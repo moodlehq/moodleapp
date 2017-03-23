@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonPlayerCtrl
  */
 .controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu) {
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
@@ -30,7 +30,9 @@ angular.module('mm.addons.mod_lesson')
         lesson,
         accessInfo,
         offline = false,
-        scrollView;
+        scrollView,
+        originalData,
+        blockData;
 
     // Block the lesson so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModLessonComponent, lessonId);
@@ -115,9 +117,11 @@ angular.module('mm.addons.mod_lesson')
             if ($mmaModLesson.isQuestionPage(data.page.type)) {
                 $scope.pageButtons = [];
                 $scope.question = $mmaModLessonHelper.getQuestionFromPageData(data);
+                originalData = angular.copy($scope.question.model);
             } else {
                 $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
                 $scope.question = false;
+                originalData = false;
             }
 
             if (data.displaymenu && !$scope.displayMenu) {
@@ -156,7 +160,12 @@ angular.module('mm.addons.mod_lesson')
 
     // Function called when the user wants to leave the player. Save the attempt before leaving.
     function leavePlayer() {
-        // @todo
+        if ($scope.question && !$scope.eolData && !$scope.processData && originalData) {
+            // Question shown. Check if there is any change.
+            if (!$mmUtil.basicLeftCompare($scope.question.model, originalData, 3)) {
+                 return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            }
+        }
         return $q.when();
     }
 
@@ -292,6 +301,11 @@ angular.module('mm.addons.mod_lesson')
         }).finally(function() {
             $scope.pageLoaded = true;
         });
+    };
+
+    // First render of rich text editor.
+    $scope.firstRender = function() {
+        originalData = angular.copy($scope.question.model);
     };
 
     // Setup right side menu.

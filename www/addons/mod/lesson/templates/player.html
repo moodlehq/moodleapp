@@ -84,7 +84,7 @@
 
             <script type="text/ng-template" id="essay">
                 <ion-input class="item item-input mm-item-has-rich-text-editor">
-                    <mm-rich-text-editor model="question.model[question.textarea.name]" property="{{question.textarea.property}}" placeholder="{{ 'mma.mod_lesson.youranswer' | translate }}" name="{{question.textarea.name}}" scroll-handle="mmaModLessonPlayerScroll" component="{{component}}" component-id="{{lesson.coursemodule}}"></mm-rich-text-editor>
+                    <mm-rich-text-editor model="question.model[question.textarea.name]" property="{{question.textarea.property}}" placeholder="{{ 'mma.mod_lesson.youranswer' | translate }}" name="{{question.textarea.name}}" scroll-handle="mmaModLessonPlayerScroll" component="{{component}}" component-id="{{lesson.coursemodule}}" first-render="firstRender()"></mm-rich-text-editor>
                 </ion-input>
             </script>
 
