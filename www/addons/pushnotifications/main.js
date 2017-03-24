@@ -17,10 +17,14 @@ angular.module('mm.addons.pushnotifications', [])
 .constant('mmaPushNotificationsComponent', 'mmaPushNotifications')
 
 .run(function($mmaPushNotifications, $ionicPlatform, $rootScope, $mmEvents, $mmLocalNotifications, mmCoreEventLogin,
-            mmaPushNotificationsComponent, mmCoreEventSiteDeleted) {
+            mmaPushNotificationsComponent, mmCoreEventSiteDeleted, mmCoreEventNotificationSoundChanged) {
 
     // Register device on GCM or APNS server.
     $ionicPlatform.ready(function() {
+        $mmaPushNotifications.registerDevice();
+    });
+    $mmEvents.on(mmCoreEventNotificationSoundChanged, function() {
+        // Notification sound has changed, register the device again to update the sound setting.
         $mmaPushNotifications.registerDevice();
     });
 
