@@ -74,5 +74,7 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
     $mmCourseDelegateProvider.registerContentHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:index', '$mmaModFeedbackHandlers.indexLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:analysis', '$mmaModFeedbackHandlers.analysisLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:complete', '$mmaModFeedbackHandlers.completeLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:print', '$mmaModFeedbackHandlers.printLinksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackPrefetchHandler');
 });

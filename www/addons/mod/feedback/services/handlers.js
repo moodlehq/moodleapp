@@ -253,7 +253,7 @@ angular.module('mm.addons.mod_feedback')
                 /\/mod\/feedback\/print\.php.*([\?\&](id)=\d+)/, '$mmCourseDelegate_mmaModFeedback');
 
     // Check if the printLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
-    self.completeLinksHandler.isEnabled = $mmaModFeedback.isPluginEnabled;
+    self.printLinksHandler.isEnabled = $mmaModFeedback.isPluginEnabled;
 
     // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
     self.printLinksHandler.getActions = function(siteIds, url, params, courseId) {

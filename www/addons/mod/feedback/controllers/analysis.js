@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_feedback')
  * @name mmaModFeedbackAnalysisCtrl
  */
 .controller('mmaModFeedbackAnalysisCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmCourse, $mmText, $mmApp,
-            mmaModFeedbackComponent, $mmEvents, $translate, $mmGroups, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper) {
+            mmaModFeedbackComponent, $mmEvents, $translate, $mmGroups, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper,
+            $ionicHistory) {
     var feedbackId = $stateParams.feedbackid,
         module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -83,7 +84,7 @@ angular.module('mm.addons.mod_feedback')
                     return $scope.setGroup($scope.selectedGroup);
                 });
             } else {
-                // @todo: go back
+                $ionicHistory.goBack();
             }
         }).catch(function(message) {
             if (!refresh) {

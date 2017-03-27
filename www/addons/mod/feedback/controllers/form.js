@@ -34,7 +34,8 @@ angular.module('mm.addons.mod_feedback')
         onlineObserver,
         offline = false,
         submitted = false,
-        originalData;
+        originalData,
+        blockData;
 
     $scope.title = $stateParams.title;
     $scope.courseId = courseId;
