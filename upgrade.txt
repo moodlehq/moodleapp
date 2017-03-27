@@ -1,6 +1,13 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.3 ===
+
+ * The project now supports Ionic CLI v2 and Node 6.9. We recommend updating node, npm, Ionic CLI and project dependencies:
+    npm install -g npm@latest
+    npm install -g ionic
+    npm install
+
 === 3.2.1 ===
 
  * mmaGrades addon has been moved to core with mmGrades name (and derivatives).
