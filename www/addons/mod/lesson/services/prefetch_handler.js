@@ -466,6 +466,9 @@ angular.module('mm.addons.mod_lesson')
             // Prefetch question attempts in last attempt for offline calculations.
             promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, attempt, false, undefined, false, true, siteId));
 
+            // Get module info to be able to handle links.
+            promises.push($mmCourse.getModuleBasicInfo(module.id, siteId));
+
             if (accessInfo.canviewreports) {
                 // Prefetch reports data.
                 promises.push($mmGroups.getActivityAllowedGroupsIfEnabled(module.id, undefined, siteId).then(function(groups) {
