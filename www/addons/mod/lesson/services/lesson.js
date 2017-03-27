@@ -691,12 +691,7 @@ angular.module('mm.addons.mod_lesson')
                 params.pageid = pageId;
             }
 
-            return site.write('mod_lesson_launch_attempt', params).then(function(result) {
-                if (!result.status) {
-                    return $q.reject();
-                }
-                return result;
-            });
+            return site.write('mod_lesson_launch_attempt', params);
         });
     };
 
