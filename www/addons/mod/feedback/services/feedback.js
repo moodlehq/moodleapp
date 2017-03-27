@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedback
  */
-.factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil) {
+.factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil, $mmUser) {
     var self = {};
 
     /**
@@ -61,7 +61,7 @@ angular.module('mm.addons.mod_feedback')
      * @return {String}         Cache key.
      */
     function getAnalysisDataPrefixCacheKey(feedbackId) {
-        return getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis';
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis:';
     }
 
     /**
@@ -73,7 +73,7 @@ angular.module('mm.addons.mod_feedback')
      */
     function getAnalysisDataCacheKey(feedbackId, groupId) {
         groupId = groupId || 0;
-        return getAnalysisDataPrefixCacheKey(feedbackId) + ":" + groupId;
+        return getAnalysisDataPrefixCacheKey(feedbackId) + groupId;
     }
 
     /**
@@ -104,6 +104,28 @@ angular.module('mm.addons.mod_feedback')
      */
     function getCurrentValuesDataCacheKey(feedbackId) {
         return getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
+    }
+
+    /**
+     * Get prefix cache key for feedback responses analysis data WS calls.
+     *
+     * @param {Number} feedbackId Feedback ID.
+     * @return {String}         Cache key.
+     */
+    function getResponsesAnalysisDataPrefixCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
+    }
+
+    /**
+     * Get cache key for responses analysis feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @param  {Number} groupId     Group id, 0 means that the function will determine the user group.
+     * @return {String}             Cache key.
+     */
+    function getResponsesAnalysisDataCacheKey(feedbackId, groupId) {
+        groupId = groupId || 0;
+        return getResponsesAnalysisDataPrefixCacheKey(feedbackId) + groupId;
     }
 
     /**
@@ -498,6 +520,93 @@ angular.module('mm.addons.mod_feedback')
     self.invalidateCurrentValuesData = function(feedbackId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getCurrentValuesDataCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Returns the feedback user responses.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getResponsesAnalysis
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {Number}    page            The page of records to return.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getResponsesAnalysis = function(feedbackId, groupId, page, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId,
+                    groupid: groupId || 0,
+                    page: page || 0
+                },
+                preSets = {
+                    cacheKey: getResponsesAnalysisDataCacheKey(feedbackId, groupId)
+                };
+
+            return site.read('mod_feedback_get_responses_analysis', params, preSets);
+        });
+    };
+
+    /**
+     * Returns all the feedback user responses.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getAllResponsesAnalysis
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Object}    [previous]      Only for recurrent use. Object with the previous fetched info.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getAllResponsesAnalysis = function(feedbackId, groupId, siteId, previous) {
+        siteId = siteId || $mmSite.getId();
+        if (typeof previous == "undefined") {
+            previous = {
+                page: 0,
+                attempts: [],
+                anonattempts: []
+            };
+        }
+
+        return self.getResponsesAnalysis(feedbackId, groupId, previous.page, siteId).then(function(responses) {
+            if (previous.anonattempts.length < responses.totalanonattempts) {
+                previous.anonattempts = previous.anonattempts.concat(responses.anonattempts);
+            }
+
+            if (previous.attempts.length < responses.totalattempts) {
+                previous.attempts = previous.attempts.concat(responses.attempts);
+            }
+
+            if (previous.anonattempts.length < responses.totalanonattempts || previous.attempts.length < responses.totalattempts) {
+                // Can load more.
+                previous.page++;
+                return self.getAllResponsesAnalysis(feedbackId, groupId, siteId, previous);
+            }
+
+            previous.totalattempts = responses.totalattempts;
+            previous.totalanonattempts = responses.totalanonattempts;
+            return previous;
+        });
+    };
+
+    /**
+     * Invalidates feedback user responses record data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateResponsesAnalysisData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateResponsesAnalysisData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getResponsesAnalysisDataPrefixCacheKey(feedbackId));
+
         });
     };
 
