@@ -24,9 +24,6 @@ $bar-content-text: #fff !default;
 $item-media-width: 32px !default;
 $item-media-height: 32px !default;
 
-// Howto tips.
-$item-howto-color: #d9edf7 !default;
-
 // Messages.
 $item-message-bg: $stable !default;
 $item-message-note-text: #999 !default;
@@ -36,11 +33,11 @@ $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 // Disabled items.
 $item-disabled-color: #999 !default;
 
-// Warnings (energized).
-$mm-warning-color: $energized !default;
-
-// Errors (red).
-$mm-error-color: #c00 !default;
+// Messages boxes.
+$mm-warning-color: $energized !default; // Energized / yellow.
+$mm-success-color: $balanced !default; // Balanced / green.
+$mm-info-color: $positive !default; // Positive / blue.
+$mm-error-color: #c00 !default; // Red.
 
 // Timer variables.
 $mm-timer-warn-color:     #f00 !default;
@@ -190,28 +187,6 @@ p.item-text-wrap {
     > .spinner {
       top: $item-padding;
     }
-  }
-}
-
-// Howto tips.
-.item.item-howto {
-  padding-bottom: 12px;
-  padding: 9px;
-  margin-bottom: 12px;
-  background-color: $item-howto-color;
-  border-color: $item-howto-color;
-  color: #666;
-
-  &.item-icon-left {
-    padding-left: 35px;
-
-    .icon:first-child {
-      left: 4px;
-    }
-  }
-
-  &.item-icon-right {
-    @extend .item-icon-right;
   }
 }
 
@@ -587,12 +562,46 @@ mm-navigation-bar {
   padding: $item-padding / 2;
 }
 
-p.mm-error {
-  color: $mm-error-color;
+
+/* Message cards */
+// Mixin to create message "cards" with a colored border-bottom and, optionally, an icon. For examples, for mm-warning.
+@mixin mm-message-card($color) {
+  border-bottom: 3px solid $color;
+  padding: $card-padding;
+  box-shadow: $card-box-shadow;
+  margin: 20px 10px;
+  background-color: #fff;
+  position: relative;
+  text-align: left;
+
+  i.icon:before {
+    color: $color;
+    font-size: 125%;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
 }
 
-.mm-warning {
-  border-bottom: 3px solid $mm-warning-color;
+.mm-error-card {
+  @include mm-message-card($mm-error-color);
+}
+
+.mm-warning-card {
+  @include mm-message-card($mm-warning-color);
+}
+
+.mm-info-card {
+  @include mm-message-card($mm-info-color);
+}
+
+.mm-success-card {
+  @include mm-message-card($mm-success-color);
+}
+
+@mixin mm-message-card-icon($color) {
+  border-bottom: 3px solid $color;
   padding: $card-padding;
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
@@ -609,14 +618,81 @@ p.mm-error {
     height: 100%;
     font-size: ceil(($item-icon-font-size / 4) * 3);
     left: ceil($item-padding / 4);
-    color: $mm-warning-color;
 
     &:before {
+      color: $color;
       display: block;
       width: ceil(($item-icon-font-size / 4) * 3);
       text-align: center;
     }
   }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mm-error-card-icon {
+  @include mm-message-card-icon($mm-error-color);
+}
+
+.mm-warning, // mm-warning is deprecated, use mm-warning-card-icon instead.
+.mm-warning-card-icon {
+  @include mm-message-card-icon($mm-warning-color);
+}
+
+.mm-info-card-icon {
+  @include mm-message-card-icon($mm-info-color);
+}
+
+.mm-success-card-icon {
+  @include mm-message-card-icon($mm-success-color);
+}
+
+.padding {
+  .mm-error-card, .mm-warning-card, .mm-info-card, .mm-success-card,
+  .mm-error-card-icon, .mm-warning-card-icon, .mm-info-card-icon, .mm-success-card-icon {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+// These will need item-icon-left as well.
+@mixin mm-message-item($color) {
+  border-bottom: 3px solid $color !important;
+  padding-top: 12px;
+  padding-bottom: 9px;
+  i.icon:before {
+    color: $color;
+  }
+  &.item-icon-left {
+    @extend .item-icon-left;
+  }
+
+  &.item-icon-right {
+    @extend .item-icon-right;
+  }
+}
+
+.mm-error-item {
+  @include mm-message-item($mm-error-color);
+}
+
+.mm-warning-item {
+  @include mm-message-item($mm-warning-color);
+}
+
+.item.item-howto, // item-howto is deprecated, use mm-info-item instead.
+.mm-info-item {
+  @include mm-message-item($mm-info-color);
+}
+
+.mm-success-item {
+  @include mm-message-item($mm-success-color);
+}
+
+p.mm-error { // Deprecated, use one of the above mm-error classes.
+  color: $mm-error-color;
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.

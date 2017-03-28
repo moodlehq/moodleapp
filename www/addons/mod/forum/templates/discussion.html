@@ -15,11 +15,11 @@
         </ion-refresher>
         <mm-loading hide-until="discussionLoaded">
             <!-- Discussion replies found to be synchronized -->
-            <div class="mm-warning" ng-if="postHasOffline">
+            <div class="mm-warning-card-icon" ng-if="postHasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: discussionStr} }}
             </div>
 
-            <div class="mm-warning" ng-if="locked">
+            <div class="mm-warning-card-icon" ng-if="locked">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_forum.discussionlocked' | translate }}
             </div>
 

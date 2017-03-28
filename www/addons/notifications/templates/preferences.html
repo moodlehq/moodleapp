@@ -18,7 +18,7 @@
 
             <!-- Show current processor. -->
             <div class="card" ng-if="currentProcessor">
-                <p class="item item-icon-left item-howto item-text-wrap" ng-class="{'item-icon-right': currentProcessor.hassettings && currentProcessor.supported}" ng-click="openProcessorPreferences()">
+                <p class="item item-icon-left mm-info-item item-text-wrap" ng-class="{'item-icon-right': currentProcessor.hassettings && currentProcessor.supported}" ng-click="openProcessorPreferences()">
                     <i class="icon ion-information"></i>
                     {{ 'mm.settings.configuringnotifications' | translate:{$a: currentProcessor.displayname} }}
                     <i ng-if="currentProcessor.hassettings && currentProcessor.supported" class="icon ion-gear-b"></i>

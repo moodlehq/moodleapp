@@ -71,26 +71,26 @@
             </div>
 
             <div class="card" ng-if="quiz">
-                <div class="item item-text-wrap" ng-repeat="message in preventMessages">
-                    <p class="mma-mod-quiz-warning">{{ message }}</p>
+                <div class="item item-text-wrap mm-error-item" ng-repeat="message in preventMessages">
+                    <p>{{ message }}</p>
                 </div>
-                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="quiz.hasquestions === 0">
-                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.noquestions' | translate }}</p>
+                <div class="item item-text-wrap mm-error-item" ng-if="quiz.hasquestions === 0">
+                    <p>{{ 'mma.mod_quiz.noquestions' | translate }}</p>
                 </div>
-                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="unsupportedQuestions && unsupportedQuestions.length">
-                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorquestionsnotsupported' | translate }}</p>
-                    <p class="mma-mod-quiz-warning" ng-repeat="type in unsupportedQuestions">{{ type }}</p>
+                <div class="item item-text-wrap mm-error-item" ng-if="unsupportedQuestions && unsupportedQuestions.length">
+                    <p>{{ 'mma.mod_quiz.errorquestionsnotsupported' | translate }}</p>
+                    <p ng-repeat="type in unsupportedQuestions">{{ type }}</p>
                 </div>
-                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="unsupportedRules && unsupportedRules.length">
-                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorrulesnotsupported' | translate }}</p>
-                    <p class="mma-mod-quiz-warning" ng-repeat="name in unsupportedRules">{{ name }}</p>
+                <div class="item item-text-wrap mm-error-item" ng-if="unsupportedRules && unsupportedRules.length">
+                    <p>{{ 'mma.mod_quiz.errorrulesnotsupported' | translate }}</p>
+                    <p ng-repeat="name in unsupportedRules">{{ name }}</p>
                 </div>
-                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="behaviourSupported === false">
-                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorbehaviournotsupported' | translate }}</p>
-                    <p class="mma-mod-quiz-warning">{{ quiz.preferredbehaviour }}</p>
+                <div class="item item-text-wrap mm-error-item" ng-if="behaviourSupported === false">
+                    <p>{{ 'mma.mod_quiz.errorbehaviournotsupported' | translate }}</p>
+                    <p>{{ quiz.preferredbehaviour }}</p>
                 </div>
                 <!-- Synchronize button -->
-                <div class="mm-warning" ng-if="buttonText && hasOffline && !showSpinner">
+                <div class="mm-warning-card-icon" ng-if="buttonText && hasOffline && !showSpinner">
                     <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
                 </div>
                 <div class="item" ng-if="buttonText && !showSpinner">
