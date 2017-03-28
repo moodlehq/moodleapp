@@ -98,6 +98,8 @@ angular.module('mm.addons.mod_forum')
                                 userPromises.push($mmUser.getProfile(discussion.userid, courseid, true).then(function(user) {
                                     discussion.userfullname = user.fullname;
                                     discussion.userpictureurl = user.profileimageurl;
+                                }).catch(function() {
+                                    // Ignore errors.
                                 }));
                             }
                         });
