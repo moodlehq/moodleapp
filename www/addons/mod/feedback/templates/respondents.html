@@ -21,7 +21,7 @@
                         {{ 'mma.mod_feedback.non_anonymous_entries' |translate : {$a: responses.totalattempts } }}
                     </div>
                     <div ng-repeat="attempt in responses.attempts" ng-if="responses.totalattempts > 0">
-                        <a ng-class="{'item-avatar': attempt.profileimageurl}" class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_feedback-attempt({'attemptid': attempt.id, 'attempt': attempt, 'feedbackid': feedbackId})">
+                        <a ng-class="{'item-avatar': attempt.profileimageurl}" class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_feedback-attempt({'attemptid': attempt.id, 'attempt': attempt, 'feedbackid': feedbackId, 'moduleid': componentId})">
                             <img ng-if="attempt.profileimageurl" ng-src="{{attempt.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: attempt.fullname} }}" role="presentation">
                             <h2>{{attempt.fullname}}</h2>
                             <p ng-if="attempt.timemodified">{{attempt.timemodified * 1000 | mmFormatDate:"dffulldate"}}</p>
@@ -37,7 +37,7 @@
                         {{ 'mma.mod_feedback.anonymous_entries' |translate : {$a: responses.totalanonattempts } }}
                     </div>
                     <div ng-repeat="attempt in responses.anonattempts" ng-if="responses.totalanonattempts > 0">
-                        <a class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_feedback-attempt({'id': attempt.id})">
+                        <a class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_feedback-attempt({'attemptid': attempt.id, 'attempt': attempt, 'feedbackid': feedbackId, 'moduleid': componentId})">
                             <h2>{{ 'mma.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>
                             <i class="icon icon-accessory ion-chevron-right"></i>
                         </a>
