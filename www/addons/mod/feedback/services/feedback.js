@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedback
  */
-.factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil, $mmUser) {
+.factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil) {
     var self = {};
 
     /**
@@ -590,6 +590,62 @@ angular.module('mm.addons.mod_feedback')
             previous.totalattempts = responses.totalattempts;
             previous.totalanonattempts = responses.totalanonattempts;
             return previous;
+        });
+    };
+
+    /**
+     * Find an attemp in all responses analysis.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getAttempt
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    attemptId       Attempt id to find.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Object}    [previous]      Only for recurrent use. Object with the previous fetched info.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getAttempt = function(feedbackId, attemptId, siteId, previous) {
+        siteId = siteId || $mmSite.getId();
+        if (typeof previous == "undefined") {
+            previous = {
+                page: 0,
+                attemptsLoaded: 0,
+                anonAttemptsLoaded: 0
+            };
+        }
+
+        return self.getResponsesAnalysis(feedbackId, 0, previous.page, siteId).then(function(responses) {
+            for (var x in responses.attempts) {
+                if (responses.attempts[x].id == attemptId) {
+                    // Found, return.
+                    return responses.attempts[x];
+                }
+            }
+
+            for (var y in responses.anonattempts) {
+                if (responses.anonattempts[y].id == attemptId) {
+                    // Found, return.
+                    return responses.anonattempts[y];
+                }
+            }
+
+            if (previous.anonAttemptsLoaded < responses.totalanonattempts) {
+                previous.anonAttemptsLoaded += responses.anonattempts.length;
+            }
+
+            if (previous.attemptsLoaded < responses.totalattempts) {
+                previous.attemptsLoaded += responses.attempts.length;
+            }
+
+            if (previous.anonAttemptsLoaded < responses.totalanonattempts || previous.attemptsLoaded < responses.totalattempts) {
+                // Can load more. Check there.
+                previous.page++;
+                return self.getAttempt(feedbackId, attemptId, siteId, previous);
+            }
+
+            // Not found and all loaded. Reject.
+            return $q.reject();
         });
     };
 

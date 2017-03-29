@@ -60,7 +60,7 @@ angular.module('mm.addons.mod_feedback')
         }).then(function(accessData) {
             $scope.access = accessData;
 
-            if (!$scope.preview && accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
+            if (!$scope.preview && accessData.cansubmit && !accessData.isempty) {
                 return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id, offline, true) : $q.when(currentPage);
             } else {
                 $scope.preview = true;

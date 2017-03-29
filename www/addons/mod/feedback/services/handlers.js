@@ -181,7 +181,7 @@ angular.module('mm.addons.mod_feedback')
                 var modal = $mmUtil.showModalLoading(),
                     moduleId = parseInt(params.id, 10);
 
-                return $mmCourse.getModuleBasicInfo(moduleId).then(function(module) {
+                return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
                     var stateParams = {
                         module: module,
                         moduleid: module.id,
@@ -222,13 +222,12 @@ angular.module('mm.addons.mod_feedback')
                 var modal = $mmUtil.showModalLoading(),
                     moduleId = parseInt(params.id, 10);
 
-                return $mmCourse.getModuleBasicInfo(moduleId).then(function(module) {
+                return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
                     var stateParams = {
                         module: module,
                         moduleid: module.id,
                         feedbackid: module.instance,
-                        courseid: module.course,
-                        preview: false
+                        courseid: module.course
                     };
                     if (typeof params.gopage == 'undefined') {
                         stateParams.page = parseInt(params.gopage, 10);
@@ -267,7 +266,7 @@ angular.module('mm.addons.mod_feedback')
                 var modal = $mmUtil.showModalLoading(),
                     moduleId = parseInt(params.id, 10);
 
-                return $mmCourse.getModuleBasicInfo(moduleId).then(function(module) {
+                return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
                     var stateParams = {
                         module: module,
                         moduleid: module.id,
@@ -282,6 +281,60 @@ angular.module('mm.addons.mod_feedback')
         }];
     };
 
+    /**
+     * Content links handler for feedback show entries questions.
+     * Match mod/feedback/show_entries.php with a valid feedback id.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHandlers#showEntriesLinksHandler
+     */
+    self.showEntriesLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/feedback\/show_entries\.php.*([\?\&](id|showcompleted)=\d+)/, '$mmCourseDelegate_mmaModFeedback');
+
+    // Check if the printLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.showEntriesLinksHandler.isEnabled = $mmaModFeedback.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.showEntriesLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                if (typeof params.id == 'undefined') {
+                    // Id not defined. Cannot treat the URL.
+                    return false;
+                }
+
+                var modal = $mmUtil.showModalLoading(),
+                    moduleId = parseInt(params.id, 10);
+
+                return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+                    var stateParams;
+
+                    if (typeof params.showcompleted == 'undefined') {
+                        // showcompleted not defined. Show entry list.
+                        stateParams = {
+                            moduleid: module.id,
+                            module: module,
+                            courseid: module.course
+                        };
+                        return $mmContentLinksHelper.goInSite('site.mod_feedback-respondents', stateParams, siteId);
+                    }
+
+                    return $mmaModFeedback.getAttempt(module.instance, parseInt(params.showcompleted, 10), siteId).then(function(attempt) {
+                        stateParams = {
+                            moduleid: module.id,
+                            attempt: attempt,
+                            attemptid: attempt.id,
+                            feedbackid: module.instance
+                        };
+                        return $mmContentLinksHelper.goInSite('site.mod_feedback-attempt', stateParams, siteId);
+                    });
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
 
     return self;
 });
