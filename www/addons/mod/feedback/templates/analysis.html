@@ -23,6 +23,10 @@
                         <span class="badge badge-positive">{{feedback.completedCount}}</span>
                         <i class="icon icon-accessory ion-chevron-right"></i>
                     </div>
+                    <div ng-if="!access.isanonymous" class="item item-text-wrap item-icon-right" ng-click="openFeature('nonrespondents')">
+                        <p class="item-heading">{{ 'mma.mod_feedback.show_nonrespondents' | translate }}</p>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
                     <div class="item item-text-wrap item-icon-right">
                         <p class="item-heading">{{ 'mma.mod_feedback.questions' | translate }}</p>
                         <span class="badge badge-positive">{{feedback.itemsCount}}</span>
@@ -70,9 +74,6 @@
             </a>
             <a class="tab-item active">
                 <i class="icon ion-stats-bars"></i>{{ 'mma.mod_feedback.analysis' | translate }}
-            </a>
-            <a class="tab-item" ng-if="!access.isanonymous" ng-click="openFeature('show_nonrespondents', true)">
-                <i class="icon ion-close-circled"></i>{{ 'mma.mod_feedback.show_nonrespondents' | translate }}
             </a>
         </div>
     </ion-footer>

@@ -98,6 +98,21 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
                 templateUrl: 'addons/mod/feedback/templates/attempt.html'
             }
         }
+    })
+
+    .state('site.mod_feedback-nonrespondents', {
+        url: '/mod_feedback-nonrespondents',
+        params: {
+            courseid: null,
+            module: null,
+            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModFeedbackNonRespondentsCtrl',
+                templateUrl: 'addons/mod/feedback/templates/nonrespondents.html'
+            }
+        }
     });
 })
 
