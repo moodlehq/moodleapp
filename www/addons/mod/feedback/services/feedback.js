@@ -21,8 +21,11 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedback
  */
-.factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil) {
-    var self = {};
+.factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil, $mmApp,
+        $mmaModFeedbackOffline) {
+    var self = {},
+        FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>',
+        FEEDBACK_LINE_SEP = '|';
 
     /**
      * Get cache key for feedback data WS calls.
@@ -462,6 +465,218 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
+     * Get a single feedback page items. If offline or server down it will use getItems to calculate dependencies.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getPageItemsWithValues
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    page            The page to get.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getPageItemsWithValues = function(feedbackId, page, offline, ignoreCache, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return self.getPageItems(feedbackId, page, siteId).then(function(response) {
+            return fillValues(feedbackId, response.items, offline, ignoreCache, siteId).then(function(items) {
+                response.items = items;
+                return response;
+            });
+        }).catch(function() {
+            // If getPageItems fail we should calculate it using getItems.
+            return self.getItems(feedbackId, siteId).then(function(response) {
+                return fillValues(feedbackId, response.items, offline, ignoreCache, siteId).then(function(items) {
+                    // Separate items by pages.
+                    var pageItems = [],
+                        currentPage = 0,
+                        previousPageItems = [];
+
+                    pageItems = items.filter(function(item) {
+                        // Greater page, discard all entries.
+                        if (currentPage > page) {
+                            return false;
+                        }
+
+                        if (item.typ == "pagebreak") {
+                            currentPage++;
+                            return false;
+                        }
+
+                        // Save items on previous page to check dependencies and discard entry.
+                        if (currentPage < page) {
+                            previousPageItems.push(item);
+                            return false;
+                        }
+
+                        // Filter depending items.
+                        if (item && item.dependitem > 0 && previousPageItems.length > 0) {
+                            return checkDependencyItem(previousPageItems, item);
+                        }
+
+                        // Filter items with errors.
+                        return item;
+                    });
+
+                    // Check if there are more pages.
+                    response.hasprevpage = page > 0;
+                    response.hasnextpage = currentPage > page;
+                    response.items = pageItems;
+
+                    return response;
+                });
+            });
+        });
+
+        /**
+         * Fill values of item questions.
+         *
+         * @param   {Number}   feedbackId   Feedback ID.
+         * @param   {Array}    items        Item to fill the value.
+         * @param   {Boolean}  offline      True if it should return cached data. Has priority over ignoreCache.
+         * @param   {Boolean}  ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
+         * @param   {String}   siteId       Site ID.
+         * @return  {Promise}               Resolved with values when done.
+         */
+        function fillValues(feedbackId, items, offline, ignoreCache, siteId) {
+            return self.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then(function(valuesArray) {
+                var values = {};
+
+                angular.forEach(valuesArray, function(value) {
+                    values[value.item] = value.value;
+                });
+
+                angular.forEach(items, function(itemData) {
+                    if (itemData.hasvalue && typeof values[itemData.id] != "undefined") {
+                        itemData.rawValue = values[itemData.id];
+                    }
+                });
+            }).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                // Merge with offline data.
+                return $mmaModFeedbackOffline.getFeedbackResponses(feedbackId, siteId).then(function(offlineValuesArray) {
+                    var offlineValues = {};
+
+                    // Merge all values into one array.
+                    offlineValuesArray = offlineValuesArray.reduce(function(a, b) {
+                        var responses = $mmUtil.objectToArrayOfObjects(b.responses, 'id', 'value');
+                        return a.concat(responses);
+                    }, []).map(function(a) {
+                        var parts = a.id.split('_');
+                        a.typ = parts[0];
+                        a.item = parseInt(parts[1], 0);
+                        return a;
+                    });
+
+                    angular.forEach(offlineValuesArray, function(value) {
+                        if (typeof offlineValues[value.item] == "undefined") {
+                            offlineValues[value.item] = [];
+                        }
+                        offlineValues[value.item].push(value.value);
+                    });
+
+                    angular.forEach(items, function(itemData) {
+                        if (itemData.hasvalue && typeof offlineValues[itemData.id] != "undefined") {
+                            // Treat multichoice checkboxes.
+                            if (itemData.typ == "multichoice" &&
+                                    itemData.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP)[0] == 'c') {
+
+                                offlineValues[itemData.id] = offlineValues[itemData.id].filter(function(value) {
+                                    return value > 0;
+                                });
+                                itemData.rawValue = offlineValues[itemData.id].join(FEEDBACK_LINE_SEP);
+                            } else {
+                                itemData.rawValue = offlineValues[itemData.id][0];
+                            }
+                        }
+                    });
+                    return items;
+                });
+            }).catch(function() {
+                // Ignore errors.
+                return items;
+            });
+        }
+
+        /**
+         * Check dependency of a question item.
+         *
+         * @param   {Array}     items       All question items to check dependency.
+         * @param   {Number}    item       Item to check.
+         * @return  {Boolean}              Return true if dependency is acomplished and it can be shown. False, otherwise.
+         */
+        function checkDependencyItem(items, item) {
+            var depend;
+            for (var x in items) {
+                if (items[x].id == item.dependitem) {
+                    depend = items[x];
+                    break;
+                }
+            }
+
+            // Item not found, looks like dependent item has been removed or is in the same or following pages.
+            if (!depend) {
+                return true;
+            }
+
+            switch (depend.typ) {
+                case 'label':
+                    return false;
+                case 'multichoice':
+                case 'multichoicerated':
+                    return compareDependItemMultichoice(depend, item.dependvalue);
+            }
+
+            return item.dependvalue == depend.rawValue;
+
+            // Helper functions by type:
+            function compareDependItemMultichoice(item, dependValue) {
+                var values, choices,
+                    parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [],
+                    subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+
+                choices = parts[1] || '';
+                choices = choices.split(FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
+                choices = choices.split(FEEDBACK_LINE_SEP) || [];
+
+
+                if (subtype === 'c') {
+                    if (typeof item.rawValue == "undefined") {
+                        values = [''];
+                    } else {
+                        item.rawValue = "" + item.rawValue;
+                        values = item.rawValue.split(FEEDBACK_LINE_SEP);
+                    }
+                } else {
+                    values = [item.rawValue];
+                }
+
+                for (var index = 0; index < choices.length; index++) {
+                    for (var x in values) {
+                        if (values[x] == index + 1) {
+                            var value = choices[index];
+                            if (item.typ == 'multichoicerated') {
+                                value = value.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
+                            }
+                            if (value.trim() == dependValue) {
+                                return true;
+                            }
+                            // We can finish checking if only searching on one value and we found it.
+                            if (values.length == 1) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+
+    };
+
+    /**
      * Process a jump between pages.
      *
      * @module mm.addons.mod_feedback
@@ -470,22 +685,132 @@ angular.module('mm.addons.mod_feedback')
      * @param   {Number}    feedbackId      Feedback ID.
      * @param   {Number}    page            The page being processed.
      * @param   {Object}    responses       The data to be processed the key is the field name (usually type[index]_id).
-     * @param   {Boolean}   goprevious      Whether we want to jump to previous page.
+     * @param   {Boolean}   goPrevious      Whether we want to jump to previous page.
+     * @param   {Boolean}   formHasErrors   Whether the form we sent has required but empty fields (only used in offline).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the info is retrieved.
      */
-    self.processPage = function(feedbackId, page, responses, goprevious, siteId) {
+    self.processPage = function(feedbackId, page, responses, goPrevious, formHasErrors, siteId) {
+        siteId = siteId || $mmSite.getId();
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If there's already a response to be sent to the server, discard it first.
+        return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedbackId, page, false, siteId).then(function() {
+            // @todo: Sync other pages first here.
+            return self.processPageOnline(feedbackId, page, responses, goPrevious, siteId).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModFeedbackOffline.saveResponses(feedbackId, page, responses, false, siteId).then(function() {
+                // Simulate process_page response.
+                var response = {
+                        jumpto: page,
+                        completed: false,
+                        offline: true
+                    },
+                    changePage = 0;
+
+                if (goPrevious) {
+                    if (page > 0) {
+                        changePage = -1;
+                    }
+                } else if (!formHasErrors) {
+                    // We can only go next if it has no errors.
+                    changePage = 1;
+                }
+
+                if (changePage === 0) {
+                    return response;
+                }
+
+                return self.getPageItemsWithValues(feedbackId, page, true, false, siteId).then(function(resp) {
+                    // Check completion.
+                    if (changePage == 1 && !resp.hasnextpage) {
+                        response.completed = true;
+                        return response;
+                    }
+                    return getPageJumpTo(feedbackId, page + changePage, changePage, siteId).then(function(loadPage) {
+                        if (loadPage === false) {
+                            // Completed or first page.
+                            if (changePage == -1) {
+                                // First page.
+                                response.jumpto = 0;
+                            } else {
+                                // Completed.
+                                response.completed = true;
+                            }
+                        } else {
+                            response.jumpto = loadPage;
+                        }
+                        return response;
+                    });
+                });
+            });
+        }
+
+        // Convenience functio to get the page we can jump.
+        function getPageJumpTo(feedbackId, page, changePage, siteId) {
+            return self.getPageItemsWithValues(feedbackId, page, true, false, siteId).then(function(resp) {
+                // The page we are going has items.
+                if (resp.items.length > 0) {
+                    return page;
+                }
+
+                // Check we can jump futher.
+                if ((changePage == 1 && resp.hasnextpage) || (changePage == -1 && resp.hasprevpage)) {
+                    return getPageJumpTo(feedbackId, page + changePage, changePage, siteId);
+                }
+
+                // Completed or first page.
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Process a jump between pages.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#processPage
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    page            The page being processed.
+     * @param   {Object}    responses       The data to be processed the key is the field name (usually type[index]_id).
+     * @param   {Boolean}   goPrevious      Whether we want to jump to previous page.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.processPageOnline = function(feedbackId, page, responses, goPrevious, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     feedbackid: feedbackId,
                     page: page,
                     responses: $mmUtil.objectToArrayOfObjects(responses, 'name', 'value'),
-                    goprevious: goprevious ? 1 : 0
+                    goprevious: goPrevious ? 1 : 0
                 };
 
-            return site.write('mod_feedback_process_page', params).then(function(response) {
+            return site.write('mod_feedback_process_page', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
                 // Invalidate corrent values because they will change.
-                return self.invalidateCurrentValuesData(feedbackId, site.getId()).then(function() {
+                return self.invalidateCurrentValuesData(feedbackId, site.getId()).catch(function() {
+                    // Ignore errors.
+                }).then(function() {
                     return response;
                 });
             });

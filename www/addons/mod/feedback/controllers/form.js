@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_feedback')
         } else {
             currentPage = page;
 
-            promise = $mmaModFeedbackHelper.getPageItems(feedback.id, page, offline, true).then(function(response) {
+            promise = $mmaModFeedback.getPageItemsWithValues(feedback.id, page, offline, true).then(function(response) {
                 $scope.hasPrevPage = !!response.hasprevpage;
                 $scope.hasNextPage = !!response.hasnextpage;
 
@@ -113,15 +113,24 @@ angular.module('mm.addons.mod_feedback')
         scrollTop();
         $scope.feedbackLoaded = false;
 
-        var responses = $mmaModFeedbackHelper.getPageItemsResponses($scope.items);
+        var responses = $mmaModFeedbackHelper.getPageItemsResponses($scope.items),
+            formHasErrors = false;
 
-        return $mmaModFeedback.processPage(feedback.id, currentPage, responses, goPrevious).then(function(response) {
+        for (var x in $scope.items) {
+            if ($scope.items[x].isEmpty) {
+                formHasErrors = true;
+                break;
+            }
+        }
+
+        return $mmaModFeedback.processPage(feedback.id, currentPage, responses, goPrevious, formHasErrors).then(function(response) {
             var jumpTo = parseInt(response.jumpto, 10);
 
             if (response.completed) {
                 // Form is completed, show completion message and buttons.
                 $scope.items = [];
                 $scope.completed = true;
+                $scope.completedOffline = !!response.offline;
                 $scope.completionPageContents = response.completionpagecontents;
                 siteAfterSubmit = response.siteaftersubmit;
                 submitted = true;
