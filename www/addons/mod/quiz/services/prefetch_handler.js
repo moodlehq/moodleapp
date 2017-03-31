@@ -65,7 +65,7 @@ angular.module('mm.addons.mod_quiz')
     self.gatherPreflightData = function(quiz, quizAccessInfo, attempt, preflightData, siteId, askPreflight, modalTitle) {
         if (askPreflight) {
             // Check if the quiz requires preflight data.
-            scope = $rootScope.$new();
+            var scope = $rootScope.$new();
             scope.preflightData = preflightData;
             scope.preflightModalTitle = modalTitle;
 
@@ -294,13 +294,14 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModQuiz.getQuiz(courseId, module.id, false, true).then(function(quiz) {
+        var siteId = $mmSite.getId();
+        return $mmaModQuiz.getQuiz(courseId, module.id, siteId).then(function(quiz) {
             if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
                 return false;
             }
 
             // Not downloadable if we reached max attempts.
-            return $mmaModQuiz.getUserAttempts(quiz.id).then(function(attempts) {
+            return $mmaModQuiz.getUserAttempts(quiz.id, false, true, false, false, siteId).then(function(attempts) {
                 var isLastFinished = !attempts.length || $mmaModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
                 return quiz.attempts === 0 || quiz.attempts > attempts.length || !isLastFinished;
             });
