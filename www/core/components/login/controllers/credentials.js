@@ -21,8 +21,9 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginCredentialsCtrl
  */
-.controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
-            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate) {
+.controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $mmEvents,
+            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent,
+            mmCoreLoginSiteUncheckedEvent) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
@@ -31,7 +32,9 @@ angular.module('mm.core.login')
     $scope.siteChecked = false;
 
     var urlToOpen = $stateParams.urltoopen,
-        siteConfig = $stateParams.siteconfig;
+        siteConfig = $stateParams.siteconfig,
+        eventThrown = false,
+        siteId;
 
     treatSiteConfig(siteConfig);
 
@@ -80,6 +83,13 @@ angular.module('mm.core.login')
             $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
             $scope.authInstructions = siteConfig.authinstructions || $translate.instant('mm.login.loginsteps');
             $scope.canSignup = siteConfig.registerauth == 'email' && !$mmLoginHelper.isEmailSignupDisabled(siteConfig);
+
+            if (!eventThrown && !$scope.$$destroyed) {
+                eventThrown = true;
+                $mmEvents.trigger(mmCoreLoginSiteCheckedEvent, {
+                    config: siteConfig
+                });
+            }
         } else {
             $scope.sitename = null;
             $scope.logourl = null;
@@ -130,9 +140,10 @@ angular.module('mm.core.login')
 
         // Start the authentication process.
         return $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
-            return $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function() {
+            return $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function(id) {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
+                siteId = id;
 
                 if (urlToOpen) {
                     // There's a content link to open.
@@ -156,4 +167,10 @@ angular.module('mm.core.login')
         });
     };
 
+    $scope.$on('$destroy', function() {
+        $mmEvents.trigger(mmCoreLoginSiteUncheckedEvent, {
+            siteid: siteId,
+            config: siteConfig
+        });
+    });
 });

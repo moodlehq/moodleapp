@@ -15,6 +15,8 @@
 angular.module('mm.core.login', [])
 
 .constant('mmCoreLoginTokenChangePassword', '*changepassword*') // Deprecated.
+.constant('mmCoreLoginSiteCheckedEvent', 'mm_login_site_checked')
+.constant('mmCoreLoginSiteUncheckedEvent', 'mm_login_site_unchecked')
 
 .config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
