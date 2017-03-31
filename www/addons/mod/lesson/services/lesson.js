@@ -614,6 +614,19 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Check if a lesson is enabled to be used in offline.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#isLessonOffline
+     * @param  {Object} lesson Lesson.
+     * @return {Boolean}       True offline is enabled, false otherwise.
+     */
+    self.isLessonOffline = function(lesson) {
+        return !!lesson.allowofflineattempts;
+    };
+
+    /**
      * Check if a lesson is password protected based in the access info.
      *
      * @module mm.addons.mod_lesson

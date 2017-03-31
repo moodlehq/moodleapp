@@ -52,6 +52,7 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModLesson', 'lesson', '$mmaModLessonHandlers.courseContentHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModLesson', 'lesson', '$mmaModLessonPrefetchHandler');
 });

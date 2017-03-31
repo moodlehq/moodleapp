@@ -45,6 +45,7 @@ angular.module('mm.addons.mod_lesson')
     // Convenience function to get Lesson data.
     function fetchLessonData(refresh) {
         $scope.isOnline = $mmApp.isOnline();
+        $scope.askPassword = false;
 
         return $mmaModLesson.getLesson(courseId, module.id).then(function(lessonData) {
             lesson = lessonData;
@@ -58,30 +59,29 @@ angular.module('mm.addons.mod_lesson')
             var promise;
 
             accessInfo = info;
-            $scope.preventMessages = info.preventaccessreasons;
 
-            if ($scope.preventMessages && $scope.preventMessages.length) {
-                $scope.askPassword = $scope.preventMessages.length == 1 && $mmaModLesson.isPasswordProtected(info);
-                if ($scope.askPassword) {
+            if (info.preventaccessreasons && info.preventaccessreasons.length) {
+                var askPassword = info.preventaccessreasons.length == 1 && $mmaModLesson.isPasswordProtected(info);
+                if (askPassword) {
                     // The lesson requires a password. Check if there is one in memory or DB.
                     promise = password ? $q.when(password) : $mmaModLesson.getStoredPassword(lesson.id);
 
                     return promise.then(function(pwd) {
-                        return validatePassword(pwd);
+                        return validatePassword(pwd, refresh);
                     }).catch(function() {
-                        // No password or the validation failed. The password form will be shown.
+                        // No password or the validation failed. Show password form.
+                        $scope.askPassword = true;
+                        $scope.preventMessages = info.preventaccessreasons;
                     });
                 } else  {
                     // Lesson cannot be attempted, stop.
+                    $scope.preventMessages = info.preventaccessreasons;
                     return;
                 }
             }
 
             // Lesson can be attempted, don't ask the password and don't show prevent messages.
-            fetchDataFinished();
-        }).then(function() {
-            // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModLessonComponent);
+            fetchDataFinished(refresh);
         }).catch(function(message) {
             if (!refresh && !lesson) {
                 // Get lesson failed, retry without using cache since it might be a new activity.
@@ -94,7 +94,7 @@ angular.module('mm.addons.mod_lesson')
     }
 
     // Function called when all the data has been fetched.
-    function fetchDataFinished(pwd) {
+    function fetchDataFinished(refresh, pwd) {
         password = pwd;
         $scope.data.password = '';
         $scope.askPassword = false;
@@ -105,15 +105,18 @@ angular.module('mm.addons.mod_lesson')
             // Store the password in DB.
             $mmaModLesson.storePassword(lesson.id, password);
         }
+
+        // All data obtained, now fill the context menu.
+        $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModLessonComponent);
     }
 
     // Validate a password and retrieve extra data.
-    function validatePassword(pwd) {
+    function validatePassword(pwd, refresh) {
         return $mmaModLesson.getLessonWithPassword(lesson.id, pwd).then(function(lessonData) {
             lesson = lessonData;
 
             // Password validated, remove the form and the prevent message.
-            fetchDataFinished(pwd);
+            fetchDataFinished(refresh, pwd);
 
             // Log view now that we have the password.
             logView();
@@ -220,6 +223,16 @@ angular.module('mm.addons.mod_lesson')
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
     };
 
     // Context Menu Description action.

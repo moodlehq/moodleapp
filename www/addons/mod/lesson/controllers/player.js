@@ -60,7 +60,7 @@ angular.module('mm.addons.mod_lesson')
                 // If it's a password protected lesson and we have the password, allow attempting it.
                 if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
                     // Lesson cannot be attempted, show message and go back.
-                    return $q.reject(info.preventaccessreasons[0]);
+                    return $q.reject(info.preventaccessreasons[0].message);
                 }
             }
 
