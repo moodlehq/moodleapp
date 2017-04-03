@@ -26,12 +26,7 @@ angular.module('mm.addons.mod_feedback')
     var self = {},
         MODE_RESPONSETIME = 1,
         MODE_COURSE = 2,
-        MODE_CATEGORY = 3,
-        FEEDBACK_LINE_SEP = '|',
-        FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>',
-        FEEDBACK_MULTICHOICE_ADJUST_SEP = '<<<<<',
-        FEEDBACK_MULTICHOICE_HIDENOSELECT = 'h',
-        FEEDBACK_MULTICHOICERATED_VALUE_SEP = '####';
+        MODE_CATEGORY = 3;
 
     /**
      * Get activity feedback group info to be shown on templates.
@@ -198,7 +193,7 @@ angular.module('mm.addons.mod_feedback')
         function getItemFormNumeric(item) {
             item.template = 'numeric';
 
-            var range = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            var range = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP) || [];
             item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
             item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
             item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
@@ -208,7 +203,7 @@ angular.module('mm.addons.mod_feedback')
 
         function getItemFormTextfield(item) {
             item.template = 'textfield';
-            item.length = item.presentation.split(FEEDBACK_LINE_SEP)[1] || 255;
+            item.length = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP)[1] || 255;
             item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
             return item;
         }
@@ -220,13 +215,13 @@ angular.module('mm.addons.mod_feedback')
         }
 
         function getItemFormMultichoice(item) {
-            var parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
+            var parts = item.presentation.split($mmaModFeedback.FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
             item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
             item.template = 'multichoice-' + item.subtype;
 
             item.presentation = parts.length > 1 ? parts[1] : '';
             if (item.subtype != 'd') {
-                parts = item.presentation.split(FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
+                parts = item.presentation.split($mmaModFeedback.FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
                 item.presentation = parts.length > 0 ? parts[0] : '';
                 // Horizontal are not supported right now.
                 //item.horizontal = parts.length > 1 && !!parts[1];
@@ -234,14 +229,14 @@ angular.module('mm.addons.mod_feedback')
                 item.class = "item-select";
             }
 
-            item.choices = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            item.choices = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP) || [];
             item.choices = item.choices.map(function(choice, index) {
-                var weightValue = choice.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
+                var weightValue = choice.split($mmaModFeedback.FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
                 choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
                 return {value: index + 1, label: choice};
             });
 
-            if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
+            if (item.subtype === 'r' && item.options.search($mmaModFeedback.FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
                 item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
                 item.value = typeof item.rawValue != "undefined" ? parseInt(item.rawValue, 10) : 0;
             } else if (item.subtype === 'd') {
@@ -252,7 +247,7 @@ angular.module('mm.addons.mod_feedback')
                     item.value = "";
                 } else {
                     item.rawValue = "" + item.rawValue;
-                    var values = item.rawValue.split(FEEDBACK_LINE_SEP);
+                    var values = item.rawValue.split($mmaModFeedback.FEEDBACK_LINE_SEP);
                     angular.forEach(item.choices, function(choice) {
                         for (var x in values) {
                             if (choice.value == values[x]) {
@@ -313,7 +308,7 @@ angular.module('mm.addons.mod_feedback')
                         value = itemData.value || 0;
                     } else {
                         name = nameTemp;
-                        value = itemData.value || "";
+                        value = itemData.value || itemData.value  == 0 ? itemData.value : "";
                     }
 
                     answered = !!value;

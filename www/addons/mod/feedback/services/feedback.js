@@ -23,9 +23,12 @@ angular.module('mm.addons.mod_feedback')
  */
 .factory('$mmaModFeedback', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModFeedbackComponent, $mmUtil, $mmApp,
         $mmaModFeedbackOffline) {
-    var self = {},
-        FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>',
-        FEEDBACK_LINE_SEP = '|';
+    var self = {};
+    self.FEEDBACK_LINE_SEP = '|';
+    self.FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>';
+    self.FEEDBACK_MULTICHOICE_ADJUST_SEP = '<<<<<';
+    self.FEEDBACK_MULTICHOICE_HIDENOSELECT = 'h';
+    self.FEEDBACK_MULTICHOICERATED_VALUE_SEP = '####';
 
     /**
      * Get cache key for feedback data WS calls.
@@ -581,12 +584,12 @@ angular.module('mm.addons.mod_feedback')
                         if (itemData.hasvalue && typeof offlineValues[itemData.id] != "undefined") {
                             // Treat multichoice checkboxes.
                             if (itemData.typ == "multichoice" &&
-                                    itemData.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP)[0] == 'c') {
+                                    itemData.presentation.split(self.FEEDBACK_MULTICHOICE_TYPE_SEP)[0] == 'c') {
 
                                 offlineValues[itemData.id] = offlineValues[itemData.id].filter(function(value) {
                                     return value > 0;
                                 });
-                                itemData.rawValue = offlineValues[itemData.id].join(FEEDBACK_LINE_SEP);
+                                itemData.rawValue = offlineValues[itemData.id].join(self.FEEDBACK_LINE_SEP);
                             } else {
                                 itemData.rawValue = offlineValues[itemData.id][0];
                             }
@@ -634,12 +637,12 @@ angular.module('mm.addons.mod_feedback')
             // Helper functions by type:
             function compareDependItemMultichoice(item, dependValue) {
                 var values, choices,
-                    parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [],
+                    parts = item.presentation.split(self.FEEDBACK_MULTICHOICE_TYPE_SEP) || [],
                     subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
 
                 choices = parts[1] || '';
-                choices = choices.split(FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
-                choices = choices.split(FEEDBACK_LINE_SEP) || [];
+                choices = choices.split(self.FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
+                choices = choices.split(self.FEEDBACK_LINE_SEP) || [];
 
 
                 if (subtype === 'c') {
@@ -647,7 +650,7 @@ angular.module('mm.addons.mod_feedback')
                         values = [''];
                     } else {
                         item.rawValue = "" + item.rawValue;
-                        values = item.rawValue.split(FEEDBACK_LINE_SEP);
+                        values = item.rawValue.split(self.FEEDBACK_LINE_SEP);
                     }
                 } else {
                     values = [item.rawValue];
@@ -658,7 +661,7 @@ angular.module('mm.addons.mod_feedback')
                         if (values[x] == index + 1) {
                             var value = choices[index];
                             if (item.typ == 'multichoicerated') {
-                                value = value.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
+                                value = value.split(self.FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
                             }
                             if (value.trim() == dependValue) {
                                 return true;
@@ -687,10 +690,11 @@ angular.module('mm.addons.mod_feedback')
      * @param   {Object}    responses       The data to be processed the key is the field name (usually type[index]_id).
      * @param   {Boolean}   goPrevious      Whether we want to jump to previous page.
      * @param   {Boolean}   formHasErrors   Whether the form we sent has required but empty fields (only used in offline).
+     * @param   {Number}    courseId        Course ID the feedback belongs to.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the info is retrieved.
      */
-    self.processPage = function(feedbackId, page, responses, goPrevious, formHasErrors, siteId) {
+    self.processPage = function(feedbackId, page, responses, goPrevious, formHasErrors, courseId, siteId) {
         siteId = siteId || $mmSite.getId();
         if (!$mmApp.isOnline()) {
             // App is offline, store the action.
@@ -698,8 +702,7 @@ angular.module('mm.addons.mod_feedback')
         }
 
         // If there's already a response to be sent to the server, discard it first.
-        return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedbackId, page, false, siteId).then(function() {
-            // @todo: Sync other pages first here.
+        return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedbackId, page, siteId).then(function() {
             return self.processPageOnline(feedbackId, page, responses, goPrevious, siteId).catch(function(error) {
                 if (error && error.wserror) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
@@ -713,7 +716,7 @@ angular.module('mm.addons.mod_feedback')
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaModFeedbackOffline.saveResponses(feedbackId, page, responses, false, siteId).then(function() {
+            return $mmaModFeedbackOffline.saveResponses(feedbackId, page, responses, courseId, siteId).then(function() {
                 // Simulate process_page response.
                 var response = {
                         jumpto: page,
@@ -807,8 +810,10 @@ angular.module('mm.addons.mod_feedback')
                     wserror: $mmUtil.isWebServiceError(error)
                 });
             }).then(function(response) {
-                // Invalidate corrent values because they will change.
-                return self.invalidateCurrentValuesData(feedbackId, site.getId()).catch(function() {
+                // Invalidate and update current values because they will change.
+                return self.invalidateCurrentValuesData(feedbackId, site.getId()).then(function() {
+                    return self.getCurrentValues(feedbackId, false, false, site.getId());
+                }).catch(function() {
                     // Ignore errors.
                 }).then(function() {
                     return response;
@@ -1096,6 +1101,23 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
+     * Invalidates feedback data except files and module info.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateFeedbackWSData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateFeedbackWSData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getFeedbackDataPrefixCacheKey(feedbackId));
+
+        });
+    };
+
+    /**
      * Invalidate the prefetched content except files.
      * To invalidate files, use $mmaModFeedback#invalidateFiles.
      *
@@ -1113,7 +1135,7 @@ angular.module('mm.addons.mod_feedback')
             var ps = [];
             // Do not invalidate feedback data before getting feedback info, we need it!
             ps.push(self.invalidateFeedbackData(courseId, siteId));
-            ps.push(self.invalidateWsCacheForKeyStartingWith(getFeedbackDataPrefixCacheKey(feedback.id), siteId));
+            ps.push(self.invalidateFeedbackWSData(feedback.id, siteId));
 
             return $q.all(ps);
         });

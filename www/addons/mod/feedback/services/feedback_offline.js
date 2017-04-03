@@ -20,16 +20,16 @@ angular.module('mm.addons.mod_feedback')
     var stores = [
         {
             name: mmaModFeedbackResponsesStore,
-            keyPath: ['feedbackid', 'userid', 'page'],
+            keyPath: ['feedbackid', 'page'],
             indexes: [
                 {
                     name: 'feedbackid'
                 },
                 {
-                    name: 'userid'
+                    name: 'page'
                 },
                 {
-                    name: 'page'
+                    name: 'courseid'
                 },
                 {
                     name: 'responses'
@@ -75,6 +75,21 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
+     * Get all the stored feedback responses data from all the feedback.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackOffline#getAllFeedbackResponses
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with entries.
+     */
+    self.getAllFeedbackResponses = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModFeedbackResponsesStore);
+        });
+    };
+
+    /**
      * Get all the stored responses from a certain feedback.
      *
      * @module mm.addons.mod_feedback
@@ -98,14 +113,12 @@ angular.module('mm.addons.mod_feedback')
      * @name $mmaModFeedbackOffline#getFeedbackPageResponses
      * @param  {Number} feedbackId Feedback ID.
      * @param  {Number} page       Page of the form to get responses from.
-     * @param  {Number} [userId]   User ID. If not defined, site's current user.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved with responses.
      */
-    self.getFeedbackPageResponses = function(feedbackId, page, userId, siteId) {
+    self.getFeedbackPageResponses = function(feedbackId, page, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            userId = userId || site.getUserId();
-            return site.getDb().get(mmaModFeedbackResponsesStore, [feedbackId, userId, page]);
+            return site.getDb().get(mmaModFeedbackResponsesStore, [feedbackId, page]);
         });
     };
 
@@ -117,14 +130,12 @@ angular.module('mm.addons.mod_feedback')
      * @name $mmaModFeedbackOffline#deleteFeedbackPageResponses
      * @param  {Number} feedbackId Feedback ID.
      * @param  {Number} page       Page of the form to delete responses from.
-     * @param  {Number} [userId]   User ID. If not defined, site's current user.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved if deleted, rejected if failure.
      */
-    self.deleteFeedbackPageResponses = function(feedbackId, page, userId, siteId) {
+    self.deleteFeedbackPageResponses = function(feedbackId, page, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            userId = userId || site.getUserId();
-            return site.getDb().remove(mmaModFeedbackResponsesStore, [feedbackId, userId, page]);
+            return site.getDb().remove(mmaModFeedbackResponsesStore, [feedbackId, page]);
         });
     };
 
@@ -137,19 +148,18 @@ angular.module('mm.addons.mod_feedback')
      * @param  {Number} feedbackId   Feedback ID.
      * @param  {Number} page         The page being processed.
      * @param  {Object} responses    The data to be processed the key is the field name (usually type[index]_id)
-     * @param  {Number} [userId]     User ID. If not defined, site's current user.
+     * @param  {Number} courseId     Course ID the feedback belongs to.
      * @param  {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved if stored, rejected if failure.
      */
-    self.saveResponses = function(feedbackId, page, responses, userId, siteId) {
+    self.saveResponses = function(feedbackId, page, responses, courseId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            userId = userId || site.getUserId();
 
             var now = $mmUtil.timestamp(),
                 entry = {
                     feedbackid: feedbackId,
-                    userid: userId,
                     page: page,
+                    courseid: courseId,
                     responses: responses,
                     timemodified: now
                 };

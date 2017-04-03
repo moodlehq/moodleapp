@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $timeout, $mmSite, $state,
             mmaModFeedbackComponent, $mmEvents, $mmApp, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper, $ionicScrollDelegate,
-            $ionicHistory, $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate) {
+            $ionicHistory, $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate, $mmaModFeedbackSync) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -103,7 +103,7 @@ angular.module('mm.addons.mod_feedback')
             });
 
             if (!$scope.preview) {
-                originalData = $mmaModFeedbackHelper.getPageItemsResponses($scope.items);
+                originalData = $mmaModFeedbackHelper.getPageItemsResponses(angular.copy($scope.items));
             }
         });
     }
@@ -123,32 +123,37 @@ angular.module('mm.addons.mod_feedback')
             }
         }
 
-        return $mmaModFeedback.processPage(feedback.id, currentPage, responses, goPrevious, formHasErrors).then(function(response) {
-            var jumpTo = parseInt(response.jumpto, 10);
+        // Sync other pages first.
+        return $mmaModFeedbackSync.syncFeedback(feedback.id).catch(function() {
+            // Ignore errors.
+        }).then(function() {
+            return $mmaModFeedback.processPage(feedback.id, currentPage, responses, goPrevious, formHasErrors, courseId).then(function(response) {
+                var jumpTo = parseInt(response.jumpto, 10);
 
-            if (response.completed) {
-                // Form is completed, show completion message and buttons.
-                $scope.items = [];
-                $scope.completed = true;
-                $scope.completedOffline = !!response.offline;
-                $scope.completionPageContents = response.completionpagecontents;
-                siteAfterSubmit = response.siteaftersubmit;
-                submitted = true;
+                if (response.completed) {
+                    // Form is completed, show completion message and buttons.
+                    $scope.items = [];
+                    $scope.completed = true;
+                    $scope.completedOffline = !!response.offline;
+                    $scope.completionPageContents = response.completionpagecontents;
+                    siteAfterSubmit = response.siteaftersubmit;
+                    submitted = true;
 
-                // Invalidate access information so user will see home page updated (continue form or completion messages).
-                // No need to wait the promises to finish.
-                $mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id);
-                $mmaModFeedback.invalidateResumePageData(feedback.id);
-            } else if (isNaN(jumpTo) || jumpTo == currentPage) {
-                // Errors on questions, stay in page.
-                return $q.when();
-            } else {
-                submitted = true;
-                // Invalidate access information so user will see home page updated (continue form).
-                $mmaModFeedback.invalidateResumePageData(feedback.id);
-                // Fetch the new page.
-                return fetchFeedbackPageData(jumpTo);
-            }
+                    // Invalidate access information so user will see home page updated (continue form or completion messages).
+                    // No need to wait the promises to finish.
+                    $mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id);
+                    $mmaModFeedback.invalidateResumePageData(feedback.id);
+                } else if (isNaN(jumpTo) || jumpTo == currentPage) {
+                    // Errors on questions, stay in page.
+                    return $q.when();
+                } else {
+                    submitted = true;
+                    // Invalidate access information so user will see home page updated (continue form).
+                    $mmaModFeedback.invalidateResumePageData(feedback.id);
+                    // Fetch the new page.
+                    return fetchFeedbackPageData(jumpTo);
+                }
+            });
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
