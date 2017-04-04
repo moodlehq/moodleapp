@@ -27,8 +27,7 @@ angular.module('mm.addons.mod_feedback')
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModFeedbackComponent);
 
     // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
-    // check_updates_since not available yet on module lib.
-    // self.updatesNames = /^configuration$|^.*files$|^answers$/;
+    self.updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 
     /**
      * Download the module.
