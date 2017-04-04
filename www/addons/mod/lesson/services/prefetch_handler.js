@@ -270,7 +270,6 @@ angular.module('mm.addons.mod_lesson')
             // Get the user timer to check the last user action.
             promises.push($mmaModLesson.getTimers(lesson.id, false, false, siteId).then(function(timers) {
                 var lastTimer = timers[timers.length - 1];
-                console.log('ABCDE TIMERS', lastTimer);
                 if (lastTimer) {
                     timemodified = Math.max(timemodified, lastTimer.starttime || 0,
                             lastTimer.lessontime || 0, lastTimer.timemodifiedoffline || 0);
@@ -281,7 +280,6 @@ angular.module('mm.addons.mod_lesson')
 
             return $q.all(promises);
         }).then(function() {
-            console.log('ABCDE TIMEMOD END', timemodified);
             return timemodified;
         });
     };
@@ -397,7 +395,7 @@ angular.module('mm.addons.mod_lesson')
         }).then(function(data) {
             password = data.password;
             lesson = data.lesson || lesson;
-            accessInfo = data.info;
+            accessInfo = data.accessinfo;
 
             if (!$mmaModLesson.leftDuringTimed(accessInfo)) {
                 // The user didn't left during a timed session. Call launch attempt to make sure there is a started attempt.
@@ -422,8 +420,8 @@ angular.module('mm.addons.mod_lesson')
 
                 // Get the data for each page.
                 angular.forEach(pages, function(data) {
-                    subPromises.push($mmaModLesson.getPageData(lesson.id, data.page.id, password, false, true, false, true, siteId)
-                            .then(function(pageData) {
+                    subPromises.push($mmaModLesson.getPageData(lesson, data.page.id, password, false, true, false,
+                            true, undefined, undefined, siteId).then(function(pageData) {
 
                         // Download the page files.
                         var filePromises = [],
@@ -454,6 +452,12 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.getTimers(lesson.id, false, true, siteId).catch(function() {
                 // Ignore errors.
             }));
+
+            // Prefetch the list of possible jumps for offline navigation.
+            promises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, false, true, siteId));
+
+            // Prefetch viewed pages in last attempt to calculate progress.
+            promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, accessInfo.attemptscount, false, true, siteId));
 
             return $q.all(promises);
         }).then(function() {

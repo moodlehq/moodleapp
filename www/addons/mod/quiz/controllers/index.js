@@ -407,10 +407,7 @@ angular.module('mm.addons.mod_quiz')
     // Showing or hide a status message depending on the SCORM status.
     function showStatus(status) {
         currentStatus = status;
-
-        if (status == mmCoreDownloading) {
-            $scope.showSpinner = true;
-        }
+        $scope.showSpinner = status == mmCoreDownloading;
     }
 
     // Fetch the Quiz data.

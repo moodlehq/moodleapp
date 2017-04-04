@@ -29,7 +29,7 @@
                 </ion-input>
             </form>
 
-            <div ng-if="lesson && (!preventMessages || !preventMessages.length)">
+            <div ng-if="lesson && (!preventMessages || !preventMessages.length) && !showSpinner">
                 <div ng-if="leftDuringTimed && !lesson.timelimit" class="card">
                     <!-- User left during the session and there is no time limit, ask to continue. -->
                     <p class="item" ng-bind-html="'mma.mod_lesson.youhaveseen' | translate"></p>
@@ -54,6 +54,11 @@
                     <div class="item">
                         <button class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.startattempt' | translate }}</button>
                     </div>
+                </div>
+            </div>
+            <div class="card" ng-if="showSpinner">
+                <div class="item text-center">
+                    <ion-spinner></ion-spinner>
                 </div>
             </div>
         </mm-loading>

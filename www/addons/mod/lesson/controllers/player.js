@@ -32,7 +32,8 @@ angular.module('mm.addons.mod_lesson')
         offline = false,
         scrollView,
         originalData,
-        blockData;
+        blockData,
+        jumps;
 
     // Block the lesson so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModLessonComponent, lessonId);
@@ -53,8 +54,22 @@ angular.module('mm.addons.mod_lesson')
             $scope.lesson = lesson;
             $scope.title = lesson.name; // Temporary title.
 
+            if ($mmaModLesson.isLessonOffline(lesson)) {
+                // Lesson supports offline.
+                return true;
+            } else {
+                // Lesson doesn't support offline right now, but maybe it did and then the setting was changed.
+                // @todo
+                // return $mmaModQuiz.isLastAttemptOfflineUnfinished(quiz);
+                return false;
+            }
+        }).then(function(offlineMode) {
+            offline = offlineMode;
+
             return $mmaModLesson.getAccessInformation(lesson.id, offline, true);
         }).then(function(info) {
+            var promises = [];
+
             accessInfo = info;
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 // If it's a password protected lesson and we have the password, allow attempting it.
@@ -66,11 +81,20 @@ angular.module('mm.addons.mod_lesson')
 
             if (password) {
                 // Lesson uses password, get the whole lesson object.
-                return $mmaModLesson.getLessonWithPassword(lesson.id, password, true, offline, true).then(function(lessonData) {
-                    lesson = lessonData;
+                promises.push($mmaModLesson.getLessonWithPassword(lesson.id, password, true, offline, true).then(function(less) {
+                    lesson = less;
                     $scope.lesson = lesson;
-                });
+                }));
             }
+
+            if (offline) {
+                // Offline mode, get the list of possible jumps to allow navigation.
+                promises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, offline).then(function(jumpList) {
+                    jumps = jumpList;
+                }));
+            }
+
+            return $q.all(promises);
         }).then(function() {
             $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
 
@@ -87,7 +111,16 @@ angular.module('mm.addons.mod_lesson')
 
     // Start or continue an attempt.
     function launchAttempt(pageId) {
-        return $mmaModLesson.launchAttempt(lesson.id, password, pageId).then(function(data) {
+        var promise;
+
+        if (!offline) {
+            // Not in offline mode, launch the attempt.
+            promise = $mmaModLesson.launchAttempt(lesson.id, password, pageId);
+        } else {
+            promise = $q.when({});
+        }
+
+        return promise.then(function(data) {
             $scope.currentPage = pageId || accessInfo.firstpageid;
             $scope.messages = data.messages || [];
 
@@ -105,7 +138,8 @@ angular.module('mm.addons.mod_lesson')
 
     // Load a certain page.
     function loadPage(pageId) {
-        return $mmaModLesson.getPageData(lesson.id, pageId, password, $scope.review, true, offline, true).then(function(data) {
+        return $mmaModLesson.getPageData(lesson, pageId, password, $scope.review, true, offline, true, accessInfo, jumps)
+                .then(function(data) {
             if (data.newpageid == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
                 return finishAttempt();
@@ -211,7 +245,8 @@ angular.module('mm.addons.mod_lesson')
     function processPage(data) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, $scope.currentPage, data, password, $scope.review).then(function(result) {
+        return $mmaModLesson.processPage(lesson, courseId, $scope.pageData, data, password, $scope.review,
+                offline, accessInfo, jumps).then(function(result) {
             if (result.nodefaultresponse || result.inmediatejump) {
                 // Don't display feedback or force a redirect to a new page. Load the new page.
                 return jumpToPage(result.newpageid);

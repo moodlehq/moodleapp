@@ -14,6 +14,10 @@
 
 angular.module('mm.core.grades', [])
 
+.constant('mmCoreGradeTypeNone', 0) // Moodle's GRADE_TYPE_NONE.
+.constant('mmCoreGradeTypeValue', 1) // Moodle's GRADE_TYPE_VALUE.
+.constant('mmCoreGradeTypeScale', 2) // Moodle's GRADE_TYPE_SCALE.
+.constant('mmCoreGradeTypeText', 3) // Moodle's GRADE_TYPE_TEXT.
 
 .config(function($stateProvider) {
 

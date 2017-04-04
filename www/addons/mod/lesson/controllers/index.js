@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_lesson')
  */
 .controller('mmaModLessonIndexCtrl', function($scope, $stateParams, $mmaModLesson, $mmCourse, $q, $translate, $ionicScrollDelegate,
             $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged,
-            $ionicHistory) {
+            $ionicHistory, mmCoreEventPackageStatusChanged, mmCoreDownloading, mmCoreDownloaded, $mmCoursePrefetchDelegate,
+            $mmaModLessonPrefetchHandler, $mmSite) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -31,7 +32,9 @@ angular.module('mm.addons.mod_lesson')
         accessInfo,
         scrollView,
         onlineObserver,
-        password;
+        password,
+        currentStatus,
+        statusObserver;
 
     $scope.title = module.name;
     $scope.moduleUrl = module.url;
@@ -59,6 +62,12 @@ angular.module('mm.addons.mod_lesson')
             var promise;
 
             accessInfo = info;
+
+            if ($mmaModLesson.isLessonOffline(lesson)) {
+                // Handle status.
+                setStatusListener();
+                getStatus().then(updateStatus);
+            }
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 var askPassword = info.preventaccessreasons.length == 1 && $mmaModLesson.isPasswordProtected(info);
@@ -135,6 +144,7 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.invalidateAccessInformation(lesson.id));
             promises.push($mmaModLesson.invalidatePages(lesson.id));
             promises.push($mmaModLesson.invalidateLessonWithPassword(lesson.id));
+            promises.push($mmaModLesson.invalidateTimers(lesson.id));
         }
 
         return $q.all(promises).finally(function() {
@@ -168,6 +178,47 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
+    // Open the lesson player.
+    function playLesson(continueLast) {
+        // Calculate the pageId to load. If there is timelimit, lesson is always restarted from the start.
+        var pageId = false;
+        if ($scope.leftDuringTimed && !lesson.timelimit) {
+            pageId = continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid;
+        }
+
+        $state.go('site.mod_lesson-player', {
+            courseid: courseId,
+            lessonid: lesson.id,
+            pageid: pageId,
+            password: password
+        });
+    }
+
+    // Get status of the lesson.
+    function getStatus() {
+        return $mmCoursePrefetchDelegate.getModuleStatus(module, courseId);
+    }
+
+    // Set a listener to monitor changes on this lesson status.
+    function setStatusListener() {
+        if (typeof statusObserver !== 'undefined') {
+            return; // Already set.
+        }
+
+        // Listen for changes on this module status to show a message to the user.
+        statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+            if (data.siteid === $mmSite.getId() && data.componentId === module.id && data.component === mmaModLessonComponent) {
+                updateStatus(data.status);
+            }
+        });
+    }
+
+    // Update current lesson status.
+    function updateStatus(status) {
+        currentStatus = status;
+        $scope.showSpinner = status == mmCoreDownloading;
+    }
+
     // Fetch the Lesson data.
     fetchLessonData().then(function() {
         if (!$scope.preventMessages || !$scope.preventMessages.length) {
@@ -181,18 +232,31 @@ angular.module('mm.addons.mod_lesson')
 
     // Start the lesson.
     $scope.start = function(continueLast) {
-        // Calculate the pageId to load. If there is timelimit, lesson is always restarted from the start.
-        var pageId = false;
-        if ($scope.leftDuringTimed && !lesson.timelimit) {
-            pageId = continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid;
+        if ($scope.showSpinner) {
+            // Lesson is being downloaded, abort.
+            return;
         }
 
-        $state.go('site.mod_lesson-player', {
-            courseid: courseId,
-            lessonid: lesson.id,
-            pageid: pageId,
-            password: password
-        });
+        if ($mmaModLesson.isLessonOffline(lesson)) {
+            // Lesson supports offline, check if it needs to be downloaded.
+            if (currentStatus != mmCoreDownloaded) {
+                // Prefetch the lesson.
+                $scope.showSpinner = true;
+                return $mmaModLessonPrefetchHandler.prefetch(module, courseId, true).then(function() {
+                    // Success downloading, open lesson.
+                    playLesson(continueLast);
+                }).catch(function(error) {
+                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                }).finally(function() {
+                    $scope.showSpinner = false;
+                });
+            } else {
+                // Already downloaded, open it.
+                playLesson(continueLast);
+            }
+        } else {
+            playLesson(continueLast);
+        }
     };
 
     // Submit password for password protected lessons.
@@ -263,6 +327,7 @@ angular.module('mm.addons.mod_lesson')
 
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
+        statusObserver && statusObserver.off && statusObserver.off();
     });
 
 });
