@@ -1202,6 +1202,51 @@ angular.module('mm.core')
         };
 
         /**
+         * Execute promises one depending on the previous.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#executeOrderedPromises
+         * @param  {Object[]} orderedPromisesData       Data to be executed including the following values:
+         *                                               - func: Function to be executed.
+         *                                               - params: Array of data to be sent to the function.
+         *                                               - blocking: Boolean. If promise should block the following.
+         * @return {Promise}                        Promise resolved when all generated promises are resolved.
+         */
+        self.executeOrderedPromises = function(orderedPromisesData) {
+            var promises = [],
+                dependency = $q.when();
+
+            // Execute all the processes in order.
+            angular.forEach(orderedPromisesData, function(data) {
+                var promise;
+
+                // Add the process to the dependency stack.
+                promise = dependency.finally(function() {
+                    var prom, fn;
+
+                    try {
+                        fn = self.resolveObject(data.func);
+                        prom = fn.apply(prom, data.params || []);
+                    } catch (e) {
+                        $log.error(e.message);
+                        return;
+                    }
+                    return prom;
+                });
+                promises.push(promise);
+
+                // If the new process is blocking, we set it as the dependency.
+                if (data.blocking) {
+                    dependency = promise;
+                }
+            });
+
+            // Return when all promises are done.
+            return self.allPromises(promises);
+        };
+
+        /**
          * Check if a promise works and returns true if resolves or false if rejects.
          *
          * @module mm.core
