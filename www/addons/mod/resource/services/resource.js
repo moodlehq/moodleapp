@@ -238,7 +238,7 @@ angular.module('mm.addons.mod_resource')
 
                 if (status === mmCoreDownloaded) {
                     // Get the local file URL.
-                    return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod);
+                    return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false);
                 } else if (status === mmCoreDownloading) {
                     // Return the online URL.
                     return fixedUrl;
@@ -251,7 +251,7 @@ angular.module('mm.addons.mod_resource')
                     return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, contents[0].filesize).then(function() {
                         // Download and then return the local URL.
                         return $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod).then(function() {
-                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod);
+                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false);
                         });
                     }, function() {
                         // Start the download if in wifi, but return the URL right away so the file is opened.
@@ -264,7 +264,7 @@ angular.module('mm.addons.mod_resource')
                             return fixedUrl;
                         } else {
                             // Outdated but offline, so we return the local URL.
-                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod);
+                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false);
                         }
                     });
                 }
