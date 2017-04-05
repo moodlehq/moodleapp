@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonPlayerCtrl
  */
 .controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu) {
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
@@ -30,7 +30,9 @@ angular.module('mm.addons.mod_lesson')
         lesson,
         accessInfo,
         offline = false,
-        scrollView;
+        scrollView,
+        originalData,
+        blockData;
 
     // Block the lesson so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModLessonComponent, lessonId);
@@ -94,8 +96,6 @@ angular.module('mm.addons.mod_lesson')
                     $scope.endTime = lastTimer.starttime + lesson.timelimit;
                 });
             }
-
-
         }).then(function() {
             return loadPage($scope.currentPage);
         });
@@ -108,9 +108,21 @@ angular.module('mm.addons.mod_lesson')
             $scope.title = data.page.title;
             $scope.pageContent = data.page.contents;
             $scope.pageLoaded = true;
-            $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
             $scope.currentPage = pageId;
             $scope.messages = $scope.messages.concat(data.messages);
+
+            // Page loaded, hide EOL and feedback data if shown.
+            $scope.eolData = $scope.processData = false;
+
+            if ($mmaModLesson.isQuestionPage(data.page.type)) {
+                $scope.pageButtons = [];
+                $scope.question = $mmaModLessonHelper.getQuestionFromPageData(data);
+                originalData = angular.copy($scope.question.model);
+            } else {
+                $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
+                $scope.question = false;
+                originalData = false;
+            }
 
             if (data.displaymenu && !$scope.displayMenu) {
                 // Load the menu.
@@ -128,6 +140,7 @@ angular.module('mm.addons.mod_lesson')
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;
             $scope.messages = $scope.messages.concat(data.messages);
+            $scope.processData = false;
 
             // Format activity link if present.
             if ($scope.eolData && $scope.eolData.activitylink) {
@@ -147,7 +160,12 @@ angular.module('mm.addons.mod_lesson')
 
     // Function called when the user wants to leave the player. Save the attempt before leaving.
     function leavePlayer() {
-        // @todo
+        if ($scope.question && !$scope.eolData && !$scope.processData && originalData) {
+            // Question shown. Check if there is any change.
+            if (!$mmUtil.basicLeftCompare($scope.question.model, originalData, 3)) {
+                 return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            }
+        }
         return $q.when();
     }
 
@@ -171,41 +189,91 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
-    // Fetch the Lesson data.
-    fetchLessonData().finally(function() {
-        $scope.pageLoaded = true;
-    });
-
-    // A button was clicked.
-    $scope.buttonClicked = function(button) {
+    // Process a page, sending some data.
+    function processPage(data) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, $scope.currentPage, button.data, password).then(function(result) {
-            if (result.newpageid === 0) {
-                // Not a valid page, return to entry view.
-                // This happens, for example, when the user clicks to go to previous page and there is no previous page.
-                blockData && blockData.back();
-                return;
-            } else if (result.newpageid == $mmaModLesson.LESSON_EOL) {
-                // End of lesson reached.
-                return finishAttempt();
-            }
+        return $mmaModLesson.processPage(lessonId, $scope.currentPage, data, password).then(function(result) {
+            if (result.nodefaultresponse || result.inmediatejump) {
+                // Don't display feedback or force a redirect to a new page. Load the new page.
+                return jumpToPage(result.newpageid);
+            } else{
+                // Not inmediate jump, show the feedback.
+                $scope.messages = result.messages;
+                $scope.processData = result;
+                $scope.processData.buttons = [];
 
-            // Load new page.
-            $scope.eolData = false;
-            $scope.messages = [];
-            return loadPage(result.newpageid);
+                if (lesson.review && !result.correctanswer && !result.noanswer && !result.isessayquestion &&
+                       !result.maxattemptsreached && !result.reviewmode) {
+                    // User can try again, show button to do so.
+                    $scope.processData.buttons.push({
+                        label: 'mma.mod_lesson.reviewquestionback',
+                        pageid: $scope.currentPage
+                    });
+                }
+
+                // Button to continue.
+                if (lesson.review && !result.correctanswer && !result.noanswer && !result.isessayquestion &&
+                       !result.maxattemptsreached) {
+                    $scope.processData.buttons.push({
+                        label: 'mma.mod_lesson.reviewquestioncontinue',
+                        pageid: result.newpageid
+                    });
+                } else {
+                    $scope.processData.buttons.push({
+                        label: 'mma.mod_lesson.continue',
+                        pageid: result.newpageid
+                    });
+                }
+            }
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error processing page');
             return $q.reject();
         }).finally(function() {
             $scope.pageLoaded = true;
         });
+    }
+
+    // Jump to a certain page after performing an action.
+    function jumpToPage(pageId) {
+        if (pageId === 0) {
+            // Not a valid page, return to entry view.
+            // This happens, for example, when the user clicks to go to previous page and there is no previous page.
+            blockData && blockData.back();
+            return;
+        } else if (pageId == $mmaModLesson.LESSON_EOL) {
+            // End of lesson reached.
+            return finishAttempt();
+        }
+
+        // Load new page.
+        $scope.messages = [];
+        return loadPage(pageId);
+    }
+
+    // Fetch the Lesson data.
+    fetchLessonData().finally(function() {
+        $scope.pageLoaded = true;
+    });
+
+    // A button was clicked.
+    $scope.buttonClicked = function(data) {
+        processPage(data);
     };
 
-    // Menu page was clicked, load the page.
-    $scope.loadPage = function(pageId) {
-        if (!$scope.eolData && $scope.currentPage == pageId) {
+    // Submit a question.
+    $scope.submitQuestion = function() {
+        showLoading();
+        $mmaModLessonHelper.prepareQuestionModel($scope.question).then(function(model) {
+            return processPage(model);
+        }).finally(function() {
+            $scope.pageLoaded = true;
+        });
+    };
+
+    // Load a page from menu or when continuing from a feedback page.
+    $scope.loadPage = function(pageId, ignoreCurrent) {
+        if (!ignoreCurrent && !$scope.eolData && $scope.currentPage == pageId) {
             // Page already loaded, stop.
             return;
         }
@@ -213,10 +281,7 @@ angular.module('mm.addons.mod_lesson')
         showLoading();
         $scope.messages = [];
 
-        return loadPage(pageId).then(function() {
-            // Page loaded, hide the EOL page if shown.
-            $scope.eolData = false;
-        }).catch(function(error) {
+        return loadPage(pageId).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error loading page');
             return $q.reject();
         }).finally(function() {
@@ -236,6 +301,11 @@ angular.module('mm.addons.mod_lesson')
         }).finally(function() {
             $scope.pageLoaded = true;
         });
+    };
+
+    // First render of rich text editor.
+    $scope.firstRender = function() {
+        originalData = angular.copy($scope.question.model);
     };
 
     // Setup right side menu.

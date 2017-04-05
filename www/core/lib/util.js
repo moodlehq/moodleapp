@@ -1264,6 +1264,11 @@ angular.module('mm.core')
 
                 var equal = true;
                 angular.forEach(itemA, function(value, name) {
+                    if (name == '$$hashKey') {
+                        // Ignore $$hashKey property since it's a "calculated" property.
+                        return;
+                    }
+
                     if (!self.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
                         equal = false;
                     }
@@ -1880,18 +1885,35 @@ angular.module('mm.core')
          * @return {Object[]}         Array of objects with the name & value of each property.
          */
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
-            var keys = Object.keys(obj);
-
+            var entries = getEntries('', obj);
             if (sort) {
-                keys = keys.sort();
+                return entries.sort(function(a, b) {
+                    return a.name > b.name;
+                });
             }
+            return entries;
 
-            return keys.map(function(key) {
-                var entry = {};
-                entry[keyName] = key;
-                entry[valueName] = obj[key];
-                return entry;
-            });
+            // Get the entries from an object or primitive value.
+            function getEntries(elKey, value) {
+                if (typeof value == 'object') {
+                    // It's an object, return at least an entry for each property.
+                    var keys = Object.keys(value),
+                        entries = [];
+
+                    angular.forEach(keys, function(key) {
+                        var newElKey = elKey ? elKey + '[' + key + ']' : key;
+                        entries = entries.concat(getEntries(newElKey, value[key]));
+                    });
+
+                    return entries;
+                } else {
+                    // Not an object, return a single entry.
+                    var entry = {};
+                    entry[keyName] = elKey;
+                    entry[valueName] = value;
+                    return entry;
+                }
+            }
         };
 
         /**
