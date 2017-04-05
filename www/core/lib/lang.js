@@ -249,7 +249,7 @@ angular.module('mm.core')
 
     // Set fallback language and language to use until the app determines the right language to use.
     var lang = mmCoreConfigConstants.default_lang || 'en';
-    $translateProvider.fallbackLanguage(lang);
+    $translateProvider.fallbackLanguage('en'); // Always use English as fallback language.
     $translateProvider.preferredLanguage(lang);
 })
 
