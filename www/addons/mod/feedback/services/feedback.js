@@ -157,6 +157,26 @@ angular.module('mm.addons.mod_feedback')
     }
 
     /**
+     * Get prefix cache key for feedback current completed temp data WS calls.
+     *
+     * @param {Number} feedbackId Feedback ID.
+     * @return {String}         Cache key.
+     */
+    function getCurrentCompletedTimeModifiedDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':completedtime:';
+    }
+
+    /**
+     * Get prefix cache key for feedback completion data WS calls.
+     *
+     * @param {Number} feedbackId Feedback ID.
+     * @return {String}         Cache key.
+     */
+    function getCompletedDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':completed:';
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
      *
      * @module mm.addons.mod_feedback
@@ -1097,6 +1117,92 @@ angular.module('mm.addons.mod_feedback')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getNonRespondentsDataPrefixCacheKey(feedbackId));
 
+        });
+    };
+
+    /**
+     * Returns the temporary completion timemodified for the current user.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getCurrentCompletedTimeModified
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getCurrentCompletedTimeModified = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getCurrentCompletedTimeModifiedDataCacheKey(feedbackId)
+                };
+
+            return site.read('mod_feedback_get_current_completed_tmp', params, preSets).then(function(response) {
+                if (response && typeof response.feedback != "undefined" && typeof response.feedback.timemodified != "undefined") {
+                    return response.feedback.timemodified;
+                }
+                return 0;
+            }).catch(function() {
+                // Ignore errors.
+                return 0;
+            });
+        });
+    };
+
+    /**
+     * Invalidates temporary completion timemodified data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateCurrentCompletedInfoData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidategetCurrentCompletedTimeModifiedData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getCurrentCompletedTimeModifiedDataCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Returns if feedback has been completed
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#isCompleted
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.isCompleted = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getCompletedDataCacheKey(feedbackId)
+                };
+
+            return $mmUtil.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
+        });
+    };
+
+    /**
+     * Invalidates temporary completion timemodified data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateCurrentCompletedInfoData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateCompletedData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getCompletedDataCacheKey(feedbackId));
         });
     };
 
