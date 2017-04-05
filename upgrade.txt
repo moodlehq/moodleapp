@@ -8,6 +8,7 @@ information provided here is intended especially for developers.
     npm install -g ionic
     npm install
  * mm-error CSS class has been deprecated. Use mm-error-card or similar instead.
+ * The function $mmaMessages#isSearchEnabled has been deprecated. Please use $mmaMessages#isSearchContactsEnabled instead.
 
 === 3.2.1 ===
 

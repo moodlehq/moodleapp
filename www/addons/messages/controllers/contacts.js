@@ -33,7 +33,6 @@ angular.module('mm.addons.messages')
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
     $scope.searchType = 'search';
     $scope.hasContacts = false;
-    $scope.canSearch = $mmaMessages.isSearchEnabled;
     $scope.formData = {
         searchString: ''
     };
@@ -91,6 +90,7 @@ angular.module('mm.addons.messages')
     // Fetch contacts.
     function fetchContacts() {
         $scope.loadingMessage = loadingMessage;
+        $scope.canSearch = $mmaMessages.isSearchContactsEnabled();
         return $mmaMessages.getAllContacts().then(function(contacts) {
             $scope.contacts = contacts;
             searchedString = false; // Reset searched string.
