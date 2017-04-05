@@ -26,6 +26,7 @@ angular.module('mm.addons.mod_lesson')
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
+        password = $stateParams.password,
         lesson,
         accessInfo,
         offline = false,
@@ -39,6 +40,7 @@ angular.module('mm.addons.mod_lesson')
 
     $scope.component = mmaModLessonComponent;
     $scope.currentPage = $stateParams.pageid;
+    $scope.messages = [];
 
     // Convenience function to get Lesson data.
     function fetchLessonData() {
@@ -46,46 +48,69 @@ angular.module('mm.addons.mod_lesson')
             lesson = lessonData;
             $scope.lesson = lesson;
             $scope.title = lesson.name; // Temporary title.
-            $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
-
-            $scope.lessonWidth = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediawidth) : '';
-            $scope.lessonHeight = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediaheight) : '';
 
             return $mmaModLesson.getAccessInformation(lesson.id, offline, true);
         }).then(function(info) {
             accessInfo = info;
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
-                // Lesson cannot be attempted, show message and go back.
-                $mmUtil.showErrorModal(info.preventaccessreasons[0]);
-                blockData && blockData.back();
-                return;
+                // If it's a password protected lesson and we have the password, allow attempting it.
+                if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
+                    // Lesson cannot be attempted, show message and go back.
+                    return $q.reject(info.preventaccessreasons[0]);
+                }
             }
+
+            if (password) {
+                // Lesson uses password, get the whole lesson object.
+                return $mmaModLesson.getLessonWithPassword(lesson.id, password, true, offline, true).then(function(lessonData) {
+                    lesson = lessonData;
+                    $scope.lesson = lesson;
+                });
+            }
+        }).then(function() {
+            $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
+
+            $scope.lessonWidth = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediawidth) : '';
+            $scope.lessonHeight = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediaheight) : '';
 
             return launchAttempt($scope.currentPage);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            blockData && blockData.back();
             return $q.reject();
         });
     }
 
     // Start or continue an attempt.
     function launchAttempt(pageId) {
-        return $mmaModLesson.launchAttempt(lesson.id, undefined, pageId).then(function() {
+        return $mmaModLesson.launchAttempt(lesson.id, password, pageId).then(function(data) {
             $scope.currentPage = pageId || accessInfo.firstpageid;
+            $scope.messages = data.messages || [];
 
+            if (lesson.timelimit) {
+                // Get the last lesson timer.
+                return $mmaModLesson.getTimers(lesson.id, false, true).then(function(timers) {
+                    var lastTimer = timers[timers.length - 1];
+                    $scope.endTime = lastTimer.starttime + lesson.timelimit;
+                });
+            }
+
+
+        }).then(function() {
             return loadPage($scope.currentPage);
         });
     }
 
     // Load a certain page.
     function loadPage(pageId) {
-        return $mmaModLesson.getPageData(lesson.id, pageId, undefined, false, true, offline, true).then(function(data) {
+        return $mmaModLesson.getPageData(lesson.id, pageId, password, false, true, offline, true).then(function(data) {
             $scope.pageData = data;
             $scope.title = data.page.title;
             $scope.pageContent = data.page.contents;
             $scope.pageLoaded = true;
             $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
             $scope.currentPage = pageId;
+            $scope.messages = $scope.messages.concat(data.messages);
 
             if (data.displaymenu && !$scope.displayMenu) {
                 // Load the menu.
@@ -96,10 +121,13 @@ angular.module('mm.addons.mod_lesson')
     }
 
     // Finish the attempt.
-    function finishAttempt() {
-        return $mmaModLesson.finishAttempt(lesson.id).then(function(data) {
+    function finishAttempt(outOfTime) {
+        $scope.messages = [];
+        return $mmaModLesson.finishAttempt(lesson.id, password, outOfTime).then(function(data) {
+            $scope.title = lesson.name;
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;
+            $scope.messages = $scope.messages.concat(data.messages);
 
             // Format activity link if present.
             if ($scope.eolData && $scope.eolData.activitylink) {
@@ -131,7 +159,7 @@ angular.module('mm.addons.mod_lesson')
         }
 
         $scope.loadingMenu = true;
-        return $mmaModLesson.getPages(lesson.id).then(function(pages) {
+        return $mmaModLesson.getPages(lesson.id, password).then(function(pages) {
             $scope.lessonPages = pages.map(function(entry) {
                 return entry.page;
             });
@@ -152,7 +180,7 @@ angular.module('mm.addons.mod_lesson')
     $scope.buttonClicked = function(button) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, $scope.currentPage, button.data).then(function(result) {
+        return $mmaModLesson.processPage(lessonId, $scope.currentPage, button.data, password).then(function(result) {
             if (result.newpageid === 0) {
                 // Not a valid page, return to entry view.
                 // This happens, for example, when the user clicks to go to previous page and there is no previous page.
@@ -160,13 +188,12 @@ angular.module('mm.addons.mod_lesson')
                 return;
             } else if (result.newpageid == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
-                // @todo Show grade, progress bar, min questions, etc. in final page.
-                $scope.title = lesson.name;
                 return finishAttempt();
             }
 
             // Load new page.
             $scope.eolData = false;
+            $scope.messages = [];
             return loadPage(result.newpageid);
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error processing page');
@@ -184,12 +211,27 @@ angular.module('mm.addons.mod_lesson')
         }
 
         showLoading();
+        $scope.messages = [];
 
         return loadPage(pageId).then(function() {
             // Page loaded, hide the EOL page if shown.
             $scope.eolData = false;
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error loading page');
+            return $q.reject();
+        }).finally(function() {
+            $scope.pageLoaded = true;
+        });
+    };
+
+    // Time up.
+    $scope.timeUp = function() {
+        // Time up called, hide the timer.
+        $scope.endTime = false;
+        showLoading();
+
+        return finishAttempt(true).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Error finishing attempt');
             return $q.reject();
         }).finally(function() {
             $scope.pageLoaded = true;

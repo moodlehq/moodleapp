@@ -14,6 +14,19 @@
 
 angular.module('mm.addons.mod_lesson')
 
+.constant('mmaModLessonPasswordStore', 'mod_lesson_password')
+
+.config(function($mmSitesFactoryProvider, mmaModLessonPasswordStore) {
+    var stores = [
+        {
+            name: mmaModLessonPasswordStore,
+            keyPath: 'id',
+            indexes: []
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+})
+
 /**
  * Lesson service.
  *
@@ -21,7 +34,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLesson
  */
-.factory('$mmaModLesson', function($log, $mmSitesManager, $q, $mmUtil) {
+.factory('$mmaModLesson', function($log, $mmSitesManager, $q, $mmUtil, mmaModLessonPasswordStore, $mmLang) {
 
     $log = $log.getInstance('$mmaModLesson');
 
@@ -196,6 +209,75 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get cache key for get lesson with password WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @return {String}          Cache key.
+     */
+    function getLessonWithPasswordCacheKey(lessonId) {
+        return 'mmaModLesson:lessonWithPswrd:' + lessonId;
+    }
+
+    /**
+     * Get a lesson protected with password.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getLessonWithPassword
+     * @param  {Number} lessonId                 Lesson ID.
+     * @param  {String} [password]               Password.
+     * @param  {Boolean} [validatePassword=true] If true, the function will fail if the password is wrong.
+     *                                           If false, it will return a lesson with the basic data if password is wrong.
+     * @param  {Boolean} forceCache              True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache             True to ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]                 Site ID. If not defined, current site.
+     * @return {Promise}                         Promise resolved with the lesson.
+     */
+    self.getLessonWithPassword = function(lessonId, password, validatePassword, forceCache, ignoreCache, siteId) {
+        if (typeof validatePassword == 'undefined') {
+            validatePassword = true;
+        }
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    lessonid: lessonId
+                },
+                preSets = {
+                    cacheKey: getLessonWithPasswordCacheKey(lessonId)
+                };
+
+            if (typeof password == 'string') {
+                params.password = password;
+            }
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_lesson', params, preSets).then(function(response) {
+                if (typeof response.lesson.ongoing == 'undefined') {
+                    // Basic data not received, password is wrong. Remove stored password.
+                    self.removeStoredPassword(lessonId);
+
+                    if (validatePassword) {
+                        // Invalidate the data and reject.
+                        return self.invalidateLessonWithPassword(lessonId).catch(function() {
+                            // Shouldn't happen.
+                        }).then(function() {
+                            return $mmLang.translateAndReject('mma.mod_lesson.loginfail');
+                        });
+                    }
+                }
+
+                return response.lesson;
+            });
+        });
+    };
+
+    /**
      * Get cache key for get page data WS calls.
      *
      * @param {Number} lessonId Lesson ID.
@@ -309,6 +391,83 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get a password stored in DB.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getStoredPassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with password on success, rejected otherwise.
+     */
+    self.getStoredPassword = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModLessonPasswordStore, lessonId).then(function(entry) {
+                return entry.password;
+            });
+        });
+    };
+
+    /**
+     * Get cache key for get timers WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} userId   User ID.
+     * @return {String}          Cache key.
+     */
+    function getTimersCacheKey(lessonId, userId) {
+        return getTimersCommonCacheKey(lessonId) + ':' + userId;
+    }
+
+    /**
+     * Get common cache key for get timers WS calls.
+     *
+     * @param {Number} lessonId Lesson ID.
+     * @return {String}         Cache key.
+     */
+    function getTimersCommonCacheKey(lessonId) {
+        return 'mmaModLesson:timers:' + lessonId;
+    }
+
+    /**
+     * Get lesson timers.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getTimers
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @param  {Number} [userId]     User ID. If not defined, site's current user.
+     * @return {Promise}             Promise resolved with the pages.
+     */
+    self.getTimers = function(lessonId, forceCache, ignoreCache, siteId, userId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var params = {
+                    lessonid: lessonId,
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getTimersCacheKey(lessonId, userId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_user_timers', params, preSets).then(function(response) {
+                return response.timers;
+            });
+        });
+    };
+
+    /**
      * Invalidates Lesson data.
      *
      * @module mm.addons.mod_lesson
@@ -337,6 +496,22 @@ angular.module('mm.addons.mod_lesson')
     self.invalidateLessonData = function(courseId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getLessonDataCacheKey(courseId));
+        });
+    };
+
+    /**
+     * Invalidates lesson with password.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateLessonWithPassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateLessonWithPassword = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getLessonWithPasswordCacheKey(lessonId));
         });
     };
 
@@ -371,6 +546,78 @@ angular.module('mm.addons.mod_lesson')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getPageDataCacheKey(lessonId, pageId));
         });
+    };
+
+    /**
+     * Invalidates pages.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidatePages
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePages = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPagesCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates timers for all users in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateTimers
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateTimers = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getTimersCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates timers for a certain user.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateTimersForUser
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Number} [userId] User ID. If not defined, site's current user.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateTimersForUser = function(lessonId, siteId, userId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKey(getTimersCacheKey(lessonId, userId));
+        });
+    };
+
+    /**
+     * Check if a lesson is password protected based in the access info.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#isPasswordProtected
+     * @param  {Object}  info Lesson access info.
+     * @return {Boolean}      True if password protected, false otherwise.
+     */
+    self.isPasswordProtected = function(info) {
+        if (info && info.preventaccessreasons) {
+            for (var i = 0; i < info.preventaccessreasons.length; i++) {
+                var entry = info.preventaccessreasons[i];
+                if (entry.reason == 'passwordprotectedlesson') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     };
 
     /**
@@ -423,6 +670,19 @@ angular.module('mm.addons.mod_lesson')
                 return result;
             });
         });
+    };
+
+    /**
+     * Check if the user left during a timed session.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#leftDuringTimed
+     * @param  {Object} info Lesson access info.
+     * @return {Boolean}     True if left during timed, false otherwise.
+     */
+    self.leftDuringTimed = function(info) {
+        return info && info.lastpageseen && info.lastpageseen != self.LESSON_EOL && info.leftduringtimedsession;
     };
 
     /**
@@ -483,6 +743,45 @@ angular.module('mm.addons.mod_lesson')
             }
 
             return site.write('mod_lesson_process_page', params);
+        });
+    };
+
+    /**
+     * Remove a password stored in DB.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#removeStoredPassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when removed.
+     */
+    self.removeStoredPassword = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonPasswordStore, lessonId);
+        });
+    };
+
+    /**
+     * Store a password in DB.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#storePassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} password Password to store.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when stored.
+     */
+    self.storePassword = function(lessonId, password, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var entry = {
+                id: lessonId,
+                password: password,
+                timemodified: new Date().getTime()
+            };
+
+            return site.getDb().insert(mmaModLessonPasswordStore, entry);
         });
     };
 

@@ -39,7 +39,8 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
       params: {
         courseid: null,
         lessonid: null,
-        pageid: null
+        pageid: null,
+        password: null
       },
       views: {
         'site': {
