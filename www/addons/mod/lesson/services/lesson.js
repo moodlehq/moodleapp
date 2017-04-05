@@ -372,6 +372,73 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get the last content page viewed.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getLastContentPageViewed
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the last content page viewed.
+     */
+    self.getLastContentPageViewed = function(lessonId, attempt, siteId) {
+        return self.getContentPagesViewed(lessonId, attempt, siteId).then(function(data) {
+            var lastPage,
+                maxTime = 0;
+
+            angular.forEach(data.online, function(page) {
+                if (page.timeseen > maxTime) {
+                    lastPage = page;
+                    maxTime = page.timeseen;
+                }
+            });
+
+            angular.forEach(data.offline, function(page) {
+                if (page.timemodified > maxTime) {
+                    lastPage = page;
+                    maxTime = page.timemodified;
+                }
+            });
+
+            return lastPage;
+        }).catch(function() {
+            // Error getting last page, don't return anything.
+        });
+    };
+
+    /**
+     * Get the last page seen.
+     * Based on Moodle's get_last_page_seen.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getLastPageSeen
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the last page seen.
+     */
+    self.getLastPageSeen = function(lessonId, attempt, siteId) {
+        var lastPageSeen = false;
+
+        // @todo Check question answers.
+
+        return self.getLastContentPageViewed(lessonId, attempt, siteId).then(function(page) {
+            if (page) {
+                if (false) {
+                    // @todo Check if the page was seen after the last question answer.
+                } else {
+                    // Has not answered any questions but has viewed a branch table.
+                    lastPageSeen = page.newpageid || page.pageid;
+                }
+            }
+
+            return lastPageSeen;
+        });
+    };
+
+    /**
      * Get cache key for Lesson data WS calls.
      *
      * @param  {Number} courseId Course ID.
@@ -1367,17 +1434,21 @@ angular.module('mm.addons.mod_lesson')
     self.processPage = function(lesson, courseId, pageData, data, password, review, offline, accessInfo, jumps, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var pageId = pageData.page.id;
+        var page = pageData.page,
+            pageId = page.id;
 
         if (offline) {
-            var attempt = accessInfo.attemptscount;
-            return $mmaModLessonOffline.processPage(lesson.id, courseId, attempt, pageData.page, data, siteId).then(function() {
+            // Calculate and store the new page id so it can be stored in offline.
+            var attempt = accessInfo.attemptscount,
+                newPageId = jumps[pageId] && jumps[pageId][data.jumpto] ? jumps[pageId][data.jumpto].calculatedjump : pageId;
+
+            return $mmaModLessonOffline.processPage(lesson.id, courseId, attempt, page, data, newPageId, siteId).then(function() {
                 // Data stored, now it must return the data. Calculate some needed offline data.
                 return calculateOfflineData(lesson, accessInfo, password, review, siteId);
             }).then(function(calculatedData) {
                 // @todo Handle question pages.
                 var result = {
-                    newpageid: jumps[pageId] && jumps[pageId][data.jumpto] ? jumps[pageId][data.jumpto].calculatedjump : pageId,
+                    newpageid: newPageId,
                     inmediatejump: true,
                     answerid: 0,
                     noanswer: false,

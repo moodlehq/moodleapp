@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_lesson')
 .controller('mmaModLessonIndexCtrl', function($scope, $stateParams, $mmaModLesson, $mmCourse, $q, $translate, $ionicScrollDelegate,
             $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged,
             $ionicHistory, mmCoreEventPackageStatusChanged, mmCoreDownloading, mmCoreDownloaded, $mmCoursePrefetchDelegate,
-            $mmaModLessonPrefetchHandler, $mmSite) {
+            $mmaModLessonPrefetchHandler, $mmSite, $mmaModLessonOffline) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -59,7 +59,8 @@ angular.module('mm.addons.mod_lesson')
 
             return $mmaModLesson.getAccessInformation(lesson.id);
         }).then(function(info) {
-            var promise;
+            var promises = [],
+                promise;
 
             accessInfo = info;
 
@@ -67,6 +68,11 @@ angular.module('mm.addons.mod_lesson')
                 // Handle status.
                 setStatusListener();
                 getStatus().then(updateStatus);
+
+                // Check if there is offline data.
+                promises.push($mmaModLessonOffline.hasAttemptAnswers(lesson.id, info.attemptscount).then(function(hasAnswers) {
+                    $scope.hasOffline = hasAnswers;
+                }));
             }
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
@@ -89,8 +95,10 @@ angular.module('mm.addons.mod_lesson')
                 }
             }
 
-            // Lesson can be attempted, don't ask the password and don't show prevent messages.
-            fetchDataFinished(refresh);
+            return $q.all(promises).then(function() {
+                // Lesson can be attempted, don't ask the password and don't show prevent messages.
+                fetchDataFinished(refresh);
+            });
         }).catch(function(message) {
             if (!refresh && !lesson) {
                 // Get lesson failed, retry without using cache since it might be a new activity.
@@ -108,7 +116,7 @@ angular.module('mm.addons.mod_lesson')
         $scope.data.password = '';
         $scope.askPassword = false;
         $scope.preventMessages = [];
-        $scope.leftDuringTimed = $mmaModLesson.leftDuringTimed(accessInfo);
+        $scope.leftDuringTimed = $scope.hasOffline || $mmaModLesson.leftDuringTimed(accessInfo);
 
         if (pwd) {
             // Store the password in DB.
@@ -181,16 +189,22 @@ angular.module('mm.addons.mod_lesson')
     // Open the lesson player.
     function playLesson(continueLast) {
         // Calculate the pageId to load. If there is timelimit, lesson is always restarted from the start.
-        var pageId = false;
-        if ($scope.leftDuringTimed && !lesson.timelimit) {
-            pageId = continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid;
+        var promise;
+        if ($scope.hasOffline) {
+            promise = $mmaModLesson.getLastPageSeen(lesson.id, accessInfo.attemptscount);
+        } else if ($scope.leftDuringTimed && !lesson.timelimit) {
+            promise = $q.when(continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid);
+        } else {
+            promise = $q.when(false);
         }
 
-        $state.go('site.mod_lesson-player', {
-            courseid: courseId,
-            lessonid: lesson.id,
-            pageid: pageId,
-            password: password
+        return promise.then(function(pageId) {
+            $state.go('site.mod_lesson-player', {
+                courseid: courseId,
+                lessonid: lesson.id,
+                pageid: pageId,
+                password: password
+            });
         });
     }
 

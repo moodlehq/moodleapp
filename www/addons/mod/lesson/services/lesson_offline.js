@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
     var stores = [
         {
             name: mmaModLessonAttemptsStore,
-            keyPath: 'lessonid',
+            keyPath: 'lessonid', // Only 1 offline attempt per lesson.
             indexes: [
                 {
                     name: 'attempt'
@@ -190,15 +190,17 @@ angular.module('mm.addons.mod_lesson')
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLesson#processPage
+     * @name $mmaModLessonOffline#processPage
      * @param  {Number} lessonId   Lesson ID.
      * @param  {Number} courseId   Course ID the lesson belongs to.
+     * @param  {Number} attempt    Attempt number.
      * @param  {Object} page       Page.
      * @param  {Object} data       Data to save.
+     * @param  {Number} newPageId  New page ID (calculated).
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved in success, rejected otherwise.
      */
-    self.processPage = function(lessonId, courseId, attempt, page, data, siteId) {
+    self.processPage = function(lessonId, courseId, attempt, page, data, newPageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var entry = {
                 lessonid: lessonId,
@@ -207,6 +209,7 @@ angular.module('mm.addons.mod_lesson')
                 courseid: courseId,
                 data: data,
                 type: page.type,
+                newpageid: newPageId,
                 timemodified: $mmUtil.timestamp()
             };
 
