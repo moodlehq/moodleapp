@@ -1,32 +1,45 @@
 <ion-view can-swipe-back="false">
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button menu-toggle="right" ng-if="displayMenu || mediaFile" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_lesson.lessonmenu' | translate }}"></button>
+    </ion-nav-buttons>
     <ion-content mm-state-class delegate-handle="mmaModLessonPlayerScroll">
         <mm-loading hide-until="pageLoaded">
-            <div ng-if="!eolData" class="list">
-                <!-- TODO: Print questions. -->
-                <mm-format-text class="item" watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text>
-                <div ng-if="pageButtons && pageButtons.length" class="item">
-                    <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button)">{{button.content}}</button>
+            <div ng-class='{"mma-mod-lesson-slideshow": lesson.slideshow}' ng-style="{'width': lessonWidth, 'height': lessonHeight}">
+                <div ng-if="!eolData" class="list">
+                    <!-- TODO: Print questions. -->
+                    <mm-format-text ng-if="pageData.ongoingscore" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{pageData.ongoingscore}}</mm-format-text>
+                    <p class="item item-text-wrap"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text></p>
+                    <div ng-if="pageButtons && pageButtons.length" class="item">
+                        <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button)">{{button.content}}</button>
+                    </div>
+                    <div ng-if="lesson.progressbar" class="item">
+                        <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>
+                        <progress max="100" value="{{pageData.progress}}"></progress>
+                    </div>
                 </div>
-            </div>
-            <!-- End of lesson reached. -->
-            <div ng-if="eolData" class="padding">
-                <h3 ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
-                <p ng-if="eolData.notenoughtimespent">{{ eolData.notenoughtimespent.message }}</p>
-                <p ng-if="eolData.numberofpagesviewed">{{ eolData.numberofpagesviewed.message }}</p>
-                <p ng-if="eolData.youshouldview">{{ eolData.youshouldview.message }}</p>
-                <p ng-if="eolData.numberofcorrectanswers">{{ eolData.numberofcorrectanswers.message }}</p>
-                <p ng-if="eolData.displayscorewithessays">{{ eolData.displayscorewithessays.message }}</p>
-                <p ng-if="!eolData.displayscorewithessays && eolData.displayscorewithoutessays">{{ eolData.displayscorewithoutessays.message }}</p>
-                <p ng-if="eolData.yourcurrentgradeisoutof">{{ eolData.yourcurrentgradeisoutof.message }}</p>
-                <p ng-if="eolData.eolstudentoutoftimenoanswers">{{ eolData.eolstudentoutoftimenoanswers.message }}</p>
-                <p ng-if="eolData.welldone">{{ eolData.welldone.message }}</p>
-                <!-- @todo progress bar -->
-                <p ng-if="eolData.displayofgrade">{{ eolData.displayofgrade.message }}</p>
-                <p ng-if="eolData.reviewlesson">{{ eolData.reviewlesson.message }}</p>
-                <p ng-if="eolData.modattemptsnoteacher">{{ eolData.modattemptsnoteacher.message }}</p>
-                <!-- @todo Activity link. -->
-                <!-- @todo Return & grade links. -->
+                <!-- End of lesson reached. -->
+                <div ng-if="eolData" class="padding">
+                    <h3 ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
+                    <p ng-if="eolData.notenoughtimespent">{{ eolData.notenoughtimespent.message }}</p>
+                    <p ng-if="eolData.numberofpagesviewed">{{ eolData.numberofpagesviewed.message }}</p>
+                    <p ng-if="eolData.youshouldview">{{ eolData.youshouldview.message }}</p>
+                    <p ng-if="eolData.numberofcorrectanswers">{{ eolData.numberofcorrectanswers.message }}</p>
+                    <p ng-if="eolData.displayscorewithessays">{{ eolData.displayscorewithessays.message }}</p>
+                    <p ng-if="!eolData.displayscorewithessays && eolData.displayscorewithoutessays">{{ eolData.displayscorewithoutessays.message }}</p>
+                    <p ng-if="eolData.yourcurrentgradeisoutof">{{ eolData.yourcurrentgradeisoutof.message }}</p>
+                    <p ng-if="eolData.eolstudentoutoftimenoanswers">{{ eolData.eolstudentoutoftimenoanswers.message }}</p>
+                    <p ng-if="eolData.welldone">{{ eolData.welldone.message }}</p>
+                    <div ng-if="lesson.progressbar && eolData.progressbar">
+                        <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: eolProgress} }}</p>
+                        <progress max="100" value="{{eolProgress}}"></progress>
+                    </div>
+                    <p ng-if="eolData.displayofgrade">{{ eolData.displayofgrade.message }}</p>
+                    <p ng-if="eolData.reviewlesson">{{ eolData.reviewlesson.message }}</p>
+                    <p ng-if="eolData.modattemptsnoteacher">{{ eolData.modattemptsnoteacher.message }}</p>
+                    <mm-format-text ng-if="eolData.activitylink" watch="true">{{ eolData.activitylink.value }}</mm-format-text>
+                    <!-- @todo Return & grade links. -->
+                </div>
             </div>
         </mm-loading>
     </ion-content>

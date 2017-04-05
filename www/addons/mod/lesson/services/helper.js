@@ -26,6 +26,32 @@ angular.module('mm.addons.mod_lesson')
     var self = {};
 
     /**
+     * Given the HTML of next activity link, format it to add some styles.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#formatActivityLink
+     * @param  {String} activityLink HTML of the activity link.
+     * @return {String}              Formatted HTML.
+     */
+    self.formatActivityLink = function(activityLink) {
+        var rootElement = document.createElement('div'),
+            anchor;
+
+        rootElement.innerHTML = activityLink;
+        anchor = rootElement.querySelector('a');
+        if (!anchor) {
+            // Anchor not found, return the original HTML.
+            return activityLink;
+        }
+
+        // Show the anchor as a button.
+        angular.element(anchor).addClass('button button-block');
+
+        return rootElement.innerHTML;
+    };
+
+    /**
      * Get the buttons to change pages.
      *
      * @module mm.addons.mod_lesson

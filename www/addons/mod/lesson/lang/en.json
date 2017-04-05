@@ -1,5 +1,8 @@
 {
     "congratulations": "Congratulations - end of lesson reached",
+    "lessonmenu": "Lesson menu",
+    "linkedmedia": "Linked media",
+    "progresscompleted": "You have completed {{$a}}% of the lesson",
     "startattempt": "Start attempt",
     "youhaveseen": "You have seen more than one page of this lesson already.<br />Do you want to start at the last page you saw?"
 }
