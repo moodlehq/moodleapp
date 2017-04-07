@@ -200,7 +200,7 @@ angular.module('mm.addons.notifications')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaNotifications.isNotificationPreferencesEnabled();
+            return true;
         };
 
         /**
