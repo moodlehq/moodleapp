@@ -173,6 +173,11 @@ angular.module('mm.addons.mod_feedback')
     self.analysisLinksHandler.getActions = function(siteIds, url, params, courseId) {
         return [{
             action: function(siteId) {
+                if (typeof params.id == 'undefined') {
+                    // Id not defined. Cannot treat the URL.
+                    return false;
+                }
+
                 var modal = $mmUtil.showModalLoading(),
                     moduleId = parseInt(params.id, 10);
 
@@ -190,6 +195,93 @@ angular.module('mm.addons.mod_feedback')
             }
         }];
     };
+
+    /**
+     * Content links handler for feedback complete questions.
+     * Match mod/feedback/complete.php with a valid feedback id and optional page.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHandlers#completeLinksHandler
+     */
+    self.completeLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/feedback\/complete\.php.*([\?\&](id|gopage)=\d+)/, '$mmCourseDelegate_mmaModFeedback');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.completeLinksHandler.isEnabled = $mmaModFeedback.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.completeLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                if (typeof params.id == 'undefined') {
+                    // Id not defined. Cannot treat the URL.
+                    return false;
+                }
+
+                var modal = $mmUtil.showModalLoading(),
+                    moduleId = parseInt(params.id, 10);
+
+                return $mmCourse.getModuleBasicInfo(moduleId).then(function(module) {
+                    var stateParams = {
+                        module: module,
+                        moduleid: module.id,
+                        feedbackid: module.instance,
+                        courseid: module.course,
+                        preview: false
+                    };
+                    if (typeof params.gopage == 'undefined') {
+                        stateParams.page = parseInt(params.gopage, 10);
+                    }
+                    return $mmContentLinksHelper.goInSite('site.mod_feedback-form', stateParams, siteId);
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
+
+    /**
+     * Content links handler for feedback print questions.
+     * Match mod/feedback/print.php with a valid feedback id.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHandlers#printLinksHandler
+     */
+    self.printLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/feedback\/print\.php.*([\?\&](id)=\d+)/, '$mmCourseDelegate_mmaModFeedback');
+
+    // Check if the printLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.printLinksHandler.isEnabled = $mmaModFeedback.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.printLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                if (typeof params.id == 'undefined') {
+                    // Id not defined. Cannot treat the URL.
+                    return false;
+                }
+
+                var modal = $mmUtil.showModalLoading(),
+                    moduleId = parseInt(params.id, 10);
+
+                return $mmCourse.getModuleBasicInfo(moduleId).then(function(module) {
+                    var stateParams = {
+                        module: module,
+                        moduleid: module.id,
+                        courseid: module.course,
+                        preview: true
+                    };
+                    return $mmContentLinksHelper.goInSite('site.mod_feedback-form', stateParams, siteId);
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
+
 
     return self;
 });

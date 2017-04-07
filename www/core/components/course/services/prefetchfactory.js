@@ -104,11 +104,12 @@ angular.module('mm.core.course')
                         if (dirPath) {
                             // Download intro files in filepool root folder.
                             angular.forEach(introFiles, function(file) {
+                                var fileUrl = file.url || file.fileurl;
                                 if (prefetch) {
-                                    promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl,
+                                    promises.push($mmFilepool.addToQueueByUrl(siteId, fileUrl,
                                             that.component, module.id, file.timemodified));
                                 } else {
-                                    promises.push($mmFilepool.downloadUrl(siteId, file.fileurl, false,
+                                    promises.push($mmFilepool.downloadUrl(siteId, fileUrl, false,
                                             that.component, module.id, file.timemodified));
                                 }
                             });
@@ -190,7 +191,7 @@ angular.module('mm.core.course')
                         eventNames = [];
 
                     angular.forEach(module.contents, function(content) {
-                        var url = content.fileurl;
+                        var url = content.url || content.fileurl;
                         if (!that.isFileDownloadable(content)) {
                             return;
                         }
@@ -226,7 +227,7 @@ angular.module('mm.core.course')
                     var promises = [];
 
                     angular.forEach(module.contents, function(content) {
-                        var url = content.fileurl;
+                        var url = content.url || content.fileurl;
                         if (!that.isFileDownloadable(content)) {
                             return;
                         }

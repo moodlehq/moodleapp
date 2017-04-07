@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_feedback', ["chart.js"])
 
 .constant('mmaModFeedbackComponent', 'mmaModFeedback')
+.constant('mmaModFeedbackEventFormSubmitted', 'mma_mod_feedback_form_submitted')
 
 .config(function($stateProvider) {
 
@@ -31,6 +32,23 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
             'site': {
                 controller: 'mmaModFeedbackIndexCtrl',
                 templateUrl: 'addons/mod/feedback/templates/index.html'
+            }
+        }
+    })
+
+    .state('site.mod_feedback-form', {
+        url: '/mod_feedback-form',
+        params: {
+            page: null,
+            preview: null,
+            courseid: null,
+            module: null,
+            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModFeedbackFormCtrl',
+                templateUrl: 'addons/mod/feedback/templates/form.html'
             }
         }
     })
@@ -56,5 +74,7 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
     $mmCourseDelegateProvider.registerContentHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:index', '$mmaModFeedbackHandlers.indexLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:analysis', '$mmaModFeedbackHandlers.analysisLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:complete', '$mmaModFeedbackHandlers.completeLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:print', '$mmaModFeedbackHandlers.printLinksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackPrefetchHandler');
 });

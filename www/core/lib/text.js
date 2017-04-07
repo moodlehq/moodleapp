@@ -478,12 +478,12 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmText#getTextPluginfileUrl
-     * @param  {Object[]} files Files to extract the URL from. They need to have the URL in a 'fileurl' attribute.
+     * @param  {Object[]} files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
      * @return {String}         Pluginfile URL, false if no files found.
      */
     self.getTextPluginfileUrl = function(files) {
         if (files && files.length) {
-            var fileURL = files[0].fileurl;
+            var fileURL = files[0].url || files[0].fileurl;
             // Remove text after last slash (encoded or not).
             return fileURL.substr(0, Math.max(fileURL.lastIndexOf('/'), fileURL.lastIndexOf('%2F')));
         }
@@ -498,7 +498,7 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmText#replacePluginfileUrls
      * @param  {String} text    Text to treat.
-     * @param  {Object[]} files Files to extract the pluginfile URL from. They need to have the URL in a 'fileurl' attribute.
+     * @param  {Object[]} files Files to extract the pluginfile URL from. They need to have the URL in a 'url'/'fileurl' attribute.
      * @return {String}         Treated text.
      */
     self.replacePluginfileUrls = function(text, files) {
@@ -518,7 +518,7 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmText#restorePluginfileUrls
      * @param  {String} text    Text to treat.
-     * @param  {Object[]} files Files to extract the pluginfile URL from.  They need to have the URL in a 'fileurl' attribute.
+     * @param  {Object[]} files Files to extract the pluginfile URL from.  They need to have the URL in a 'url'/'fileurl' attribute.
      * @return {String}         Treated text.
      */
     self.restorePluginfileUrls = function(text, files) {

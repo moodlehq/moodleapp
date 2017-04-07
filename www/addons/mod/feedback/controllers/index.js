@@ -23,12 +23,13 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackIndexCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $mmCourseHelper, $q, $mmCourse,
             $mmText, mmaModFeedbackComponent, $mmEvents, $ionicScrollDelegate, $mmApp, $translate, $mmGroups, $mmaModFeedbackHelper,
-            mmCoreEventOnlineStatusChanged) {
+            mmCoreEventOnlineStatusChanged, $state, mmaModFeedbackEventFormSubmitted) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         feedback,
         scrollView,
-        onlineObserver;
+        onlineObserver,
+        obsSubmitted;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -54,7 +55,15 @@ angular.module('mm.addons.mod_feedback')
 
             return $mmaModFeedback.getFeedbackAccessInformation(feedback.id);
         }).then(function(accessData) {
+            var promises = [];
+
             $scope.access = accessData;
+
+            if (accessData.cancomplete && accessData.cansubmit && accessData.isopen) {
+                promises.push($mmaModFeedback.getResumePage(feedback.id).then(function(goPage) {
+                    $scope.goPage = goPage > 0 ? goPage : false;
+                }));
+            }
 
             if (accessData.canedititems) {
                 feedback.timeopen = parseInt(feedback.timeopen) * 1000 || false;
@@ -63,11 +72,13 @@ angular.module('mm.addons.mod_feedback')
                 feedback.closeTimeReadable = feedback.timeclose ? moment(feedback.timeclose).format('LLL') : false;
 
                 // Get groups (only for teachers).
-                return $mmaModFeedbackHelper.getFeedbackGroupInfo(feedback.coursemodule).then(function(groupInfo) {
+                promises.push($mmaModFeedbackHelper.getFeedbackGroupInfo(feedback.coursemodule).then(function(groupInfo) {
                     $scope.groupInfo = groupInfo;
                     return $scope.setGroup($scope.selectedGroup);
-                });
+                }));
             }
+
+            return $q.all(promises);
         }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModFeedbackComponent);
@@ -101,6 +112,7 @@ angular.module('mm.addons.mod_feedback')
         if (feedback) {
             promises.push($mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id));
             promises.push($mmaModFeedback.invalidateAnalysisData(feedback.id));
+            promises.push($mmaModFeedback.invalidateResumePageData(feedback.id));
             promises.push($mmGroups.invalidateActivityAllowedGroups(feedback.coursemodule));
             promises.push($mmGroups.invalidateActivityGroupMode(feedback.coursemodule));
         }
@@ -151,12 +163,32 @@ angular.module('mm.addons.mod_feedback')
         $mmaModFeedbackHelper.openFeature(feature, module, courseId, notImplemented);
     };
 
+    // Function to go to the questions form.
+    $scope.gotoAnswerQuestions = function(preview) {
+        var stateParams = {
+            module: module,
+            moduleid: module.id,
+            courseid: courseId,
+            preview: !!preview
+        };
+        $state.go('site.mod_feedback-form', stateParams);
+    };
+
+
     function scrollTop() {
         if (!scrollView) {
             scrollView = $ionicScrollDelegate.$getByHandle('mmaModFeedbackScroll');
         }
         scrollView && scrollView.scrollTop && scrollView.scrollTop();
     }
+
+    // Listen for form submit events.
+    obsSubmitted = $mmEvents.on(mmaModFeedbackEventFormSubmitted, function(data) {
+        // Go to review attempt if an attempt in this quiz was finished and synced.
+        if (data.feedbackId === feedback.id) {
+            fetchFeedbackData(true);
+        }
+    });
 
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
@@ -165,5 +197,6 @@ angular.module('mm.addons.mod_feedback')
 
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
+        obsSubmitted && obsSubmitted.off && obsSubmitted.off();
     });
 });

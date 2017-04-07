@@ -76,6 +76,35 @@ angular.module('mm.addons.mod_feedback')
         return getAnalysisDataPrefixCacheKey(feedbackId) + ":" + groupId;
     }
 
+    /**
+     * Get prefix cache key for resume feedback page data WS calls.
+     *
+     * @param {Number} feedbackId   Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getResumePageDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
+    }
+
+    /**
+     * Get cache key for get items feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getItemsDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
+    }
+
+    /**
+     * Get cache key for get current values feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getCurrentValuesDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
+    }
 
     /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
@@ -188,10 +217,12 @@ angular.module('mm.addons.mod_feedback')
      * @ngdoc method
      * @name $mmaModFeedback#getFeedbackAccessInformation
      * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the feedback is retrieved.
      */
-    self.getFeedbackAccessInformation = function(feedbackId, siteId) {
+    self.getFeedbackAccessInformation = function(feedbackId, offline, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     feedbackid: feedbackId
@@ -199,6 +230,13 @@ angular.module('mm.addons.mod_feedback')
                 preSets = {
                     cacheKey: getFeedbackAccessInformationDataCacheKey(feedbackId)
                 };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_feedback_get_feedback_access_information', params, preSets);
         });
@@ -261,6 +299,205 @@ angular.module('mm.addons.mod_feedback')
     self.invalidateAnalysisData = function(feedbackId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getAnalysisDataPrefixCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Gets the resume page information.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getResumePage
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getResumePage = function(feedbackId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getResumePageDataCacheKey(feedbackId)
+                };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_feedback_launch_feedback', params, preSets).then(function(response) {
+                if (response && typeof response.gopage != "undefined") {
+                    // WS will return -1 for last page but the user need to start again.
+                    return response.gopage > 0 ? response.gopage : 0;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates launch feedback data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateLaunchFeedbackData
+     * @param {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateResumePageData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getResumePageDataCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Get a single feedback page items. This function is not cached, use $mmaModFeedbackHelper.getPageItems instead.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getPageItems
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    page            The page to get.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getPageItems = function(feedbackId, page, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId,
+                    page: page
+                };
+
+            return site.write('mod_feedback_get_page_items', params);
+        });
+    };
+
+    /**
+     * Returns the items (questions) in the given feedback.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getItems
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getItems = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getItemsDataCacheKey(feedbackId)
+                };
+
+            return site.read('mod_feedback_get_items', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidates get items data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateItemsData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateItemsData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getItemsDataCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Process a jump between pages.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#processPage
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    page            The page being processed.
+     * @param   {Object}    responses       The data to be processed the key is the field name (usually type[index]_id).
+     * @param   {Boolean}   goprevious      Whether we want to jump to previous page.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.processPage = function(feedbackId, page, responses, goprevious, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId,
+                    page: page,
+                    responses: $mmUtil.objectToArrayOfObjects(responses, 'name', 'value'),
+                    goprevious: goprevious ? 1 : 0
+                };
+
+            return site.write('mod_feedback_process_page', params).then(function(response) {
+                // Invalidate corrent values because they will change.
+                return self.invalidateCurrentValuesData(feedbackId, site.getId()).then(function() {
+                    return response;
+                });
+            });
+        });
+    };
+
+    /**
+     * Returns the temporary completion record for the current user.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getCurrentValues
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getCurrentValues = function(feedbackId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getCurrentValuesDataCacheKey(feedbackId)
+                };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_feedback_get_unfinished_responses', params, preSets).then(function(response) {
+                if (response && typeof response.responses != "undefined") {
+                    return response.responses;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates temporary completion record data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateCurrentVlauesData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateCurrentValuesData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getCurrentValuesDataCacheKey(feedbackId));
         });
     };
 
