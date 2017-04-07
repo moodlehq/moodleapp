@@ -61,27 +61,26 @@ angular.module('mm.core.course')
 
             // Get the sections.
             return $mmCourse.getSections(courseId, false, true).then(function(sections) {
-                // Add a fake first section (all sections).
-                return $translate('mm.course.allsections').then(function(str) {
-                    // Adding fake first section.
-                    var result = [{
-                        name: str,
-                        id: mmCoreCourseAllSectionsId
-                    }].concat(sections);
-
-                    $scope.sections = result;
-
-                    if ($scope.downloadSectionsEnabled) {
-                        calculateSectionStatus(refresh);
-                    }
+                sections = sections.map(function(section) {
+                    section.name = section.name.trim() || section.section;
+                    return section;
                 });
+
+                // Add a fake first section (all sections).
+                var result = [{
+                    name: $translate.instant('mm.course.allsections'),
+                    id: mmCoreCourseAllSectionsId
+                }].concat(sections);
+
+
+                $scope.sections = result;
+
+                if ($scope.downloadSectionsEnabled) {
+                    calculateSectionStatus(refresh);
+                }
             });
         }).catch(function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsections', true);
         });
     }
 

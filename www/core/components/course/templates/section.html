@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content delegate-handle="mmSectionScroll" mm-state-class padding="true">
+    <ion-content delegate-handle="mmSectionScroll" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionLoaded" on-refresh="doRefresh()">
         </ion-refresher>
         <mm-loading hide-until="sectionLoaded" loading-padding-top="loadingPaddingTop">
@@ -12,9 +12,9 @@
                 </div>
             </section>
 
-            <section class="card" ng-repeat="section in sections" ng-if="sectionHasContent(section)">
+            <section ng-class="{'card': allSections}" ng-repeat="section in sections" ng-if="sectionHasContent(section)">
                 <!-- Title and summary are displayed when multiple sections per page. -->
-                <div class="item item-divider" ng-if="allSections">
+                <div class="item item-divider" ng-if="allSections && section.name">
                     <h2><mm-format-text watch="true">{{ section.name }}</mm-format-text></h2>
                 </div>
 
