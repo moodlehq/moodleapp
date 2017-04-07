@@ -306,6 +306,28 @@ angular.module('mm.core')
     };
 
     /**
+     * Add files to queue using a URL.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#addFilesToQueueByUrl
+     * @param {String} siteId        The site ID.
+     * @param {Array}  files         Array of files to add.
+     * @param {String} [component]   The component to link the file to.
+     * @param {Mixed}  [componentId] An ID to use in conjunction with the component (optional).
+     * @return {Promise} Resolved on success. The returned value can be inconsistent, do not use.
+     */
+    self.addFilesToQueueByUrl = function(siteId, files, component, componentId) {
+        var promises = [];
+        // Prefetch files.
+        angular.forEach(files, function(file) {
+            promises.push(self.addToQueueByUrl(siteId, file.fileurl, component, componentId, file.timemodified));
+        });
+
+        return $q.all(promises);
+    };
+
+    /**
      * Add an entry to queue using a URL.
      *
      * @module mm.core

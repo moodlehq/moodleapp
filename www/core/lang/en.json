@@ -74,6 +74,8 @@
     "forcepasswordchangenotice": "You must change your password to proceed.",
     "fulllistofcourses": "All courses",
     "fullnameandsitename": "{{fullname}} ({{sitename}})",
+    "groupsseparate": "Separate groups",
+    "groupsvisible": "Visible groups",
     "hasdatatosync": "This {{$a}} has offline data to be synchronized.",
     "help" : "Help",
     "hide": "Hide",
