@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedbackHelper
  */
-.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state, $mmText,
+.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state, $mmText, $mmUser, $q,
         $mmaModFeedback) {
 
     var self = {},
@@ -126,11 +126,11 @@ angular.module('mm.addons.mod_feedback')
 
                 // Page found.
                 if (view.stateName == pageName) {
-                    break;
+                    return backTimes;
                 }
             }
 
-            return backTimes;
+            return 0;
         }
     };
 
@@ -502,6 +502,35 @@ angular.module('mm.addons.mod_feedback')
         });
 
         return responses;
+    };
+
+    /**
+     * Returns the feedback user responses with extra info.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHelper#getResponsesAnalysis
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {Number}    page            The page of records to return.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getResponsesAnalysis = function(feedbackId, groupId, page) {
+        return $mmaModFeedback.getResponsesAnalysis(feedbackId, groupId, page).then(function(responses) {
+            var promises = [];
+
+            angular.forEach(responses.attempts, function(attempt) {
+                promises.push($mmUser.getProfile(attempt.userid, attempt.courseid, true).then(function(user) {
+                    attempt.profileimageurl = user.profileimageurl;
+                }).catch(function() {
+                    // Error getting profile, resolve promise without adding any extra data.
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return responses;
+            });
+        });
     };
 
     return self;

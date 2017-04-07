@@ -93,6 +93,7 @@
     "lastsync": "Last synchronization",
     "listsep": ",",
     "loading": "Loading",
+    "loadmore": "Load more",
     "lostconnection": "Your authentication token is invalid or has expired, you will have to reconnect to the site.",
     "maxsizeandattachments": "Maximum size for new files: {{$a.size}}, maximum attachments: {{$a.attachments}}",
     "min" : "min",

@@ -60,7 +60,7 @@ angular.module('mm.addons.mod_feedback')
         }).then(function(accessData) {
             $scope.access = accessData;
 
-            if (!$scope.preview && accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
+            if (!$scope.preview && accessData.cansubmit && !accessData.isempty) {
                 return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id, offline, true) : $q.when(currentPage);
             } else {
                 $scope.preview = true;
@@ -149,11 +149,13 @@ angular.module('mm.addons.mod_feedback')
     };
 
     function leavePlayer() {
-        var responses = $mmaModFeedbackHelper.getPageItemsResponses($scope.items);
-        if ($scope.items && !$scope.completed && originalData) {
-            // Form submitted. Check if there is any change.
-            if (!$mmUtil.basicLeftCompare(responses, originalData, 3)) {
-                 return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+        if (!$stateParams.preview) {
+            var responses = $mmaModFeedbackHelper.getPageItemsResponses($scope.items);
+            if ($scope.items && !$scope.completed && originalData) {
+                // Form submitted. Check if there is any change.
+                if (!$mmUtil.basicLeftCompare(responses, originalData, 3)) {
+                     return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+                }
             }
         }
         return $q.when();

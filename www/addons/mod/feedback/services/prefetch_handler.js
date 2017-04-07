@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_feedback')
  * @name $mmaModFeedbackPrefetchHandler
  */
 .factory('$mmaModFeedbackPrefetchHandler', function($mmaModFeedback, mmaModFeedbackComponent, $mmFilepool, $q, $mmUtil, $mmGroups,
-            $mmPrefetchFactory) {
+            $mmPrefetchFactory, $mmUser) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModFeedbackComponent);
 
@@ -203,12 +203,19 @@ angular.module('mm.addons.mod_feedback')
                     // Get all groups analysis.
                     p2.push($mmaModFeedback.getAnalysis(feedback.id, undefined, siteId));
                     p2.push($mmGroups.getActivityAllowedGroupsIfEnabled(feedback.coursemodule, undefined, siteId).then(function(groups) {
-                        var p3 = [];
+                        var p3 = [],
+                            userIds = [];
                         angular.forEach(groups, function(group) {
                             p3.push($mmaModFeedback.getAnalysis(feedback.id, group.id, siteId));
+                            p3.push($mmaModFeedback.getAllResponsesAnalysis(feedback.id, group.id, siteId).then(function(responses) {
+                                userIds.push(responses.userid);
+                            }));
                         });
 
-                        return $q.all(p3);
+                        return $q.all(p3).then(function() {
+                            // Prefetch user profiles.
+                            return $mmUser.prefetchProfiles(userIds, courseId, siteId);
+                        });
                     }));
                 }
 

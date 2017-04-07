@@ -67,6 +67,37 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
                 templateUrl: 'addons/mod/feedback/templates/analysis.html'
             }
         }
+    })
+
+    .state('site.mod_feedback-respondents', {
+        url: '/mod_feedback-respondents',
+        params: {
+            courseid: null,
+            module: null,
+            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModFeedbackRespondentsCtrl',
+                templateUrl: 'addons/mod/feedback/templates/respondents.html'
+            }
+        }
+    })
+
+    .state('site.mod_feedback-attempt', {
+        url: '/mod_feedback-attempt',
+        params: {
+            attempt: null,
+            attemptid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            feedbackid: null,
+            moduleid: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModFeedbackAttemptCtrl',
+                templateUrl: 'addons/mod/feedback/templates/attempt.html'
+            }
+        }
     });
 })
 
@@ -76,5 +107,6 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:analysis', '$mmaModFeedbackHandlers.analysisLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:complete', '$mmaModFeedbackHandlers.completeLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:print', '$mmaModFeedbackHandlers.printLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:showEntries', '$mmaModFeedbackHandlers.showEntriesLinksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackPrefetchHandler');
 });
