@@ -6,6 +6,7 @@
     "couldnotadd": "Could not add your post due to an unknown error",
     "discussion": "Discussion",
     "discussionlocked": "This discussion has been locked so you can no longer reply to it.",
+    "discussionpinned": "Pinned",
     "discussionsubscription": "Discussion subscription",
     "edit": "Edit",
     "erroremptymessage": "Post message cannot be empty",

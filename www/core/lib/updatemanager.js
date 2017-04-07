@@ -80,6 +80,10 @@ angular.module('mm.core')
                 promises.push(migrateWikiNewPagesStore());
             }
 
+            if (versionCode >= 2018 && versionApplied < 2018) {
+                promises.push(adaptForumOfflineStores());
+            }
+
             return $q.all(promises).then(function() {
                 return $mmConfig.set(mmCoreVersionApplied, versionCode);
             }).catch(function() {
@@ -517,6 +521,95 @@ angular.module('mm.core')
             }
             // Fail silently.
             return $q.when();
+        });
+    }
+
+    /**
+     * The data stored for offline discussions and posts changed its format. Adapt the entries already stored.
+     * Since it can be slow, we'll only block migrating the db of current site, the rest will be in background.
+     *
+     * @return {Promise} Promise resolved when the db is migrated.
+     */
+    function adaptForumOfflineStores() {
+        return $mmSitesManager.getSitesIds().then(function(siteIds) {
+
+            return $mmSitesManager.getStoredCurrentSiteId().catch(function() {
+                // Error getting current site.
+            }).then(function(currentSiteId) {
+                var promise;
+
+                // Load the config of current site first.
+                if (currentSiteId) {
+                    promise = adaptForumOfflineSiteStores(currentSiteId);
+                } else {
+                    promise = $q.when();
+                }
+
+                // Load the config of rest of sites in background.
+                angular.forEach(siteIds, function(siteId) {
+                    if (siteId != currentSiteId) {
+                        adaptForumOfflineSiteStores(siteId);
+                    }
+                });
+
+                return promise;
+            });
+        });
+    }
+
+    /**
+     * The data stored for offline discussions and posts changed its format. Adapt the entries already stored.
+     *
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Promise resolved when the data is migrated for the site.
+     */
+    function adaptForumOfflineSiteStores(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var promises = [],
+                $mmaModForumOffline = $injector.get('$mmaModForumOffline'),
+                mmaModForumOfflineDiscussionsStore = $injector.get('mmaModForumOfflineDiscussionsStore'),
+                mmaModForumOfflineRepliesStore = $injector.get('mmaModForumOfflineRepliesStore');
+
+            // Adapt new discussions.
+            promises.push($mmaModForumOffline.getAllNewDiscussions(siteId).then(function(discs) {
+                var subPromises = [];
+
+                angular.forEach(discs, function(disc) {
+                    // Put subscribe and attachments into an options object.
+                    disc.options = {
+                        discussionsubscribe: disc.subscribe
+                    };
+                    if (disc.attachments) {
+                        disc.options.attachmentsid = disc.attachments;
+                    }
+                    delete disc.subscribe;
+                    delete disc.attachments;
+
+                    subPromises.push(site.getDb().insert(mmaModForumOfflineDiscussionsStore, disc));
+                });
+
+                return $q.all(subPromises);
+            }));
+
+            // Adapt replies.
+            promises.push($mmaModForumOffline.getAllReplies(siteId).then(function(replies) {
+                var subPromises = [];
+
+                angular.forEach(replies, function(reply) {
+                    // Put attachments into an options object.
+                    reply.options = {};
+                    if (reply.attachments) {
+                        reply.options.attachmentsid = reply.attachments;
+                    }
+                    delete reply.attachments;
+
+                    subPromises.push(site.getDb().insert(mmaModForumOfflineRepliesStore, reply));
+                });
+
+                return $q.all(subPromises);
+            }));
+
+            return $q.all(promises);
         });
     }
 

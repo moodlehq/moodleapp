@@ -59,10 +59,10 @@ angular.module('mm.addons.mod_forum')
             promises = [];
 
         // Treat attachments if any.
-        if (offlineReply.attachments) {
-            reply.attachments = offlineReply.attachments.online || [];
+        if (offlineReply.options && offlineReply.options.attachmentsid) {
+            reply.attachments = offlineReply.options.attachmentsid.online || [];
 
-            if (offlineReply.attachments.offline) {
+            if (offlineReply.options.attachmentsid.offline) {
                 promises.push(self.getReplyStoredFiles(offlineReply.forumid, reply.parent, siteId, reply.userid)
                             .then(function(files) {
                     reply.attachments = reply.attachments.concat(files);

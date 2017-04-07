@@ -344,14 +344,24 @@ angular.module('mm.addons.mod_forum')
         // Check group mode.
         return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
             if (mode !== $mmGroups.SEPARATEGROUPS && mode !== $mmGroups.VISIBLEGROUPS) {
-                // Activity doesn't use groups, nothing else to prefetch.
+                // Activity doesn't use groups. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
+                if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                    return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
+                        // Ignore errors.
+                    });
+                }
                 return;
             }
 
             // Activity uses groups, prefetch allowed groups.
             return $mmGroups.getActivityAllowedGroups(forum.cmid).then(function(groups) {
                 if (mode === $mmGroups.SEPARATEGROUPS) {
-                    // Groups are already filtered by WS, nothing else to prefetch.
+                    // Groups are already filtered by WS. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
+                    if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                        return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
+                            // Ignore errors.
+                        });
+                    }
                     return;
                 }
 
@@ -361,9 +371,11 @@ angular.module('mm.addons.mod_forum')
                         // Can add discussion WS available, prefetch the calls.
                         return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
                             // The call failed, let's assume he can't.
-                            return false;
-                        }).then(function(canAdd) {
-                            if (canAdd) {
+                            return {
+                                status: false
+                            };
+                        }).then(function(response) {
+                            if (response.status) {
                                 // User can post to all groups, nothing else to prefetch.
                                 return;
                             }
