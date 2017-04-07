@@ -40,6 +40,8 @@ angular.module('mm.addons.mod_lesson')
     // Block leaving the view, we want to save changes before leaving.
     blockData = $mmUtil.blockLeaveView($scope, leavePlayer);
 
+    $scope.review = false;
+    $scope.LESSON_EOL = $mmaModLesson.LESSON_EOL;
     $scope.component = mmaModLessonComponent;
     $scope.currentPage = $stateParams.pageid;
     $scope.messages = [];
@@ -103,7 +105,12 @@ angular.module('mm.addons.mod_lesson')
 
     // Load a certain page.
     function loadPage(pageId) {
-        return $mmaModLesson.getPageData(lesson.id, pageId, password, false, true, offline, true).then(function(data) {
+        return $mmaModLesson.getPageData(lesson.id, pageId, password, $scope.review, true, offline, true).then(function(data) {
+            if (data.newpageid == $mmaModLesson.LESSON_EOL) {
+                // End of lesson reached.
+                return finishAttempt();
+            }
+
             $scope.pageData = data;
             $scope.title = data.page.title;
             $scope.pageContent = data.page.contents;
@@ -135,7 +142,7 @@ angular.module('mm.addons.mod_lesson')
     // Finish the attempt.
     function finishAttempt(outOfTime) {
         $scope.messages = [];
-        return $mmaModLesson.finishAttempt(lesson.id, password, outOfTime).then(function(data) {
+        return $mmaModLesson.finishAttempt(lesson.id, password, outOfTime, $scope.review).then(function(data) {
             $scope.title = lesson.name;
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;
@@ -145,6 +152,17 @@ angular.module('mm.addons.mod_lesson')
             // Format activity link if present.
             if ($scope.eolData && $scope.eolData.activitylink) {
                 $scope.eolData.activitylink.value = $mmaModLessonHelper.formatActivityLink($scope.eolData.activitylink.value);
+            }
+
+            // Format review lesson if present.
+            if ($scope.eolData && $scope.eolData.reviewlesson) {
+                var params = $mmUtil.extractUrlParams($scope.eolData.reviewlesson.value);
+                if (!params || !params.pageid) {
+                    // No pageid in the URL, the user cannot review (probably didn't answer any question).
+                    delete $scope.eolData.reviewlesson;
+                } else {
+                    $scope.eolData.reviewlesson.pageid = params.pageid;
+                }
             }
         });
     }
@@ -193,7 +211,7 @@ angular.module('mm.addons.mod_lesson')
     function processPage(data) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, $scope.currentPage, data, password).then(function(result) {
+        return $mmaModLesson.processPage(lessonId, $scope.currentPage, data, password, $scope.review).then(function(result) {
             if (result.nodefaultresponse || result.inmediatejump) {
                 // Don't display feedback or force a redirect to a new page. Load the new page.
                 return jumpToPage(result.newpageid);
@@ -306,6 +324,17 @@ angular.module('mm.addons.mod_lesson')
     // First render of rich text editor.
     $scope.firstRender = function() {
         originalData = angular.copy($scope.question.model);
+    };
+
+    // Review the lesson.
+    $scope.reviewLesson = function(pageId) {
+        showLoading();
+        $scope.review = true;
+
+        loadPage(pageId).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Error loading page');
+            $scope.pageLoaded = true;
+        });
     };
 
     // Setup right side menu.

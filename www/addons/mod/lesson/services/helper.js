@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLessonHelper
  */
-.factory('$mmaModLessonHelper', function($mmaModLesson, $mmText, $q, $mmUtil) {
+.factory('$mmaModLessonHelper', function($mmaModLesson, $mmText, $q, $mmUtil, $translate) {
 
     var self = {};
 
@@ -116,6 +116,7 @@ angular.module('mm.addons.mod_lesson')
         var rootElement = document.createElement('div'),
             fieldContainer,
             hiddenInputs,
+            submitButton,
             type,
             question = {
                 model: {}
@@ -130,6 +131,10 @@ angular.module('mm.addons.mod_lesson')
         angular.forEach(hiddenInputs, function(input) {
             question.model[input.name] = input.value;
         });
+
+        // Get the submit button and extract its value.
+        submitButton = rootElement.querySelector('input[type="submit"]');
+        question.submitLabel = submitButton ? submitButton.value : $translate.instant('mma.mod_lesson.submit');
 
         if (!fieldContainer) {
             // Element not found, return.
@@ -159,9 +164,15 @@ angular.module('mm.addons.mod_lesson')
                     var option = {
                             id: input.id,
                             name: input.name,
-                            value: input.value
+                            value: input.value,
+                            checked: input.checked,
+                            disabled: input.disabled
                         },
                         parent = input.parentNode;
+
+                    if (option.checked) {
+                        question.model[option.name] = question.multi ? true : option.value;
+                    }
 
                     // Remove the input and use the rest of the parent contents as the label.
                     angular.element(input).remove();
@@ -186,9 +197,13 @@ angular.module('mm.addons.mod_lesson')
                     id: input.id,
                     name: input.name,
                     maxlength: input.maxLength,
-                    value: input.value,
-                    type: type || 'text'
+                    type: type || 'text',
+                    readonly: input.readOnly
                 };
+
+                if (input.value) {
+                    question.model[input.name] =  type == 'number' ? parseInt(input.value, 10) : input.value;
+                }
                 break;
 
             case $mmaModLesson.LESSON_PAGE_ESSAY:
@@ -197,23 +212,31 @@ angular.module('mm.addons.mod_lesson')
                 // Get the textarea.
                 var textarea = fieldContainer.querySelector('textarea'),
                     nameMatch;
+
                 if (!textarea) {
-                    return false;
+                    // Textarea not found, probably review mode.
+                    var answerEl = fieldContainer.querySelector('.reviewessay');
+                    if (!answerEl) {
+                        // Answer not found, stop.
+                        return false;
+                    }
+                    question.useranswer = answerEl.innerHTML;
+                } else {
+                    // Extract the model name and the property from the textarea's name.
+                    textarea.name = textarea.name || 'answer[text]';
+                    nameMatch = textarea.name.match(/([^\[]*)\[([^\[]*)\]/);
+
+                    question.textarea = {
+                        id: textarea.id,
+                        fullName: textarea.name,
+                        name: nameMatch[1] || 'answer',
+                        property: nameMatch[2] || 'text'
+                    };
+
+                    // Init the model.
+                    question.model[question.textarea.name] = {};
                 }
 
-                // Extract the model name and the property from the textarea's name.
-                textarea.name = textarea.name || 'answer[text]';
-                nameMatch = textarea.name.match(/([^\[]*)\[([^\[]*)\]/);
-
-                question.textarea = {
-                    id: textarea.id,
-                    fullName: textarea.name,
-                    name: nameMatch[1] || 'answer',
-                    property: nameMatch[2] || 'text'
-                };
-
-                // Init the model.
-                question.model[question.textarea.name] = {};
                 break;
 
             case $mmaModLesson.LESSON_PAGE_MATCHING:
@@ -236,6 +259,7 @@ angular.module('mm.addons.mod_lesson')
                     rowModel.text = label.innerHTML.trim();
                     rowModel.id = select.id;
                     rowModel.name = select.name;
+                    rowModel.disabled = select.disabled;
                     rowModel.options = [];
 
                     // Treat each option.
@@ -278,7 +302,7 @@ angular.module('mm.addons.mod_lesson')
     self.prepareQuestionModel = function(question) {
         // Create a copy of the model so changing it doesn't affect the template.
         var model = angular.copy(question.model);
-        if (question.template == 'essay') {
+        if (question.template == 'essay' && question.textarea) {
             // The answer might need formatting. Check if rich text editor is enabled or not.
             return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
                 if (!enabled) {

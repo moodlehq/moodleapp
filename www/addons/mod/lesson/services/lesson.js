@@ -118,11 +118,11 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#getAccessInformation
-     * @param  {Number} lessonId     Lesson ID.
-     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}             Promise resolved with the access information-
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the access information-
      */
     self.getAccessInformation = function(lessonId, forceCache, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -243,8 +243,8 @@ angular.module('mm.addons.mod_lesson')
      * @param  {String} [password]               Password.
      * @param  {Boolean} [validatePassword=true] If true, the function will fail if the password is wrong.
      *                                           If false, it will return a lesson with the basic data if password is wrong.
-     * @param  {Boolean} forceCache              True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} ignoreCache             True to ignore cached data (it will always fail in offline or server down).
+     * @param  {Boolean} [forceCache]            True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache]           True to ignore cached data (it will always fail in offline or server down).
      * @param  {String} [siteId]                 Site ID. If not defined, current site.
      * @return {Promise}                         Promise resolved with the lesson.
      */
@@ -324,8 +324,8 @@ angular.module('mm.addons.mod_lesson')
      * @param  {String} [password]         Lesson password (if any).
      * @param  {Boolean} [review]          If the user wants to review just after finishing (1 hour margin).
      * @param  {Boolean} [includeContents] Include the page rendered contents.
-     * @param  {Boolean} forceCache        True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} ignoreCache       True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {Boolean} [forceCache]      True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache]     True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {String} [siteId]           Site ID. If not defined, current site.
      * @return {Promise}                   Promise resolved with the page data.
      */
@@ -372,12 +372,12 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#getPages
-     * @param  {Number} lessonId     Lesson ID.
-     * @param  {String} [password]   Lesson password (if any).
-     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}             Promise resolved with the pages.
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {String} [password]     Lesson password (if any).
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the pages.
      */
     self.getPages = function(lessonId, password, forceCache, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -450,12 +450,12 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#getTimers
-     * @param  {Number} lessonId     Lesson ID.
-     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @param  {Number} [userId]     User ID. If not defined, site's current user.
-     * @return {Promise}             Promise resolved with the pages.
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @param  {Number} [userId]       User ID. If not defined, site's current user.
+     * @return {Promise}               Promise resolved with the pages.
      */
     self.getTimers = function(lessonId, forceCache, ignoreCache, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -691,12 +691,7 @@ angular.module('mm.addons.mod_lesson')
                 params.pageid = pageId;
             }
 
-            return site.write('mod_lesson_launch_attempt', params).then(function(result) {
-                if (!result.status) {
-                    return $q.reject();
-                }
-                return result;
-            });
+            return site.write('mod_lesson_launch_attempt', params);
         });
     };
 
