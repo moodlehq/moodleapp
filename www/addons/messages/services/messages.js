@@ -444,7 +444,8 @@ angular.module('mm.addons.messages')
      *
      * @module mm.addons.messages
      * @ngdoc method
-     * @param messageId   ID of message to mark as read
+     * @name $mmaMessages#markMessageRead
+     * @param   {Number}  messageId   ID of message to mark as read
      * @returns {Promise} Promise resolved with boolean marking success or not.
      */
     self.markMessageRead = function(messageId) {
@@ -454,6 +455,36 @@ angular.module('mm.addons.messages')
             };
         return $mmSite.write('core_message_mark_message_read', params);
 
+    };
+
+    /**
+     * Mark all messages of a discussion as read.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#markAllMessagesRead
+     * @param   {Number}  userIdFrom  User Id for the sender.
+     * @returns {Promise} Promise resolved with boolean marking success or not.
+     */
+    self.markAllMessagesRead = function(userIdFrom) {
+        var params = {
+                'useridto': $mmSite.getUserId(),
+                'useridfrom': userIdFrom
+            };
+        return $mmSite.write('core_message_mark_all_messages_as_read', params);
+
+    };
+
+    /**
+     * Returns whether or not we can mark all messages as read.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMarkAllMessagesReadEnabled
+     * @return {Boolean}
+     */
+    self.isMarkAllMessagesReadEnabled = function() {
+        return $mmSite.wsAvailable('core_message_mark_all_messages_as_read');
     };
 
     /**

@@ -324,33 +324,41 @@ angular.module('mm.addons.messages')
     // Mark messages as read.
     function markMessagesAsRead() {
         var readChanged = false,
-            previousMessageRead = false,
             promises = [];
 
-        angular.forEach($scope.messages, function(message) {
-
-            if (message.useridfrom != $scope.currentUserId) {
+        if ($mmaMessages.isMarkAllMessagesReadEnabled()) {
+            var messageUnreadFound = false;
+            // Mark all messages at a time if one messages is unread.
+            for (var x in $scope.messages) {
+                var message = $scope.messages[x];
+                // If an unread message is found, mark all messages as read.
+                if (message.useridfrom != $scope.currentUserId && message.read == 0) {
+                    messageUnreadFound = true;
+                    break;
+                }
+            }
+            if (messageUnreadFound) {
+                setUnreadLabelPosition();
+                promises.push($mmaMessages.markAllMessagesRead(userId).then(function() {
+                    readChanged = true;
+                    // Mark all messages as read.
+                    angular.forEach($scope.messages, function(message) {
+                        message.read = 1;
+                    });
+                }));
+            }
+        } else {
+            setUnreadLabelPosition();
+            // Mark each message as read one by one.
+            angular.forEach($scope.messages, function(message) {
                 // If the message is unread, call $mmaMessages.markMessageRead.
-                if (message.read == 0) {
+                if (message.useridfrom != $scope.currentUserId && message.read == 0) {
                     promises.push($mmaMessages.markMessageRead(message.id).then(function() {
                         readChanged = true;
                         message.read = 1;
                     }));
                 }
-
-                // Place unread from message label only once.
-                if (!unreadMessageFrom) {
-                    message.unreadFrom = message.read == 0 && previousMessageRead;
-                    // Save where the label is placed.
-                    unreadMessageFrom = message.unreadFrom && parseInt(message.id, 10);
-                    previousMessageRead = message.read != 0;
-                }
-            }
-        });
-        // Do not update the message unread from label on next refresh.
-        if (!unreadMessageFrom) {
-            // Using true to indicate the label is not placed but should not be placed.
-            unreadMessageFrom = true;
+            });
         }
 
         $q.all(promises).finally(function() {
@@ -361,6 +369,34 @@ angular.module('mm.addons.messages')
                 });
             }
         });
+    }
+
+    // Set the place where the unread label position has to be.
+    function setUnreadLabelPosition() {
+        if (unreadMessageFrom) {
+            return;
+        }
+
+        var previousMessageRead = false;
+
+        // Check all messages again and mark it as read.
+        angular.forEach($scope.messages, function(message) {
+            if (message.useridfrom != $scope.currentUserId) {
+                // Place unread from message label only once.
+                if (!unreadMessageFrom) {
+                    message.unreadFrom = message.read == 0 && previousMessageRead;
+                    // Save where the label is placed.
+                    unreadMessageFrom = message.unreadFrom && parseInt(message.id, 10);
+                    previousMessageRead = message.read != 0;
+                }
+            }
+        });
+
+        // Do not update the message unread from label on next refresh.
+        if (!unreadMessageFrom) {
+            // Using true to indicate the label is not placed but should not be placed.
+            unreadMessageFrom = true;
+        }
     }
 
     // Get a discussion. Can load several "pages".
