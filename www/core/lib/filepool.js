@@ -2892,6 +2892,35 @@ angular.module('mm.core')
         $mmEvents.trigger(mmCoreEventPackageStatusChanged, data);
     };
 
+    /**
+     * Update the download time of a package. This doesn't modify the previous download time.
+     * This function should be used if a package generates some new data during a download. Calling this function
+     * right after generating the data in the download will prevent detecting this data as an update.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#updatePackageDownloadTime
+     * @param {String} siteId         Site ID.
+     * @param {String} component      Package's component.
+     * @param {Mixed} [componentId]   An ID to use in conjunction with the component.
+     * @return {Promise}              Promise resolved when status is stored.
+     */
+    self.updatePackageDownloadTime = function(siteId, component, componentId) {
+        componentId = self._fixComponentId(componentId);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Get current entry.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                entry.downloadtime = $mmUtil.timestamp();
+
+                return db.insert(mmFilepoolPackagesStore, entry);
+            });
+        });
+    };
+
     return self;
 })
 

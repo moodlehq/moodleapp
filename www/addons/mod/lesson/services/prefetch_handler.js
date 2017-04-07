@@ -399,7 +399,17 @@ angular.module('mm.addons.mod_lesson')
 
             if (!$mmaModLesson.leftDuringTimed(accessInfo)) {
                 // The user didn't left during a timed session. Call launch attempt to make sure there is a started attempt.
-                return $mmaModLesson.launchAttempt(lesson.id, password, false, false, siteId);
+                return $mmaModLesson.launchAttempt(lesson.id, password, false, false, siteId).then(function() {
+                    var promises = [];
+
+                    // New data generated, update the download time and refresh the access info.
+                    promises.push($mmFilepool.updatePackageDownloadTime(siteId, self.component, module.id).catch(function() {
+                        // Ignore errors.
+                    }));
+                    promises.push($mmaModLesson.getAccessInformation(lesson.id, false, true, siteId));
+
+                    return $q.all(promises);
+                });
             }
         }).then(function() {
             var promises = [],

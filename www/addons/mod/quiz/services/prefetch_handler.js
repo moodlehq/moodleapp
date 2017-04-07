@@ -403,6 +403,11 @@ angular.module('mm.addons.mod_quiz')
                 promises.push($mmaModQuiz.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                     attempts = atts;
                 }));
+
+                // Update the download time to prevent detecting the new attempt as an update.
+                promises.push($mmFilepool.updatePackageDownloadTime(siteId, self.component, module.id).catch(function() {
+                    // Ignore errors.
+                }));
             }
 
             // Fetch attempt related data.
