@@ -35,6 +35,7 @@ angular.module('mm.addons.mod_page')
     $scope.externalUrl = module.url;
     $scope.loaded = false;
     $scope.refreshIcon = 'spinner';
+    $scope.canGetPage = $mmaModPage.isGetPageWSAvailable();
 
     function fetchContent(refresh) {
         var downloadFailed = false;
@@ -51,11 +52,18 @@ angular.module('mm.addons.mod_page')
         }).then(function() {
             var promises = [];
 
+            var getPagePromise;
             // Get the module to get the latest title and description. Data should've been updated in download.
-            promises.push($mmCourse.getModule(module.id, courseId).then(function(mod) {
+            if ($scope.canGetPage) {
+                getPagePromise = $mmaModPage.getPageData(courseId, module.id);
+            } else {
+                getPagePromise = $mmCourse.getModule(module.id, courseId);
+            }
+
+            promises.push(getPagePromise.then(function(mod){
                 $scope.title = mod.name;
-                $scope.description = mod.description;
-            }).catch(function() {
+                $scope.description = mod.intro || mod.description;
+            }).catch(function(){
                 // Ignore errors.
             }));
 
@@ -100,7 +108,7 @@ angular.module('mm.addons.mod_page')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmaModPagePrefetchHandler.invalidateContent(module.id).then(function() {
+            return $mmaModPage.invalidateContent(module.id, courseId).then(function() {
                 return fetchContent(true);
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
