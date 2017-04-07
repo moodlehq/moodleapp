@@ -51,7 +51,7 @@
                         </a>
                     </li>
                     <li class="card" ng-repeat="discussion in discussions track by $index">
-                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid, trackposts: discussion.numunread > 0,locked: discussion.locked && !discussion.canreply})">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid, trackposts: trackPosts, locked: discussion.locked && !discussion.canreply})">
                             <article>
                                 <div class="item item-text-wrap item-heading clearfix" ng-class="{'item-avatar': discussion.userfullname}">
                                     <img ng-if="discussion.userpictureurl && discussion.userfullname" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">

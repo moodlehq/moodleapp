@@ -45,6 +45,7 @@ angular.module('mm.addons.mod_forum')
     $scope.syncIcon = 'spinner';
     $scope.component = mmaModForumComponent;
     $scope.componentId = module.id;
+    $scope.trackPosts = false;
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh, sync, showErrors) {
@@ -55,6 +56,9 @@ angular.module('mm.addons.mod_forum')
             $scope.title = forum.name || $scope.title;
             $scope.description = forum.intro || $scope.description;
             $scope.forum = forum;
+            if (typeof forum.istracked != "undefined") {
+                $scope.trackPosts = forum.istracked;
+            }
 
             // In tablet, load first discussion skipping "Add new discussion" button.
             if (!$scope.linkToLoad) {
@@ -145,6 +149,16 @@ angular.module('mm.addons.mod_forum')
                     for (var x in discussions) {
                         if (discussions[x].userfullname && discussions[x].parent == 0) {
                             discussions[x].userfullname = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (typeof forum.istracked == "undefined" && !$scope.trackPosts) {
+                    // If any discussion has unread posts, the whole forum is being tracked.
+                    for (var y in discussions) {
+                        if (discussions[y].numunread > 0) {
+                            $scope.trackPosts = true;
                             break;
                         }
                     }
