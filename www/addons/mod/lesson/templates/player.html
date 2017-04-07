@@ -35,6 +35,9 @@
 
                 <!-- End of lesson reached. -->
                 <div ng-if="eolData && !processData" class="padding">
+                    <div class="mm-warning" ng-if="eolData.offline && eolData.offline.value">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_lesson.finishattemptoffline' | translate }}
+                    </div>
                     <h3 ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
                     <p ng-if="eolData.notenoughtimespent"><mm-format-text>{{ eolData.notenoughtimespent.message }}</mm-format-text></p>
                     <p ng-if="eolData.numberofpagesviewed"><mm-format-text>{{ eolData.numberofpagesviewed.message }}</mm-format-text></p>

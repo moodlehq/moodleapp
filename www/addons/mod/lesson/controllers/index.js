@@ -191,7 +191,11 @@ angular.module('mm.addons.mod_lesson')
         // Calculate the pageId to load. If there is timelimit, lesson is always restarted from the start.
         var promise;
         if ($scope.hasOffline) {
-            promise = $mmaModLesson.getLastPageSeen(lesson.id, accessInfo.attemptscount);
+            if (continueLast) {
+                promise = $mmaModLesson.getLastPageSeen(lesson.id, accessInfo.attemptscount);
+            } else {
+                promise = $q.when(accessInfo.firstpageid);
+            }
         } else if ($scope.leftDuringTimed && !lesson.timelimit) {
             promise = $q.when(continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid);
         } else {
@@ -260,7 +264,12 @@ angular.module('mm.addons.mod_lesson')
                     // Success downloading, open lesson.
                     playLesson(continueLast);
                 }).catch(function(error) {
-                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                    if ($scope.hasOffline) {
+                        // Error downloading but there is something offline, allow continuing it.
+                        playLesson(continueLast);
+                    } else {
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                    }
                 }).finally(function() {
                     $scope.showSpinner = false;
                 });

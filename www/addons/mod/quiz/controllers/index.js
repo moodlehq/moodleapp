@@ -450,7 +450,12 @@ angular.module('mm.addons.mod_quiz')
                     // Success downloading, open quiz.
                     openQuiz();
                 }).catch(function(error) {
-                    $mmaModQuizHelper.showError(error, 'mma.mod_quiz.errordownloading');
+                    if ($scope.hasOffline) {
+                        // Error downloading but there is something offline, allow continuing it.
+                        openQuiz();
+                    } else {
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                    }
                 }).finally(function() {
                     $scope.showSpinner = false;
                 });

@@ -68,10 +68,6 @@ angular.module('mm.addons.mod_lesson')
                     keyPath: ['lessonid', 'attempt']
                 },
                 {
-                    name: 'lessonAndAttemptAndPage',
-                    keyPath: ['lessonid', 'attempt', 'pageid']
-                },
-                {
                     name: 'lessonAndAttemptAndType',
                     keyPath: ['lessonid', 'attempt', 'type']
                 }
@@ -88,11 +84,41 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLessonOffline
  */
-.factory('$mmaModLessonOffline', function($log, $mmSitesManager, $mmUtil, $q, mmaModLessonAttemptsStore, mmaModLessonAnswersStore) {
+.factory('$mmaModLessonOffline', function($log, $mmSitesManager, $mmUtil, $q, mmaModLessonAttemptsStore, mmaModLessonAnswersStore,
+            $mmSite) {
 
     $log = $log.getInstance('$mmaModLessonOffline');
 
     var self = {};
+
+    /**
+     * Mark an attempt as finished.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#finishAttempt
+     * @param  {Number} lessonId   Lesson ID.
+     * @param  {Number} courseId   Course ID the lesson belongs to.
+     * @param  {Number} attempt    Attempt number.
+     * @param  {Boolean} finished  Whether attempt is finished.
+     * @param  {Boolean} outOfTime If the user ran out of time.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved in success, rejected otherwise.
+     */
+    self.finishAttempt = function(lessonId, courseId, attempt, finished, outOfTime, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        // Get current stored attempt.
+        return getAttemptWithFallback(lessonId, courseId, attempt, siteId).then(function(entry) {
+            return $mmSitesManager.getSite(siteId).then(function(site) {
+                entry.finished = !!finished;
+                entry.outoftime = !!outOfTime;
+                entry.timemodified = $mmUtil.timestamp();
+
+                return site.getDb().insert(mmaModLessonAttemptsStore, entry);
+            });
+        });
+    };
 
     /**
      * Get all the offline attempts in a certain site.
@@ -147,6 +173,24 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Retrieve offline answers for an attempt and page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getAttemptAnswerForPage
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} pageId   Page ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the attempt answers.
+     */
+    self.getAttemptAnswerForPage = function(lessonId, attempt, pageId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModLessonAnswersStore, [lessonId, attempt, pageId]);
+        });
+    };
+
+    /**
      * Retrieve offline answers for certain pages for an attempt.
      *
      * @module mm.addons.mod_lesson
@@ -163,6 +207,33 @@ angular.module('mm.addons.mod_lesson')
             return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttemptAndType', [lessonId, attempt, type]);
         });
     };
+    /**
+     * Get stored attempt. If not found or doesn't match the attempt number, return a new one.
+     *
+     * @param  {Number} lessonId  Lesson ID.
+     * @param  {Number} courseId  Course ID the lesson belongs to.
+     * @param  {Number} attempt   Attempt number.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with the attempt.
+     */
+    function getAttemptWithFallback(lessonId, courseId, attempt, siteId) {
+        // Get current stored attempt.
+        return self.getAttempt(lessonId, siteId).then(function(attemptData) {
+            if (attemptData.attempt != attempt) {
+                // The stored attempt doesn't match the attempt number, create a new one.
+                return $q.reject();
+            }
+            return attemptData;
+        }).catch(function() {
+            // No attempt, create a new one.
+            return {
+                lessonid: lessonId,
+                attempt: attempt,
+                courseid: courseId,
+                finished: false
+            };
+        });
+    }
 
     /**
      * Check if there are offline answers for an attempt.
@@ -180,6 +251,24 @@ angular.module('mm.addons.mod_lesson')
             return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttempt', [lessonId, attempt]).then(function(list) {
                 return !!list.length;
             });
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
+     * Check if there is a finished attempt for a certain lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#hasFinishedAttempt
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with boolean.
+     */
+    self.hasFinishedAttempt = function(lessonId, siteId) {
+        return self.getAttempt(lessonId, siteId).then(function(attempt) {
+            return !!attempt.finished;
         }).catch(function() {
             return false;
         });

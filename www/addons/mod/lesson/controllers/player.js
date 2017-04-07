@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonPlayerCtrl
  */
 .controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate) {
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate, $mmaModLessonOffline) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
@@ -117,7 +117,14 @@ angular.module('mm.addons.mod_lesson')
             // Not in offline mode, launch the attempt.
             promise = $mmaModLesson.launchAttempt(lesson.id, password, pageId);
         } else {
-            promise = $q.when({});
+            // Check if there is a finished offline attempt.
+            promise = $mmaModLessonOffline.hasFinishedAttempt(lesson.id).then(function(finished) {
+                if (finished) {
+                    // Always show EOL page.
+                    pageId = $mmaModLesson.LESSON_EOL;
+                }
+                return {};
+            });
         }
 
         return promise.then(function(data) {
@@ -132,6 +139,10 @@ angular.module('mm.addons.mod_lesson')
                 });
             }
         }).then(function() {
+            if ($scope.currentPage == $mmaModLesson.LESSON_EOL) {
+                // End of lesson reached.
+                return finishAttempt();
+            }
             return loadPage($scope.currentPage);
         });
     }
@@ -176,7 +187,8 @@ angular.module('mm.addons.mod_lesson')
     // Finish the attempt.
     function finishAttempt(outOfTime) {
         $scope.messages = [];
-        return $mmaModLesson.finishAttempt(lesson.id, password, outOfTime, $scope.review).then(function(data) {
+        return $mmaModLesson.finishAttempt(lesson, courseId, password, outOfTime, $scope.review, offline, accessInfo)
+                .then(function(data) {
             $scope.title = lesson.name;
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;

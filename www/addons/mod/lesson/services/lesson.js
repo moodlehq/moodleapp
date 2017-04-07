@@ -105,6 +105,9 @@ angular.module('mm.addons.mod_lesson')
      * Calculate the progress of the current user in the lesson.
      * Based on Moodle's calculate_progress.
      *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#calculateProgress
      * @param  {Number} lessonId   Lesson ID.
      * @param  {Object} accessInfo Result of get access info.
      * @param  {String} [password] Lesson password (if any).
@@ -171,6 +174,109 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#finishAttempt
+     * @param  {Object} lesson       Lesson.
+     * @param  {Number} courseId     Course ID the lesson belongs to.
+     * @param  {String} [password]   Lesson password (if any).
+     * @param  {Boolean} [outOfTime] If the user ran out of time.
+     * @param  {Boolean} [review]    If the user wants to review just after finishing (1 hour margin).
+     * @param  {Boolean} [offline]   Whether it's offline mode.
+     * @param  {Object} [accessInfo] Result of get access info. Required if offline is true.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved in success, rejected otherwise.
+     */
+    self.finishAttempt = function(lesson, courseId, password, outOfTime, review, offline, accessInfo, siteId) {
+        if (offline) {
+            var attempt = accessInfo.attemptscount;
+            return $mmaModLessonOffline.finishAttempt(lesson.id, courseId, attempt, true, outOfTime, siteId).then(function() {
+                // Attempt marked, now return the response. We won't return all the possible data.
+                // This code is based in Moodle's process_eol_page.
+                var gradeInfo = self.lessonGrade(),
+                    gradeLesson = true,
+                    result = {
+                        data: {},
+                        messages: [],
+                        warnings: []
+                    },
+                    messageParams,
+                    promises = [];
+
+                addResultValue(result, 'offline', true); // Mark the result as offline.
+                addResultValue(result, 'gradeinfo', gradeInfo);
+
+                if (lesson.custom && !accessInfo.canmanage) {
+                    // Before we calculate the custom score make sure they answered the minimum
+                    // number of questions. We only need to do this for custom scoring as we can
+                    // not get the miniumum score the user should achieve. If we are not using
+                    // custom scoring (so all questions are valued as 1) then we simply check if
+                    // they answered more than the minimum questions, if not, we mark it out of the
+                    // number specified in the minimum questions setting - which is done in lesson_grade().
+                    // Get the number of answers given.
+                    if (gradeInfo.nquestions < lesson.minquestions) {
+                        gradeLesson = false;
+                        messageParams = {
+                            nquestions: gradeInfo.nquestions,
+                            minquestions: lesson.minquestions
+                        };
+                        messages.push($translate.instant('mma.mod_lesson.numberofpagesviewednotice'), {$a: data});
+                    }
+                }
+
+                if (!accessInfo.canmanage) {
+                    if (gradeLesson) {
+                        promises.push(self.calculateProgress(lesson.id, accessInfo, password, review, false, siteId)
+                                    .then(function(progress) {
+                            addResultValue(result, 'progresscompleted', progress);
+                        }));
+
+                        if (false) {
+                            // @todo Handle questions.
+                        } else {
+                            if (lesson.timelimit) {
+                                if (outOfTime) {
+                                    addResultValue(result, 'eolstudentoutoftimenoanswers', true, true);
+                                }
+                            } else {
+                                addResultValue(result, 'welldone', true, true);
+                            }
+                        }
+                    }
+                } else {
+                    // Display for teacher.
+                    if (lesson.grade != mmCoreGradeTypeNone) {
+                        addResultValue(result, 'displayofgrade', true, true);
+                    }
+                }
+
+                if (lesson.modattempts && accessInfo.canmanage) {
+                    addResultValue(result, 'modattemptsnoteacher', true, true);
+                }
+
+                if (gradeLesson) {
+                    addResultValue(result, 'gradelesson', 1);
+                }
+
+                return result;
+            });
+        }
+
+        return self.finishAttemptOnline(lesson.id, password, outOfTime, review, siteId);
+
+        // Add a property to the offline result.
+        function addResultValue(result, name, value, addMessage) {
+            result.data[name] = {
+                name: name,
+                value: value,
+                message: addMessage ? $translate.instant('mma.mod_lesson.' + name) : ''
+            };
+        }
+    };
+
+    /**
+     * Finishes an attempt. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#finishAttemptOnline
      * @param  {Number} lessonId     Lesson ID.
      * @param  {String} [password]   Lesson password (if any).
      * @param  {Boolean} [outOfTime] If the user ran out of time.
@@ -178,7 +284,7 @@ angular.module('mm.addons.mod_lesson')
      * @param  {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved in success, rejected otherwise.
      */
-    self.finishAttempt = function(lessonId, password, outOfTime, review, siteId) {
+    self.finishAttemptOnline = function(lessonId, password, outOfTime, review, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 lessonid: lessonId,
