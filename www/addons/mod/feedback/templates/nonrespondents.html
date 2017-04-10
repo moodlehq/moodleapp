@@ -16,7 +16,7 @@
                     <select ng-model="selectedGroup" ng-change="loadGroupUsers(selectedGroup)" aria-labelledby="mma-feedback-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
                     </select>
                 </div>
-                <div class="item item-divider" ng-if="total > 0">
+                <div class="item item-divider">
                     {{ 'mma.mod_feedback.non_respondents_students' |translate : {$a: total } }}
                 </div>
                 <div ng-repeat="user in users" ng-if="total > 0">
