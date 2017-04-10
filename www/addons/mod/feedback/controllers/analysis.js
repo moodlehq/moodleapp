@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_feedback')
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
-    $scope.selectedGroup = 0;
+    $scope.selectedGroup = $stateParams.group || 0;
     $scope.chartOptions = {
         'legend': {
             'display': true,
@@ -236,7 +236,7 @@ angular.module('mm.addons.mod_feedback')
 
     // Function to link implemented features.
     $scope.openFeature = function(feature) {
-        $mmaModFeedbackHelper.openFeature(feature, module, courseId);
+        $mmaModFeedbackHelper.openFeature(feature, module, courseId, $scope.selectedGroup);
     };
 
     // Refresh online status when changes.

@@ -32,7 +32,7 @@ angular.module('mm.addons.mod_feedback')
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
-    $scope.selectedGroup = 0;
+    $scope.selectedGroup = $stateParams.group || 0;
     $scope.canLoadMoreAnon = false;
     $scope.canLoadMoreNonAnon = false;
     $scope.responses = {
