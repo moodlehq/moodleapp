@@ -795,19 +795,10 @@ angular.module('mm.addons.mod_lesson')
 
             return site.read('mod_lesson_get_page_data', params, preSets).then(function(data) {
                 if (forceCache && accessInfo) {
-                    // Offline mode, check if there is any answer stored.
-                    var attempt = accessInfo.attemptscount;
-                    return $mmaModLessonOffline.hasAttemptAnswers(lesson.id, attempt, siteId).then(function(hasAnswers) {
-                        if (!hasAnswers) {
-                            // No offline answers, return the WS data.
-                            return data;
-                        }
-
-                        // There are offline answers stored. Calculate the data that might be affected.
-                        return calculateOfflineData(lesson, accessInfo, password, review, siteId).then(function(calculatedData) {
-                            data.messages = self.getPageViewMessages(lesson, accessInfo, data.page, review, jumps);
-                            return angular.extend(data, calculatedData);
-                        });
+                    // Offline mode. Calculate the data that might be affected.
+                    return calculateOfflineData(lesson, accessInfo, password, review, siteId).then(function(calculatedData) {
+                        data.messages = self.getPageViewMessages(lesson, accessInfo, data.page, review, jumps);
+                        return angular.extend(data, calculatedData);
                     });
                 }
 

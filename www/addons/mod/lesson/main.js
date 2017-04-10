@@ -15,6 +15,8 @@
 angular.module('mm.addons.mod_lesson', ['mm.core'])
 
 .constant('mmaModLessonComponent', 'mmaModLesson')
+.constant('mmaModLessonAutomSyncedEvent', 'mma_mod_lesson_autom_synced')
+.constant('mmaModLessonSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -55,4 +57,8 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
 .config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModLesson', 'lesson', '$mmaModLessonHandlers.courseContentHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModLesson', 'lesson', '$mmaModLessonPrefetchHandler');
+})
+
+.run(function($mmCronDelegate) {
+    $mmCronDelegate.register('mmaModLesson', '$mmaModLessonHandlers.syncHandler');
 });

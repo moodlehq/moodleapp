@@ -48,6 +48,9 @@ angular.module('mm.addons.mod_lesson')
                     name: 'lessonid'
                 },
                 {
+                    name: 'courseid'
+                },
+                {
                     name: 'attempt'
                 },
                 {
@@ -90,6 +93,40 @@ angular.module('mm.addons.mod_lesson')
     $log = $log.getInstance('$mmaModLessonOffline');
 
     var self = {};
+
+    /**
+     * Delete offline attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#deleteAttempt
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.deleteAttempt = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonAttemptsStore, lessonId);
+        });
+    };
+
+    /**
+     * Delete offline answers for an attempt and page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#deleteAttemptAnswerForPage
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} pageId   Page ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.deleteAttemptAnswerForPage = function(lessonId, attempt, pageId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId]);
+        });
+    };
 
     /**
      * Mark an attempt as finished.
@@ -137,6 +174,42 @@ angular.module('mm.addons.mod_lesson')
 
             return db.getAll(mmaModLessonAttemptsStore);
         });
+    };
+
+    /**
+     * Get all the lessons that have offline data in a certain site.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getAllLessonsWithData
+     * @param {String} [siteId] Site ID. If not set, use current site.
+     * @return {Promise}        Promise resolved with an object containing the lessons.
+     */
+    self.getAllLessonsWithData = function(siteId) {
+        var promises = [],
+            lessons = {};
+
+        promises.push(getLessons(self.getAllAttempts(siteId)));
+        promises.push(getLessons(self.getLessonAnswers(siteId)));
+
+        return $q.all(promises).then(function() {
+            return lessons;
+        });
+
+        function getLessons(promise) {
+            return promise.then(function(entries) {
+                angular.forEach(entries, function(entry) {
+                    if (!lessons[entry.lessonid]) {
+                        lessons[entry.lessonid] = {
+                            id: entry.lessonid,
+                            courseid: entry.courseid
+                        };
+                    }
+                });
+            }).catch(function() {
+                // Ignore errors.
+            });
+        }
     };
 
     /**
@@ -234,6 +307,22 @@ angular.module('mm.addons.mod_lesson')
             };
         });
     }
+
+    /**
+     * Retrieve all offline answers for a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getLessonAnswers
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the answers.
+     */
+    self.getLessonAnswers = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonid', lessonId);
+        });
+    };
 
     /**
      * Check if there are offline answers for an attempt.

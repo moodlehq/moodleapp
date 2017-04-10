@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonPlayerCtrl
  */
 .controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate, $mmaModLessonOffline) {
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate, $mmaModLessonOffline,
+            $mmaModLessonSync) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
@@ -49,7 +50,10 @@ angular.module('mm.addons.mod_lesson')
 
     // Convenience function to get Lesson data.
     function fetchLessonData() {
-        return $mmaModLesson.getLessonById(courseId, lessonId).then(function(lessonData) {
+        // Wait for any ongoing sync to finish. We won't sync a lesson while it's being played.
+        return $mmaModLessonSync.waitForSync(lessonId).then(function() {
+            return $mmaModLesson.getLessonById(courseId, lessonId);
+        }).then(function(lessonData) {
             lesson = lessonData;
             $scope.lesson = lesson;
             $scope.title = lesson.name; // Temporary title.
@@ -386,5 +390,10 @@ angular.module('mm.addons.mod_lesson')
 
     // Setup right side menu.
     $mmSideMenu.showRightSideMenu('addons/mod/lesson/templates/menu.html', $scope);
+
+    $scope.$on('$destroy', function() {
+        // Unblock the lesson so it can be synced.
+        $mmSyncBlock.unblockOperation(mmaModLessonComponent, lessonId);
+    });
 
 });

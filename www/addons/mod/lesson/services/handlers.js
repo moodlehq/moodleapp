@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_lesson')
  */
 .factory('$mmaModLessonHandlers', function($mmCourse, $mmaModLesson, $state, $mmaModLessonPrefetchHandler, $mmUtil, $mmEvents,
             $mmSite, $mmCoursePrefetchDelegate, mmCoreEventPackageStatusChanged, mmaModLessonComponent, mmCoreDownloading,
-            mmCoreNotDownloaded, mmCoreOutdated) {
+            mmCoreNotDownloaded, mmCoreOutdated, $mmaModLessonSync) {
 
     var self = {};
 
@@ -140,6 +140,58 @@ angular.module('mm.addons.mod_lesson')
                     statusObserver && statusObserver.off && statusObserver.off();
                 });
             };
+        };
+
+        return self;
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaModLessonSync.syncAllLessons(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;

@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_lesson')
 .controller('mmaModLessonIndexCtrl', function($scope, $stateParams, $mmaModLesson, $mmCourse, $q, $translate, $ionicScrollDelegate,
             $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged,
             $ionicHistory, mmCoreEventPackageStatusChanged, mmCoreDownloading, mmCoreDownloaded, $mmCoursePrefetchDelegate,
-            $mmaModLessonPrefetchHandler, $mmSite, $mmaModLessonOffline) {
+            $mmaModLessonPrefetchHandler, $mmSite, $mmaModLessonSync, mmaModLessonAutomSyncedEvent) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -34,19 +34,21 @@ angular.module('mm.addons.mod_lesson')
         onlineObserver,
         password,
         currentStatus,
-        statusObserver;
+        statusObserver, syncObserver;
 
     $scope.title = module.name;
     $scope.moduleUrl = module.url;
     $scope.refreshIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
     $scope.component = mmaModLessonComponent;
     $scope.componentId = module.id;
+    $scope.moduleName = $mmCourse.translateModuleName('lesson');
     $scope.data = {
         password: ''
     };
 
     // Convenience function to get Lesson data.
-    function fetchLessonData(refresh) {
+    function fetchLessonData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
         $scope.askPassword = false;
 
@@ -57,6 +59,13 @@ angular.module('mm.addons.mod_lesson')
             $scope.title = lesson.name || $scope.title;
             $scope.description = lesson.intro; // Show description only if intro is present.
 
+            if (sync) {
+                // Try to synchronize the lesson.
+                return syncLesson(showErrors).catch(function() {
+                    // Ignore errors.
+                });
+            }
+        }).then(function() {
             return $mmaModLesson.getAccessInformation(lesson.id);
         }).then(function(info) {
             var promises = [],
@@ -70,9 +79,12 @@ angular.module('mm.addons.mod_lesson')
                 getStatus().then(updateStatus);
 
                 // Check if there is offline data.
-                promises.push($mmaModLessonOffline.hasAttemptAnswers(lesson.id, info.attemptscount).then(function(hasAnswers) {
-                    $scope.hasOffline = hasAnswers;
+                promises.push($mmaModLessonSync.hasDataToSync(lesson.id, info.attemptscount).then(function(hasOffline) {
+                    $scope.hasOffline = hasOffline;
                 }));
+
+                // Update the list of content pages viewed.
+                promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, accessInfo.attemptscount));
             }
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
@@ -102,10 +114,26 @@ angular.module('mm.addons.mod_lesson')
         }).catch(function(message) {
             if (!refresh && !lesson) {
                 // Get lesson failed, retry without using cache since it might be a new activity.
-                return refreshData();
+                return refreshData(sync, showErrors);
             }
 
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        });
+    }
+
+    // Tries to synchronize the lesson.
+    function syncLesson(showErrors) {
+        return $mmaModLessonSync.syncLesson(lesson.id, true).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
+            }
             return $q.reject();
         });
     }
@@ -144,7 +172,7 @@ angular.module('mm.addons.mod_lesson')
     }
 
     // Refreshes data.
-    function refreshData() {
+    function refreshData(sync, showErrors) {
         var promises = [];
 
         promises.push($mmaModLesson.invalidateLessonData(courseId));
@@ -153,21 +181,24 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.invalidatePages(lesson.id));
             promises.push($mmaModLesson.invalidateLessonWithPassword(lesson.id));
             promises.push($mmaModLesson.invalidateTimers(lesson.id));
+            promises.push($mmaModLesson.invalidateContentPagesViewed(lesson.id));
         }
 
         return $q.all(promises).finally(function() {
-            return fetchLessonData(true);
+            return fetchLessonData(true, sync, showErrors);
         });
     }
 
-    function showSpinnerAndRefresh() {
+    function showSpinnerAndRefresh(sync, showErrors) {
         scrollTop();
         $scope.lessonLoaded = false;
         $scope.refreshIcon = 'spinner';
+        $scope.syncIcon = 'spinner';
 
-        refreshData().finally(function() {
+        refreshData(sync, showErrors).finally(function() {
             $scope.lessonLoaded = true;
             $scope.refreshIcon = 'ion-refresh';
+            $scope.syncIcon = 'ion-loop';
         });
     }
 
@@ -238,7 +269,7 @@ angular.module('mm.addons.mod_lesson')
     }
 
     // Fetch the Lesson data.
-    fetchLessonData().then(function() {
+    fetchLessonData(false, true).then(function() {
         if (!$scope.preventMessages || !$scope.preventMessages.length) {
             // Lesson can be attempted, log viewing it.
             logView();
@@ -246,6 +277,7 @@ angular.module('mm.addons.mod_lesson')
     }).finally(function() {
         $scope.lessonLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
+        $scope.syncIcon = 'ion-loop';
     });
 
     // Start the lesson.
@@ -292,21 +324,25 @@ angular.module('mm.addons.mod_lesson')
         scrollTop();
         $scope.lessonLoaded = false;
         $scope.refreshIcon = 'spinner';
+        $scope.syncIcon = 'spinner';
 
         validatePassword(pwd).catch(function(error) {
             $mmUtil.showErrorModal(error);
         }).finally(function() {
             $scope.lessonLoaded = true;
             $scope.refreshIcon = 'ion-refresh';
+            $scope.syncIcon = 'ion-loop';
         });
     };
 
     // Pull to refresh.
-    $scope.refreshLesson = function() {
+    $scope.refreshLesson = function(showErrors) {
         if ($scope.lessonLoaded) {
             $scope.refreshIcon = 'spinner';
-            return refreshData().finally(function() {
+            $scope.syncIcon = 'spinner';
+            return refreshData(true, showErrors).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
+                $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
@@ -339,7 +375,7 @@ angular.module('mm.addons.mod_lesson')
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === 'site.mod_lesson-player') {
             // Refresh data.
-            showSpinnerAndRefresh();
+            showSpinnerAndRefresh(true, false);
         }
     });
 
@@ -348,9 +384,18 @@ angular.module('mm.addons.mod_lesson')
         $scope.isOnline = online;
     });
 
+    // Refresh data if this lesson is synchronized automatically.
+    syncObserver = $mmEvents.on(mmaModLessonAutomSyncedEvent, function(data) {
+        if (lesson && data && data.siteid == $mmSite.getId() && data.lessonid == lesson.id) {
+            // Refresh the data.
+            showSpinnerAndRefresh(false);
+        }
+    });
+
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
         statusObserver && statusObserver.off && statusObserver.off();
+        syncObserver && syncObserver.off && syncObserver.off();
     });
 
 });
