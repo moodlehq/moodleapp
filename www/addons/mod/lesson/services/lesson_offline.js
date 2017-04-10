@@ -383,6 +383,37 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Check if a lesson has offline data.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#hasOfflineData
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with boolean.
+     */
+    self.hasOfflineData = function(lessonId, siteId) {
+        var promises = [],
+            hasData = false;
+
+        promises.push(self.getAttempt(lessonId, siteId).then(function() {
+            hasData = true;
+        }).catch(function() {
+            // Ignore errors.
+        }));
+
+        promises.push(self.getLessonAnswers(lessonId, siteId).then(function(answers) {
+            hasData = hasData || !!answers.length;
+        }).catch(function() {
+            // Ignore errors.
+        }));
+
+        return $q.all(promises).then(function() {
+            return hasData;
+        });
+    };
+
+    /**
      * Process a lesson page, saving its data.
      *
      * @module mm.addons.mod_lesson

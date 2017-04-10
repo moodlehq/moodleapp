@@ -56,7 +56,6 @@
                     <button ng-if="eolData.reviewlesson" class="button button-block" ng-click="reviewLesson(eolData.reviewlesson.pageid)"><mm-format-text>{{ 'mma.mod_lesson.reviewlesson' | translate }}</mm-format-text></button>
                     <p ng-if="eolData.modattemptsnoteacher"><mm-format-text>{{ eolData.modattemptsnoteacher.message }}</mm-format-text></p>
                     <mm-format-text ng-if="eolData.activitylink" watch="true">{{ eolData.activitylink.value }}</mm-format-text>
-                    <!-- @todo Return & grade links. -->
                 </div>
 
                 <!-- Feedback returned when processing an action. -->
