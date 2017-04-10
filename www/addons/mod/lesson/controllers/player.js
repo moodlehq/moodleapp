@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc controller
  * @name mmaModLessonPlayerCtrl
  */
-.controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
+.controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil, $mmApp,
             mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate, $mmaModLessonOffline,
             $mmaModLessonSync) {
 
@@ -190,9 +190,42 @@ angular.module('mm.addons.mod_lesson')
 
     // Finish the attempt.
     function finishAttempt(outOfTime) {
+        var promise;
+
         $scope.messages = [];
-        return $mmaModLesson.finishAttempt(lesson, courseId, password, outOfTime, $scope.review, offline, accessInfo)
-                .then(function(data) {
+
+        if (offline && $mmApp.isOnline()) {
+            // Offline mode but the app is online. Try to sync the data.
+            promise = $mmaModLessonSync.syncLesson(lesson.id, true, true).then(function(result) {
+                if (result.warnings && result.warnings.length) {
+                    var error = result.warnings[0];
+
+                    // Some data was deleted. Check if the attempt has changed.
+                    return $mmaModLesson.getAccessInformation(lesson.id).then(function(info) {
+                        if (info.attemptscount != accessInfo.attemptscount) {
+                            // The attempt has changed. Leave the view and show the error.
+                            blockData && blockData.back();
+                            return $q.reject(error);
+                        }
+
+                        // Attempt hasn't changed, show the warning and finish the attempt in online.
+                        offline = false;
+                        $mmUtil.showErrorModal(error);
+                    });
+                }
+
+                offline = false;
+            }, function() {
+                // Ignore errors.
+            });
+        } else {
+            promise = $q.when();
+        }
+
+        return promise.then(function() {
+            // Now finish the attempt.
+            return $mmaModLesson.finishAttempt(lesson, courseId, password, outOfTime, $scope.review, offline, accessInfo);
+        }).then(function(data) {
             $scope.title = lesson.name;
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;

@@ -128,7 +128,7 @@ angular.module('mm.addons.mod_lesson')
     self.syncLessonIfNeeded = function(lessonId, askPassword, siteId) {
         return self.isSyncNeeded(lessonId, siteId).then(function(needed) {
             if (needed) {
-                return self.syncLesson(lessonId, askPassword, siteId);
+                return self.syncLesson(lessonId, askPassword, false, siteId);
             }
         });
     };
@@ -141,12 +141,13 @@ angular.module('mm.addons.mod_lesson')
      * @name $mmaModLessonSync#syncLesson
      * @param  {Number} lessonId     Lesson ID.
      * @param  {Boolean} askPassword True if we should ask for password if needed, false otherwise.
+     * @param  {Boolean} ignoreBlock True to ignore the sync block setting.
      * @param  {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}             Promise rejected in failure, resolved in success with an object containing:
      *                                       -warnings Array of warnings.
      *                                       -updated  True if some data was sent to the server.
      */
-    self.syncLesson = function(lessonId, askPassword, siteId) {
+    self.syncLesson = function(lessonId, askPassword, ignoreBlock, siteId) {
         siteId = siteId || $mmSite.getId();
 
         var syncPromise,
@@ -165,7 +166,7 @@ angular.module('mm.addons.mod_lesson')
         }
 
         // Verify that lesson isn't blocked.
-        if ($mmSyncBlock.isBlocked(mmaModLessonComponent, lessonId, siteId)) {
+        if (!ignoreBlock && $mmSyncBlock.isBlocked(mmaModLessonComponent, lessonId, siteId)) {
             $log.debug('Cannot sync lesson ' + lessonId + ' because it is blocked.');
             var moduleName = $mmCourse.translateModuleName('lesson');
             return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: moduleName});

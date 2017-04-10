@@ -158,6 +158,25 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get all the offline answers in a certain site.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getAllAnswers
+     * @param {String} [siteId] Site ID. If not set, use current site.
+     * @return {Promise}        Promise resolved when the offline answers are retrieved.
+     */
+    self.getAllAnswers = function(siteId) {
+        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
+            if (!db) {
+                return $q.reject();
+            }
+
+            return db.getAll(mmaModLessonAnswersStore);
+        });
+    };
+
+    /**
      * Get all the offline attempts in a certain site.
      *
      * @module mm.addons.mod_lesson
@@ -190,7 +209,7 @@ angular.module('mm.addons.mod_lesson')
             lessons = {};
 
         promises.push(getLessons(self.getAllAttempts(siteId)));
-        promises.push(getLessons(self.getLessonAnswers(siteId)));
+        promises.push(getLessons(self.getAllAnswers(siteId)));
 
         return $q.all(promises).then(function() {
             return lessons;
