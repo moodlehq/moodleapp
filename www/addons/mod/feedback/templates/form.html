@@ -47,7 +47,17 @@
                 </script>
 
                 <script type="text/ng-template" id="captcha">
-                    <p ng-if="!preview">Captcha is not supported right now, feedback cannot be submitted.</p>
+                    <div ng-if="!preview && item.captcha && item.captcha.challengehash && item.captcha.imageurl && !offline">
+                        <img ng-src="{{item.captcha.imageurl}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
+                        <ion-input class="item-input">
+                            <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="item.value" autocapitalize="none" autocorrect="off" required>
+                        </ion-input>
+                        <!-- Use anchor instead of button to prevent marking form as submitted. -->
+                        <a class="button button-block" ng-click="requestCaptcha(item)">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+                    </div>
+                    <div ng-if="!preview && (!item.captcha || !item.captcha.challengehash || !item.captcha.imageurl || offline)" class="mm-warning-card-icon">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_feedback.captchaofflinewarning' | translate }}
+                    </div>
                 </script>
 
                 <div ng-if="!preview" class="item item-text-wrap row-buttons responsive-sm">

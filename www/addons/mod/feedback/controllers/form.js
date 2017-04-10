@@ -32,7 +32,6 @@ angular.module('mm.addons.mod_feedback')
         siteAfterSubmit,
         scrollView,
         onlineObserver,
-        offline = false,
         submitted = false,
         originalData,
         blockData;
@@ -42,13 +41,14 @@ angular.module('mm.addons.mod_feedback')
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
     $scope.preview = !!$stateParams.preview;
+    $scope.offline = false;
 
     // Block leaving the view, we want to save changes before leaving.
     blockData = $mmUtil.blockLeaveView($scope, leavePlayer);
 
     // Convenience function to get feedback data.
     function fetchFeedbackFormData() {
-        offline = !$mmApp.isOnline();
+        $scope.offline = !$mmApp.isOnline();
 
         return $mmaModFeedback.getFeedback(courseId, module.id).then(function(feedbackData) {
             feedback = feedbackData;
@@ -56,10 +56,10 @@ angular.module('mm.addons.mod_feedback')
             $scope.title = feedback.name || $scope.title;
             $scope.feedback = feedback;
 
-            return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, offline, true).catch(function(error) {
-                if (!offline && !$mmUtil.isWebServiceError(error)) {
+            return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, $scope.offline, true).catch(function(error) {
+                if (!$scope.offline && !$mmUtil.isWebServiceError(error)) {
                     // If it fails, go offline.
-                    offline = true;
+                    $scope.offline = true;
                     return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, true);
                 }
                 return $q.reject(error);
@@ -68,15 +68,16 @@ angular.module('mm.addons.mod_feedback')
             $scope.access = accessData;
 
             if (!$scope.preview && accessData.cansubmit && !accessData.isempty) {
-                return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id, offline, true) : $q.when(currentPage);
+                return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id, $scope.offline, true) :
+                    $q.when(currentPage);
             } else {
                 $scope.preview = true;
                 return $q.when(0);
             }
         }).catch(function(error) {
-            if (!offline && !$mmUtil.isWebServiceError(error)) {
+            if (!$scope.offline && !$mmUtil.isWebServiceError(error)) {
                 // If it fails, go offline.
-                offline = true;
+                $scope.offline = true;
                 return $mmaModFeedback.getResumePage(feedback.id, true);
             }
             return $q.reject(error);
@@ -101,10 +102,10 @@ angular.module('mm.addons.mod_feedback')
         } else {
             currentPage = page;
 
-            promise = $mmaModFeedback.getPageItemsWithValues(feedback.id, page, offline, true).catch(function(error) {
-                if (!offline && !$mmUtil.isWebServiceError(error)) {
+            promise = $mmaModFeedback.getPageItemsWithValues(feedback.id, page, $scope.offline, true).catch(function(error) {
+                if (!$scope.offline && !$mmUtil.isWebServiceError(error)) {
                     // If it fails, go offline.
-                    offline = true;
+                    $scope.offline = true;
                     return $mmaModFeedback.getPageItemsWithValues(feedback.id, page, true);
                 }
                 return $q.reject(error);
@@ -217,6 +218,25 @@ angular.module('mm.addons.mod_feedback')
         }
     };
 
+    // Request another captcha.
+    $scope.requestCaptcha = function(item) {
+        var modal = $mmUtil.showModalLoading();
+        $mmaModFeedback.getPageItems(feedback.id, currentPage).then(function(response) {
+            for (var x in response.items) {
+                if (response.items[x].typ == 'captcha') {
+                    response.items[x] = $mmaModFeedbackHelper.getItemForm(response.items[x], false);
+                    if (response.items[x].captcha) {
+                        item.value = "";
+                        item.captcha = response.items[x].captcha;
+                    }
+                    break;
+                }
+            }
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
     // Function to link implemented features.
     $scope.openFeature = function(feature) {
         $mmaModFeedbackHelper.openFeature(feature, module, courseId);
@@ -235,7 +255,7 @@ angular.module('mm.addons.mod_feedback')
 
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
-        offline = !online;
+        $scope.offline = !online;
     });
 
     $scope.$on('$destroy', function() {
