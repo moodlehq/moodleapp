@@ -169,22 +169,48 @@ angular.module('mm.addons.mod_feedback')
             return $mmaModFeedback.getFeedbackById(courseId, feedbackId, siteId).then(function(feedbackData) {
                 feedback = feedbackData;
 
-                // Sort by page.
-                responses.sort(function (a, b) {
-                    return a.page - b.page;
-                });
+                if (!feedback.multiple_submit) {
+                    // If it does not admit multiple submits, check if it is completed to know if we can submit.
+                    return $mmaModFeedback.isCompleted(feedbackId);
+                } else {
+                    return false;
+                }
+            }).then(function(isCompleted) {
+                if (isCompleted) {
+                    // Cannot submit again, delete resposes.
+                    var promises = [];
 
-                responses = responses.map(function (data) {
-                    return {
-                        func: processPage,
-                        params: [feedbackId, data, siteId, result],
-                        blocking: true
-                    };
-                });
+                    angular.forEach(responses, function(data) {
+                        promises.push($mmaModFeedbackOffline.deleteFeedbackPageResponses(feedbackId, data.page, siteId));
+                    });
 
-                // Execute all the processes in order to solve dependencies.
-                return $mmUtil.executeOrderedPromises(responses);
-            });
+                    result.updated = true;
+                    result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
+                        component: $mmCourse.translateModuleName('feedback'),
+                        name: feedback.name,
+                        error: $translate.instant('mma.mod_feedback.this_feedback_is_already_submitted')
+                    }));
+                    return $q.all(promises);
+                }
+
+                return $mmaModFeedback.getCurrentCompletedTimeModified(feedbackId, siteId).then(function(timemodified) {
+                    // Sort by page.
+                    responses.sort(function (a, b) {
+                        return a.page - b.page;
+                    });
+
+                    responses = responses.map(function (data) {
+                        return {
+                            func: processPage,
+                            params: [feedback, data, siteId, timemodified, result],
+                            blocking: true
+                        };
+                    });
+
+                    // Execute all the processes in order to solve dependencies.
+                    return $mmUtil.executeOrderedPromises(responses);
+                });
+            })
         }).then(function() {
             if (result.updated) {
                 // Data has been sent to server. Now invalidate the WS calls.
@@ -206,16 +232,21 @@ angular.module('mm.addons.mod_feedback')
     };
 
     // Convenience function to sync process page calls.
-    function processPage(feedbackId, data, siteId, result) {
-        return $mmaModFeedback.processPageOnline(feedbackId, data.page, data.responses, false, siteId).then(function() {
+    function processPage(feedback, data, siteId, timemodified, result) {
+        // Delete all pages that are submitted before changing website.
+        if (timemodified > data.timemodified) {
+            return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedback.id, data.page, siteId);
+        }
+
+        return $mmaModFeedback.processPageOnline(feedback.id, data.page, data.responses, false, siteId).then(function() {
             result.updated = true;
 
-            return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedbackId, data.page, siteId);
+            return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedback.id, data.page, siteId);
         }).catch(function(error) {
             if (error && error.wserror) {
                 // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
                 result.updated = true;
-                return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedbackId, data.page, siteId).then(function() {
+                return $mmaModFeedbackOffline.deleteFeedbackPageResponses(feedback.id, data.page, siteId).then(function() {
                     // Responses deleted, add a warning.
                     result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                         component: $mmCourse.translateModuleName('feedback'),

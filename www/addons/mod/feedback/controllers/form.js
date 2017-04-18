@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $timeout, $mmSite, $state,
             mmaModFeedbackComponent, $mmEvents, $mmApp, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper, $ionicScrollDelegate,
-            $ionicHistory, $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate, $mmaModFeedbackSync) {
+            $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate, $mmaModFeedbackSync) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -56,7 +56,14 @@ angular.module('mm.addons.mod_feedback')
             $scope.title = feedback.name || $scope.title;
             $scope.feedback = feedback;
 
-            return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, offline, true);
+            return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, offline, true).catch(function(error) {
+                if (!offline && !$mmUtil.isWebServiceError(error)) {
+                    // If it fails, go offline.
+                    offline = true;
+                    return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, true);
+                }
+                return $q.reject(error);
+            });
         }).then(function(accessData) {
             $scope.access = accessData;
 
@@ -66,6 +73,13 @@ angular.module('mm.addons.mod_feedback')
                 $scope.preview = true;
                 return $q.when(0);
             }
+        }).catch(function(error) {
+            if (!offline && !$mmUtil.isWebServiceError(error)) {
+                // If it fails, go offline.
+                offline = true;
+                return $mmaModFeedback.getResumePage(feedback.id, true);
+            }
+            return $q.reject(error);
         }).then(function(page) {
             page = page || 0;
             return fetchFeedbackPageData(page);
@@ -87,7 +101,14 @@ angular.module('mm.addons.mod_feedback')
         } else {
             currentPage = page;
 
-            promise = $mmaModFeedback.getPageItemsWithValues(feedback.id, page, offline, true).then(function(response) {
+            promise = $mmaModFeedback.getPageItemsWithValues(feedback.id, page, offline, true).catch(function(error) {
+                if (!offline && !$mmUtil.isWebServiceError(error)) {
+                    // If it fails, go offline.
+                    offline = true;
+                    return $mmaModFeedback.getPageItemsWithValues(feedback.id, page, true);
+                }
+                return $q.reject(error);
+            }).then(function(response) {
                 $scope.hasPrevPage = !!response.hasprevpage;
                 $scope.hasNextPage = !!response.hasnextpage;
 
