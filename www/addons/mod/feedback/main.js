@@ -16,6 +16,8 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
 
 .constant('mmaModFeedbackComponent', 'mmaModFeedback')
 .constant('mmaModFeedbackEventFormSubmitted', 'mma_mod_feedback_form_submitted')
+.constant('mmaModFeedbackAutomSyncedEvent', 'mma-mod_feedback_autom_synced')
+.constant('mmaModFeedbackSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -125,4 +127,6 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:showEntries', '$mmaModFeedbackHandlers.showEntriesLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:showNonRespondents', '$mmaModFeedbackHandlers.showNonRespondentsLinksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackPrefetchHandler');
+}).run(function($mmCronDelegate) {
+    $mmCronDelegate.register('mmaModFeedback', '$mmaModFeedbackHandlers.syncHandler');
 });

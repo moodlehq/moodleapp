@@ -22,12 +22,11 @@ angular.module('mm.addons.mod_feedback')
  * @name mmaModFeedbackIndexCtrl
  */
 .controller('mmaModFeedbackIndexCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $mmCourseHelper, $q, $mmCourse,
-            $mmText, mmaModFeedbackComponent, $mmEvents, $ionicScrollDelegate, $mmApp, $translate, $mmGroups, $mmaModFeedbackHelper,
-            mmCoreEventOnlineStatusChanged, $state, mmaModFeedbackEventFormSubmitted) {
+            $mmText, mmaModFeedbackComponent, $mmEvents, $mmApp, $translate, $mmGroups, $mmaModFeedbackHelper, $mmaModFeedbackSync,
+            mmCoreEventOnlineStatusChanged, $state, mmaModFeedbackEventFormSubmitted, $mmaModFeedbackOffline) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         feedback,
-        scrollView,
         onlineObserver,
         obsSubmitted;
 
@@ -53,6 +52,13 @@ angular.module('mm.addons.mod_feedback')
 
             $scope.feedback = feedback;
 
+            if (sync) {
+                // Try to synchronize the feedback.
+                return syncFeedback(showErrors).catch(function() {
+                    // Ignore errors.
+                });
+            }
+        }).then(function() {
             return $mmaModFeedback.getFeedbackAccessInformation(feedback.id);
         }).then(function(accessData) {
             var promises = [];
@@ -82,6 +88,11 @@ angular.module('mm.addons.mod_feedback')
         }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModFeedbackComponent);
+
+            // Check if there are responses stored in offline.
+            return $mmaModFeedbackOffline.hasFeedbackOfflineData(feedback.id).then(function(hasOffline) {
+                $scope.hasOffline = !!hasOffline;
+            });
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -119,6 +130,22 @@ angular.module('mm.addons.mod_feedback')
 
         return $q.all(promises).finally(function() {
             return fetchFeedbackData(true, sync, showErrors);
+        });
+    }
+
+    // Tries to synchronize the feedback.
+    function syncFeedback(showErrors) {
+        return $mmaModFeedbackSync.syncFeedback(feedback.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
+            }
+            return $q.reject();
         });
     }
 
@@ -173,14 +200,6 @@ angular.module('mm.addons.mod_feedback')
         };
         $state.go('site.mod_feedback-form', stateParams);
     };
-
-
-    function scrollTop() {
-        if (!scrollView) {
-            scrollView = $ionicScrollDelegate.$getByHandle('mmaModFeedbackScroll');
-        }
-        scrollView && scrollView.scrollTop && scrollView.scrollTop();
-    }
 
     // Listen for form submit events.
     obsSubmitted = $mmEvents.on(mmaModFeedbackEventFormSubmitted, function(data) {

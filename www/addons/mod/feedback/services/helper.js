@@ -21,18 +21,12 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedbackHelper
  */
-.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state, $mmText, $mmUser, $q,
-        $mmaModFeedback) {
+.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $state, $mmText, $mmUser, $q, $mmaModFeedback) {
 
     var self = {},
         MODE_RESPONSETIME = 1,
         MODE_COURSE = 2,
-        MODE_CATEGORY = 3,
-        FEEDBACK_LINE_SEP = '|',
-        FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>',
-        FEEDBACK_MULTICHOICE_ADJUST_SEP = '<<<<<',
-        FEEDBACK_MULTICHOICE_HIDENOSELECT = 'h',
-        FEEDBACK_MULTICHOICERATED_VALUE_SEP = '####';
+        MODE_CATEGORY = 3;
 
     /**
      * Get activity feedback group info to be shown on templates.
@@ -199,7 +193,7 @@ angular.module('mm.addons.mod_feedback')
         function getItemFormNumeric(item) {
             item.template = 'numeric';
 
-            var range = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            var range = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP) || [];
             item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
             item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
             item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
@@ -209,7 +203,7 @@ angular.module('mm.addons.mod_feedback')
 
         function getItemFormTextfield(item) {
             item.template = 'textfield';
-            item.length = item.presentation.split(FEEDBACK_LINE_SEP)[1] || 255;
+            item.length = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP)[1] || 255;
             item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
             return item;
         }
@@ -221,13 +215,13 @@ angular.module('mm.addons.mod_feedback')
         }
 
         function getItemFormMultichoice(item) {
-            var parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
+            var parts = item.presentation.split($mmaModFeedback.FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
             item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
             item.template = 'multichoice-' + item.subtype;
 
             item.presentation = parts.length > 1 ? parts[1] : '';
             if (item.subtype != 'd') {
-                parts = item.presentation.split(FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
+                parts = item.presentation.split($mmaModFeedback.FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
                 item.presentation = parts.length > 0 ? parts[0] : '';
                 // Horizontal are not supported right now.
                 //item.horizontal = parts.length > 1 && !!parts[1];
@@ -235,14 +229,14 @@ angular.module('mm.addons.mod_feedback')
                 item.class = "item-select";
             }
 
-            item.choices = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            item.choices = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP) || [];
             item.choices = item.choices.map(function(choice, index) {
-                var weightValue = choice.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
+                var weightValue = choice.split($mmaModFeedback.FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
                 choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
                 return {value: index + 1, label: choice};
             });
 
-            if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
+            if (item.subtype === 'r' && item.options.search($mmaModFeedback.FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
                 item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
                 item.value = typeof item.rawValue != "undefined" ? parseInt(item.rawValue, 10) : 0;
             } else if (item.subtype === 'd') {
@@ -252,7 +246,8 @@ angular.module('mm.addons.mod_feedback')
                 if (typeof item.rawValue == "undefined") {
                     item.value = "";
                 } else {
-                    var values = item.rawValue.split(FEEDBACK_LINE_SEP);
+                    item.rawValue = "" + item.rawValue;
+                    var values = item.rawValue.split($mmaModFeedback.FEEDBACK_LINE_SEP);
                     angular.forEach(item.choices, function(choice) {
                         for (var x in values) {
                             if (choice.value == values[x]) {
@@ -275,172 +270,6 @@ angular.module('mm.addons.mod_feedback')
             return item;
         }
     };
-
-    /**
-     * Get a single feedback page items. If offline or server down it will use getItems to calculate dependencies.
-     *
-     * @module mm.addons.mod_feedback
-     * @ngdoc method
-     * @name $mmaModFeedbackHelper#getPageItems
-     * @param   {Number}    feedbackId      Feedback ID.
-     * @param   {Number}    page            The page to get.
-     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
-     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
-     * @return  {Promise}                   Promise resolved when the info is retrieved.
-     */
-    self.getPageItems = function(feedbackId, page, offline, ignoreCache) {
-        return $mmaModFeedback.getPageItems(feedbackId, page).then(function(response) {
-            return fillValues(feedbackId, response.items, offline, ignoreCache).then(function(items) {
-                response.items = items;
-                return response;
-            });
-        }).catch(function() {
-            // If getPageItems fail we should calculate it using getItems.
-            return $mmaModFeedback.getItems(feedbackId).then(function(response) {
-                return fillValues(feedbackId, response.items, offline, ignoreCache).then(function(items) {
-                    // Separate items by pages.
-                    var pageItems = [],
-                        currentPage = 0,
-                        previousPageItems = [],
-
-                    pageItems = items.filter(function(item) {
-                        // Greater page, discard all entries.
-                        if (currentPage > page) {
-                            return false;
-                        }
-
-                        if (item.typ == "pagebreak") {
-                            currentPage++;
-                            return false;
-                        }
-
-                        // Save items on previous page to check dependencies and discard entry.
-                        if (currentPage < page) {
-                            previousPageItems.push(item);
-                            return false;
-                        }
-
-                        // Filter depending items.
-                        if (item && item.dependitem > 0 && previousPageItems.length > 0) {
-                            return checkDependencyItem(previousPageItems, item);
-                        }
-
-                        // Filter items with errors.
-                        return item;
-                    });
-
-                    // Check if there are more pages.
-                    response.hasprevpage = page > 0;
-                    response.hasnextpage = currentPage > page;
-                    response.items = pageItems;
-
-                    return response;
-                });
-            });
-        });
-    };
-
-    /**
-     * Fill values of item questions.
-     *
-     * @param   {Number}   feedbackId Feedback ID.
-     * @param   {Array}    items      Item to fill the value.
-     * @return  {Promise}             Resolved with values when done.
-     */
-    function fillValues(feedbackId, items, offline, ignoreCache) {
-        return $mmaModFeedback.getCurrentValues(feedbackId, offline, ignoreCache).then(function(values) {
-            angular.forEach(items, function(itemData) {
-                if (!itemData.hasvalue) {
-                    return;
-                }
-
-                for (var x in values) {
-                    if (values[x].item == itemData.id) {
-                        itemData.rawValue = values[x].value;
-                        return;
-                    }
-                }
-            });
-            return items;
-        }).catch(function() {
-            // Ignore errors.
-            return items;
-        });
-    }
-
-    /**
-     * Check dependency of a question item.
-     *
-     * @param   {Array}     tems       All question items to check dependency.
-     * @param   {Number}    item       Item to check.
-     * @return  {Boolean}              Return true if dependency is acomplished and it can be shown. False, otherwise.
-     */
-    function checkDependencyItem(items, item) {
-        var depend;
-        for (var x in items) {
-            if (items[x].id == item.dependitem) {
-                depend = items[x];
-                break;
-            }
-        }
-
-        // Item not found, looks like dependent item has been removed or is in the same or following pages.
-        if (!depend) {
-            return true;
-        }
-
-        var value;
-        switch (depend.typ) {
-            case 'label':
-                return false;
-            case 'multichoice':
-            case 'multichoicerated':
-                return compareDependItemMultichoice(depend, item.dependvalue);
-        }
-
-        return item.dependvalue == depend.rawValue;
-
-        // Helper functions by type:
-        function compareDependItemMultichoice(item, dependValue) {
-            var values, choices,
-                parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [],
-                subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
-
-            choices = parts[1] || '';
-            choices = choices.split(FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
-            choices = choices.split(FEEDBACK_LINE_SEP) || [];
-
-
-            if (subtype === 'c') {
-                if (typeof item.rawValue == "undefined") {
-                    values = [''];
-                } else {
-                    values = item.rawValue.split(FEEDBACK_LINE_SEP);
-                }
-            } else {
-                values = [item.rawValue];
-            }
-
-            for (var index = 0; index < choices.length; index++) {
-                for (var x in values) {
-                    if (values[x] == index + 1) {
-                        var value = choices[index];
-                        if (item.typ == 'multichoicerated') {
-                            value = value.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
-                        }
-                        if (value.trim() == dependValue) {
-                            return true;
-                        }
-                        // We can finish checking if only searching on one value and we found it.
-                        if (values.length == 1) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-    }
 
     /**
      * Get page items responses to be sent.
@@ -479,7 +308,7 @@ angular.module('mm.addons.mod_feedback')
                         value = itemData.value || 0;
                     } else {
                         name = nameTemp;
-                        value = itemData.value || "";
+                        value = itemData.value || itemData.value  == 0 ? itemData.value : "";
                     }
 
                     answered = !!value;

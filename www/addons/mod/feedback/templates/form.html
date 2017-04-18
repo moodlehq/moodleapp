@@ -63,7 +63,8 @@
                 </div>
             </section>
             <div class="mm-success-card-icon" ng-if="completed">
-                <i class="icon ion-checkmark-round padding"></i> <p ng-if="!completionPageContents">{{ 'mma.mod_feedback.this_feedback_is_already_submitted' | translate }}</p>
+                <i class="icon ion-checkmark-round padding"></i> <p ng-if="!completionPageContents && !completedOffline">{{ 'mma.mod_feedback.this_feedback_is_already_submitted' | translate }}</p>
+                <i class="icon ion-checkmark-round padding"></i> <p ng-if="!completionPageContents && completedOffline">{{ 'mma.mod_feedback.feedback_submitted_offline' | translate }}</p>
                 <p ng-if="completionPageContents"><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ completionPageContents }}</mm-format-text></p>
             </div>
             <div class="item item-text-wrap row-buttons responsive-sm" ng-if="completed">

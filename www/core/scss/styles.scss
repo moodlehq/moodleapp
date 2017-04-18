@@ -535,6 +535,10 @@ img.mm-media-adapt-width-enabled {
   height: 30px;
   text-align: center;
   line-height: 30px;
+
+  i.icon:before {
+    color: black !important;
+  }
 }
 
 // Remove padding-top and bottom from navigation bar to minimize height used.

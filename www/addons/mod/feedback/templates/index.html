@@ -15,6 +15,11 @@
         <mm-loading hide-until="feedbackLoaded">
             <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
+            <!-- Feedback responses found to be synchronized -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
             <div class="mm-warning-card-icon" ng-if="access.cancomplete && !access.isopen">
                 <i class="icon ion-close-circled padding"></i> {{ 'mma.mod_feedback.feedback_is_not_open' | translate }}
             </div>
