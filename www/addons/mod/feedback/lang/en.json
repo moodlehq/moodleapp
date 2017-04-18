@@ -3,6 +3,7 @@
     "anonymous": "Anonymous",
     "anonymous_entries": "Anonymous entries ({{$a}})",
     "average": "Average",
+    "captchaofflinewarning" : "Feedback with captcha cannot be completed in offline mode or with the server down.",
     "complete_the_form": "Answer the questions...",
     "completed_feedbacks": "Submitted answers",
     "continue_the_form": "Continue the form",

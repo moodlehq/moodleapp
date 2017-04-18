@@ -265,6 +265,15 @@ angular.module('mm.addons.mod_feedback')
         }
 
         function getItemFormCaptcha(item) {
+            var data = $mmText.parseJSON(item.otherdata);
+            if (data && data.length > 3) {
+                item.captcha = {
+                    challengehash: data[0],
+                    imageurl: data[1],
+                    jsurl: data[2],
+                    recaptchapublickey: data[3]
+                };
+            }
             item.template = 'captcha';
             item.value = "";
             return item;
@@ -284,7 +293,7 @@ angular.module('mm.addons.mod_feedback')
         var responses = {};
 
         angular.forEach(items, function(itemData) {
-            if (itemData.hasvalue || itemData.typ == "captcha") {
+            if (itemData.hasvalue) {
                 var name, value,
                     nameTemp = itemData.typ + '_' + itemData.id,
                     answered = false;
@@ -314,6 +323,23 @@ angular.module('mm.addons.mod_feedback')
                     answered = !!value;
                     responses[name] = value;
                 }
+
+                if (itemData.required && !answered) {
+                    // Check if it has any value.
+                    itemData.isEmpty = true;
+                } else {
+                    itemData.isEmpty = false;
+                }
+            } else if (itemData.typ == "captcha") {
+                var value = itemData.value || "",
+                    name = itemData.typ + '_' + itemData.id,
+                    answered = false;
+
+                answered = !!value;
+                responses[name] = 1;
+                responses.recaptcha_challenge_field = itemData.captcha.challengehash;
+                responses.recaptcha_response_field = value;
+                responses.recaptcha_element = 'dummyvalue';
 
                 if (itemData.required && !answered) {
                     // Check if it has any value.
