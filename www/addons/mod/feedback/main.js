@@ -28,7 +28,8 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
         params: {
             module: null,
             moduleid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
-            courseid: null
+            courseid: null,
+            group: null
         },
         views: {
             'site': {
@@ -61,7 +62,8 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
             feedbackid: null,
             courseid: null,
             module: null,
-            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            moduleid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            group: null
         },
         views: {
             'site': {
@@ -76,7 +78,8 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
         params: {
             courseid: null,
             module: null,
-            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            moduleid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            group: null
         },
         views: {
             'site': {
@@ -107,7 +110,8 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
         params: {
             courseid: null,
             module: null,
-            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            moduleid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            group: null
         },
         views: {
             'site': {

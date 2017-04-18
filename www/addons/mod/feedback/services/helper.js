@@ -70,10 +70,16 @@ angular.module('mm.addons.mod_feedback')
      * @param {String}  feature          Name of the feature to open.
      * @param {Object}  module           Course module activity object.
      * @param {Number}  courseId         Course Id.
+     * @param {Number}  group            Course module activity object.
      */
-    self.openFeature = function(feature, module, courseId) {
+    self.openFeature = function(feature, module, courseId, group) {
         var pageName = feature ? 'site.mod_feedback-' + feature : 'site.mod_feedback',
+            backTimes = 0;
+
+        // Only check history if navigating through tabs.
+        if (!feature || feature == "analysis") {
             backTimes = getHistoryBackCounter(pageName, module.instance);
+        }
 
         if (backTimes < 0) {
             // Go back X times until the the page we want to reach.
@@ -84,7 +90,8 @@ angular.module('mm.addons.mod_feedback')
                 module: module,
                 moduleid: module.id,
                 courseid: courseId,
-                feedbackid: module.instance
+                feedbackid: module.instance,
+                group: group || 0
             };
             $state.go(pageName, stateParams);
         }

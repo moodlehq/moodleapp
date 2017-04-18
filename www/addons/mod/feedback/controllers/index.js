@@ -39,7 +39,7 @@ angular.module('mm.addons.mod_feedback')
     $scope.syncIcon = 'spinner';
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
-    $scope.selectedGroup = 0;
+    $scope.selectedGroup = $stateParams.group || 0;
 
     // Convenience function to get feedback data.
     function fetchFeedbackData(refresh, sync, showErrors) {
@@ -187,7 +187,7 @@ angular.module('mm.addons.mod_feedback')
 
     // Function to link implemented features.
     $scope.openFeature = function(feature) {
-        $mmaModFeedbackHelper.openFeature(feature, module, courseId);
+        $mmaModFeedbackHelper.openFeature(feature, module, courseId, $scope.selectedGroup);
     };
 
     // Function to go to the questions form.
