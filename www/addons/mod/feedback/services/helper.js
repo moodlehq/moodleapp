@@ -76,14 +76,8 @@ angular.module('mm.addons.mod_feedback')
      * @param {String}  feature          Name of the feature to open.
      * @param {Object}  module           Course module activity object.
      * @param {Number}  courseId         Course Id.
-     * @param {Boolean} [notImplemented] If not implemented the browser will be opened. Temporary.
      */
-    self.openFeature = function(feature, module, courseId, notImplemented) {
-        if (notImplemented) {
-            $mmUtil.openInApp($mmSite.getURL() + '/mod/feedback/' + feature + '.php?id=' + module.id);
-            return;
-        }
-
+    self.openFeature = function(feature, module, courseId) {
         var pageName = feature ? 'site.mod_feedback-' + feature : 'site.mod_feedback',
             backTimes = getHistoryBackCounter(pageName, module.instance);
 
@@ -522,6 +516,36 @@ angular.module('mm.addons.mod_feedback')
             angular.forEach(responses.attempts, function(attempt) {
                 promises.push($mmUser.getProfile(attempt.userid, attempt.courseid, true).then(function(user) {
                     attempt.profileimageurl = user.profileimageurl;
+                }).catch(function() {
+                    // Error getting profile, resolve promise without adding any extra data.
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return responses;
+            });
+        });
+    };
+
+
+    /**
+     * Retrieves a list of students who didn't submit the feedback with extra info.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHelper#getNonRespondents
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {Number}    page            The page of records to return.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getNonRespondents = function(feedbackId, groupId, page) {
+        return $mmaModFeedback.getNonRespondents(feedbackId, groupId, page).then(function(responses) {
+            var promises = [];
+
+            angular.forEach(responses.users, function(user) {
+                promises.push($mmUser.getProfile(user.userid, user.courseid, true).then(function(u) {
+                    user.profileimageurl = u.profileimageurl;
                 }).catch(function() {
                     // Error getting profile, resolve promise without adding any extra data.
                 }));

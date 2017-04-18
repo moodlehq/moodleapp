@@ -210,6 +210,9 @@ angular.module('mm.addons.mod_feedback')
                             p3.push($mmaModFeedback.getAllResponsesAnalysis(feedback.id, group.id, siteId).then(function(responses) {
                                 userIds.push(responses.userid);
                             }));
+                            p3.push($mmaModFeedback.getAllNonRespondents(feedback.id, group.id, siteId).then(function(responses) {
+                                userIds.push(responses.userid);
+                            }));
                         });
 
                         return $q.all(p3).then(function() {

@@ -15,13 +15,13 @@
 angular.module('mm.addons.mod_feedback')
 
 /**
- * Feedback respondents controller.
+ * Feedback non respondents controller.
  *
  * @module mm.addons.mod_feedback
  * @ngdoc controller
- * @name mmaModFeedbackRespondentsCtrl
+ * @name mmaModFeedbackNonRespondentsCtrl
  */
-.controller('mmaModFeedbackRespondentsCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmText, $translate,
+.controller('mmaModFeedbackNonRespondentsCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmText, $translate,
         mmaModFeedbackComponent, $mmGroups, $mmaModFeedbackHelper, $ionicHistory) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -33,14 +33,9 @@ angular.module('mm.addons.mod_feedback')
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
     $scope.selectedGroup = 0;
-    $scope.canLoadMoreAnon = false;
-    $scope.canLoadMoreNonAnon = false;
-    $scope.responses = {
-        attempts: [],
-        anonattempts: [],
-        totalattempts: 0,
-        totalanonattempts: 0
-    };
+    $scope.canLoadMore = false;
+    $scope.users = [];
+    $scope.total = 0;
 
     // Convenience function to get feedback data.
     function fetchFeedbackRespondentsData(refresh) {
@@ -51,15 +46,13 @@ angular.module('mm.addons.mod_feedback')
 
             $scope.feedbackId = feedback.id;
             page = 0;
-            $scope.responses.totalattempts = 0;
-            $scope.responses.totalanonattempts = 0;
-            $scope.responses.attempts = [];
-            $scope.responses.anonattempts = [];
+            $scope.total = 0;
+            $scope.users = [];
 
             // Get groups (only for teachers).
             return $mmaModFeedbackHelper.getFeedbackGroupInfo(feedback.coursemodule).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
-                return loadGroupAttempts($scope.selectedGroup);
+                return loadGroupUsers($scope.selectedGroup);
             });
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
@@ -75,38 +68,31 @@ angular.module('mm.addons.mod_feedback')
     /**
      * Load Group responses.
      *
-     * @param  {Number} [groupId]   If defined it will change group if not, it will load more attempts for the same group.
-     * @return {Promise}            Resolved with the attempts loaded.
+     * @param  {Number} [groupId]   If defined it will change group if not, it will load more users for the same group.
+     * @return {Promise}            Resolved with the users loaded.
      */
-    function loadGroupAttempts(groupId) {
+    function loadGroupUsers(groupId) {
         if (typeof groupId == "undefined") {
             page++;
             $scope.loadingMore = true;
         } else {
             $scope.selectedGroup = groupId;
             page = 0;
-            $scope.responses.totalattempts = 0;
-            $scope.responses.totalanonattempts = 0;
-            $scope.responses.attempts = [];
-            $scope.responses.anonattempts = [];
+            $scope.total = 0;
+            $scope.users = [];
             $scope.feedbackLoaded = false;
         }
 
-        return $mmaModFeedbackHelper.getResponsesAnalysis(feedback.id, $scope.selectedGroup, page).then(function(responses) {
-            $scope.responses.totalattempts = responses.totalattempts;
-            $scope.responses.totalanonattempts = responses.totalanonattempts;
+        return $mmaModFeedbackHelper.getNonRespondents(feedback.id, $scope.selectedGroup, page).then(function(response) {
+            $scope.total = response.total;
 
-            if ($scope.responses.anonattempts.length < responses.totalanonattempts) {
-                $scope.responses.anonattempts = $scope.responses.anonattempts.concat(responses.anonattempts);
-            }
-            if ($scope.responses.attempts.length < responses.totalattempts) {
-                $scope.responses.attempts = $scope.responses.attempts.concat(responses.attempts);
+            if ($scope.users.length < response.total) {
+                $scope.users = $scope.users.concat(response.users);
             }
 
-            $scope.canLoadMoreAnon = $scope.responses.anonattempts.length < responses.totalanonattempts;
-            $scope.canLoadMoreNonAnon = $scope.responses.attempts.length < responses.totalattempts;
+            $scope.canLoadMore = $scope.users.length < response.total;
 
-            return responses;
+            return response;
         }).finally(function() {
             $scope.loadingMore = false;
             $scope.feedbackLoaded = true;
@@ -114,8 +100,8 @@ angular.module('mm.addons.mod_feedback')
     }
 
     // Load group attempts.
-    $scope.loadGroupAttempts = function(groupId) {
-        loadGroupAttempts(groupId).catch(function(message) {
+    $scope.loadGroupUsers = function(groupId) {
+        loadGroupUsers(groupId).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
         });
     };
@@ -125,7 +111,7 @@ angular.module('mm.addons.mod_feedback')
         var promises = [];
         promises.push($mmaModFeedback.invalidateFeedbackData(courseId));
         if (feedback) {
-            promises.push($mmaModFeedback.invalidateResponsesAnalysisData(feedback.id));
+            promises.push($mmaModFeedback.invalidateNonRespondentsData(feedback.id));
             promises.push($mmGroups.invalidateActivityAllowedGroups(feedback.coursemodule));
             promises.push($mmGroups.invalidateActivityGroupMode(feedback.coursemodule));
         }

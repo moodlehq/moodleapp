@@ -129,6 +129,28 @@ angular.module('mm.addons.mod_feedback')
     }
 
     /**
+     * Get prefix cache key for feedback non respondents data WS calls.
+     *
+     * @param {Number} feedbackId Feedback ID.
+     * @return {String}         Cache key.
+     */
+    function getNonRespondentsDataPrefixCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
+    }
+
+    /**
+     * Get cache key for non respondents feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @param  {Number} groupId     Group id, 0 means that the function will determine the user group.
+     * @return {String}             Cache key.
+     */
+    function getNonRespondentsDataCacheKey(feedbackId, groupId) {
+        groupId = groupId || 0;
+        return getNonRespondentsDataPrefixCacheKey(feedbackId) + groupId;
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
      *
      * @module mm.addons.mod_feedback
@@ -662,6 +684,88 @@ angular.module('mm.addons.mod_feedback')
     self.invalidateResponsesAnalysisData = function(feedbackId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getResponsesAnalysisDataPrefixCacheKey(feedbackId));
+
+        });
+    };
+
+
+    /**
+     * Retrieves a list of students who didn't submit the feedback.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getNonRespondents
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {Number}    page            The page of records to return.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getNonRespondents = function(feedbackId, groupId, page, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId,
+                    groupid: groupId || 0,
+                    page: page || 0
+                },
+                preSets = {
+                    cacheKey: getNonRespondentsDataCacheKey(feedbackId, groupId)
+                };
+
+            return site.read('mod_feedback_get_non_respondents', params, preSets);
+        });
+    };
+
+    /**
+     * Returns all the feedback non respondents users.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getAllNonRespondents
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Object}    [previous]      Only for recurrent use. Object with the previous fetched info.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getAllNonRespondents = function(feedbackId, groupId, siteId, previous) {
+        siteId = siteId || $mmSite.getId();
+        if (typeof previous == "undefined") {
+            previous = {
+                page: 0,
+                users: []
+            };
+        }
+
+        return self.getNonRespondents(feedbackId, groupId, previous.page, siteId).then(function(response) {
+            if (previous.users.length < response.total) {
+                previous.users = previous.users.concat(response.users);
+            }
+
+            if (previous.users.length < response.total) {
+                // Can load more.
+                previous.page++;
+                return self.getAllNonRespondents(feedbackId, groupId, siteId, previous);
+            }
+
+            previous.total = response.total;
+            return previous;
+        });
+    };
+
+    /**
+     * Invalidates feedback non respondents record data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateNonRespondentsData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateNonRespondentsData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getNonRespondentsDataPrefixCacheKey(feedbackId));
 
         });
     };

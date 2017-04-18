@@ -11,22 +11,24 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback(false)"></ion-refresher>
         <mm-loading hide-until="feedbackLoaded">
             <section class="list" ng-if="access.canedititems || !access.isempty">
-                <div ng-if="access.canedititems">
-                    <div class="item item-text-wrap item-input item-select" ng-if="groupInfo.separateGroups || groupInfo.visibleGroups">
-                        <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
-                        <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
-                        <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-feedback-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
-                        </select>
-                    </div>
-                    <div class="item item-text-wrap item-icon-right"  ng-click="openFeature('respondents')">
-                        <p class="item-heading">{{ 'mma.mod_feedback.completed_feedbacks' | translate }}</p>
-                        <span class="badge badge-positive">{{feedback.completedCount}}</span>
-                        <i class="icon icon-accessory ion-chevron-right"></i>
-                    </div>
-                    <div class="item item-text-wrap item-icon-right">
-                        <p class="item-heading">{{ 'mma.mod_feedback.questions' | translate }}</p>
-                        <span class="badge badge-positive">{{feedback.itemsCount}}</span>
-                    </div>
+                <div ng-if="access.canedititems && (groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                    <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                    <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                    <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-feedback-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                    </select>
+                </div>
+                <div ng-if="access.canviewreports || access.canedititems" class="item item-text-wrap" ng-class="{'item-icon-right': access.canviewreports}"   ng-click="access.canviewreports && openFeature('respondents')">
+                    <p class="item-heading">{{ 'mma.mod_feedback.completed_feedbacks' | translate }}</p>
+                    <span class="badge badge-positive">{{feedback.completedCount}}</span>
+                    <i ng-if="access.canviewreports" class="icon icon-accessory ion-chevron-right"></i>
+                </div>
+                <div ng-if="!access.isanonymous && access.canviewreports" class="item item-text-wrap item-icon-right" ng-click="openFeature('nonrespondents')">
+                    <p class="item-heading">{{ 'mma.mod_feedback.show_nonrespondents' | translate }}</p>
+                    <i class="icon icon-accessory ion-chevron-right"></i>
+                </div>
+                <div ng-if="access.canedititems" class="item item-text-wrap item-icon-right">
+                    <p class="item-heading">{{ 'mma.mod_feedback.questions' | translate }}</p>
+                    <span class="badge badge-positive">{{feedback.itemsCount}}</span>
                 </div>
                 <div class="mm-warning-card-icon" ng-if="warning">
                     <i class="icon ion-close-circled padding"></i> {{ warning }}
@@ -70,9 +72,6 @@
             </a>
             <a class="tab-item active">
                 <i class="icon ion-stats-bars"></i>{{ 'mma.mod_feedback.analysis' | translate }}
-            </a>
-            <a class="tab-item" ng-if="!access.isanonymous" ng-click="openFeature('show_nonrespondents', true)">
-                <i class="icon ion-close-circled"></i>{{ 'mma.mod_feedback.show_nonrespondents' | translate }}
             </a>
         </div>
     </ion-footer>

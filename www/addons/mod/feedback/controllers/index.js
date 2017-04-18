@@ -159,8 +159,8 @@ angular.module('mm.addons.mod_feedback')
     };
 
     // Function to link implemented features.
-    $scope.openFeature = function(feature, notImplemented) {
-        $mmaModFeedbackHelper.openFeature(feature, module, courseId, notImplemented);
+    $scope.openFeature = function(feature) {
+        $mmaModFeedbackHelper.openFeature(feature, module, courseId);
     };
 
     // Function to go to the questions form.
