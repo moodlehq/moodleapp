@@ -18,6 +18,10 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
 .constant('mmaModLessonAutomSyncedEvent', 'mma_mod_lesson_autom_synced')
 .constant('mmaModLessonSyncTime', 300000) // In milliseconds.
 
+// Constants used to identify the type of pages and questions.
+.constant('mmaModLessonTypeQuestion', 0)
+.constant('mmaModLessonTypeStructure', 1)
+
 .config(function($stateProvider) {
 
     $stateProvider
