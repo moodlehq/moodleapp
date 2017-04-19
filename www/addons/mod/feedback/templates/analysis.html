@@ -10,7 +10,7 @@
     <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback(false)"></ion-refresher>
         <mm-loading hide-until="feedbackLoaded">
-            <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="access.canviewreports">
+            <div class="tabs tabs-striped tabs-free tabs-color-orange" ng-if="access.canviewreports">
               <a class="tab-item" ng-click="openFeature()">{{ 'mma.mod_feedback.overview' | translate }}</a>
               <a class="tab-item active">{{ 'mma.mod_feedback.analysis' | translate }}</a>
             </div>

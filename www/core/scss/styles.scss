@@ -15,8 +15,10 @@
  * Variables
  */
 
+$orange-medium: #ff7701; // Default app color.
+
 // Bar content.
-$bar-content-bg: #f70 !default;
+$bar-content-bg: $orange-medium !default;
 $bar-content-border: transparent !default;
 $bar-content-text: #fff !default;
 
@@ -298,20 +300,26 @@ p.item-text-wrap {
 }
 
 /* Show buttons as tabs */
+@include tabs-striped-color('tabs-color-orange', $orange-medium);
+@include tabs-color('tabs-color-orange', $orange-medium);
+
 .tabs.tabs-free {
   position: initial;
-  background: transparent;
+  background: white;
   border: 0;
-  margin-bottom: 0;
-  margin-top: 10px;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2);
 
   .tab-item {
-    margin-top: -1px;
+    color: #666;
+    margin-top: 0;
     max-width: initial;
     font-size: 120%;
 
     &.active, &.activated {
-      margin-top: -1px;
+      color: black;
+      margin-top: 0;
       border-top-width: 0;
       border-bottom-width: 3px;
     }

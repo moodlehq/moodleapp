@@ -1,9 +1,34 @@
 <ion-view view-title="{{ 'mma.myoverview.pluginname' | translate }}">
     <ion-content mm-state-class>
-        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="myOverviewLoaded" on-refresh="refreshMyOverview()">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="timeline.loaded" on-refresh="refreshMyOverview()">
         </ion-refresher>
-        <mm-loading hide-until="myOverviewLoaded">
-
-        </mm-loading>
+        <div class="tabs tabs-striped tabs-free tabs-color-orange">
+          <a class="tab-item" ng-class="{'active': tabShown == 'timeline'}" ng-click="switchTab('timeline')">{{ 'mma.myoverview.timeline' | translate }}</a>
+          <a class="tab-item" ng-class="{'active': tabShown == 'courses'}" ng-click="switchTab('courses')">{{ 'mm.courses.courses' | translate }}</a>
+        </div>
+        <div class="padding">
+            <mm-loading hide-until="timeline.loaded" ng-show="tabShown == 'timeline'">
+                <h5 ng-if="timeline.recentlyOverdue.length > 0" class="assertive">{{ 'mma.myoverview.recentlyoverdue' | translate }}</h5>
+                <mma-my-overview-event-list ng-if="timeline.recentlyOverdue.length > 0" events="timeline.recentlyOverdue" show-course="true"></mma-my-overview-event-list>
+                <h5 ng-if="timeline.today.length > 0">{{ 'mma.myoverview.today' | translate }}</h5>
+                <mma-my-overview-event-list ng-if="timeline.today.length > 0" events="timeline.today" show-course="true"></mma-my-overview-event-list>
+                <h5 ng-if="timeline.next7Days.length > 0">{{ 'mma.myoverview.next7days' | translate }}</h5>
+                <mma-my-overview-event-list ng-if="timeline.next7Days.length > 0" events="timeline.next7Days" show-course="true"></mma-my-overview-event-list>
+                <h5 ng-if="timeline.next30Days.length > 0">{{ 'mma.myoverview.next30days' | translate }}</h5>
+                <mma-my-overview-event-list ng-if="timeline.next30Days.length > 0" events="timeline.next30Days" show-course="true"></mma-my-overview-event-list>
+                <h5 ng-if="timeline.future.length > 0">{{ 'mma.myoverview.future' | translate }}</h5>
+                <mma-my-overview-event-list ng-if="timeline.future.length > 0" events="timeline.future" show-course="true"></mma-my-overview-event-list>
+                <div class="padding text-center" ng-if="timeline.canLoadMore">
+                    <!-- Button and spinner to show more attempts. -->
+                    <button ng-if="!timeline.loadingMore" class="button button-block" ng-click="loadMore()">{{ 'mm.core.loadmore' | translate }}</button>
+                    <ion-spinner ng-if="timeline.loadingMore"></ion-spinner>
+                </div>
+                <div ng-if="timeline.empty">
+                    <p>{{ 'mma.myoverview.noevents' | translate }}</p>
+                </div>
+            </mm-loading>
+            <mm-loading hide-until="coursesLoaded" ng-show="tabShown == 'courses'">
+            </mm-loading>
+        </div>
     </ion-content>
 </ion-view>

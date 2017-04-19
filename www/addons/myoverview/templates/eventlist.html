@@ -1,0 +1,9 @@
+<ul class="list">
+    <li ng-repeat="event in events">
+        <a mm-link capture-link="true" class="item mm-course-module-handler item-media" href="{{ event.url }}" title="{{ event.name }}">
+            <img ng-src="{{ event.iconUrl }}" mm-external-content alt="" role="presentation" ng-if="event.iconUrl">
+            <p class="item-heading"><mm-format-text watch="true">{{ event.name }}</mm-format-text></p>
+            <p>{{event.timesort * 1000 | mmFormatDate:"dfmediumdate" }} <mm-format-text watch="true" ng-if="showCourse">{{ event.course.fullnamedisplay }}</mm-format-text></p>
+        </a>
+    </li>
+</ul>

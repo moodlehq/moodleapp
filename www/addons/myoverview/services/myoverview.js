@@ -21,10 +21,38 @@ angular.module('mm.addons.myoverview')
  * @ngdoc service
  * @name $mmaMyOverview
  */
-.factory('$mmaMyOverview', function($log, $mmSitesManager, $mmSite) {
+.factory('$mmaMyOverview', function($log, $mmSitesManager, $mmSite, $mmUtil) {
     $log = $log.getInstance('$mmaMyOverview');
 
     var self = {};
+
+    /**
+     * Get cache key for get calendar action events for a given list of courses value WS call.
+     *
+     * @return {String}       Cache key.
+     */
+    function getActionEventsByCoursesCacheKey() {
+        return 'myoverview:bycourses';
+    }
+
+    /**
+     * Get cache key for get calendar action events for the given course value WS call.
+     *
+     * @param {Number}   courseId    Only events in this course.
+     * @return {String}             Cache key.
+     */
+    function getActionEventsByCourseCacheKey(courseId) {
+        return 'myoverview:bycourse:' + courseId;
+    }
+
+    /**
+     * Get cache key for get calendar action events based on the timesort value WS call.
+     *
+     * @return {String}       Cache key.
+     */
+    function getActionEventsByTimesortCacheKey() {
+        return 'myoverview:bytimesort';
+    }
 
     /**
      * Returns whether or not the my overview plugin is enabled for a certain site.
@@ -75,6 +103,103 @@ angular.module('mm.addons.myoverview')
             });
         }
         return $q.when(false);
+    };
+
+
+    /**
+     * Get calendar action events for a given list of courses.
+     *
+     * @module mm.core.myoverview
+     * @ngdoc method
+     * @name $mmaMyOverview#getActionEventsByCourses
+     * @param {Array} courseIds
+     * @param {String}  [siteId]    Site. If not defined, use current site.
+     * @return {Promise}            Promise to be resolved when the info is retrieved.
+     */
+    self.getActionEventsByCourses = function(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+
+            var data = {
+                    courseids: courseIds
+                },
+                presets = {
+                    cacheKey: getActionEventsByCoursesCacheKey()
+                };
+
+            return site.read('core_calendar_get_action_events_by_courses', data, presets);
+        });
+    };
+
+    /**
+     * Get calendar action events for the given course.
+     *
+     * @module mm.core.myoverview
+     * @ngdoc method
+     * @name $mmaMyOverview#getActionEventsByCourse
+     * @param {Number}  courseId    Only events in this course.
+     * @param {String}  [siteId]    Site. If not defined, use current site.
+     * @return {Promise}            Promise to be resolved when the info is retrieved.
+     */
+    self.getActionEventsByCourse = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+
+            var data = {
+                    courseid: courseId
+                },
+                presets = {
+                    cacheKey: getActionEventsByCourseCacheKey(courseId)
+                };
+
+            return site.read('core_calendar_get_action_events_by_course', data, presets);
+        });
+    };
+
+    /**
+     * Get calendar action events based on the timesort value.
+     *
+     * @module mm.core.myoverview
+     * @ngdoc method
+     * @name $mmaMyOverview#getActionEventsByTimesort
+     * @param {Number}  [afterEventId]  The last seen event id.
+     * @param {String}  [siteId]        Site. If not defined, use current site.
+     * @return {Promise}                Promise to be resolved when the info is retrieved.
+     */
+    self.getActionEventsByTimesort = function(afterEventId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
+                data = {
+                    timesortfrom: time
+                },
+                presets = {
+                    cacheKey: getActionEventsByTimesortCacheKey()
+                };
+
+            if (afterEventId) {
+                data.aftereventid = afterEventId;
+            }
+
+            return site.read('core_calendar_get_action_events_by_timesort', data, presets).then(function(events) {
+                // Filter events by time in case it uses cache.
+                return events.events.filter(function(element) {
+                    return element.timesort >= time;
+                });
+            });
+        });
+    };
+
+    /**
+     * Invalidates get calendar action events based on the timesort value WS call.
+     *
+     * @module mm.core.myoverview
+     * @ngdoc method
+     * @name $mmCourses#invalidateActionEventsByTimesort
+     * @param {String} [siteId] Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateActionEventsByTimesort = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getActionEventsByTimesortCacheKey());
+        });
     };
 
     return self;
