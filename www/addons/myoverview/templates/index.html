@@ -1,0 +1,9 @@
+<ion-view view-title="{{ 'mma.myoverview.pluginname' | translate }}">
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="myOverviewLoaded" on-refresh="refreshMyOverview()">
+        </ion-refresher>
+        <mm-loading hide-until="myOverviewLoaded">
+
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -39,11 +39,7 @@ angular.module('mm.core.courses')
 
             return loadCoursesNavHandlers(refresh);
         }, function(error) {
-            if (typeof error != 'undefined' && error !== '') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mm.courses.errorloadcourses', true);
         });
     }
 
