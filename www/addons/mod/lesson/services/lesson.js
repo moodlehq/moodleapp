@@ -2170,7 +2170,7 @@ angular.module('mm.addons.mod_lesson')
             // Custom scores. If score on answer is positive, it is correct.
             return answer.score > 0;
         } else {
-            return jumptoIsCorrect(pageId, answer.jumpto, pageIndex);
+            return self.jumptoIsCorrect(pageId, answer.jumpto, pageIndex);
         }
     }
 
@@ -2410,10 +2410,10 @@ angular.module('mm.addons.mod_lesson')
                 if (pageData.answers.length) {
                     return recordAttempt(lesson, courseId, pageData, data, review, accessInfo, jumps, pageIndex, siteId);
                 } else {
-                    // The page has no answers so we will just progress to the next page.
+                    // The page has no answers so we will just progress to the next page (as set by newpageid).
                    return {
                         nodefaultresponse: true,
-                        newpageid: self.LESSON_NEXTPAGE
+                        newpageid: data.newpageid
                     };
                 }
             }).then(function(res) {

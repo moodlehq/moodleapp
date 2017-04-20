@@ -151,6 +151,11 @@ angular.module('mm.addons.mod_lesson')
 
     // Load a certain page.
     function loadPage(pageId) {
+        if (pageId == $mmaModLesson.LESSON_EOL) {
+            // End of lesson reached.
+            return finishAttempt();
+        }
+
         var args = [lesson, pageId, password, $scope.review, true, offline, true, accessInfo, jumps];
         return callFunction($mmaModLesson.getPageData, args, 5).then(function(data) {
             if (data.newpageid == $mmaModLesson.LESSON_EOL) {
