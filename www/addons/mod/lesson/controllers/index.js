@@ -83,8 +83,9 @@ angular.module('mm.addons.mod_lesson')
                     $scope.hasOffline = hasOffline;
                 }));
 
-                // Update the list of content pages viewed.
+                // Update the list of content pages viewed and question attempts.
                 promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, accessInfo.attemptscount));
+                promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, accessInfo.attemptscount));
             }
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
@@ -182,6 +183,7 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.invalidateLessonWithPassword(lesson.id));
             promises.push($mmaModLesson.invalidateTimers(lesson.id));
             promises.push($mmaModLesson.invalidateContentPagesViewed(lesson.id));
+            promises.push($mmaModLesson.invalidateQuestionsAttempts(lesson.id));
         }
 
         return $q.all(promises).finally(function() {

@@ -309,6 +309,7 @@ angular.module('mm.addons.mod_lesson')
                 var promises = [];
                 promises.push($mmaModLesson.invalidateAccessInformation(lessonId, siteId));
                 promises.push($mmaModLesson.invalidateContentPagesViewed(lessonId, siteId));
+                promises.push($mmaModLesson.invalidateQuestionsAttempts(lessonId, siteId));
                 promises.push($mmaModLesson.invalidatePagesPossibleJumps(lessonId, siteId));
                 promises.push($mmaModLesson.invalidateTimers(lessonId, siteId));
 
@@ -317,7 +318,14 @@ angular.module('mm.addons.mod_lesson')
                 }).then(function() {
                     // Sync successful, update some data that might have been modified.
                     return $mmaModLesson.getAccessInformation(lessonId, false, false, siteId).then(function(info) {
-                        return $mmaModLesson.getContentPagesViewedOnline(lessonId, info.attemptscount, false, false, siteId);
+                        var promises = [],
+                            attempt = info.attemptscount;
+
+                        promises.push($mmaModLesson.getContentPagesViewedOnline(lessonId, attempt, false, false, siteId));
+                        promises.push($mmaModLesson.getQuestionsAttemptsOnline(
+                                    lessonId, attempt, false, undefined, false, false, siteId));
+
+                        return $q.all(promises);
                     }).catch(function() {
                         // Ignore errors.
                     });
@@ -351,12 +359,12 @@ angular.module('mm.addons.mod_lesson')
         return $mmaModLesson.processPageOnline(lesson.id, answer.pageid, answer.data, password, false, siteId).then(function() {
             result.updated = true;
 
-            return $mmaModLessonOffline.deleteAttemptAnswerForPage(lesson.id, answer.attempt, answer.pageid, siteId);
+            return $mmaModLessonOffline.deleteAttemptAnswersForPage(lesson.id, answer.attempt, answer.pageid, siteId);
         }).catch(function(error) {
             if (error && $mmUtil.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
                 result.updated = true;
-                return $mmaModLessonOffline.deleteAttemptAnswerForPage(lesson.id, answer.attempt, answer.pageid, siteId)
+                return $mmaModLessonOffline.deleteAttemptAnswersForPage(lesson.id, answer.attempt, answer.pageid, siteId)
                         .then(function() {
                     // Responses deleted, add a warning.
                     result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {

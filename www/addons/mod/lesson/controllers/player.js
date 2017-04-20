@@ -293,6 +293,7 @@ angular.module('mm.addons.mod_lesson')
     function processPage(data) {
         showLoading();
 
+        // @todo Refresh contentpagesviewed and questionsattempts after online process.
         var args = [lesson, courseId, $scope.pageData, data, password, $scope.review, offline, accessInfo, jumps];
         return callFunction($mmaModLesson.processPage, args, 6).then(function(result) {
             if (result.nodefaultresponse || result.inmediatejump) {
