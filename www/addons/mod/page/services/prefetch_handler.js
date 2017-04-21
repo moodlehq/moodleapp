@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPagePrefetchHandler
  */
-.factory('$mmaModPagePrefetchHandler', function($mmPrefetchFactory, mmaModPageComponent, $mmaModPage, $mmCourse) {
+.factory('$mmaModPagePrefetchHandler', function($mmPrefetchFactory, mmaModPageComponent, $mmaModPage, $mmCourse, $q) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModPageComponent, true);
 
