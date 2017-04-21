@@ -103,22 +103,30 @@ angular.module('mm.core.courses')
         /**
          * Get the handler for a course using a certain access type.
          *
-         * @param  {Number} courseId     The course ID.
-         * @param  {Boolean} refresh     True if it should refresh the list.
-         * @param  {Object} accessData   Access type and data. Default, guest, ...
-         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
-         * @return {Array}               Array of objects containing 'priority' and 'controller'.
+         * @param  {Number}  courseId         The course ID.
+         * @param  {Boolean} refresh          True if it should refresh the list.
+         * @param  {Object}  accessData       Access type and data. Default, guest, ...
+         * @param  {Object}  [navOptions]     Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object}  [admOptions]     Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @param  {Boolean} [waitForPromise] Wait for handlers to be loaded.
+         * @return {Array|Promise}            Array of objects containing 'priority' and 'controller'. Or promise if asked for it.
          */
-        function getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions) {
+        function getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise) {
             if (refresh || !coursesHandlers[courseId] || coursesHandlers[courseId].access.type != accessData.type) {
                 coursesHandlers[courseId] = {
                     access: accessData,
                     navOptions: navOptions,
                     admOptions: admOptions,
-                    handlers: []
+                    handlers: [],
+                    deferred: $q.defer()
                 };
                 self.updateNavHandlersForCourse(courseId, accessData, navOptions, admOptions);
+            }
+
+            if (waitForPromise) {
+                return coursesHandlers[courseId].deferred.promise.then(function() {
+                    return coursesHandlers[courseId].handlers;
+                });
             }
             return coursesHandlers[courseId].handlers;
         }
@@ -129,18 +137,19 @@ angular.module('mm.core.courses')
          * @module mm.core.courses
          * @ngdoc method
          * @name $mmCoursesDelegate#getNavHandlersFor
-         * @param  {Number} courseId     The course ID.
-         * @param  {Boolean} refresh     True if it should refresh the list.
-         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
-         * @return {Array}               Array of objects containing 'priority' and 'controller'.
+         * @param  {Number}  courseId         The course ID.
+         * @param  {Boolean} refresh          True if it should refresh the list.
+         * @param  {Object}  [navOptions]     Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object}  [admOptions]     Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @param  {Boolean} [waitForPromise] Wait for handlers to be loaded.
+         * @return {Array|Promise}            Array of objects containing 'priority' and 'controller'. Or promise if asked for it.
          */
-        self.getNavHandlersFor = function(courseId, refresh, navOptions, admOptions) {
+        self.getNavHandlersFor = function(courseId, refresh, navOptions, admOptions, waitForPromise) {
             // Default access.
             var accessData = {
                 type: mmCoursesAccessMethods.default
             };
-            return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions);
+            return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise);
         };
 
         /**
@@ -149,18 +158,19 @@ angular.module('mm.core.courses')
          * @module mm.core.courses
          * @ngdoc method
          * @name $mmCoursesDelegate#getNavHandlersForGuest
-         * @param  {Number} courseId     The course ID.
-         * @param  {Boolean} refresh     True if it should refresh the list.
-         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
-         * @return {Array}               Array of objects containing 'priority' and 'controller'.
+         * @param  {Number}  courseId         The course ID.
+         * @param  {Boolean} refresh          True if it should refresh the list.
+         * @param  {Object}  [navOptions]     Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object}  [admOptions]     Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @param  {Boolean} [waitForPromise] Wait for handlers to be loaded.
+         * @return {Array|Promise}            Array of objects containing 'priority' and 'controller'. Or promise if asked for it.
          */
-        self.getNavHandlersForGuest = function(courseId, refresh, navOptions, admOptions) {
+        self.getNavHandlersForGuest = function(courseId, refresh, navOptions, admOptions, waitForPromise) {
             // Guest access.
             var accessData = {
                 type: mmCoursesAccessMethods.guest
             };
-            return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions);
+            return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise);
         };
 
         /**
@@ -339,6 +349,9 @@ angular.module('mm.core.courses')
                         });
                     });
                     loaded[courseId] = true;
+
+                    // Resolve the promise.
+                    coursesHandlers[courseId].deferred.resolve();
                 }
             });
         };

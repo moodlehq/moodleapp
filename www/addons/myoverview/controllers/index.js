@@ -21,62 +21,198 @@ angular.module('mm.addons.myoverview')
  * @ngdoc controller
  * @name mmaMyOverviewCtrl
  */
-.controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourse) {
+.controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourses) {
 
-    var timeline = [];
     $scope.tabShown = 'timeline';
     $scope.timeline = {
+        sort: 'sortbydates',
+        events: [],
         loaded: false,
-        loadingMore: false,
-        canLoadMore: false
-    }
+        canLoadMore: false,
+    };
+    $scope.timelineCourses = {
+        courses: [],
+        loaded: false,
+        canLoadMore: false,
+    };
+    $scope.courses = {
+        selected: 'inprogress',
+        loaded: false,
+        filter: ''
+    };
+    $scope.showGrid = true;
+    $scope.showFilter = false;
+
+    $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable() && !$mmCourses.isSearchCoursesDisabledInSite();
 
     function fetchMyOverviewTimeline(afterEventId) {
         return $mmaMyOverview.getActionEventsByTimesort(afterEventId).then(function(events) {
-            timeline = timeline.concat(events);
-
-            $scope.timeline.empty = !timeline.length;
-            $scope.timeline.recentlyOverdue = filterEventsByTime(timeline, -14, 0);
-            $scope.timeline.today = filterEventsByTime(timeline, 0, 1);
-            $scope.timeline.next7Days = filterEventsByTime(timeline, 1, 7);
-            $scope.timeline.next30Days = filterEventsByTime(timeline, 7, 30);
-            $scope.timeline.future = filterEventsByTime(timeline, 30);
-            $scope.timeline.canLoadMore = events.length >= 20;
-
+            $scope.timeline.events = $scope.timeline.events.concat(events.events);
+            $scope.timeline.canLoadMore = events.canLoadMore;
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
             return $q.reject();
         });
     }
 
-    function filterEventsByTime(events, start, end) {
-        start = moment().add(start, 'days').unix();
-        end = typeof end == "undefined" ? false : moment().add(end, 'days').unix();
+    function fetchMyOverviewTimelineByCourses() {
+        return fetchUserCourses().then(function(courses) {
+            var today = moment().unix(),
+                courseIds = [];
+            courses = courses.filter(function(course) {
+                return course.startdate <= today && (!course.enddate || course.enddate >= today);
+            }).sort(function(a, b) {
+                var compareA = a.fullname.toLowerCase(),
+                    compareB = b.fullname.toLowerCase();
 
-        return events.filter(function(event) {
-            if (end) {
-                return start <= event.timesort && event.timesort < end;
+                return compareA.localeCompare(compareB);
+            });
+            $scope.timelineCourses.courses = courses;
+            if (courses.length > 0) {
+                courseIds = courses.map(function(course) {
+                    return course.id;
+                });
+                return $mmaMyOverview.getActionEventsByCourses(courseIds).then(function(courseEvents) {
+                    angular.forEach($scope.timelineCourses.courses, function(course) {
+                        course.events = courseEvents[course.id].events;
+                        course.canLoadMore = courseEvents[course.id].canLoadMore;
+                    });
+                });
             }
-
-            return start <= event.timesort;
-        }).map(function(event) {
-            event.iconUrl = $mmCourse.getModuleIconSrc(event.icon.component);
-            return event;
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
+            return $q.reject();
         });
     }
 
+    function fetchMyOverviewCourses() {
+        return fetchUserCourses().then(function(courses) {
+            var today = moment().unix();
+
+            $scope.courses.filter = ''; // Filter value MUST be set after courses are shown.
+            $scope.showFilter = false;
+            $scope.courses.past = [];
+            $scope.courses.inprogress = [];
+            $scope.courses.future = [];
+
+            courses.sort(function(a, b) {
+                var compareA = a.fullname.toLowerCase(),
+                    compareB = b.fullname.toLowerCase();
+
+                return compareA.localeCompare(compareB);
+            })
+
+            angular.forEach(courses, function(course) {
+                if (course.startdate > today) {
+                    // Courses that have not started yet.
+                    $scope.courses.future.push(course);
+                } else if (course.enddate && course.enddate < today) {
+                    // Courses that have already ended.
+                    $scope.courses.past.push(course);
+                } else {
+                    // Courses still in progress. Either their end date is not set, or the end date is not yet past the current date.
+                    $scope.courses.inprogress.push(course);
+                }
+            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
+            return $q.reject();
+        });
+    }
+
+    function fetchUserCourses() {
+        var courseIds = [];
+        return $mmCourses.getUserCourses().then(function(courses) {
+            courseIds = courses.map(function(course) {
+                return course.id;
+            });
+
+            // Load the handlers of each course.
+            return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
+                angular.forEach(courses, function(course) {
+                    course.showProgress = true;
+                    course.progress = isNaN(parseInt(course.progress, 10)) ? false : parseInt(course.progress, 10);
+
+                    course.navOptions = options.navOptions[course.id];
+                    course.admOptions = options.admOptions[course.id];
+                });
+                return courses;
+            });
+        });
+    }
+
+    $scope.switchFilter = function() {
+        $scope.showFilter = !$scope.showFilter;
+        if (!$scope.showFilter) {
+            $scope.courses.filter = "";
+        }
+    };
+
+    $scope.switchGrid = function() {
+        $scope.showGrid = !$scope.showGrid;
+    };
+
     // Pull to refresh.
     $scope.refreshMyOverview = function() {
+        var promises = [];
+
         switch($scope.tabShown) {
             case 'timeline':
-                timeline = [];
-                $mmaMyOverview.invalidateActionEventsByTimesort().finally(function() {
-                    fetchMyOverviewTimesort().finally(function() {
-                        $scope.$broadcast('scroll.refreshComplete');
-                    });
-                });
+                promises.push($mmaMyOverview.invalidateActionEventsByTimesort());
+                promises.push($mmaMyOverview.invalidateActionEventsByCourses());
+                promises.push($mmCourses.invalidateUserNavigationOptions());
+                promises.push($mmCourses.invalidateUserAdministrationOptions());
+                promises.push($mmCourses.invalidateUserCourses());
                 break;
             case 'courses':
+                promises.push($mmCourses.invalidateUserNavigationOptions());
+                promises.push($mmCourses.invalidateUserAdministrationOptions());
+                promises.push($mmCourses.invalidateUserCourses());
+                break;
+        }
+
+        $q.all(promises).finally(function() {
+            var promise;
+
+            switch($scope.tabShown) {
+                case 'timeline':
+                    switch($scope.timeline.sort) {
+                        case 'sortbydates':
+                            $scope.timeline.events = [];
+                            promise = fetchMyOverviewTimesort();
+                            break;
+                        case 'sortbycourses':
+                            $scope.timeline.courses = [];
+                            promise = fetchMyOverviewTimelineByCourses();
+                            break;
+                    }
+                    break;
+                case 'courses':
+                    promise = fetchMyOverviewCourses();
+                    break;
+            }
+            promise.finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        });
+    };
+
+    // Change timeline sort being viewed.
+    $scope.switchSort = function() {
+        switch($scope.timeline.sort) {
+            case 'sortbydates':
+                if (!$scope.timeline.loaded) {
+                    fetchMyOverviewTimeline().finally(function() {
+                        $scope.timeline.loaded = true;
+                    });
+                }
+                break;
+            case 'sortbycourses':
+                if (!$scope.timelineCourses.loaded) {
+                    fetchMyOverviewTimelineByCourses().finally(function() {
+                        $scope.timelineCourses.loaded = true;
+                    });
+                }
                 break;
         }
     };
@@ -87,32 +223,37 @@ angular.module('mm.addons.myoverview')
         switch($scope.tabShown) {
             case 'timeline':
                 if (!$scope.timeline.loaded) {
-                    fetchMyOverviewTimeline().finally(function() {
+                    return fetchMyOverviewTimeline().finally(function() {
                         $scope.timeline.loaded = true;
                     });
                 }
                 break;
             case 'courses':
+                if (!$scope.courses.loaded) {
+                    return fetchMyOverviewCourses().finally(function() {
+                        $scope.courses.loaded = true;
+                    });
+                }
                 break;
         }
     };
 
-    $scope.switchTab('timeline');
+    $scope.switchTab('timeline').finally(function() {
+        if ($scope.timeline.events.length == 0) {
+            $scope.switchTab('courses')
+        }
+    });
 
     // Load more events.
-    $scope.loadMore = function() {
-        switch($scope.tabShown) {
-            case 'timeline':
-                $scope.timeline.loadingMore = true;
-                fetchMyOverviewTimeline(timeline[timeline.length -1].id).catch(function(message) {
-                    $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
-                }).finally(function() {
-                    $scope.timeline.loadingMore = false;
-                });
-                break;
-            case 'courses':
-                break;
-        }
+    $scope.loadMoreTimeline = function() {
+        return fetchMyOverviewTimeline($scope.timeline.canLoadMore);
+    };
 
+    // Load more events.
+    $scope.loadMoreCourse = function(course) {
+        return $mmaMyOverview.getActionEventsByCourse(course.id, course.canLoadMore).then(function(courseEvents) {
+            course.events = course.events.concat(courseEvents.events);
+            course.canLoadMore = courseEvents.canLoadMore;
+        });
     };
 });

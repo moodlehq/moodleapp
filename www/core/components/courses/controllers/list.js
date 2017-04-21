@@ -28,32 +28,27 @@ angular.module('mm.core.courses')
         myCoursesObserver;
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable() && !$mmCourses.isSearchCoursesDisabledInSite();
-    $scope.areNavHandlersLoadedFor = $mmCoursesDelegate.areNavHandlersLoadedFor;
     $scope.filter = {};
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses().then(function(courses) {
-            $scope.courses = courses;
             $scope.filter.filterText = ''; // Filter value MUST be set after courses are shown.
 
-            return loadCoursesNavHandlers(refresh);
+            var courseIds = courses.map(function(course) {
+                return course.id;
+            });
+
+            return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
+                angular.forEach(courses, function(course) {
+                    course.progress = isNaN(parseInt(course.progress, 10)) ? false : parseInt(course.progress, 10);
+                    course.navOptions = options.navOptions[course.id];
+                    course.admOptions = options.admOptions[course.id];
+                });
+                $scope.courses = courses;
+            });
         }, function(error) {
             $mmUtil.showErrorModalDefault(error, 'mm.courses.errorloadcourses', true);
-        });
-    }
-
-    // Convenience function to load the handlers of each course.
-    function loadCoursesNavHandlers(refresh) {
-        var courseIds = $scope.courses.map(function(course) {
-            return course.id;
-        });
-
-        return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
-            angular.forEach($scope.courses, function(course) {
-                course._handlers = $mmCoursesDelegate.getNavHandlersFor(
-                            course.id, refresh, options.navOptions[course.id], options.admOptions[course.id]);
-            });
         });
     }
 

@@ -27,14 +27,60 @@ angular.module('mm.addons.myoverview')
  * @param {Array} events        Array of event items to show.
  * @param {Boolean} showCourse  Whether of not show course name.
  */
-.directive('mmaMyOverviewEventList', function() {
+.directive('mmaMyOverviewEventList', function($mmCourse, $mmUtil) {
+
+    function filterEventsByTime(events, start, end) {
+        start = moment().add(start, 'days').unix();
+        end = typeof end == "undefined" ? false : moment().add(end, 'days').unix();
+
+        return events.filter(function(event) {
+            if (end) {
+                return start <= event.timesort && event.timesort < end;
+            }
+
+            return start <= event.timesort;
+        }).map(function(event) {
+            event.iconUrl = $mmCourse.getModuleIconSrc(event.icon.component);
+            return event;
+        });
+    }
 
     return {
         restrict: 'E',
         scope: {
             events: '=',
-            showCourse: '=?'
+            canLoadMore: '=?',
+            showCourse: '=?',
+            loadMore: '&'
         },
-        templateUrl: 'addons/myoverview/templates/eventlist.html'
+        templateUrl: 'addons/myoverview/templates/eventlist.html',
+        link: function(scope, element, attrs) {
+
+            updateEvents(scope.events);
+
+            scope.$watch('events', function(newValue) {
+                updateEvents(newValue);
+            });
+
+            function updateEvents(events) {
+                scope.empty = !events || events.length <= 0;
+                if (!scope.empty) {
+                    scope.recentlyOverdue = filterEventsByTime(events, -14, 0);
+                    scope.today = filterEventsByTime(events, 0, 1);
+                    scope.next7Days = filterEventsByTime(events, 1, 7);
+                    scope.next30Days = filterEventsByTime(events, 7, 30);
+                    scope.future = filterEventsByTime(events, 30);
+                }
+            }
+
+            scope.loadMoreEvents = function() {
+                scope.loadingMore = true;
+                scope.loadMore().catch(function(message) {
+                    $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
+                }).finally(function() {
+                    scope.loadingMore = false;
+                });
+            };
+        }
     };
 });

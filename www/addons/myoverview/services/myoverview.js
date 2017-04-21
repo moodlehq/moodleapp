@@ -21,10 +21,13 @@ angular.module('mm.addons.myoverview')
  * @ngdoc service
  * @name $mmaMyOverview
  */
-.factory('$mmaMyOverview', function($log, $mmSitesManager, $mmSite, $mmUtil) {
+.factory('$mmaMyOverview', function($log, $mmSitesManager, $mmSite) {
     $log = $log.getInstance('$mmaMyOverview');
 
-    var self = {};
+    var self = {
+        eventsLimit: 20,
+        eventsLimitPerCourse: 10
+    };
 
     /**
      * Get cache key for get calendar action events for a given list of courses value WS call.
@@ -32,7 +35,7 @@ angular.module('mm.addons.myoverview')
      * @return {String}       Cache key.
      */
     function getActionEventsByCoursesCacheKey() {
-        return 'myoverview:bycourses';
+        return 'myoverview:bycourse';
     }
 
     /**
@@ -42,7 +45,7 @@ angular.module('mm.addons.myoverview')
      * @return {String}             Cache key.
      */
     function getActionEventsByCourseCacheKey(courseId) {
-        return 'myoverview:bycourse:' + courseId;
+        return getActionEventsByCoursesCacheKey() + ':' + courseId;
     }
 
     /**
@@ -118,15 +121,52 @@ angular.module('mm.addons.myoverview')
      */
     self.getActionEventsByCourses = function(courseIds, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-
-            var data = {
-                    courseids: courseIds
+            var time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
+                data = {
+                    //timesortfrom: time,
+                    courseids: courseIds,
+                    limitnum: self.eventsLimitPerCourse
                 },
                 presets = {
                     cacheKey: getActionEventsByCoursesCacheKey()
                 };
 
-            return site.read('core_calendar_get_action_events_by_courses', data, presets);
+            return site.read('core_calendar_get_action_events_by_courses', data, presets).then(function(events) {
+                if (events && events.groupedbycourse) {
+                    var courseEvents = {};
+
+                    angular.forEach(events.groupedbycourse, function(course) {
+                        var canLoadMore = course.events.length >= self.eventsLimitPerCourse ? course.lastid : false;
+
+                        // Filter events by time in case it uses cache.
+                        course.events = course.events.filter(function(element) {
+                            return element.timesort >= time;
+                        });
+
+                        courseEvents[course.courseid] = {
+                            events: course.events,
+                            canLoadMore: canLoadMore
+                        };
+                    });
+                    return courseEvents;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates get calendar action events for a given list of courses WS call.
+     *
+     * @module mm.core.myoverview
+     * @ngdoc method
+     * @name $mmCourses#invalidateActionEventsByCourses
+     * @param {String} [siteId] Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateActionEventsByCourses = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getActionEventsByCoursesCacheKey());
         });
     };
 
@@ -137,20 +177,42 @@ angular.module('mm.addons.myoverview')
      * @ngdoc method
      * @name $mmaMyOverview#getActionEventsByCourse
      * @param {Number}  courseId    Only events in this course.
+     * @param {Number}  [afterEventId]  The last seen event id.
      * @param {String}  [siteId]    Site. If not defined, use current site.
      * @return {Promise}            Promise to be resolved when the info is retrieved.
      */
-    self.getActionEventsByCourse = function(courseId, siteId) {
+    self.getActionEventsByCourse = function(courseId, afterEventId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-
-            var data = {
-                    courseid: courseId
+            var time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
+                data = {
+                    timesortfrom: time,
+                    courseid: courseId,
+                    limitnum: self.eventsLimitPerCourse
                 },
                 presets = {
                     cacheKey: getActionEventsByCourseCacheKey(courseId)
                 };
 
-            return site.read('core_calendar_get_action_events_by_course', data, presets);
+            if (afterEventId) {
+                data.aftereventid = afterEventId;
+            }
+
+            return site.read('core_calendar_get_action_events_by_course', data, presets).then(function(events) {
+                if (events && events.events) {
+                    var canLoadMore = events.events.length >= self.eventsLimitPerCourse ? events.lastid : false;
+
+                    // Filter events by time in case it uses cache.
+                    events = events.events.filter(function(element) {
+                        return element.timesort >= time;
+                    });
+
+                    return {
+                        events: events,
+                        canLoadMore: canLoadMore
+                    };
+                }
+                return $q.reject();
+            });
         });
     };
 
@@ -168,7 +230,8 @@ angular.module('mm.addons.myoverview')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data = {
-                    timesortfrom: time
+                    timesortfrom: time,
+                    limitnum: self.eventsLimit
                 },
                 presets = {
                     cacheKey: getActionEventsByTimesortCacheKey()
@@ -179,10 +242,20 @@ angular.module('mm.addons.myoverview')
             }
 
             return site.read('core_calendar_get_action_events_by_timesort', data, presets).then(function(events) {
-                // Filter events by time in case it uses cache.
-                return events.events.filter(function(element) {
-                    return element.timesort >= time;
-                });
+                if (events && events.events) {
+                    var canLoadMore = events.events.length >= self.eventsLimit ? events.lastid : false;
+
+                    // Filter events by time in case it uses cache.
+                    events = events.events.filter(function(element) {
+                        return element.timesort >= time;
+                    });
+
+                    return {
+                        events: events,
+                        canLoadMore: canLoadMore
+                    };
+                }
+                return $q.reject();
             });
         });
     };
