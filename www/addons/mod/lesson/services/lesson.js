@@ -144,7 +144,10 @@ angular.module('mm.addons.mod_lesson')
             return 100;
         }
 
-        var promise;
+        var promise,
+            ntries = accessInfo.attemptscount,
+            viewedPagesIds = [];
+
         if (pageIndex) {
             promise = $q.when();
         } else {
@@ -154,13 +157,18 @@ angular.module('mm.addons.mod_lesson')
         }
 
         return promise.then(function() {
-            // @todo Question pages.
+            // Get the list of question pages answered.
+            return self.getPagesIdsWithQuestionAttempts(lessonId, ntries, false, siteId);
+        }).then(function(ids) {
+            viewedPagesIds = ids;
 
             // Get the list of viewed content pages.
-            return self.getContentPagesViewedIds(lessonId, accessInfo.attemptscount, siteId);
-        }).then(function(viewedPagesIds) {
+            return self.getContentPagesViewedIds(lessonId, ntries, siteId);
+        }).then(function(viewedContentPagesIds) {
             var pageId = accessInfo.firstpageid,
                 validPages = {};
+
+            viewedPagesIds = $mmUtil.mergeArraysWithoutDuplicates(viewedPagesIds, viewedContentPagesIds);
 
             // Filter out the following pages:
             // - End of Cluster
