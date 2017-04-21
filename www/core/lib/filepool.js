@@ -2758,7 +2758,7 @@ angular.module('mm.core')
             return $q.when();
         }
 
-        return $mmUtil.getMimeType(url).then(function(mimetype) {
+        return $mmUtil.getMimeTypeFromUrl(url).then(function(mimetype) {
             // If the file is streaming (audio or video) we reject.
             if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
                 return $q.reject();

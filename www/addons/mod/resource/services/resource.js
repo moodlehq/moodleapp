@@ -226,11 +226,14 @@ angular.module('mm.addons.mod_resource')
             component = mmaModResourceComponent,
             url = contents[0].fileurl,
             fixedUrl = $mmSite.fixPluginfileURL(url),
+            status,
             promise;
 
         if ($mmFS.isAvailable()) {
             // The file system is available.
-            promise = $mmFilepool.getPackageStatus(siteId, component, moduleId, revision, timeMod).then(function(status) {
+            promise = $mmFilepool.getPackageStatus(siteId, component, moduleId, revision, timeMod).then(function(stat) {
+                status = stat;
+
                 var isWifi = !$mmApp.isNetworkAccessLimited(),
                     isOnline = $mmApp.isOnline();
 
@@ -272,11 +275,34 @@ angular.module('mm.addons.mod_resource')
             promise = $q.when(fixedUrl);
         }
 
-        return promise.then(function(url) {
-            if (url.indexOf('http') === 0) {
-                return $mmUtil.openOnlineFile(url);
+        return promise.then(function(path) {
+            if (path.indexOf('http') === 0) {
+                return $mmUtil.openOnlineFile(path).catch(function(error) {
+                    // Error opening the file, some apps don't allow opening online files.
+                    if (!$mmFS.isAvailable()) {
+                        return $q.reject(error);
+                    }
+
+                    var subPromise;
+                    if (status === mmCoreDownloading) {
+                        subPromise = $mmLang.translateAndReject('mm.core.erroropenfiledownloading');
+                    } else if (status === mmCoreNotDownloaded) {
+                        // File is not downloaded, download and then return the local URL.
+                        subPromise = $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod)
+                                .then(function() {
+                            return $mmFilepool.getInternalUrlByUrl(siteId, url);
+                        });
+                    } else {
+                        // File is outdated or stale and can't be opened in online, return the local URL.
+                        subPromise = $mmFilepool.getInternalUrlByUrl(siteId, url);
+                    }
+
+                    return subPromise.then(function(path) {
+                        return $mmUtil.openFile(path);
+                    });
+                });
             } else {
-                return $mmUtil.openFile(url);
+                return $mmUtil.openFile(path);
             }
         });
     };
