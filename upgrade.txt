@@ -12,6 +12,7 @@ information provided here is intended especially for developers.
  * Question type addons can now implement an optional prepareAnswers function. If provided, this function will be called before sending the quiz data to the server, and allows the addon to perform changes in the data to send.
  * The promise returned by $mmaModForum#canAddDiscussion is now resolved with an object (WS response) instead of a boolean.
  * The parameters of the following functions have changed to match the WS behaviour: $mmaModForum#addNewDiscussion, $mmaModForum#addNewDiscussionOnline, $mmaModForumOffline#addNewDiscussion, $mmaModForum#replyPost, $mmaModForum#replyPostOnline, $mmaModForumOffline#replyPost.
+ * The function $mmUtil#getMimeType has been deprecated. Please use $mmUtil#getMimeTypeFromUrl instead.
 
 === 3.2.1 ===
 

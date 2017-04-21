@@ -42,7 +42,7 @@ angular.module('mm.core.login')
             $scope.sitePolicy = settings.sitepolicy;
 
             // Try to get the mime type.
-            return $mmUtil.getMimeType($scope.sitePolicy).then(function(mimeType) {
+            return $mmUtil.getMimeTypeFromUrl($scope.sitePolicy).then(function(mimeType) {
                 var extension = $mmFS.getExtension(mimeType, $scope.sitePolicy);
                 $scope.showInline = extension == 'html' || extension == 'html';
 

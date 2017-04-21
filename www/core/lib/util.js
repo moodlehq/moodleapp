@@ -445,14 +445,15 @@ angular.module('mm.core')
 
             if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
                 // In Android we need the mimetype to open it.
-                var extension,
-                    iParams;
+                var iParams;
 
-                $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                self.getMimeTypeFromUrl(url).catch(function() {
+                    // Error getting mimetype, return undefined.
+                }).then(function(mimetype) {
                     if (!mimetype) {
-                        // Couldn't retireve mimetype. Try to guess it.
-                        extension = $mmFS.guessExtensionFromUrl(url);
-                        mimetype = $mmFS.getMimeType(extension);
+                        // Couldn't retrieve mimetype. Return error.
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                        return;
                     }
 
                     iParams = {
@@ -473,12 +474,7 @@ angular.module('mm.core')
                             $log.debug('url: ' + iParams.url);
                             $log.debug('type: ' + iParams.type);
 
-                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
-                                // Extension not found.
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
-                            } else {
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
-                            }
+                            $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
                         }
                     );
                 });
@@ -492,22 +488,42 @@ angular.module('mm.core')
         };
 
         /**
-         * Get the mimetype of a file given its URL. It'll perform a HEAD request to get it, if that
-         * fails it'll try to guess it using the URL.
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#getMimeType
          * @param  {String} url The URL of the file.
          * @return {Promise}    Promise resolved with the mimetype.
+         * @deprecated since 3.3. Use $mmUtil#getMimeTypeFromUrl.
          */
         self.getMimeType = function(url) {
+            $log.warn('$mmUtil#getMimeType is deprecated. Use $mmUtil#getMimeTypeFromUrl instead');
+            return self.getMimeTypeFromUrl(url);
+        };
+
+        /**
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getMimeTypeFromUrl
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved with the mimetype.
+         */
+        self.getMimeTypeFromUrl = function(url) {
+            // First check if it can be guessed from the URL.
+            var extension = $mmFS.guessExtensionFromUrl(url),
+                mimetype = $mmFS.getMimeType(extension);
+
+            if (mimetype) {
+                return $q.when(mimetype);
+            }
+
+            // Can't be guessed, get the remote mimetype.
             return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
-                if (!mimetype) {
-                    // Couldn't retireve mimetype. Try to guess it.
-                    extension = $mmFS.guessExtensionFromUrl(url);
-                    mimetype = $mmFS.getMimeType(extension);
-                }
                 return mimetype || '';
             });
         };
