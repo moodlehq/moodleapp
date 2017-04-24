@@ -6,6 +6,8 @@
     "continuetonextpage": "Continue to next page.",
     "defaultessayresponse": "Your essay will be graded by your teacher.",
     "displayofgrade": "Display of grade (for students only)",
+    "displayscorewithessays": "<p>You earned {{$a.score}} out of {{$a.tempmaxgrade}} for the automatically graded questions.</p><p>Your {{$a.essayquestions}} essay question(s) will be graded and added into your final score at a later date.</p><p>Your current grade without the essay question(s) is {{$a.score}} out of {{$a.grade}}.</p>",
+    "displayscorewithoutessays": "Your score is {{$a.score}} (out of {{$a.grade}}).",
     "emptypassword": "Password cannot be empty",
     "enterpassword": "Please enter the password:",
     "eolstudentoutoftimenoanswers": "You did not answer any questions.  You have received a 0 for this lesson.",
@@ -22,6 +24,7 @@
     "modattemptsnoteacher": "Student review only works for students.",
     "noanswer": "One or more questions have no answer given.  Please go back and submit an answer.",
     "numberofcorrectanswers": "Number of correct answers: {{$a}}",
+    "numberofpagesviewed": "Number of questions answered: {{$a}}",
     "numberofpagesviewednotice": "Number of questions answered: {{$a.nquestions}} (You should answer at least {{$a.minquestions}})",
     "ongoingcustom": "You have earned {{$a.score}} point(s) out of {{$a.currenthigh}} point(s) thus far.",
     "ongoingnormal": "You have answered {{$a.correct}} correctly out of {{$a.viewed}} attempts.",
@@ -42,5 +45,7 @@
     "unseenpageinbranch": "Unseen question within a content page",
     "welldone": "Well done!",
     "youhaveseen": "You have seen more than one page of this lesson already.<br />Do you want to start at the last page you saw?",
-    "youranswer": "Your answer"
+    "youranswer": "Your answer",
+    "yourcurrentgradeisoutof": "Your current grade is {{$a.grade}} out of {{$a.total}}",
+    "youshouldview": "You should answer at least: {{$a}}"
 }

@@ -103,7 +103,10 @@ angular.module('mm.addons.mod_lesson')
 
         if (!accessInfo.canmanage) {
             if (lesson.ongoing && !reviewMode) {
-                ongoingMessage = self.getOngoingScoreMessage(lesson, accessInfo, review);
+                promises.push(self.getOngoingScoreMessage(lesson, accessInfo, password, review, pageIndex, siteId)
+                        .then(function(message) {
+                    ongoingMessage = message;
+                }));
             }
             if (lesson.progressbar) {
                 promises.push(self.calculateProgress(lesson.id, accessInfo, password, review, pageIndex, siteId).then(function(p) {
@@ -284,7 +287,16 @@ angular.module('mm.addons.mod_lesson')
             result.newpageid = answer.jumpto;
         });
 
-        // Don't store userresponse because it contains a PHP serialization so it shouldn't be used by the app.
+        var userResponse = {
+            sent: 0,
+            graded: 0,
+            score: 0,
+            answer: studentAnswer,
+            answerformat: 1,
+            response: '',
+            responseformat: 1
+        };
+        result.userresponse = userResponse;
         result.studentanswerformat = 1;
         result.studentanswer = studentAnswer;
     }
@@ -763,10 +775,15 @@ angular.module('mm.addons.mod_lesson')
         if (offline) {
             var attempt = accessInfo.attemptscount;
             return $mmaModLessonOffline.finishAttempt(lesson.id, courseId, attempt, true, outOfTime, siteId).then(function() {
+                // Get the lesson grade.
+                return self.lessonGrade(lesson, accessInfo.attemptscount, password, review, undefined, siteId).catch(function() {
+                    // Ignore errors.
+                    return {};
+                });
+            }).then(function(gradeInfo) {
                 // Attempt marked, now return the response. We won't return all the possible data.
                 // This code is based in Moodle's process_eol_page.
-                var gradeInfo = self.lessonGrade(),
-                    gradeLesson = true,
+                var gradeLesson = true,
                     result = {
                         data: {},
                         messages: [],
@@ -822,7 +839,7 @@ angular.module('mm.addons.mod_lesson')
                             };
                             if (gradeInfo.nmanual) {
                                 entryData.tempmaxgrade = gradeInfo.total - gradeInfo.manualpoints;
-                                entryData.essayquestions = gradeInfo.manual;
+                                entryData.essayquestions = gradeInfo.nmanual;
                                 addResultValue(result, 'displayscorewithessays', entryData, true);
                             } else {
                                 addResultValue(result, 'displayscorewithoutessays', entryData, true);
@@ -870,10 +887,16 @@ angular.module('mm.addons.mod_lesson')
 
         // Add a property to the offline result.
         function addResultValue(result, name, value, addMessage) {
+            var message = '';
+            if (addMessage) {
+                var params = typeof value != 'boolean' ? {$a: value} : undefined;
+                message = $translate.instant('mma.mod_lesson.' + name, params);
+            }
+
             result.data[name] = {
                 name: name,
                 value: value,
-                message: addMessage ? $translate.instant('mma.mod_lesson.' + name) : ''
+                message: message
             };
         }
     };
@@ -1335,36 +1358,84 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#getOngoingScoreMessage
-     * @param  {Object} lesson     Lesson.
-     * @param  {Object} accessInfo Result of get access info.
-     * @param  {Boolean} [review]  If the user wants to review just after finishing (1 hour margin).
-     * @return {String}            Ongoing score message.
+     * @param  {Object} lesson      Lesson.
+     * @param  {Object} accessInfo  Result of get access info.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} [pageIndex] Object containing all the pages indexed by ID. If not provided, it will be calculated.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the ongoing score message.
      */
-    self.getOngoingScoreMessage = function(lesson, accessInfo, review) {
+    self.getOngoingScoreMessage = function(lesson, accessInfo, password, review, pageIndex, siteId) {
         if (accessInfo.canmanage) {
-            return $translate.instant('mma.mod_lesson.teacherongoingwarning');
+            return $q.when($translate.instant('mma.mod_lesson.teacherongoingwarning'));
         } else {
             var ntries = accessInfo.attemptscount;
             if (review) {
                 ntries--;
             }
 
-            var gradeInfo = self.lessonGrade(),
-                data = {};
+            return self.lessonGrade(lesson, ntries, password, review, pageIndex, siteId).then(function(gradeInfo) {
+                var data = {};
 
-            if (lesson.custom) {
-                data.score = gradeInfo.earned;
-                data.currenthigh = gradeInfo.total;
-                return $translate.instant('mma.mod_lesson.ongoingcustom', {$a: data});
-            } else {
-                data.correct = gradeInfo.earned;
-                data.viewed = gradeInfo.attempts;
-                return $translate.instant('mma.mod_lesson.ongoingnormal', {$a: data});
-            }
+                if (lesson.custom) {
+                    data.score = gradeInfo.earned;
+                    data.currenthigh = gradeInfo.total;
+                    return $translate.instant('mma.mod_lesson.ongoingcustom', {$a: data});
+                } else {
+                    data.correct = gradeInfo.earned;
+                    data.viewed = gradeInfo.attempts;
+                    return $translate.instant('mma.mod_lesson.ongoingnormal', {$a: data});
+                }
+            });
         }
-
-        return '';
     };
+
+    /**
+     * Get the answers from a page.
+     *
+     * @param  {Object} lesson      Lesson.
+     * @param  {Number} pageId      Page ID the answer belongs to.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the list of answers.
+     */
+    function getPageAnswers(lesson, pageId, password, review, siteId) {
+        return self.getPageData(lesson, pageId, password, review, true, true, false, undefined, undefined, siteId)
+                .then(function(data) {
+            return data.answers;
+        });
+    }
+
+    /**
+     * Get all the answers from a list of pages, indexed by answerId.
+     *
+     * @param  {Object} lesson      Lesson.
+     * @param  {Number[]} pageIds   List of page IDs.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the list of answers.
+     */
+    function getPagesAnswers(lesson, pageIds, password, review, siteId) {
+        var answers = {},
+            promises = [];
+
+        angular.forEach(pageIds, function(pageId) {
+            promises.push(getPageAnswers(lesson, pageId, password, review, siteId).then(function(pageAnswers) {
+                angular.forEach(pageAnswers, function(answer) {
+                    // Include the pageid in each answer and add them to the final list.
+                    answer.pageid = pageId;
+                    answers[answer.id] = answer;
+                });
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return answers;
+        });
+    }
 
     /**
      * Get cache key for get page data WS calls.
@@ -1405,13 +1476,14 @@ angular.module('mm.addons.mod_lesson')
      * @param  {String} [siteId]           Site ID. If not defined, current site.
      * @return {Promise}                   Promise resolved with the page data.
      */
-    self.getPageData = function(lesson, pageId, password, review, includeContents, forceCache, ignoreCache, accessInfo, jumps, siteId) {
+    self.getPageData = function(lesson, pageId, password, review, includeContents, forceCache, ignoreCache, accessInfo, jumps,
+                siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     lessonid: lesson.id,
-                    pageid: pageId,
+                    pageid: parseInt(pageId, 10),
                     review: review ? 1 : 0,
                     returncontents: includeContents ? 1 : 0
                 },
@@ -1434,8 +1506,11 @@ angular.module('mm.addons.mod_lesson')
                 if (forceCache && accessInfo && data.page) {
                     // Offline mode and valid page. Calculate the data that might be affected.
                     return calculateOfflineData(lesson, accessInfo, password, review, false, siteId).then(function(calculatedData) {
-                        data.messages = self.getPageViewMessages(lesson, accessInfo, data.page, review, jumps);
-                        return angular.extend(data, calculatedData);
+                        angular.extend(data, calculatedData);
+                        return self.getPageViewMessages(lesson, accessInfo, data.page, review, jumps, password, siteId);
+                    }).then(function(messages) {
+                        data.messages = messages;
+                        return data;
                     });
                 }
 
@@ -1632,38 +1707,44 @@ angular.module('mm.addons.mod_lesson')
      * @param  {Object} page       Page loaded.
      * @param  {Boolean} review    If the user wants to review just after finishing (1 hour margin).
      * @param  {Object} jumps      Result of get pages possible jumps.
-     * @return {String[]}          Messages.
+     * @param  {String} [password] Lesson password (if any).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the list of messages.
      */
-    self.getPageViewMessages = function(lesson, accessInfo, page, review, jumps) {
+    self.getPageViewMessages = function(lesson, accessInfo, page, review, jumps, password, siteId) {
         var messages = [],
-            data;
+            data,
+            promise = $q.when();
 
         if (!accessInfo.canmanage) {
             if (page.qtype == self.LESSON_PAGE_BRANCHTABLE && lesson.minquestions) {
                 // Tell student how many questions they have seen, how many are required and their grade.
-                var ntries = accessInfo.attemptscount,
-                    gradeInfo = self.lessonGrade();
+                var ntries = accessInfo.attemptscount;
 
-                if (gradeInfo.attempts) {
-                    if (gradeInfo.nquestions < lesson.minquestions) {
-                        data = {
-                            nquestions: gradeInfo.nquestions,
-                            minquestions: lesson.minquestions
-                        };
-                        addMessage(messages, 'mma.mod_lesson.numberofpagesviewednotice', {$a: data});
-                    }
-
-                    if (!review && !lesson.retake) {
-                        addMessage(messages, 'mma.mod_lesson.numberofcorrectanswers', {$a: gradeInfo.earned});
-                        if (lesson.grade != mmCoreGradeTypeNone) {
+                promise = self.lessonGrade(lesson, ntries, password, review, undefined, siteId).then(function(gradeInfo) {
+                    if (gradeInfo.attempts) {
+                        if (gradeInfo.nquestions < lesson.minquestions) {
                             data = {
-                                grade: $mmUtil.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
-                                total: lesson.grade
+                                nquestions: gradeInfo.nquestions,
+                                minquestions: lesson.minquestions
                             };
-                            addMessage(messages, 'mma.mod_lesson.yourcurrentgradeisoutof', {$a: data});
+                            addMessage(messages, 'mma.mod_lesson.numberofpagesviewednotice', {$a: data});
+                        }
+
+                        if (!review && !lesson.retake) {
+                            addMessage(messages, 'mma.mod_lesson.numberofcorrectanswers', {$a: gradeInfo.earned});
+                            if (lesson.grade != mmCoreGradeTypeNone) {
+                                data = {
+                                    grade: $mmUtil.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
+                                    total: lesson.grade
+                                };
+                                addMessage(messages, 'mma.mod_lesson.yourcurrentgradeisoutof', {$a: data});
+                            }
                         }
                     }
-                }
+                }).catch(function() {
+                    // Ignore errors.
+                });
             }
         } else {
             if (lesson.timelimit) {
@@ -1681,7 +1762,9 @@ angular.module('mm.addons.mod_lesson')
             }
         }
 
-        return messages;
+        return promise.then(function() {
+            return messages;
+        });
     };
 
     /**
@@ -2319,39 +2402,144 @@ angular.module('mm.addons.mod_lesson')
 
     /**
      * Calculates a user's grade for a lesson.
+     * Based on Moodle's lesson_grade.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#lessonGrade
-     * @return {Object} Object with the grade data.
+     * @param  {Object} lesson      Lesson.
+     * @param  {Number} retry       Retry number.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} [pageIndex] Object containing all the pages indexed by ID. If not provided, it will be calculated.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @param  {Number} [userId]    User ID. If not defined, site's user.
+     * @return {Promise}            Promise resolved with an object with the grade data.
      */
-    self.lessonGrade = function() {
+    self.lessonGrade = function(lesson, retry, password, review, pageIndex, siteId, userId) {
         // Initialize all variables.
-        var ncorrect     = 0,
-            nviewed      = 0,
-            score        = 0,
-            nmanual      = 0,
-            manualpoints = 0,
-            thegrade     = 0,
-            nquestions   = 0,
+        var nViewed      = 0,
+            nManual      = 0,
+            manualPoints = 0,
+            theGrade     = 0,
+            nQuestions   = 0,
             total        = 0,
             earned       = 0;
 
-        // @todo Handle questions.
+        // Get the questions attempts for the user.
+        return self.getQuestionsAttempts(lesson.id, retry, false, undefined, siteId, userId).then(function(attempts) {
+            attempts = attempts.online.concat(attempts.offline);
 
-        if (total) { // Not zero.
-            thegrade = $mmUtil.roundToDecimals(100 * earned / total, 5);
-        }
+            if (!attempts.length) {
+                // No attempts.
+                return;
+            }
 
-        return {
-            nquestions: nquestions,
-            attempts: nviewed,
-            total: total,
-            earned: earned,
-            grade: thegrade,
-            nmanual: nmanual,
-            manualpoints: manualpoints
-        };
+            var promise,
+                attemptSet = {};
+
+            // Create the pageIndex if it isn't provided.
+            if (!pageIndex) {
+                promise = self.getPages(lesson.id, password, true, false, siteId).then(function(pages) {
+                    pageIndex = createPagesIndex(pages);
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+
+                // Group each try with its page
+                angular.forEach(attempts, function(attempt) {
+                    if (!attemptSet[attempt.pageid]) {
+                        attemptSet[attempt.pageid] = [];
+                    }
+                    attemptSet[attempt.pageid].push(attempt);
+                });
+
+                // Drop all attempts that go beyond max attempts for the lesson
+                angular.forEach(attemptSet, function(set, pageId) {
+                    // Sort the list by time in ascending order.
+                    set = set.sort(function(a, b) {
+                        return (a.timeseen || a.timemodified) > (b.timeseen || b.timemodified) ? 1 : -1;
+                    });
+                    attemptSet[pageId] = set.slice(0, lesson.maxattempts);
+                });
+
+                // Get all the answers from the pages the user answered.
+                return getPagesAnswers(lesson, Object.keys(attemptSet), password, review, siteId);
+            }).then(function(answers) {
+                // Number of pages answered.
+                nQuestions = Object.keys(attemptSet).length;
+
+                angular.forEach(attemptSet, function(attempts) {
+                    var lastAttempt = attempts[attempts.length - 1];
+                    if (lesson.custom) {
+                        // If essay question, handle it, otherwise add to score.
+                        if (pageIndex[lastAttempt.pageid].qtype == self.LESSON_PAGE_ESSAY) {
+                            if (lastAttempt.useranswer && typeof lastAttempt.useranswer.score != 'undefined') {
+                                earned += lastAttempt.useranswer.score;
+                            }
+                            nManual++;
+                            manualPoints += answers[lastAttempt.answerid].score;
+                        } else if (lastAttempt.answerid) {
+                            earned += answers[lastAttempt.answerid].score;
+                        }
+                    } else {
+                        angular.forEach(attempts, function(attempt) {
+                            earned += attempt.correct ? 1 : 0;
+                        });
+                        // If essay question, increase numbers.
+                        if (pageIndex[lastAttempt.pageid].qtype == self.LESSON_PAGE_ESSAY) {
+                            nManual++;
+                            manualPoints++;
+                        }
+                    }
+
+                    // Number of times answered.
+                    nViewed += attempts.length;
+                });
+
+                if (lesson.custom) {
+                    var bestScores = {};
+                    // Find the highest possible score per page to get our total.
+                    angular.forEach(answers, function(answer) {
+                        if (typeof bestScores[answer.pageid] == 'undefined') {
+                            bestScores[answer.pageid] = answer.score;
+                        } else if (bestScores[answer.pageid] < answer.score) {
+                            bestScores[answer.pageid] = answer.score;
+                        }
+                    });
+
+                    // Sum all the scores.
+                    angular.forEach(bestScores, function(score) {
+                        total += score;
+                    });
+                } else {
+                    // Check to make sure the student has answered the minimum questions.
+                    if (lesson.minquestions && nQuestions < lesson.minquestions) {
+                        // Nope, increase number viewed by the amount of unanswered questions.
+                        total = nViewed + (lesson.minquestions - nQuestions);
+                    } else {
+                        total = nViewed;
+                    }
+                }
+            });
+        }).then(function() {
+            if (total) { // Not zero.
+                theGrade = $mmUtil.roundToDecimals(100 * earned / total, 5);
+            }
+
+            return {
+                nquestions: nQuestions,
+                attempts: nViewed,
+                total: total,
+                earned: earned,
+                grade: theGrade,
+                nmanual: nManual,
+                manualpoints: manualPoints
+            };
+        });
     };
 
     /**
@@ -2500,7 +2688,7 @@ angular.module('mm.addons.mod_lesson')
             if (pageData.page.qtype == self.LESSON_PAGE_BRANCHTABLE) {
                 // Store the content page data. In Moodle this is stored in a separate table, during checkAnswer.
                 return $mmaModLessonOffline.processPage(lesson.id, courseId, nretakes, pageData.page, data,
-                            result.newpageid, false, siteId).then(function() {
+                            result.newpageid, result.answerid, false, result.userresponse, siteId).then(function() {
                     return result;
                 });
             }
@@ -2540,8 +2728,8 @@ angular.module('mm.addons.mod_lesson')
                             // Store the student's attempt and increase the number of attempts made.
                             // Calculate and store the new page ID to prevent having to recalculate it later.
                             var newPageId = getNewPageId(pageData.page.id, result.newpageid, jumps);
-                            subPromise = $mmaModLessonOffline.processPage(lesson.id, courseId, nretakes,
-                                        pageData.page, data, newPageId, result.correctanswer, siteId);
+                            subPromise = $mmaModLessonOffline.processPage(lesson.id, courseId, nretakes, pageData.page, data,
+                                        newPageId, result.answerid, result.correctanswer, result.userresponse, siteId);
                             nattempts++;
                         }
                     }

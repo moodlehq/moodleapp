@@ -496,17 +496,19 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLessonOffline#processPage
-     * @param  {Number} lessonId   Lesson ID.
-     * @param  {Number} courseId   Course ID the lesson belongs to.
-     * @param  {Number} attempt    Attempt number.
-     * @param  {Object} page       Page.
-     * @param  {Object} data       Data to save.
-     * @param  {Number} newPageId  New page ID (calculated).
-     * @param  {Boolean} [correct] If answer is correct. Only for question pages.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved in success, rejected otherwise.
+     * @param  {Number} lessonId    Lesson ID.
+     * @param  {Number} courseId    Course ID the lesson belongs to.
+     * @param  {Number} attempt     Attempt number.
+     * @param  {Object} page        Page.
+     * @param  {Object} data        Data to save.
+     * @param  {Number} newPageId   New page ID (calculated).
+     * @param  {Number} [answerId]  The answer ID that the user answered.
+     * @param  {Boolean} [correct]  If answer is correct. Only for question pages.
+     * @param  {Mixed} [userAnswer] The user's answer (userresponse from checkAnswer).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved in success, rejected otherwise.
      */
-    self.processPage = function(lessonId, courseId, attempt, page, data, newPageId, correct, siteId) {
+    self.processPage = function(lessonId, courseId, attempt, page, data, newPageId, answerId, correct, userAnswer, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -519,6 +521,8 @@ angular.module('mm.addons.mod_lesson')
                 type: page.type,
                 newpageid: newPageId,
                 correct: !!correct,
+                answerid: parseInt(answerId, 10),
+                userAnswer: userAnswer,
                 timemodified: $mmUtil.timestamp()
             };
 
