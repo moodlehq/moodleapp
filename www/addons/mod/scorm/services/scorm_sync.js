@@ -559,7 +559,7 @@ angular.module('mm.addons.mod_scorm')
 
         // Sort offline attempts in DESC order.
         offlineAttempts = offlineAttempts.sort(function(a, b) {
-            return parseInt(a, 10) < parseInt(b, 10);
+            return parseInt(a, 10) <= parseInt(b, 10) ? 1 : -1;
         });
 
         // First move the offline attempts after the collisions;
@@ -581,7 +581,7 @@ angular.module('mm.addons.mod_scorm')
 
             // Sort newAttempts in ASC order.
             newAttempts = newAttempts.sort(function(a, b) {
-                return parseInt(a, 10) > parseInt(b, 10);
+                return parseInt(a, 10) >= parseInt(b, 10) ? 1 : -1;
             });
 
             // Now move the attempts in newAttempts.

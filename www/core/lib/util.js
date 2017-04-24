@@ -1949,7 +1949,7 @@ angular.module('mm.core')
             var entries = getEntries('', obj);
             if (sort) {
                 return entries.sort(function(a, b) {
-                    return a.name > b.name;
+                    return a.name >= b.name ? 1 : -1;
                 });
             }
             return entries;
