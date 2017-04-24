@@ -298,9 +298,17 @@ angular.module('mm.addons.mod_lesson')
     function processPage(data) {
         showLoading();
 
-        // @todo Refresh contentpagesviewed and questionsattempts after online process.
         var args = [lesson, courseId, $scope.pageData, data, password, $scope.review, offline, accessInfo, jumps];
         return callFunction($mmaModLesson.processPage, args, 6).then(function(result) {
+            if (!offline && !$scope.review && $mmaModLesson.isLessonOffline(lesson)) {
+                // Lesson allows offline and the user changed some data in server. Update cached data.
+                if ($mmaModLesson.isQuestionPage($scope.pageData.page.type)) {
+                    $mmaModLesson.getQuestionsAttemptsOnline(lesson.id, accessInfo.attemptscount, false, undefined, false, true);
+                } else {
+                    $mmaModLesson.getContentPagesViewedOnline(lesson.id, accessInfo.attemptscount, false, true);
+                }
+            }
+
             if (result.nodefaultresponse || result.inmediatejump) {
                 // Don't display feedback or force a redirect to a new page. Load the new page.
                 return jumpToPage(result.newpageid);
