@@ -2461,7 +2461,7 @@ angular.module('mm.addons.mod_lesson')
                 angular.forEach(attemptSet, function(set, pageId) {
                     // Sort the list by time in ascending order.
                     set = set.sort(function(a, b) {
-                        return (a.timeseen || a.timemodified) > (b.timeseen || b.timemodified) ? 1 : -1;
+                        return (a.timeseen || a.timemodified) - (b.timeseen || b.timemodified);
                     });
                     attemptSet[pageId] = set.slice(0, lesson.maxattempts);
                 });

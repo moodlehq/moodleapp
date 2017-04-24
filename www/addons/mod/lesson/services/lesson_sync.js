@@ -191,17 +191,24 @@ angular.module('mm.addons.mod_lesson')
 
                 return $mmaModLessonPrefetchHandler.gatherLessonPassword(lessonId, false, true, askPassword, siteId);
             }).then(function(data) {
-                var answersLength = answers.length,
-                    lastAnswer,
-                    promises = [];
+                var answersLength = answers.length;
 
                 accessInfo = data.accessinfo;
                 password = data.password;
                 lesson = data.lesson || lesson;
 
+                var promises = [];
+
                 // Filter the answers, get only the ones that belong to the current attempt.
                 answers = answers.filter(function(answer) {
-                    return answer.attempt == accessInfo.attemptscount;
+                    if (answer.attempt != accessInfo.attemptscount) {
+                        promises.push($mmaModLessonOffline.deleteAnswer(lesson.id, answer.attempt, answer.pageid,
+                                answer.timemodified, siteId).catch(function() {
+                            // Ignore errors.
+                        }));
+                        return false;
+                    }
+                    return true;
                 });
 
                 if (answers.length != answersLength) {
@@ -209,29 +216,30 @@ angular.module('mm.addons.mod_lesson')
                     result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                         component: $mmCourse.translateModuleName('lesson'),
                         name: lesson.name,
-                        error: ''
+                        error: $translate.instant('mma.mod_lesson.warningattemptfinished')
                     }));
                 }
 
+                return $q.all(promises);
+            }).then(function() {
                 if (!answers.length) {
                     return;
                 }
 
-                // Sort the answers by timemodified.
+                // Send the answers in the same order they were answered.
                 answers.sort(function(a, b) {
-                    return a.timemodified > b.timemodified;
-                });
-                lastAnswer = answers.pop();
-
-                // Send all the answers except the last page (so last page seen is calculated right).
-                angular.forEach(answers, function(answer) {
-                    promises.push(sendAnswer(lesson, password, answer, result, siteId));
+                    return a.timemodified - b.timemodified;
                 });
 
-                return $q.all(promises).then(function() {
-                    // Now send the last page.
-                    return sendAnswer(lesson, password, lastAnswer, result, siteId);
+                answers = answers.map(function(answer) {
+                    return {
+                        func: sendAnswer,
+                        params: [lesson, password, answer, result, siteId],
+                        blocking: true
+                    };
                 });
+
+                return $mmUtil.executeOrderedPromises(answers);
             });
         }).then(function() {
             // Answers sent or there was none. If there is a finished attempt, send it.
@@ -270,7 +278,7 @@ angular.module('mm.addons.mod_lesson')
                             result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                 component: $mmCourse.translateModuleName('lesson'),
                                 name: lesson.name,
-                                error: ''
+                                error: $translate.instant('mma.mod_lesson.warningattemptfinished')
                             }));
                         }
 
@@ -359,14 +367,14 @@ angular.module('mm.addons.mod_lesson')
         return $mmaModLesson.processPageOnline(lesson.id, answer.pageid, answer.data, password, false, siteId).then(function() {
             result.updated = true;
 
-            return $mmaModLessonOffline.deleteAttemptAnswersForPage(lesson.id, answer.attempt, answer.pageid, siteId);
+            return $mmaModLessonOffline.deleteAnswer(lesson.id, answer.attempt, answer.pageid, answer.timemodified, siteId);
         }).catch(function(error) {
             if (error && $mmUtil.isWebServiceError(error)) {
-                // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
+                // The WebService has thrown an error, this means that the answer cannot be submitted. Delete it.
                 result.updated = true;
-                return $mmaModLessonOffline.deleteAttemptAnswersForPage(lesson.id, answer.attempt, answer.pageid, siteId)
+                return $mmaModLessonOffline.deleteAnswer(lesson.id, answer.attempt, answer.pageid, answer.timemodified, siteId)
                         .then(function() {
-                    // Responses deleted, add a warning.
+                    // Answer deleted, add a warning.
                     result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                         component: $mmCourse.translateModuleName('lesson'),
                         name: lesson.name,

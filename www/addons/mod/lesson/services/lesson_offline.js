@@ -99,6 +99,25 @@ angular.module('mm.addons.mod_lesson')
     var self = {};
 
     /**
+     * Delete offline answer.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#deleteAnswer
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {Number} attempt      Attempt number.
+     * @param  {Number} pageId       Page ID.
+     * @param  {Number} timemodified The time modified of the answer.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved when done.
+     */
+    self.deleteAnswer = function(lessonId, attempt, pageId, timemodified, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId, timemodified]);
+        });
+    };
+
+    /**
      * Delete offline attempt.
      *
      * @module mm.addons.mod_lesson
