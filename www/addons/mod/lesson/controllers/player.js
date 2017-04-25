@@ -21,8 +21,9 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc controller
  * @name mmaModLessonPlayerCtrl
  */
-.controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate) {
+.controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil, $mmApp,
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu, $translate, $mmaModLessonOffline,
+            $mmaModLessonSync) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
@@ -32,7 +33,8 @@ angular.module('mm.addons.mod_lesson')
         offline = false,
         scrollView,
         originalData,
-        blockData;
+        blockData,
+        jumps;
 
     // Block the lesson so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModLessonComponent, lessonId);
@@ -48,29 +50,53 @@ angular.module('mm.addons.mod_lesson')
 
     // Convenience function to get Lesson data.
     function fetchLessonData() {
-        return $mmaModLesson.getLessonById(courseId, lessonId).then(function(lessonData) {
+        // Wait for any ongoing sync to finish. We won't sync a lesson while it's being played.
+        return $mmaModLessonSync.waitForSync(lessonId).then(function() {
+            return $mmaModLesson.getLessonById(courseId, lessonId);
+        }).then(function(lessonData) {
             lesson = lessonData;
             $scope.lesson = lesson;
             $scope.title = lesson.name; // Temporary title.
 
-            return $mmaModLesson.getAccessInformation(lesson.id, offline, true);
+            // If lesson has offline data already, use offline mode.
+            return $mmaModLessonOffline.hasOfflineData(lessonId);
+        }).then(function(offlineMode) {
+            offline = offlineMode;
+            if (!offline && !$mmApp.isOnline() && $mmaModLesson.isLessonOffline(lesson)) {
+                // Lesson doesn't have offline data, but it allows offline and the device is offline. Use offline mode.
+                offline = true;
+            }
+
+            return callFunction($mmaModLesson.getAccessInformation, [lesson.id, offline, true], 1);
         }).then(function(info) {
+            var promises = [];
+
             accessInfo = info;
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 // If it's a password protected lesson and we have the password, allow attempting it.
                 if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
                     // Lesson cannot be attempted, show message and go back.
-                    return $q.reject(info.preventaccessreasons[0]);
+                    return $q.reject(info.preventaccessreasons[0].message);
                 }
             }
 
             if (password) {
                 // Lesson uses password, get the whole lesson object.
-                return $mmaModLesson.getLessonWithPassword(lesson.id, password, true, offline, true).then(function(lessonData) {
-                    lesson = lessonData;
+                var args = [lesson.id, password, true, offline, true];
+                promises.push(callFunction($mmaModLesson.getLessonWithPassword, args, 3).then(function(less) {
+                    lesson = less;
                     $scope.lesson = lesson;
-                });
+                }));
             }
+
+            if (offline) {
+                // Offline mode, get the list of possible jumps to allow navigation.
+                promises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, offline).then(function(jumpList) {
+                    jumps = jumpList;
+                }));
+            }
+
+            return $q.all(promises);
         }).then(function() {
             $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
 
@@ -87,7 +113,23 @@ angular.module('mm.addons.mod_lesson')
 
     // Start or continue an attempt.
     function launchAttempt(pageId) {
-        return $mmaModLesson.launchAttempt(lesson.id, password, pageId).then(function(data) {
+        var promise;
+
+        if (!offline) {
+            // Not in offline mode, launch the attempt.
+            promise = $mmaModLesson.launchAttempt(lesson.id, password, pageId);
+        } else {
+            // Check if there is a finished offline attempt.
+            promise = $mmaModLessonOffline.hasFinishedAttempt(lesson.id).then(function(finished) {
+                if (finished) {
+                    // Always show EOL page.
+                    pageId = $mmaModLesson.LESSON_EOL;
+                }
+                return {};
+            });
+        }
+
+        return promise.then(function(data) {
             $scope.currentPage = pageId || accessInfo.firstpageid;
             $scope.messages = data.messages || [];
 
@@ -99,13 +141,18 @@ angular.module('mm.addons.mod_lesson')
                 });
             }
         }).then(function() {
+            if ($scope.currentPage == $mmaModLesson.LESSON_EOL) {
+                // End of lesson reached.
+                return finishAttempt();
+            }
             return loadPage($scope.currentPage);
         });
     }
 
     // Load a certain page.
     function loadPage(pageId) {
-        return $mmaModLesson.getPageData(lesson.id, pageId, password, $scope.review, true, offline, true).then(function(data) {
+        var args = [lesson, pageId, password, $scope.review, true, offline, true, accessInfo, jumps];
+        return callFunction($mmaModLesson.getPageData, args, 5).then(function(data) {
             if (data.newpageid == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
                 return finishAttempt();
@@ -141,8 +188,43 @@ angular.module('mm.addons.mod_lesson')
 
     // Finish the attempt.
     function finishAttempt(outOfTime) {
+        var promise;
+
         $scope.messages = [];
-        return $mmaModLesson.finishAttempt(lesson.id, password, outOfTime, $scope.review).then(function(data) {
+
+        if (offline && $mmApp.isOnline()) {
+            // Offline mode but the app is online. Try to sync the data.
+            promise = $mmaModLessonSync.syncLesson(lesson.id, true, true).then(function(result) {
+                if (result.warnings && result.warnings.length) {
+                    var error = result.warnings[0];
+
+                    // Some data was deleted. Check if the attempt has changed.
+                    return $mmaModLesson.getAccessInformation(lesson.id).then(function(info) {
+                        if (info.attemptscount != accessInfo.attemptscount) {
+                            // The attempt has changed. Leave the view and show the error.
+                            blockData && blockData.back();
+                            return $q.reject(error);
+                        }
+
+                        // Attempt hasn't changed, show the warning and finish the attempt in online.
+                        offline = false;
+                        $mmUtil.showErrorModal(error);
+                    });
+                }
+
+                offline = false;
+            }, function() {
+                // Ignore errors.
+            });
+        } else {
+            promise = $q.when();
+        }
+
+        return promise.then(function() {
+            // Now finish the attempt.
+            var args = [lesson, courseId, password, outOfTime, $scope.review, offline, accessInfo];
+            return callFunction($mmaModLesson.finishAttempt, args, 5);
+        }).then(function(data) {
             $scope.title = lesson.name;
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;
@@ -195,7 +277,7 @@ angular.module('mm.addons.mod_lesson')
         }
 
         $scope.loadingMenu = true;
-        return $mmaModLesson.getPages(lesson.id, password).then(function(pages) {
+        return callFunction($mmaModLesson.getPages, [lesson.id, password, offline, true], 2).then(function(pages) {
             $scope.lessonPages = pages.map(function(entry) {
                 return entry.page;
             });
@@ -211,7 +293,8 @@ angular.module('mm.addons.mod_lesson')
     function processPage(data) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, $scope.currentPage, data, password, $scope.review).then(function(result) {
+        var args = [lesson, courseId, $scope.pageData, data, password, $scope.review, offline, accessInfo, jumps];
+        return callFunction($mmaModLesson.processPage, args, 6).then(function(result) {
             if (result.nodefaultresponse || result.inmediatejump) {
                 // Don't display feedback or force a redirect to a new page. Load the new page.
                 return jumpToPage(result.newpageid);
@@ -267,6 +350,33 @@ angular.module('mm.addons.mod_lesson')
         // Load new page.
         $scope.messages = [];
         return loadPage(pageId);
+    }
+
+    /**
+     * Call a function and go offline if allowed and the call fails.
+     *
+     * @param  {Function} func          Function to call.
+     * @param  {Mixed[]} args           Arguments to pass to the function.
+     * @param  {Number} offlineParamPos Position of the offline parameter in the args.
+     * @return {Promise}                Promise resolved in success, rejected otherwise.
+     */
+    function callFunction(func, args, offlineParamPos) {
+        return func.apply(this, args).catch(function(error) {
+            if (!offline && !$scope.review && $mmaModLesson.isLessonOffline(lesson) && !$mmUtil.isWebServiceError(error)) {
+                // If it fails, go offline.
+                offline = true;
+
+                // Get the possible jumps now.
+                return $mmaModLesson.getPagesPossibleJumps(lesson.id, offline).then(function(jumpList) {
+                    jumps = jumpList;
+
+                    // Call the function again with offline set to true.
+                    args[offlineParamPos] = true;
+                    return func.apply(this, args);
+                });
+            }
+            return $q.reject(error);
+        });
     }
 
     // Fetch the Lesson data.
@@ -330,6 +440,7 @@ angular.module('mm.addons.mod_lesson')
     $scope.reviewLesson = function(pageId) {
         showLoading();
         $scope.review = true;
+        offline = false; // Don't allow offline mode in review.
 
         loadPage(pageId).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error loading page');
@@ -339,5 +450,10 @@ angular.module('mm.addons.mod_lesson')
 
     // Setup right side menu.
     $mmSideMenu.showRightSideMenu('addons/mod/lesson/templates/menu.html', $scope);
+
+    $scope.$on('$destroy', function() {
+        // Unblock the lesson so it can be synced.
+        $mmSyncBlock.unblockOperation(mmaModLessonComponent, lessonId);
+    });
 
 });
