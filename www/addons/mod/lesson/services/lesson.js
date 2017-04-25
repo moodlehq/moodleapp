@@ -1502,6 +1502,13 @@ angular.module('mm.addons.mod_lesson')
                 preSets.emergencyCache = 0;
             }
 
+            if (review) {
+                // Force online mode in review.
+                preSets.getFromCache = 0;
+                preSets.saveToCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
             return site.read('mod_lesson_get_page_data', params, preSets).then(function(data) {
                 if (forceCache && accessInfo && data.page) {
                     // Offline mode and valid page. Calculate the data that might be affected.

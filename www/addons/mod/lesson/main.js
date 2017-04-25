@@ -46,7 +46,9 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
         courseid: null,
         lessonid: null,
         pageid: null,
-        password: null
+        password: null,
+        review: false,
+        attempt: null // Only if review=true. To verify that the attempt can be reviewed.
       },
       views: {
         'site': {

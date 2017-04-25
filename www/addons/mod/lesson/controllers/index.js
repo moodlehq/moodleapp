@@ -83,6 +83,19 @@ angular.module('mm.addons.mod_lesson')
                     $scope.hasOffline = hasOffline;
                 }));
 
+                // Check if there is an attempt finished in a synchronization.
+                promises.push($mmaModLessonSync.getAttemptFinishedInSync(lesson.id).then(function(attempt) {
+                    if (attempt && attempt.attempt == accessInfo.attemptscount - 1) {
+                        // The attempt finished is still the last attempt. Allow reviewing it.
+                        $scope.attemptToReview = attempt;
+                    } else {
+                        $scope.attemptToReview = undefined;
+                        if (attempt) {
+                            $mmaModLessonSync.deleteAttemptFinishedInSync(lesson.id);
+                        }
+                    }
+                }));
+
                 // Update the list of content pages viewed and question attempts.
                 promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, accessInfo.attemptscount));
                 promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, accessInfo.attemptscount));
@@ -314,6 +327,23 @@ angular.module('mm.addons.mod_lesson')
         } else {
             playLesson(continueLast);
         }
+    };
+
+    // Review the lesson.
+    $scope.review = function() {
+        if (!$scope.attemptToReview) {
+            // No attempt to review, stop.
+            return;
+        }
+
+        $state.go('site.mod_lesson-player', {
+            courseid: courseId,
+            lessonid: lesson.id,
+            pageid: $scope.attemptToReview.pageid,
+            password: password,
+            review: true,
+            attempt: $scope.attemptToReview.attempt
+        });
     };
 
     // Submit password for password protected lessons.

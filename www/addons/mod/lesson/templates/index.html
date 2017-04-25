@@ -36,6 +36,13 @@
             </form>
 
             <div ng-if="lesson && (!preventMessages || !preventMessages.length) && !showSpinner">
+                <div ng-if="attemptToReview" class="card">
+                    <!-- An attempt was finished in a synchronization, allow reviewing it. -->
+                    <p class="item item-text-wrap">{{ 'mma.mod_lesson.attemptfinishedinsync' | translate }}</p>
+                    <div class="item">
+                        <button class="button button-block" ng-click="review()">{{ 'mma.mod_lesson.review' | translate }}</button>
+                    </div>
+                </div>
                 <div ng-if="leftDuringTimed && !lesson.timelimit" class="card">
                     <!-- User left during the session and there is no time limit, ask to continue. -->
                     <p class="item item-text-wrap" ng-bind-html="'mma.mod_lesson.youhaveseen' | translate"></p>

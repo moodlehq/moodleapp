@@ -14,6 +14,26 @@
 
 angular.module('mm.addons.mod_lesson')
 
+.constant('mmaModLessonAttemptsFinishedSyncStore', 'mma_mod_lesson_attempts_finished_sync')
+
+.config(function($mmSitesFactoryProvider, mmaModLessonAttemptsFinishedSyncStore) {
+    var stores = [
+        {
+            name: mmaModLessonAttemptsFinishedSyncStore,
+            keyPath: 'lessonid', // Only 1 attempt per lesson.
+            indexes: [
+                {
+                    name: 'attempt'
+                },
+                {
+                    name: 'timefinished'
+                }
+            ]
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+})
+
 /**
  * Lesson synchronization service.
  *
@@ -23,12 +43,48 @@ angular.module('mm.addons.mod_lesson')
  */
 .factory('$mmaModLessonSync', function($log, $mmaModLesson, $mmSite, $mmSitesManager, $q, $mmaModLessonOffline, $mmUtil,
             $mmLang, $mmApp, $mmEvents, $translate, mmaModLessonSyncTime, $mmSync, mmaModLessonAutomSyncedEvent,
-            mmaModLessonComponent, $mmaModLessonPrefetchHandler, $mmCourse, $mmSyncBlock) {
+            mmaModLessonComponent, $mmaModLessonPrefetchHandler, $mmCourse, $mmSyncBlock, mmaModLessonAttemptsFinishedSyncStore) {
 
     $log = $log.getInstance('$mmaModLessonSync');
 
     // Inherit self from $mmSync.
     var self = $mmSync.createChild(mmaModLessonComponent, mmaModLessonSyncTime);
+
+    /**
+     * Unmark an attempt as finished in a synchronization.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonSync#deleteAttemptFinishedInSync
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.deleteAttemptFinishedInSync = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonAttemptsFinishedSyncStore, lessonId);
+        }).catch(function() {
+            // Ignore errors, maybe there is none.
+        });
+    };
+
+    /**
+     * Get the number of an attempt finished in a synchronization for a certain lesson (if any).
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonSync#getAttemptFinishedInSync
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the attempt entry (undefined if no attempt).
+     */
+    self.getAttemptFinishedInSync = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModLessonAttemptsFinishedSyncStore, lessonId);
+        }).catch(function() {
+            // Ignore errors, return undefined.
+        });
+    };
 
     /**
      * Check if a lesson has data to synchronize.
@@ -57,6 +113,29 @@ angular.module('mm.addons.mod_lesson')
 
         return $q.all(promises).then(function() {
             return hasDataToSync;
+        });
+    };
+
+    /**
+     * Mark an attempt as finished in a synchronization.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonSync#setAttemptFinishedInSync
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  The attempt number.
+     * @param  {Number} pageId   The page ID to start reviewing from.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.setAttemptFinishedInSync = function(lessonId, attempt, pageId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().insert(mmaModLessonAttemptsFinishedSyncStore, {
+                lessonid: lessonId,
+                attempt: parseInt(attempt, 10),
+                pageid: parseInt(pageId, 10),
+                timefinished: $mmUtil.timestamp()
+            });
         });
     };
 
@@ -286,8 +365,19 @@ angular.module('mm.addons.mod_lesson')
                     }
 
                     // All good, finish the attempt.
-                    return $mmaModLesson.finishAttemptOnline(lessonId, password, false, false, siteId).then(function() {
+                    return $mmaModLesson.finishAttemptOnline(lessonId, password, false, false, siteId).then(function(response) {
                         result.updated = true;
+
+                        if (!ignoreBlock) {
+                            // Mark the attempt as finished in a sync if it can be reviewed.
+                            if (response.data && response.data.reviewlesson) {
+                                var params = $mmUtil.extractUrlParams(response.data.reviewlesson.value);
+                                if (params && params.pageid) {
+                                    // The attempt can be reviewed, mark it as finished. Don't block the user for this.
+                                    self.setAttemptFinishedInSync(lessonId, attempt.attempt, params.pageid, siteId);
+                                }
+                            }
+                        }
 
                         return $mmaModLessonOffline.deleteAttempt(lessonId, siteId);
                     }).catch(function(error) {
