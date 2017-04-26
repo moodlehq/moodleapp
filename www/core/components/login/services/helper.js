@@ -29,7 +29,7 @@ angular.module('mm.core.login')
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
             md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
-            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses) {
+            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -159,6 +159,29 @@ angular.module('mm.core.login')
         }
 
         return errors;
+    };
+
+    /**
+     * Get the valid identity providers from a site config.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#getValidIdentityProviders
+     * @param  {Object} siteConfig Site's public config.
+     * @return {Object[]}          Valid identity providers.
+     */
+    self.getValidIdentityProviders = function(siteConfig) {
+        var validProviders = [],
+            httpUrl = $mmFS.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/'),
+            httpsUrl = $mmFS.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+
+        angular.forEach(siteConfig.identityproviders, function(provider) {
+            if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1)) {
+                validProviders.push(provider);
+            }
+        });
+
+        return validProviders;
     };
 
     /**
@@ -315,6 +338,43 @@ angular.module('mm.core.login')
      */
     self.isSSOLoginNeeded = function(code) {
         return code == mmLoginSSOCode || code == mmLoginSSOInAppCode;
+    };
+
+    /**
+     * Open a browser to perform OAuth login (Google, Facebook, Microsoft).
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#openBrowserForOAuthLogin
+     * @param  {String} siteUrl       URL of the site where the login will be performed.
+     * @param  {Number} id            ID of the identity provider.
+     * @param  {String} [launchUrl]   The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated.
+     * @return {Void}
+     */
+    self.openBrowserForOAuthLogin = function(siteUrl, id, launchUrl, stateName, stateParams) {
+        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+
+        var service = $mmSitesManager.determineService(siteUrl),
+            loginUrl = self.prepareForSSOLogin(siteUrl, service, launchUrl, stateName, stateParams);
+
+        loginUrl += '&oauthsso=' + id;
+
+        if (id != 1) {
+            // Not Google, open in InAppBrowser.
+            var options = {
+                clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
+                closebuttoncaption: $translate.instant('mm.login.cancel'),
+            };
+            $mmUtil.openInApp(loginUrl, options);
+        } else {
+            // Open Google in browser.
+            $mmUtil.openInBrowser(loginUrl);
+            if (navigator.app) {
+                navigator.app.exitApp();
+            }
+        }
     };
 
     /**

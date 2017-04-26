@@ -24,3 +24,31 @@
 .mm-login-sitepolicy-iframe {
   height: 300px;
 }
+
+.mm-oauth-icon, .button.mm-oauth-icon, .button-bar > .button.mm-oauth-icon {
+  padding: 0 4px;
+
+  > img, > span {
+    max-height: $item-icon-font-size;
+    max-width: $item-icon-font-size;
+    vertical-align: middle;
+  }
+  > span {
+    margin-left: 5px;
+  }
+}
+
+.mm-mm_login_credentials, .mm-mm_login_reconnect {
+  .mm-ioninput-password {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .mm-oauth-icon, .button.mm-oauth-icon, .button-bar > .button.mm-oauth-icon {
+    &:not(:only-child) > span {
+      display: none;
+    }
+  }
+}
