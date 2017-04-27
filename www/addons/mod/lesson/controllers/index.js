@@ -72,6 +72,7 @@ angular.module('mm.addons.mod_lesson')
                 promise;
 
             accessInfo = info;
+            $scope.canManage = info.canmanage;
 
             if ($mmaModLesson.isLessonOffline(lesson)) {
                 // Handle status.

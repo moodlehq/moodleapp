@@ -72,6 +72,8 @@ angular.module('mm.addons.mod_lesson')
             var promises = [];
 
             accessInfo = info;
+            $scope.canManage = info.canmanage;
+
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 // If it's a password protected lesson and we have the password, allow attempting it.
                 if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
@@ -153,7 +155,7 @@ angular.module('mm.addons.mod_lesson')
             $scope.currentPage = pageId || accessInfo.firstpageid;
             $scope.messages = data.messages || [];
 
-            if (lesson.timelimit) {
+            if (lesson.timelimit && !accessInfo.canmanage) {
                 // Get the last lesson timer.
                 return $mmaModLesson.getTimers(lesson.id, false, true).then(function(timers) {
                     var lastTimer = timers[timers.length - 1];

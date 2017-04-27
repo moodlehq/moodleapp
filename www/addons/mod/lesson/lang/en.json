@@ -31,6 +31,8 @@
     "ongoingcustom": "You have earned {{$a.score}} point(s) out of {{$a.currenthigh}} point(s) thus far.",
     "ongoingnormal": "You have answered {{$a.correct}} correctly out of {{$a.viewed}} attempts.",
     "or": "OR",
+    "preview": "Preview",
+    "progressbarteacherwarning2": "You will not see the progress bar because you can edit this lesson",
     "progresscompleted": "You have completed {{$a}}% of the lesson",
     "review": "Review",
     "reviewlesson": "Review lesson",

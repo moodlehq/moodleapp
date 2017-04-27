@@ -65,7 +65,8 @@
                 <div ng-if="!leftDuringTimed" class="card">
                     <!-- User hasn't left during the session, show a start button. -->
                     <div class="item">
-                        <button class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.startattempt' | translate }}</button>
+                        <button ng-if="!canManage" class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.startattempt' | translate }}</button>
+                        <button ng-if="canManage" class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.preview' | translate }}</button>
                     </div>
                 </div>
             </div>
