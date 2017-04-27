@@ -15,22 +15,20 @@
  * Variables
  */
 
-$orange-medium: #ff7701; // Default app color.
-
 // Bar content.
-$bar-content-bg: $orange-medium !default;
+$bar-content-bg: $orange !default;
 $bar-content-border: transparent !default;
-$bar-content-text: #fff !default;
+$bar-content-text: $white !default;
 
 // Small avatar ideal for icons.
 $item-media-width: 32px !default;
 $item-media-height: 32px !default;
 
 // Messages.
-$item-message-bg: $stable !default;
-$item-message-note-text: #999 !default;
+$item-message-bg: $white !default;
+$item-message-note-text: $gray-dark !default;
 $item-message-note-font-size: $font-size-small !default;
-$item-message-mine-bg: rgba(17, 193, 243, .1) !default;
+$item-message-mine-bg: $turquoise-light !default;
 
 // Disabled items.
 $item-disabled-color: #999 !default;
@@ -39,11 +37,11 @@ $item-disabled-color: #999 !default;
 $mm-warning-color: $energized !default; // Energized / yellow.
 $mm-success-color: $balanced !default; // Balanced / green.
 $mm-info-color: $positive !default; // Positive / blue.
-$mm-error-color: #c00 !default; // Red.
+$mm-error-color: $assertive !default; // Red.
 
 // Timer variables.
-$mm-timer-warn-color:     #f00 !default;
-$mm-timer-color:          #fff !default;
+$mm-timer-warn-color:     $assertive !default;
+$mm-timer-color:          $white !default;
 $mm-timer-iterations:     15 !default;
 
 // Text with icon.
@@ -53,7 +51,7 @@ $mm-text-with-icon-height: 22px !default;
 $mm-button-icon-small-height: 22px !default;
 
 // Required inputs asterisk color.
-$mm-input-required-asterisk-color: #ff4136 !default;
+$mm-input-required-asterisk-color: $red !default;
 
 // Item padding.
 $item-input-padding: 16px !default;
@@ -123,7 +121,7 @@ em {
   @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
   .button {
     @include button-style($bar-content-bg, $bar-content-border, $bar-content-bg, $bar-content-border, $bar-content-text);
-    @include button-clear(#fff, $bar-title-font-size);
+    @include button-clear($white, $bar-title-font-size);
   }
 }
 
@@ -214,11 +212,6 @@ p.item-text-wrap {
   }
 }
 
-.item-message .item-content {
-  background-color: $item-message-bg;
-  padding: 0;
-}
-
 // Defines when an item-message is the user's.
 .item-message-mine {
   background-color: $item-message-mine-bg;
@@ -239,7 +232,8 @@ p.item-text-wrap {
   }
 }
 
-.item-message-mine .item-content {
+.item-message .item-content,
+.item-message-mine .item-content{
   background-color: transparent;
   padding: 0;
 }
@@ -300,8 +294,8 @@ p.item-text-wrap {
 }
 
 /* Show buttons as tabs */
-@include tabs-striped-color('tabs-color-orange', $orange-medium);
-@include tabs-color('tabs-color-orange', $orange-medium);
+@include tabs-striped-color('tabs-color-orange', $orange);
+@include tabs-color('tabs-color-orange', $orange);
 
 .tabs.tabs-free {
   position: initial;
@@ -312,13 +306,13 @@ p.item-text-wrap {
   box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2);
 
   .tab-item {
-    color: #666;
+    color: $gray-dark;
     margin-top: 0;
     max-width: initial;
     font-size: 120%;
 
     &.active, &.activated {
-      color: black;
+      color: $black;
       margin-top: 0;
       border-top-width: 0;
       border-bottom-width: 3px;
@@ -480,8 +474,17 @@ mm-loading.mm-loading-center {
 }
 
 .mm-split-item-selected, .mm-split-item-selected .item {
-  border-color: #ccc;
-  background-color: #D9D9D9;
+  background-color: $gray-light;
+  border-left: 5px solid $orange-light;
+  padding-left: $item-padding - 4;
+
+  &.item-avatar,
+  &.item-avatar-left {
+    padding-left: $item-avatar-width + ($item-padding * 2) - 4;
+    > img:first-child {
+      left: $item-padding - 4;
+    }
+  }
 }
 
 .mm-module-buttons {
@@ -535,7 +538,7 @@ img.mm-media-adapt-width-enabled {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  color: black;
+  color: $black;
   font-size: 20px;
   border-radius: 5px;
   background: rgba(255, 255, 255, .5);
@@ -545,7 +548,7 @@ img.mm-media-adapt-width-enabled {
   line-height: 30px;
 
   i.icon:before {
-    color: black !important;
+    color: $black !important;
   }
 }
 
@@ -591,7 +594,7 @@ mm-navigation-bar {
   padding: $card-padding;
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
-  background-color: #fff;
+  background-color: $white;
   position: relative;
   text-align: left;
 
@@ -626,7 +629,7 @@ mm-navigation-bar {
   padding: $card-padding;
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
-  background-color: #fff;
+  background-color: $white;
   position: relative;
   padding-left: $item-padding * 3;
   text-align: left;
@@ -1043,6 +1046,10 @@ input[type="radio"].mm-radio {
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
+
+  .item-input-wrapper {
+    background: white;
+  }
 }
 
 .item.mm-not-clickable {
@@ -1669,6 +1676,10 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
   pointer-events: none;
 }
 
+.item-divider .item-note {
+  color: $gray-dark;
+}
+
 
 .mm-empty-box {
   padding-top: $item-padding;
@@ -1695,13 +1706,13 @@ progress {
   appearance: none;
 
   &[value]::-webkit-progress-bar {
-    background-color: #eee;
+    background-color: $gray-light;
     border-radius: 2px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
   }
 
   &[value]::-webkit-progress-value {
-    background-color: $orange-medium;
+    background-color: $orange-light;
     border-radius: 2px;
     background-size: 35px 20px, 100% 100%, 100% 100%;
   }

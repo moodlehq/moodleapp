@@ -1,10 +1,10 @@
 $chart-size: 70px;
 $doughnut-border-size: 15px;
 $doughnut-dasharray: 173;
-$doughnut-empty-colour: #dcdcdc;
-$doughnut-fill-colour: #f89406;
-$doughnut-border-colour: #c4c8cc;
-$doughnut-text-colour: #73777d;
+$doughnut-empty-colour: $gray-light;
+$doughnut-fill-colour: $orange-light;
+$doughnut-border-colour:  $gray-medium;
+$doughnut-text-colour: $gray-dark;
 
 .item-course {
   >.icon {
