@@ -1,0 +1,15 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-bookmark" ng-if="showToc && !loadingToc && toc && toc.length" ng-click="popover.show($event)">
+        </button>
+        <ion-spinner ng-if="showToc && loadingToc"></ion-spinner>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <mm-loading hide-until="loaded">
+            <mm-navigation-bar previous="previousSco" next="nextSco" action="loadSco"></mm-navigation-bar>
+            <mm-iframe ng-if="src" src="src" iframe-width="{{scorm.popup ? scorm.width : undefined}}" iframe-height="{{scorm.popup ? scorm.height : undefined}}" ng-class='{"mm-has-navigation-bar": previousSco || nextSco}'></mm-iframe>
+            <p ng-if="!src && errorMessage">{{ errorMessage | translate }}</p>
+	    </mm-loading>
+    </ion-content>
+</ion-view>

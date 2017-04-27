@@ -1,0 +1,13 @@
+{
+    "erroremptysubject": "Pranešimo temos langelis negali būti tuščias",
+    "errorgetforum": "Klaida gaunant forumo duomenis.",
+    "errorgetgroups": "Klaida gaunant grupės nustatymus.",
+    "forumnodiscussionsyet": "Pokalbio temų forume dar nėra.",
+    "group": "Grupė",
+    "numdiscussions": "Pokalbių {{numdiscussions}}",
+    "numreplies": "Atsakymų {{numreplies}}",
+    "refreshdiscussions": "Atnaujinti pokalbius",
+    "refreshposts": "Atnaujinti pokalbių įrašus",
+    "sortnewestfirst": "Rodyti naujesnius",
+    "sortoldestfirst": "Rodyti senesnius"
+}

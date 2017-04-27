@@ -1,0 +1,28 @@
+<ion-modal-view class="mma-mod_chat-users-modal">
+    <ion-header-bar>
+      <h1 class="title">{{ 'mma.mod_chat.currentusers' | translate }}</h1>
+      <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+    </ion-header-bar>
+    <ion-content>
+        <mm-loading hide-until="usersLoaded">
+            <ul class="list">
+                <li ng-repeat="user in chatUsers" class="item-complex">
+                    <div class="item item-avatar">
+                        <img ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
+                        <mm-format-text>{{user.fullname}}</mm-format-text>
+                        <div class="item tabs tabs-secondary tabs-icon-left" ng-if="currentUserId != user.id && !isAppOffline()">
+                            <a class="tab-item" ng-click="talkTo(user.fullname)">
+                                <i class="icon ion-chatbox"></i>
+                                {{ 'mma.mod_chat.talk' | translate}}
+                            </a>
+                            <a class="tab-item" ng-click="beepTo(user.id)">
+                                <i class="icon ion-ios-bell"></i>
+                                {{ 'mma.mod_chat.beep' | translate}}
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </mm-loading>
+    </ion-content>
+</ion-modal-view>

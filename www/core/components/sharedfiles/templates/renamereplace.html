@@ -1,0 +1,13 @@
+<ion-modal-view class="mm-sharedfiles-renamereplace-modal">
+    <ion-header-bar>
+        <h1 class="title">{{ 'mm.sharedfiles.sharedfiles' | translate }}</h1>
+        <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+    </ion-header-bar>
+    <ion-content class="popup">
+        <p class="popup-body">{{ 'mm.sharedfiles.chooseactionrepeatedfile' | translate:{$a: newName} }}</p>
+        <div class="popup-buttons">
+	        <button class="button" ng-click="click(newName)">{{ 'mm.sharedfiles.rename' | translate }}</button>
+	        <button class="button" ng-click="click(originalName)">{{ 'mm.sharedfiles.replace' | translate }}</button>
+        </div>
+    </ion-content>
+</ion-modal-view>

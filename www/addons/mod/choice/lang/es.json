@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Lo lamentamos, se ha producido un error con el envío de su respuesta. Por favor inténtelo de nuevo.",
+    "choiceoptions": "Opciones de la Consulta",
+    "errorgetchoice": "Se ha producido un error recuperando los datos de la consulta.",
+    "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
+    "full": "(Lleno)",
+    "noresultsviewable": "Los resultados no pueden verse en este momento.",
+    "notopenyet": "Lo sentimos, esta actividad no estará disponible hasta {{$a}}",
+    "numberofuser": "Número de participantes",
+    "numberofuserinpercentage": "Porcentaje de participantes",
+    "previewonly": "Esta es solamente una previsualización de las opciones disponibles para esta actividad. No podrá enviar su respuesta a la consulta hasta el {{$a}}.",
+    "removemychoice": "Eliminar mi elección",
+    "responses": "Respuestas",
+    "responsesresultgraphdescription": "{{number}}% de los usuarios han escogido la opción: {{text}}.",
+    "responsesresultgraphheader": "Vista de gráfica",
+    "resultsnotsynced": "Los resultados no incluyen su última respuesta. Por favor, sincronícelos para actualizarlos.",
+    "savemychoice": "Guardar mi elección",
+    "userchoosethisoption": "Usuarios que eligieron esta opción",
+    "yourselection": "Su elección"
+}

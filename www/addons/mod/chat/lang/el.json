@@ -1,0 +1,8 @@
+{
+    "errorwhileconnecting": "Σφάλμα κατά τη σύνδεση στο chat.",
+    "errorwhilegettingchatdata": "Σφάλμα κατά την ανάκτηση των δεδομένων του chat.",
+    "errorwhilegettingchatusers": "Σφάλμα κατά την ανάκτηση των χρηστών του chat.",
+    "errorwhileretrievingmessages": "Σφάλμα κατά την ανάκτηση των μηνυμάτων από το διακομιστή.",
+    "errorwhilesendingmessage": "Σφάλμα κατά την αποστολή του μηνύματος.",
+    "mustbeonlinetosendmessages": "Πρέπει να είστε συνδεδεμένοι για να στείλετε μηνύματα"
+}

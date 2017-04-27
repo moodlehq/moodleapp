@@ -1,0 +1,21 @@
+{
+    "answer": "回答",
+    "answersaved": "答案已儲存",
+    "complete": "完全",
+    "correct": "正確",
+    "errorattachmentsnotsupported": "本應用程序尚不支援將檔案附加到答案.",
+    "errorinlinefilesnotsupported": "該應用程序尚不支援線上檔案的編輯.",
+    "errorquestionnotsupported": "該應用程式不支援此問題類型: {{$ a}}.",
+    "feedback": "回饋",
+    "howtodraganddrop": "點一下選擇, 然後再點一下刪除.",
+    "incorrect": "不正確",
+    "information": "資訊",
+    "invalidanswer": "不完整的答案",
+    "notanswered": "尚未回答",
+    "notyetanswered": "還沒被填答",
+    "partiallycorrect": "部分正確",
+    "questionmessage": "問題 {{$a}}: {{$b}}",
+    "questionno": "試題{{$a}}",
+    "requiresgrading": "需要計分",
+    "unknown": "無法偵測到狀態"
+}

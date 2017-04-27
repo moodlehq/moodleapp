@@ -1,0 +1,17 @@
+<a class="item item-text-wrap item-media" ng-click="open($event)" ng-class="{'item-borderless': noBorder, 'item-button-right': manage}">
+    <img ng-src="{{fileIcon}}" alt="{{fileExtension}}" role="presentation" />
+    <p ng-if="!editMode" class="mm-text-with-icon-right">{{fileName}} <i class="icon ion-edit" ng-if="manage" ng-click="activateEdit($event)" aria-label="{{ 'mm.core.edit' | translate }}"></i></p>
+    <form class="item-input-inset mm-input-inset-no-padding" ng-if="editMode" ng-submit="changeName($event, data.filename)">
+    	<ion-input class="item-input-wrapper">
+    		<input class="mm-full-width" type="text" placeholder="{{ 'mm.core.filename' | translate }}" ng-model="data.filename" autocapitalize="none" autocorrect="off" ng-click="$event.stopPropagation()">
+    	</ion-input>
+    	<button type="submit" class="button button-icon mm-button-icon-small" ng-click="changeName($event, data.filename)" aria-label="{{ 'mm.core.save' | translate }}">
+        	<i class="icon ion-checkmark-round"></i>
+    	</button>
+    </form>
+    <p ng-if="size">{{ size }}</p>
+    <p ng-if="timeModified">{{ timeModified }}</p>
+    <button class="button button-icon" ng-if="manage" ng-click="deleteFile($event)" aria-label="{{ 'mm.core.delete' | translate }}">
+        <i class="icon ion-trash-a"></i>
+    </button>
+</a>

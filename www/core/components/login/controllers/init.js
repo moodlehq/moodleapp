@@ -33,8 +33,33 @@ angular.module('mm.core.login')
             disableBack: true
         });
 
+        // Check if there was a pending redirect.
+        var redirectData = $mmApp.getRedirect();
+        if (redirectData.siteid && redirectData.state) {
+            // Unset redirect data.
+            $mmApp.storeRedirect('', '', '');
+
+            // Only accept the redirect if it was stored less than 20 seconds ago.
+            if (new Date().getTime() - redirectData.timemodified < 20000) {
+                return $mmSitesManager.loadSite(redirectData.siteid).then(function() {
+                    if (!$mmLoginHelper.isSiteLoggedOut(redirectData.state, redirectData.params)) {
+                        $state.go(redirectData.state, redirectData.params);
+                    }
+                }).catch(function() {
+                    // Site doesn't exist.
+                    loadCurrent();
+                });
+            }
+        }
+
+        loadCurrent();
+    });
+
+    function loadCurrent() {
         if ($mmSite.isLoggedIn()) {
-            $mmLoginHelper.goToSiteInitialPage();
+            if (!$mmLoginHelper.isSiteLoggedOut()) {
+                $mmLoginHelper.goToSiteInitialPage();
+            }
         } else {
             $mmSitesManager.hasSites().then(function() {
                 return $state.go('mm_login.sites');
@@ -42,6 +67,6 @@ angular.module('mm.core.login')
                 return $mmLoginHelper.goToAddSite();
             });
         }
-    });
+    }
 
 });

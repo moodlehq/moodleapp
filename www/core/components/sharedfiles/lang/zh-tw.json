@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "選擇要存入檔案的帳號",
+    "chooseactionrepeatedfile": "已有一個同名稱的檔案.  要替換現有檔案還是將重新命名為“{{$ a}}”?",
+    "errorreceivefilenosites": "沒有已存入的網站. 請在與應用程式共享文件之前新增網站.",
+    "nosharedfiles": "此網站中沒有存入共享檔案.",
+    "nosharedfilestoupload": "您沒有要在此處上傳的檔案. 如果您要從其他應用程式上傳檔案, 請找出該檔案, 然後按一下[開啟]按鈕.",
+    "rename": "重新命名",
+    "replace": "替代",
+    "sharedfiles": "分享檔案",
+    "successstorefile": "檔案已成功儲存.現在您可以選擇檔案進行上傳到您的個人檔案."
+}

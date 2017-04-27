@@ -1,5 +1,6 @@
 {
-    "errorgetnotifications": "Fejl ved indhentning af underretninger",
+    "errorgetnotifications": "Fejl ved hentning af underretninger",
+    "notificationpreferences": "Indstillinger for underretninger",
     "notifications": "Underretninger",
     "therearentnotificationsyet": "Der er ingen underretninger"
 }

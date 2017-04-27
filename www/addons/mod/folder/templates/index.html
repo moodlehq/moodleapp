@@ -1,0 +1,30 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" content="'mm.core.refresh' | translate" action="refreshFolder()" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="canReload" on-refresh="refreshFolder()"></ion-refresher>
+        <mm-loading hide-until="folderLoaded">
+            <mm-course-mod-description description="description" component="{{component}}" component-id="{{componentId}}" watch="true"></mm-course-mod-description>
+            <ul class="list">
+                <li ng-repeat="file in contents">
+                    <mm-file ng-if="file.type !== 'folder'" file="file" component="{{component}}" component-id="{{componentId}}"></mm-file>
+                    <a ng-if="file.type === 'folder'" class="item item-text-wrap item-media" ui-sref="site.mod_folder({courseid: courseid, module: file, path: file.filepath})">
+                        <img ng-src="{{file.fileicon}}" />
+                        <p>{{file.name}}</p>
+                    </a>
+                </li>
+            </ul>
+            <div class="padding" ng-if="!contents || contents.length == 0">
+                <p>{{ 'mma.mod_folder.emptyfilelist' | translate}}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,81 @@
+<ion-view>
+    <ion-nav-title>{{ 'mma.competency.coursecompetencies' | translate }}</ion-nav-title>
+    <ion-content mm-state-class padding="true">
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="competenciesLoaded"
+                       on-refresh="refreshCourseCompetencies()">
+        </ion-refresher>
+        <mm-loading hide-until="competenciesLoaded">
+            <article>
+                <ul class="list card" ng-if="!user && competencies.statistics.competencycount > 0">
+                    <li class="item item-text-wrap" ng-if="competencies.settings.pushratingstouserplans">
+                        {{ 'mma.competency.coursecompetencyratingsarepushedtouserplans' | translate }}
+                    </li>
+                    <li class="item item-text-wrap" ng-if="!competencies.settings.pushratingstouserplans">
+                        {{ 'mma.competency.coursecompetencyratingsarenotpushedtouserplans' | translate }}
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.progress' | translate }}</strong>:
+                        {{ 'mma.competency.xcompetenciesproficientoutofyincourse' | translate:{$a: {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
+                        <progress max="100" value="{{ competencies.statistics.proficientcompetencypercentage }}"></progress>
+                    </li>
+                    <li class="item item-text-wrap" ng-if="competencies.statistics.leastproficientcount > 0">
+                        <strong>{{ 'mma.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
+                        <ul>
+                            <li ng-repeat="comp in competencies.statistics.leastproficient">
+                                <a ui-sref="site.competencysummary({competencyid: comp.id})">
+                                    {{ comp.shortname }} - {{ comp.idnumber }}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </article>
+
+            <article>
+                <h3>{{ 'mma.competency.competencies' | translate }}</h3>
+                <p ng-if="user" class="item item-avatar">
+                    <img ng-if="user.profileimageurl && user.profileimageurl !== true" ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
+                    <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
+                    <mm-format-text>{{ user.fullname }}</mm-format-text>
+                </p>
+                <span ng-if="competencies.statistics.competencycount == 0">
+                    {{ 'mma.competency.nocompetencies' | translate }}
+                </span>
+
+                <div class="list card" ng-repeat="competency in competencies.competencies">
+                    <a ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}" class="item item-heading item-text-wrap clearfix">
+                        {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
+                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
+                    </a>
+                    <div class="item item-body">
+                        <div ng-if="competency.competency.description">
+                            <mm-format-text watch="true">{{ competency.competency.description }}</mm-format-text>
+                        </div>
+                        <div>
+                            <strong>{{ 'mma.competency.path' | translate }}</strong>
+                            {{ competency.comppath.framework.name }}
+                            <span ng-repeat="ancestor in competency.comppath.ancestors">
+                                &nbsp;/&nbsp;<a ui-sref="site.competencysummary({competencyid: ancestor.id})">{{ ancestor.name }}</a>
+                            </span>
+                        </div>
+                        <div>
+                            <strong>{{ 'mma.competency.activities' | translate }}</strong>:
+                            <span ng-if="competency.coursemodules.length == 0" class="positive">
+                                {{ 'mma.competency.noactivities' | translate }}
+                            </span>
+                            <ul ng-if="competency.coursemodules.length > 0">
+                                <li ng-repeat="activity in competency.coursemodules">
+                                    <a mm-link capture-link="true" class="item item-text-wrap mm-course-module-handler item-media" href="{{ activity.url }}" title="{{ activity.name }}">
+                                        <img ng-src="{{ activity.iconurl }}" mm-external-content alt="" role="presentation" ng-if="activity.iconurl">
+                                        <mm-format-text watch="true">{{ activity.name }}</mm-format-text>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </mm-loading>
+    </ion-content>
+</ion-view>

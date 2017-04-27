@@ -1,0 +1,22 @@
+{
+    "addfiletext": "Tilføj fil",
+    "audio": "Audio",
+    "camera": "Kamera",
+    "confirmuploadfile": "Du er ved at oploade {{size}}. Er du sikker på at du vil fortsætte?",
+    "errorcapturingaudio": "Fejl ved indspilning af lyd",
+    "errorcapturingimage": "Fejl ved indhentning af billede.",
+    "errorcapturingvideo": "Fejl ved indspilning af video",
+    "errorgettingimagealbum": "Fejl ved indhentning af billede fra album",
+    "errormustbeonlinetoupload": "Du skal være online for at uploade filer.",
+    "errornoapp": "Du har ikke installeret en app som kan udføre denne handling.",
+    "errorreadingfile": "Fejl ved læsning af fil.",
+    "errorwhileuploading": "En fejl opstod under upload af filen.",
+    "file": "Fil",
+    "fileuploaded": "Filen er uploadet.",
+    "maxbytesfile": "Filen {{$a.file}} er for stor. Maksimal upload-størrelse er {{$a.size}}.",
+    "photoalbums": "Fotoalbum",
+    "readingfile": "Læser fil",
+    "uploadafile": "Upload en fil",
+    "uploading": "Uploader",
+    "video": "Video"
+}

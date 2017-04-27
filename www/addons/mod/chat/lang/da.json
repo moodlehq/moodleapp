@@ -1,0 +1,19 @@
+{
+    "beep": "Bip",
+    "currentusers": "Er i chatten nu:",
+    "enterchat": "Tryk her for at gå ind i chatten nu.",
+    "entermessage": "Skriv din besked",
+    "errorwhileconnecting": "Fejl ved tilkobling til chatten.",
+    "errorwhilegettingchatdata": "Fejl ved hentning af chatdata.",
+    "errorwhilegettingchatusers": "Fejl ved hentning af chatbrugere.",
+    "errorwhileretrievingmessages": "Fejl ved hentning af beskeder fra serveren.",
+    "errorwhilesendingmessage": "Fejl ved afsendelse af besked.",
+    "messagebeepsyou": "{{$a}} har lige bippet dig!",
+    "messageenter": "{{$a}} er lige kommet til",
+    "messageexit": "{{$a}} har forladt chatten",
+    "mustbeonlinetosendmessages": "Du skal være online for at sende beskeder",
+    "nomessages": "Ingen beskeder endnu",
+    "send": "Send",
+    "sessionstart": "Næste chat starter {{$a.date}}, ({{$a.fromnow}} fra nu af)",
+    "talk": "Tal"
+}

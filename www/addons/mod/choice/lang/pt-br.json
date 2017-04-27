@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Desculpe, houve um problema ao enviar sua escolha. Por favor, tente novamente.",
+    "choiceoptions": "Opções de escolha",
+    "errorgetchoice": "Erro ao obter dados do escolha.",
+    "expired": "Esta atividade está encerrada desde {{$a}}",
+    "full": "(Cheio)",
+    "noresultsviewable": "Não é possível visualizar os resultados neste momento.",
+    "notopenyet": "Esta atividade será acessível a partir de {{$a}}",
+    "numberofuser": "Número de participantes",
+    "numberofuserinpercentage": "Porcentagem de participantes",
+    "previewonly": "Esta é somente uma previsualização das opções dessa atividade. Você somente poderá enviar sua escolha a partir de {{$a}}",
+    "removemychoice": "Remover a minha resposta",
+    "responses": "Respostas",
+    "responsesresultgraphdescription": "{{number}}% de usuários que escolheram a opção: {{text}}.",
+    "responsesresultgraphheader": "Visualização do gráfico",
+    "resultsnotsynced": "Os resultados não incluem a sua última resposta. Por favor, sincronize para atualizarem eles.",
+    "savemychoice": "Gravar a minha resposta",
+    "userchoosethisoption": "Usuários que escolheram esta opção",
+    "yourselection": "A sua escolha"
+}

@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Pasirinkite paskyrą, kurioje norite talpinti failą.",
+    "chooseactionrepeatedfile": "Failas tokiu pavadinimu jau yra. Ar norite pakeisti esantį ar jį pervadinti \"{{$a}}\"?",
+    "errorreceivefilenosites": "Svetainės nėra saugomos. Prieš dalintis failu, pridėkite svetainės nuorodą.",
+    "nosharedfiles": "Šioje svetainėje nepatalpinti bendro naudojimo failai.",
+    "nosharedfilestoupload": "Nėra įkeltų failų. Jeigu norite juos įkelti iš kitos programėlės, pažymėkite ir paspauskite mygtuką „Atidaryti“.",
+    "rename": "Pervadinti",
+    "replace": "Pakeisti",
+    "sharedfiles": "Bendro naudojimo failai",
+    "successstorefile": "Failas sėkmingai patalpintas. Galite jį perkelti į savo asmeninį aplanką arba įkelti tam tikrosiose veiklose."
+}

@@ -1,0 +1,14 @@
+<ion-modal-view class="mma-mod_quiz-preflight-modal">
+    <ion-header-bar class="bar bar-header">
+        <h1 class="title">{{ preflightModalTitle | translate}}</h1>
+        <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+    </ion-header-bar>
+    <ion-content>
+        <form class="list">
+            <mma-quiz-access-rule ng-repeat="directive in accessRulesDirectives"></mma-quiz-access-rule>
+            <div class="item">
+                <button class="button button-block" ng-click="start(true)">{{ 'mm.core.send' | translate }}</button>
+            </div>
+        </form>
+    </ion-content>
+</ion-modal-view>

@@ -1,0 +1,17 @@
+{
+    "confirmselfenrol": "Ar Jūs tikrai norite įsirašyti į šiuos mokymo kursus?",
+    "enrolme": "Įrašyti mane",
+    "errorloadcourses": "Klaida kraunant kursus.",
+    "errorsearching": "Paieškos klaida.",
+    "errorselfenrol": "Klaida įrašant.",
+    "filtermycourses": "Filtruoti mano kursus",
+    "frontpage": "Titulinis lapas",
+    "nocourses": "Nėra ką rodyti",
+    "nosearchresults": "Paieškos rezultatų nėra",
+    "notenroled": "Nesate įrašytas į šį kursą",
+    "notenrollable": "Negalite įrašyti savęs į šį kursą.",
+    "password": "Įrašymo raktas",
+    "searchcoursesadvice": "Jūs galite naudoti kursų paieškos mygtuką ieškant kursų su svečio prieiga arba įrašyti save į kursus, kurie yra prieinami.",
+    "selfenrolment": "Savarankiška registracija",
+    "totalcoursesearchresults": "Visi kursai: {{$a}}"
+}

@@ -1,0 +1,28 @@
+<ion-content id="mma-mod-quiz-toc">
+    <nav>
+        <ul class="list">
+            <!-- In player, show button to finish attempt. -->
+            <a ng-if="!rsmScope.isReview" menu-close class="item item-text-wrap" ng-click="rsmScope.loadPage(-1, true)">
+                <span>{{ 'mma.mod_quiz.finishattemptdots' | translate }}</span>
+            </a>
+            <!-- In review we can toggle between all questions in same page or one page at a time. -->
+            <a ng-if="rsmScope.isReview && rsmScope.numPages > 1" menu-close class="item item-text-wrap" ng-click="rsmScope.switchMode()">
+                <span ng-if="!rsmScope.showAll">{{ 'mma.mod_quiz.showall' | translate }}</span>
+                <span ng-if="rsmScope.showAll">{{ 'mma.mod_quiz.showeachpage' | translate }}</span>
+            </a>
+            <a menu-close ng-repeat="question in rsmScope.toc" class="item item-text-wrap {{question.stateClass}}" ng-class='{"mma-mod-quiz-selected": !rsmScope.showSummary && rsmScope.attempt.currentpage == question.page, "mma-mod-quiz-last-of-page": $last || rsmScope.toc[$index + 1].page != question.page}' ng-click="rsmScope.loadPage(question.page, true, question.slot)">
+                <span ng-if="question.number">{{ 'mm.question.questionno' | translate:{$a: question.number} }}</span>
+                <span ng-if="!question.number">{{ 'mm.question.information' | translate }}</span>
+            </a>
+            <!-- In player, show button to finish attempt. -->
+            <a ng-if="!rsmScope.isReview" menu-close class="item item-text-wrap" ng-click="rsmScope.loadPage(-1, true)">
+                <span>{{ 'mma.mod_quiz.finishattemptdots' | translate }}</span>
+            </a>
+            <!-- In review we can toggle between all questions in same page or one page at a time. -->
+            <a ng-if="rsmScope.isReview && rsmScope.numPages > 1" menu-close class="item item-text-wrap" ng-click="rsmScope.switchMode()">
+                <span ng-if="!rsmScope.showAll">{{ 'mma.mod_quiz.showall' | translate }}</span>
+                <span ng-if="rsmScope.showAll">{{ 'mma.mod_quiz.showeachpage' | translate }}</span>
+            </a>
+        </ul>
+    </nav>
+</ion-content>

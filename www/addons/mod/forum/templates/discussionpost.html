@@ -1,0 +1,50 @@
+<div class="item item-divider" ng-if="showdivider"></div>
+<div class="item item-heading item-text-wrap clearfix" ng-class="{'item-avatar': subject}">
+    <img ng-if="post.userpictureurl && subject" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
+    <img ng-if="!post.userpictureurl && subject" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
+    <h2 ng-if="titleimportant"><summary>{{title}}</summary></h2>
+    <summary ng-if="!titleimportant">{{title}}</summary>
+    <div class="item-note" ng-if="!post.modified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+    <div class="item-note text-right" ng-if="post.modified">
+        {{post.modified | mmDateDayOrTime}}
+        <div ng-if="unread"><i class="icon ion-record positive"></i> {{ 'mma.mod_forum.unread' | translate }}</div>
+    </div>
+    <p ng-if="subject" class="mm-subject">{{subject}}</p>
+</div>
+<div class="item item-body" ng-if="newpost.editing !== uniqueid || !newpost.isEditing">
+    <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
+    <div ng-repeat="attachment in post.attachments">
+        <!-- Files already attached to the submission. -->
+        <mm-file ng-if="!attachment.name" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
+        <!-- Files stored in offline to be sent later. -->
+        <mm-local-file ng-if="attachment.name" file="attachment"></mm-local-file>
+    </div>
+</div>
+<div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="((isReplyEnabled && post.canreply) || !post.id) && (newpost.editing !== uniqueid || !newpost.isEditing)">
+    <a ng-if="isReplyEnabled && post.canreply" class="tab-item" title="{{ 'mma.mod_forum.reply' | translate }}" ng-click="showReply()" role="button" aria-controls="mma-forum-reply-edit-form-{{uniqueid}}" aria-expanded="{{ newpost.replyingto === post.id }}">
+        <i class="icon ion-reply"></i> {{ 'mma.mod_forum.reply' | translate }}
+    </a>
+    <a ng-if="!post.id" class="tab-item" title="{{ 'mma.mod_forum.edit' | translate }}" ng-click="editReply()" role="button" aria-controls="mma-forum-reply-edit-form-{{uniqueid}}" aria-expanded="{{ newpost.replyingto === post.parent }}">
+        <i class="icon ion-edit"></i> {{ 'mma.mod_forum.edit' | translate }}
+    </a>
+</div>
+<div id="mma-forum-reply-edit-form-{{uniqueid}}" class="item item-text-wrap mma-forum-reply-edit" ng-if="newpost.editing === uniqueid">
+    <form class="list mma-forum-border">
+        <ion-input class="item item-input item-stacked-label">
+            <ion-label>{{ 'mma.mod_forum.subject' | translate }}</ion-label>
+            <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newpost.subject">
+        </ion-input>
+        <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor">
+            <ion-label>{{ 'mma.mod_forum.message' | translate }}</ion-label>
+            <mm-rich-text-editor model="newpost" placeholder="{{ 'mma.mod_forum.message' | translate }}" scroll-handle="{{scrollHandle}}" name="mod_forum_reply_{{post.id}}" component="{{component}}" component-id="{{post.id}}" first-render="firstRender()"></mm-rich-text-editor>
+        </ion-input>
+        <mm-attachments ng-if="canAddAttachments && forum && forum.maxattachments > 0" files="newpost.files" max-size="{{forum.maxbytes}}" max-submissions="{{forum.maxattachments}}" component="{{component}}" component-id="{{forum.cmid}}" allow-offline="true"></mm-attachments>
+        <div class="item button-bar">
+            <button class="button" ng-click="reply()" ng-disabled="newpost.subject == '' || newpost.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+            <button class="button" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
+        </div>
+        <div class="item button-bar" ng-if="newpost.isEditing">
+            <button class="button button-outline button-positive" ng-click="discard()">{{ 'mm.core.discard' | translate }}</button>
+        </div>
+    </form>
+</div>

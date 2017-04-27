@@ -21,71 +21,124 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionsCtrl
  */
-.controller('mmaMessagesDiscussionsCtrl', function($q, $state, $scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents,
-            mmCoreSplitViewLoad) {
-    var observers = [];
+.controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite, $ionicPlatform,
+            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager, mmaMessagesReadChangedEvent,
+            mmaMessagesReadCronEvent) {
+    var newMessagesObserver, readChangedObserver, cronObserver,
+        siteId = $mmSite.getId(),
+        discussions,
+        $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+        unregisterResume;
 
     $scope.loaded = false;
 
-    // Set observers to watch for new messages on discussions. If a user sees a new message in a discussion, we'll update
-    // the discussion's last message in discussions list.
-    function setObservers(discussions) {
-        clearObservers();
-
-        angular.forEach(discussions, function(discussion) {
-            observers.push($mmEvents.on($mmaMessages.getDiscussionEventName(discussion.message.user), function(data) {
-                if (data && data.timecreated > discussion.message.timecreated) {
-                    discussion.message.message = data.message;
-                    discussion.message.timecreated = data.timecreated;
-                }
-            }));
-        });
-    }
-
-    // Clear observers.
-    function clearObservers() {
-        angular.forEach(observers, function(observer) {
-            if (observer && observer.off) {
-                observer.off();
-            }
-        });
-    }
-
     function fetchDiscussions() {
-        return $mmaMessages.getDiscussions().then(function(discussions) {
+        return $mmaMessages.getDiscussions().then(function(discs) {
+            discussions = discs;
+
             // Convert to an array for sorting.
-            var array = [];
-            angular.forEach(discussions, function(v) {
-                array.push(v);
+            var discussionsSorted = [];
+            angular.forEach(discussions, function(discussion) {
+                discussion.unread = !!discussion.unread;
+                discussionsSorted.push(discussion);
             });
-            $scope.discussions = array;
-            setObservers(array);
+            $scope.discussions = discussionsSorted;
         }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingdiscussions', true);
+        }).finally(function() {
+            $scope.loaded = true;
+        });
+    }
+
+    function refreshData() {
+        return $mmaMessages.invalidateDiscussionsCache().then(function() {
+            return fetchDiscussions();
         });
     }
 
     $scope.refresh = function() {
-        $mmaMessages.invalidateDiscussionsCache().then(function() {
-            return fetchDiscussions();
-        }).finally(function() {
+        refreshData().finally(function() {
+            // Triggering without userid will avoid loops. This trigger will only update the side menu.
+            $mmEvents.trigger(mmaMessagesReadChangedEvent, {siteid: siteId});
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
     fetchDiscussions().finally(function() {
-        $scope.loaded = true;
         // Tell mm-split-view that it can load the first link now in tablets. We need to do it
         // like this because the directive doesn't have access to $scope.loaded variable (because of tabs).
         $rootScope.$broadcast(mmCoreSplitViewLoad);
     });
 
+    newMessagesObserver = $mmEvents.on(mmaMessagesNewMessageEvent, function(data) {
+        var discussion;
+
+        if (data && data.siteid == siteId && data.userid) {
+            discussion = discussions[data.userid];
+
+            if (typeof discussion == 'undefined') {
+                // It's a new discussion. Refresh list.
+                $scope.loaded = false;
+                refreshData().finally(function() {
+                    $scope.loaded = true;
+                });
+            } else {
+                // An existing discussion has a new message, update the last message.
+                discussion.message.message = data.message;
+                discussion.message.timecreated = data.timecreated;
+            }
+        }
+    });
+
+    readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
+        if (data && data.siteid == siteId && data.userid) {
+            var discussion = discussions[data.userid];
+
+            if (typeof discussion != 'undefined') {
+                // A discussion has been read reset counter.
+                discussion.unread = false;
+
+                // Discussions changed, invalidate them.
+                $mmaMessages.invalidateDiscussionsCache();
+            }
+        }
+    });
+
+    cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
+        if (data && (data.siteid == siteId || !data.siteid)) {
+            refreshData();
+        }
+    });
+
+    // If a message push notification is received, refresh the view.
+    if ($mmPushNotificationsDelegate) {
+        $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:discussions', function(notification) {
+            if ($mmUtil.isFalseOrZero(notification.notif)) {
+                // New message received. If it's from current site, refresh the data.
+                if (notification.site == siteId) {
+                    refreshData();
+                }
+            }
+        });
+    }
+
+    // Refresh the view when the app is resumed.
+    unregisterResume = $ionicPlatform.on('resume', function() {
+        $scope.loaded = false;
+        refreshData();
+    });
+
     $scope.$on('$destroy', function() {
-        clearObservers();
+        newMessagesObserver && newMessagesObserver.off && newMessagesObserver.off();
+        readChangedObserver && readChangedObserver.off && readChangedObserver.off();
+        cronObserver && cronObserver.off && cronObserver.off();
+
+        if ($mmPushNotificationsDelegate) {
+            $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:discussions');
+        }
+        if (unregisterResume) {
+            unregisterResume();
+        }
     });
 });
 

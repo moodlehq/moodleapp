@@ -1,0 +1,14 @@
+{
+    "acceptsubmissionstatement": "Priimkite pateiktą pranešimą.",
+    "cannoteditduetostatementsubmission": "Negalite pridėti ar redaguoti pateikiamos programėlės, nes negavome svetainės patvirtinimo.",
+    "cannotgradefromapp": "Keli vertinimo metodai nėra palaikomi ir negali būti pakeisti programėlėje.",
+    "cannotsubmitduetostatementsubmission": "Negalima pradėti vertinti, nes negautas pareiškimas dėl pateikimo .",
+    "erroreditpluginsnotsupported": "Programėlėje pateikimo negalima pridėti ar redaguoti, nes redagavimo papildiniai nėra palaikomi:",
+    "errorshowinginformation": "Pateikta informacija negali būti rodoma",
+    "feedbacknotsupported": "Programėlė grįžtamojo ryšio nepalaiko ir negali pateikti visos informacijos",
+    "notallparticipantsareshown": "Negalima rodyti nepatvirtintų dalyvių",
+    "submissionnotsupported": "Programėlė negali patvirtinti ir pateikti visos informacijos",
+    "userwithid": "Naudotojas su  ID {{id}}",
+    "warningsubmissiongrademodified": "Pakeistas vertinimas.",
+    "warningsubmissionmodified": "Pakeistas vartotojo pateikimas."
+}

@@ -15,11 +15,10 @@
 angular.module('mm.addons.files')
 
 .controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil,
-        $ionicHistory, mmaFilesUploadStateName, $state, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
+        $mmaFilesHelper, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
-        title,
         promise;
 
     // We're loading the files.
@@ -32,41 +31,33 @@ angular.module('mm.addons.files')
             // The path is unknown, the user must be requesting a root.
             if (root === 'site') {
                 promise = $mmaFiles.getSiteFiles();
-                title = $translate('mma.files.sitefiles');
+                $scope.title = $translate.instant('mma.files.sitefiles');
             } else if (root === 'my') {
                 promise = $mmaFiles.getMyFiles();
-                title = $translate('mma.files.myprivatefiles');
+                $scope.title = $translate.instant('mma.files.files');
             } else {
                 // Upon error we create a fake promise that is rejected.
                 promise = $q.reject();
-                title = (function() {
-                    var q = $q.defer();
-                    q.resolve('');
-                    return q.promise;
-                })();
             }
         } else {
             // Serve the files the user requested.
             pathdata = JSON.parse(path);
             promise = $mmaFiles.getFiles(pathdata);
-
-            // Put the title in a promise to act like translate does.
-            title = (function() {
-                var q = $q.defer();
-                q.resolve($stateParams.title);
-                return q.promise;
-            })();
+            $scope.title = $stateParams.title;
         }
 
-        return $q.all([promise, title]).then(function(data) {
-            var files = data[0],
-                title = data[1];
-
+        return promise.then(function(files) {
             $scope.files = files.entries;
             $scope.count = files.count;
-            $scope.title = title;
-        }, function() {
+        }).catch(function() {
             $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
+        });
+    }
+
+    // Function to refresh files list.
+    function refreshFiles() {
+        return $mmaFiles.invalidateDirectory(root, path).finally(function() {
+            return fetchFiles(root, path);
         });
     }
 
@@ -75,35 +66,28 @@ angular.module('mm.addons.files')
     });
 
     $scope.refreshFiles = function() {
-        $mmaFiles.invalidateDirectory(root, path).finally(function() {
-            fetchFiles(root, path).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+        refreshFiles().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
-    // Update list if we come from upload page (we don't know if user upoaded a file or not).
-    // List is invalidated in upload state after uploading a file.
-    $scope.$on('$ionicView.enter', function(e) {
-        var forwardView = $ionicHistory.forwardView();
-        if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
-            $scope.filesLoaded = false;
-            fetchFiles(root, path).finally(function() {
-                $scope.filesLoaded = true;
-            });
-        }
-    });
-
-    $scope.showUpload = function() {
-        return (root === 'my' && !path && $mmSite.canUploadFiles());
-    };
+    $scope.showUpload = root === 'my' && !path && $mmSite.canUploadFiles() && !$mmaFiles.isUploadDisabledInSite();
 
     // When we are in the root of the private files we can add more files.
     $scope.add = function() {
-        if (!$mmApp.isOnline()) {
-            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-        } else {
-            $state.go('site.files-upload', {root: root, path: path});
-        }
+        $mmaFiles.versionCanUploadFiles().then(function(canUpload) {
+            if (!canUpload) {
+                $mmUtil.showModal('mm.core.notice', 'mma.files.erroruploadnotworking');
+            } else if (!$mmApp.isOnline()) {
+                $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
+            } else {
+                $mmaFilesHelper.selectAndUploadFile().then(function() {
+                    $scope.filesLoaded = false;
+                    refreshFiles().finally(function() {
+                        $scope.filesLoaded = true;
+                    });
+                });
+            }
+        });
     };
 });

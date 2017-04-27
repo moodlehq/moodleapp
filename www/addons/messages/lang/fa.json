@@ -1,9 +1,13 @@
 {
     "addcontact": "افزودن مخاطب",
     "blockcontact": "مسدود کردن مخاطب",
+    "blocknoncontacts": "جلوگیری از دریافت پیام افرادی که در لیست مخاطبین من نمی باشند.",
     "contactlistempty": "لیست مخاطبین شما خالی است",
     "contacts": "مخاطبین",
+    "message": "متن پیام",
+    "messagepreferences": "ترجیحات پیام‌دهی",
     "messages": "پیام های من",
+    "newmessage": "پیام جدید",
     "nomessages": "هیچ پیغامی منتظر جواب نیست",
     "nousersfound": "کاربری پیدا نشد",
     "removecontact": "حذف کردن مخاطب",

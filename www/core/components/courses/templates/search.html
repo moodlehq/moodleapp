@@ -1,31 +1,10 @@
 <ion-view view-title="{{ 'mm.courses.searchcourses' | translate }}">
-    <ion-content padding="true" mm-state-class>
-        <form class="list">
-            <label class="item item-input">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" placeholder="{{ 'mm.courses.search' | translate}}" ng-model="searchText" mm-auto-focus>
-            </label>
-            <button class="button button-block" ng-click="search(searchText)" ng-disabled="searchText.length < 3">
-                {{ 'mm.courses.search' | translate }}
-            </button>
-        </form>
+    <ion-content mm-state-class>
+        <mm-searchbox submit-action="search" placeholder="{{ 'mm.courses.search' | translate }}" initial-value="{{searchText}}" search-label="{{ 'mm.courses.search' | translate}}" autofocus="true"></mm-searchbox>
         <div ng-if="courses">
-            <div class="list">
-                <li class="item">{{ 'mm.courses.totalcoursesearchresults' | translate:{$a: total} }}</li>
-            </div>
-            <p ng-if="total == 0">{{ 'mm.courses.nosearchresults' | translate }}</p>
-            <section ng-repeat="course in courses track by course.id" class="list card">
-                <a class="item item-divider" ui-sref="site.mm_viewresult({course: course})" title="{{course.fullname}}">
-                    <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
-                </a>
-                <div class="item item-text-wrap" ng-if="course.summary">
-                    <p>
-                        <summary>
-                            <mm-format-text class="mm-content-with-float" watch="true" shorten="40%" expand-on-click="true">{{course.summary}}</mm-format-text>
-                        </summary>
-                    </p>
-                </div>
-            </section>
+            <p class="item item-divider">{{ 'mm.courses.totalcoursesearchresults' | translate:{$a: total} }}</p>
+            <p class="item" ng-if="total == 0">{{ 'mm.courses.nosearchresults' | translate }}</p>
+            <mm-course-list-item ng-repeat="course in courses track by course.id" course="course"></mm-course-list-item>
             <ion-infinite-scroll ng-if="canLoadMore" immediate-check="false" on-infinite="loadMoreResults()">
             </ion-infinite-scroll>
         </div>

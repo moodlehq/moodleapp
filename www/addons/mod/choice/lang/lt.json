@@ -1,0 +1,7 @@
+{
+    "errorgetchoice": "Klaida gaunant alternatyvius duomenis.",
+    "numberofuser": "Dalyvių skaičius",
+    "numberofuserinpercentage": "Dalyvių procentas",
+    "responsesresultgraphdescription": "{{number}}%  dalyvių pasirinkusių pasirinkimą: {{tekstas}}",
+    "resultsnotsynced": "Galutinis atsakymas neužfiksuotas. Prašome sinchronizuotai atnaujinti duomenis."
+}

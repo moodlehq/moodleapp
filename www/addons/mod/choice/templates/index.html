@@ -1,0 +1,84 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="choiceLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshChoice(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="choiceLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshChoice(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="prefetchStatusIcon" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="choiceLoaded" on-refresh="refreshChoice(false)"></ion-refresher>
+        <mm-loading hide-until="choiceLoaded">
+            <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+            <!-- Activity availability messages -->
+            <section class="card padding" ng-if="choice.timeopen != 0 && choice.timeopen > now">
+                <p ng-if="options && options.length">{{ 'mma.mod_choice.previewonly' | translate:{$a: choice.openTimeReadable} }}</p>
+                <p ng-if="!options || !options.length">{{ 'mma.mod_choice.notopenyet' | translate:{$a: choice.openTimeReadable} }}</p>
+            </section>
+            <section class="card padding" ng-if="choice.timeclose != 0 && choice.timeclose <= now">
+                <p ng-if="options && options.length">{{ 'mma.mod_choice.yourselection' | translate }} <mm-format-text watch="true">{{options[0].text}}</mm-format-text></p>
+                <p>{{ 'mma.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
+            </section>
+
+            <!-- Choice done in offline but not synchronized -->
+            <div class="mm-warning" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
+            <!-- Choice options -->
+            <section class="card list" ng-if="options && options.length">
+                <div ng-if="choice.allowmultiple">
+                    <ion-checkbox ng-repeat="option in options" class="item-text-wrap item-checkbox-right" ng-model="option.checked" ng-disabled="option.disabled || !canEdit">
+                        <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
+                    </ion-checkbox>
+                </div>
+                <div ng-if="!choice.allowmultiple">
+                    <ion-radio ng-repeat="option in options" ng-model="selectedOption.id" ng-value="option.id" ng-disabled="option.disabled || !canEdit">
+                        <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
+                    </ion-radio>
+                </div>
+                <div class="item" ng-if="canEdit">
+                    <button class="button button-block" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
+                </div>
+                <div class="item" ng-if="canDelete">
+                    <button class="button button-block" ng-click="delete()">{{ 'mma.mod_choice.removemychoice' | translate }}</button>
+                </div>
+            </section>
+
+            <!-- Choice results -->
+            <section class="card text-center" ng-if="canSeeResults">
+                <div class="item item-divider">
+                    <h3>{{ 'mma.mod_choice.responses' | translate }}</h3>
+                </div>
+                <div class="row row-no-padding responsive-md">
+                    <div class="col col-33">
+                        <div class="mm-warning" ng-if="hasOffline">
+                            <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_choice.resultsnotsynced' | translate }}
+                        </div>
+                        <div class="item chart-item">
+                            <canvas class="chart chart-pie" chart-data="data" chart-labels="labels"></canvas>
+                        </div>
+                    </div>
+                    <div ng-if="choice.publish && results" class="col col-67 item list text-left">
+                        <article ng-repeat="result in results" class="item">
+                            <h2><mm-format-text watch="true">{{ result.text }}</mm-format-text></h2>
+                            <p>{{ 'mma.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'mm.core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
+                            <a class="user-with-avatar" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">
+                                 <img ng-src="{{user.profileimageurl}}" alt="{{user.fullname}}" mm-external-content>
+                                 <p>{{user.fullname}}</p>
+                            </a>
+                        </article>
+                    </div>
+                </div>
+            </section>
+            <section class="card padding" ng-if="!canSeeResults">
+                <p>{{ 'mma.mod_choice.noresultsviewable' | translate }}</p>
+            </section>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,17 @@
+{
+    "cannotsubmit": "申し訳ございません、あなたの投票送信時に問題が発生しました。再度お試しください。",
+    "choiceoptions": "投票オプション",
+    "expired": "申し訳ございません、この活動は {{$a}} に終了しているため、これ以上利用することはできません。",
+    "full": "(上限到達)",
+    "noresultsviewable": "現在、投票結果は閲覧できません。",
+    "notopenyet": "申し訳ございません、この活動は {{$a}} まで利用することができません。",
+    "numberofuser": "投票者数",
+    "numberofuserinpercentage": "投票者数 (%)",
+    "previewonly": "これはこの活動に関する利用可能なオプションのプレビューです。あなたの投票は {{$a}} まで送信することができません。",
+    "removemychoice": "私の投票を削除する",
+    "responses": "投票結果",
+    "responsesresultgraphheader": "グラフ表示",
+    "savemychoice": "私の投票を保存する",
+    "userchoosethisoption": "このオプションを選択したユーザ",
+    "yourselection": "あなたの投票"
+}

@@ -1,0 +1,19 @@
+{
+    "beep": "Chamar",
+    "currentusers": "Utilizadores no chat",
+    "enterchat": "Clique aqui para entrar no chat",
+    "entermessage": "Introduza a sua mensagem",
+    "errorwhileconnecting": "Erro ao entrar no chat.",
+    "errorwhilegettingchatdata": "Erro ao obter os dados do chat.",
+    "errorwhilegettingchatusers": "Erro ao obter os utilizadores do chat.",
+    "errorwhileretrievingmessages": "Erro ao obter as mensagens do servidor.",
+    "errorwhilesendingmessage": "Erro ao enviar a mensagem.",
+    "messagebeepsyou": "{{$a}} acabou de o chamar!",
+    "messageenter": "{{$a}} acabou de entrar neste chat",
+    "messageexit": "{{$a}} acabou de sair deste chat",
+    "mustbeonlinetosendmessages": "Tem de estar online para enviar mensagens",
+    "nomessages": "Ainda não há mensagens",
+    "send": "Enviar",
+    "sessionstart": "A próxima sessão de chat irá iniciar em {{$a.date}}, ({{$a.fromnow}} a partir de agora)",
+    "talk": "Falar"
+}

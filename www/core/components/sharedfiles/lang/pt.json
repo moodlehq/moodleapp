@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Escolha uma conta para onde armazenar o ficheiro.",
+    "chooseactionrepeatedfile": "Já existe um ficheiro com este nome. Deseja substituir o ficheiro existente ou renomeá-lo para \"{{$a}}\"?",
+    "errorreceivefilenosites": "Não existem sites armazenados. Adicione um site antes de partilhar um ficheiro com a aplicação.",
+    "nosharedfiles": "Não existem quaisquer ficheiros partilhados armazenados neste site.",
+    "nosharedfilestoupload": "Não tem ficheiros para fazer o carregamento aqui. Se quiser carregar um ficheiro de outra aplicação, localize o ficheiro e clique no botão 'Abrir em'.",
+    "rename": "Mudar nome",
+    "replace": "Substituir",
+    "sharedfiles": "Ficheiros partilhados",
+    "successstorefile": "Ficheiro armazenado com sucesso. A partir de agora pode selecionar este ficheiro para enviá-lo para os seus ficheiros privados ou anexá-lo em algumas atividades."
+}

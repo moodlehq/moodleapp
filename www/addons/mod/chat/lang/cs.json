@@ -1,0 +1,19 @@
+{
+    "beep": "Prozvonit",
+    "currentusers": "Stávající uživatelé",
+    "enterchat": "Klikněte zde pro vstup do chatu",
+    "entermessage": "Vložte svou zprávu",
+    "errorwhileconnecting": "Chyba při připojování k chatu.",
+    "errorwhilegettingchatdata": "Chyba při načítání dat chatu.",
+    "errorwhilegettingchatusers": "Chyba při načítání uživatelů chatu.",
+    "errorwhileretrievingmessages": "Chyba při načítání zpráv ze serveru.",
+    "errorwhilesendingmessage": "Chyba při odeslání zprávy.",
+    "messagebeepsyou": "{{$a}} vás prozvání!",
+    "messageenter": "{{$a}} právě vstoupil(a) do tohoto chatu",
+    "messageexit": "{{$a}} opustil(a) tento chat",
+    "mustbeonlinetosendmessages": "Pro odesílání zpráv musíte být online",
+    "nomessages": "Zatím žádné zprávy",
+    "send": "Odeslat",
+    "sessionstart": "Další chatování začne v {{$a}}, (za {{$a.fromnow}})",
+    "talk": "Diskuse"
+}

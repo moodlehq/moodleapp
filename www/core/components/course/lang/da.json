@@ -1,5 +1,5 @@
 {
-    "activitynotyetviewable": "Denne aktivitet eller ressource er det endnu ikke muligt at vise i denne app.",
+    "activitynotyetviewable": "Denne aktivitet kan endnu ikke vises i app'en.",
     "activitynotyetviewablegothere": "Denne aktivitet eller ressource er det endnu ikke muligt at vise i denne app, klik på knappen herunder for at åbne fra webstedet.",
     "allsections": "Alle sektioner",
     "confirmdownload": "Du er ved at hente {{size}}. Er du sikker på at du vil fortsætte?",
@@ -11,6 +11,7 @@
     "errordownloadingsection": "Fejl ved indlæsning af sektion.",
     "gotothesite": "Gå til webstedet",
     "nocontentavailable": "Intet indhold tilgængeligt lige nu.",
+    "overriddennotice": "Din endelige karakter fra denne aktivitet blev justeret manuelt.",
     "showall": "Vis alt",
-    "whoops": "Hovsa"
+    "whoops": "Hovsa!"
 }

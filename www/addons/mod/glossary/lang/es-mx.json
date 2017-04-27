@@ -1,0 +1,20 @@
+{
+    "attachment": "Adjunto",
+    "browsemode": "Ver entradas",
+    "byalphabet": "Alfabéticamente",
+    "byauthor": "Agrupar por autor",
+    "bycategory": "Agrupar por categoría",
+    "bynewestfirst": "Los más nuevos primero",
+    "byrecentlyupdated": "Recientemente actualizado",
+    "bysearch": "Buscar",
+    "cannoteditentry": "No puede editarse entrada",
+    "casesensitive": "Diferencia entre MAYÚSCULAS y minúsculas",
+    "categories": "Categorías",
+    "entriestobesynced": "Entradas para ser sincronizadas",
+    "entrypendingapproval": "Esta entrada está pendiente de aprobación.",
+    "errorloadingentries": "Ocurrió un error al cargar entradas.",
+    "errorloadingentry": "Ocurrió un error al cargar la entrada.",
+    "errorloadingglossary": "Ocurrió un error al cargar el glosario.",
+    "noentriesfound": "No se encontraron entradas.",
+    "searchquery": "Consulta de búsqueda"
+}

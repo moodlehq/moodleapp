@@ -22,7 +22,7 @@ angular.module('mm.core.user')
  * @ngdoc provider
  * @name $mmUserDelegate
  */
-.provider('$mmUserDelegate', function() {
+.provider('$mmUserDelegate', function(mmUserProfileHandlersTypeNewPage) {
     var profileHandlers = {},
         self = {};
 
@@ -42,6 +42,15 @@ angular.module('mm.core.user')
      *                             - getController(userid) (Function) Returns the function that will act as controller.
      *                                                                See core/components/user/templates/profile.html
      *                                                                for the list of scope variables expected.
+     *                           Also the object require the following attributes:
+     *                             - type (String)  A type should be specified among these:
+     *                                                 - mmUserProfileHandlersTypeCommunication: will be displayed under the user
+     *                                                         avatar. Should have icon. Spinner not used.
+     *                                                 - mmUserProfileHandlersTypeNewPage: will be displayed as a list of items.
+     *                                                         Should have icon. Spinner not used.
+     *                                                         Default value if none is specified.
+     *                                                 - mmUserProfileHandlersTypeAction: will be displayed as a button and should
+     *                                                         not redirect to any state. Spinner use is recommended.
      *                           The string can either be 'factoryName' or 'factoryName.functionToCall'.
      * @param {Number} [priority=100] Plugin priority.
      */
@@ -60,9 +69,10 @@ angular.module('mm.core.user')
         return true;
     };
 
-    self.$get = function($q, $log, $mmSite, $mmUtil) {
+    self.$get = function($q, $log, $mmSite, $mmUtil, $mmCourses) {
         var enabledProfileHandlers = {},
-            self = {};
+            self = {},
+            lastUpdateHandlersStart;
 
         $log = $log.getInstance('$mmUserDelegate');
 
@@ -74,35 +84,68 @@ angular.module('mm.core.user')
          * @name $mmUserDelegate#getProfileHandlersFor
          * @param {Object} user The user object.
          * @param {Number} courseId The course ID.
-         * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
+         * @return {Promise} Resolved with an array of objects containing 'priority', 'controller' and 'type'.
          */
         self.getProfileHandlersFor = function(user, courseId) {
             var handlers = [],
                 promises = [];
 
-            angular.forEach(enabledProfileHandlers, function(handler) {
-                // Checks if the handler is enabled for the user.
-                var promise = $q.when(handler.instance.isEnabledForUser(user, courseId)).then(function(enabled) {
-                    if (enabled) {
-                        handlers.push({
-                            controller: handler.instance.getController(user, courseId),
-                            priority: handler.priority
-                        });
-                    } else {
-                        return $q.reject();
-                    }
-                }).catch(function() {
-                    // Nothing to do here, it is not enabled for this user.
+            // Retrieve course options forcing cache.
+            return $mmCourses.getUserCourses(true).then(function(courses) {
+                var courseIds = courses.map(function(course) {
+                    return course.id;
                 });
-                promises.push(promise);
-            });
 
-            return $q.all(promises).then(function() {
-                return handlers;
+                return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
+                    // For backwards compatibility we don't modify the courseId.
+                    var courseIdForOptions = courseId || $mmSite.getSiteHomeId();
+                    var navOptions = options.navOptions[courseIdForOptions];
+                    var admOptions = options.admOptions[courseIdForOptions];
+
+                    angular.forEach(enabledProfileHandlers, function(handler) {
+                        // Checks if the handler is enabled for the user.
+                        var isEnabledForUser = handler.instance.isEnabledForUser(user, courseId, navOptions, admOptions);
+                        var promise = $q.when(isEnabledForUser).then(function(enabled) {
+                            if (enabled) {
+                                handlers.push({
+                                    controller: handler.instance.getController(user, courseId),
+                                    priority: handler.priority,
+                                    type: handler.instance.type || mmUserProfileHandlersTypeNewPage
+                                });
+                            } else {
+                                return $q.reject();
+                            }
+                        }).catch(function() {
+                            // Nothing to do here, it is not enabled for this user.
+                        });
+                        promises.push(promise);
+                    });
+
+                    return $q.all(promises).then(function() {
+                        return handlers;
+                    });
+                });
             }).catch(function() {
                 // Never fails.
                 return handlers;
             });
+        };
+
+        /**
+         * Check if a time belongs to the last update handlers call.
+         * This is to handle the cases where updateProfileHandlers don't finish in the same order as they're called.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserDelegate#isLastUpdateCall
+         * @param  {Number}  time Time to check.
+         * @return {Boolean}      True if equal, false otherwise.
+         */
+        self.isLastUpdateCall = function(time) {
+            if (!lastUpdateHandlersStart) {
+                return true;
+            }
+            return time == lastUpdateHandlersStart;
         };
 
         /**
@@ -113,11 +156,13 @@ angular.module('mm.core.user')
          * @name $mmUserDelegate#updateProfileHandler
          * @param {String} component The component name.
          * @param {Object} handlerInfo The handler details.
+         * @param  {Number} time Time this update process started.
          * @return {Promise} Resolved when enabled, rejected when not.
          * @protected
          */
-        self.updateProfileHandler = function(component, handlerInfo) {
-            var promise;
+        self.updateProfileHandler = function(component, handlerInfo, time) {
+            var promise,
+                siteId = $mmSite.getId();
 
             if (typeof handlerInfo.instance === 'undefined') {
                 handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
@@ -125,22 +170,28 @@ angular.module('mm.core.user')
 
             if (!$mmSite.isLoggedIn()) {
                 promise = $q.reject();
+            } else if ($mmSite.isFeatureDisabled('$mmUserDelegate_' + component)) {
+                promise = $q.when(false);
             } else {
                 promise = $q.when(handlerInfo.instance.isEnabled());
             }
 
             // Checks if the content is enabled.
-            return promise.then(function(enabled) {
-                if (enabled) {
-                    enabledProfileHandlers[component] = {
-                        instance: handlerInfo.instance,
-                        priority: handlerInfo.priority
-                    };
-                } else {
-                    return $q.reject();
+            return promise.catch(function() {
+                return false;
+            }).then(function(enabled) {
+                // Verify that this call is the last one that was started.
+                // Check that site hasn't changed since the check started.
+                if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+                    if (enabled) {
+                        enabledProfileHandlers[component] = {
+                            instance: handlerInfo.instance,
+                            priority: handlerInfo.priority
+                        };
+                    } else {
+                        delete enabledProfileHandlers[component];
+                    }
                 }
-            }).catch(function() {
-                delete enabledProfileHandlers[component];
             });
         };
 
@@ -154,13 +205,16 @@ angular.module('mm.core.user')
          * @protected
          */
         self.updateProfileHandlers = function() {
-            var promises = [];
+            var promises = [],
+                now = new Date().getTime();
 
             $log.debug('Updating profile handlers for current site.');
 
+            lastUpdateHandlersStart = now;
+
             // Loop over all the profile handlers.
             angular.forEach(profileHandlers, function(handlerInfo, component) {
-                promises.push(self.updateProfileHandler(component, handlerInfo));
+                promises.push(self.updateProfileHandler(component, handlerInfo, now));
             });
 
             return $q.all(promises).then(function() {

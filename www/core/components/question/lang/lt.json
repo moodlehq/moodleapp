@@ -1,0 +1,8 @@
+{
+    "errorattachmentsnotsupported": "Programėlė nepalaiko pridėtų failų.",
+    "errorinlinefilesnotsupported": "Programėlė nepalaiko redaguojamų failų",
+    "errorquestionnotsupported": "Šis klausimo tipas programėlėje nepalaikomas: {{$a}}.",
+    "howtodraganddrop": "Paspauskite pasirinkimui, tada perneškite.",
+    "questionmessage": "Klausimas {{$a}}: {{$b}}",
+    "unknown": "Negalima nustatyti statuso"
+}

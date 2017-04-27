@@ -24,3 +24,9 @@ $bar-side-menu-text-color: $bar-content-text !default;
 .has-side-menu-header {
   top: $bar-side-menu-height;
 }
+
+.mm-sidemenu-menu {
+  .item .badge {
+    right: 16px;
+  }
+}

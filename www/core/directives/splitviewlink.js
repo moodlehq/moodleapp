@@ -89,6 +89,27 @@ angular.module('mm.core')
         }
     }
 
+    /**
+     * Fill state params to prevent problems with missing params. For each param not defined, applies the default value.
+     * Example: If there are 2 states, one with params {timecreated: 1} and the other with params {},
+     * Ionic thinks they are the same since the "timecreated" is inherited if it's not defined.
+     *
+     * @param  {Object} stateParams State params to fill.
+     * @param  {Object} state       State where to get the default params.
+     * @return {Void}
+     */
+    function fillStateParams(stateParams, state) {
+        if (!stateParams || !state || !state.params) {
+            return;
+        }
+
+        angular.forEach(state.params, function(defaultValue, name) {
+            if (typeof stateParams[name] == 'undefined') {
+                stateParams[name] = defaultValue;
+            }
+        });
+    }
+
     return {
         restrict: 'A',
         require: '^mmSplitView',
@@ -99,7 +120,8 @@ angular.module('mm.core')
                 stateName,
                 stateParams,
                 stateParamsString,
-                tabletStateName;
+                tabletStateName,
+                stateParamsFilled = false;
 
             if (sref) {
                 matches = sref.match(srefRegex);
@@ -113,6 +135,8 @@ angular.module('mm.core')
                     // Watch for changes on stateParams.
                     scope.$watch(stateParamsString, function(newVal) {
                         stateParams = newVal;
+                        // Fill state params to prevent problems with missing params.
+                        fillStateParams(stateParams, $state.get(tabletStateName));
                     });
 
                     element.on('click', function(event) {
@@ -126,10 +150,23 @@ angular.module('mm.core')
                                     return;
                                 }
                             }
-                            splitViewController.setLink(element); // Set last link loaded.
-                            splitViewController.clearMarkedLinks();
-                            element.addClass('mm-split-item-selected');
-                            $state.go(tabletStateName, stateParams, {location:'replace'});
+
+                            if (!stateParamsFilled) {
+                                // Fill state params to prevent problems with missing params.
+                                fillStateParams(stateParams, $state.get(tabletStateName));
+                                stateParamsFilled = true;
+                            }
+
+                            // Set this link as candidate to load. This is used when the split view blocks view changes.
+                            splitViewController.setCandidateLink(element);
+
+                            // Load the state.
+                            $state.go(tabletStateName, stateParams, {location:'replace'}).then(function() {
+                                // State change success, now mark the link as loaded.
+                                splitViewController.setLink(element);
+                                splitViewController.clearMarkedLinks();
+                                element.addClass('mm-split-item-selected');
+                            });
                         } else {
                             $state.go(stateName, stateParams);
                         }

@@ -106,7 +106,6 @@ angular.module('mm.addons.coursecompletion')
             preSets = {
                 cacheKey: getCompletionCacheKey(courseid, userid)
             };
-
         return $mmSite.read('core_completion_get_course_completion_status', data, preSets).then(function(data) {
             if (data.completionstatus) {
                 return data.completionstatus;
@@ -177,10 +176,28 @@ angular.module('mm.addons.coursecompletion')
         }
 
         return $mmCourses.getUserCourse(courseId, true).then(function(course) {
-            if (course && typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
+            if (course && typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
                 return false;
             }
             return true;
+        });
+    };
+
+    /**
+     * Returns whether or not the view course completion plugin is enabled for a certain user.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletion#isPluginViewEnabledForUser
+     * @param {Number} courseId Course ID.
+     * @param {Number} userId   User ID.
+     * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     */
+    self.isPluginViewEnabledForUser = function(courseId, userId) {
+        return self.getCompletion(courseId, userId).then(function() {
+            return true;
+        }).catch(function() {
+            return false;
         });
     };
 

@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Sorry, there was a problem submitting your choice. Please try again.",
+    "choiceoptions": "Choice options",
+    "errorgetchoice": "Error getting choice data.",
+    "expired": "Sorry, this activity closed on {{$a}} and is no longer available",
+    "full": "(Full)",
+    "noresultsviewable": "The results are not currently viewable.",
+    "notopenyet": "Sorry, this activity is not available until {{$a}}",
+    "numberofuser": "Number of participants",
+    "numberofuserinpercentage": "Percentage of participants",
+    "previewonly": "This is just a preview of the available options for this activity. You will not be able to submit your choice until {{$a}}.",
+    "removemychoice": "Remove my choice",
+    "responses": "Responses",
+    "responsesresultgraphdescription": "{{number}}% of the users chose the option: {{text}}.",
+    "responsesresultgraphheader": "Graph display",
+    "resultsnotsynced": "Results doesn't include your last response. Please, synchronize to update them.",
+    "savemychoice": "Save my choice",
+    "userchoosethisoption": "Users who chose this option",
+    "yourselection": "Your selection"
+}

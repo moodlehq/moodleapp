@@ -14,6 +14,8 @@
 
 angular.module('mm.core')
 
+.constant('mmCoreIframeTimeout', 15000)
+
 /**
  * Directive to display content in an iframe.
  *
@@ -27,10 +29,10 @@ angular.module('mm.core')
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
-.directive('mmIframe', function($mmUtil) {
+.directive('mmIframe', function($log, $mmUtil, $mmText, $mmSite, $mmFS, $timeout, mmCoreIframeTimeout) {
+    $log = $log.getInstance('mmIframe');
 
-    var errorShownTime = 0,
-        tags = ['iframe', 'frame', 'object', 'embed'];
+    var tags = ['iframe', 'frame', 'object', 'embed'];
 
     /**
      * Intercept window.open in a frame and its subframes, shows an error modal instead.
@@ -72,7 +74,7 @@ angular.module('mm.core')
 
         if (!contentWindow && el && el.getSVGDocument) {
             // It's probably an <embed>. Try to get the window.
-            var svgDoc = el.getSVGDocument;
+            var svgDoc = el.getSVGDocument();
             if (svgDoc && svgDoc.defaultView) {
                 contents = angular.element(svgdoc);
                 contentWindow = svgdoc.defaultView;
@@ -85,14 +87,40 @@ angular.module('mm.core')
 
         if (contentWindow) {
             // Intercept window.open.
-            contentWindow.open = function () {
-                // Prevent showing more than one consecutive error. This shouldn't happen often because it means that the
-                // element is using more than one window.open, but it's better to handle it just in case.
-                var currentTime = new Date().getTime();
-                if (currentTime - errorShownTime > 500) {
-                    errorShownTime = currentTime;
-                    $mmUtil.showErrorModal('mm.core.erroropenpopup', true);
+            contentWindow.open = function (url) {
+                var scheme = $mmText.getUrlScheme(url);
+                if (!scheme) {
+                    // It's a relative URL, use the frame src to create the full URL.
+                    var src = element[0] && (element[0].src || element[0].data);
+                    if (src) {
+                        var dirAndFile = $mmFS.getFileAndDirectoryFromPath(src);
+                        if (dirAndFile.directory) {
+                            url = $mmFS.concatenatePaths(dirAndFile.directory, url);
+                        } else {
+                            $log.warn('Cannot get iframe dir path to open relative url', url, element);
+                            return {}; // Return empty "window" object.
+                        }
+                    } else {
+                        $log.warn('Cannot get iframe src to open relative url', url, element);
+                        return {}; // Return empty "window" object.
+                    }
                 }
+
+                if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
+                    // It's a local file.
+                    $mmUtil.openFile(url).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
+                    });
+                } else {
+                    // It's an external link, we will open with browser. Check if we need to auto-login.
+                    if (!$mmSite.isLoggedIn()) {
+                        // Not logged in, cannot auto-login.
+                        $mmUtil.openInBrowser(url);
+                    } else {
+                        $mmSite.openInBrowserWithAutoLoginIfSameSite(url);
+                    }
+                }
+
                 return {}; // Return empty "window" object.
             };
         }
@@ -107,6 +135,7 @@ angular.module('mm.core')
 
     /**
      * Search links (<a>) and open them in browser or InAppBrowser if needed.
+     * Only links that haven't been treated by SCORM Javascript will be treated.
      *
      * @param  {DOMElement} element Element to treat.
      * @return {Void}
@@ -118,19 +147,47 @@ angular.module('mm.core')
 
             // Check that href is not null.
             if (href) {
-                if (href.indexOf('http') === 0) {
-                    // Link has protocol http(s), open it in browser.
+                var scheme = $mmText.getUrlScheme(href);
+                if (scheme && scheme == 'javascript') {
+                    // Javascript links should be treated by the SCORM Javascript.
+                    // There's nothing to be done with these links, so they'll be ignored.
+                    return;
+                } else if (scheme && scheme != 'file' && scheme != 'filesystem') {
+                    // Scheme suggests it's an external resource, open it in browser.
                     angular.element(el).on('click', function(e) {
-                        e.preventDefault();
-                        $mmUtil.openInBrowser(href);
+                        // If the link's already prevented by SCORM JS then we won't open it in browser.
+                        if (!e.defaultPrevented) {
+                            e.preventDefault();
+                            if (!$mmSite.isLoggedIn()) {
+                                $mmUtil.openInBrowser(href);
+                            } else {
+                                $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                            }
+                        }
                     });
                 } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
                     // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
                     angular.element(el).on('click', function(e) {
-                        // If the link's already prevented then we won't open it in InAppBrowser.
+                        // If the link's already prevented by SCORM JS then we won't open it in InAppBrowser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
-                            $mmUtil.openInApp(href);
+                            $mmUtil.openFile(href).catch(function(error) {
+                                $mmUtil.showErrorModal(error);
+                            });
+                        }
+                    });
+                } else if (ionic.Platform.isIOS() && (!el.target || el.target == '_self')) {
+                    // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
+                    angular.element(el).on('click', function(e) {
+                        // If the link's already prevented by SCORM JS then we won't treat it.
+                        if (!e.defaultPrevented) {
+                            if (element[0].tagName.toLowerCase() == 'object') {
+                                e.preventDefault();
+                                element.attr('data', href);
+                            } else {
+                                e.preventDefault();
+                                element.attr('src', href);
+                            }
                         }
                     });
                 }
@@ -140,17 +197,38 @@ angular.module('mm.core')
 
     return {
         restrict: 'E',
-        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-style="{\'width\': width, \'height\': height}" ng-src="{{src}}"></iframe></div>',
+        templateUrl: 'core/templates/iframe.html',
         scope: {
             src: '='
         },
         link: function(scope, element, attrs) {
+            var url = (scope.src && scope.src.toString()) || '',  // Convert $sce URLs to string URLs.
+                iframe = angular.element(element.find('iframe')[0]);
+
             scope.width = $mmUtil.formatPixelsSize(attrs.iframeWidth) || '100%';
             scope.height = $mmUtil.formatPixelsSize(attrs.iframeHeight) || '100%';
 
-            var iframe = angular.element(element.find('iframe')[0]);
+            // Show loading only with external URLs.
+            scope.loading = !!url.match(/^https?:\/\//i);
+
             treatFrame(iframe);
 
+            if (scope.loading) {
+                iframe.on('load', function() {
+                    scope.loading = false;
+                    $timeout(); // Use $timeout to force a digest and update the view.
+                });
+
+                iframe.on('error', function() {
+                    scope.loading = false;
+                    $mmUtil.showErrorModal('mm.core.errorloadingcontent', true);
+                    $timeout(); // Use $timeout to force a digest and update the view.
+                });
+
+                $timeout(function() {
+                    scope.loading = false;
+                }, mmCoreIframeTimeout);
+            }
         }
     };
 });

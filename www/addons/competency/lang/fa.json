@@ -1,0 +1,20 @@
+{
+    "activities": "فعالیت‌ها",
+    "coursecompetencies": "شایستگی‌های درس",
+    "coursecompetencyratingsarenotpushedtouserplans": "امتیازهای شایستگی‌ها در این درس تاثیری در برنامه‌های آموزشی ندارند.",
+    "coursecompetencyratingsarepushedtouserplans": "امتیازهای شایستگی‌ها در این درس بلافاصله در برنامه‌های آموزشی به‌روز می‌شوند.",
+    "duedate": "مهلت تحویل",
+    "evidence": "مدرک",
+    "learningplancompetencies": "شایستگی‌های برنامه آموزشی",
+    "learningplans": "برنامه‌های آزموشی",
+    "myplans": "برنامه‌های آموزشی من",
+    "noevidence": "بدون مدرک",
+    "path": "مسیر",
+    "proficient": "کسب مهارت",
+    "progress": "پیشروی شاگردان",
+    "rating": "امتیاز",
+    "reviewstatus": "بازبینی وضعیت",
+    "status": "وضعیت",
+    "template": "الگو",
+    "xcompetenciesproficientoutofy": "در {{$a.x}} شایستگی از مجموع {{$a.y}} شایستگی مهارت کسب شده است"
+}

@@ -1,0 +1,19 @@
+{
+    "cannoteditpage": "Du kan ikke redigere denne side.",
+    "createpage": "Opret side",
+    "editingpage": "Redigering af denne side '{{$a}}'",
+    "errornowikiavailable": "Denne wiki har endnu intet indhold.",
+    "map": "Kort",
+    "newpagehdr": "Ny side",
+    "newpagetitle": "Ny sidetitel",
+    "nocontent": "Der er intet indhold til denne side",
+    "notingroup": "Ikke i gruppe",
+    "page": "Side",
+    "pageexists": "Denne side findes allerede.",
+    "pagename": "Sidenavn",
+    "subwiki": "Underwiki",
+    "titleshouldnotbeempty": "Titlen skal være tom",
+    "viewpage": "Se side",
+    "wikipage": "Wikiside",
+    "wrongversionlock": "En anden bruger har redigeret denne side mens du redigerede og dit indhold er forældet."
+}

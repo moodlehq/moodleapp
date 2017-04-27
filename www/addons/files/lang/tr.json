@@ -1,14 +1,12 @@
 {
-    "downloading": "İndiriliyor...",
     "errorcapturingaudio": "Ses çalma hatası",
     "errorcapturingvideo": "Video oynatma hatası",
-    "errorreadingfile": "\"{$a}\" dosyasını okurken hata oluştu",
-    "file": "Dosya",
+    "files": "Dosyalarım",
     "fileuploaded": "Dosya yüklendi",
     "myfiles": "Dosyalarım",
+    "photoalbums": "Fotoğraf albümleri",
+    "privatefiles": "Kişisel dosyalar",
     "sitefiles": "Site dosyaları",
-    "success": "Başarılı",
-    "uploadafile": "Bir dosya yükle",
     "uploadfiles": "Dosya yükleyebilir",
     "uploading": "Yükleniyor",
     "video": "Video"

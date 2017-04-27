@@ -1,0 +1,19 @@
+<!-- Read only -->
+<div class="item item-text-wrap" ng-if="!edit && model.text">
+    <h2>{{plugin.name}}</h2>
+    <p ng-if="words">{{ 'mma.mod_assign.numwords' | translate: {'$a': words} }}</p>
+    <p><mm-format-text expand-title="{{plugin.name}}" max-height="80" fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
+        {{model.text}}
+    </mm-format-text></p>
+</div>
+<!-- Edit -->
+<div ng-if="edit">
+    <h2 class="item item-text-wrap item-divider">{{plugin.name}}</h2>
+	<div class="item item-text-wrap" ng-if="configs.wordlimitenabled">
+		<h2>{{ 'mma.mod_assign.wordlimit' | translate }}</h2>
+		<p>{{ 'mm.core.numwords' | translate: {'$a': words + ' / ' + configs.wordlimit} }}</p>
+	</div>
+	<div class="item item-text-wrap mm-item-has-rich-text-editor">
+        <mm-rich-text-editor model="model" placeholder="{{ plugin.name }}" name="onlinetext_editor_text" scroll-handle="{{scrollHandle}}" text-change="onChange()" component="{{assignComponent}}" component-id="{{assign.cmid}}" first-render="firstRender()"></mm-rich-text-editor>
+    </div>
+</div>

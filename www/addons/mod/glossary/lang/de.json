@@ -1,0 +1,20 @@
+{
+    "attachment": "Anhang",
+    "browsemode": "Einträge durchblättern",
+    "byalphabet": "Alphabetisch",
+    "byauthor": "Nach Autor/in",
+    "bycategory": "Nach Kategorie",
+    "bynewestfirst": "Neu zuerst",
+    "byrecentlyupdated": "Gerade aktualisiert",
+    "bysearch": "Suchen",
+    "cannoteditentry": "Eintrag nicht bearbeitbar",
+    "casesensitive": "Groß-/Kleinschreibung",
+    "categories": "Kursbereiche",
+    "entriestobesynced": "Einträge zum Synchronisieren",
+    "entrypendingapproval": "Dieser Eintrag wartet auf eine Freigabe.",
+    "errorloadingentries": "Fehler beim Laden von Einträgen",
+    "errorloadingentry": "Fehler beim Laden des Eintrags",
+    "errorloadingglossary": "Fehler beim Laden des Glossars",
+    "noentriesfound": "Keine Einträge",
+    "searchquery": "Suchanfrage"
+}

@@ -1,0 +1,20 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <mm-split-view load-when="competenciesLoaded" load="{{competencyToLoad}}" component="mmaCompetenciesList">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="competenciesLoaded" on-refresh="refreshCompetencies()">
+            </ion-refresher>
+            <mm-loading hide-until="competenciesLoaded">
+                <ul class="list">
+                    <li ng-repeat="competency in competencies">
+                        <a class="item item-text-wrap clearfix" mm-split-view-link="site.competency({ {{idname}}: id, competencyid: competency.competency.id, userid: userId})" title="{{competency.competency.shortname}}">
+                            {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
+                            <span ng-if="competency.usercompetency" ng-class="{'badge-balanced': competency.usercompetency.proficiency, 'badge-assertive': !competency.usercompetency.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetency.gradename }}</span>
+                            <span ng-if="competency.usercompetencycourse" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetencycourse.gradename }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

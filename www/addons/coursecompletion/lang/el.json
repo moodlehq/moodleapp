@@ -1,0 +1,20 @@
+{
+    "complete": "Ολοκλήρωση",
+    "completecourse": "Ολοκλήρωση μαθήματος",
+    "completed": "Ολοκληρωμένο",
+    "completiondate": "Ημερομηνία ολοκλήρωσης",
+    "couldnotloadreport": "Δεν ήταν δυνατή η φόρτωση της αναφοράς ολοκλήρωσης του μαθήματος, δοκιμάστε ξανά αργότερα.",
+    "coursecompletion": "Ολοκλήρωση μαθήματος",
+    "criteria": "Κριτήρια",
+    "criteriagroup": "Ομάδα κριτηρίων",
+    "criteriarequiredall": "Όλα τα παρακάτω κριτήρια είναι υποχρεωτικά",
+    "criteriarequiredany": "Οποιοδήποτε από τα παρακάτω κριτήρια είναι υποχρεωτικά",
+    "inprogress": "Σε εξέλιξη",
+    "notyetstarted": "Δεν έχει ξεκινήσει ακόμα",
+    "pending": "Εκκρεμής",
+    "required": "Απαιτείται",
+    "requiredcriteria": "Απαιτούμενα κριτήρια",
+    "requirement": "Απαίτηση",
+    "status": "Κατάσταση",
+    "viewcoursereport": "Δείτε την αναφορά μαθήματος"
+}

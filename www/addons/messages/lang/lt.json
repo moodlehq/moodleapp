@@ -1,0 +1,19 @@
+{
+    "contactlistempty": "Kontaktų sąrašas tuščias",
+    "contactname": "Kontaktas",
+    "errordeletemessage": "Klaida trinant žinutes.",
+    "errorwhileretrievingcontacts": "Klaida nuskaitant kontaktus iš serverio.",
+    "errorwhileretrievingdiscussions": "Klaida nuskaitant diskusijas iš serverio.",
+    "errorwhileretrievingmessages": "Klaida nuskaitant pranešimus iš serverio.",
+    "messagenotsent": "Žinutė nebuvo išsiųsta, pabandykite vėliau.",
+    "mustbeonlinetosendmessages": "Norėdamas išsiųsti žinutę, turite prisijungti",
+    "newmessage": "Nauja žinutė...",
+    "nomessages": "Žinučių nėra.",
+    "nousersfound": "Vartotojas nerastas",
+    "type_blocked": "Užblokuota",
+    "type_offline": "Neprisjungęs",
+    "type_online": "Prisijungęs",
+    "type_search": "Paieška",
+    "type_strangers": "Kita",
+    "warningmessagenotsent": "Žinutė {{user}} vartotojui neišsiųsta. {{error}}"
+}

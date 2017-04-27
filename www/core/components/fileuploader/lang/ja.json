@@ -1,0 +1,14 @@
+{
+    "addfiletext": "ファイルを追加する",
+    "confirmuploadfile": "{{$a}}をアップロードしようとしています。続けますか？",
+    "errorcapturingaudio": "音声キャプチャーのエラー",
+    "errorcapturingvideo": "ビデオキャプチャーのエラー",
+    "errorreadingfile": "ファイル\"{{$a}}\"の読み取りエラー",
+    "file": "ファイル",
+    "fileuploaded": "アップロードしたファイル",
+    "maxbytesfile": "ファイル {{$a.file}} は大きすぎます。あなたがアップロードできる最大サイズは {{$a.size}} です。",
+    "readingfile": "ファイル読み取り",
+    "uploadafile": "ファイルをアップロードする",
+    "uploading": "アップロード中",
+    "video": "ビデオ"
+}

@@ -21,10 +21,39 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontpage
  */
-.factory('$mmaFrontpage', function($mmSite, $log, $q, $mmCourse) {
+.factory('$mmaFrontpage', function($mmSite, $log, $q, $mmCourse, $mmSitesManager) {
     $log = $log.getInstance('$mmaFrontpage');
 
     var self = {};
+
+    /**
+     * Check if Site Home is disabled in a certain site.
+     *
+     * @module mm.addons.frontpage
+     * @ngdoc method
+     * @name $mmaFrontpage#isDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if Site Home is disabled in a certain site.
+     *
+     * @module mm.addons.frontpage
+     * @ngdoc method
+     * @name $mmaFrontpage#isDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaFrontpage');
+    };
 
     /**
      * Returns whether or not the plugin is enabled for the current site.
@@ -54,17 +83,45 @@ angular.module('mm.addons.frontpage')
      * @module mm.addons.frontpage
      * @ngdoc method
      * @name $mmaFrontpage#isFrontpageAvailable
-     * @return {Promise} Resolved when enabled, otherwise rejected.
+     * @param  {Number} [siteId] The site ID. If not defined, current site.
+     * @return {Promise}         Resolved when enabled, otherwise rejected.
      */
-    self.isFrontpageAvailable = function() {
-
+    self.isFrontpageAvailable = function(siteId) {
         // On older version we cannot check other than calling a WS. If the request
         // fails there is a very high chance that frontpage is not available.
         $log.debug('Using WS call to check if frontpage is available.');
-        return $mmCourse.getSections(1, {emergencyCache: false}).then(function(data) {
-            if (!angular.isArray(data) || data.length == 0) {
-                return $q.reject();
-            }
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var siteHomeId = site.getSiteHomeId(),
+                hasData = false;
+
+            return $mmCourse.getSections(siteHomeId, false, true, {emergencyCache: false}, siteId).then(function(data) {
+                if (!angular.isArray(data) || !data.length) {
+                    return $q.reject();
+                }
+
+                angular.forEach(data, function(section) {
+                    if (section.summary || (section.modules && section.modules.length)) {
+                        hasData = true;
+                    }
+                });
+
+                if (!hasData) {
+                    return $q.reject();
+                }
+            }).catch(function() {
+                var config = site.getStoredConfig();
+                if (config && config.frontpageloggedin) {
+                    var items = config.frontpageloggedin.split(',');
+                    if (items.length > 0) {
+                        return; // It's enabled.
+                    }
+                }
+
+                if (!hasData) {
+                    return $q.reject();
+                }
+            });
         });
     };
 

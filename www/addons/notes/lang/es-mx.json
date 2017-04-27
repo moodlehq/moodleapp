@@ -8,5 +8,6 @@
     "personalnotes": "Notas personales",
     "publishstate": "Contexto",
     "sitenotes": "Notas del sitio",
-    "userwithid": "Usuario con Id {{id}}"
+    "userwithid": "Usuario con Id {{id}}",
+    "warningnotenotsent": "No se pudo añadir nota(s) al curso {{course}}. {{error}}"
 }

@@ -1,0 +1,21 @@
+{
+    "answer": "Resposta",
+    "answersaved": "Resposta salva",
+    "complete": "Concluído",
+    "correct": "Correto",
+    "errorattachmentsnotsupported": "O aplicativo ainda não suporta anexar arquivos à resposta.",
+    "errorinlinefilesnotsupported": "O aplicativo ainda não suporta a edição direta de arquivos.",
+    "errorquestionnotsupported": "Esse tipo de questão não é suportada pelo aplicativo: {{$a}}.",
+    "feedback": "Feedback",
+    "howtodraganddrop": "Toque para selecionar e então toque para soltar.",
+    "incorrect": "Errado",
+    "information": "Informação",
+    "invalidanswer": "Resposta incompleta",
+    "notanswered": "Nenhuma resposta",
+    "notyetanswered": "Ainda não respondeu",
+    "partiallycorrect": "Parcialmente correta",
+    "questionmessage": "Questão {{$a}}: {{$b}}",
+    "questionno": "Questão {{$a}}",
+    "requiresgrading": "Requer avaliação",
+    "unknown": "Não pôde determinar o estado"
+}

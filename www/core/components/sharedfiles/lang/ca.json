@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Seleccioneu un compte per desar el fitxer.",
+    "chooseactionrepeatedfile": "Ja hi ha un fitxer amb aquest nom. Voleu reemplaçar el fitxer existent o canviar-li el nom a «{{$a}}»?",
+    "errorreceivefilenosites": "No hi ha llocs desats. Afegiu un lloc per poder compartir fitxers amb l'aplicació.",
+    "nosharedfiles": "No hi ha fitxers compartits desats en aquest lloc.",
+    "nosharedfilestoupload": "No hi ha fitxers per pujar. Si voleu pujar un fitxer des d'un altra aplicació, busqueu-lo i feu clic al botó «Obre a».",
+    "rename": "Reanomena",
+    "replace": "Reemplaça",
+    "sharedfiles": "Fitxers compartits",
+    "successstorefile": "S'ha desat el fitxer amb èxit. Podeu seleccionar-lo i pujar-lo als vostres fitxers privats o adjuntar-lo a alguna activitat."
+}

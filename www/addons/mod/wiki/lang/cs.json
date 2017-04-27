@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "Nemůžete editovat tuto stránku.",
+    "createpage": "Vytvořit stránku",
+    "editingpage": "Úprava stránky \"{{$a}}\"",
+    "errorloadingpage": "Při načítání stránky došlo k chybě.",
+    "errornowikiavailable": "Tato wiki ještě nemá žádný obsah.",
+    "gowikihome": "Přejí na výchozí stránku Wiki",
+    "map": "Mapa",
+    "newpagehdr": "Nová stránka",
+    "newpagetitle": "Nový název stránky",
+    "nocontent": "Pro tuto stránku není obsah",
+    "notingroup": "Není ve skupině",
+    "page": "Stránka",
+    "pageexists": "Tato stránka již existuje.",
+    "pagename": "Název stránky",
+    "subwiki": "Subwiki",
+    "titleshouldnotbeempty": "Název by neměl být prázdný",
+    "viewpage": "Zobrazit stránku",
+    "wikipage": "Wiki stránka",
+    "wrongversionlock": "Jiný uživatel upravil tuto stránku zatímco vy jste pracovali na svých vlastních úpravách. Váš obsah je nyní zastaralý."
+}

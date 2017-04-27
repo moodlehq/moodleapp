@@ -1,0 +1,55 @@
+$mma-mod-wiki-toc-level-padding:    12px !default;
+$mma-mod-wiki-newentry-link-color:   red !default;
+$mma-mod-wiki-toc-title-color:   #666 !default;
+$mma-mod-wiki-toc-border-color:   #bbb !default;
+$mma-mod-wiki-toc-background-color:   #eee !default;
+$mma-mod-wiki-subwiki-selected-background-color:   #eee !default;
+
+.wiki-toc {
+  border: 1px solid $mma-mod-wiki-toc-border-color;
+  background: $mma-mod-wiki-toc-background-color;
+  margin: 16px;
+  padding: 8px;
+}
+
+.wiki-toc-title {
+  color: $mma-mod-wiki-toc-title-color;
+  font-size: 1.1em;
+  font-variant: small-caps;
+  text-align: center;
+}
+
+.wiki-toc-section {
+  padding: 0;
+  margin: 2px 8px;
+}
+
+.wiki-toc-section-2 {
+  padding-left: $mma-mod-wiki-toc-level-padding;
+}
+
+.wiki-toc-section-3 {
+  padding-left: $mma-mod-wiki-toc-level-padding * 2;
+}
+
+.mm-site_mod_wiki .wiki_newentry {
+  color: $mma-mod-wiki-newentry-link-color;
+  font-style: italic;
+}
+
+/* Hide edit section links */
+.mma-mod_wiki-noedit a.wiki_edit_section {
+  display: none;
+}
+
+.mma-mod_wiki-subwiki-picker .item-divider {
+  font-weight: bold;
+}
+
+.mma-mod_wiki-subwiki-picker .item.item-selected {
+  background-color: $mma-mod-wiki-subwiki-selected-background-color;
+}
+
+.mma-mod_wiki-subwiki-picker .item.item-selected .icon {
+  font-size: 24px;
+}

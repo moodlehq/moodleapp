@@ -16,8 +16,12 @@ angular.module('mm.addons.notifications', [])
 
 .constant('mmaNotificationsListLimit', 20) // Max of notifications to retrieve in each WS call.
 .constant('mmaNotificationsPriority', 800)
+.constant('mmaNotificationsPreferencesPriority', 500)
+.constant('mmaNotificationsReadChangedEvent', 'mma-notifications_read_changed')
+.constant('mmaNotificationsReadCronEvent', 'mma-notifications_read_cron')
 
-.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaNotificationsPriority) {
+.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaNotificationsPriority, $mmSettingsDelegateProvider,
+            mmaNotificationsPreferencesPriority) {
 
     $stateProvider
 
@@ -29,13 +33,27 @@ angular.module('mm.addons.notifications', [])
                 controller: 'mmaNotificationsListCtrl'
             }
         }
+    })
+
+    .state('site.notifications-preferences', {
+        url: '/notifications-preferences',
+        views: {
+            'site': {
+                controller: 'mmaNotificationsPreferencesCtrl',
+                templateUrl: 'addons/notifications/templates/preferences.html'
+            }
+        }
     });
 
     // Register side menu addon.
     $mmSideMenuDelegateProvider.registerNavHandler('mmaNotifications', '$mmaNotificationsHandlers.sideMenuNav', mmaNotificationsPriority);
+
+    // Register settings handler.
+    $mmSettingsDelegateProvider.registerHandler('mmaNotifications:preferences',
+            '$mmaNotificationsHandlers.preferences', mmaNotificationsPreferencesPriority);
 })
 
-.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager) {
+.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager, $mmCronDelegate, $mmSitesManager) {
     $log = $log.getInstance('mmaNotifications');
 
     // Register push notification clicks.
@@ -44,12 +62,23 @@ angular.module('mm.addons.notifications', [])
         $mmPushNotificationsDelegate.registerHandler('mmaNotifications', function(notification) {
             if ($mmUtil.isTrueOrOne(notification.notif)) {
                 $mmaNotifications.isPluginEnabledForSite(notification.site).then(function() {
-                    $mmaNotifications.invalidateNotificationsList().finally(function() {
-                        $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                    $mmSitesManager.isFeatureDisabled('$mmSideMenuDelegate_mmaNotifications', notification.site)
+                            .then(function(disabled) {
+                        if (disabled) {
+                            // Notifications are disabled, stop.
+                            return;
+                        }
+
+                        $mmaNotifications.invalidateNotificationsList().finally(function() {
+                            $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                        });
                     });
                 });
                 return true;
             }
         });
     }
+
+    // Register sync process.
+    $mmCronDelegate.register('mmaNotificationsMenu', '$mmaNotificationsHandlers.sideMenuNav');
 });

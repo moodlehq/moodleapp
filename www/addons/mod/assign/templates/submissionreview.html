@@ -1,0 +1,14 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <mm-nav-buttons side="secondary">
+        <a ng-show="canSaveGrades" class="button button-clear" ng-click="submitGrade()" aria-label="{{ 'mm.core.done' | translate }}">
+            {{ 'mm.core.done' | translate }}
+        </a>
+    </mm-nav-buttons>
+    <ion-content padding="false" mm-state-class delegate-handle="mmaModAssignSubmissionReviewScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentSubmissionLoaded" on-refresh="refreshSubmission()"></ion-refresher>
+        <mm-loading hide-until="assignmentSubmissionLoaded">
+            <mma-mod-assign-submission submitid="{{submitid}}" blindid="{{blindid}}" courseid="{{courseid}}" moduleid="{{moduleid}}" scroll-handle="mmaModAssignSubmissionReviewScroll" show-submission="showSubmission"></mma-mod-assign-submission>
+        </mm-loading>
+    </ion-content>
+</ion-view>

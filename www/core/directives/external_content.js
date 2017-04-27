@@ -31,7 +31,7 @@ angular.module('mm.core')
  * Attributes accepted:
  *     - siteid: Reference to the site ID if different than the site the user is connected to.
  */
-.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q) {
+.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q, $mmApp, $ionicPlatform) {
     $log = $log.getInstance('mmExternalContent');
 
     /**
@@ -49,7 +49,12 @@ angular.module('mm.core')
             type = dom.getAttribute('type');
         e.setAttribute('src', url);
         if (type) {
-            e.setAttribute('type', type);
+            if (ionic.Platform.isAndroid() && type == 'video/quicktime') {
+                // Fix for VideoJS/Chrome bug https://github.com/videojs/video.js/issues/423 .
+                e.setAttribute('type', 'video/mp4');
+            } else {
+                e.setAttribute('type', type);
+            }
         }
         dom.parentNode.insertBefore(e, dom);
     }
@@ -67,6 +72,25 @@ angular.module('mm.core')
      */
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
+        if (dom.tagName == 'VIDEO' && dom.textTracks && targetAttr != 'poster') {
+            // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
+            dom.textTracks.onaddtrack = function(event) {
+                if (event.track) {
+                    event.track.oncuechange = function() {
+                        var line = $ionicPlatform.isTablet() || ionic.Platform.isAndroid() ? 90 : 80;
+                        // Position all subtitles to a percentage of video height.
+                        angular.forEach(event.track.cues, function(cue) {
+                            cue.snapToLines = false;
+                            cue.line = line;
+                            cue.size = 100; // This solves some Android issue.
+                        });
+                        // Delete listener.
+                        event.track.oncuechange = null;
+                    };
+                }
+            };
+        }
+
         if (!url || !$mmUtil.isDownloadableUrl(url)) {
             $log.debug('Ignoring non-downloadable URL: ' + url);
             if (dom.tagName === 'SOURCE') {
@@ -79,25 +103,48 @@ angular.module('mm.core')
         // Get the webservice pluginfile URL, we ignore failures here.
         return $mmSitesManager.getSite(siteId).then(function(site) {
             if (!site.canDownloadFiles() && $mmUtil.isPluginFileUrl(url)) {
-                dom.remove(); // Remove element since it'll be broken.
+                angular.element(dom).remove(); // Remove element since it'll be broken.
                 return $q.reject();
             }
 
-            var fn;
+            // Download images, tracks and posters if size is unknown.
+            var fn,
+                downloadUnknown = dom.tagName == 'IMG' || dom.tagName == 'TRACK' || targetAttr == 'poster';
 
-            if (targetAttr === 'src' && dom.tagName !== 'SOURCE') {
+            if (targetAttr === 'src' && dom.tagName !== 'SOURCE' && dom.tagName !== 'TRACK') {
                 fn = $mmFilepool.getSrcByUrl;
             } else {
                 fn = $mmFilepool.getUrlByUrl;
             }
 
-            return fn(siteId, url, component, componentId).then(function(finalUrl) {
+            return fn(siteId, url, component, componentId, 0, true, downloadUnknown).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
                 if (dom.tagName === 'SOURCE') {
                     // The browser does not catch changes in SRC, we need to add a new source.
                     addSource(dom, finalUrl);
                 } else {
                     dom.setAttribute(targetAttr, finalUrl);
+                }
+
+                // Set events to download big files (not downloaded automatically).
+                if (finalUrl.indexOf('http') === 0 && targetAttr != 'poster' &&
+                            (dom.tagName == 'VIDEO' || dom.tagName == 'AUDIO' || dom.tagName == 'A' || dom.tagName == 'SOURCE')) {
+                    var eventName = dom.tagName == 'A' ? 'click' : 'play';
+
+                    if (dom.tagName == 'SOURCE') {
+                        dom = $mmUtil.closest(dom, 'video,audio');
+                        if (!dom) {
+                            return;
+                        }
+                    }
+
+                    angular.element(dom).on(eventName, function() {
+                        // User played media or opened a downloadable link.
+                        // Download the file if in wifi and it hasn't been downloaded already (for big files).
+                        if (!$mmApp.isNetworkAccessLimited()) {
+                            fn(siteId, url, component, componentId, undefined, false);
+                        }
+                    });
                 }
             });
         });
@@ -131,11 +178,16 @@ angular.module('mm.core')
                     observe = true;
                 }
 
-            } else if (dom.tagName === 'AUDIO' || dom.tagName === 'VIDEO' || dom.tagName === 'SOURCE') {
+            } else if (dom.tagName === 'AUDIO' || dom.tagName === 'VIDEO' || dom.tagName === 'SOURCE' || dom.tagName === 'TRACK') {
                 targetAttr = 'src';
                 sourceAttr = 'targetSrc';
                 if (attrs.hasOwnProperty('ngSrc')) {
                     observe = true;
+                }
+
+                if (dom.tagName === 'VIDEO' && attrs.poster) {
+                    // Handle poster.
+                    handleExternalContent(siteid, dom, 'poster', attrs.poster, component, componentId);
                 }
 
             } else {

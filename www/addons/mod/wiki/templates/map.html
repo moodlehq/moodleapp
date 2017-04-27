@@ -1,0 +1,12 @@
+<ion-content delegate-handle="mmaModWikiMapScroll" mm-state-class>
+    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="wikiLoaded" on-refresh="refreshWiki()"></ion-refresher>
+    <mm-loading hide-until="wikiLoaded">
+        <div class="list">
+            <div ng-repeat-start="letter in map" ng-if="letter.label" class="item item-divider">{{ letter.label }}</div>
+            <ion-item class= "item-text-wrap" ng-repeat-end ng-repeat="page in letter.pages" ng-click="gotoPage(page)">
+                {{ page.title }}
+                <span ng-if="!page.id" class="item-note assertive"><strong>{{ 'mm.core.offline' | translate }}</strong></span>
+            </ion-item>
+        </div>
+    </mm-loading>
+</ion-content>

@@ -1,0 +1,16 @@
+{
+    "answer": "إجابة",
+    "answersaved": "تم حفظ الإجابة",
+    "complete": "كامل",
+    "correct": "صح",
+    "feedback": "تقرير",
+    "incorrect": "خطاء",
+    "information": "معلومات",
+    "invalidanswer": "إجابة غير مكتملة",
+    "notanswered": "لم تتم الأجابة بعد",
+    "notyetanswered": "لم يتم الاجابة بعد",
+    "partiallycorrect": "إجابة جزئية",
+    "questionno": "سؤال {{$a}}",
+    "requiresgrading": "يتطلب التصحيح",
+    "unknown": "غير معروف"
+}

@@ -1,0 +1,12 @@
+<a class="item item-icon-left item-button-right item-text-wrap" ui-sref="site.mm_viewresult({course: course})" ng-class="{'item-disabled': course.visible == 0}" title="{{course.fullname}}">
+    <i class="icon ion-ionic"></i>
+    <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
+    <div class="buttons buttons-small">
+        <span ng-if="!course.isEnrolled" ng-repeat="instance in course.enrollment" class="button button-icon" aria-label="{{ instance.name | translate }}">
+            <i class="icon icon-accessory {{instance.icon}}"></i>
+        </span>
+        <span class="button button-icon">
+            <i class="icon icon-accessory ion-chevron-right"></i>
+        </span>
+    </div>
+</a>

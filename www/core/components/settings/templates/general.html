@@ -5,28 +5,16 @@
                 <div class="input-label" id="mm-settings-languagelabel">
                     {{ 'mm.settings.language' | translate }}
                 </div>
-                <select ng-model="selectedLanguage" ng-options="code as name for (code, name) in langs" ng-change="languageChanged(selectedLanguage)" aria-labelledby="mm-settings-languagelabel">
+                <select ng-model="selectedLanguage" ng-options="code as name for (code, name) in langs" ng-change="languageChanged(selectedLanguage)" aria-labelledby="mm-settings-languagelabel" mm-ios-select-fix>
                 </select>
             </li>
-             <li class="item item-toggle item-text-wrap">
-                <p id="mm-settings-downloadsectionlabel" class="item-heading">{{ 'mm.settings.enabledownloadsection' | translate }}</p>
-                <p>{{ 'mm.settings.enabledownloadsectiondescription' | translate }}</p>
-                <label class="toggle" aria-labelledby="mm-settings-downloadsectionlabel">
-                    <input id="mm-settings-downloadsectioncheckbox" type="checkbox" ng-model="downloadSection" ng-change="downloadSectionChanged(downloadSection)">
-                    <div class="track">
-                        <div class="handle"></div>
-                    </div>
-                </label>
-            </li>
-             <li class="item item-toggle item-text-wrap" ng-if="showReport">
-                <p id="mm-settings-reportlabel" class="item-heading">{{ 'mm.settings.reportinbackground' | translate }}</p>
-                <label class="toggle" aria-labelledby="mm-settings-reportlabel">
-                    <input id="mm-settings-reportcheckbox" type="checkbox" ng-model="reportInBackground" ng-change="reportChanged(reportInBackground)">
-                    <div class="track">
-                        <div class="handle"></div>
-                    </div>
-                </label>
-            </li>
+            <ion-toggle ng-if="rteSupported" ng-model="richTextEditor" ng-change="richTextEditorChanged(richTextEditor)">
+                <p class="item-heading">{{ 'mm.settings.enablerichtexteditor' | translate }}</p>
+                <p>{{ 'mm.settings.enablerichtexteditordescription' | translate }}</p>
+            </ion-toggle>
+            <ion-toggle ng-if="showReport" ng-model="reportInBackground" ng-change="reportChanged(reportInBackground)">
+                <p class="item-heading">{{ 'mm.settings.reportinbackground' | translate }}</p>
+            </ion-toggle>
         </ul>
     </ion-content>
 </ion-view>

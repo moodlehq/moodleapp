@@ -1,0 +1,14 @@
+{
+    "cannoteditpage": "あなたはこのページを編集できません。",
+    "createpage": "ページを作成する",
+    "editingpage": "このページ「 {{$a}} 」の編集",
+    "map": "マップ",
+    "newpagehdr": "新しいページ",
+    "newpagetitle": "新しいページタイトル",
+    "nocontent": "このページにはコンテンツがありません。",
+    "notingroup": "グループ外",
+    "page": "ページ",
+    "pageexists": "このページはすでに存在します。",
+    "pagename": "ページ名",
+    "wrongversionlock": "あなたが編集している間、別のユーザがこのページを編集しました。そのため、あなたのコンテンツは古くなりました。"
+}

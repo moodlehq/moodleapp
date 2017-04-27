@@ -1,0 +1,13 @@
+<ion-popover-view class="mma-mod_imscp-toc">
+    <ion-content >
+        <nav>
+            <ul class="list">
+                <li ng-repeat="item in items">
+                    <a class="item" ng-click="loadItem(item.href)" ng-class='{"mm-bold": !item.href}'>
+                        <span class="padding-left" ng-repeat="i in getNumberForPadding(item.level)"></span>{{item.title}}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </ion-content>
+</ion-popover-view>

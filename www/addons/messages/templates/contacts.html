@@ -1,17 +1,7 @@
 <ion-content class="has-tabs" mm-state-class>
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
 
-    <form ng-if="canSearch()" ng-submit="search(formData.searchString);">
-        <div class="list">
-            <div class="item item-input-inset">
-                <label class="item-input-wrapper">
-                    <i class="icon ion-search placeholder-icon"></i>
-                    <input type="text" placeholder="{{ 'mma.messages.contactname' | translate }}" ng-model="formData.searchString">
-                </label>
-                <button type="submit" class="button button-clear" ng-disabled="!formData.searchString || formData.searchString.length < 3">{{ 'mm.core.search' | translate}}</button>
-            </div>
-        </div>
-    </form>
+    <mm-searchbox ng-if="canSearch()" submit-action="search" placeholder="{{ 'mma.messages.contactname' | translate }}" initial-value="{{formData.searchString}}" autocorrect="off" spellcheck="false" length-check="2"></mm-searchbox>
 
     <mm-loading hide-until="loaded" dyn-message="loadingMessage">
         <ul class="list">
@@ -25,8 +15,8 @@
                     </button>
                 </ion-item>
 
-                <a ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" ng-if="contact.profileimageurl || contact.profileimageurlsmall" class="item item-avatar" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{contact.fullname}}"> <!-- Don't show deleted users -->
-                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="" role="presentation" mm-external-content >
+                <a ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" ng-if="contact.profileimageurl || contact.profileimageurlsmall" class="item item-avatar" mm-split-view-link="site.messages-discussion({userId: contact.id})" title="{{contact.fullname}}"> <!-- Don't show deleted users -->
+                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="{{ 'mm.core.pictureof' | translate:{$a: contact.fullname} }}" role="presentation" mm-external-content >
                     <p class="item-heading">{{ contact.fullname }}</p>
                 </a>
             </li>

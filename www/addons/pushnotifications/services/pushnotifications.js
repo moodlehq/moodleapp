@@ -14,6 +14,27 @@
 
 angular.module('mm.addons.pushnotifications')
 
+
+.constant('mmaPushNotificationsBadgeStore', 'mma_pushnotifications_badge')
+
+.config(function($mmAppProvider, mmaPushNotificationsBadgeStore) {
+    var stores = [
+        {
+            name: mmaPushNotificationsBadgeStore,
+            keyPath: ['siteid', 'addon'],
+            indexes: [
+                {
+                    name: 'siteid'
+                },
+                {
+                    name: 'addon'
+                }
+            ]
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+
 /**
  * Push notifications factory.
  *
@@ -21,12 +42,25 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotifications
  */
-.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmText, $q, $cordovaDevice, $mmUtil, mmCoreConfigConstants,
-            $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, $mmSitesManager, mmaPushNotificationsComponent) {
+.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, $mmSitesManager,
+            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent,
+            mmaPushNotificationsBadgeStore) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
         pushID;
+
+    /**
+     * Get the pushID for this device.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getPushId
+     * @return {String} Push ID.
+     */
+    self.getPushId = function() {
+        return pushID;
+    };
 
     /**
      * Returns whether or not the plugin is enabled for the current site.
@@ -48,48 +82,12 @@ angular.module('mm.addons.pushnotifications')
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmaPushNotifications#notificationClicked
-     * @param {Object} data Notification data.
+     * @param {Object} notification Notification.
      */
-    self.notificationClicked = function(data) {
+    self.notificationClicked = function(notification) {
         $mmApp.ready().then(function() {
-            $mmPushNotificationsDelegate.clicked(data);
+            $mmPushNotificationsDelegate.clicked(notification);
         });
-    };
-
-    /**
-     * This function is called from the PushPlugin when we receive a Notification from GCM.
-     * The app can be in foreground or background,
-     * if we are in background this code is executed when we open the app clicking in the notification bar.
-     *
-     * @module mm.addons.pushnotifications
-     * @ngdoc method
-     * @name $mmaPushNotifications#onGCMReceived
-     * @param {Object} notification Notification data.
-     */
-    self.onGCMReceived = function(notification) {
-        $log.debug('GCM notification received. Type: '+notification.event);
-
-        switch (notification.event) {
-            case 'registered':
-                if (notification.regid.length > 0) {
-                    pushID = notification.regid;
-                    return self.registerDeviceOnMoodle();
-                } else {
-                    $log.debug('Device NOT registered in GCM, invalid regid');
-                    break;
-                }
-
-            case 'message':
-                notification.payload.foreground = notification.foreground;
-                return self.onMessageReceived(notification.payload);
-
-            case 'error':
-                $log.debug('Push messages error');
-                break;
-
-            default:
-                $log.debug('Push unknown message');
-        }
     };
 
     /**
@@ -100,12 +98,13 @@ angular.module('mm.addons.pushnotifications')
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmaPushNotifications#onMessageReceived
-     * @param {Object} data Notification data.
+     * @param {Object} notification Notification received.
      */
-    self.onMessageReceived = function(data) {
-        var promise;
+    self.onMessageReceived = function(notification) {
+        var promise,
+            data = notification ? notification.additionalData : {};
 
-        if (data && data.site) {
+        if (data.site) {
             promise = $mmSitesManager.getSite(data.site); // Check if site exists.
         } else {
             promise = $q.when(); // No site specified, resolve.
@@ -115,25 +114,45 @@ angular.module('mm.addons.pushnotifications')
             if ($mmUtil.isTrueOrOne(data.foreground)) {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if ($mmLocalNotifications.isAvailable()) {
+                    var localNotif = {
+                            id: 1,
+                            at: new Date(),
+                            data: {
+                                notif: data.notif,
+                                site: data.site
+                            }
+                        },
+                        promises = [];
+
                     // Apply formatText to title and message.
-                    $mmText.formatText(data.title, true, true).then(function(formattedTitle) {
-                        $mmText.formatText(data.message, true, true).then(function(formattedMessage) {
-                            var localNotif = {
-                                id: 1,
-                                title: formattedTitle,
-                                message: formattedMessage,
-                                at: new Date(),
-                                smallIcon: 'res://icon',
-                                data: {
-                                    notif: data.notif,
-                                    site: data.site
-                                }
-                            };
-                            $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
-                        });
+                    promises.push($mmText.formatText(notification.title, true, true).then(function(formattedTitle) {
+                        localNotif.title = formattedTitle;
+                    }).catch(function() {
+                        localNotif.title = notification.title;
+                    }));
+
+                    promises.push($mmText.formatText(notification.message, true, true).then(function(formattedMessage) {
+                        localNotif.text = formattedMessage;
+                    }).catch(function() {
+                        localNotif.text = notification.message;
+                    }));
+
+                    $q.all(promises).then(function() {
+                        $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
                     });
                 }
+
+                // Trigger a notification received event.
+                $mmApp.ready().then(function() {
+                    data.title = notification.title;
+                    data.message = notification.message;
+                    $mmPushNotificationsDelegate.received(data);
+                });
             } else {
+                // The notification was clicked. For compatibility with old push plugin implementation
+                // we'll merge all the notification data in a single object.
+                data.title = notification.title;
+                data.message = notification.message;
                 self.notificationClicked(data);
             }
         });
@@ -149,56 +168,29 @@ angular.module('mm.addons.pushnotifications')
      */
     self.registerDevice = function() {
         try {
-            if (ionic.Platform.isIOS()) {
-                return self._registerDeviceAPNS();
-            } else if (ionic.Platform.isAndroid()) {
-                return self._registerDeviceGCM();
-            }
+            var options = {
+                android: {
+                    senderID: mmCoreConfigConstants.gcmpn
+                },
+                ios: {
+                    alert: true,
+                    badge: true,
+                    sound: true
+                }
+            };
+            return $cordovaPushV5.initialize(options).then(function() {
+                // Start listening for notifications and errors.
+                $cordovaPushV5.onNotification();
+                $cordovaPushV5.onError();
+
+                // Register the device in GCM or APNS.
+                return $cordovaPushV5.register().then(function(token) {
+                    pushID = token;
+                    return self.registerDeviceOnMoodle();
+                });
+            });
         } catch(ex) {}
 
-        return $q.reject();
-    };
-
-    /**
-     * Register a device in Apple APNS (Apple Push Notificaiton System) using the Phonegap PushPlugin.
-     * It also registers the device in the Moodle site using the core_user_add_user_device WebService.
-     * We need the device registered in Moodle so we can connect the device with the message output Moode plugin airnotifier.
-     *
-     * @module mm.addons.pushnotifications
-     * @ngdoc method
-     * @name $mmaPushNotifications#_registerDeviceAPNS
-     * @return {Promise} Promise resolved when the device is registered.
-     * @protected
-     */
-    self._registerDeviceAPNS = function() {
-        var options = {
-            alert: 'true',
-            badge: 'true',
-            sound: 'true'
-        };
-        return $cordovaPush.register(options).then(function(token) {
-            pushID = token;
-            return self.registerDeviceOnMoodle();
-        }, function(error) {
-            return $q.reject();
-        });
-    };
-
-    /**
-     * Register a device in Google GCM using the Phonegap PushPlugin.
-     *
-     * @module mm.addons.pushnotifications
-     * @ngdoc method
-     * @name $mmaPushNotifications#_registerDeviceGCM
-     * @return {Promise} Promise resolved when the device is registered.
-     * @protected
-     */
-    self._registerDeviceGCM = function() {
-        if (mmCoreConfigConstants.gcmpn) {
-            return $cordovaPush.register({
-                senderID: mmCoreConfigConstants.gcmpn
-            });
-        }
         return $q.reject();
     };
 
@@ -256,6 +248,173 @@ angular.module('mm.addons.pushnotifications')
             }
         });
     };
+
+    /**
+     * Update Counter for an addon. It will update the refered siteId counter and the total badge.
+     * It will return the updated addon counter.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#updateAddonCounter
+     * @param  {String} siteId Site ID.
+     * @param  {String} addon  Registered addon name to set the badge number.
+     * @param  {Number} number The number to be stored.
+     * @return {Promise}       Promise resolved with the stored badge counter for the addon on the site.
+     */
+    self.updateAddonCounter = function(siteId, addon, number) {
+        if ($mmPushNotificationsDelegate.isCounterHandlerRegistered(addon)) {
+            siteId = siteId || $mmSite.getId();
+
+            return saveAddonBadge(siteId, number, addon).then(function() {
+                return self.updateSiteCounter(siteId).then(function() {
+                    return number;
+                });
+            });
+        }
+        return $q.when(0);
+    };
+
+    /**
+     * Update counter for a site using the stored addon data. It will update the total badge application number.
+     * It will return the updated site counter.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#updateSiteCounter
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Promise resolved with the stored badge counter for the site.
+     */
+    self.updateSiteCounter = function(siteId) {
+        var addons = $mmPushNotificationsDelegate.getCounterHandlers(),
+            promises = [];
+
+        angular.forEach(addons, function(addon) {
+            promises.push(getAddonBadge(siteId, addon));
+        });
+
+        return $q.all(promises).then(function (counters) {
+            var plus = false,
+                total = counters.reduce(function (previous, counter) {
+                    // Check if there is a plus sign at the end of the counter.
+                    if (counter != parseInt(counter, 10)) {
+                        plus = true;
+                        counter = parseInt(counter, 10);
+                    }
+                    return previous + counter;
+                }, 0);
+
+            total = plus && total > 0 ? total + '+' : total;
+
+            // Save the counter on site.
+            return saveAddonBadge(siteId, total);
+        }).then(function(siteTotal) {
+            return self.updateAppCounter().then(function() {
+                return siteTotal;
+            });
+        });
+    };
+
+    /**
+     * Update total badge counter of the app.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#updateAppCounter
+     * @return {Promise}        Promise resolved with the stored badge counter for the site.
+     */
+    self.updateAppCounter = function() {
+        return $mmSitesManager.getSitesIds().then(function (sites) {
+            var promises = [];
+            angular.forEach(sites, function(siteId) {
+                promises.push(getAddonBadge(siteId));
+            });
+
+            return $q.all(promises).then(function (counters) {
+                var total = counters.reduce(function (previous, counter) {
+                        // The app badge counter does not support strings, so parse to int before.
+                        return previous + parseInt(counter, 10);
+                    }, 0);
+
+                // Set the app badge.
+                return $cordovaPushV5.setBadgeNumber(total).then(function() {
+                    return total;
+                });
+            });
+        });
+    };
+
+    /**
+     * Delete all badge records for a given site.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#cleanSiteCounters
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Resolved when done.
+     */
+    self.cleanSiteCounters = function(siteId) {
+        var db = $mmApp.getDB();
+        return db.whereEqual(mmaPushNotificationsBadgeStore, 'siteid', siteId).then(function (entries) {
+            var promises =  [];
+            angular.forEach(entries, function (entry) {
+                promises.push(db.remove(mmaPushNotificationsBadgeStore, [entry.siteid, entry.addon]));
+            });
+            return $q.all(promises);
+        }).finally(function() {
+            self.updateAppCounter();
+        });
+
+    };
+
+    /**
+     * Get Sitebadge  counter from the database.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getSiteCounter
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Promise resolved with the stored badge counter for the site.
+     */
+    self.getSiteCounter = function(siteId) {
+        return getAddonBadge(siteId);
+    };
+
+    /**
+     * Get the addon/site badge counter from the database.
+     *
+     * @param  {String} siteId   Site ID.
+     * @param  {String} [addon]  Registered addon name. If not defined it will return the site total.
+     * @return {Promise}         Promise resolved with the stored badge counter for the addon or site or 0 if none.
+     */
+    function getAddonBadge(siteId, addon) {
+        addon = addon || 'site';
+
+        return $mmApp.getDB().get(mmaPushNotificationsBadgeStore, [siteId, addon]).then(function(entry) {
+             return (entry && entry.number) || 0;
+        }).catch(function() {
+            return 0;
+        });
+    }
+
+    /**
+     * Save the addon/site badgecounter on the database.
+     *
+     * @param  {String} siteId   Site ID.
+     * @param  {Number} number   The number to be stored.
+     * @param  {String} [addon]  Registered addon name. If not defined it will store the site total.
+     * @return {Promise}         Promise resolved with the stored badge counter for the addon or site.
+     */
+    function saveAddonBadge(siteId, number, addon) {
+        var entry = {
+            siteid: siteId,
+            addon: addon || 'site',
+            number: number
+        };
+
+        return $mmApp.getDB().insert(mmaPushNotificationsBadgeStore, entry).then(function() {
+            return number;
+        });
+    }
 
     return self;
 });

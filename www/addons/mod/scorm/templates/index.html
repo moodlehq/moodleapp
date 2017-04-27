@@ -1,0 +1,128 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="scormLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshScorm(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="scormLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshScorm(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="550" ng-if="prefetchStatusIcon" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content padding="true" delegate-handle="mmaModScormIndexScroll" mm-state-class>
+    	<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="scormLoaded" on-refresh="refreshScorm(false)">
+        </ion-refresher>
+        <mm-loading hide-until="scormLoaded">
+	        <mm-course-mod-description watch="true" description="description" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+	        <p ng-if="scorm.warningmessage">{{ scorm.warningmessage }}</p>
+	        <div ng-if="allDataLoaded && !scorm.warningmessage">
+	        	<!-- Attempts status -->
+	        	<div class="card" ng-if="scorm.displayattemptstatus || Object.keys(scorm.offlineAttempts).length">
+	        		<div class="item item-divider">{{ 'mma.mod_scorm.attempts' | translate }}</div>
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.maxattempt >= 0">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.noattemptsallowed' | translate }}</p>
+	                    <p ng-if="scorm.maxattempt == 0">{{ 'mm.core.unlimited' | translate }}</p>
+	                    <p ng-if="scorm.maxattempt > 0">{{ scorm.maxattempt }}</p>
+	                </div>
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.numAttempts >= 0">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.noattemptsmade' | translate }}</p>
+	                    <p>{{ scorm.numAttempts }}</p>
+	                </div>
+	                <div class="item" ng-if="scorm.displayattemptstatus" ng-repeat="attempt in scorm.onlineAttempts track by $index">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
+	                    <p ng-if="attempt.grade != -1">{{ attempt.grade }}</p>
+	                    <p ng-if="attempt.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
+	                </div>
+	                <div class="item item-text-wrap" ng-repeat="attempt in scorm.offlineAttempts track by $index">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
+	                    <p ng-if="attempt.grade != -1">{{ attempt.grade }}</p>
+	                    <p ng-if="attempt.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
+	                    <p ng-if="scorm.maxattempt == 0 || attempt.number <= scorm.maxattempt">{{ 'mma.mod_scorm.offlineattemptnote' | translate }}</p>
+	                    <p ng-if="scorm.maxattempt != 0 && attempt.number > scorm.maxattempt">{{ 'mma.mod_scorm.offlineattemptovermax' | translate }}</p>
+	                </div>
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.grademethodReadable">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.grademethod' | translate }}</p>
+	                    <p>{{ scorm.grademethodReadable }}</p>
+	                </div>
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.grade">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.gradereported' | translate }}</p>
+	                    <p ng-if="scorm.grade != -1">{{ scorm.grade }}</p>
+	                    <p ng-if="scorm.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
+	                </div>
+	                <div class="item" ng-if="syncTime">
+	                	<p class="item-heading">{{ 'mm.core.lastsync' | translate }}</p>
+	                    <p>{{ syncTime }}</p>
+	                </div>
+	            </div>
+                <!-- Synchronize button -->
+                <div class="mm-warning" ng-if="!errorMessage && hasOffline">
+                    <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+                </div>
+	            <!-- TOC -->
+	            <div class="card" ng-if="(scorm.displaycoursestructure && organizations.length) || (organizations && organizations.length > 1)">
+	        		<div class="item item-divider">{{ 'mma.mod_scorm.contents' | translate }}</div>
+	        		<div ng-if="organizations && organizations.length > 1" class="item item-input item-select">
+	                    <div class="input-label" id="mma-scorm-organizationslabel">
+	                        {{ 'mma.mod_scorm.organizations' | translate }}
+	                    </div>
+	                    <select ng-model="currentOrganization.identifier" ng-options="org.identifier as org.title for org in organizations" ng-change="loadOrg()" aria-labelledby="mma-scorm-organizationslabel" mm-ios-select-fix>
+	                    </select>
+	                </div>
+	                <div class="item text-center" ng-if="scorm.displaycoursestructure && loadingToc">
+	                	<ion-spinner></ion-spinner>
+	                </div>
+	                <div class="item item-text-wrap" ng-if="scorm.displaycoursestructure && !loadingToc">
+	                	<!-- If data shown doesn't belong to last attempt, warn it. -->
+	                	<p ng-if="attemptToContinue">{{ 'mma.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
+	                	<p>{{ currentOrganization.title }}</p>
+	                	<div ng-repeat="sco in toc track by sco.id" class="mma-scorm-level-{{sco.level}}">
+	                		<p ng-if="sco.isvisible">
+	                			<img ng-src="{{sco.image.url}}" alt="{{sco.image.description}}" />
+	                			<a href="#" ng-if="sco.prereq && sco.launch" ng-click="open($event, sco.id)">{{ sco.title }}</a>
+	                			<span ng-if="!sco.prereq || !sco.launch">{{ sco.title }}</span>
+	                		</p>
+	                	</div>
+	                </div>
+	        	</div>
+	            <!-- Open in browser button -->
+                <div class="card padding" ng-if="errorMessage">
+                	<p class="mma-mod-scorm-warning">{{ errorMessage | translate }}</strong></p>
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+                <!-- Warning that you don't have any more attempts -->
+                <div class="card padding" ng-if="!errorMessage && scorm.attemptsLeft <= 0">
+                	<p class="mma-mod-scorm-warning">{{ 'mma.mod_scorm.exceededmaxattempts' | translate }}</p>
+                </div>
+	            <!-- Open SCORM in app form -->
+                <form class="card" ng-if="!errorMessage && (!scorm.lastattemptlock || scorm.attemptsLeft > 0)" ng-submit="open($event)">
+               		<!-- Open mode (Preview or Normal) -->
+                	<div class="item" ng-if="!scorm.hidebrowse">
+                		<p class="item-heading">{{ 'mma.mod_scorm.mode' | translate }}</p>
+                		<p class="mma-mod-scorm-checkbox-padding">
+                			<input type="radio" name="mode" ng-model="scormOptions.mode" value="{{modebrowse}}" aria-labelledby="mma-mod_scorm-browse">
+                			<span id="mma-mod_scorm-browse">{{ 'mma.mod_scorm.browse' | translate }}</span>
+                		</p>
+                		<p class="mma-mod-scorm-checkbox-padding">
+                			<input type="radio" name="mode" ng-model="scormOptions.mode" value="{{modenormal}}" aria-labelledby="mma-mod_scorm-normal">
+                			<span id="mma-mod_scorm-normal">{{ 'mma.mod_scorm.normal' | translate }}</span>
+                		</p>
+                	</div>
+               		<!-- Create new attempt -->
+                    <ion-checkbox ng-if="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0" class="item-text-wrap item-checkbox-right" ng-model="scormOptions.newAttempt">
+                        <p class="item-heading">{{ 'mma.mod_scorm.newattempt' | translate }}</p>
+                    </ion-checkbox>
+                	<div class="item item-text-wrap" ng-if="!downloading">
+                		<p ng-if="statusMessage">{{ statusMessage | translate }}</p>
+	                    <button class="button button-block">{{ 'mma.mod_scorm.enter' | translate }}</button>
+                	</div>
+                	<div class="item text-center" ng-if="downloading">
+	                	<ion-spinner></ion-spinner>
+	                	<p ng-if="progressMessage">{{ progressMessage | translate }}</p>
+	                	<p ng-if="percentage <= 100">{{ 'mm.core.percentagenumber' | translate:{$a: percentage} }}</p>
+	                </div>
+                </form>
+	        </div>
+	    </mm-loading>
+    </ion-content>
+</ion-view>

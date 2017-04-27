@@ -1,0 +1,73 @@
+
+$mma-mod-quiz-warning-color:      #c00 !default;
+$mma-mod-quiz-highlight-color:    #d9edf7 !default;
+$mma-mod-quiz-alternate-color:    #fbfbfb !default;
+$mma-mod-quiz-conecterr-color:    #fcc !default;
+$mma-mod-quiz-selected-color:     #666 !default;
+
+p.mma-mod-quiz-warning {
+  color: $mma-mod-quiz-warning-color;
+}
+
+.mm-site_mod_quiz, .mm-site_mod_quiz-player {
+  .row {
+    min-height: $button-height + $grid-padding-width + 5px;
+
+    .button.button-block {
+      margin: 0;
+    }
+  }
+}
+
+.item.mma-mod-quiz-highlighted,
+.platform-android .item.mma-mod-quiz-highlighted,
+.platform-ios .item.mma-mod-quiz-highlighted,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-highlighted {
+  background-color: $mma-mod-quiz-highlight-color;
+}
+
+.mma-quiz-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
+
+// Remove padding-top and bottom from navigation bar to minimize height used.
+.mma-mod-quiz-subheader {
+  .row {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .mm-timer {
+    line-height: $button-bar-button-height
+  }
+}
+
+// Alternate background color in rows.
+.mma-mod-quiz-table .row:nth-child(odd) {
+  background-color: $mma-mod-quiz-alternate-color;
+}
+
+.mma-mod_quiz-connection-error, ion-popover-view.popover.mma-mod_quiz-connection-error {
+  background-color: $mma-mod-quiz-conecterr-color;
+}
+
+.mm-site_mod_quiz-review .item {
+  h3 {
+    font-size: 18px;
+  }
+}
+
+.item.mma-mod-quiz-selected,
+.platform-android .item.mma-mod-quiz-selected,
+.platform-ios .item.mma-mod-quiz-selected,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-selected {
+  border: 3px solid $mma-mod-quiz-selected-color;
+  &:not(.mma-mod-quiz-last-of-page) {
+    border-bottom: 0;
+  }
+}

@@ -1,0 +1,10 @@
+{
+    "cannotsubmitsurvey": "Un problème est survenu lors de l'envoi de votre consultation. Veuillez essayer à nouveau.",
+    "clicktocontinue": "Cliquer ici pour continuer",
+    "errorgetsurvey": "Erreur lors de l'obtention des données de la consultation.",
+    "ifoundthat": "J'ai trouvé que",
+    "ipreferthat": "J'aime mieux quand",
+    "responses": "Réponses",
+    "results": "Résultats",
+    "surveycompletednograph": "Vous avez terminé ce sondage."
+}

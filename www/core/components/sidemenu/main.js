@@ -24,7 +24,7 @@ angular.module('mm.core.sidemenu', [])
         controller: 'mmSideMenuCtrl',
         abstract: true,
         cache: false,
-        onEnter: function($ionicHistory, $state, $mmSite, $timeout) {
+        onEnter: function($ionicHistory, $state, $mmSite) {
             // Remove the login page from the history stack.
             $ionicHistory.clearHistory();
 
@@ -33,12 +33,28 @@ angular.module('mm.core.sidemenu', [])
                 $state.go('mm_login.init');
             }
         }
+    })
+
+    .state('site.iframe-view', {
+        url: '/iframe-view',
+        params: {
+            title: null,
+            url: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/sidemenu/templates/iframe.html',
+                controller: 'mmSideMenuIframeViewCtrl'
+            }
+        }
     });
 
 })
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmSideMenuDelegate) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmSideMenuDelegate,
+            mmCoreEventRemoteAddonsLoaded) {
     $mmEvents.on(mmCoreEventLogin, $mmSideMenuDelegate.updateNavHandlers);
     $mmEvents.on(mmCoreEventSiteUpdated, $mmSideMenuDelegate.updateNavHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmSideMenuDelegate.updateNavHandlers);
     $mmEvents.on(mmCoreEventLogout, $mmSideMenuDelegate.clearSiteHandlers);
 });

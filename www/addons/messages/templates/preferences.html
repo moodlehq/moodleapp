@@ -1,0 +1,60 @@
+<ion-view view-title="{{ 'mma.messages.messagepreferences' | translate }}">
+    <ion-content mm-state-class delegate-handle="mmaMessagesPreferencesScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="preferencesLoaded" on-refresh="refreshPreferences()">
+        </ion-refresher>
+        <mm-loading hide-until="preferencesLoaded">
+            <!-- Block non contacts. -->
+            <div class="card" ng-if="preferences">
+                <ion-toggle class="item item-text-wrap" ng-model="preferences.blocknoncontacts" ng-change="blockNonContacts(preferences.blocknoncontacts)" >
+                    {{ 'mma.messages.blocknoncontacts' | translate }}
+                </ion-toggle>
+            </div>
+
+            <!-- Tablet view -->
+            <div ng-if="preferences && isTablet" ng-repeat="component in preferences.components">
+                <ul class="list card" ng-repeat="notification in component.notifications">
+                    <li class="item item-divider item-text-wrap row">
+                        <div class="col col-60">{{ notification.displayname }}</div>
+                        <p class="col col-20 text-center">{{ 'mm.settings.loggedin' | translate }}</p>
+                        <p class="col col-20 text-center">{{ 'mm.settings.loggedoff' | translate }}</p>
+                    </li>
+                    <li class="item item-text-wrap item-toggle-relative row" ng-repeat="processor in notification.processors">
+                        <div class="col col-60">{{ processor.displayname }}</div>
+                        <div class="col col-20 text-center" ng-repeat="state in ['loggedin', 'loggedoff']">
+                            <!-- If notifications not disabled, show toggle. -->
+                            <ion-toggle ng-if="!preferences.disableall" ng-model="processor[state].checked" ng-change="changePreference(notification, state, processor)" ng-disabled="notification.processor.locked || notification.updating[state]">
+                                <ion-spinner ng-if="notification.updating[state]" class="mm-spinner-right"></ion-spinner>
+                            </ion-toggle>
+                            <!-- If notifications are disabled, show "Disabled" instead of toggle. -->
+                            <span ng-if="preferences.disableall">{{ 'mm.settings.disabled' | translate }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Phone view -->
+            <div ng-if="preferences && !isTablet" ng-repeat="component in preferences.components">
+                <ul class="list card" ng-repeat="notification in component.notifications">
+                    <li class="item item-divider item-text-wrap">{{ notification.displayname }}</li>
+                    <div class="item item-text-wrap" ng-repeat="processor in notification.processors">
+                        {{ processor.displayname }}
+                        <!-- If notifications not disabled, show toggles. -->
+                        <div ng-if="!preferences.disableall">
+                            <ion-toggle ng-repeat="state in ['loggedin', 'loggedoff']" class="item-text-wrap has-spinner-right" ng-model="processor[state].checked" ng-change="changePreference(notification, state, processor)" ng-disabled="processor.locked || notification.updating[state]">
+                                <small>{{ 'mm.settings.' + state | translate }}</small>
+                                <ion-spinner ng-if="notification.updating[state]" class="mm-spinner-right"></ion-spinner>
+                            </ion-toggle>
+                        </div>
+                        <!-- If notifications are disabled, show "Disabled" instead of toggle. -->
+                        <div ng-if="preferences.disableall">
+                            <div ng-repeat="state in ['loggedin', 'loggedoff']" class="item item-text-wrap">
+                                <small>{{ 'mm.settings.' + state | translate }}</small>
+                                <span class="item-note">{{ 'mm.settings.disabled' | translate }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

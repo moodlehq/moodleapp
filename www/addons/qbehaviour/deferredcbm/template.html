@@ -1,0 +1,6 @@
+<div class="item item-text-wrap mma-qbehaviour-deferredcbm-certainty-title" ng-if="question.behaviourCertaintyOptions && question.behaviourCertaintyOptions.length">
+	<p>{{ 'mm.question.certainty' | translate }}</p>
+</div>
+<ion-radio ng-repeat="option in question.behaviourCertaintyOptions" id="{{option.id}}" name="{{option.name}}" ng-model="question.behaviourCertaintySelected" ng-value="option.value" ng-disabled="option.disabled">
+    <p><mm-format-text watch="true">{{option.text}}</mm-format-text></p>
+</ion-radio>

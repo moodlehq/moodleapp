@@ -1,0 +1,19 @@
+<ion-view view-title="{{ 'mma.competency.userplans' | translate }}">
+    <mm-split-view load-when="plansLoaded" component="mmaLearningPlansList">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="plansLoaded" on-refresh="refreshLearningPlans()">
+            </ion-refresher>
+            <mm-loading hide-until="plansLoaded">
+                <ul class="list">
+                    <li ng-if="plans.length == 0" class="item">{{ 'mma.competency.noplanswerecreated' | translate }}</li>
+                    <li ng-repeat="plan in plans">
+                        <a class="item item-text-wrap" mm-split-view-link="site.learningplan({id: plan.id})" title="{{plan.name}}">
+                            <h2>{{plan.name}}</h2>
+                            <p ng-if="plan.duedate">{{ 'mma.competency.duedate' | translate }}: {{ plan.duedate | mmToLocaleString }}</p>
+                        </a>
+                    </li>
+                </ul>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

@@ -1,0 +1,14 @@
+{
+    "cannoteditpage": "您不能编辑此页面。",
+    "createpage": "建立页面",
+    "editingpage": "编辑页面“{{$a}}”",
+    "map": "地图",
+    "newpagehdr": "新建页面",
+    "newpagetitle": "新页面标题",
+    "nocontent": "此页面无内容",
+    "notingroup": "不在小组内",
+    "page": "页",
+    "pageexists": "页面已存在。重定向到它",
+    "pagename": "页码",
+    "wrongversionlock": "在您正编辑此页面时，另一个人已经做了编辑，所以您的修改已过时。"
+}

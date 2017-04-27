@@ -1,0 +1,22 @@
+{
+    "cannotsubmitquizdueto": "Testas negali būti pateiktas dėl šių priežasčių:",
+    "confirmcontinueoffline": "Bandymas nesinchronizuojamas nuo {{$a}}. Jeigu mėginsite per kitą įrenginį, duomenys bus prarasti.",
+    "confirmleavequizonerror": "Klaida išsaugant atsakymus. Ar norite išeiti iš testo?",
+    "errorbehaviournotsupported": "Negalima pildyti testo, nes programėlė nesupranta veiksmų:",
+    "errordownloading": "Klaida siunčiant privalomus duomenis.",
+    "errorgetattempt": "Klaida gaunant bandymo duomenis.",
+    "errorgetquestions": "Klaida gaunant klausimus.",
+    "errorgetquiz": "Klaida gaunant testo duomenis.",
+    "errorparsequestions": "Klaida nuskaitant klausimus. Prašome mėginti užpildyti testą naršyklėje.",
+    "errorquestionsnotsupported": "Negalima pildyti testo, nes gali būti klausimų, kurių nėra programėlėje:",
+    "errorrulesnotsupported": "Negalima pildyti testo, nes programėlė neatpažįsta prieigos taisyklių:",
+    "errorsaveattempt": "Klaida saugant duomenis.",
+    "errorsyncquiz": "Klaida sinchronizuojant. Pamėginkite vėliau.",
+    "errorsyncquizblocked": "Testo negalima sinchronizuoti dėl vykstančių procesų. Mėginkite vėliau. Jei nepavyks, perkraukite programėlę.",
+    "finishnotsynced": "Baigta, bet nesinchronizuota",
+    "hasdatatosync": "Neprijungti duomenys teste turi būti sinchronizuojami.",
+    "opentoc": "Atidaryti naršymo skirtuką.",
+    "warningattemptfinished": "Bandymas neprisijungus atmestas nes buvo baigtas arba neaptiktas.",
+    "warningdatadiscarded": "Atsakymai suformuluoti neprisijungus buvo atmesti, nes klausimai formuoti prisijungus.",
+    "warningdatadiscardedfromfinished": "Bandymas nebaigtas dėl atmestų atsakymų. Prašome juos peržiūrėti ir bandyti dar kartą."
+}

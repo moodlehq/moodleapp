@@ -6,10 +6,16 @@
     "description": "توضیحات",
     "details": "جزئیات",
     "email": "ایمیل",
+    "emailagain": "پست الکترونیک (دوباره)",
+    "firstname": "نام",
     "interests": "علایق",
+    "invaliduser": "کاربر نامعتبر",
+    "lastname": "نام خانوادگی",
+    "newpicture": "عکس جدید",
     "phone1": "تلفن",
     "phone2": "همراه",
     "roles": "نقش‌ها",
     "student": "شاگرد",
+    "viewprofile": "مشاهدهٔ صفحهٔ مشخصات فردی",
     "webpage": "صفحهٔ وب"
 }

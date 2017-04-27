@@ -1,0 +1,21 @@
+{
+    "activities": "Jarduerak",
+    "coursecompetencies": "Ikastaroko gaitasunak",
+    "duedate": "Entregatze-data",
+    "errornocompetenciesfound": "Ez da gaitasunik aurkitu",
+    "evidence": "Ebidentzia",
+    "learningplancompetencies": "Ikasketa-planaren gaitasunak",
+    "learningplans": "Ikasketa-planak",
+    "mylearningplans": "Nire ikasketa-planak",
+    "myplans": "Nire ikasketa-planak",
+    "noactivities": "Ez dago jarduerarik",
+    "nocompetencies": "Gaitasunik ez",
+    "noevidence": "Ez dago ebidentziarik",
+    "noplanswerecreated": "Ez da ikasketa-planik sortu.",
+    "path": "Bidea",
+    "progress": "Ikaslearen aurrerapena",
+    "rating": "Puntuazioa",
+    "reviewstatus": "Berrikusi egora",
+    "status": "Egoera",
+    "template": "Txantiloia"
+}

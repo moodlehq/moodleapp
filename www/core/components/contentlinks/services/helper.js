@@ -22,11 +22,71 @@ angular.module('mm.core.contentlinks')
  * @name $mmContentLinksHelper
  */
 .factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate,
-            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants) {
+            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants, $mmCourse,
+            $mmContentLinkHandlerFactory) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
 
     var self = {};
+
+    /**
+     * Create a link handler to handle links to a module index page.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#createModuleIndexLinkHandler
+     * @param  {String} addon          Name of the addon as it's registered in $mmCourseDelegateProvider.
+     * @param  {String} modName        Name of the module (assign, book, ...)
+     * @param  {Object} service        Module's service. Should implement a 'isPluginEnabled(siteId)' function.
+     * @param  {Function} [gotoReview] Function to go to review page if user is not current user.
+     * @return {Object}                Link handler.
+     */
+    self.createModuleGradeLinkHandler = function(addon, modName, service, gotoReview) {
+        var regex = new RegExp('\/mod\/' + modName + '\/grade\.php.*([\&\?]id=\\d+)'),
+            handler = $mmContentLinkHandlerFactory.createChild(regex, '$mmCourseDelegate_' + addon);
+
+        // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+        handler.isEnabled = function(siteId, url, params, courseId) {
+            courseId = courseId || params.courseid || params.cid;
+            return self.isModuleIndexEnabled(service, siteId, courseId);
+        };
+
+        // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+        handler.getActions = function(siteIds, url, params, courseId) {
+            courseId = courseId || params.courseid || params.cid;
+            return self.treatModuleGradeUrl(siteIds, url, params, courseId, gotoReview);
+        };
+
+        return handler;
+    };
+
+    /**
+     * Create a link handler to handle links to a module index page.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#createModuleIndexLinkHandler
+     * @param  {String} addon   Name of the addon as it's registered in $mmCourseDelegateProvider.
+     * @param  {String} modName Name of the module (assign, book, ...)
+     * @param  {Object} service Module's service. Should implement a 'isPluginEnabled(siteId)' function.
+     * @return {Object}         Link handler.
+     */
+    self.createModuleIndexLinkHandler = function(addon, modName, service) {
+        // Match the view.php URL with an id param.
+        var regex = new RegExp('\/mod\/' + modName + '\/view\.php.*([\&\?]id=\\d+)'),
+            handler = $mmContentLinkHandlerFactory.createChild(regex, '$mmCourseDelegate_' + addon);
+
+        // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+        handler.isEnabled = function(siteId, url, params, courseId) {
+            courseId = courseId || params.courseid || params.cid;
+            return self.isModuleIndexEnabled(service, siteId, courseId);
+        };
+
+        // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+        handler.getActions = self.treatModuleIndexUrl;
+
+        return handler;
+    };
 
     /**
      * Filter the list of supported sites based on a isEnabled function.
@@ -41,34 +101,9 @@ angular.module('mm.core.contentlinks')
      *                                depending on this result.
      * @param  {Mixed}                All the params sent after checkAll will be passed to isEnabledFn.
      * @return {Promise}              Promise resolved with the list of supported sites.
+     * @deprecated since v3.2.1. Please use $mmUtil#filterEnabledSites instead.
      */
-    self.filterSupportedSites = function(siteIds, isEnabledFn, checkAll) {
-        var promises = [],
-            supported = [],
-            extraParams = Array.prototype.slice.call(arguments, 3); // Params received after 'checkAll'.
-
-        angular.forEach(siteIds, function(siteId) {
-            if (checkAll || !promises.length) {
-                promises.push(isEnabledFn.apply(isEnabledFn, [siteId].concat(extraParams)).then(function(enabled) {
-                    if (enabled) {
-                        supported.push(siteId);
-                    }
-                }));
-            }
-        });
-
-        return $mmUtil.allPromises(promises).catch(function() {}).then(function() {
-            if (!checkAll) {
-                if (supported.length) {
-                    return siteIds; // Checking 1 was enough and it succeeded, all sites supported.
-                } else {
-                    return []; // Checking 1 was enough and it failed, no sites supported.
-                }
-            } else {
-                return supported;
-            }
-        });
-    };
+    self.filterSupportedSites = $mmUtil.filterEnabledSites;
 
     /**
      * Get the first valid action in a list of actions.
@@ -172,8 +207,7 @@ angular.module('mm.core.contentlinks')
                 });
             } else {
                 // Get the site URL.
-                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url),
-                    formatted = $mmUtil.formatURL(siteUrl);
+                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url);
                 if (!siteUrl) {
                     $mmUtil.showErrorModal('mm.login.invalidsite', true);
                     return;
@@ -188,13 +222,8 @@ angular.module('mm.core.contentlinks')
                     modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
                     if (!$mmSite.isLoggedIn()) {
-                        if (ssoNeeded) {
-                            // Ask SSO confirmation.
-                            promise = $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
-                        } else {
-                            // Not logged in and no SSO, no need to confirm.
-                            promise = $q.when();
-                        }
+                        // Not logged in, no need to confirm. If SSO the confirm will be shown later.
+                        promise = $q.when();
                     } else {
                         // Ask the user before changing site.
                         promise = $mmUtil.showConfirm($translate('mm.contentlinks.confirmurlothersite')).then(function() {
@@ -208,7 +237,8 @@ angular.module('mm.core.contentlinks')
 
                     return promise.then(function() {
                         if (ssoNeeded) {
-                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                            $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                                        result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                         } else {
                             $state.go('mm_login.credentials', {
                                 siteurl: result.siteurl,
@@ -274,41 +304,88 @@ angular.module('mm.core.contentlinks')
     };
 
     /**
-     * Treats a URL that belongs to a module's index page.
+     * Check if a module is enabled for module index links.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#isModuleIndexEnabled
+     * @param  {Object} service    Module's service. Should implement a 'isPluginEnabled(siteId)' function.
+     * @param  {String} siteId     Site ID.
+     * @param  {Number} [courseId] Course ID of the module.
+     * @return {Promise}           Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     */
+    self.isModuleIndexEnabled = function(service, siteId, courseId) {
+        var promise;
+        if (service.isPluginEnabled) {
+            promise = service.isPluginEnabled(siteId);
+        } else {
+            promise = $q.when(true);
+        }
+
+        return promise.then(function(enabled) {
+            if (!enabled) {
+                return false;
+            }
+
+            return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
+        });
+    };
+
+    /**
+     * Treats a module grade URL (grade.php).
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#treatModuleGradeUrl
+     * @param  {String[]} siteIds      Site IDs the URL belongs to.
+     * @param  {String} url            URL to treat.
+     * @param  {Object} params         Params of the URL.
+     * @param  {Number} [courseId]     Course ID related to the URL.
+     * @param  {Function} [gotoReview] Function to go to review page if user is not current user.
+     * @return {Object[]}              List of actions.
+     */
+    self.treatModuleGradeUrl = function(siteIds, url, params, courseId, gotoReview) {
+        return [{
+            action: function(siteId) {
+                // Check if userid is the site's current user.
+                var modal = $mmUtil.showModalLoading();
+                $mmSitesManager.getSite(siteId).then(function(site) {
+                    if (!params.userid || params.userid == site.getUserId()) {
+                        // No user specified or current user. Navigate to module.
+                        $mmCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                    } else if (angular.isFunction(gotoReview)) {
+                        // gotoReview function is defined, use it.
+                        gotoReview(url, params, courseId, siteId);
+                    } else {
+                        // Not current user and no gotoReview function specified, open it in browser.
+                        return site.openInBrowserWithAutoLogin(url);
+                    }
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
+
+    /**
+     * Treats a URL that belongs to a module's index page. Returns actions for the module.
      *
      * @module mm.core.contentlinks
      * @ngdoc method
      * @name $mmContentLinksHelper#treatModuleIndexUrl
-     * @param {String[]} siteIds   Site IDs the URL belongs to.
-     * @param {String} url         URL to treat.
-     * @param {Function} isEnabled Function to check if the module is enabled. @see $mmContentLinksHelper#filterSupportedSites .
-     * @param {Number} [courseId]  Course ID related to the URL.
-     * @return {Promise}           Promise resolved with the list of actions.
+     * @param  {String[]} siteIds  Site IDs the URL belongs to.
+     * @param  {String} url        URL to treat.
+     * @param  {Object} params     Params of the URL.
+     * @param  {Number} [courseId] Course ID related to the URL.
+     * @return {Object[]}          List of actions.
      */
-    self.treatModuleIndexUrl = function(siteIds, url, isEnabled, courseId) {
-        var params = $mmUtil.extractUrlParams(url);
-        if (typeof params.id != 'undefined') {
-            // If courseId is not set we check if it's set in the URL as a param.
-            courseId = courseId || params.courseid || params.cid;
-
-            // Pass false because all sites should have the same siteurl.
-            return self.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
-                if (!ids.length) {
-                    return [];
-                } else {
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: ids,
-                        action: function(siteId) {
-                            $mmCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
-                        }
-                    }];
-                }
-            });
-        }
-        return $q.when([]);
+    self.treatModuleIndexUrl = function(siteIds, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+        return [{
+            action: function(siteId) {
+                $mmCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+            }
+        }];
     };
 
     return self;

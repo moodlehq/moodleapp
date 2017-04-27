@@ -23,7 +23,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontPageHandlers
  */
-.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage) {
+.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $state, $mmSitesManager, $mmContentLinkHandlerFactory) {
     $log = $log.getInstance('$mmaFrontPageHandlers');
 
     var self = {};
@@ -71,11 +71,56 @@ angular.module('mm.addons.frontpage')
             return function($scope) {
                 $scope.icon = 'ion-home';
                 $scope.title = 'mma.frontpage.sitehome';
-                $scope.state = 'site.mm_course-section';
+                $scope.state = 'site.frontpage';
+                $scope.class = 'mma-frontpage-handler';
             };
         };
 
         return self;
+    };
+
+    /**
+     * Content links handler.
+     *
+     * @module mm.addons.frontpage
+     * @ngdoc method
+     * @name $mmaFrontPageHandlers#linksHandler
+     */
+    self.linksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/course\/view\.php.*([\?\&]id=\d+)/, '$mmSideMenuDelegate_mmaFrontpage');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.linksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = parseInt(params.id, 10);
+        if (!courseId) {
+            return false;
+        }
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (courseId != site.getSiteHomeId()) {
+                // The course is not site home.
+                return false;
+            }
+
+            return $mmaFrontpage.isFrontpageAvailable(siteId).then(function() {
+                return true;
+            }).catch(function() {
+                return false;
+            });
+        });
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.linksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.frontpage'
+                });
+            }
+        }];
     };
 
     return self;

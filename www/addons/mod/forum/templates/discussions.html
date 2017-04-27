@@ -1,0 +1,94 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-show="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-show="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-show="discussionsLoaded && !hasOffline && isOnline" content="'mma.mod_forum.refreshdiscussions' | translate" action="refreshDiscussions(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-show="discussionsLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshDiscussions(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="300" ng-show="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="200" ng-show="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <mm-split-view load-when="discussionsLoaded" load="{{linkToLoad}}" component="mmaModForumDiscussionsList">
+        <ion-content delegate-handle="mmaModForumDiscussionsScroll" mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="discussionsLoaded" on-refresh="refreshDiscussions(false)">
+            </ion-refresher>
+            <mm-loading hide-until="discussionsLoaded">
+                <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+                <!-- Forum discussions found to be synchronized -->
+                <div class="mm-warning" ng-if="hasOffline">
+                    <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+                </div>
+
+                <ul class="list" ng-if="forum">
+                    <li class="padding-horizontal" ng-if="isCreateEnabled && forum.cancreatediscussions">
+                        <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
+                            {{ 'mma.mod_forum.addanewdiscussion' | translate }}
+                        </button>
+                    </li>
+                    <li class="card" ng-repeat="discussion in offlineDiscussions | orderBy:'-timecreated'">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-newdiscussion({cid: courseid, forumid: forum.id, cmid: forum.cmid, userid: discussion.userid, timecreated: discussion.timecreated})">
+                            <article>
+                                <div class="item item-text-wrap item-heading clearfix" ng-class="{'item-avatar': discussion.userfullname}">
+                                    <img ng-if="discussion.userpictureurl && discussion.userfullname" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <img ng-if="!discussion.userpictureurl && discussion.userfullname" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <div class="item-note"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+                                    <h2><summary>{{discussion.subject}}</summary></h2>
+                                    <p ng-if="userfullname" class="mm-subject">{{discussion.userfullname}}</p>
+                                </div>
+                                <div class="item item-body">
+                                    <p><mm-format-text watch="true" clean="true" max-height="60" component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
+                                    <span class="item-note text-right">
+                                        <span ng-if="discussion.groupname">
+                                            <i class="icon ion-ios-people"></i> {{ discussion.groupname }}
+                                            <br />
+                                        </span>
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
+                    </li>
+                    <li class="card" ng-repeat="discussion in discussions track by $index">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid, trackposts: discussion.numunread > 0,locked: discussion.locked && !discussion.canreply})">
+                            <article>
+                                <div class="item item-text-wrap item-heading clearfix" ng-class="{'item-avatar': discussion.userfullname}">
+                                    <img ng-if="discussion.userpictureurl && discussion.userfullname" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <img ng-if="!discussion.userpictureurl && discussion.userfullname" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <h2>
+                                        <summary><i class="icon ion-pin" ng-if="discussion.pinned"></i> {{discussion.subject}}</summary>
+                                    </h2>
+                                    <div class="item-note text-right">
+                                        {{discussion.created | mmDateDayOrTime}}
+                                        <div ng-if="discussion.numunread"><i class="icon ion-record positive"></i> {{ 'mma.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}</div>
+                                    </div>
+                                    <p ng-if="discussion.userfullname">{{discussion.userfullname}}</p>
+                                </div>
+                                <div class="item item-body">
+                                    <p><mm-format-text watch="true" clean="true" max-height="60" component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
+                                    <span class="item-note text-right">
+                                        <span ng-if="discussion.groupname">
+                                            <i class="icon ion-ios-people"></i> {{ discussion.groupname }}
+                                            <br />
+                                        </span>
+                                        <span><i class="icon ion-ios-chatboxes-outline"></i> {{ 'mma.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}</span>
+                                        <span ng-if="discussion.timemodified > discussion.created">
+                                            <br />
+                                            <i class="icon ion-clock"></i> {{discussion.timemodified | mmTimeAgo}}
+                                        </span>
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
+                    </li>
+                    <li ng-if="count == 0" class="item item-text-wrap">{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}</li>
+                </ul>
+                <ion-infinite-scroll ng-if="canLoadMore"
+                        immediate-check="false"
+                        on-infinite="loadMoreDiscussions()" >
+                </ion-infinite-scroll>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

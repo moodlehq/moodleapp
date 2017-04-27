@@ -1,0 +1,87 @@
+<ion-view can-swipe-back="false">
+    <ion-nav-title><mm-format-text watch="true">{{ quiz.name }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button id="mma-mod_quiz-connectionerror-button" class="button button-icon ion-alert-circled" ng-show="autoSaveError" ng-click="conErrPopover.show($event)" aria-label="{{ 'mm.core.error' | translate }}">
+        </button>
+        <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button>
+    </ion-nav-buttons>
+    <!-- Navigation arrows -->
+    <ion-header-bar class="bar-subheader mma-mod-quiz-subheader" ng-if="dataLoaded && questions.length && !quizAborted && !showSummary">
+        <div class="row">
+            <div class="col col-20">
+                <a class="button button-icon icon ion-arrow-left-b" ng-if="previousPage >= 0" ng-click="loadPage(previousPage)" title="{{ 'mm.core.previous' | translate }}"></a>
+            </div>
+            <div class="col col-60 text-center">
+                <mm-timer ng-if="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></mm-timer>
+            </div>
+            <div class="col col-20 text-right">
+                <a class="button button-icon icon ion-arrow-right-b" ng-if="nextPage >= -1" ng-click="loadPage(nextPage)" title="{{ 'mm.core.next' | translate }}"></a>
+            </div>
+        </div>
+    </ion-header-bar>
+    <ion-content padding="true" mm-state-class delegate-handle="mmaModQuizPlayerScroll" ng-class="{'has-subheader': dataLoaded && questions.length && !quizAborted && !showSummary}">
+        <mm-loading hide-until="dataLoaded">
+            <div class="list padding" ng-if="!attempt">
+                <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
+            </div>
+            <!-- Questions -->
+            <form name="mma-mod_quiz-player-form" ng-if="questions.length && !quizAborted && !showSummary">
+                <div ng-repeat="question in questions">
+                    <section class="card" id="mma-mod_quiz-question-{{question.slot}}">
+                        <div class="item item-divider">
+                            <h2 ng-if="question.number" class="inline">{{ 'mm.question.questionno' | translate:{$a: question.number} }}</h2>
+                            <h2 ng-if="!question.number" class="inline">{{ 'mm.question.information' | translate }}</h2>
+                            <div class="item-text-wrap item-note" ng-if="question.status || question.readableMark">
+                                <span ng-if="question.status" class="block">{{question.status}}</span>
+                                <span ng-if="question.readableMark" class="block"><mm-format-text watch="true">{{question.readableMark}}</mm-format-text></span>
+                            </div>
+                        </div>
+                        <mm-question class="item item-complex item-text-wrap" question="question" abort="abortQuiz()" button-clicked="behaviourButtonClicked(name, value)" component="component" component-id="quiz.coursemodule" attempt-id="attempt.id" offline-enabled="{{offline}}" scroll-handle="mmaModQuizPlayerScroll"></mm-question>
+                    </section>
+                </div>
+            </form>
+            <!-- Summary -->
+            <div ng-if="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="card mma-mod-quiz-table">
+                <div class="item item-divider">
+                    <h2>{{ 'mma.mod_quiz.summaryofattempt' | translate }}</h2>
+                </div>
+                <div class="item item-text-wrap row">
+                    <p class="col col-25 text-center"><b>{{ 'mma.mod_quiz.question' | translate }}</b></p>
+                    <p class="col col-65 text-center"><b>{{ 'mma.mod_quiz.status' | translate }}</b></p>
+                    <p class="col col-10 text-center" ng-if="!quiz.isSequential && canReturn"></p>
+                </div>
+                <div ng-repeat="question in summaryQuestions" class="item item-text-wrap row" ng-if="question.number">
+                    <p class="col col-25 text-center">{{ question.number }}</p>
+                    <p class="col col-65 text-center">{{ question.status }}</p>
+                    <p class="col col-10 text-center" ng-if="!quiz.isSequential && canReturn">
+                        <a class="button button-block button-icon ion-ios-arrow-forward" ng-click="loadPage(question.page, false, question.slot)" aria-label="{{ 'mm.question.questionno' | translate:{$a: question.number} }}"></a>
+                    </p>
+                </div>
+                <div class="item" ng-if="canReturn">
+                    <a class="button button-block" ng-click="loadPage(attempt.currentpage)">{{ 'mma.mod_quiz.returnattempt' | translate }}</a>
+                </div>
+                <div class="item item-text-wrap" ng-if="attempt.dueDateWarning">
+                    {{ attempt.dueDateWarning }}
+                </div>
+                <mm-timer ng-if="endTime" class="item item-text-wrap" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></mm-timer>
+                <div class="item item-text-wrap" ng-if="preventSubmitMessages.length">
+                    <p class="item-heading">{{ 'mma.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
+                    <p ng-repeat="message in preventSubmitMessages">{{message}}</p>
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+                <div class="item" ng-if="!attempt.finishedOffline && !preventSubmitMessages.length">
+                    <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
+                </div>
+            </div>
+            <!-- Quiz aborted -->
+            <section class="card" ng-if="attempt && ((!questions.length && !showSummary) || quizAborted)">
+                <div class="item item-text-wrap">
+                    <p>{{ 'mma.mod_quiz.errorparsequestions' | translate }}</p>
+                </div>
+                <div class="item">
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+            </section>
+        </mm-loading>
+    </ion-content>
+</ion-view>

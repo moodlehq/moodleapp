@@ -26,7 +26,8 @@ angular.module('mm.core.course', ['mm.core.courses'])
         params: {
             courseid: null,
             sid: null, // Section to load. Not naming it sectionid because it collides with 'mm_course-section' param in split-view.
-            moduleid: null // Module to load.
+            moduleid: null, // Module to load.
+            coursefullname: null
         },
         views: {
             'site': {
@@ -63,11 +64,10 @@ angular.module('mm.core.course', ['mm.core.courses'])
             }
         }
     });
-
-    $mmCoursesDelegateProvider.registerNavHandler('mmCourse', '$mmCourseCoursesNavHandler', mmCoreCoursePriority);
 })
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmCourseDelegate) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmCourseDelegate, mmCoreEventRemoteAddonsLoaded) {
     $mmEvents.on(mmCoreEventLogin, $mmCourseDelegate.updateContentHandlers);
     $mmEvents.on(mmCoreEventSiteUpdated, $mmCourseDelegate.updateContentHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmCourseDelegate.updateContentHandlers);
 });

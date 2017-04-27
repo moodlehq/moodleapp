@@ -1,6 +1,82 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.2.1 ===
+
+ * mmaGrades addon has been moved to core with mmGrades name (and derivatives).
+ * $mmContentLinksDelegate has been refactored. Please see the new requirements in $mmContentLinksDelegateProvider#registerLinkHandler. Also, it is recommended to use the new $mmContentLinkHandlerFactory to create the content link handlers. The functions $mmContentLinksHelper#treatModuleIndexUrl and $mmContentLinksHelper#treatModuleGradeUrl have been modified to match the new behaviour.
+ * The promise returned by $mmaMessages#sendMessage is now resolved with an object instead of a boolean.
+ * mm-format-text directive is now depending on height so new parameter max-height has been added and parameters shorten and expand-on-click have been deprecated.
+ * Now mmUser#formatRoleList is returning a String instead of a Promise.
+ * The event mmCoreEventSessionExpired now receives an object instead of a string. Also, mmLoginLaunchSiteURL and mmLoginLaunchPassport have been deprecated, please use mmLoginLaunchData instead.
+ * Handlers registered in $mmFileUploaderDelegate now must implement a getData function instead of getController. This is because now file picker uses action sheet instead of a new view.
+ * The function $mmaModForumOffline#convertOfflineReplyToOnline is now in $mmaModForumHelper.
+ * The function $mmContentLinksHelper#filterSupportedSites has been deprecated. Please use $mmUtil#filterEnabledSites instead.
+ * New Phonegap plugin installed. Please run:
+ * New Phonegap plugins installed. Please run:
+    ionic plugin add cordova-universal-clipboard
+    ionic plugin add nl.kingsquare.cordova.background-audio
+        or
+    ionic state restore
+ * mm-rich-text-editor now admits a new parameter adjust-height (default: true). It admits an HTML DOM Id string or boolean. Specifying it will adjust height of the editor to the selected element. If true it will adjust to the whole page and false will use height parameter instead.
+ * Generators on stores are deprecated. Using generators will make Android < 4.4 fail. Use keyPath instead. They will be automatically generated if needed. DB Functions query, update and where are not allowed using compoung indexes see JSdoc DB functions on db.js for more info.
+ * A new field has been added to config.json: privacypolicy.
+ * String identifiers mm.core.elementseparator and mm.core.fieldvalueseparator have been renamed to:
+   mm.core.listsep and mm.core.labelsep
+ * Filepool now also throws file events (getFileEventNameByUrl) when files are deleted, outdated or start downloading. It passes an 'action' property to identify the exact action.
+
+=== 3.2 ===
+
+ * Now the app supports auto-login with the site if it's a Moodle 3.2 or higher. The mm-link directive already handles it automatically, but it also includes a new attribute to force or disable auto-login in links. To manually open a link with auto-login you can use any of the new functions in $mmSite: openInBrowserWithAutoLogin, openInAppWithAutoLogin, ...
+ * $mmCourse#getModule now accepts a ignoreCache parameter. Also, $mmCourse#loadModuleContents now accepts preferCache and ignoreCache.
+ * Ionic and some other libraries have been updated, please run:
+    bower update
+
+=== 3.1.3 ===
+
+ * The module object received by addons in course contents no longer has the "contents" array in Moodle 2.9 or higher. Please use the new function $mmCourse#loadModuleContents to load the contents.
+ * The prefetch system has been refactored. We recommend using $mmPrefetchFactory to create prefetch handlers.
+ * Added a new preSet for WS requests: rewriteurls. It can be used to configure the flag moodlewssettingfileurl. It will be set to true if not defined.
+ * New event mmaMessagesToggleDeleteEvent triggered when the toggle delete button is clicked on split view.
+ * Event mmaMessagesDiscussionLoadedEvent changes its parameters from userId to and object {userId: Number, canDelete: Boolean}.
+ * $mmText#guessExtensionFromUrl has been moved to $mmFS#guessExtensionFromUrl. Old function has been removed.
+ * The parameters of the function $mmaMessages#deleteMessage have changed to support offline messaging. The implementation of $mmaMessages#sendMessage has changed too, but the parameters haven't changed. The old implementations are now in $mmaMessages#deleteMessageOnline and $mmaMessages#sendMessageOnline.
+ * Now the messages returned by $mmaMessages#getDiscussion and $mmaMessages#getDiscussions have their times in milliseconds, not in seconds like before.
+ * Ionic and some other libraries have been updated, please run:
+    bower update
+ * The CSS files inside www/css folder have been deleted because they weren't used. That is, www/css/app.css and www/css/app.min.css.
+ * Downloadable modules can now implement functions getDownloadedSize and removeFiles for better performance. See $mmCoursePrefetchDelegateProvider#registerPrefetchHandler.
+ * Most of the attributes of the directive mm-context-menu-item have changed from text binding (@) to two-way binding (=) to make it work with mm-nav-buttons.
+ * A new field appname was added to config.json, if you have a custom app you must add there your custom app name since the language string in the settings components has been deleted.
+ * $mmUtil#confirmDownloadSize Now accepts an object with the file sizes and a boolean to indicate if it is the total size or only partial.
+ * $mmCourse#translateModuleName now returns the translated name immediately, without using promises.
+ * mmaForumDiscussionPost postadded directive has been renamed to onpostchange.
+ * Event mmCoreEventOnline has been deprecated. Please use the new event mmCoreEventOnlineStatusChanged instead.
+
+=== 3.1.2 ===
+
+ * Most of the upload file logic has been moved from the addon "files" to the component "fileuploader". This includes controllers, templates, service functions and language strings.
+ * The function uploadGenericFile inside "fileuploader" component now accepts a new parameter "itemId".
+ * The function uploadMedia inside "fileuploader" now only accepts 1 file instead of an array.
+ * New libraries were installed, please run:
+    bower install
+ * Added a new preSet for WS requests: filter. It can be used to configure the flag moodlewssettingfilter. It will be set to true if not defined.
+
+=== 3.1.1 ===
+
+ * checkTime parameter was removed from the syncQuiz function in the mmaModQuizIndexCtrl controller. We don't check for time anymore.
+
+=== 3.1.0 ===
+
+ * A new param "single" is passed to the prefetch functions of handlers registered in $mmCoursePrefetchDelegateProvider. Please notice that the download of sections will always send false/undefined, if you use this function somewhere else to download a single module then you should pass single=true.
+ * Activity modules have been moved from addons/mod_* to addons/mod/*.
+
+=== 3.0 ===
+
+ * The function $mmaModBook#getChapterContent now requires to receive the result of $mmaModBook#getContentsMap instead of module.contents.
+ * The events obtained using $mmaMessages#getDiscussionEventName are deprecated. Now you should just use the event mmaMessagesNewMessageEvent and you will receive the site ID and user ID as parameters.
+ * Directive "mm-browser" has been renamed to "mm-link" to be more coherent with its functionality.
+
 === 2.9 ===
 
  * Most of the functions from $mmaModScormOnline, $mmaModScormOffline, $mmaModScorm, $mmaModScormSync and $mmaModScormHelper now have a new param siteId to determine the site to affect. If you use any of these services please make sure you still pass the right parameters.

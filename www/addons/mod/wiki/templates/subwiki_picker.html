@@ -1,0 +1,11 @@
+<ion-popover-view class="mma-mod_wiki-subwiki-picker">
+    <ion-content>
+        <div class="list">
+            <div ng-repeat-start="group in subwikiData.subwikis" ng-if="group.label" class="item item-divider">{{ group.label }}</div>
+            <ion-item ng-repeat-end ng-class="{'item-disabled': !subwiki.canedit && subwiki.id <= 0, 'item-icon-right item-selected': isSubwikiSelected(subwiki)}" ng-repeat="subwiki in group.subwikis" ng-disabled="!subwiki.canedit && subwiki.id <= 0" ng-click="gotoSubwiki(subwiki.id, subwiki.user, subwiki.group, subwiki.canedit)">
+                {{ subwiki.name }}
+                <i class="icon ion-checkmark" ng-if="isSubwikiSelected(subwiki)"></i>
+            </ion-item>
+        </div>
+    </ion-content>
+</ion-popover-view>

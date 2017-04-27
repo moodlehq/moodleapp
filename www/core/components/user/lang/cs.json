@@ -5,13 +5,21 @@
     "country": "Země",
     "description": "Popis",
     "details": "Detaily",
+    "detailsnotavailable": "Podrobnosti o tomto uživateli nejsou k dispozici.",
+    "editingteacher": "Učitel",
     "email": "E-mail",
+    "emailagain": "E-mail (znovu)",
+    "firstname": "Křestní jméno",
     "interests": "Zájmy",
-    "invaliduser": "Neplatný uživatel",
+    "invaliduser": "Neplatný uživatel.",
+    "lastname": "Příjmení",
     "manager": "Manažer",
+    "newpicture": "Nový obrázek",
     "phone1": "Telefon",
     "phone2": "Mobil",
     "roles": "Role",
     "student": "Student",
-    "webpage": "Webová stránka"
+    "teacher": "Učitel bez práva upravovat",
+    "viewprofile": "Zobrazit profil",
+    "webpage": "Webové stránky"
 }

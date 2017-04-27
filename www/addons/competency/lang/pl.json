@@ -1,0 +1,19 @@
+{
+    "activities": "Aktywności",
+    "coursecompetencies": "Kompetencje kursu",
+    "duedate": "Termin oddania",
+    "evidence": "Dowód",
+    "learningplancompetencies": "Kompetencje planu nauczania",
+    "learningplans": "Plany nauczania",
+    "myplans": "Moje plany uczenia się.",
+    "noactivities": "Brak aktywności",
+    "nocompetencies": "Nie utworzono żadnych kompetencji w tych ramach kwalifikacji.",
+    "noevidence": "Brak dowodów",
+    "noplanswerecreated": "Nie utworzono planów uczenia się.",
+    "path": "Ścieżka",
+    "progress": "Postępy studenta w nauce",
+    "rating": "Ocena",
+    "reviewstatus": "Status przeglądu",
+    "status": "Status",
+    "template": "Szablon"
+}

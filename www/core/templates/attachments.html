@@ -1,0 +1,15 @@
+<div class="item item-text-wrap item-border">
+	{{ 'mm.core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissions} } }}
+</div>
+<div ng-repeat="file in files">
+    <!-- Files already attached to the submission, either in online or in offline. -->
+    <mm-file ng-if="!file.name || file.offline" file="file" component="{{component}}" component-id="{{componentId}}" can-delete="true" on-delete="delete($index, true)" can-download="{{!file.offline}}"></mm-file>
+    <!-- Files added to draft but not attached to submission yet. -->
+    <mm-local-file ng-if="file.name && !file.offline" file="file" manage="true" file-deleted="delete($index, false)" file-renamed="renamed($index, file)"></mm-local-file>
+</div>
+<!-- Button to add more files. -->
+<div class="item item-text-wrap" ng-if="unlimitedFiles || (maxSubmissions >= 0 && files.length < maxSubmissions)">
+    <a class="button button-block icon-left ion-plus" ng-click="add()">
+        {{ 'mm.fileuploader.addfiletext' | translate }}
+    </a>
+</div>

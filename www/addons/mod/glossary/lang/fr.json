@@ -1,0 +1,20 @@
+{
+    "attachment": "Annexe",
+    "browsemode": "Parcourir les articles",
+    "byalphabet": "Alphabétiquement",
+    "byauthor": "Grouper par auteur",
+    "bycategory": "Grouper par catégorie",
+    "bynewestfirst": "Les plus récents en premier",
+    "byrecentlyupdated": "Modifiés récemment",
+    "bysearch": "Rechercher",
+    "cannoteditentry": "Impossible de modifier l'article",
+    "casesensitive": "Casse des caractères",
+    "categories": "Catégories de cours",
+    "entriestobesynced": "Articles à synchroniser",
+    "entrypendingapproval": "Cet article est en attente d'approbation",
+    "errorloadingentries": "Une erreur est survenue lors du chargement des articles.",
+    "errorloadingentry": "Une erreur est survenue lors du chargement de l'article.",
+    "errorloadingglossary": "Une erreur est survenue lors du chargement du glossaire.",
+    "noentriesfound": "Aucun article trouvé.",
+    "searchquery": "Texte recherché"
+}

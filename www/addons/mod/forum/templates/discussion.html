@@ -1,0 +1,46 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ discussion.subject }}</mm-format-text></ion-nav-title>
+    <mm-nav-buttons side="secondary">
+        <mm-context-menu merge="true">
+            <mm-context-menu-item priority="650" ng-if="discussionLoaded && !postHasOffline && isOnline" content="'mma.mod_forum.refreshposts' | translate" action="refreshPosts(false)" icon-action="refreshPostsIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="550" ng-if="discussionLoaded && !isTablet && postHasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshPosts(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item ng-show="sort != sortTypeFlatOldest" priority="500" content="'mma.mod_forum.modeflatoldestfirst' | translate" action="changeSort(sortTypeFlatOldest)" icon-action="'ion-arrow-down-c'"></mm-context-menu-item>
+            <mm-context-menu-item ng-show="sort != sortTypeFlatNewest" priority="450" content="'mma.mod_forum.modeflatnewestfirst' | translate" action="changeSort(sortTypeFlatNewest)" icon-action="'ion-arrow-up-c'"></mm-context-menu-item>
+            <mm-context-menu-item ng-show="sort != sortTypeNested" priority="400" content="'mma.mod_forum.modenested' | translate" action="changeSort(sortTypeNested)" icon-action="'ion-arrow-swap'"></mm-context-menu-item>
+        </mm-context-menu>
+    </mm-nav-buttons>
+    <ion-content delegate-handle="mmaModForumPostsScroll" mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="discussionLoaded"
+                       on-refresh="refreshPosts(false)">
+        </ion-refresher>
+        <mm-loading hide-until="discussionLoaded">
+            <!-- Discussion replies found to be synchronized -->
+            <div class="mm-warning" ng-if="postHasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: discussionStr} }}
+            </div>
+
+            <div class="mm-warning" ng-if="locked">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_forum.discussionlocked' | translate }}
+            </div>
+
+            <article class="card highlight" ng-if="discussion">
+                <mma-mod-forum-discussion-post post="discussion" courseid="courseId" discussion-id="discussionId" title="discussion.subject" subject="discussion.userfullname" component="component" component-id="componentId" newpost="newPost" showdivider="false" titleimportant="true" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll" unread="trackPosts && !discussion.postread" original-data="originalData" forum="forum"></mma-mod-forum-discussion-post>
+            </article>
+
+            <div ng-class="{'mm-nest-cards': sort == sortTypeNested, 'card': sort != sortTypeNested}" ng-if="posts && posts.length">
+                <article ng-repeat="post in posts track by $index" ng-include="'nestedPosts'">
+                </article>
+            </div>
+
+            <script type="text/ng-template" id="nestedPosts">
+                <div class="mm-nested-card">
+                    <mma-mod-forum-discussion-post post="post" courseid="courseId" discussion-id="discussionId" title="post.subject" subject="post.userfullname" component="component" component-id="componentId" newpost="newPost" showdivider="$index > 0" titleimportant="false" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll" unread="trackPosts && !post.postread" original-data="originalData" forum="forum"></mma-mod-forum-discussion-post>
+                </div>
+                <div class="mm-nested" ng-if="post.children.length && post.children[0].subject">
+                    <article ng-repeat="post in post.children track by $index" ng-include="'nestedPosts'">
+                    </article>
+                </div>
+            </script>
+        </mm-loading>
+    </ion-content>
+</ion-view>

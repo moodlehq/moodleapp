@@ -23,9 +23,52 @@ angular.module('mm.addons.coursecompletion')
  * @ngdoc service
  * @name $mmaCourseCompletionHandlers
  */
-.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $state, mmCoursesAccessMethods) {
+.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $state, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
-    var self = {};
+    // We use "caches" to decrease network usage.
+    var self = {},
+        viewCompletionEnabledCache = {},
+        coursesNavEnabledCache = {};
+
+    /**
+     * Get a cache key to identify a course and a user.
+     *
+     * @param  {Number} courseId Course ID.
+     * @param  {Number} userId   User ID.
+     * @return {String}          Cache key.
+     */
+    function getCacheKey(courseId, userId) {
+        return courseId + '#' + userId;
+    }
+
+    /**
+     * Clear view completion cache.
+     * If a courseId and userId are specified, it will only delete the entry for that user and course.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletionHandlers#clearViewCompletionCache
+     * @param  {Number} [courseId] Course ID.
+     * @param  {Number} [userId]   User ID.
+     */
+    self.clearViewCompletionCache = function(courseId, userId) {
+        if (courseId && userId) {
+            delete viewCompletionEnabledCache[getCacheKey(courseId, userId)];
+        } else {
+            viewCompletionEnabledCache = {};
+        }
+    };
+
+    /**
+     * Clear courses nav caches.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletionHandlers#clearCoursesNavCache
+     */
+    self.clearCoursesNavCache = function() {
+        coursesNavEnabledCache = {};
+    };
 
     /**
      * View user completion handler.
@@ -36,7 +79,9 @@ angular.module('mm.addons.coursecompletion')
      */
     self.viewCompletion = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.
@@ -52,10 +97,25 @@ angular.module('mm.addons.coursecompletion')
          *
          * @param {Object} user     User to check.
          * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
-        self.isEnabledForUser = function(user, courseId) {
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId);
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function(courseEnabled) {
+                var cacheKey = getCacheKey(courseId, user.id);
+                // If is not enabled in the course, is not enabled for the user.
+                if (!courseEnabled) {
+                    viewCompletionEnabledCache[cacheKey] = false;
+                }
+                if (typeof viewCompletionEnabledCache[cacheKey] != 'undefined') {
+                    return viewCompletionEnabledCache[cacheKey];
+                }
+                return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId, user.id).then(function(enabled) {
+                    viewCompletionEnabledCache[cacheKey] = enabled;
+                    return enabled;
+                });
+            });
         };
 
         /**
@@ -77,7 +137,9 @@ angular.module('mm.addons.coursecompletion')
             return function($scope) {
 
                 // Button title.
-                $scope.title = 'mma.coursecompletion.viewcoursereport';
+                $scope.title = 'mma.coursecompletion.coursecompletion';
+                $scope.class = 'mma-coursecompletion-user-handler';
+                $scope.icon = 'ion-android-checkbox-outline';
 
                 $scope.action = function($event) {
                     $event.preventDefault();
@@ -118,15 +180,31 @@ angular.module('mm.addons.coursecompletion')
         /**
          * Check if handler is enabled for this course.
          *
-         * @param {Number} courseId   Course ID.
-         * @param {Object} accessData Type of access to the course: default, guest, ...
-         * @return {Boolean}          True if handler is enabled, false otherwise.
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Boolean}             True if handler is enabled, false otherwise.
          */
-        self.isEnabledForCourse = function(courseId, accessData) {
+        self.isEnabledForCourse = function(courseId, accessData, navOptions, admOptions) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId);
+
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function(courseEnabled) {
+                // If is not enabled in the course, is not enabled for the user.
+                if (!courseEnabled) {
+                    coursesNavEnabledCache[courseId] = false;
+                }
+                // Check if the user can see his own report, teachers can't.
+                if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                    return coursesNavEnabledCache[courseId];
+                }
+                return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId).then(function(enabled) {
+                    coursesNavEnabledCache[courseId] = enabled;
+                    return enabled;
+                });
+            });
         };
 
         /**
@@ -147,6 +225,7 @@ angular.module('mm.addons.coursecompletion')
             return function($scope, $state) {
                 $scope.icon = 'ion-android-checkbox-outline';
                 $scope.title = 'mma.coursecompletion.coursecompletion';
+                $scope.class = 'mma-coursecompletion-mine-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();
@@ -161,4 +240,18 @@ angular.module('mm.addons.coursecompletion')
     };
 
     return self;
+})
+
+.run(function($mmaCourseCompletionHandlers, $mmEvents, mmCoreEventLogout, mmCoursesEventMyCoursesRefreshed,
+            mmUserEventProfileRefreshed) {
+    $mmEvents.on(mmCoreEventLogout, function() {
+        $mmaCourseCompletionHandlers.clearViewCompletionCache();
+        $mmaCourseCompletionHandlers.clearCoursesNavCache();
+    });
+    $mmEvents.on(mmCoursesEventMyCoursesRefreshed, $mmaCourseCompletionHandlers.clearCoursesNavCache);
+    $mmEvents.on(mmUserEventProfileRefreshed, function(data) {
+        if (data) {
+            $mmaCourseCompletionHandlers.clearViewCompletionCache(data.courseid, data.userid);
+        }
+    });
 });
