@@ -257,6 +257,11 @@ angular.module('mm.core')
                             jqImg = angular.element(img);
 
                         container.css('float', img.style.float); // Copy the float to corretly position the search icon.
+                        if (jqImg.hasClass('atto_image_button_right')) {
+                            container.addClass('atto_image_button_right');
+                        } else if (jqImg.hasClass('atto_image_button_left')) {
+                            container.addClass('atto_image_button_left');
+                        }
                         jqImg.wrap(container);
 
                         if (imgWidth > elWidth) {
