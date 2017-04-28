@@ -470,8 +470,11 @@ angular.module('mm.addons.messages')
         var params = {
                 'useridto': $mmSite.getUserId(),
                 'useridfrom': userIdFrom
+            },
+            preSets = {
+                typeExpected: 'boolean'
             };
-        return $mmSite.write('core_message_mark_all_messages_as_read', params);
+        return $mmSite.write('core_message_mark_all_messages_as_read', params, preSets);
 
     };
 
