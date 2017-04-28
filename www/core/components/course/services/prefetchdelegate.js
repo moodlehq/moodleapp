@@ -351,7 +351,7 @@ angular.module('mm.core')
             return $q.all(promises).then(function() {
                 // Sort toCheck list.
                 result.toCheck.sort(function (a, b) {
-                    return a.id > b.id;
+                    return a.id >= b.id ? 1 : -1;
                 });
 
                 return result;

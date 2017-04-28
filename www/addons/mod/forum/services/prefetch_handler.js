@@ -148,7 +148,7 @@ angular.module('mm.addons.mod_forum')
             // If the forum has introfiles there's no need to do this because they have timemodified.
             var urls = $mmUtil.extractDownloadableFilesFromHtml(forum.intro);
             urls = urls.sort(function (a, b) {
-                return a > b;
+                return a >= b ? 1 : -1;
             });
             return revision + '#' + md5.createHash(JSON.stringify(urls));
         }

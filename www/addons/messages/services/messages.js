@@ -1241,7 +1241,7 @@ angular.module('mm.addons.messages')
             timecreatedB = parseInt(b.timecreated, 10);
             if (timecreatedA == timecreatedB && a.id) {
                 // Same time, sort by ID.
-                return a.id >= b.id;
+                return a.id >= b.id ? 1 : -1;
             }
             return timecreatedA >= timecreatedB ? 1 : -1;
         });
