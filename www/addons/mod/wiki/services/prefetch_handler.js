@@ -287,16 +287,9 @@ angular.module('mm.addons.mod_wiki')
 
                 // Get related page files and fetch them.
                 promises.push(self.getFiles(module, courseId, siteId).then(function (files) {
-                    var filePromises = [];
-
                     revision = $mmFilepool.getRevisionFromFileList(files);
 
-                    angular.forEach(files, function(file) {
-                        var url = file.fileurl;
-                        filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-                    });
-
-                    return $q.all(filePromises);
+                    return $mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id);
                 }));
 
                 // Get timemodified.

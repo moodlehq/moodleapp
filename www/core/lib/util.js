@@ -265,7 +265,8 @@ angular.module('mm.core')
             } else {
                 url += '?';
             }
-            url += 'token=' + token;
+            // Always send offline=1 (for external repositories). It shouldn't cause problems for local files or old Moodles.
+            url += 'token=' + token + '&offline=1';
 
             // Some webservices returns directly the correct download url, others not.
             if (url.indexOf('/webservice/pluginfile') == -1) {

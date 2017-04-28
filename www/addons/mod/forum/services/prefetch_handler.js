@@ -315,9 +315,7 @@ angular.module('mm.addons.mod_forum')
             });
 
             // Prefetch files.
-            angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // Prefetch groups data.
             promises.push(prefetchGroupsInfo(forum, courseId, canCreateDiscussions));

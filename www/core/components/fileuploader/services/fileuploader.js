@@ -237,7 +237,8 @@ angular.module('mm.core.fileuploader')
         if (file.filename && !file.name) {
             // It's an online file. We need to download it and re-upload it.
             fileName = file.filename;
-            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, component, componentId).then(function(path) {
+            promise = $mmFilepool.downloadUrl(siteId, file.url || file.fileurl, false, component, componentId,
+                    file.timemodified, undefined, file).then(function(path) {
                 return $mmFS.getExternalFile(path);
             });
         } else {

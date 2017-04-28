@@ -217,9 +217,7 @@ angular.module('mm.addons.mod_choice')
                 files = self.getIntroFilesFromInstance(module, choice);
 
             // Prefetch files.
-            angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // Get the options and results.
             promises.push($mmaModChoice.getOptions(choice.id));

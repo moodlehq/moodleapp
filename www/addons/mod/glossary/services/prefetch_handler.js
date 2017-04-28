@@ -261,9 +261,7 @@ angular.module('mm.addons.mod_glossary')
                 // Prefetch user profiles.
                 promises.push($mmUser.prefetchProfiles(userIds, courseId, siteId));
 
-                angular.forEach(files, function(file) {
-                    promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-                });
+                promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
                 return $q.all(promises);
             }));
