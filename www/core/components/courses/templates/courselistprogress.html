@@ -1,5 +1,5 @@
 <div class="card">
-    <a class="item item-text-wrap item-icon-right item-borderless item-course" ng-class="{'item-progress': roundProgress}" ui-sref="site.mm_course({courseid: course.id, coursefullname: course.fullname})" title="{{course.fullname}}">
+    <a class="item item-text-wrap item-icon-right item-borderless item-course" ng-class="{'item-progress': roundProgress}" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}">
         <div class="progress-chart-container" ng-if="roundProgress">
             <div ng-if="course.progress !== false" class="progress-doughnut">
                 <div class="progress-text has-percent">{{course.progress}}&#37;</div>

@@ -58,7 +58,7 @@ angular.module('mm.core.courses')
         return true;
     };
 
-    self.$get = function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods) {
+    self.$get = function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods, $mmCourses) {
         var enabledNavHandlers = {},
             coursesHandlers = {},
             self = {},
@@ -150,6 +150,35 @@ angular.module('mm.core.courses')
                 type: mmCoursesAccessMethods.default
             };
             return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise);
+        };
+
+        /**
+         * Get the handlers for a course where the user is enrolled in, using course object.
+         *
+         * @module mm.core.courses
+         * @ngdoc method
+         * @name $mmCoursesDelegate#getNavHandlersForCourse
+         * @param  {Object}  course           The course object.
+         * @param  {Boolean} refresh          True if it should refresh the list.
+         * @param  {Boolean} [waitForPromise] Wait for handlers to be loaded.
+         * @return {Array|Promise}            Array of objects containing 'priority' and 'controller'. Or promise if asked for it.
+         */
+        self.getNavHandlersForCourse = function(course, refresh, waitForPromise) {
+            var promise;
+
+            // Load course options if missing.
+            if (typeof course.navOptions == "undefined" || typeof course.admOptions == "undefined" || refresh) {
+                promise = $mmCourses.getCoursesOptions([course.id]).then(function(options) {
+                    course.navOptions = options.navOptions[course.id];
+                    course.admOptions = options.admOptions[course.id];
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+                return self.getNavHandlersFor(course.id, refresh, course.navOptions, course.admOptions, waitForPromise);
+            });
         };
 
         /**

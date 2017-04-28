@@ -5,7 +5,7 @@
         <mm-loading hide-until="courseLoaded">
 
             <div ng-if="course" class="list">
-                <a class="item item-icon-left" ui-sref="site.mm_course({courseid: course.id, coursefullname: course.fullname})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
+                <a class="item item-icon-left" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
                     <i class="icon ion-ionic"></i>
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
                     <p ng-if="course.categoryname">{{course.categoryname}}</p>
@@ -35,7 +35,7 @@
                 <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
-                <a class="item item-icon-left item-icon-right" ui-sref="site.mm_course({courseid: course.id, coursefullname: course.fullname})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
+                <a class="item item-icon-left item-icon-right" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
                     <i class="icon ion-briefcase"></i>
                     <h2><mm-format-text watch="true">{{ 'mm.course.contents' | translate }}</mm-format-text></h2>
                     <i class="icon icon-accessory ion-chevron-right"></i>

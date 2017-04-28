@@ -41,24 +41,7 @@ angular.module('mm.core.courses')
             showSummary: "=?"
         },
         link: function(scope) {
-            var buttonPromise,
-                courseId = scope.course.id;
-
-            // Load course options if missing.
-            if (typeof scope.course.navOptions == "undefined" || typeof scope.course.admOptions == "undefined") {
-                buttonPromise = $mmCourses.getCoursesOptions([courseId]).then(function(options) {
-                    scope.course.navOptions = options.navOptions[courseId];
-                    scope.course.admOptions = options.admOptions[courseId];
-                });
-            } else {
-                buttonPromise = $q.when();
-            }
-
-            // @todo: refresh?
-            buttonPromise = buttonPromise.then(function() {
-                return $mmCoursesDelegate.getNavHandlersFor(
-                        courseId, false, scope.course.navOptions, scope.course.admOptions, true);
-            }).then(function(buttons) {
+            var buttonPromise = $mmCoursesDelegate.getNavHandlersForCourse(scope.course, false, true).then(function(buttons) {
                 scope.showActions = !!buttons.length;
                 return buttons.map(function(button) {
                     var newScope = scope.$new();
