@@ -23,10 +23,11 @@
                     <li class="mm-warning-card-icon item item-text-wrap" ng-if="!haveAllParticipants">
                         <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.notallparticipantsareshown' | translate }}
                     </li>
-                    <li class="padding" ng-if="!submissions || submissions.length == 0">
-                        <p>{{ 'mma.mod_assign.submissionstatus_' | translate }}</p>
-                    </li>
                 </ul>
+                <div ng-if="!submissions || submissions.length == 0" class="mm-empty-box block">
+                    <i class="icon ion-archive"></i>
+                    <p>{{ 'mma.mod_assign.submissionstatus_' | translate }}</p>
+                </div>
             </mm-loading>
         </ion-content>
     </mm-split-view>

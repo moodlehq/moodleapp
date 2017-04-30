@@ -22,7 +22,7 @@
                     <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
                 </div>
 
-                <ul class="list" ng-if="forum">
+                <ul class="list" ng-if="forum && count > 0">
                     <li class="padding-horizontal" ng-if="isCreateEnabled && forum.cancreatediscussions">
                         <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
                             {{ 'mma.mod_forum.addanewdiscussion' | translate }}
@@ -82,8 +82,16 @@
                             </article>
                         </a>
                     </li>
-                    <li ng-if="count == 0" class="item item-text-wrap">{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}</li>
                 </ul>
+                <div ng-if="forum && count == 0" class="mm-empty-box block">
+                    <i class="icon ion-chatboxes"></i>
+                    <p>{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}</p>
+                    <div class="padding-top" ng-if="isCreateEnabled && forum.cancreatediscussions">
+                        <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
+                            {{ 'mma.mod_forum.addanewdiscussion' | translate }}
+                        </button>
+                    </div>
+                </div>
                 <ion-infinite-scroll ng-if="canLoadMore"
                         immediate-check="false"
                         on-infinite="loadMoreDiscussions()" >

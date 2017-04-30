@@ -33,15 +33,16 @@
             </article>
 
             <article>
-                <h3>{{ 'mma.competency.competencies' | translate }}</h3>
+                <h3 ng-if="competencies.statistics.competencycount > 0">{{ 'mma.competency.competencies' | translate }}</h3>
                 <p ng-if="user" class="item item-avatar">
                     <img ng-if="user.profileimageurl && user.profileimageurl !== true" ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
                     <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
                     <mm-format-text>{{ user.fullname }}</mm-format-text>
                 </p>
-                <span ng-if="competencies.statistics.competencycount == 0">
-                    {{ 'mma.competency.nocompetencies' | translate }}
-                </span>
+                <div ng-if="competencies.statistics.competencycount == 0" class="mm-empty-box block">
+                    <i class="icon ion-ribbon-a"></i>
+                    <p>{{ 'mma.competency.nocompetencies' | translate }}</p>
+                </div>
 
                 <div class="list card" ng-repeat="competency in competencies.competencies">
                     <a ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}" class="item item-heading item-text-wrap clearfix">

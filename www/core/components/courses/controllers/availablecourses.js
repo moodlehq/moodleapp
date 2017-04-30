@@ -25,9 +25,11 @@ angular.module('mm.core.courses')
 
     // Convenience function to search courses.
     function loadCourses() {
-        $scope.frontpageCourseId = $mmSite.getSiteHomeId();
+        var frontpageCourseId = $mmSite.getSiteHomeId();
         return $mmCourses.getCoursesByField().then(function(courses) {
-            $scope.courses = courses;
+            $scope.courses = courses.filter(function(course) {
+                return course.id != frontpageCourseId;
+            });
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.courses.errorloadcourses', true);
             return $q.reject();

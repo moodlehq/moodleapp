@@ -22,7 +22,8 @@
                     </a>
                 </li>
             </ul>
-            <div class="padding" ng-if="!contents || contents.length == 0">
+            <div ng-if="!contents || contents.length == 0" class="mm-empty-box block">
+                <i class="icon ion-folder"></i>
                 <p>{{ 'mma.mod_folder.emptyfilelist' | translate}}</p>
             </div>
         </mm-loading>

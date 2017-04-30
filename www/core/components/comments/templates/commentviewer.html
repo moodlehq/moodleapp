@@ -13,8 +13,9 @@
                     <mm-format-text watch="true" clean="true">{{comment.content}}</mm-format-text>
                 </div>
             </div>
-            <div class="card" ng-if="!comments || !comments.length">
-                <p class="item">{{ 'mm.core.nocomments' | translate }}</p>
+            <div ng-if="!comments || !comments.length" class="mm-empty-box block">
+                <i class="icon ion-chatbubble-working"></i>
+                <p>{{ 'mm.core.nocomments' | translate }}</p>
             </div>
         </mm-loading>
     </ion-content>

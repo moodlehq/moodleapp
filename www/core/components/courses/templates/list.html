@@ -14,7 +14,8 @@
                 </ion-input>
             </div>
             <mm-course-list-progress ng-repeat="course in courses | filter:{fullname: filter.filterText}" course="course" show-summary="true"></mm-course-list-progress>
-            <div ng-if="!courses || !courses.length">
+            <div ng-if="!courses || !courses.length" class="mm-empty-box block">
+                <i class="icon ion-ionic"></i>
                 <p>{{ 'mm.courses.nocourses' | translate }}</p>
                 <p ng-if="searchEnabled">{{ 'mm.courses.searchcoursesadvice' | translate }}</p>
             </div>

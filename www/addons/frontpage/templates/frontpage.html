@@ -23,7 +23,10 @@
                 <mm-course-module class="item item-complex" ng-repeat="module in block.modules" module="module"></mm-course-module>
             </section>
 
-            <p class="padding" ng-if="!hasContent">{{ 'mm.course.nocontentavailable' | translate }}</p>
+            <div ng-if="!hasContent" class="mm-empty-box block">
+                <i class="icon ion-qr-scanner"></i>
+                <p>{{ 'mm.course.nocontentavailable' | translate }}</p>
+            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

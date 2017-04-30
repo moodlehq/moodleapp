@@ -19,7 +19,10 @@
 
         <article ng-class="{'mma-mod_wiki-noedit': !canEdit}">
             <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}" ng-if="pageContent">{{ pageContent }}</mm-format-text>
-            <p ng-if="!pageContent">{{ 'mma.mod_wiki.nocontent' | translate }}</p>
+            <div ng-if="!pageContent" class="mm-empty-box block">
+                <i class="icon ion-document"></i>
+                <p>{{ 'mma.mod_wiki.nocontent' | translate }}</p>
+            </div>
         </article>
     </mm-loading>
 </ion-content>

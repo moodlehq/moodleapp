@@ -433,9 +433,19 @@ button.item.item-button-right {
 }
 
 .mm-loading-container {
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  clear: both;
+}
+
+.scroll > .padding > mm-loading > .mm-loading-container,
+.scroll > mm-loading > .mm-loading-container {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
 }
 
 .mm-loading-content {
@@ -466,8 +476,9 @@ mm-loading.mm-loading-center {
   right: 16px;
 }
 
-.mm-split-item-selected, .mm-split-item-selected .item {
-  background-color: $gray-light;
+.mm-split-item-selected:not(.button),
+.mm-split-item-selected.item:not(.button) {
+  background-color: $gray-lighter;
   border-left: 5px solid $mm-color-light;
   padding-left: $item-padding - 4;
 
@@ -1397,9 +1408,14 @@ i, cite, em, var, address, dfn {
 
 
 .mm-empty-box {
-  padding-top: $item-padding;
+  padding: $item-padding;
   text-align: center;
   color: $dark;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-65%);
 
   .icon {
     font-size: 120px;
@@ -1419,17 +1435,17 @@ i, cite, em, var, address, dfn {
 progress {
   -webkit-appearance: none;
   appearance: none;
+  height: 5px;
 
   &[value]::-webkit-progress-bar {
     background-color: $gray-light;
     border-radius: 2px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
   }
 
   &[value]::-webkit-progress-value {
     background-color: $mm-color-light;
     border-radius: 2px;
-    background-size: 35px 20px, 100% 100%, 100% 100%;
   }
 }
 

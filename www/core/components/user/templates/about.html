@@ -87,8 +87,9 @@
                 </div>
             </div>
 
-            <div ng-if="!user">
-                {{ 'mm.user.detailsnotavailable' | translate }}
+            <div ng-if="!user || !hasContact || !hasDetails || !user.description" class="mm-empty-box block">
+                <i class="icon ion-person"></i>
+                <p>{{ 'mm.user.detailsnotavailable' | translate }}</p>
             </div>
         </mm-loading>
     </ion-content>
