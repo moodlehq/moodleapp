@@ -35,25 +35,25 @@
                 <div class="item item-divider">
                     <h2>{{ 'mma.mod_quiz.summaryofattempts' | translate }}</h2>
                 </div>
-                <div class="item item-text-wrap row">
-                    <p class="col text-center" ng-if="quiz.showAttemptColumn"><b>{{ 'mma.mod_quiz.attemptnumber' | translate }}</b></p>
-                    <p class="col col-50"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
-                    <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn"><b>{{ 'mma.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</b></p>
+                <div class="item item-text-wrap row row-center">
+                    <p class="col text-center col-10" ng-if="quiz.showAttemptColumn"><b>{{ 'mma.mod_quiz.attemptnumber' | translate }}</b></p>
+                    <p class="col"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
+                    <p class="col text-center hidden-phone" ng-if="quiz.showMarkColumn"><b>{{ 'mma.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</b></p>
                     <p class="col text-center" ng-if="quiz.showGradeColumn"><b>{{ 'mma.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</b></p>
                     <p class="col col-10"></p>
                 </div>
-                <div class="item item-text-wrap row" ng-repeat="attempt in attempts" ng-class='{"mma-mod-quiz-highlighted": attempt.highlightGrade}'>
-                    <p class="col text-center" ng-if="quiz.showAttemptColumn && attempt.preview">{{ 'mma.mod_quiz.preview' | translate }}</p>
-                    <p class="col text-center" ng-if="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</p>
-                    <div class="col col-50">
+                <a class="item item-text-wrap row row-center" ng-repeat="attempt in attempts" ng-class='{"mma-mod-quiz-highlighted": attempt.highlightGrade}' ui-sref="site.mod_quiz-attempt({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})" aria-label="{{ 'mm.core.seemoredetail' | translate }}">
+                    <p class="col text-center col-10" ng-if="quiz.showAttemptColumn && attempt.preview">{{ 'mma.mod_quiz.preview' | translate }}</p>
+                    <p class="col text-center col-10" ng-if="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</p>
+                    <div class="col">
                         <p ng-repeat="sentence in attempt.readableState">{{ sentence }}</p>
                     </div>
-                    <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn">{{ attempt.readableMark }}</p>
+                    <p class="col text-center hidden-phone" ng-if="quiz.showMarkColumn">{{ attempt.readableMark }}</p>
                     <p class="col text-center" ng-if="quiz.showGradeColumn">{{ attempt.readableGrade }}</p>
                     <p class="col col-10 text-center">
-                        <a class="button button-block button-icon ion-chevron-right icon-accessory" ui-sref="site.mod_quiz-attempt({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})" aria-label="{{ 'mm.core.seemoredetail' | translate }}"></a>
+                        <i class="icon ion-chevron-right icon-accessory"></i>
                     </p>
-                </div>
+                </a>
             </div>
 
             <!-- Result info -->

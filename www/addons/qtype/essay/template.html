@@ -10,13 +10,13 @@
         <!-- Rich text editor. -->
         <mm-rich-text-editor ng-if="!isPlainText" model="textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" scroll-handle="{{scrollHandle}}" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
     </ion-input>
-    <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap">
+    <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap mm-error-item">
         <p class="mm-question-warning">{{ 'mm.question.errorinlinefilesnotsupported' | translate }}</p>
     </div>
     <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap">
         <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{textarea.text}}</mm-format-text></p>
     </div>
-    <div class="item item-text-wrap" ng-if="allowsAttachments">
+    <div class="item item-text-wrap mm-error-item" ng-if="allowsAttachments">
         <p class="mm-question-warning">{{ 'mm.question.errorattachmentsnotsupported' | translate }}</p>
     </div>
     <div class="item item-text-wrap" ng-if="!textarea && (answer || (!attachments.length && !allowsAttachments))">
