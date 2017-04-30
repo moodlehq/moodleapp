@@ -53,6 +53,7 @@
     "problemconnectingerror": "We're having trouble connecting to",
     "problemconnectingerrorcontinue": "Double check you've entered the address correctly and try again.",
     "profileinvaliddata": "Invalid value",
+    "potentialidps": "Log in using your account on:",
     "recaptchachallengeimage": "reCAPTCHA challenge image",
     "reconnect": "Reconnect",
     "reconnectdescription": "Your authentication token is invalid or has expired, you have to reconnect to the site.",
