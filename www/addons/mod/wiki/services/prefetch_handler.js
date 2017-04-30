@@ -196,13 +196,12 @@ angular.module('mm.addons.mod_wiki')
      */
     self.invalidateModule = function(module, courseId) {
         if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
-            // No need to invalidate anything if can check updates.
-            return $q.when();
+            // If can check updates only get wiki by course is needed.
+            return $mmaModWiki.invalidateWikiData(courseId);
         }
 
         return $mmaModWiki.getWiki(courseId, module.id, 'coursemodule').then(function(wiki) {
             var promises = [];
-
             promises.push($mmaModWiki.invalidateWikiData(courseId));
             promises.push($mmaModWiki.invalidateSubwikis(wiki.id));
             promises.push($mmaModWiki.invalidateSubwikiFiles(wiki.id));
