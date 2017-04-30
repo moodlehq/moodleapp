@@ -40,6 +40,14 @@
                     </section>
                 </div>
             </form>
+            <div ng-if="dataLoaded && questions.length && !quizAborted && !showSummary" class="item item-text-wrap row-buttons responsive-sm">
+                <button ng-if="previousPage >= 0" class="button button-block icon-left ion-chevron-left" ng-click="loadPage(previousPage)">
+                    {{ 'mm.core.previous' | translate }}
+                </button>
+                <button ng-if="nextPage >= -1" class="button button-block button-positive icon-right ion-chevron-right" ng-click="loadPage(nextPage)">
+                    {{ 'mm.core.next' | translate }}
+                </button>
+            </div>
             <!-- Summary -->
             <div ng-if="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="card mma-mod-quiz-table">
                 <div class="item item-divider">
