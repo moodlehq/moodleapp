@@ -298,7 +298,7 @@ angular.module('mm.core.fileuploader')
         // Add buttons for handlers.
         handlers = $mmFileUploaderDelegate.getHandlers();
         handlers.sort(function(a, b) {
-            return a.priority < b.priority;
+            return a.priority <= b.priority ? 1 : -1;
         });
 
         angular.forEach(handlers, function(handler) {

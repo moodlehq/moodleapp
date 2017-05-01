@@ -167,8 +167,6 @@ angular.module('mm.core.course')
      * @return {Promise}         Promise resolved with the module's info.
      */
     self.getModuleBasicInfo = function(moduleId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     cmid: moduleId

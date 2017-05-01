@@ -124,7 +124,7 @@ angular.module('mm.addons.mod_survey')
                 // If the survey has introfiles there's no need to do this because they have timemodified.
                 var urls = $mmUtil.extractDownloadableFilesFromHtml(survey.intro);
                 urls = urls.sort(function (a, b) {
-                    return a > b;
+                    return a >= b ? 1 : -1;
                 });
                 return revision + '#' + md5.createHash(JSON.stringify(urls));
             }

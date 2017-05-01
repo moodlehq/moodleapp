@@ -207,12 +207,14 @@ angular.module('mm.addons.mod_forum')
                 var promise;
 
                 courseId = data.courseid;
+                data.options = data.options || {};
 
                 // First of all upload the attachments (if any).
                 promise = uploadAttachments(forumId, data, true, siteId, userId).then(function(itemId) {
                     // Now try to add the discussion.
+                    data.options.attachmentsid = itemId;
                     return $mmaModForum.addNewDiscussionOnline(forumId, data.subject, data.message,
-                            data.subscribe, data.groupid, itemId, siteId);
+                            data.options, data.groupid, siteId);
                 });
 
                 promises.push(promise.then(function() {
@@ -433,11 +435,13 @@ angular.module('mm.addons.mod_forum')
 
                 courseId = data.courseid;
                 forumId = data.forumid;
+                data.options = data.options || {};
 
                 // First of all upload the attachments (if any).
                 promise = uploadAttachments(forumId, data, false, siteId, userId).then(function(itemId) {
                     // Now try to send the reply.
-                    return $mmaModForum.replyPostOnline(data.postid, data.subject, data.message, itemId, siteId);
+                    data.options.attachmentsid = itemId;
+                    return $mmaModForum.replyPostOnline(data.postid, data.subject, data.message, data.options, siteId);
                 });
 
                 promises.push(promise.then(function() {
@@ -499,7 +503,7 @@ angular.module('mm.addons.mod_forum')
      * @return {Promise}         Promise resolved with draftid if uploaded, resolved with undefined if nothing to upload.
      */
     function uploadAttachments(forumId, post, isDisc, siteId, userId) {
-        var attachments = post && post.attachments;
+        var attachments = post && post.options && post.options.attachmentsid;
         if (attachments) {
             // Has some attachments to sync.
             var files = attachments.online || [],

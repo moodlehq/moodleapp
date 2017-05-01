@@ -1,35 +1,47 @@
 {
   "name": "mm2",
   "version": "1.0.0",
-  "description": "mm2: An Ionic project",
+  "description": "Moodle Mobile 2: The official mobile app for Moodle.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moodlehq/moodlemobile2.git"
+  },
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
   "dependencies": {
-    "gulp": "^3.5.6",
-    "gulp-concat": "^2.2.0",
-    "gulp-minify-css": "^0.3.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-sass": "^1.3.3"
   },
   "devDependencies": {
-    "appium": "^1.4.11",
+    "appium": "^1.6.0",
     "bower": "^1.3.3",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.0.3",
+    "gulp-concat": "^2.6.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-clean": "^0.3.2",
     "gulp-clip-empty-files": "^0.1.1",
     "gulp-concat-util": "^0.5.2",
-    "gulp-file": "^0.2.0",
-    "gulp-insert": "^0.4.0",
-    "gulp-ng-annotate": "^1.1.0",
-    "gulp-remove-empty-lines": "0.0.2",
+    "gulp-file": "^0.3.0",
+    "gulp-insert": "^0.5.0",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-remove-empty-lines": "0.0.8",
     "gulp-slash": "^1.1.3",
-    "gulp-strip-comments": "^1.0.1",
+    "gulp-strip-comments": "^2.4.3",
     "gulp-tap": "^0.1.3",
-    "gulp-util": "^2.2.14",
+    "gulp-util": "^3.0.7",
     "gulp-zip": "^3.2.0",
     "jasmine": "^2.2.1",
     "jasmine-core": "^2.2.0",
-    "karma": "^0.12.31",
-    "karma-chrome-launcher": "^0.1.7",
-    "karma-jasmine": "^0.3.5",
+    "karma": "^1.3.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.0.2",
     "plist": "^1.1.0",
-    "protractor": "^2.2.0",
+    "protractor": "^4.0.9",
     "shelljs": "^0.3.0",
     "through": "^2.3.6",
     "wd": "^0.4.0",
@@ -85,7 +97,30 @@
     "nl.kingsquare.cordova.background-audio"
   ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
-  ]
+    {
+      "platform": "ios",
+      "version": "4.3.0",
+      "locator": "ios@4.3.0"
+    },
+    {
+      "platform": "android",
+      "version": "6.1.2",
+      "locator": "android@6.1.2"
+    }
+  ],
+  "scripts": {
+    "setup": "npm install && ionic state restore && bower install && gulp",
+    "reinstall": "gulp clean-build && gulp clean-libs && gulp clean-node-modules && npm run-script setup",
+    "start": "ionic serve",
+    "clean": "gulp clean-build",
+    "build.e2e": "gulp e2e-build",
+    "build.dev": "gulp",
+    "build.android": "ionic build android",
+    "build.ios": "ionic build ios",
+    "ios": "ionic run ios",
+    "android": "ionic run android",
+    "serve.e2e": "ionic serve -b -a",
+    "serve.dev": "ionic serve",
+    "e2e": "protractor e2e/build/protractor.conf.js"
+  }
 }

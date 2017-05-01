@@ -21,12 +21,46 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPagePrefetchHandler
  */
-.factory('$mmaModPagePrefetchHandler', function($mmPrefetchFactory, mmaModPageComponent) {
+.factory('$mmaModPagePrefetchHandler', function($mmPrefetchFactory, mmaModPageComponent, $mmaModPage, $mmCourse, $q) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModPageComponent, true);
 
     // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
     self.updatesNames = /^configuration$|^.*files$/;
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPagePrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModPage.invalidateContent(moduleId, courseId);
+    };
+
+    /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPagePrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        var promises = [];
+
+        promises.push($mmaModPage.invalidatePageData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+
+        return $q.all(promises);
+    };
+
 
     return self;
 });

@@ -36,6 +36,7 @@ angular.module('mm.addons.mod_resource')
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModResourceComponent;
     $scope.componentId = module.id;
+    $scope.canGetResource = $mmaModResource.isGetResourceWSAvailable();
 
     function fetchContent(refresh) {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
@@ -78,13 +79,22 @@ angular.module('mm.addons.mod_resource')
                 };
             }
         }).then(function() {
-            // Get the module to get the latest title and description. Data should've been updated in loadModuleContents if needed.
-            return $mmCourse.getModule(module.id, courseId).then(function(mod) {
+
+            var promise;
+            // Get the module to get the latest title and description.
+            if ($scope.canGetResource) {
+                promise = $mmaModResource.getResourceData(courseId, module.id);
+            } else {
+                promise = $mmCourse.getModule(module.id, courseId);
+            }
+
+            return promise.then(function(mod) {
                 $scope.title = mod.name;
-                $scope.description = mod.description;
+                $scope.description = mod.intro || mod.description;
             }).catch(function() {
                 // Ignore errors.
             });
+
         }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModResourceComponent);
@@ -116,9 +126,10 @@ angular.module('mm.addons.mod_resource')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmaModResourcePrefetchHandler.invalidateContent(module.id).then(function() {
+            return $mmaModResource.invalidateContent(module.id, courseId).then(function() {
                 return fetchContent(true);
             }).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }

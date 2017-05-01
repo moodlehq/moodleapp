@@ -1,0 +1,23 @@
+<ion-content id="mma-mod-lesson-menu">
+    <nav>
+        <ul class="list">
+            <!-- Media file. -->
+            <div ng-if="rsmScope.mediaFile">
+                <li class="item item-divider"><h2>{{ 'mma.mod_lesson.linkedmedia' | translate }}</h2></li>
+                <mm-file file="rsmScope.mediaFile" component="{{rsmScope.component}}" component-id="{{rsmScope.lesson.coursemodule}}" timemodified="{{rsmScope.mediaFile.timemodified}}"></mm-file>
+            </div>
+            <!-- Lesson menu. -->
+            <div ng-if="rsmScope.displayMenu">
+                <li class="item item-divider"><h2>{{ 'mma.mod_lesson.lessonmenu' | translate }}</h2></li>
+                <div class="item text-center" ng-if="rsmScope.loadingMenu">
+                    <ion-spinner></ion-spinner>
+                </div>
+                <div ng-if="!rsmScope.loadingMenu">
+                    <a menu-close class="item item-text-wrap" ng-repeat="page in rsmScope.lessonPages" ng-if="page.display && page.displayinmenublock" ng-click="rsmScope.loadPage(page.id)" ng-class='{"mma-mod-lesson-selected": !rsmScope.eolData && rsmScope.currentPage == page.id}'>
+                        <p><mm-format-text watch="true">{{page.title}}</mm-format-text></p>
+                    </a>
+                </div>
+            </div>
+        </ul>
+    </nav>
+</ion-content>

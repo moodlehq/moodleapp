@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResource
  */
 .factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, $mmSitesManager,
-            $mmText, mmaModResourceComponent, mmCoreNotDownloaded, mmCoreDownloading, mmCoreDownloaded) {
+            $mmText, mmaModResourceComponent, mmCoreNotDownloaded, mmCoreDownloading, mmCoreDownloaded, $mmCourse) {
     $log = $log.getInstance('$mmaModResource');
 
     var self = {};
@@ -180,8 +180,6 @@ angular.module('mm.addons.mod_resource')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.canDownloadFiles();
         });
@@ -228,17 +226,20 @@ angular.module('mm.addons.mod_resource')
             component = mmaModResourceComponent,
             url = contents[0].fileurl,
             fixedUrl = $mmSite.fixPluginfileURL(url),
+            status,
             promise;
 
         if ($mmFS.isAvailable()) {
             // The file system is available.
-            promise = $mmFilepool.getPackageStatus(siteId, component, moduleId, revision, timeMod).then(function(status) {
+            promise = $mmFilepool.getPackageStatus(siteId, component, moduleId, revision, timeMod).then(function(stat) {
+                status = stat;
+
                 var isWifi = !$mmApp.isNetworkAccessLimited(),
                     isOnline = $mmApp.isOnline();
 
                 if (status === mmCoreDownloaded) {
                     // Get the local file URL.
-                    return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod);
+                    return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false);
                 } else if (status === mmCoreDownloading) {
                     // Return the online URL.
                     return fixedUrl;
@@ -251,7 +252,7 @@ angular.module('mm.addons.mod_resource')
                     return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, contents[0].filesize).then(function() {
                         // Download and then return the local URL.
                         return $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod).then(function() {
-                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod);
+                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false);
                         });
                     }, function() {
                         // Start the download if in wifi, but return the URL right away so the file is opened.
@@ -264,7 +265,7 @@ angular.module('mm.addons.mod_resource')
                             return fixedUrl;
                         } else {
                             // Outdated but offline, so we return the local URL.
-                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod);
+                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false);
                         }
                     });
                 }
@@ -274,13 +275,150 @@ angular.module('mm.addons.mod_resource')
             promise = $q.when(fixedUrl);
         }
 
-        return promise.then(function(url) {
-            if (url.indexOf('http') === 0) {
-                return $mmUtil.openOnlineFile(url);
+        return promise.then(function(path) {
+            if (path.indexOf('http') === 0) {
+                return $mmUtil.openOnlineFile(path).catch(function(error) {
+                    // Error opening the file, some apps don't allow opening online files.
+                    if (!$mmFS.isAvailable()) {
+                        return $q.reject(error);
+                    }
+
+                    var subPromise;
+                    if (status === mmCoreDownloading) {
+                        subPromise = $mmLang.translateAndReject('mm.core.erroropenfiledownloading');
+                    } else if (status === mmCoreNotDownloaded) {
+                        // File is not downloaded, download and then return the local URL.
+                        subPromise = $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod)
+                                .then(function() {
+                            return $mmFilepool.getInternalUrlByUrl(siteId, url);
+                        });
+                    } else {
+                        // File is outdated or stale and can't be opened in online, return the local URL.
+                        subPromise = $mmFilepool.getInternalUrlByUrl(siteId, url);
+                    }
+
+                    return subPromise.then(function(path) {
+                        return $mmUtil.openFile(path);
+                    });
+                });
             } else {
-                return $mmUtil.openFile(url);
+                return $mmUtil.openFile(path);
             }
         });
+    };
+
+    /**
+     * Returns whether or not getResource WS available or not.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#isGetResourceWSAvailable
+     * @return {Boolean}
+     */
+    self.isGetResourceWSAvailable = function() {
+        return $mmSite.wsAvailable('mod_resource_get_resources_by_courses');
+    };
+
+    /**
+     * Get a resource data.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#getResourceData
+     * @param {Number} courseid Course ID.
+     * @param {Number} cmid     Course module ID.
+     * @param  {String} key     Name of the property to check.
+     * @param  {Mixed}  value   Value to search.
+     * @return {Promise}        Promise resolved when the resource is retrieved.
+     */
+    function getResourceData(siteId, courseId, key, value) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getResourceCacheKey(courseId)
+                };
+
+            return site.read('mod_resource_get_resources_by_courses', params, preSets).then(function(response) {
+                if (response && response.resources) {
+                    var currentResource;
+                    angular.forEach(response.resources, function(resource) {
+                        if (!currentResource && resource[key] == value) {
+                            currentResource = resource;
+                        }
+                    });
+                    if (currentResource) {
+                        return currentResource;
+                    }
+                }
+                return $q.reject();
+            });
+        });
+    }
+
+    /**
+     * Get a resource by course module ID.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#getResource
+     * @param {Number} courseId Course ID.
+     * @param {Number} cmId     Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the book is retrieved.
+     */
+    self.getResourceData = function(courseId, cmId, siteId) {
+        return getResourceData(siteId, courseId, 'coursemodule', cmId);
+    };
+
+    /**
+     * Get cache key for resource data WS calls.
+     *
+     * @param {Number} courseid Course ID.
+     * @return {String}         Cache key.
+     */
+    function getResourceCacheKey(courseid) {
+        return 'mmaModResource:resource:' + courseid;
+    }
+
+     /**
+     * Invalidates resource data.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#invalidateResourceData
+     * @param {Number} courseid Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateResourceData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getResourceCacheKey(courseId));
+        });
+    };
+
+     /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [];
+
+        promises.push(self.invalidateResourceData(courseId, siteId));
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModResourceComponent, moduleId));
+        promises.push($mmCourse.invalidateModule(moduleId, siteId));
+
+        return $mmUtil.allPromises(promises);
     };
 
     return self;

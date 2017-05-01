@@ -1,0 +1,18 @@
+
+.item.mma-mod-lesson-selected {
+  font-weight: bold;
+}
+
+.mma-mod-lesson-slideshow {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.mma-mod-lesson-ongoingscore,
+.item.mma-mod-lesson-ongoingscore,
+.mma-mod-lesson-ongoingscore span,
+.item.mma-mod-lesson-ongoingscore span {
+  // Same styles as .item p.
+  color: #666;
+  font-size: 14px;
+}

@@ -153,6 +153,7 @@ angular.module('mm.addons.mod_forum')
                     message = scope.newpost.text,
                     replyingTo = scope.newpost.replyingto,
                     files = scope.newpost.files || [],
+                    options = {},
                     modal = $mmUtil.showModalLoading('mm.core.sending', true),
                     saveOffline = false;
 
@@ -177,10 +178,14 @@ angular.module('mm.addons.mod_forum')
                         });
                     }
                 }).then(function(attach) {
+                    if (attach) {
+                        options.attachmentsid = attach;
+                    }
+
                     if (saveOffline) {
                         // Save post in offline.
                         return $mmaModForumOffline.replyPost(replyingTo, scope.discussionId, forum.id, forum.name,
-                                scope.courseid, subject, message, attach).then(function() {
+                                scope.courseid, subject, message, options).then(function() {
                             // Return false since it wasn't sent to server.
                             return false;
                         });
@@ -188,7 +193,7 @@ angular.module('mm.addons.mod_forum')
                         // Try to send it to server.
                         // Don't allow offline if there are attachments since they were uploaded fine.
                         return $mmaModForum.replyPost(replyingTo, scope.discussionId, forum.id, forum.name,
-                                scope.courseid, subject, message, attach, undefined, !files.length);
+                                scope.courseid, subject, message, options, undefined, !files.length);
                     }
                 }).then(function(sent) {
                     if (sent && forum.id) {

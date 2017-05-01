@@ -40,7 +40,7 @@ angular.module('mm.core')
  * @param {Boolean} [noBorder=false]   True if want to show file entry without borders. Defaults to false.
  */
 .directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents, $mmFS, mmCoreDownloaded, mmCoreDownloading,
-            mmCoreNotDownloaded, mmCoreOutdated) {
+            mmCoreNotDownloaded, mmCoreOutdated, $mmLang) {
 
     /**
      * Convenience function to get the file state and set scope variables based on it.
@@ -142,7 +142,7 @@ angular.module('mm.core')
                             downloadFile(scope, siteId, fileUrl, component, componentId, timeModified, alwaysDownload);
                         }
 
-                        if (isDownloading|| !scope.isDownloaded || isOnline) {
+                        if (isDownloading || !scope.isDownloaded || isOnline) {
                             // Not downloaded or outdated and online, return the online URL.
                             return fixedUrl;
                         } else {
@@ -163,7 +163,27 @@ angular.module('mm.core')
             }
 
             if (url.indexOf('http') === 0) {
-                return $mmUtil.openOnlineFile(url);
+                return $mmUtil.openOnlineFile(url).catch(function(error) {
+                    // Error opening the file, some apps don't allow opening online files.
+                    if (!$mmFS.isAvailable()) {
+                        return $q.reject(error);
+                    }
+
+                    var subPromise;
+                    if (scope.isDownloading) {
+                        subPromise = $mmLang.translateAndReject('mm.core.erroropenfiledownloading');
+                    } else if (status === mmCoreNotDownloaded) {
+                        // File is not downloaded, download and then return the local URL.
+                        subPromise = downloadFile(scope, siteId, fileUrl, component, componentId, timeModified, alwaysDownload);
+                    } else {
+                        // File is outdated and can't be opened in online, return the local URL.
+                        subPromise = $mmFilepool.getInternalUrlByUrl(siteId, fileUrl);
+                    }
+
+                    return subPromise.then(function(url) {
+                        return $mmUtil.openFile(url);
+                    });
+                });
             } else {
                 return $mmUtil.openFile(url);
             }

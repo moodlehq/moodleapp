@@ -211,7 +211,7 @@ angular.module('mm.core.contentlinks')
 
             // Sort by priority.
             actions = actions.sort(function(a, b) {
-                return a.priority > b.priority;
+                return a.priority >= b.priority ? 1 : -1;
             });
 
             // Fill result array.

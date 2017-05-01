@@ -24,6 +24,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreSecondsDay', 86400)
 .constant('mmCoreSecondsHour', 3600)
 .constant('mmCoreSecondsMinute', 60)
+.constant('mmCoreDontShowError', 'mmCoreDontShowError') // Pass it to reject functions to indicate that no error should be shown.
 
 // States for downloading files/modules.
 .constant('mmCoreDownloaded', 'downloaded')

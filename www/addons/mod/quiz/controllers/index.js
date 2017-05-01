@@ -407,10 +407,7 @@ angular.module('mm.addons.mod_quiz')
     // Showing or hide a status message depending on the SCORM status.
     function showStatus(status) {
         currentStatus = status;
-
-        if (status == mmCoreDownloading) {
-            $scope.showSpinner = true;
-        }
+        $scope.showSpinner = status == mmCoreDownloading;
     }
 
     // Fetch the Quiz data.
@@ -453,7 +450,12 @@ angular.module('mm.addons.mod_quiz')
                     // Success downloading, open quiz.
                     openQuiz();
                 }).catch(function(error) {
-                    $mmaModQuizHelper.showError(error, 'mma.mod_quiz.errordownloading');
+                    if ($scope.hasOffline) {
+                        // Error downloading but there is something offline, allow continuing it.
+                        openQuiz();
+                    } else {
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                    }
                 }).finally(function() {
                     $scope.showSpinner = false;
                 });

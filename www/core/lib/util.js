@@ -69,7 +69,7 @@ angular.module('mm.core')
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
                 $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
-                $window, $cordovaClipboard) {
+                $window, $cordovaClipboard, mmCoreDontShowError) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -445,14 +445,15 @@ angular.module('mm.core')
 
             if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
                 // In Android we need the mimetype to open it.
-                var extension,
-                    iParams;
+                var iParams;
 
-                $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                self.getMimeTypeFromUrl(url).catch(function() {
+                    // Error getting mimetype, return undefined.
+                }).then(function(mimetype) {
                     if (!mimetype) {
-                        // Couldn't retireve mimetype. Try to guess it.
-                        extension = $mmFS.guessExtensionFromUrl(url);
-                        mimetype = $mmFS.getMimeType(extension);
+                        // Couldn't retrieve mimetype. Return error.
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                        return;
                     }
 
                     iParams = {
@@ -473,12 +474,7 @@ angular.module('mm.core')
                             $log.debug('url: ' + iParams.url);
                             $log.debug('type: ' + iParams.type);
 
-                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
-                                // Extension not found.
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
-                            } else {
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
-                            }
+                            $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
                         }
                     );
                 });
@@ -492,22 +488,42 @@ angular.module('mm.core')
         };
 
         /**
-         * Get the mimetype of a file given its URL. It'll perform a HEAD request to get it, if that
-         * fails it'll try to guess it using the URL.
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#getMimeType
          * @param  {String} url The URL of the file.
          * @return {Promise}    Promise resolved with the mimetype.
+         * @deprecated since 3.3. Use $mmUtil#getMimeTypeFromUrl.
          */
         self.getMimeType = function(url) {
+            $log.warn('$mmUtil#getMimeType is deprecated. Use $mmUtil#getMimeTypeFromUrl instead');
+            return self.getMimeTypeFromUrl(url);
+        };
+
+        /**
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getMimeTypeFromUrl
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved with the mimetype.
+         */
+        self.getMimeTypeFromUrl = function(url) {
+            // First check if it can be guessed from the URL.
+            var extension = $mmFS.guessExtensionFromUrl(url),
+                mimetype = $mmFS.getMimeType(extension);
+
+            if (mimetype) {
+                return $q.when(mimetype);
+            }
+
+            // Can't be guessed, get the remote mimetype.
             return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
-                if (!mimetype) {
-                    // Couldn't retireve mimetype. Try to guess it.
-                    extension = $mmFS.guessExtensionFromUrl(url);
-                    mimetype = $mmFS.getMimeType(extension);
-                }
                 return mimetype || '';
             });
         };
@@ -720,8 +736,10 @@ angular.module('mm.core')
          *                                    If not defined, modal won't be automatically closed.
          */
         self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
-            errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
-            return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
+            if (errorMessage != mmCoreDontShowError) {
+                errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
+                return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
+            }
         };
 
         /**
@@ -1202,6 +1220,51 @@ angular.module('mm.core')
         };
 
         /**
+         * Execute promises one depending on the previous.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#executeOrderedPromises
+         * @param  {Object[]} orderedPromisesData       Data to be executed including the following values:
+         *                                               - func: Function to be executed.
+         *                                               - params: Array of data to be sent to the function.
+         *                                               - blocking: Boolean. If promise should block the following.
+         * @return {Promise}                        Promise resolved when all generated promises are resolved.
+         */
+        self.executeOrderedPromises = function(orderedPromisesData) {
+            var promises = [],
+                dependency = $q.when();
+
+            // Execute all the processes in order.
+            angular.forEach(orderedPromisesData, function(data) {
+                var promise;
+
+                // Add the process to the dependency stack.
+                promise = dependency.finally(function() {
+                    var prom, fn;
+
+                    try {
+                        fn = self.resolveObject(data.func);
+                        prom = fn.apply(prom, data.params || []);
+                    } catch (e) {
+                        $log.error(e.message);
+                        return;
+                    }
+                    return prom;
+                });
+                promises.push(promise);
+
+                // If the new process is blocking, we set it as the dependency.
+                if (data.blocking) {
+                    dependency = promise;
+                }
+            });
+
+            // Return when all promises are done.
+            return self.allPromises(promises);
+        };
+
+        /**
          * Check if a promise works and returns true if resolves or false if rejects.
          *
          * @module mm.core
@@ -1264,6 +1327,11 @@ angular.module('mm.core')
 
                 var equal = true;
                 angular.forEach(itemA, function(value, name) {
+                    if (name == '$$hashKey') {
+                        // Ignore $$hashKey property since it's a "calculated" property.
+                        return;
+                    }
+
                     if (!self.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
                         equal = false;
                     }
@@ -1880,18 +1948,35 @@ angular.module('mm.core')
          * @return {Object[]}         Array of objects with the name & value of each property.
          */
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
-            var keys = Object.keys(obj);
-
+            var entries = getEntries('', obj);
             if (sort) {
-                keys = keys.sort();
+                return entries.sort(function(a, b) {
+                    return a.name >= b.name ? 1 : -1;
+                });
             }
+            return entries;
 
-            return keys.map(function(key) {
-                var entry = {};
-                entry[keyName] = key;
-                entry[valueName] = obj[key];
-                return entry;
-            });
+            // Get the entries from an object or primitive value.
+            function getEntries(elKey, value) {
+                if (typeof value == 'object') {
+                    // It's an object, return at least an entry for each property.
+                    var keys = Object.keys(value),
+                        entries = [];
+
+                    angular.forEach(keys, function(key) {
+                        var newElKey = elKey ? elKey + '[' + key + ']' : key;
+                        entries = entries.concat(getEntries(newElKey, value[key]));
+                    });
+
+                    return entries;
+                } else {
+                    // Not an object, return a single entry.
+                    var entry = {};
+                    entry[keyName] = elKey;
+                    entry[valueName] = value;
+                    return entry;
+                }
+            }
         };
 
         /**
@@ -1907,6 +1992,30 @@ angular.module('mm.core')
             return Object.keys(obj).map(function(key) {
                 return obj[key];
             });
+        };
+
+        /**
+         * Converts an array of objects into an object with key and value.
+         * The contrary of objectToArrayOfObjects
+         * For example, it can convert [{name: 'size', value: 2}] into {size: 2}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToKeyValueMap
+         * @param  {Object} obj         Object to convert.
+         * @param  {String} keyName     Name of the properties where the keys are stored.
+         * @param  {String} valueName   Name of the properties where the keys are stored.
+         * @param  {String} [keyPrefix] Key prefix if needed to delete it.
+         * @return {Object[]}         Array of objects mapped.
+         */
+        self.objectToKeyValueMap = function(obj, keyName, valueName, keyPrefix) {
+            var prefixSubstr = keyPrefix ? keyPrefix.length : 0,
+                mapped = {};
+            angular.forEach(obj, function(item) {
+                var key = prefixSubstr > 0 ? item[keyName].substr(prefixSubstr) : item[keyName];
+                mapped[key] = item[valueName];
+            });
+            return mapped;
         };
 
 

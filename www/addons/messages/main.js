@@ -28,6 +28,7 @@ angular.module('mm.addons.messages', ['mm.core'])
 .constant('mmaMessagesReadChangedEvent', 'mma-messages_read_changed')
 .constant('mmaMessagesReadCronEvent', 'mma-messages_read_cron')
 .constant('mmaMessagesAutomSyncedEvent', 'mma_messages_autom_synced')
+.constant('mmaMessagesLimitSearchMessages', 50)
 
 .config(function($stateProvider, $mmUserDelegateProvider, $mmSideMenuDelegateProvider, mmaMessagesSendMessagePriority,
             mmaMessagesAddContactPriority, mmaMessagesBlockContactPriority, mmaMessagesPriority, $mmContentLinksDelegateProvider,

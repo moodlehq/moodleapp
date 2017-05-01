@@ -306,6 +306,28 @@ angular.module('mm.core')
     };
 
     /**
+     * Add files to queue using a URL.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#addFilesToQueueByUrl
+     * @param {String} siteId        The site ID.
+     * @param {Array}  files         Array of files to add.
+     * @param {String} [component]   The component to link the file to.
+     * @param {Mixed}  [componentId] An ID to use in conjunction with the component (optional).
+     * @return {Promise} Resolved on success. The returned value can be inconsistent, do not use.
+     */
+    self.addFilesToQueueByUrl = function(siteId, files, component, componentId) {
+        var promises = [];
+        // Prefetch files.
+        angular.forEach(files, function(file) {
+            promises.push(self.addToQueueByUrl(siteId, file.url || file.fileurl, component, componentId, file.timemodified));
+        });
+
+        return $q.all(promises);
+    };
+
+    /**
      * Add an entry to queue using a URL.
      *
      * @module mm.core
@@ -621,7 +643,8 @@ angular.module('mm.core')
             angular.forEach(fileList, function(file) {
                 var path,
                     promise,
-                    fileLoaded = 0;
+                    fileLoaded = 0,
+                    fileUrl = file.url || file.fileurl;
 
                 if (dirPath) {
                     // Calculate the path to the file.
@@ -633,9 +656,9 @@ angular.module('mm.core')
                 }
 
                 if (prefetch) {
-                    promise = self.addToQueueByUrl(siteId, file.fileurl, component, componentId, file.timemodified, path);
+                    promise = self.addToQueueByUrl(siteId, fileUrl, component, componentId, file.timemodified, path);
                 } else {
-                    promise = self.downloadUrl(siteId, file.fileurl, false, component, componentId, file.timemodified, path);
+                    promise = self.downloadUrl(siteId, fileUrl, false, component, componentId, file.timemodified, path);
                 }
 
                 // Using undefined for success & fail will pass the success/failure to the parent promise.
@@ -1820,8 +1843,8 @@ angular.module('mm.core')
         var revision = 0;
 
         angular.forEach(files, function(file) {
-            if (file.fileurl) {
-                var r = self.getRevisionFromUrl(file.fileurl);
+            if (file.url || file.fileurl) {
+                var r = self.getRevisionFromUrl(file.url || file.fileurl);
                 if (r > revision) {
                     revision = r;
                 }
@@ -2735,7 +2758,7 @@ angular.module('mm.core')
             return $q.when();
         }
 
-        return $mmUtil.getMimeType(url).then(function(mimetype) {
+        return $mmUtil.getMimeTypeFromUrl(url).then(function(mimetype) {
             // If the file is streaming (audio or video) we reject.
             if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
                 return $q.reject();
@@ -2867,6 +2890,35 @@ angular.module('mm.core')
             status: status
         };
         $mmEvents.trigger(mmCoreEventPackageStatusChanged, data);
+    };
+
+    /**
+     * Update the download time of a package. This doesn't modify the previous download time.
+     * This function should be used if a package generates some new data during a download. Calling this function
+     * right after generating the data in the download will prevent detecting this data as an update.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#updatePackageDownloadTime
+     * @param {String} siteId         Site ID.
+     * @param {String} component      Package's component.
+     * @param {Mixed} [componentId]   An ID to use in conjunction with the component.
+     * @return {Promise}              Promise resolved when status is stored.
+     */
+    self.updatePackageDownloadTime = function(siteId, component, componentId) {
+        componentId = self._fixComponentId(componentId);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Get current entry.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                entry.downloadtime = $mmUtil.timestamp();
+
+                return db.insert(mmFilepoolPackagesStore, entry);
+            });
+        });
     };
 
     return self;

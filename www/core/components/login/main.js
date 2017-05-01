@@ -15,6 +15,8 @@
 angular.module('mm.core.login', [])
 
 .constant('mmCoreLoginTokenChangePassword', '*changepassword*') // Deprecated.
+.constant('mmCoreLoginSiteCheckedEvent', 'mm_login_site_checked')
+.constant('mmCoreLoginSiteUncheckedEvent', 'mm_login_site_unchecked')
 
 .config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
@@ -358,11 +360,14 @@ angular.module('mm.core.login', [])
         $mmApp.startSSOAuthentication();
         $log.debug('App launched by URL');
 
-        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true),
-            siteData;
-
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
+
+        // Some sites add a # at the end of the URL. If it's there, remove it.
+        if (url.slice(-1) == '#') {
+            url = url.substring(0, url.length - 1);
+        }
+
         // Decode from base64.
         try {
             url = atob(url);
@@ -371,6 +376,9 @@ angular.module('mm.core.login', [])
             $log.error('Error decoding parameter received for login SSO');
             return false;
         }
+
+        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true),
+            siteData;
 
         // Wait for app to be ready.
         $mmApp.ready().then(function() {

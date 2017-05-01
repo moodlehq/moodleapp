@@ -5,6 +5,7 @@ $mma-mod-quiz-alternate-color:    #fbfbfb !default;
 $mma-mod-quiz-conecterr-color:    #fcc !default;
 $mma-mod-quiz-selected-color:     #666 !default;
 
+// Deprecated use mm-error-item instead.
 p.mma-mod-quiz-warning {
   color: $mma-mod-quiz-warning-color;
 }

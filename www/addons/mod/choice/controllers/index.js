@@ -57,6 +57,8 @@ angular.module('mm.addons.mod_choice')
             $scope.title = choice.name || $scope.title;
             $scope.description = choice.intro || $scope.description;
             $scope.choice = choice;
+            $scope.choiceNotOpenYet = choice.timeopen && choice.timeopen > $scope.now;
+            $scope.choiceClosed = choice.timeclose && choice.timeclose <= $scope.now;
 
             if (sync) {
                 // Try to synchronize the choice.
@@ -175,6 +177,12 @@ angular.module('mm.addons.mod_choice')
 
     // Convenience function to get choice results.
     function fetchResults() {
+        if ($scope.choiceNotOpenYet) {
+            // Cannot see results yet.
+            $scope.canSeeResults = false;
+            return;
+        }
+
         return $mmaModChoice.getResults(choice.id).then(function(results) {
             var hasVotes = false;
             $scope.data = [];

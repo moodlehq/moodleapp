@@ -22,7 +22,7 @@ angular.module('mm.core.question')
  * @name $mmQuestionHelper
  */
 .factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q,
-            $mmQuestion, $mmSite) {
+            $mmQuestion, $mmSite, $mmQuestionDelegate) {
 
     var self = {},
         lastErrorShown = 0;
@@ -591,8 +591,6 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#loadLocalAnswersInHtml
-     * @param  {String} component Component the answers belong to.
-     * @param  {Number} attemptId Attempt ID.
      * @param  {Object} question  Question.
      * @return {Void}
      */
@@ -857,6 +855,38 @@ angular.module('mm.core.question')
             });
 
             return $q.all(promises);
+        });
+    };
+
+    /**
+     * Prepare and return the answers.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#prepareAnswers
+     * @param  {Object[]} questions The list of questions.
+     * @param  {Object} answers     The input data.
+     * @param  {Boolean} offline    True if data should be saved in offline.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with answers to send to server.
+     */
+    self.prepareAnswers = function(questions, answers, offline, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [],
+            error;
+
+        angular.forEach(questions, function(question) {
+            promises.push($mmQuestionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId).catch(function(e) {
+                error = e;
+                return $q.reject();
+            }));
+        });
+
+        return $mmUtil.allPromises(promises).then(function() {
+            return answers;
+        }).catch(function() {
+            return $q.reject(error);
         });
     };
 
