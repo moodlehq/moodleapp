@@ -138,6 +138,19 @@ angular.module('mm.addons.mod_resource')
     };
 
     /**
+     * Check if the file in the resource is an external file.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#hasExternalFile
+     * @param {Object} module The module object.
+     * @return {Boolean}      Whether it's a external file.
+     */
+    self.hasExternalFile = function(module) {
+        return module && module.contents && module.contents[0] && module.contents[0].isexternalfile;
+    };
+
+    /**
      * Whether the resource has to be displayed in an iframe.
      *
      * @module mm.addons.mod_resource

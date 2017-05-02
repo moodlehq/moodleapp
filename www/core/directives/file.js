@@ -219,6 +219,10 @@ angular.module('mm.core')
                 return;
             }
 
+            if (scope.file.isexternalfile) {
+                alwaysDownload = true; // Always show the download button in external files.
+            }
+
             scope.filename = fileName;
             scope.fileicon = $mmFS.getFileIcon(fileName);
 
