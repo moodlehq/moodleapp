@@ -41,11 +41,11 @@
     h5 {
       margin-left: 10px;
     }
-    .list.block  .item {
+    .list.block .item {
       border-top: $item-border-width solid $item-light-border;
       border-bottom: $item-border-width solid $item-light-border;
     }
-    .list.block:last-child .item{
+    .list.block:last-child .item {
       border-bottom: 0;
     }
   }

@@ -22,7 +22,7 @@ angular.module('mm.core.courses')
  * @name mmCoursesListCtrl
  */
 .controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite, $q,
-            mmCoursesEventMyCoursesUpdated, mmCoursesEventMyCoursesRefreshed, mmCoreEventSiteUpdated) {
+            mmCoursesEventMyCoursesUpdated, mmCoreEventSiteUpdated) {
 
     var updateSiteObserver,
         myCoursesObserver;
@@ -59,15 +59,11 @@ angular.module('mm.core.courses')
     $scope.refreshCourses = function() {
         var promises = [];
 
-        $mmEvents.trigger(mmCoursesEventMyCoursesRefreshed);
-
         promises.push($mmCourses.invalidateUserCourses());
-        promises.push($mmCourses.invalidateUserNavigationOptions());
-        promises.push($mmCourses.invalidateUserAdministrationOptions());
-
-        $mmCoursesDelegate.clearCoursesHandlers();
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions());
 
         $q.all(promises).finally(function() {
+
             fetchCourses(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

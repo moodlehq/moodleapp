@@ -5,27 +5,21 @@
     <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="timeline.loaded" on-refresh="refreshMyOverview()">
         </ion-refresher>
-        <div class="tabs tabs-striped tabs-free tabs-color-orange">
-          <a class="tab-item" ng-class="{'active': tabShown == 'timeline'}" ng-click="switchTab('timeline')">{{ 'mma.myoverview.timeline' | translate }}</a>
-          <a class="tab-item" ng-class="{'active': tabShown == 'courses'}" ng-click="switchTab('courses')">{{ 'mm.courses.courses' | translate }}</a>
+        <div class="tabs tabs-striped tabs-free mm-tabs-color">
+            <a class="tab-item" ng-class="{'active': tabShown == 'timeline'}" ng-click="switchTab('timeline')">{{ 'mma.myoverview.timeline' | translate }}</a>
+            <a class="tab-item" ng-class="{'active': tabShown == 'courses'}" ng-click="switchTab('courses')">{{ 'mm.courses.courses' | translate }}</a>
         </div>
         <div class="padding">
+            <div class="item-select mm-full-width-centered mm-timelinesort" ng-show="tabShown == 'timeline' && (timeline.loaded || timelineCourses.loaded)">
+                <select ng-model="timeline.sort" ng-change="switchSort()">
+                    <option value="sortbydates">{{ 'mma.myoverview.sortbydates' | translate }}</option>
+                    <option value="sortbycourses">{{ 'mma.myoverview.sortbycourses' | translate }}</option>
+                </select>
+            </div>
             <mm-loading hide-until="timeline.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbydates'">
-                <div class="item-select mm-full-width-centered mm-timelinesort">
-                    <select ng-model="timeline.sort" ng-change="switchSort()">
-                        <option value="sortbydates">{{ 'mma.myoverview.sortbydates' | translate }}</option>
-                        <option value="sortbycourses">{{ 'mma.myoverview.sortbycourses' | translate }}</option>
-                    </select>
-                </div>
                 <mma-my-overview-event-list events="timeline.events" show-course="true" can-load-more="timeline.canLoadMore" load-more="loadMoreTimeline()"></mma-my-overview-event-list>
             </mm-loading>
-            <mm-loading hide-until="timelineCourses.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbycourses'">
-                <div class="item-select mm-full-width-centered mm-timelinesort">
-                    <select ng-model="timeline.sort" ng-change="switchSort()">
-                        <option value="sortbydates">{{ 'mma.myoverview.sortbydates' | translate }}</option>
-                        <option value="sortbycourses">{{ 'mma.myoverview.sortbycourses' | translate }}</option>
-                    </select>
-                </div>
+            <mm-loading hide-until="timelineCourses.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbycourses'" class="block">
                 <div class="block mm-course-grid">
                     <mm-course-list-progress ng-repeat="course in timelineCourses.courses" course="course" round-progress="true" show-summary="true">
                         <mma-my-overview-event-list events="course.events" can-load-more="course.canLoadMore" load-more="loadMoreCourse(course)"></mma-my-overview-event-list>

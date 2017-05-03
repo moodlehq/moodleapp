@@ -49,12 +49,24 @@ angular.module('mm.addons.myoverview')
     }
 
     /**
+     * Get prefix cache key for calendar action events based on the timesort value WS calls.
+     *
+     * @return {String}         Cache key.
+     */
+    function getActionEventsByTimesortPrefixCacheKey() {
+        return 'myoverview:bytimesort:';
+    }
+
+    /**
      * Get cache key for get calendar action events based on the timesort value WS call.
      *
-     * @return {String}       Cache key.
+     * @param  {Number}     [afterEventId]  The last seen event id.
+     * @param  {Number}     [limit]         Limit num of the call.
+     * @return {String}     Cache key.
      */
-    function getActionEventsByTimesortCacheKey() {
-        return 'myoverview:bytimesort';
+    function getActionEventsByTimesortCacheKey(afterEventId, limit) {
+        afterEventId = afterEventId || 0;
+        return getActionEventsByTimesortPrefixCacheKey() + afterEventId + ':' + limit;
     }
 
     /**
@@ -95,11 +107,11 @@ angular.module('mm.addons.myoverview')
      *
      * @module mm.addons.myoverview
      * @ngdoc method
-     * @name $mmaMyOverview#isSideMenuAvalaible
+     * @name $mmaMyOverview#isSideMenuAvailable
      * @param  {Object} [site] Site. If not defined, use current site.
      * @return {Boolean}       True if disabled, false otherwise.
      */
-    self.isSideMenuAvalaible = function() {
+    self.isSideMenuAvailable = function() {
         if (!self.isMyOverviewDisabledInSite()) {
             return self.isPluginEnabled().catch(function() {
                 return false;
@@ -123,7 +135,7 @@ angular.module('mm.addons.myoverview')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data = {
-                    //timesortfrom: time,
+                    timesortfrom: time,
                     courseids: courseIds,
                     limitnum: self.eventsLimitPerCourse
                 },
@@ -136,17 +148,7 @@ angular.module('mm.addons.myoverview')
                     var courseEvents = {};
 
                     angular.forEach(events.groupedbycourse, function(course) {
-                        var canLoadMore = course.events.length >= self.eventsLimitPerCourse ? course.lastid : false;
-
-                        // Filter events by time in case it uses cache.
-                        course.events = course.events.filter(function(element) {
-                            return element.timesort >= time;
-                        });
-
-                        courseEvents[course.courseid] = {
-                            events: course.events,
-                            canLoadMore: canLoadMore
-                        };
+                        courseEvents[course.courseid] = treatCourseEvents(course, time);
                     });
                     return courseEvents;
                 }
@@ -197,24 +199,35 @@ angular.module('mm.addons.myoverview')
                 data.aftereventid = afterEventId;
             }
 
-            return site.read('core_calendar_get_action_events_by_course', data, presets).then(function(events) {
-                if (events && events.events) {
-                    var canLoadMore = events.events.length >= self.eventsLimitPerCourse ? events.lastid : false;
-
-                    // Filter events by time in case it uses cache.
-                    events = events.events.filter(function(element) {
-                        return element.timesort >= time;
-                    });
-
-                    return {
-                        events: events,
-                        canLoadMore: canLoadMore
-                    };
+            return site.read('core_calendar_get_action_events_by_course', data, presets).then(function(courseEvents) {
+                if (courseEvents && courseEvents.events) {
+                    return treatCourseEvents(courseEvents, time);
                 }
                 return $q.reject();
             });
         });
     };
+
+    /**
+     * Handles course events, filtering and treating if more can be loaded.
+     *
+     * @param  {Object} course      Object containing response course events info.
+     * @param  {Number} timeFrom    Current time to filter events from.
+     * @return {Object}             Object containing course events and and last loaded event id if more can be loaded.
+     */
+    function treatCourseEvents(course, timeFrom) {
+        var canLoadMore = course.events.length >= self.eventsLimitPerCourse ? course.lastid : false;
+
+        // Filter events by time in case it uses cache.
+        course.events = course.events.filter(function(element) {
+            return element.timesort >= timeFrom;
+        });
+
+        return {
+            events: course.events,
+            canLoadMore: canLoadMore
+        };
+    }
 
     /**
      * Get calendar action events based on the timesort value.
@@ -234,7 +247,9 @@ angular.module('mm.addons.myoverview')
                     limitnum: self.eventsLimit
                 },
                 presets = {
-                    cacheKey: getActionEventsByTimesortCacheKey()
+                    cacheKey: getActionEventsByTimesortCacheKey(afterEventId, self.eventsLimit),
+                    getCacheUsingCacheKey: true,
+                    uniqueCacheKey: true
                 };
 
             if (afterEventId) {
@@ -271,7 +286,7 @@ angular.module('mm.addons.myoverview')
      */
     self.invalidateActionEventsByTimesort = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(getActionEventsByTimesortCacheKey());
+            return site.invalidateWsCacheForKeyStartingWith(getActionEventsByTimesortPrefixCacheKey());
         });
     };
 

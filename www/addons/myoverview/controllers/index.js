@@ -21,7 +21,7 @@ angular.module('mm.addons.myoverview')
  * @ngdoc controller
  * @name mmaMyOverviewCtrl
  */
-.controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourses) {
+.controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourses, $mmCoursesDelegate) {
 
     $scope.tabShown = 'timeline';
     $scope.timeline = {
@@ -61,12 +61,8 @@ angular.module('mm.addons.myoverview')
                 courseIds = [];
             courses = courses.filter(function(course) {
                 return course.startdate <= today && (!course.enddate || course.enddate >= today);
-            }).sort(function(a, b) {
-                var compareA = a.fullname.toLowerCase(),
-                    compareB = b.fullname.toLowerCase();
-
-                return compareA.localeCompare(compareB);
             });
+
             $scope.timelineCourses.courses = courses;
             if (courses.length > 0) {
                 courseIds = courses.map(function(course) {
@@ -95,13 +91,6 @@ angular.module('mm.addons.myoverview')
             $scope.courses.inprogress = [];
             $scope.courses.future = [];
 
-            courses.sort(function(a, b) {
-                var compareA = a.fullname.toLowerCase(),
-                    compareB = b.fullname.toLowerCase();
-
-                return compareA.localeCompare(compareB);
-            })
-
             angular.forEach(courses, function(course) {
                 if (course.startdate > today) {
                     // Courses that have not started yet.
@@ -127,7 +116,7 @@ angular.module('mm.addons.myoverview')
                 return course.id;
             });
 
-            // Load the handlers of each course.
+            // Load course options of the course.
             return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
                 angular.forEach(courses, function(course) {
                     course.showProgress = true;
@@ -136,7 +125,13 @@ angular.module('mm.addons.myoverview')
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
                 });
-                return courses;
+
+                return courses.sort(function(a, b) {
+                    var compareA = a.fullname.toLowerCase(),
+                        compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
             });
         });
     }
@@ -156,27 +151,20 @@ angular.module('mm.addons.myoverview')
     $scope.refreshMyOverview = function() {
         var promises = [];
 
-        switch($scope.tabShown) {
-            case 'timeline':
-                promises.push($mmaMyOverview.invalidateActionEventsByTimesort());
-                promises.push($mmaMyOverview.invalidateActionEventsByCourses());
-                promises.push($mmCourses.invalidateUserNavigationOptions());
-                promises.push($mmCourses.invalidateUserAdministrationOptions());
-                promises.push($mmCourses.invalidateUserCourses());
-                break;
-            case 'courses':
-                promises.push($mmCourses.invalidateUserNavigationOptions());
-                promises.push($mmCourses.invalidateUserAdministrationOptions());
-                promises.push($mmCourses.invalidateUserCourses());
-                break;
+        if ($scope.tabShown == 'timeline') {
+            promises.push($mmaMyOverview.invalidateActionEventsByTimesort());
+            promises.push($mmaMyOverview.invalidateActionEventsByCourses());
         }
+
+        promises.push($mmCourses.invalidateUserCourses());
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions());
 
         $q.all(promises).finally(function() {
             var promise;
 
-            switch($scope.tabShown) {
+            switch ($scope.tabShown) {
                 case 'timeline':
-                    switch($scope.timeline.sort) {
+                    switch ($scope.timeline.sort) {
                         case 'sortbydates':
                             $scope.timeline.events = [];
                             promise = fetchMyOverviewTimesort();
@@ -191,6 +179,7 @@ angular.module('mm.addons.myoverview')
                     promise = fetchMyOverviewCourses();
                     break;
             }
+
             promise.finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -199,7 +188,7 @@ angular.module('mm.addons.myoverview')
 
     // Change timeline sort being viewed.
     $scope.switchSort = function() {
-        switch($scope.timeline.sort) {
+        switch ($scope.timeline.sort) {
             case 'sortbydates':
                 if (!$scope.timeline.loaded) {
                     fetchMyOverviewTimeline().finally(function() {
@@ -220,7 +209,7 @@ angular.module('mm.addons.myoverview')
     // Change tab being viewed.
     $scope.switchTab = function(tab) {
         $scope.tabShown = tab;
-        switch($scope.tabShown) {
+        switch ($scope.tabShown) {
             case 'timeline':
                 if (!$scope.timeline.loaded) {
                     return fetchMyOverviewTimeline().finally(function() {
@@ -240,7 +229,7 @@ angular.module('mm.addons.myoverview')
 
     $scope.switchTab('timeline').finally(function() {
         if ($scope.timeline.events.length == 0) {
-            $scope.switchTab('courses')
+            $scope.switchTab('courses');
         }
     });
 

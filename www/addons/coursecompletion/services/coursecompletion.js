@@ -167,15 +167,20 @@ angular.module('mm.addons.coursecompletion')
      * @module mm.addons.coursecompletion
      * @ngdoc method
      * @name $mmaCourseCompletion#isPluginViewEnabledForCourse
-     * @param {Number} courseId Course ID.
+     * @param {Number}  courseId            Course ID.
+     * @param {Boolean} [preferCache=true]  True if shouldn't call WS if data is cached, false otherwise.
      * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginViewEnabledForCourse = function(courseId) {
+    self.isPluginViewEnabledForCourse = function(courseId, preferCache) {
         if (!courseId) {
             return $q.reject();
         }
 
-        return $mmCourses.getUserCourse(courseId, true).then(function(course) {
+        if (typeof preferCache == "undefined") {
+            preferCache = true;
+        }
+
+        return $mmCourses.getUserCourse(courseId, preferCache).then(function(course) {
             if (course && typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
                 return false;
             }

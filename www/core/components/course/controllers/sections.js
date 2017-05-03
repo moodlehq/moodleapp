@@ -197,6 +197,7 @@ angular.module('mm.core.course')
 
     $scope.doRefresh = function() {
         var promises = [];
+
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourse.invalidateSections(courseId));
 
@@ -205,6 +206,8 @@ angular.module('mm.core.course')
             var modules = $mmCourseHelper.getSectionsModules($scope.sections);
             promises.push($mmCoursePrefetchDelegate.invalidateModules(modules, courseId));
         }
+
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions(courseId));
 
         $q.all(promises).finally(function() {
             loadSections(true).finally(function() {

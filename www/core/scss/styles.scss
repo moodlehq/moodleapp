@@ -16,7 +16,7 @@
  */
 
 // Bar content.
-$bar-content-bg: $orange !default;
+$bar-content-bg: $mm-color !default;
 $bar-content-border: transparent !default;
 $bar-content-text: $white !default;
 
@@ -294,8 +294,8 @@ p.item-text-wrap {
 }
 
 /* Show buttons as tabs */
-@include tabs-striped-color('tabs-color-orange', $orange);
-@include tabs-color('tabs-color-orange', $orange);
+@include tabs-striped-color('mm-tabs-color', $mm-color);
+@include tabs-color('mm-tabs-color', $mm-color);
 
 .tabs.tabs-free {
   position: initial;
@@ -475,7 +475,7 @@ mm-loading.mm-loading-center {
 
 .mm-split-item-selected, .mm-split-item-selected .item {
   background-color: $gray-light;
-  border-left: 5px solid $orange-light;
+  border-left: 5px solid $mm-color-light;
   padding-left: $item-padding - 4;
 
   &.item-avatar,
@@ -1712,7 +1712,7 @@ progress {
   }
 
   &[value]::-webkit-progress-value {
-    background-color: $orange-light;
+    background-color: $mm-color-light;
     border-radius: 2px;
     background-size: 35px 20px, 100% 100%, 100% 100%;
   }

@@ -232,7 +232,7 @@ angular.module('mm.core.login')
         function isMyOverviewEnabled() {
             var $mmaMyOverview = $mmAddonManager.get('$mmaMyOverview');
             if ($mmaMyOverview) {
-                return $mmaMyOverview.isSideMenuAvalaible();
+                return $mmaMyOverview.isSideMenuAvailable();
             }
             return $q.when(false);
         }

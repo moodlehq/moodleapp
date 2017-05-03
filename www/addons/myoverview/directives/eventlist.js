@@ -75,9 +75,7 @@ angular.module('mm.addons.myoverview')
 
             scope.loadMoreEvents = function() {
                 scope.loadingMore = true;
-                scope.loadMore().catch(function(message) {
-                    $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
-                }).finally(function() {
+                scope.loadMore().finally(function() {
                     scope.loadingMore = false;
                 });
             };

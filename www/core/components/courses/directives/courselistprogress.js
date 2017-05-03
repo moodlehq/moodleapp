@@ -30,7 +30,8 @@ angular.module('mm.core.courses')
  *
  * <mm-course-list-progress course="course" round-progress="true" show-summary="true"></mm-course-list-progress>
  */
-.directive('mmCourseListProgress', function($ionicActionSheet, $mmCourses, $mmCoursesDelegate, $translate, $controller, $q) {
+.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $mmEvents,
+        mmCoursesEventCourseOptionsInvalidated) {
     return {
         restrict: 'E',
         templateUrl: 'core/components/courses/templates/courselistprogress.html',
@@ -41,53 +42,67 @@ angular.module('mm.core.courses')
             showSummary: "=?"
         },
         link: function(scope) {
-            var buttonPromise = $mmCoursesDelegate.getNavHandlersForCourse(scope.course, false, true).then(function(buttons) {
-                scope.showActions = !!buttons.length;
-                return buttons.map(function(button) {
-                    var newScope = scope.$new();
-                    $controller(button.controller, {$scope: newScope});
+            var buttons, invObserver;
+            scope.loaded = false;
 
-                    var title = newScope.title || "",
-                        icon = newScope.icon || false,
-                        buttonInfo = {
-                            text: (icon ? '<i class="icon ' + icon + '"></i>' : '') + $translate.instant(title),
-                            action: newScope.action || false,
-                            className: newScope.class || false,
-                            priority: button.priority || false
-                        };
+            function updateButtons(refresh) {
+                scope.loaded = false;
+                $mmCoursesDelegate.getNavHandlersForCourse(scope.course, refresh, true).then(function(buttonsLoaded) {
+                    buttons = buttonsLoaded.map(function(button) {
+                        var newScope = scope.$new();
+                        $controller(button.controller, {$scope: newScope});
 
-                    newScope.$destroy();
-                    return buttonInfo;
-                }).sort(function(a, b) {
-                    return b.priority - a.priority;
+                        var title = newScope.title || "",
+                            icon = newScope.icon || false,
+                            buttonInfo = {
+                                text: (icon ? '<i class="icon ' + icon + '"></i>' : '') + $translate.instant(title),
+                                action: newScope.action || false,
+                                className: newScope.class || false,
+                                priority: button.priority || false
+                            };
+
+                        newScope.$destroy();
+                        return buttonInfo;
+                    }).sort(function(a, b) {
+                        return b.priority - a.priority;
+                    });
+                }).finally(function() {
+                    scope.showActions = !!buttons.length;
+                    scope.loaded = true;
                 });
-            });
+            }
+
+            updateButtons(false);
 
             scope.showCourseActions = function($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
-                buttonPromise.then(function(buttons) {
-                    $ionicActionSheet.show({
-                        titleText: scope.course.fullname,
-                        buttons: buttons,
-                        cancelText: $translate.instant('mm.core.cancel'),
-                        buttonClicked: function(index) {
-                            if (angular.isFunction(buttons[index].action)) {
-                                // Execute the action and close the action sheet.
-                                return buttons[index].action($event, scope.course);
-                            }
-                            // Never close the action sheet. It will automatically be closed if success.
-                            return false;
-                        },
-                        cancel: function() {
-                            // User cancelled the action sheet.
-                            return true;
+                $ionicActionSheet.show({
+                    titleText: scope.course.fullname,
+                    buttons: buttons,
+                    cancelText: $translate.instant('mm.core.cancel'),
+                    buttonClicked: function(index) {
+                        if (angular.isFunction(buttons[index].action)) {
+                            // Execute the action and close the action sheet.
+                            return buttons[index].action($event, scope.course);
                         }
-                    });
+                        // Never close the action sheet. It will automatically be closed if success.
+                        return false;
+                    },
+                    cancel: function() {
+                        // User cancelled the action sheet.
+                        return true;
+                    }
                 });
             };
 
+            invObserver = $mmEvents.on(mmCoursesEventCourseOptionsInvalidated, function() {
+                updateButtons(true);
+            });
 
+            scope.$on('$destroy', function() {
+                invObserver && invObserver.off && invObserver.off();
+            });
         }
     };
 });

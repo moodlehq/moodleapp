@@ -58,7 +58,8 @@ angular.module('mm.core.courses')
         return true;
     };
 
-    self.$get = function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods, $mmCourses) {
+    self.$get = function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods, $mmCourses, $mmEvents,
+            mmCoursesEventCourseOptionsInvalidated, mmCoursesEventMyCoursesRefreshed) {
         var enabledNavHandlers = {},
             coursesHandlers = {},
             self = {},
@@ -101,6 +102,30 @@ angular.module('mm.core.courses')
         };
 
         /**
+         * Clear all courses handlers and invalidate its options.
+         *
+         * @module mm.core.courses
+         * @ngdoc method
+         * @name $mmCoursesDelegate#clearAndInvalidateCoursesOptions
+         * @param {Number} [courseId]   The course ID. If not defined, all handlers will be cleared.
+         * @protected
+         */
+        self.clearAndInvalidateCoursesOptions = function(courseId) {
+            var promises = [];
+
+            $mmEvents.trigger(mmCoursesEventMyCoursesRefreshed);
+
+            promises.push($mmCourses.invalidateUserNavigationOptions());
+            promises.push($mmCourses.invalidateUserAdministrationOptions());
+
+            self.clearCoursesHandlers(courseId);
+
+            return $q.all(promises).finally(function() {
+                $mmEvents.trigger(mmCoursesEventCourseOptionsInvalidated);
+            });
+        };
+
+        /**
          * Get the handler for a course using a certain access type.
          *
          * @param  {Number}  courseId         The course ID.
@@ -112,6 +137,13 @@ angular.module('mm.core.courses')
          * @return {Array|Promise}            Array of objects containing 'priority' and 'controller'. Or promise if asked for it.
          */
         function getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise) {
+            // If the promise is pending, do not refresh.
+            if (coursesHandlers[courseId] && coursesHandlers[courseId].deferred &&
+                    coursesHandlers[courseId].deferred.promise.$$state &&
+                    coursesHandlers[courseId].deferred.promise.$$state.status === 0) {
+                refresh = false;
+            }
+
             if (refresh || !coursesHandlers[courseId] || coursesHandlers[courseId].access.type != accessData.type) {
                 coursesHandlers[courseId] = {
                     access: accessData,

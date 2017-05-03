@@ -45,7 +45,7 @@ angular.module('mm.addons.myoverview')
          *                           rejected promise or false.
          */
         self.isEnabled = function() {
-            return $mmaMyOverview.isSideMenuAvalaible();
+            return $mmaMyOverview.isSideMenuAvailable();
         };
 
         /**

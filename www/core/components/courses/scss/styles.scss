@@ -7,12 +7,13 @@ $doughnut-border-colour:  $gray-medium;
 $doughnut-text-colour: $gray-dark;
 
 .item-course {
-  >.icon {
+  >.icon, >ion-spinner {
     height: 32px + ($item-padding /2);
     width: 32px + ($item-padding /2);
     right: 0;
     top: 6px;
     color: $doughnut-text-colour;
+    position: absolute;
   }
 }
 

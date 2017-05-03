@@ -285,9 +285,10 @@ angular.module('mm.core.courses')
         self.isEnabled = function() {
             var myCoursesDisabled = $mmCourses.isMyCoursesDisabledInSite();
 
+            // Check if overview side menu is available, so it won't show My courses.
             var $mmaMyOverview = $mmAddonManager.get('$mmaMyOverview');
             if ($mmaMyOverview) {
-                return $mmaMyOverview.isSideMenuAvalaible().then(function(enabled) {
+                return $mmaMyOverview.isSideMenuAvailable().then(function(enabled) {
                     if (enabled) {
                         return false;
                     }
