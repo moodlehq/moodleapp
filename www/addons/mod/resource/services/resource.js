@@ -27,6 +27,57 @@ angular.module('mm.addons.mod_resource')
 
     var self = {};
 
+    /* Constants to determine how a resource should be displayed in Moodle. */
+    // Try the best way.
+    self.DISPLAY_AUTO = 0;
+    // Display using object tag.
+    self.DISPLAY_EMBED = 1;
+    // Display inside frame.
+    self.DISPLAY_FRAME = 2;
+    // Display normal link in new window.
+    self.DISPLAY_NEW = 3;
+    // Force download of file instead of display.
+    self.DISPLAY_DOWNLOAD = 4;
+    // Open directly.
+    self.DISPLAY_OPEN = 5;
+    // Open in "emulated" pop-up without navigation.
+    self.DISPLAY_POPUP = 6;
+
+    /**
+     * Get the HTML to display an embedded resource.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#getEmbeddedHtml
+     * @param {Object} module The module object.
+     * @return {Promise}      Promise resolved with the iframe src.
+     * @since 3.3
+     */
+    self.getEmbeddedHtml = function(module) {
+        if (!module.contents || !module.contents.length) {
+            return $q.reject();
+        }
+
+        var file = module.contents[0],
+            ext = $mmFS.getFileExtension(file.filename);
+
+        return treatResourceMainFile(file, module.id).then(function(result) {
+            var type = $mmFS.getExtensionType(ext),
+                mimeType = $mmFS.getMimeType(ext);
+
+            if (type == 'image') {
+                return '<img src="' + result.path + '"></img>';
+            } else if (type == 'audio' || type == 'video') {
+                return '<' + type + ' controls title="' + file.filename +'"" src="' + result.path + '">' +
+                    '<source src="' + result.path + '" type="' + mimeType + '">' +
+                    '</' + type +'>';
+            } else {
+                // Shouldn't reach here, the user should have called $mmFS#canBeEmbedded.
+                return '';
+            }
+        });
+    };
+
     /**
      * Download all the files needed and returns the src of the iframe.
      *
@@ -151,21 +202,43 @@ angular.module('mm.addons.mod_resource')
     };
 
     /**
+     * Whether the resource has to be displayed embedded.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#isDisplayedEmbedded
+     * @param {Object} module    The module object.
+     * @param {Number} [display] The display mode (if available).
+     * @return {Boolean}         Whether the resource should be displayed in an iframe.
+     * @since 3.3
+     */
+    self.isDisplayedEmbedded = function(module, display) {
+        if (!module.contents.length || !$mmFS.isAvailable()) {
+            return false;
+        }
+
+        var ext = $mmFS.getFileExtension(module.contents[0].filename);
+        return (display == self.DISPLAY_EMBED || display == self.DISPLAY_AUTO) && $mmFS.canBeEmbedded(ext);
+    };
+
+    /**
      * Whether the resource has to be displayed in an iframe.
      *
      * @module mm.addons.mod_resource
      * @ngdoc method
      * @name $mmaModResource#isDisplayedInIframe
      * @param {Object} module The module object.
-     * @return {Boolean}
+     * @return {Boolean}      Whether the resource should be displayed in an iframe.
      */
     self.isDisplayedInIframe = function(module) {
-        if (!module.contents.length) {
+        if (!module.contents.length || !$mmFS.isAvailable()) {
             return false;
         }
-        var ext = $mmFS.getFileExtension(module.contents[0].filename);
 
-        return (ext === 'htm' || ext === 'html') && $mmFS.isAvailable();
+        var ext = $mmFS.getFileExtension(module.contents[0].filename),
+            mimetype = $mmFS.getMimeType(ext);
+
+        return mimetype == 'text/html';
     };
 
     /**
@@ -232,78 +305,25 @@ angular.module('mm.addons.mod_resource')
             return $q.reject();
         }
 
-        var files = [contents[0]],
-            siteId = $mmSite.getId(),
-            revision = $mmFilepool.getRevisionFromFileList(files),
-            timeMod = $mmFilepool.getTimemodifiedFromFileList(files),
-            component = mmaModResourceComponent,
-            url = contents[0].fileurl,
-            fixedUrl = $mmSite.fixPluginfileURL(url),
-            status,
-            promise;
+        var siteId = $mmSite.getId(),
+            file = contents[0],
+            files = [file];
 
-        if ($mmFS.isAvailable()) {
-            // The file system is available.
-            promise = $mmFilepool.getPackageStatus(siteId, component, moduleId, revision, timeMod).then(function(stat) {
-                status = stat;
-
-                var isWifi = !$mmApp.isNetworkAccessLimited(),
-                    isOnline = $mmApp.isOnline();
-
-                if (status === mmCoreDownloaded) {
-                    // Get the local file URL.
-                    return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false, false, contents[0]);
-                } else if (status === mmCoreDownloading) {
-                    // Return the online URL.
-                    return fixedUrl;
-                } else {
-                    if (!isOnline && status === mmCoreNotDownloaded) {
-                        // Not downloaded and we're offline, reject.
-                        return $q.reject();
-                    }
-
-                    return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, contents[0].filesize).then(function() {
-                        // Download and then return the local URL.
-                        return $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod).then(function() {
-                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false, false, contents[0]);
-                        });
-                    }, function() {
-                        // Start the download if in wifi, but return the URL right away so the file is opened.
-                        if (isWifi && isOnline) {
-                            $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod);
-                        }
-
-                        if (status === mmCoreNotDownloaded || isOnline) {
-                            // Not downloaded or outdated and online, return the online URL.
-                            return fixedUrl;
-                        } else {
-                            // Outdated but offline, so we return the local URL.
-                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false, false, contents[0]);
-                        }
-                    });
-                }
-            });
-        } else {
-            // We use the live URL.
-            promise = $q.when(fixedUrl);
-        }
-
-        return promise.then(function(path) {
-            if (path.indexOf('http') === 0) {
-                return $mmUtil.openOnlineFile(path).catch(function(error) {
+        return treatResourceMainFile(file, moduleId).then(function(result) {
+            if (result.path.indexOf('http') === 0) {
+                return $mmUtil.openOnlineFile(result.path).catch(function(error) {
                     // Error opening the file, some apps don't allow opening online files.
                     if (!$mmFS.isAvailable()) {
                         return $q.reject(error);
                     }
 
                     var subPromise;
-                    if (status === mmCoreDownloading) {
+                    if (result.status === mmCoreDownloading) {
                         subPromise = $mmLang.translateAndReject('mm.core.erroropenfiledownloading');
-                    } else if (status === mmCoreNotDownloaded) {
-                        // File is not downloaded, download and then return the local URL.
-                        subPromise = $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod)
-                                .then(function() {
-                            return $mmFilepool.getInternalUrlByUrl(siteId, url);
+                    } else if (result.status === mmCoreNotDownloaded) {
+                        subPromise = $mmFilepool.downloadPackage(siteId, files, mmaModResourceComponent,
+                                moduleId, result.revision, result.timemodified).then(function() {
+                            return $mmFilepool.getInternalUrlByUrl(siteId, file.fileurl);
                         });
                     } else {
                         // File is outdated or stale and can't be opened in online, return the local URL.
@@ -315,7 +335,7 @@ angular.module('mm.addons.mod_resource')
                     });
                 });
             } else {
-                return $mmUtil.openFile(path);
+                return $mmUtil.openFile(result.path);
             }
         });
     };
@@ -433,6 +453,83 @@ angular.module('mm.addons.mod_resource')
 
         return $mmUtil.allPromises(promises);
     };
+
+    /**
+     * Treat the main file of a resource, downloading it if needed and returning the URL to use and the status of the resource.
+     *
+     * @param  {Object} file     Resource's main file.
+     * @param  {Number} moduleId The module ID.
+     * @return {Promise}         Promise resolved with an object containing:
+     *                               * fixedurl: The online URL of the main file, ready to be used.
+     *                               * path: The URL to use; can be an online URL or an offline path.
+     *                               * status: The status of the resource.
+     *                               * revision: The resource revision.
+     *                               * timemodified: The resource timemodified.
+     */
+    function treatResourceMainFile(file, moduleId) {
+        var files = [file],
+            siteId = $mmSite.getId(),
+            revision = $mmFilepool.getRevisionFromFileList(files),
+            timeMod = $mmFilepool.getTimemodifiedFromFileList(files),
+            component = mmaModResourceComponent,
+            url = file.fileurl,
+            fixedUrl = $mmSite.fixPluginfileURL(url),
+            result = {
+                fixedurl: fixedUrl,
+                revision: revision,
+                timemodified: timeMod
+            };
+
+        if ($mmFS.isAvailable()) {
+            // The file system is available.
+            return $mmFilepool.getPackageStatus(siteId, component, moduleId, revision, timeMod).then(function(status) {
+                result.status = status;
+
+                var isWifi = !$mmApp.isNetworkAccessLimited(),
+                    isOnline = $mmApp.isOnline();
+
+                if (status === mmCoreDownloaded) {
+                    // Get the local file URL.
+                    return $mmFilepool.getInternalUrlByUrl(siteId, url);
+                } else if (status === mmCoreDownloading) {
+                    // Return the online URL.
+                    return fixedUrl;
+                } else {
+                    if (!isOnline && status === mmCoreNotDownloaded) {
+                        // Not downloaded and we're offline, reject.
+                        return $q.reject();
+                    }
+
+                    return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, file.filesize).then(function() {
+                        // Download and then return the local URL.
+                        return $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod).then(function() {
+                            return $mmFilepool.getInternalUrlByUrl(siteId, url);
+                        });
+                    }, function() {
+                        // Start the download if in wifi, but return the URL right away so the file is opened.
+                        if (isWifi && isOnline) {
+                            $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod);
+                        }
+
+                        if (status === mmCoreNotDownloaded || isOnline) {
+                            // Not downloaded or outdated and online, return the online URL.
+                            return fixedUrl;
+                        } else {
+                            // Outdated but offline, so we return the local URL.
+                            return $mmFilepool.getUrlByUrl(siteId, url, component, moduleId, timeMod, false, false, file);
+                        }
+                    });
+                }
+            }).then(function(path) {
+                result.path = path;
+                return result;
+            });
+        } else {
+            // We use the live URL.
+            result.path = fixedUrl;
+            return $q.when(result);
+        }
+    }
 
     return self;
 });
