@@ -191,7 +191,7 @@ angular.module('mm.addons.coursecompletion')
                 return false; // Not enabled for guests.
             }
 
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function(courseEnabled) {
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId, false).then(function(courseEnabled) {
                 // If is not enabled in the course, is not enabled for the user.
                 if (!courseEnabled) {
                     coursesNavEnabledCache[courseId] = false;

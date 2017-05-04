@@ -35,9 +35,9 @@
         <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </div>
 
-    <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback || isGrading">
-      <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submission' | translate }}</a>
-      <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.grade' | translate }}</a>
+    <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="feedback || isGrading">
+        <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submission' | translate }}</a>
+        <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.grade' | translate }}</a>
     </div>
 
     <div ng-show="showSubmission">

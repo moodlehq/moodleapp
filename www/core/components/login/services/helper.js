@@ -188,33 +188,54 @@ angular.module('mm.core.login')
      * @return {Promise} Promise resolved when the state changes.
      */
     self.goToSiteInitialPage = function() {
-        var myCoursesDisabled = $mmCourses.isMyCoursesDisabledInSite();
+        return isMyOverviewEnabled().then(function(myOverview) {
+            var myCourses = !myOverview && isMyCoursesEnabled();
 
-        if (myCoursesDisabled || ($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0)) {
-            // Configured to go to Site Home OR My Courses is disabled. Check if plugin is installed in the app.
+            // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
+            if (($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
+                promise = isFrontpageEnabled();
+            } else {
+                promise = $q.when(false);
+            }
+
+            return promise.then(function(frontpage) {
+                // Check avalaibility in priority order.
+                if (frontpage) {
+                    return $state.go('site.frontpage');
+                } else if (myOverview) {
+                    return $state.go('site.myoverview');
+                } else if (myCourses) {
+                    return $state.go('site.mm_courses');
+                } else {
+                    // Anything else available, go to the user profile.
+                    return $state.go(mmUserProfileState, {userid: $mmSite.getUserId()});
+                }
+            });
+        });
+
+        function isFrontpageEnabled() {
             var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
             if ($mmaFrontpage && !$mmaFrontpage.isDisabledInSite()) {
                 return $mmaFrontpage.isFrontpageAvailable().then(function() {
-                    return $state.go('site.frontpage');
+                    return true;
                 }).catch(function() {
-                    if (!myCoursesDisabled) {
-                        // Site Home not available, go to My Courses.
-                        return $state.go('site.mm_courses');
-                    }
-
-                    // Both Site Home and My Courses aren't available, go to the user profile.
-                    return $state.go(mmUserProfileState, {userid: $mmSite.getUserId()});
+                    return false;
                 });
             }
+            return $q.when(false);
         }
 
-        if (!myCoursesDisabled) {
-            // Site Home not available, go to My Courses.
-            return $state.go('site.mm_courses');
+        function isMyCoursesEnabled() {
+            return !$mmCourses.isMyCoursesDisabledInSite();
         }
 
-        // Both Site Home and My Courses aren't available, go to the user profile.
-        return $state.go(mmUserProfileState, {userid: $mmSite.getUserId()});
+        function isMyOverviewEnabled() {
+            var $mmaMyOverview = $mmAddonManager.get('$mmaMyOverview');
+            if ($mmaMyOverview) {
+                return $mmaMyOverview.isSideMenuAvailable();
+            }
+            return $q.when(false);
+        }
     };
 
     /**
@@ -418,7 +439,7 @@ angular.module('mm.core.login')
                     stateparams: data.stateparams
                 };
             } else {
-                $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
+                $log.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '
                                 + signature + ' for passport ' + passport);
                 return $mmLang.translateAndReject('mm.core.unexpectederror');
             }

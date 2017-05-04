@@ -1,0 +1,69 @@
+<ion-view view-title="{{ 'mma.myoverview.pluginname' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <a ui-sref="site.mm_searchcourses" ng-if="searchEnabled" class="button button-icon ion-ios-search-strong"></a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="timeline.loaded" on-refresh="refreshMyOverview()">
+        </ion-refresher>
+        <div class="tabs tabs-striped tabs-free mm-tabs-color">
+            <a class="tab-item" ng-class="{'active': tabShown == 'timeline'}" ng-click="switchTab('timeline')">{{ 'mma.myoverview.timeline' | translate }}</a>
+            <a class="tab-item" ng-class="{'active': tabShown == 'courses'}" ng-click="switchTab('courses')">{{ 'mm.courses.courses' | translate }}</a>
+        </div>
+        <div class="padding">
+            <div class="item-select mm-full-width-centered mm-timelinesort" ng-show="tabShown == 'timeline' && (timeline.loaded || timelineCourses.loaded)">
+                <select ng-model="timeline.sort" ng-change="switchSort()">
+                    <option value="sortbydates">{{ 'mma.myoverview.sortbydates' | translate }}</option>
+                    <option value="sortbycourses">{{ 'mma.myoverview.sortbycourses' | translate }}</option>
+                </select>
+            </div>
+            <mm-loading hide-until="timeline.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbydates'">
+                <mma-my-overview-event-list events="timeline.events" show-course="true" can-load-more="timeline.canLoadMore" load-more="loadMoreTimeline()"></mma-my-overview-event-list>
+            </mm-loading>
+            <mm-loading hide-until="timelineCourses.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbycourses'" class="block">
+                <div class="block mm-course-grid">
+                    <mm-course-list-progress ng-repeat="course in timelineCourses.courses" course="course" round-progress="true" show-summary="true">
+                        <mma-my-overview-event-list events="course.events" can-load-more="course.canLoadMore" load-more="loadMoreCourse(course)"></mma-my-overview-event-list>
+                    </mm-course-list-progress>
+                </div>
+                <div ng-if="timelineCourses.courses.length == 0" class="mm-empty-box block">
+                    <img src="addons/myoverview/img/courses.svg">
+                    <p>{{ 'mma.myoverview.nocourses' | translate }}</p>
+                </div>
+            </mm-loading>
+            <mm-loading hide-until="courses.loaded" ng-show="tabShown == 'courses'">
+                <div class="row row-no-padding">
+                    <div class="col-10 text-left">
+                        <a ng-if="courses[courses.selected] && courses[courses.selected].length > 5" ng-class="{'ion-funnel': !showFilter, 'ion-close-round': showFilter}" class="button button-dark button-icon icon" ng-click="switchFilter()"></a>
+                    </div>
+                    <div class="col text-center" ng-show="!showFilter">
+                        <div class="item-select mm-full-width-centered">
+                            <select ng-model="courses.selected">
+                                <option value="inprogress">{{ 'mma.myoverview.inprogress' | translate }}</option>
+                                <option value="future">{{ 'mma.myoverview.future' | translate }}</option>
+                                <option value="past">{{ 'mma.myoverview.past' | translate }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-10 text-right" ng-show="!showFilter">
+                        <a ng-class="{'ion-grid': !showGrid, 'ion-navicon': showGrid}" class="button button-dark button-icon icon" ng-click="switchGrid()"></a>
+                    </div>
+                    <div class="col" ng-show="showFilter">
+                        <ion-input class="item item-input">
+                            <i class="icon ion-funnel placeholder-icon"></i>
+                            <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="courses.filter">
+                        </ion-input>
+                    </div>
+                </div>
+                <div ng-class="{'mm-course-grid': showGrid}">
+                    <mm-course-list-progress ng-repeat="course in courses[courses.selected] | filter:{fullname: courses.filter}" course="course" round-progress="showGrid" show-summary="showGrid"></mm-course-list-progress>
+                </div>
+                <div ng-if="courses[courses.selected].length == 0" class="mm-empty-box">
+                    <img src="addons/myoverview/img/courses.svg">
+                    <p ng-if="courses.selected == 'inprogress'">{{ 'mma.myoverview.nocoursesinprogress' | translate }}</p>
+                    <p ng-if="courses.selected == 'future'">{{ 'mma.myoverview.nocoursesfuture' | translate }}</p>
+                    <p ng-if="courses.selected == 'past'">{{ 'mma.myoverview.nocoursespast' | translate }}</p>
+                </div>
+            </mm-loading>
+        </div>
+    </ion-content>
+</ion-view>
