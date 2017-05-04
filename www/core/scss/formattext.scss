@@ -128,3 +128,10 @@ mm-format-text, *[mm-format-text] {
     display: inline;
   }
 }
+
+.item mm-format-text,
+.item *[mm-format-text] {
+  p {
+    color: inherit;
+  }
+}
