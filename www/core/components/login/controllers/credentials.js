@@ -41,9 +41,10 @@ angular.module('mm.core.login')
     // Function to check if a site uses local_mobile, requires SSO login, etc.
     // This should be used only if a fixed URL is set, otherwise this check is already performed in mmLoginSiteCtrl.
     function checkSite(siteurl) {
+        $scope.pageLoaded = false;
+
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
-        var checkmodal = $mmUtil.showModalLoading(),
-            protocol = siteurl.indexOf('http://') === 0 ? 'http://' : undefined;
+        var protocol = siteurl.indexOf('http://') === 0 ? 'http://' : undefined;
         return $mmSitesManager.checkSite(siteurl, protocol).then(function(result) {
 
             $scope.siteChecked = true;
@@ -73,7 +74,7 @@ angular.module('mm.core.login')
             $mmUtil.showErrorModal(error);
             return $q.reject();
         }).finally(function() {
-            checkmodal.dismiss();
+            $scope.pageLoaded = true;
         });
     }
 
@@ -106,6 +107,7 @@ angular.module('mm.core.login')
         checkSite($scope.siteurl);
     } else {
         $scope.siteChecked = true;
+        $scope.pageLoaded = true;
     }
 
     $scope.login = function() {
