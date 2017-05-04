@@ -335,6 +335,7 @@ var paths = {
   ],
   sass: {
     core: [
+      './www/core/scss/styles.scss',
       './www/core/scss/*.scss',
       './www/core/components/**/scss/*.scss',
       './www/addons/**/scss/*.scss',
