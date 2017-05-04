@@ -223,8 +223,8 @@ angular.module('mm.addons.mod_forum')
      */
     self.invalidateModule = function(module, courseId) {
         if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
-            // No need to invalidate anything if can check updates.
-            return $q.when();
+            // If can check updates only get forum by course is needed.
+            return $mmaModForum.invalidateForumData(courseId);
         }
 
         // Get the forum since we need its ID.

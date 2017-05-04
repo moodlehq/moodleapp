@@ -40,7 +40,7 @@ angular.module('mm.core.course')
     }
 
     // Convenience function to fetch section(s).
-    function loadContent(sectionId) {
+    function loadContent(sectionId, refresh) {
         return $mmCourses.getUserCourse(courseId, true).catch(function() {
             // User not enrolled in the course or an error occurred, ignore the error.
         }).then(function(course) {
@@ -70,6 +70,19 @@ angular.module('mm.core.course')
                 }
 
                 return promise.then(function(sections) {
+                    var promise;
+                    if (refresh) {
+                        // Invalidate the recently downloaded module list. To ensure info can be prefetched.
+                        var modules = $mmCourseHelper.getSectionsModules(sections);
+                        promise = $mmCoursePrefetchDelegate.invalidateModules(modules, courseId);
+                    } else {
+                        promise = $q.when();
+                    }
+
+                    return promise.then(function() {
+                        return sections;
+                    });
+                }).then(function(sections) {
                     sections = sections.map(function(section) {
                         section.name = section.name.trim() || false;
                         return section;
@@ -113,13 +126,11 @@ angular.module('mm.core.course')
         promises.push($mmCourse.invalidateSections(courseId));
 
         if ($scope.sections) {
-            // Invalidate modules prefetch data.
-            var modules = $mmCourseHelper.getSectionsModules($scope.sections);
-            promises.push($mmCoursePrefetchDelegate.invalidateModules(modules, courseId));
+            promises.push($mmCoursePrefetchDelegate.invalidateCourseUpdates(courseId));
         }
 
         $q.all(promises).finally(function() {
-            loadContent(sectionId).finally(function() {
+            loadContent(sectionId, true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
         });
