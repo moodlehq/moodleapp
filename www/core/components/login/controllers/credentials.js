@@ -171,19 +171,10 @@ angular.module('mm.core.login')
     };
 
     // An OAuth button was clicked.
-    $scope.oauthClicked = function(providerUrl) {
-        if (!providerUrl) {
-            // Stop.
-            return;
-        }
-
-        var params = $mmUtil.extractUrlParams(providerUrl);
-        if (!params.id) {
+    $scope.oauthClicked = function(provider) {
+        if (!$mmLoginHelper.openBrowserForOAuthLogin($scope.siteurl, provider, siteConfig.launchurl)) {
             $mmUtil.showErrorModal('Invalid data.');
-            return;
         }
-
-        $mmLoginHelper.openBrowserForOAuthLogin($scope.siteurl, params.id, siteConfig.launchurl);
     };
 
     $scope.$on('$destroy', function() {

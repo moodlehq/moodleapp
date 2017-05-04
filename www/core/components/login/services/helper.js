@@ -68,7 +68,7 @@ angular.module('mm.core.login')
      * @param  {String} siteurl     URL of the site where the SSO login will be performed.
      * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
      * @param  {String} [service]   The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @return {Void}
      */
     self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
@@ -347,34 +347,44 @@ angular.module('mm.core.login')
      * @ngdoc method
      * @name $mmLoginHelper#openBrowserForOAuthLogin
      * @param  {String} siteUrl       URL of the site where the login will be performed.
-     * @param  {Number} id            ID of the identity provider.
-     * @param  {String} [launchUrl]   The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {Object} provider      The identity provider.
+     * @param  {String} [launchUrl]   The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
      * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
      * @param  {Object} [stateParams] Params of the state to go once authenticated.
-     * @return {Void}
+     * @return {Boolean}              True if success, false if error.
      */
-    self.openBrowserForOAuthLogin = function(siteUrl, id, launchUrl, stateName, stateParams) {
+    self.openBrowserForOAuthLogin = function(siteUrl, provider, launchUrl, stateName, stateParams) {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        if (!provider || !provider.url) {
+            return false;
+        }
 
         var service = $mmSitesManager.determineService(siteUrl),
             loginUrl = self.prepareForSSOLogin(siteUrl, service, launchUrl, stateName, stateParams);
+            params = $mmUtil.extractUrlParams(provider.url);
 
-        loginUrl += '&oauthsso=' + id;
+        if (!params.id) {
+            return false;
+        }
 
-        if (id != 1) {
-            // Not Google, open in InAppBrowser.
+        loginUrl += '&oauthsso=' + params.id;
+
+        // Google will be opened in browser, others will be opened in InAppBrowser.
+        // There's no reliable attribute to check if it's google (ID is not reliable), search for "google" in icon and name.
+        if ((provider.name && provider.name.match(/google/i)) || (provider.iconurl && provider.iconurl.match(/google/i))) {
+            $mmUtil.openInBrowser(loginUrl);
+            if (navigator.app) {
+                navigator.app.exitApp();
+            }
+        } else {
             var options = {
                 clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                 closebuttoncaption: $translate.instant('mm.login.cancel'),
             };
             $mmUtil.openInApp(loginUrl, options);
-        } else {
-            // Open Google in browser.
-            $mmUtil.openInBrowser(loginUrl);
-            if (navigator.app) {
-                navigator.app.exitApp();
-            }
         }
+
+        return true;
     };
 
     /**
@@ -386,7 +396,7 @@ angular.module('mm.core.login')
      * @param  {String} siteurl       URL of the site where the SSO login will be performed.
      * @param  {Number} typeOfLogin   mmLoginSSOCode or mmLoginSSOInAppCode.
      * @param  {String} [service]     The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl]   The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [launchUrl]   The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
      * @param  {Object} [stateParams] Params of the state to go once authenticated.
      * @return {Void}
@@ -416,7 +426,7 @@ angular.module('mm.core.login')
      * @name $mmLoginHelper#prepareForSSOLogin
      * @param  {String} siteUrl       URL of the site where the SSO login will be performed.
      * @param  {String} [service]     The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl]   The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [launchUrl]   The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
      * @param  {Object} [stateParams] Params of the state to go once authenticated.
      * @return {Void}
