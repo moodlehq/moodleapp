@@ -274,7 +274,7 @@ p.item-text-wrap {
           border-radius: 2%;
           border: 0;
           max-width: 100%;
-          max-height: 200px;
+          max-height: 160px;
           width: auto;
           height: auto;
         }
@@ -1435,4 +1435,8 @@ progress {
 
 .mm-progress-text {
   margin-left: 10px;
+}
+
+.padding > .button.button-block:only-child {
+  margin-bottom: 0;
 }

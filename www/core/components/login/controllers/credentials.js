@@ -49,6 +49,7 @@ angular.module('mm.core.login')
             $scope.siteChecked = true;
             $scope.siteurl = result.siteurl;
 
+            siteConfig = result.config;
             treatSiteConfig(result.config);
 
             if (result && result.warning) {
@@ -83,6 +84,7 @@ angular.module('mm.core.login')
             $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
             $scope.authInstructions = siteConfig.authinstructions || $translate.instant('mm.login.loginsteps');
             $scope.canSignup = siteConfig.registerauth == 'email' && !$mmLoginHelper.isEmailSignupDisabled(siteConfig);
+            $scope.identityProviders = $mmLoginHelper.getValidIdentityProviders(siteConfig);
 
             if (!eventThrown && !$scope.$$destroyed) {
                 eventThrown = true;
@@ -95,6 +97,7 @@ angular.module('mm.core.login')
             $scope.logourl = null;
             $scope.authInstructions = null;
             $scope.canSignup = false;
+            $scope.identityProviders = [];
         }
     }
 
@@ -165,6 +168,13 @@ angular.module('mm.core.login')
         }).finally(function() {
             modal.dismiss();
         });
+    };
+
+    // An OAuth button was clicked.
+    $scope.oauthClicked = function(provider) {
+        if (!$mmLoginHelper.openBrowserForOAuthLogin($scope.siteurl, provider, siteConfig.launchurl)) {
+            $mmUtil.showErrorModal('Invalid data.');
+        }
     };
 
     $scope.$on('$destroy', function() {

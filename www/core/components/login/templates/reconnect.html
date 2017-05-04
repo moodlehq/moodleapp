@@ -1,27 +1,30 @@
 <ion-view view-title="{{ 'mm.login.reconnect' | translate }}">
     <ion-content mm-state-class>
-        <div class="card">
+        <div class="list">
             <div class="item item-text-wrap item-avatar-center">
                 <img ng-src="{{site.avatar}}" class="avatar" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
                 <h2 class="padding">{{siteurl}}</h2>
                 <p ng-if="!isLoggedOut"><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
             </div>
-        </div>
-        <div class="list list-inset">
             <div class="item">
                 <h2>{{ 'mm.login.username' | translate }}</h2>
                 <p>{{credentials.username}}</p>
             </div>
             <form>
-                <ion-input class="item item-input item-stacked-label">
-                    <ion-label>{{ 'mm.login.password' | translate }}</ion-label>
+                <ion-input class="item item-input mm-ioninput-password">
                     <input id="mm-login-reconnect-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus mm-show-password>
                 </ion-input>
-                <div class="item padding">
-                    <button class="button button-block button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
-                    <button class="button button-block button-outline button-positive" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+                <div class="item padding button-bar">
+                    <button class="button button-outline" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+                    <button class="button button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
                 </div>
             </form>
+            <div ng-if="identityProviders && identityProviders.length" class="padding button-bar">
+                <button ng-repeat="provider in identityProviders" class="button mm-oauth-icon" ng-click="oauthClicked(provider)" title="{{provider.name}}">
+                    <img ng-src="{{provider.iconurl}}" alt="{{provider.name}}">
+                    <span>{{provider.name}}</span>
+                </button>
+            </div>
         </div>
     </ion-content>
 </ion-view>

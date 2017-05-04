@@ -87,7 +87,8 @@ angular.module('mm.core.login', [])
             infositeurl: '',
             siteid: '',
             statename: null, // Name and params of the state to go once authenticated. If not defined, site initial page.
-            stateparams: null
+            stateparams: null,
+            siteconfig: null
         }
     })
 
@@ -303,7 +304,8 @@ angular.module('mm.core.login', [])
                         infositeurl: info.siteurl,
                         siteid: siteId,
                         statename: data.statename,
-                        stateparams: data.stateparams
+                        stateparams: data.stateparams,
+                        siteconfig: result.config
                     });
                 }
             }
