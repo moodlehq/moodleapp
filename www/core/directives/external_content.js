@@ -94,7 +94,7 @@ angular.module('mm.core')
             };
         }
 
-        if (!url || !$mmUtil.isDownloadableUrl(url)) {
+        if (!url || !url.match(/^https?:\/\//i) || (dom.tagName === 'A' && !$mmUtil.isDownloadableUrl(url))) {
             $log.debug('Ignoring non-downloadable URL: ' + url);
             if (dom.tagName === 'SOURCE') {
                 // Restoring original src.
