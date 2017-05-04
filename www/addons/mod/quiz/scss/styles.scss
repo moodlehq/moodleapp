@@ -1,9 +1,9 @@
 
-$mma-mod-quiz-warning-color:      #c00 !default;
-$mma-mod-quiz-highlight-color:    #d9edf7 !default;
+$mma-mod-quiz-warning-color:      $red !default;
+$mma-mod-quiz-highlight-color:    $blue-lighter !default;
 $mma-mod-quiz-alternate-color:    #fbfbfb !default;
-$mma-mod-quiz-conecterr-color:    #fcc !default;
-$mma-mod-quiz-selected-color:     #666 !default;
+$mma-mod-quiz-conecterr-color:    $red-lighter !default;
+$mma-mod-quiz-selected-color:     $blue-lighter !default;
 
 // Deprecated use mm-error-item instead.
 p.mma-mod-quiz-warning {
@@ -67,8 +67,9 @@ p.mma-mod-quiz-warning {
 .platform-android .item.mma-mod-quiz-selected,
 .platform-ios .item.mma-mod-quiz-selected,
 .mma-mod-quiz-table .item.row.mma-mod-quiz-selected {
-  border: 3px solid $mma-mod-quiz-selected-color;
-  &:not(.mma-mod-quiz-last-of-page) {
-    border-bottom: 0;
-  }
+  background: $mma-mod-quiz-selected-color;
+}
+
+#mma-mod-quiz-toc .item {
+  border-color: $gray-medium;
 }

@@ -16,8 +16,9 @@
   .drop {
       display: inline-block;
       text-align: center;
-      border: 1px solid #000000;
+      border: 1px solid $gray-dark;
       margin-bottom: 2px;
+      border-radius: 5px;
   }
   .draghome, .drag {
       display: inline-block;
@@ -26,22 +27,24 @@
       border: 0;
   }
   .draghome, .drag.unplaced{
-      border: 1px solid #000000;
+      border: 1px solid $gray-dark;
+      border-radius: 5px;
   }
   .draghome {
       visibility: hidden;
   }
   .drag {
       z-index: 2;
+      border-radius: 5px;
   }
   .drag.selected {
       z-index: 3;
-      box-shadow: 3px 3px 4px #000;
+      box-shadow: 3px 3px 4px $gray-dark;
   }
 
   .drop.selected {
-      border-color: #0a0;
-      box-shadow: 0 0 5px 5px rgba(255, 255, 150, 1);
+      border-color: $yellow-lighter;
+      box-shadow: 0 0 5px 5px $yellow-lighter;
   }
 
   &.notreadonly .drag,
@@ -49,6 +52,7 @@
   &.notreadonly .drop,
   &.notreadonly .answercontainer {
       cursor: pointer;
+      border-radius: 5px;
   }
 
   &.readonly .drag,
@@ -59,10 +63,10 @@
   }
 
   span.incorrect {
-      background-color: #faa;
+      background-color: $red-lighter;
   }
   span.correct {
-      background-color: #afa;
+      background-color: $green-lighter;
   }
 
   .group1 {

@@ -12,26 +12,40 @@ $gray-light:      #eeeeee; // Background.
 $white:           #ffffff; // Background, reversed text.
 
 $blue:            #0064d2; // Link, background.
-$blue-light:      #eaf4ff; // Background.
+$blue-light:      lighten($blue, 10%);
 $blue-dark:       darken($blue, 10%);
+$blue-lighter:    #eaf4ff; // Background.
+$blue-darker:     mix($blue, black, 20%);
 
-$turquoise:       #007982; // Accent.
-$turquoise-light: #edfafb; // Background.
-$turquoise-dark:  darken($turquoise, 10%);
+$turquoise:           #007982; // Accent.
+$turquoise-light:     #edfafb; // Background.
+$turquoise-dark:      darken($turquoise, 10%);
+$turquoise-lighter:   mix($turquoise, white, 20%);
+$turquoise-darker:    mix($turquoise, black, 20%);
 
 $green:           #739500; // Accent.
 $green-light:     lighten($green, 10%);
 $green-dark:      darken($green, 10%);
+$green-lighter:   mix($green, white, 20%);
+$green-darker:    mix($green, black, 20%);
 
 $red:             #a22b38;
 $red-light:       lighten($red, 10%);
 $red-dark:        darken($red, 10%);
+$red-lighter:     mix($red, white, 20%);
+$red-darker:      mix($red, black, 20%);
 
 $orange:          #e07627; // Accent (never text).
 $orange-light:    lighten($orange, 10%);
 $orange-dark:     darken($orange, 10%);
+$orange-lighter:  mix($orange, white, 20%);
+$orange-darker:   mix($orange, black, 20%);
 
 $yellow:          #fbad1a; // Accent (never text).
+$yellow-light:    lighten($yellow, 10%);
+$yellow-dark:     darken($yellow, 10%);
+$yellow-lighter:  mix($yellow, white, 20%);
+$yellow-darker:   mix($yellow, black, 40%);
 
 // Change Ionic default colors.
 $dark: $black !default;
