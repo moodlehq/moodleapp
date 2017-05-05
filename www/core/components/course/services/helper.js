@@ -638,7 +638,8 @@ angular.module('mm.core.course')
      * @return {Boolean}       True if the section has content.
      */
     self.sectionHasContent = function(section) {
-        return !section.hiddenbynumsections  && (section.summary != '' || section.modules.length);
+        return !section.hiddenbynumsections && ((typeof section.availabilityinfo != "undefined" && section.availabilityinfo != '') ||
+            section.summary != '' || section.modules.length);
     };
 
     /**

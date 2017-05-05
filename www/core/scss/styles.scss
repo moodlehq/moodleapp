@@ -286,6 +286,10 @@ p.item-text-wrap {
   border-top: 0;
 }
 
+.item-dimmed {
+  opacity: 0.6;
+}
+
 /* Show buttons as tabs */
 @include tabs-striped-color('mm-tabs-color', $mm-color);
 @include tabs-color('mm-tabs-color', $mm-color);
@@ -783,12 +787,14 @@ p.mm-error { // Deprecated, use one of the above mm-error classes.
   border-radius: 50%;
 }
 
+.item.item-button-right .badge.badge-inline,
 .badge.badge-inline {
   display: inline-block;
   position: relative;
   top: initial;
   right: initial;
   white-space: normal;
+  text-align: left;
 }
 
 // Timer.

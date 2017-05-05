@@ -1,4 +1,4 @@
-<a id="mm-course-module-{{module.id}}" class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-click="action && action($event)" ng-class="{'item-media': icon, 'mm-not-clickable': !action}" ng-controller="module._controller" title="{{ module.name }}" ng-if="module.visibleoncoursepage !== 0">
+<a id="mm-course-module-{{module.id}}" class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-click="action && action($event)" ng-class="{'item-media': icon, 'mm-not-clickable': !action, 'item-dimmed': module.visible === 0 || module.uservisible === false}" ng-controller="module._controller" title="{{ module.name }}" ng-if="module.visibleoncoursepage !== 0">
 
     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
 
@@ -13,5 +13,9 @@
     </div>
 
     <mm-format-text watch="true">{{ title }}</mm-format-text>
+    <div class="padding-vertical" ng-if="module.visible === 0 || module.availabilityinfo">
+        <p class="badge badge-calm badge-inline" ng-if="module.visible === 0">{{ 'mm.course.hiddenfromstudents' | translate }}</p>
+        <p class="badge badge-calm badge-inline" ng-if="module.availabilityinfo"><mm-format-text watch="true">{{ module.availabilityinfo }}</mm-format-text></p>
+    </div>
     <mm-format-text watch="true" max-height="80" ng-if="module.description">{{ module.description }}</mm-format-text>
 </a>

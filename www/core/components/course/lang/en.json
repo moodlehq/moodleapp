@@ -14,6 +14,7 @@
     "couldnotloadsectioncontent": "Could not load the section content, please try again later.",
     "errordownloadingsection": "Error downloading section.",
     "errorgetmodule": "Error getting module data.",
+    "hiddenfromstudents": "Hidden from students",
     "nocontentavailable": "No content available at the moment.",
     "overriddennotice": "Your final grade from this activity was manually adjusted.",
     "useactivityonbrowser": "You can still use it using your devices browser.",
