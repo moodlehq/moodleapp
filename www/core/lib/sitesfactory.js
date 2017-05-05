@@ -77,10 +77,13 @@ angular.module('mm.core')
      */
     this.registerStore = function(store) {
         if (typeof(store.name) === 'undefined') {
-            console.log('$mmSite: Error: store name is undefined.');
+            console.error('$mmSite: Error: store name is undefined.');
+            return;
+        } else if (typeof store.keyPath  === 'undefined' || !store.keyPath) {
+            console.error('$mmSite: Error: store ' + store.name + ' keyPath is invalid.');
             return;
         } else if (storeExists(store.name)) {
-            console.log('$mmSite: Error: store ' + store.name + ' is already defined.');
+            console.error('$mmSite: Error: store ' + store.name + ' is already defined.');
             return;
         }
         store.indexes = getIndexes(store.indexes);
