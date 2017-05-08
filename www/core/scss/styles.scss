@@ -1470,3 +1470,15 @@ progress {
 h2.invert {
   color: $white;
 }
+
+.mm-center-view .scroll {
+  margin: 0 auto;
+  max-width: 600px;
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+  .mm-view-content {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
