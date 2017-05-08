@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_feedback')
  * @name $mmaModFeedbackPrefetchHandler
  */
 .factory('$mmaModFeedbackPrefetchHandler', function($mmaModFeedback, mmaModFeedbackComponent, $mmFilepool, $q, $mmUtil, $mmGroups,
-            $mmPrefetchFactory, $mmUser, $mmaModFeedbackHelper) {
+            $mmPrefetchFactory, $mmUser) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModFeedbackComponent);
 
@@ -201,7 +201,8 @@ angular.module('mm.addons.mod_feedback')
                 if (accessData.canedititems || accessData.canviewreports) {
                     // Get all groups analysis.
                     p2.push($mmaModFeedback.getAnalysis(feedback.id, undefined, siteId));
-                    p2.push($mmaModFeedbackHelper.getFeedbackGroupInfo(feedback.coursemodule, siteId).then(function(groupInfo) {
+                    p2.push($mmGroups.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId)
+                            .then(function(groupInfo) {
                         var p3 = [],
                             userIds = [];
                         if (!groupInfo.groups || groupInfo.groups.length == 0) {
@@ -209,13 +210,15 @@ angular.module('mm.addons.mod_feedback')
                         }
                         angular.forEach(groupInfo.groups, function(group) {
                             p3.push($mmaModFeedback.getAnalysis(feedback.id, group.id, siteId));
-                            p3.push($mmaModFeedback.getAllResponsesAnalysis(feedback.id, group.id, siteId).then(function(responses) {
+                            p3.push($mmaModFeedback.getAllResponsesAnalysis(feedback.id, group.id, siteId)
+                                    .then(function(responses) {
                                 angular.forEach(responses.attempts, function(attempt) {
                                     userIds.push(attempt.userid);
                                 });
                             }));
                             if (!accessData.isanonymous) {
-                                p3.push($mmaModFeedback.getAllNonRespondents(feedback.id, group.id, siteId).then(function(responses) {
+                                p3.push($mmaModFeedback.getAllNonRespondents(feedback.id, group.id, siteId)
+                                        .then(function(responses) {
                                     angular.forEach(responses.users, function(user) {
                                         userIds.push(user.userid);
                                     });

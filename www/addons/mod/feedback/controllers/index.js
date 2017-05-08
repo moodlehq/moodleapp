@@ -32,6 +32,10 @@ angular.module('mm.addons.mod_feedback')
         analysisLoaded = false,
         overviewLoaded = false;
 
+    // Constants for display modes.
+    $scope.DISPLAY_OVERVIEW = 'overview';
+    $scope.DISPLAY_ANALYSIS = 'analysis';
+
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
@@ -42,7 +46,7 @@ angular.module('mm.addons.mod_feedback')
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
     $scope.selectedGroup = $stateParams.group || 0;
-    $scope.selectedTab = $stateParams.tab || 'overview';
+    $scope.selectedTab = $stateParams.tab || $scope.DISPLAY_OVERVIEW;
     $scope.overview = {};
     $scope.tabSwitched = false;
     $scope.chartOptions = {
@@ -71,7 +75,7 @@ angular.module('mm.addons.mod_feedback')
     };
 
     function fetchGroupInfo(module) {
-        return $mmaModFeedbackHelper.getFeedbackGroupInfo(module).then(function(groupInfo) {
+        return $mmGroups.getActivityGroupInfo(module).then(function(groupInfo) {
             $scope.groupInfo = groupInfo;
             return $scope.setGroup($scope.selectedGroup);
         });
@@ -99,7 +103,7 @@ angular.module('mm.addons.mod_feedback')
         }).then(function(accessData) {
             $scope.access = accessData;
 
-            if ($scope.selectedTab == 'analysis') {
+            if ($scope.selectedTab == $scope.DISPLAY_ANALYSIS) {
                 return fetchFeedbackAnalysisData(accessData);
             }
             return fetchFeedbackOverviewData(accessData);
@@ -159,7 +163,7 @@ angular.module('mm.addons.mod_feedback')
             // Get groups (only for teachers).
             promise = fetchGroupInfo(feedback.coursemodule);
         } else {
-            $scope.setTab('overview');
+            $scope.setTab($scope.DISPLAY_OVERVIEW);
             promise = $q.when();
         }
 
@@ -176,7 +180,7 @@ angular.module('mm.addons.mod_feedback')
             $scope.feedback.completedCount = analysis.completedcount;
             $scope.feedback.itemsCount = analysis.itemscount;
 
-            if ($scope.selectedTab == 'analysis') {
+            if ($scope.selectedTab == $scope.DISPLAY_ANALYSIS) {
                 var number = 1;
                 $scope.items = analysis.itemsdata.map(function(item) {
                     // Move data inside item.
@@ -206,15 +210,16 @@ angular.module('mm.addons.mod_feedback')
 
     // Set group to see the analysis.
     $scope.setTab = function(tab) {
-        $scope.selectedTab = tab == 'overview' ? 'overview' : 'analysis';
+        $scope.selectedTab = tab == $scope.DISPLAY_OVERVIEW ? $scope.DISPLAY_OVERVIEW : $scope.DISPLAY_ANALYSIS;
 
-        if (($scope.selectedTab == 'overview' && !overviewLoaded) || ($scope.selectedTab == 'analysis' && !analysisLoaded)) {
+        if (($scope.selectedTab == $scope.DISPLAY_OVERVIEW && !overviewLoaded) ||
+                ($scope.selectedTab == $scope.DISPLAY_ANALYSIS && !analysisLoaded)) {
             $scope.tabSwitched = false;
             return fetchFeedbackData(false, false, true);
         }
     };
 
-        // Parse the analysis info to show the info correctly formatted.
+    // Parse the analysis info to show the info correctly formatted.
     function parseAnalysisInfo(item) {
         switch (item.typ) {
             case 'numeric':

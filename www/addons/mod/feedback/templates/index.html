@@ -17,9 +17,9 @@
             <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
             <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="(access.canviewreports || access.canviewanalysis) && !access.isempty">
-                <a class="tab-item" ng-class="{'active': selectedTab == 'overview'}" ng-click="setTab('overview')">{{ 'mma.mod_feedback.overview' | translate }}</a>
-                <a ng-if="access.canviewreports" class="tab-item" ng-class="{'active': selectedTab == 'analysis'}" ng-click="setTab('analysis')">{{ 'mma.mod_feedback.analysis' | translate }}</a>
-                <a ng-if="!access.canviewreports" class="tab-item" ng-class="{'active': selectedTab == 'analysis'}" ng-click="setTab('analysis')">{{ 'mma.mod_feedback.completed_feedbacks' | translate }}</a>
+                <a class="tab-item" ng-class="{'active': selectedTab == DISPLAY_OVERVIEW}" ng-click="setTab(DISPLAY_OVERVIEW)">{{ 'mma.mod_feedback.overview' | translate }}</a>
+                <a ng-if="access.canviewreports" class="tab-item" ng-class="{'active': selectedTab == DISPLAY_ANALYSIS}" ng-click="setTab(DISPLAY_ANALYSIS)">{{ 'mma.mod_feedback.analysis' | translate }}</a>
+                <a ng-if="!access.canviewreports" class="tab-item" ng-class="{'active': selectedTab == DISPLAY_ANALYSIS}" ng-click="setTab(DISPLAY_ANALYSIS)">{{ 'mma.mod_feedback.completed_feedbacks' | translate }}</a>
             </div>
 
             <mm-loading hide-until="tabSwitched">
@@ -45,7 +45,7 @@
                     </div>
                 </section>
 
-                <div ng-if="selectedTab == 'overview'">
+                <div ng-if="selectedTab == DISPLAY_OVERVIEW">
                     <!-- Feedback responses found to be synchronized -->
                     <div class="mm-warning-card-icon" ng-if="hasOffline">
                         <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
@@ -60,7 +60,7 @@
                     </div>
                 </div>
 
-                <section class="list" ng-if="selectedTab == 'overview' && (access.canedititems || access.canviewreports || !access.isempty)">
+                <section class="list" ng-if="selectedTab == DISPLAY_OVERVIEW && (access.canedititems || access.canviewreports || !access.isempty)">
                     <div ng-if="access.canedititems && overview.timeopen" class="item item-text-wrap">
                         <p class="item-heading">{{ 'mma.mod_feedback.feedbackopen' | translate }}</p>
                         <p>{{overview.openTimeReadable}}</p>
@@ -90,7 +90,7 @@
                         </div>
                     </div>
                 </section>
-                <section class="list mm-analysis" ng-if="selectedTab == 'analysis' && (access.canedititems || !access.isempty)">
+                <section class="list mm-analysis" ng-if="selectedTab == DISPLAY_ANALYSIS && (access.canedititems || !access.isempty)">
                     <div class="mm-warning-card-icon" ng-if="warning">
                         <i class="icon ion-information-circled padding"></i> {{ warning }}
                     </div>

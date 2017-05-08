@@ -29,40 +29,6 @@ angular.module('mm.addons.mod_feedback')
         MODE_CATEGORY = 3;
 
     /**
-     * Get activity feedback group info to be shown on templates.
-     *
-     * @module mm.addons.mod_feedback
-     * @ngdoc method
-     * @name $mmaModFeedbackHelper#getFeedbackGroupInfo
-     * @param  {Number} cmId        Course Module Id of the feedback.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Object}             Containing the group info related to the activity.
-     */
-    self.getFeedbackGroupInfo = function(cmId, siteId) {
-        var groupInfo = {};
-
-        return $mmGroups.getActivityGroupMode(cmId, siteId).then(function(groupMode) {
-            if (groupMode === $mmGroups.SEPARATEGROUPS || groupMode === $mmGroups.VISIBLEGROUPS) {
-                groupInfo.separateGroups = groupMode === $mmGroups.SEPARATEGROUPS;
-                groupInfo.visibleGroups = groupMode === $mmGroups.VISIBLEGROUPS;
-                return $mmGroups.getActivityAllowedGroups(cmId, undefined, siteId);
-            }
-            return [];
-        }).then(function (groups) {
-            if (groups.length <= 0) {
-                groupInfo.separateGroups = false;
-                groupInfo.visibleGroups = false;
-            } else {
-                groupInfo.groups = [
-                    {'id': 0, 'name': $translate.instant('mm.core.allparticipants')}
-                ];
-                groupInfo.groups = groupInfo.groups.concat(groups);
-            }
-            return groupInfo;
-        });
-    };
-
-    /**
      * Helper function to open a feature in the app.
      *
      * @module mm.addons.mod_feedback

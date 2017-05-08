@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmGroups
  */
-.factory('$mmGroups', function($log, $q, $mmSite, $mmSitesManager) {
+.factory('$mmGroups', function($log, $q, $mmSite, $mmSitesManager, $translate) {
 
     $log = $log.getInstance('$mmGroups');
 
@@ -84,6 +84,52 @@ angular.module('mm.core')
     function getActivityAllowedGroupsCacheKey(cmId, userId) {
         return 'mmGroups:allowedgroups:' + cmId + ':' + userId;
     }
+
+    /**
+     * Helper function to get activity group info (group mode and list of groups).
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#getActivityGroupInfo
+     * @param  {Number} cmId                Course Module Id of the feedback.
+     * @param  {Boolean} [addAllParts=true] True to add the all participants option, false otherwise.
+     * @param  {Number} [userId]            User ID. If not defined, use current user.
+     * @param  {String} [siteId]            Site ID. If not defined, current site.
+     * @return {Object}                     Containing the group info related to the activity.
+     * @since 3.3
+     */
+    self.getActivityGroupInfo = function(cmId, addAllParts, userId, siteId) {
+        if (typeof addAllParts == 'undefined') {
+            addAllParts = true;
+        }
+
+        var groupInfo = {
+            groups: []
+        };
+
+        return self.getActivityGroupMode(cmId, siteId).then(function(groupMode) {
+            groupInfo.separateGroups = groupMode === self.SEPARATEGROUPS;
+            groupInfo.visibleGroups = groupMode === self.VISIBLEGROUPS;
+
+            if (groupInfo.separateGroups || groupInfo.visibleGroups) {
+                return self.getActivityAllowedGroups(cmId, userId, siteId);
+            }
+            return [];
+        }).then(function (groups) {
+            if (groups.length <= 0) {
+                groupInfo.separateGroups = false;
+                groupInfo.visibleGroups = false;
+            } else {
+                if (addAllParts) {
+                    groupInfo.groups = [
+                        {'id': 0, 'name': $translate.instant('mm.core.allparticipants')}
+                    ];
+                }
+                groupInfo.groups = groupInfo.groups.concat(groups);
+            }
+            return groupInfo;
+        });
+    };
 
     /**
      * Get the group mode of an activity.
@@ -241,13 +287,16 @@ angular.module('mm.core')
      * @module mm.core.groups
      * @ngdoc method
      * @name $mmGroups#invalidateActivityAllowedGroups
-     * @param {Number} cmid     Course module ID.
-     * @param {Number} [userid] User ID. If not defined, use current user.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @param  {Number} cmId     Course module ID.
+     * @param  {Number} [userId] User ID. If not defined, use current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
      */
-    self.invalidateActivityAllowedGroups = function(cmid, userid) {
-        userid = userid || $mmSite.getUserId();
-        return $mmSite.invalidateWsCacheForKey(getActivityAllowedGroupsCacheKey(cmid, userid));
+    self.invalidateActivityAllowedGroups = function(cmId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKey(getActivityAllowedGroupsCacheKey(cmId, userId));
+        });
     };
 
     /**
@@ -256,11 +305,32 @@ angular.module('mm.core')
      * @module mm.core.groups
      * @ngdoc method
      * @name $mmGroups#invalidateActivityGroupMode
-     * @param {Number} cmid Course module ID.
-     * @return {Promise}    Promise resolved when the data is invalidated.
+     * @param  {Number} cmId     Course module ID.
+     * @param  {Number} [userId] User ID. If not defined, use current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
      */
-    self.invalidateActivityGroupMode = function(cmid) {
-        return $mmSite.invalidateWsCacheForKey(getActivityGroupModeCacheKey(cmid));
+    self.invalidateActivityGroupMode = function(cmId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getActivityGroupModeCacheKey(cmId));
+        });
+    };
+
+    /**
+     * Invalidates all activity group info: mode and allowed groups.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#invalidateActivityGroupInfo
+     * @param  {Number} cmId     Course module ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateActivityGroupInfo = function(cmId, userId, siteId) {
+        var promises = [];
+        promises.push(self.invalidateActivityAllowedGroups(cmId, userId, siteId));
+        promises.push(self.invalidateActivityGroupMode(cmId, siteId));
+        return $q.all(promises);
     };
 
     return self;
