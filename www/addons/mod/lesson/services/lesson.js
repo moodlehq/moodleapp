@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.mod_lesson')
 
-.constant('mmaModLessonPasswordStore', 'mod_lesson_password')
+.constant('mmaModLessonPasswordStore', 'mma_mod_lesson_password')
 
 .config(function($mmSitesFactoryProvider, mmaModLessonPasswordStore) {
     var stores = [
@@ -35,22 +35,28 @@ angular.module('mm.addons.mod_lesson')
  * @name $mmaModLesson
  */
 .factory('$mmaModLesson', function($log, $mmSitesManager, $q, $mmUtil, mmaModLessonPasswordStore, $mmLang, $mmaModLessonOffline,
-            $translate, $mmSite, mmCoreGradeTypeNone) {
+            $translate, $mmSite, mmCoreGradeTypeNone, mmaModLessonTypeQuestion, mmaModLessonTypeStructure, $mmText) {
 
     $log = $log.getInstance('$mmaModLesson');
 
     var self = {};
 
+    // This page.
+    self.LESSON_THISPAGE = 0;
+    // Next page -> any page not seen before.
+    self.LESSON_UNSEENPAGE = 1;
+    // Next page -> any page not answered correctly.
+    self.LESSON_UNANSWEREDPAGE = 2;
+    // Jump to Next Page.
+    self.LESSON_NEXTPAGE = -1;
     // End of Lesson.
     self.LESSON_EOL = -9;
     // Jump to an unseen page within a branch and end of branch or end of lesson.
     self.LESSON_UNSEENBRANCHPAGE = -50;
+    // Jump to a random page within a branch and end of branch or end of lesson.
+    self.LESSON_RANDOMPAGE = -60;
     // Cluster Jump.
     self.LESSON_CLUSTERJUMP = -80;
-
-    // Constants used to identify the type of pages and questions.
-    self.TYPE_QUESTION = 0;
-    self.TYPE_STRUCTURE = 1;
 
     self.LESSON_PAGE_SHORTANSWER =  1;
     self.LESSON_PAGE_TRUEFALSE =    2;
@@ -64,16 +70,30 @@ angular.module('mm.addons.mod_lesson')
     self.LESSON_PAGE_ENDOFCLUSTER = 31;
 
     /**
+     * Add a message to a list of messages, following the format of the messages returned by WS.
+     *
+     * @param {String[]} messages     List of messages where to add the message.
+     * @param {String} stringName     The ID of the message to be translated. E.g. 'mma.mod_lesson.numberofpagesviewednotice'.
+     * @param {Object} [stringParams] The params of the message (if any).
+     */
+    function addMessage(messages, stringName, stringParams) {
+        messages.push({
+            message: $translate.instant(stringName, stringParams)
+        });
+    }
+
+    /**
      * Calculate some offline data like progress and ongoingscore.
      *
-     * @param  {Object} lesson     Lesson.
-     * @param  {Object} accessInfo Result of get access info.
-     * @param  {String} [password] Lesson password (if any).
-     * @param  {Boolean} [review]  If the user wants to review just after finishing (1 hour margin).
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved with the calculated data.
+     * @param  {Object} lesson      Lesson.
+     * @param  {Object} accessInfo  Result of get access info.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} [pageIndex] Object containing all the pages indexed by ID. If not defined, it will be calculated.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the calculated data.
      */
-    function calculateOfflineData(lesson, accessInfo, password, review, siteId) {
+    function calculateOfflineData(lesson, accessInfo, password, review, pageIndex, siteId) {
         accessInfo = accessInfo || {};
 
         var reviewMode = review || accessInfo.reviewmode,
@@ -83,10 +103,13 @@ angular.module('mm.addons.mod_lesson')
 
         if (!accessInfo.canmanage) {
             if (lesson.ongoing && !reviewMode) {
-                ongoingMessage = self.getOngoingScoreMessage(lesson, accessInfo, review);
+                promises.push(self.getOngoingScoreMessage(lesson, accessInfo, password, review, pageIndex, siteId)
+                        .then(function(message) {
+                    ongoingMessage = message;
+                }));
             }
             if (lesson.progressbar) {
-                promises.push(self.calculateProgress(lesson.id, accessInfo, password, review, false, siteId).then(function(p) {
+                promises.push(self.calculateProgress(lesson.id, accessInfo, password, review, pageIndex, siteId).then(function(p) {
                     progress = p;
                 }));
             }
@@ -108,15 +131,15 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#calculateProgress
-     * @param  {Number} lessonId   Lesson ID.
-     * @param  {Object} accessInfo Result of get access info.
-     * @param  {String} [password] Lesson password (if any).
-     * @param  {Boolean} [review]  If the user wants to review just after finishing (1 hour margin).
-     * @param  {Object[]} [pages]  Result of getPages. If not defined, it will be calculated.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved with a number: the progress (scale 0-100).
+     * @param  {Number} lessonId    Lesson ID.
+     * @param  {Object} accessInfo  Result of get access info.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} [pageIndex] Object containing all the pages indexed by ID. If not defined, it will be calculated.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with a number: the progress (scale 0-100).
      */
-    self.calculateProgress = function(lessonId, accessInfo, password, review, pages, siteId) {
+    self.calculateProgress = function(lessonId, accessInfo, password, review, pageIndex, siteId) {
         siteId = siteId || $mmSite.getId();
 
         // Check if the user is reviewing the attempt.
@@ -124,19 +147,31 @@ angular.module('mm.addons.mod_lesson')
             return 100;
         }
 
-        var promise = pages ? $q.when(pages) : self.getPages(lessonId, password, true, false, siteId),
-            pageIndex;
+        var promise,
+            ntries = accessInfo.attemptscount,
+            viewedPagesIds = [];
 
-        return promise.then(function(pages) {
-            pageIndex = createPagesIndex(pages);
+        if (pageIndex) {
+            promise = $q.when();
+        } else {
+            promise = self.getPages(lessonId, password, true, false, siteId).then(function(pages) {
+                pageIndex = createPagesIndex(pages);
+            });
+        }
 
-            // @todo Question pages.
+        return promise.then(function() {
+            // Get the list of question pages answered.
+            return self.getPagesIdsWithQuestionAttempts(lessonId, ntries, false, siteId);
+        }).then(function(ids) {
+            viewedPagesIds = ids;
 
             // Get the list of viewed content pages.
-            return self.getContentPagesViewedIds(lessonId, accessInfo.attemptscount, siteId);
-        }).then(function(viewedPagesIds) {
+            return self.getContentPagesViewedIds(lessonId, ntries, siteId);
+        }).then(function(viewedContentPagesIds) {
             var pageId = accessInfo.firstpageid,
                 validPages = {};
+
+            viewedPagesIds = $mmUtil.mergeArraysWithoutDuplicates(viewedPagesIds, viewedContentPagesIds);
 
             // Filter out the following pages:
             // - End of Cluster
@@ -152,6 +187,558 @@ angular.module('mm.addons.mod_lesson')
             return $mmUtil.roundToDecimals(viewedPagesIds.length / Object.keys(validPages).length, 2) * 100;
         });
     };
+
+    /**
+     * Check if an answer is correct or not and return the result object.
+     * This method is based on the check_answer implementation of all page types (Moodle).
+     *
+     * @param  {Object} lesson    Lesson.
+     * @param  {Object} pageData  Result of getPageData for the page to process.
+     * @param  {Object} data      Data containing the user answer.
+     * @param  {Object} jumps     Result of get pages possible jumps.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID.
+     * @return {Object}           Result.
+     */
+    function checkAnswer(lesson, pageData, data, jumps, pageIndex) {
+        // Default result.
+        var result = {
+            answerid: 0,
+            noanswer: false,
+            correctanswer: false,
+            isessayquestion: false,
+            response: '',
+            newpageid: 0,
+            studentanswer: '',
+            userresponse: null,
+            feedback: '',
+            nodefaultresponse: false,
+            inmediatejump: false
+        };
+
+        switch (pageData.page.qtype) {
+            case self.LESSON_PAGE_BRANCHTABLE:
+                // Load the new page immediately.
+                result.inmediatejump = true;
+                result.newpageid = getNewPageId(pageData.page.id, data.jumpto, jumps);
+                break;
+
+            case self.LESSON_PAGE_ESSAY:
+                checkAnswerEssay(pageData, data, result);
+                break;
+
+            case self.LESSON_PAGE_MATCHING:
+                checkAnswerMatching(pageData, data, result);
+                break;
+
+            case self.LESSON_PAGE_MULTICHOICE:
+                checkAnswerMultichoice(lesson, pageData, data, pageIndex, result);
+                break;
+
+            case self.LESSON_PAGE_NUMERICAL:
+                checkAnswerNumerical(lesson, pageData, data, pageIndex, result);
+                break;
+
+            case self.LESSON_PAGE_SHORTANSWER:
+                checkAnswerShort(lesson, pageData, data, pageIndex, result);
+                break;
+
+            case self.LESSON_PAGE_TRUEFALSE:
+                checkAnswerTruefalse(lesson, pageData, data, pageIndex, result);
+                break;
+        }
+
+
+        return result;
+    }
+
+    /**
+     * Check an essay answer.
+     *
+     * @param  {Object} pageData Result of getPageData for the page to process.
+     * @param  {Object} data     Data containing the user answer.
+     * @param  {Object} result   Object where to store the result.
+     * @return {Void}
+     */
+    function checkAnswerEssay(pageData, data, result) {
+        var studentAnswer;
+
+        result.isessayquestion = true;
+
+        if (!data) {
+            result.inmediatejump = true;
+            result.newpageid = pageData.page.id;
+            return result;
+        }
+
+        if (angular.isObject(data.answer)) {
+            studentAnswer = data.answer.text;
+        } else {
+            studentAnswer = data.answer;
+        }
+
+        if (!studentAnswer || studentAnswer.trim() === '') {
+            result.noanswer = true;
+            return;
+        }
+
+        // Essays should only have 1 answer.
+        angular.forEach(pageData.answers, function(answer) {
+            result.answerid = answer.id;
+            result.newpageid = answer.jumpto;
+        });
+
+        var userResponse = {
+            sent: 0,
+            graded: 0,
+            score: 0,
+            answer: studentAnswer,
+            answerformat: 1,
+            response: '',
+            responseformat: 1
+        };
+        result.userresponse = userResponse;
+        result.studentanswerformat = 1;
+        result.studentanswer = studentAnswer;
+    }
+
+    /**
+     * Check a matching answer.
+     *
+     * @param  {Object} pageData  Result of getPageData for the page to process.
+     * @param  {Object} data      Data containing the user answer.
+     * @param  {Object} result    Object where to store the result.
+     * @return {Void}
+     */
+    function checkAnswerMatching(pageData, data, result) {
+        if (!data) {
+            result.inmediatejump = true;
+            result.newpageid = pageData.page.id;
+            return;
+        }
+
+        var response = getResponse(),
+            getAnswers = angular.copy(pageData.answers),
+            correct = getAnswers.shift(),
+            wrong = getAnswers.shift(),
+            answers = {};
+
+        angular.forEach(getAnswers, function(answer) {
+            if (answer.answer !== '' || answer.response !== '') {
+                answers[answer.id] = answer;
+            }
+        });
+
+        // Get the user's exact responses for record keeping.
+        var hits = 0,
+            userResponse = [];
+        result.studentanswer = '';
+        result.studentanswerformat = 1;
+
+        for (var id in response) {
+            var value = response[id];
+            if (!value) {
+                result.noanswer = true;
+                return;
+            }
+
+            value = $mmText.decodeHTML(value);
+            userResponse.push(value);
+            if (typeof answers[id] != 'undefined') {
+                var answer = answers[id];
+                result.studentanswer += '<br />' + answer.answer + ' = ' + value;
+                if (answer.response && answer.response.trim() == value.trim()) {
+                    hits++;
+                }
+            }
+        }
+
+        result.userresponse = userResponse.join(',');
+
+        if (hits == Object.keys(answers).length) {
+            result.correctanswer = true;
+            result.response = correct.answer;
+            result.answerid = correct.id;
+            result.newpageid = correct.jumpto;
+        } else {
+            result.correctanswer = false;
+            result.response = wrong.answer;
+            result.answerid = wrong.id;
+            result.newpageid = wrong.jumpto;
+        }
+
+        // Get the user's response.
+        function getResponse() {
+            if (data.response) {
+                // The data is already stored as expected. Return it.
+                return data.response;
+            }
+
+            // Data is stored in properties like 'response[379]'. Recreate the response object.
+            var response = {};
+            for (var key in data) {
+                var match = key.match(/^response\[(\d+)\]/);
+                if (match && match.length > 1) {
+                    response[match[1]] = data[key];
+                }
+            }
+            return response;
+        }
+    }
+
+    /**
+     * Check a multichoice answer.
+     *
+     * @param  {Object} lesson    Lesson.
+     * @param  {Object} pageData  Result of getPageData for the page to process.
+     * @param  {Object} data      Data containing the user answer.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID.
+     * @param  {Object} result    Object where to store the result.
+     * @return {Void}
+     */
+    function checkAnswerMultichoice(lesson, pageData, data, pageIndex, result) {
+        if (!data) {
+            result.inmediatejump = true;
+            result.newpageid = pageData.page.id;
+            return;
+        }
+
+        var answers = getUsedAnswers();
+
+        if (pageData.page.qoption) {
+            // Multianswer allowed, user's answer is an array.
+            var studentAnswers = getUserAnswersMulti();
+
+            if (!studentAnswers || !angular.isArray(studentAnswers)) {
+                result.noanswer = true;
+                return;
+            }
+
+            // Get what the user answered.
+            result.userresponse = studentAnswers.join(',');
+
+            // Get the answers in a set order, the id order.
+            var ncorrect = 0,
+                nhits = 0,
+                responses = [],
+                correctAnswerId = 0,
+                wrongAnswerId = 0,
+                correctPageId,
+                wrongPageId;
+
+            // Store student's answers for displaying on feedback page.
+            result.studentanswer = '';
+            result.studentanswerformat = 1;
+            angular.forEach(answers, function(answer) {
+                for (var i in studentAnswers) {
+                    var answerId = studentAnswers[i];
+                    if (answerId == answer.id) {
+                        result.studentanswer += '<br />' + answer.answer;
+                        if ($mmText.cleanTags(answer.response).trim()) {
+                            responses.push(answer.response);
+                        }
+                        break;
+                    }
+                }
+            });
+
+            // Iterate over all the possible answers.
+            angular.forEach(answers, function(answer) {
+                var correctAnswer = isAnswerCorrect(lesson, pageData.page.id, answer, pageIndex);
+
+                // Iterate over all the student answers to check if he selected the current possible answer.
+                angular.forEach(studentAnswers, function(answerId) {
+                    if (answerId == answer.id) {
+                        if (correctAnswer) {
+                            nhits++;
+                        } else {
+                            // Always use the first student wrong answer.
+                            if (typeof wrongPageId == 'undefined') {
+                                wrongPageId = answer.jumpto;
+                            }
+                            // Save the answer id for scoring.
+                            if (!wrongAnswerId) {
+                                wrongAnswerId = answer.id;
+                            }
+                        }
+                    }
+                });
+
+                if (correctAnswer) {
+                    ncorrect++;
+
+                    // Save the first jumpto.
+                    if (typeof correctPageId == 'undefined') {
+                        correctPageId = answer.jumpto;
+                    }
+                    // Save the answer id for scoring.
+                    if (!correctAnswerId) {
+                        correctAnswerId = answer.id;
+                    }
+                }
+            });
+
+            if (studentAnswers.length == ncorrect && nhits == ncorrect) {
+                result.correctanswer = true;
+                result.response = responses.join('<br />');
+                result.newpageid = correctPageId;
+                result.answerid = correctAnswerId;
+            } else {
+                result.correctanswer = false;
+                result.response = responses.join('<br />');
+                result.newpageid = wrongPageId;
+                result.answerid = wrongAnswerId;
+            }
+        } else {
+            // Only one answer allowed.
+            if (typeof data.answerid == 'undefined' || (!data.answerid && !angular.isNumber(data.answerid))) {
+                result.noanswer = true;
+                return;
+            }
+
+            result.answerid = data.answerid;
+
+            // Search the answer.
+            for (var i in pageData.answers) {
+                var answer = pageData.answers[i];
+                if (answer.id == data.answerid) {
+                    result.correctanswer = isAnswerCorrect(lesson, pageData.page.id, answer, pageIndex);
+                    result.newpageid = answer.jumpto;
+                    result.response = answer.response;
+                    result.userresponse = result.studentanswer = answer.answer;
+                    break;
+                }
+            }
+        }
+
+        // Get the list of used answers (with valid answer).
+        function getUsedAnswers() {
+            var answers = angular.copy(pageData.answers);
+            return answers.filter(function(entry) {
+                return entry.answer !== '';
+            });
+        }
+
+        // Get the user's answer if multiple answers are allowed.
+        function getUserAnswersMulti() {
+            if (data.answer) {
+                // The data is already stored as expected. If it's valid, parse the values to int.
+                if (angular.isArray(data.answer)) {
+                    return data.answer.map(function(value) {
+                        return parseInt(value, 10);
+                    });
+                }
+                return data.answer;
+            }
+
+            // Data is stored in properties like 'answer[379]'. Recreate the answer array.
+            var answer = [];
+            for (var key in data) {
+                var match = key.match(/^answer\[(\d+)\]/);
+                if (match && match.length > 1) {
+                    answer.push(parseInt(match[1], 10));
+                }
+            }
+            return answer;
+        }
+    }
+
+    /**
+     * Check a numerical answer.
+     *
+     * @param  {Object} lesson    Lesson.
+     * @param  {Object} pageData  Result of getPageData for the page to process.
+     * @param  {Object} data      Data containing the user answer.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID.
+     * @param  {Object} result    Object where to store the result.
+     * @return {Void}
+     */
+    function checkAnswerNumerical(lesson, pageData, data, pageIndex, result) {
+        var parsedAnswer = parseFloat(data.answer);
+
+        // Set defaults.
+        result.response = '';
+        result.newpageid = 0;
+
+        if (!data.answer || isNaN(parsedAnswer)) {
+            result.noanswer = true;
+            return;
+        } else {
+            result.useranswer = parsedAnswer;
+        }
+
+        result.studentanswer = result.userresponse = result.useranswer;
+
+        // Find the answer.
+        for (var i in pageData.answers) {
+            var answer = pageData.answers[i],
+                max, min;
+
+            if (answer.answer && answer.answer.indexOf(':') != -1) {
+                // There's a pair of values.
+                var split = answer.answer.split(':');
+                min = parseFloat(split[0]);
+                max = parseFloat(split[1]);
+            } else {
+                // Only one value.
+                min = parseFloat(answer.answer);
+                max = min;
+            }
+
+            if (result.useranswer >= min && result.useranswer <= max) {
+                result.newpageid = answer.jumpto;
+                result.response = answer.response;
+                result.correctanswer = isAnswerCorrect(lesson, pageData.page.id, answer, pageIndex);
+                result.answerid = answer.id;
+                break;
+            }
+        }
+    }
+
+    /**
+     * Check a short answer.
+     *
+     * @param  {Object} lesson    Lesson.
+     * @param  {Object} pageData  Result of getPageData for the page to process.
+     * @param  {Object} data      Data containing the user answer.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID.
+     * @param  {Object} result    Object where to store the result.
+     * @return {Void}
+     */
+    function checkAnswerShort(lesson, pageData, data, pageIndex, result) {
+        var studentAnswer = data.answer && data.answer.trim ? data.answer.trim() : false;
+        if (!studentAnswer) {
+            result.noanswer = true;
+            return;
+        }
+
+        // Search the answer in the list of possible answers.
+        for (var i in pageData.answers) {
+            var answer = pageData.answers[i],
+                expectedAnswer = answer.answer, // @todo Applying PARAM_TEXT as it is applied to the answer submitted by the user.
+                isMatch = false,
+                markIt = false,
+                useRegExp = pageData.page.qoption,
+                ignoreCase;
+
+            if (useRegExp) {
+                ignoreCase = '';
+                if (expectedAnswer.substr(-2) == '/i') {
+                    expectedAnswer = expectedAnswer.substr(0, expectedAnswer.length - 2);
+                    ignoreCase = 'i';
+                }
+            } else {
+                expectedAnswer = expectedAnswer.replace('*', '#####');
+                expectedAnswer = $mmText.escapeForRegex(expectedAnswer);
+                expectedAnswer = expectedAnswer.replace('#####', '.*');
+            }
+
+            // See if user typed in any of the correct answers.
+            if (isAnswerCorrect(lesson, pageData.page.id, answer, pageIndex)) {
+                if (!useRegExp) { // We are using 'normal analysis', which ignores case.
+                    if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', 'i'))) {
+                        isMatch = true;
+                    }
+                } else {
+                    if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
+                        isMatch = true;
+                    }
+                }
+                if (isMatch) {
+                    result.correctanswer = true;
+                }
+            } else {
+               if (!useRegExp) { // We are using 'normal analysis'.
+                    // See if user typed in any of the wrong answers; don't worry about case.
+                    if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', 'i'))) {
+                        isMatch = true;
+                    }
+                } else { // We are using regular expressions analysis.
+                    var startCode = expectedAnswer.substr(0, 2);
+                    switch (startCode){
+                        // 1- Check for absence of required string in studentAnswer (coded by initial '--').
+                        case "--":
+                            expectedAnswer = expectedAnswer.substr(2);
+                            if (!studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
+                                isMatch = true;
+                            }
+                            break;
+
+                        // 2- Check for code for marking wrong strings (coded by initial '++').
+                        case "++":
+                            expectedAnswer = expectedAnswer.substr(2);
+                            markIt = true;
+                            // Check for one or several matches.
+                            var matches = studentAnswer.match(new RegExp(expectedAnswer, 'g' + ignoreCase));
+                            if (matches) {
+                                isMatch   = true;
+                                var nb = matches[0].length,
+                                    original = [],
+                                    marked = [];
+
+                                for (var j = 0; j < nb; j++) {
+                                    original.push(matches[0][j]);
+                                    marked.push('<span class="incorrect matches">' + matches[0][j] + '</span>');
+                                }
+
+                                studentAnswer = studentAnswer.replace(original, marked);
+                            }
+                            break;
+
+                        // 3- Check for wrong answers belonging neither to -- nor to ++ categories.
+                        default:
+                            if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
+                                isMatch = true;
+                            }
+                            break;
+                    }
+
+                    result.correctanswer = false;
+                }
+            }
+
+            if (isMatch) {
+                result.newpageid = answer.jumpto;
+                result.response = answer.response;
+                result.answerid = answer.id;
+                break; // Quit answer analysis immediately after a match has been found.
+            }
+        }
+
+        result.userresponse = studentAnswer;
+        result.studentanswer = $mmText.s(studentAnswer); // Clean student answer as it goes to output.
+    }
+
+    /**
+     * Check a truefalse answer.
+     *
+     * @param  {Object} lesson    Lesson.
+     * @param  {Object} pageData  Result of getPageData for the page to process.
+     * @param  {Object} data      Data containing the user answer.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID.
+     * @param  {Object} result    Object where to store the result.
+     * @return {Void}
+     */
+    function checkAnswerTruefalse(lesson, pageData, data, pageIndex, result) {
+        if (!data.answerid) {
+            result.noanswer = true;
+            return;
+        }
+
+        result.answerid = data.answerid;
+
+        // Get the answer.
+        for (var i in pageData.answers) {
+            var answer = pageData.answers[i];
+            if (answer.id == data.answerid) {
+                // Answer found.
+                result.correctanswer = isAnswerCorrect(lesson, pageData.page.id, answer, pageIndex);
+                result.newpageid = answer.jumpto;
+                result.response  = answer.response;
+                result.studentanswer = result.userresponse = answer.answer;
+                break;
+            }
+        }
+    }
 
     /**
      * Create a list of pages indexed by page ID based on a list of pages.
@@ -188,16 +775,22 @@ angular.module('mm.addons.mod_lesson')
         if (offline) {
             var attempt = accessInfo.attemptscount;
             return $mmaModLessonOffline.finishAttempt(lesson.id, courseId, attempt, true, outOfTime, siteId).then(function() {
+                // Get the lesson grade.
+                return self.lessonGrade(lesson, accessInfo.attemptscount, password, review, undefined, siteId).catch(function() {
+                    // Ignore errors.
+                    return {};
+                });
+            }).then(function(gradeInfo) {
                 // Attempt marked, now return the response. We won't return all the possible data.
                 // This code is based in Moodle's process_eol_page.
-                var gradeInfo = self.lessonGrade(),
-                    gradeLesson = true,
+                var gradeLesson = true,
                     result = {
                         data: {},
                         messages: [],
                         warnings: []
                     },
                     messageParams,
+                    entryData,
                     promises = [];
 
                 addResultValue(result, 'offline', true); // Mark the result as offline.
@@ -217,7 +810,7 @@ angular.module('mm.addons.mod_lesson')
                             nquestions: gradeInfo.nquestions,
                             minquestions: lesson.minquestions
                         };
-                        messages.push($translate.instant('mma.mod_lesson.numberofpagesviewednotice'), {$a: data});
+                        addMessage(messages, 'mma.mod_lesson.numberofpagesviewednotice', {$a: data});
                     }
                 }
 
@@ -228,9 +821,40 @@ angular.module('mm.addons.mod_lesson')
                             addResultValue(result, 'progresscompleted', progress);
                         }));
 
-                        if (false) {
-                            // @todo Handle questions.
+                        if (gradeInfo.attempts) {
+                            // User has answered questions.
+                            if (!lesson.custom) {
+                                addResultValue(result, 'numberofpagesviewed', gradeInfo.nquestions, true);
+                                if (lesson.minquestions) {
+                                    if (gradeInfo.nquestions < lesson.minquestions) {
+                                        addResultValue(result, 'youshouldview', lesson.minquestions, true);
+                                    }
+                                }
+                                addResultValue(result, 'numberofcorrectanswers', gradeInfo.earned, true);
+                            }
+
+                            entryData = {
+                                score: gradeInfo.earned,
+                                grade: gradeInfo.total
+                            };
+                            if (gradeInfo.nmanual) {
+                                entryData.tempmaxgrade = gradeInfo.total - gradeInfo.manualpoints;
+                                entryData.essayquestions = gradeInfo.nmanual;
+                                addResultValue(result, 'displayscorewithessays', entryData, true);
+                            } else {
+                                addResultValue(result, 'displayscorewithoutessays', entryData, true);
+                            }
+
+                            if (lesson.grade != mmCoreGradeTypeNone) {
+                                entryData = {
+                                    grade: $mmUtil.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
+                                    total: lesson.grade
+                                };
+                                addResultValue(result, 'yourcurrentgradeisoutof', entryData, true);
+                            }
+
                         } else {
+                            // User hasn't answered any question, only content pages.
                             if (lesson.timelimit) {
                                 if (outOfTime) {
                                     addResultValue(result, 'eolstudentoutoftimenoanswers', true, true);
@@ -263,10 +887,16 @@ angular.module('mm.addons.mod_lesson')
 
         // Add a property to the offline result.
         function addResultValue(result, name, value, addMessage) {
+            var message = '';
+            if (addMessage) {
+                var params = typeof value != 'boolean' ? {$a: value} : undefined;
+                message = $translate.instant('mma.mod_lesson.' + name, params);
+            }
+
             result.data[name] = {
                 name: name,
                 value: value,
-                message: addMessage ? $translate.instant('mma.mod_lesson.' + name) : ''
+                message: message
             };
         }
     };
@@ -315,6 +945,25 @@ angular.module('mm.addons.mod_lesson')
             });
         });
     };
+
+    /**
+     * Given a page ID, a jumpto and all the possible jumps, calcualate the new page ID.
+     *
+     * @param  {Number} pageId Current page ID.
+     * @param  {Number} jumpTo The jumpto.
+     * @param  {Object} jumps  Result of get pages possible jumps.
+     * @return {Number}        New page ID.
+     */
+    function getNewPageId(pageId, jumpTo, jumps) {
+        // If jump not found, return current jumpTo.
+        if (jumps && jumps[pageId] && jumps[pageId][jumpTo]) {
+            return jumps[pageId][jumpTo].calculatedjump;
+        } else if (!jumpTo) {
+            // Return current page.
+            return pageId;
+        }
+        return jumpTo;
+    }
 
     /**
      * Get cache key for access information WS calls.
@@ -371,7 +1020,7 @@ angular.module('mm.addons.mod_lesson')
      */
     self.getContentPagesViewed = function(lessonId, attempt, siteId) {
         var promises = [],
-            type = self.TYPE_STRUCTURE,
+            type = mmaModLessonTypeStructure,
             result = {
                 online: [],
                 offline: []
@@ -526,21 +1175,32 @@ angular.module('mm.addons.mod_lesson')
      * @return {Promise}         Promise resolved with the last page seen.
      */
     self.getLastPageSeen = function(lessonId, attempt, siteId) {
+        siteId = siteId || $mmSite.getId();
+
         var lastPageSeen = false;
 
-        // @todo Check question answers.
-
-        return self.getLastContentPageViewed(lessonId, attempt, siteId).then(function(page) {
-            if (page) {
-                if (false) {
-                    // @todo Check if the page was seen after the last question answer.
-                } else {
-                    // Has not answered any questions but has viewed a branch table.
-                    lastPageSeen = page.newpageid || page.pageid;
-                }
+        // Get the last question answered.
+        return $mmaModLessonOffline.getLastQuestionPageAnswer(lessonId, attempt, siteId).then(function(answer) {
+            if (answer) {
+                lastPageSeen = answer.newpageid;
             }
 
-            return lastPageSeen;
+            // Now get the last content page viewed.
+            return self.getLastContentPageViewed(lessonId, attempt, siteId).then(function(page) {
+                if (page) {
+                    if (answer) {
+                        if (page.timemodified > answer.timemodified) {
+                            // This branch table was viewed more recently than the question page.
+                            lastPageSeen = page.newpageid || page.pageid;
+                        }
+                    } else {
+                        // Has not answered any questions but has viewed a branch table.
+                        lastPageSeen = page.newpageid || page.pageid;
+                    }
+                }
+
+                return lastPageSeen;
+            });
         });
     };
 
@@ -698,36 +1358,84 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#getOngoingScoreMessage
-     * @param  {Object} lesson     Lesson.
-     * @param  {Object} accessInfo Result of get access info.
-     * @param  {Boolean} [review]  If the user wants to review just after finishing (1 hour margin).
-     * @return {String}            Ongoing score message.
+     * @param  {Object} lesson      Lesson.
+     * @param  {Object} accessInfo  Result of get access info.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} [pageIndex] Object containing all the pages indexed by ID. If not provided, it will be calculated.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the ongoing score message.
      */
-    self.getOngoingScoreMessage = function(lesson, accessInfo, review) {
+    self.getOngoingScoreMessage = function(lesson, accessInfo, password, review, pageIndex, siteId) {
         if (accessInfo.canmanage) {
-            return $translate.instant('mma.mod_lesson.teacherongoingwarning');
+            return $q.when($translate.instant('mma.mod_lesson.teacherongoingwarning'));
         } else {
             var ntries = accessInfo.attemptscount;
             if (review) {
                 ntries--;
             }
 
-            var gradeInfo = self.lessonGrade(),
-                data = {};
+            return self.lessonGrade(lesson, ntries, password, review, pageIndex, siteId).then(function(gradeInfo) {
+                var data = {};
 
-            if (lesson.custom) {
-                data.score = gradeInfo.earned;
-                data.currenthigh = gradeInfo.total;
-                return $translate.instant('mma.mod_lesson.ongoingcustom', {$a: data});
-            } else {
-                data.correct = gradeInfo.earned;
-                data.viewed = gradeInfo.attempts;
-                return $translate.instant('mma.mod_lesson.ongoingnormal', {$a: data});
-            }
+                if (lesson.custom) {
+                    data.score = gradeInfo.earned;
+                    data.currenthigh = gradeInfo.total;
+                    return $translate.instant('mma.mod_lesson.ongoingcustom', {$a: data});
+                } else {
+                    data.correct = gradeInfo.earned;
+                    data.viewed = gradeInfo.attempts;
+                    return $translate.instant('mma.mod_lesson.ongoingnormal', {$a: data});
+                }
+            });
         }
-
-        return '';
     };
+
+    /**
+     * Get the answers from a page.
+     *
+     * @param  {Object} lesson      Lesson.
+     * @param  {Number} pageId      Page ID the answer belongs to.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the list of answers.
+     */
+    function getPageAnswers(lesson, pageId, password, review, siteId) {
+        return self.getPageData(lesson, pageId, password, review, true, true, false, undefined, undefined, siteId)
+                .then(function(data) {
+            return data.answers;
+        });
+    }
+
+    /**
+     * Get all the answers from a list of pages, indexed by answerId.
+     *
+     * @param  {Object} lesson      Lesson.
+     * @param  {Number[]} pageIds   List of page IDs.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the list of answers.
+     */
+    function getPagesAnswers(lesson, pageIds, password, review, siteId) {
+        var answers = {},
+            promises = [];
+
+        angular.forEach(pageIds, function(pageId) {
+            promises.push(getPageAnswers(lesson, pageId, password, review, siteId).then(function(pageAnswers) {
+                angular.forEach(pageAnswers, function(answer) {
+                    // Include the pageid in each answer and add them to the final list.
+                    answer.pageid = pageId;
+                    answers[answer.id] = answer;
+                });
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return answers;
+        });
+    }
 
     /**
      * Get cache key for get page data WS calls.
@@ -768,13 +1476,14 @@ angular.module('mm.addons.mod_lesson')
      * @param  {String} [siteId]           Site ID. If not defined, current site.
      * @return {Promise}                   Promise resolved with the page data.
      */
-    self.getPageData = function(lesson, pageId, password, review, includeContents, forceCache, ignoreCache, accessInfo, jumps, siteId) {
+    self.getPageData = function(lesson, pageId, password, review, includeContents, forceCache, ignoreCache, accessInfo, jumps,
+                siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     lessonid: lesson.id,
-                    pageid: pageId,
+                    pageid: parseInt(pageId, 10),
                     review: review ? 1 : 0,
                     returncontents: includeContents ? 1 : 0
                 },
@@ -793,12 +1502,22 @@ angular.module('mm.addons.mod_lesson')
                 preSets.emergencyCache = 0;
             }
 
+            if (review) {
+                // Force online mode in review.
+                preSets.getFromCache = 0;
+                preSets.saveToCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
             return site.read('mod_lesson_get_page_data', params, preSets).then(function(data) {
-                if (forceCache && accessInfo) {
-                    // Offline mode. Calculate the data that might be affected.
-                    return calculateOfflineData(lesson, accessInfo, password, review, siteId).then(function(calculatedData) {
-                        data.messages = self.getPageViewMessages(lesson, accessInfo, data.page, review, jumps);
-                        return angular.extend(data, calculatedData);
+                if (forceCache && accessInfo && data.page) {
+                    // Offline mode and valid page. Calculate the data that might be affected.
+                    return calculateOfflineData(lesson, accessInfo, password, review, false, siteId).then(function(calculatedData) {
+                        angular.extend(data, calculatedData);
+                        return self.getPageViewMessages(lesson, accessInfo, data.page, review, jumps, password, siteId);
+                    }).then(function(messages) {
+                        data.messages = messages;
+                        return data;
                     });
                 }
 
@@ -938,20 +1657,48 @@ angular.module('mm.addons.mod_lesson')
                     cluster: $translate.instant('mma.mod_lesson.clusterjump'),
                     unseen: $translate.instant('mma.mod_lesson.unseenpageinbranch')
                 };
-                messages.push($translate.instant('mma.mod_lesson.teacherjumpwarning'), {$a: data});
+                addMessage(messages, 'mma.mod_lesson.teacherjumpwarning', {$a: data});
             }
 
             // Inform teacher that s/he will not see the timer.
             if (lesson.timelimit) {
-                messages.push($translate.instant('mma.mod_lesson.teachertimerwarning'));
+                addMessage(messages, 'mma.mod_lesson.teachertimerwarning');
             }
         }
         // Report attempts remaining.
         if (result.attemptsremaining > 0 && lesson.review && !review) {
-            messages.push($translate.instant('mma.mod_lesson.attemptsremaining'), {$a: result.attemptsremaining});
+            addMessage(messages, 'mma.mod_lesson.attemptsremaining', {$a: result.attemptsremaining});
         }
 
         return messages;
+    };
+
+    /**
+     * Get the IDs of all the pages that have at least 1 question attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getPagesIdsWithQuestionAttempts
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Boolean} correct True to only fetch correct attempts, false to get them all.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Number} [userId] User ID. If not defined, site's user.
+     * @return {Promise}         Promise resolved with the IDs.
+     */
+    self.getPagesIdsWithQuestionAttempts = function(lessonId, attempt, correct, siteId, userId) {
+        return self.getQuestionsAttempts(lessonId, attempt, correct, undefined, siteId, userId).then(function(result) {
+            var ids = {},
+                answers = result.online.concat(result.offline);
+
+            angular.forEach(answers, function(answer) {
+                if (!ids[answer.pageid]) {
+                    ids[answer.pageid] = true;
+                }
+            });
+
+            return Object.keys(ids);
+        });
     };
 
     /**
@@ -967,42 +1714,48 @@ angular.module('mm.addons.mod_lesson')
      * @param  {Object} page       Page loaded.
      * @param  {Boolean} review    If the user wants to review just after finishing (1 hour margin).
      * @param  {Object} jumps      Result of get pages possible jumps.
-     * @return {String[]}          Messages.
+     * @param  {String} [password] Lesson password (if any).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the list of messages.
      */
-    self.getPageViewMessages = function(lesson, accessInfo, page, review, jumps) {
+    self.getPageViewMessages = function(lesson, accessInfo, page, review, jumps, password, siteId) {
         var messages = [],
-            data;
+            data,
+            promise = $q.when();
 
         if (!accessInfo.canmanage) {
             if (page.qtype == self.LESSON_PAGE_BRANCHTABLE && lesson.minquestions) {
                 // Tell student how many questions they have seen, how many are required and their grade.
-                var ntries = accessInfo.attemptscount,
-                    gradeInfo = self.lessonGrade();
+                var ntries = accessInfo.attemptscount;
 
-                if (gradeInfo.attempts) {
-                    if (gradeInfo.nquestions < lesson.minquestions) {
-                        data = {
-                            nquestions: gradeInfo.nquestions,
-                            minquestions: lesson.minquestions
-                        };
-                        messages.push($translate.instant('mma.mod_lesson.numberofpagesviewednotice'), {$a: data});
-                    }
-
-                    if (!review && !lesson.retake) {
-                        messages.push($translate.instant('mma.mod_lesson.numberofcorrectanswers'), {$a: gradeInfo.earned});
-                        if (lesson.grade != mmCoreGradeTypeNone) {
+                promise = self.lessonGrade(lesson, ntries, password, review, undefined, siteId).then(function(gradeInfo) {
+                    if (gradeInfo.attempts) {
+                        if (gradeInfo.nquestions < lesson.minquestions) {
                             data = {
-                                grade: $mmUtil.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
-                                total: lesson.grade
+                                nquestions: gradeInfo.nquestions,
+                                minquestions: lesson.minquestions
                             };
-                            messages.push($translate.instant('mma.mod_lesson.yourcurrentgradeisoutof'), {$a: data});
+                            addMessage(messages, 'mma.mod_lesson.numberofpagesviewednotice', {$a: data});
+                        }
+
+                        if (!review && !lesson.retake) {
+                            addMessage(messages, 'mma.mod_lesson.numberofcorrectanswers', {$a: gradeInfo.earned});
+                            if (lesson.grade != mmCoreGradeTypeNone) {
+                                data = {
+                                    grade: $mmUtil.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
+                                    total: lesson.grade
+                                };
+                                addMessage(messages, 'mma.mod_lesson.yourcurrentgradeisoutof', {$a: data});
+                            }
                         }
                     }
-                }
+                }).catch(function() {
+                    // Ignore errors.
+                });
             }
         } else {
             if (lesson.timelimit) {
-                messages.push($translate.instant('mma.mod_lesson.teachertimerwarning'));
+                addMessage(messages, 'mma.mod_lesson.teachertimerwarning');
             }
 
             if (self.lessonDisplayTeacherWarning(jumps)) {
@@ -1012,11 +1765,130 @@ angular.module('mm.addons.mod_lesson')
                     cluster: $translate.instant('mma.mod_lesson.clusterjump'),
                     unseen: $translate.instant('mma.mod_lesson.unseenpageinbranch')
                 };
-                messages.push($translate.instant('mma.mod_lesson.teacherjumpwarning'), {$a: data});
+                addMessage(messages, 'mma.mod_lesson.teacherjumpwarning', {$a: data});
             }
         }
 
-        return messages;
+        return promise.then(function() {
+            return messages;
+        });
+    };
+
+    /**
+     * Get questions attempts, including offline attempts.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getQuestionsAttempts
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} attempt        Attempt number.
+     * @param  {Boolean} correct       True to only fetch correct attempts, false to get them all.
+     * @param  {Number} [pageId]       If defined, only get attempts on this page.
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @param  {Number} [userId]       User ID. If not defined, site's user.
+     * @return {Promise}               Promise resolved with the questions attempts.
+     */
+    self.getQuestionsAttempts = function(lessonId, attempt, correct, pageId, siteId, userId) {
+        var promises = [],
+            result = {
+                online: [],
+                offline: []
+            };
+
+        promises.push(self.getQuestionsAttemptsOnline(lessonId, attempt, correct, pageId, false, false, siteId, userId)
+                .then(function(attempts) {
+            result.online = attempts;
+        }));
+
+        promises.push($mmaModLessonOffline.getQuestionsAttempts(lessonId, attempt, correct, pageId, siteId).catch(function() {
+            // Error, assume no answers.
+            return [];
+        }).then(function(attempts) {
+            result.offline = attempts;
+        }));
+
+        return $q.all(promises).then(function() {
+            return result;
+        });
+    };
+
+    /**
+     * Get cache key for get questions attempts WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} userId   User ID.
+     * @return {String}          Cache key.
+     */
+    function getQuestionsAttemptsCacheKey(lessonId, attempt, userId) {
+        return getQuestionsAttemptsCommonCacheKey(lessonId) + ':' + userId + ':' + attempt;
+    }
+
+    /**
+     * Get common cache key for get questions attempts WS calls.
+     *
+     * @param {Number} lessonId Lesson ID.
+     * @return {String}         Cache key.
+     */
+    function getQuestionsAttemptsCommonCacheKey(lessonId) {
+        return 'mmaModLesson:questionsAttempts:' + lessonId;
+    }
+
+    /**
+     * Get questions attempts from the site.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getQuestionsAttemptsOnline
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} attempt        Attempt number.
+     * @param  {Boolean} correct       True to only fetch correct attempts, false to get them all.
+     * @param  {Number} [pageId]       If defined, only get attempts on this page.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @param  {Number} [userId]       User ID. If not defined, site's user.
+     * @return {Promise}               Promise resolved with the questions attempts.
+     */
+    self.getQuestionsAttemptsOnline = function(lessonId, attempt, correct, pageId, forceCache, ignoreCache, siteId, userId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            // Don't pass "pageId" and "correct" params, they will be filtered locally.
+            var params = {
+                    lessonid: lessonId,
+                    attempt: attempt,
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getQuestionsAttemptsCacheKey(lessonId, attempt, userId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_questions_attempts', params, preSets).then(function(response) {
+                if (pageId || correct) {
+                    // Filter the attempts.
+                    return response.attempts.filter(function(attempt) {
+                        var include = true;
+                        if (correct) {
+                            include = !!attempt.correct;
+                        }
+                        if (pageId && include) {
+                            include = attempt.pageid == pageId;
+                        }
+                        return include;
+                    });
+                }
+
+                return response.attempts;
+            });
+        });
     };
 
     /**
@@ -1126,6 +1998,45 @@ angular.module('mm.addons.mod_lesson')
                 return response.timers;
             });
         });
+    };
+
+    /**
+     * Check if a jump is correct.
+     * Based in Moodle's jumpto_is_correct.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#jumptoIsCorrect
+     * @param  {Number} pageId    ID of the page from which you are jumping from.
+     * @param  {Number} jumpTo    The jumpto number.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID. See createPagesIndex.
+     * @return {Boolean}          Whether jump is correct.
+     */
+    self.jumptoIsCorrect = function(pageId, jumpTo, pageIndex) {
+        // First test the special values.
+        if (!jumpTo) {
+            // Same page
+            return false;
+        } else if (jumpTo == self.LESSON_NEXTPAGE) {
+            return true;
+        } else if (jumpTo == self.LESSON_UNSEENBRANCHPAGE) {
+            return true;
+        } else if (jumpTo == self.LESSON_RANDOMPAGE) {
+            return true;
+        } else if (jumpTo == self.LESSON_CLUSTERJUMP) {
+            return true;
+        } else if (jumpTo == self.LESSON_EOL) {
+            return true;
+        }
+
+        var aPageId = pageIndex[pageId].nextpageid;
+        while (aPageId) {
+            if (jumpTo == aPageId) {
+                return true;
+            }
+            aPageId = pageIndex[aPageId].nextpageid;
+        }
+        return false;
     };
 
     /**
@@ -1275,6 +2186,41 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Invalidates questions attempts for all attempts.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateQuestionsAttempts
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateQuestionsAttempts = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getQuestionsAttemptsCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates question answers for a certain attempt and user.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateQuestionsAttemptsForAttempt
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {String} [siteId] Site ID. If not defined, current site..
+     * @param  {Number} [userId] User ID. If not defined, site's user.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateQuestionsAttemptsForAttempt = function(lessonId, attempt, siteId, userId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKey(getQuestionsAttemptsCacheKey(lessonId, attempt, userId));
+        });
+    };
+
+    /**
      * Invalidates timers for all users in a lesson.
      *
      * @module mm.addons.mod_lesson
@@ -1307,6 +2253,24 @@ angular.module('mm.addons.mod_lesson')
             return site.invalidateWsCacheForKey(getTimersCacheKey(lessonId, userId));
         });
     };
+
+    /**
+     * Check if an answer is correct.
+     *
+     * @param  {Object} lesson    Lesson.
+     * @param  {Number} pageId    The page ID.
+     * @param  {Object} answer    The answer to check.
+     * @param  {Object} pageIndex Object containing all the pages indexed by ID.
+     * @return {Boolean}          Whether the answer is correct.
+     */
+    function isAnswerCorrect(lesson, pageId, answer, pageIndex) {
+        if (lesson.custom) {
+            // Custom scores. If score on answer is positive, it is correct.
+            return answer.score > 0;
+        } else {
+            return self.jumptoIsCorrect(pageId, answer.jumpto, pageIndex);
+        }
+    }
 
     /**
      * Check if a lesson is enabled to be used in offline.
@@ -1369,7 +2333,7 @@ angular.module('mm.addons.mod_lesson')
      * @return {Boolean}     True if question page, false if content page.
      */
     self.isQuestionPage = function(type) {
-        return type == self.TYPE_QUESTION;
+        return type == mmaModLessonTypeQuestion;
     };
 
     /**
@@ -1445,39 +2409,144 @@ angular.module('mm.addons.mod_lesson')
 
     /**
      * Calculates a user's grade for a lesson.
+     * Based on Moodle's lesson_grade.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#lessonGrade
-     * @return {Object} Object with the grade data.
+     * @param  {Object} lesson      Lesson.
+     * @param  {Number} retry       Retry number.
+     * @param  {String} [password]  Lesson password (if any).
+     * @param  {Boolean} [review]   If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} [pageIndex] Object containing all the pages indexed by ID. If not provided, it will be calculated.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @param  {Number} [userId]    User ID. If not defined, site's user.
+     * @return {Promise}            Promise resolved with an object with the grade data.
      */
-    self.lessonGrade = function() {
+    self.lessonGrade = function(lesson, retry, password, review, pageIndex, siteId, userId) {
         // Initialize all variables.
-        var ncorrect     = 0,
-            nviewed      = 0,
-            score        = 0,
-            nmanual      = 0,
-            manualpoints = 0,
-            thegrade     = 0,
-            nquestions   = 0,
+        var nViewed      = 0,
+            nManual      = 0,
+            manualPoints = 0,
+            theGrade     = 0,
+            nQuestions   = 0,
             total        = 0,
             earned       = 0;
 
-        // @todo Handle questions.
+        // Get the questions attempts for the user.
+        return self.getQuestionsAttempts(lesson.id, retry, false, undefined, siteId, userId).then(function(attempts) {
+            attempts = attempts.online.concat(attempts.offline);
 
-        if (total) { // Not zero.
-            thegrade = $mmUtil.roundToDecimals(100 * earned / total, 5);
-        }
+            if (!attempts.length) {
+                // No attempts.
+                return;
+            }
 
-        return {
-            nquestions: nquestions,
-            attempts: nviewed,
-            total: total,
-            earned: earned,
-            grade: thegrade,
-            nmanual: nmanual,
-            manualpoints: manualpoints
-        };
+            var promise,
+                attemptSet = {};
+
+            // Create the pageIndex if it isn't provided.
+            if (!pageIndex) {
+                promise = self.getPages(lesson.id, password, true, false, siteId).then(function(pages) {
+                    pageIndex = createPagesIndex(pages);
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+
+                // Group each try with its page
+                angular.forEach(attempts, function(attempt) {
+                    if (!attemptSet[attempt.pageid]) {
+                        attemptSet[attempt.pageid] = [];
+                    }
+                    attemptSet[attempt.pageid].push(attempt);
+                });
+
+                // Drop all attempts that go beyond max attempts for the lesson
+                angular.forEach(attemptSet, function(set, pageId) {
+                    // Sort the list by time in ascending order.
+                    set = set.sort(function(a, b) {
+                        return (a.timeseen || a.timemodified) - (b.timeseen || b.timemodified);
+                    });
+                    attemptSet[pageId] = set.slice(0, lesson.maxattempts);
+                });
+
+                // Get all the answers from the pages the user answered.
+                return getPagesAnswers(lesson, Object.keys(attemptSet), password, review, siteId);
+            }).then(function(answers) {
+                // Number of pages answered.
+                nQuestions = Object.keys(attemptSet).length;
+
+                angular.forEach(attemptSet, function(attempts) {
+                    var lastAttempt = attempts[attempts.length - 1];
+                    if (lesson.custom) {
+                        // If essay question, handle it, otherwise add to score.
+                        if (pageIndex[lastAttempt.pageid].qtype == self.LESSON_PAGE_ESSAY) {
+                            if (lastAttempt.useranswer && typeof lastAttempt.useranswer.score != 'undefined') {
+                                earned += lastAttempt.useranswer.score;
+                            }
+                            nManual++;
+                            manualPoints += answers[lastAttempt.answerid].score;
+                        } else if (lastAttempt.answerid) {
+                            earned += answers[lastAttempt.answerid].score;
+                        }
+                    } else {
+                        angular.forEach(attempts, function(attempt) {
+                            earned += attempt.correct ? 1 : 0;
+                        });
+                        // If essay question, increase numbers.
+                        if (pageIndex[lastAttempt.pageid].qtype == self.LESSON_PAGE_ESSAY) {
+                            nManual++;
+                            manualPoints++;
+                        }
+                    }
+
+                    // Number of times answered.
+                    nViewed += attempts.length;
+                });
+
+                if (lesson.custom) {
+                    var bestScores = {};
+                    // Find the highest possible score per page to get our total.
+                    angular.forEach(answers, function(answer) {
+                        if (typeof bestScores[answer.pageid] == 'undefined') {
+                            bestScores[answer.pageid] = answer.score;
+                        } else if (bestScores[answer.pageid] < answer.score) {
+                            bestScores[answer.pageid] = answer.score;
+                        }
+                    });
+
+                    // Sum all the scores.
+                    angular.forEach(bestScores, function(score) {
+                        total += score;
+                    });
+                } else {
+                    // Check to make sure the student has answered the minimum questions.
+                    if (lesson.minquestions && nQuestions < lesson.minquestions) {
+                        // Nope, increase number viewed by the amount of unanswered questions.
+                        total = nViewed + (lesson.minquestions - nQuestions);
+                    } else {
+                        total = nViewed;
+                    }
+                }
+            });
+        }).then(function() {
+            if (total) { // Not zero.
+                theGrade = $mmUtil.roundToDecimals(100 * earned / total, 5);
+            }
+
+            return {
+                nquestions: nQuestions,
+                attempts: nViewed,
+                total: total,
+                earned: earned,
+                grade: theGrade,
+                nmanual: nManual,
+                manualpoints: manualPoints
+            };
+        });
     };
 
     /**
@@ -1532,36 +2601,34 @@ angular.module('mm.addons.mod_lesson')
         siteId = siteId || $mmSite.getId();
 
         var page = pageData.page,
-            pageId = page.id;
+            pageId = page.id,
+            result,
+            pageIndex;
 
         if (offline) {
-            // Calculate and store the new page id so it can be stored in offline.
-            var attempt = accessInfo.attemptscount,
-                newPageId = jumps[pageId] && jumps[pageId][data.jumpto] ? jumps[pageId][data.jumpto].calculatedjump : pageId;
+            // Get the list of pages of the lesson.
+            return self.getPages(lesson.id, password, true, false, siteId).then(function(pages) {
+                pageIndex = createPagesIndex(pages);
 
-            return $mmaModLessonOffline.processPage(lesson.id, courseId, attempt, page, data, newPageId, siteId).then(function() {
-                // Data stored, now it must return the data. Calculate some needed offline data.
-                return calculateOfflineData(lesson, accessInfo, password, review, siteId);
+                if (pageData.answers.length) {
+                    return recordAttempt(lesson, courseId, pageData, data, review, accessInfo, jumps, pageIndex, siteId);
+                } else {
+                    // The page has no answers so we will just progress to the next page (as set by newpageid).
+                   return {
+                        nodefaultresponse: true,
+                        newpageid: data.newpageid
+                    };
+                }
+            }).then(function(res) {
+                result = res;
+                result.newpageid = getNewPageId(pageData.page.id, result.newpageid, jumps);
+
+                // Calculate some needed offline data.
+                return calculateOfflineData(lesson, accessInfo, password, review, pageIndex, siteId);
             }).then(function(calculatedData) {
-                // @todo Handle question pages.
-                var result = {
-                    newpageid: newPageId,
-                    inmediatejump: true,
-                    answerid: 0,
-                    noanswer: false,
-                    correctanswer: false,
-                    isessayquestion: false,
-                    response: '',
-                    studentanswer: '',
-                    userresponse: null,
-                    feedback: '',
-                    nodefaultresponse: false,
-                    attemptsremaining: null,
-                    maxattemptsreached: false,
-                    displaymenu: pageData.displaymenu, // Keep the same value since we can't calculate it in offline.
-                    warnings: []
-                };
-
+                // Add some default data to match the WS response.
+                result.warnings = [];
+                result.displaymenu = pageData.displaymenu; // Keep the same value since we can't calculate it in offline.
                 result.messages = self.getPageProcessMessages(lesson, accessInfo, result, review, jumps);
                 angular.extend(result, calculatedData);
 
@@ -1602,6 +2669,167 @@ angular.module('mm.addons.mod_lesson')
             return site.write('mod_lesson_process_page', params);
         });
     };
+
+    /**
+     * Records an attempt on a certain page.
+     * Based on Moodle's record_attempt.
+     *
+     * @param  {Object} lesson     Lesson.
+     * @param  {Number} courseId   Course ID the lesson belongs to.
+     * @param  {Object} pageData   Result of getPageData for the page to process.
+     * @param  {Object} data       Data to save.
+     * @param  {Boolean} review    If the user wants to review just after finishing (1 hour margin).
+     * @param  {Object} accessInfo Result of get access info.
+     * @param  {Object} jumps      Result of get pages possible jumps.
+     * @param  {Object} pageIndex  Object containing all the pages indexed by ID.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the result.
+     */
+    function recordAttempt(lesson, courseId, pageData, data, review, accessInfo, jumps, pageIndex, siteId) {
+        // Check the answer. Each page type has its own implementation.
+        var result = checkAnswer(lesson, pageData, data, jumps, pageIndex),
+            nretakes = accessInfo.attemptscount;
+
+        // Processes inmediate jumps.
+        if (result.inmediatejump) {
+            if (pageData.page.qtype == self.LESSON_PAGE_BRANCHTABLE) {
+                // Store the content page data. In Moodle this is stored in a separate table, during checkAnswer.
+                return $mmaModLessonOffline.processPage(lesson.id, courseId, nretakes, pageData.page, data,
+                            result.newpageid, result.answerid, false, result.userresponse, siteId).then(function() {
+                    return result;
+                });
+            }
+            return $q.when(result);
+        }
+
+        var promise = $q.when(),
+            stop = false,
+            nattempts;
+
+        result.attemptsremaining  = 0;
+        result.maxattemptsreached = false;
+
+        if (result.noanswer) {
+            result.newpageid = pageData.page.id; // Display same page again.
+            result.feedback = $translate.instant('mma.mod_lesson.noanswer');
+        } else {
+            if (!accessInfo.canmanage) {
+                // Get the number of attempts that have been made on this question for this student and retake.
+                promise = self.getQuestionsAttempts(lesson.id, nretakes, false, pageData.page.id, siteId).then(function(attempts) {
+                    var subPromise;
+
+                    nattempts = attempts.online.length + attempts.offline.length;
+
+                    // Check if they have reached (or exceeded) the maximum number of attempts allowed.
+                    if (nattempts >= lesson.maxattempts) {
+                        result.maxattemptsreached = true;
+                        result.feedback = $translate.instant('mma.mod_lesson.maximumnumberofattemptsreached');
+                        result.newpageid = self.LESSON_NEXTPAGE;
+                        stop = true; // Set stop to true to prevent further calculations.
+                        return;
+                    }
+
+                    // Only insert a record if we are not reviewing the lesson.
+                    if (!review) {
+                        if (lesson.retake || (!lesson.retake && !nretakes)) {
+                            // Store the student's attempt and increase the number of attempts made.
+                            // Calculate and store the new page ID to prevent having to recalculate it later.
+                            var newPageId = getNewPageId(pageData.page.id, result.newpageid, jumps);
+                            subPromise = $mmaModLessonOffline.processPage(lesson.id, courseId, nretakes, pageData.page, data,
+                                        newPageId, result.answerid, result.correctanswer, result.userresponse, siteId);
+                            nattempts++;
+                        }
+                    }
+
+                    // "number of attempts remaining" message if lesson.maxattempts > 1
+                    // Displaying of message(s) is at the end of page for more ergonomic display.
+                    if (!result.correctanswer && !result.newpageid) {
+                        // Retreive the number of attempts left counter for displaying at bottom of feedback page
+                        if (nattempts >= lesson.maxattempts) {
+                            if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt
+                                result.maxattemptsreached = true;
+                            }
+                            result.newpageid =  self.LESSON_NEXTPAGE;
+                        } else if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt
+                            result.attemptsremaining = lesson.maxattempts - nattempts;
+                        }
+                    }
+
+                    return subPromise;
+                });
+            }
+
+            promise.then(function() {
+                if (stop) {
+                    return;
+                }
+
+                var subPromise;
+
+                // Determine default feedback if necessary.
+                if (!result.response) {
+                    if (!lesson.feedback && !result.noanswer &&
+                            !(lesson.review && !result.correctanswer && !result.isessayquestion)) {
+                        // These conditions have been met:
+                        //  1. The lesson manager has not supplied feedback to the student.
+                        //  2. Not displaying default feedback.
+                        //  3. The user did provide an answer.
+                        //  4. We are not reviewing with an incorrect answer (and not reviewing an essay question).
+
+                        result.nodefaultresponse = true;
+                    } else if (result.isessayquestion) {
+                        result.response = $translate.instant('mma.mod_lesson.defaultessayresponse');
+                    } else if (result.correctanswer) {
+                        result.response = $translate.instant('mma.mod_lesson.thatsthecorrectanswer');
+                    } else {
+                        result.response = $translate.instant('mma.mod_lesson.thatsthewronganswer');
+                    }
+                }
+
+                if (result.response) {
+                    if (lesson.review && !result.correctanswer && !result.isessayquestion) {
+                        // Calculate the number of question attempt in the page if it isn't calculated already.
+                        if (typeof nattempts == 'undefined') {
+                            subPromise = self.getQuestionsAttempts(lesson.id, nretakes, false, pageData.page.id, siteId)
+                                    .then(function(result) {
+                                nattempts = result.online.length + result.offline.length;
+                            });
+                        } else {
+                            subPromise = $q.when();
+                        }
+
+                        subPromise.then(function() {
+                            var messageId = nattempts == 1 ? 'firstwrong' : 'secondpluswrong';
+                            result.feedback = '<div class="box feedback">' +
+                                    $translate.instant('mma.mod_lesson.' + messageId) + '</div>';
+                        });
+                    } else {
+                        result.feedback = '';
+                        subPromise = $q.when();
+                    }
+
+                    var className = 'response';
+                    if (result.correctanswer) {
+                        className += ' correct';
+                    } else if (!result.isessayquestion) {
+                        className += ' incorrect';
+                    }
+
+                    return subPromise.then(function() {
+                        result.feedback += '<div class="box generalbox boxaligncenter">' + pageData.page.contents + '</div>';
+                        result.feedback += '<div class="correctanswer generalbox"><em>' +
+                                $translate.instant('mma.mod_lesson.youranswer') + '</em> : ' +
+                                (result.studentanswerformat ? result.studentanswer : $mmText.cleanTags(result.studentanswer)) +
+                                '<div class="box ' + className + '">' + result.response + '</div></div>';
+                    });
+                }
+            });
+        }
+
+        return promise.then(function() {
+            return result;
+        });
+    }
 
     /**
      * Remove a password stored in DB.

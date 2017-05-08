@@ -156,7 +156,7 @@ angular.module('mm.addons.mod_lesson')
 
                     if (!inputs || !inputs.length) {
                         // No checkbox found either. Stop.
-                        return false;
+                        return question;
                     }
                 }
 
@@ -190,7 +190,7 @@ angular.module('mm.addons.mod_lesson')
                 // Get the input.
                 var input = fieldContainer.querySelector('input[type="text"], input[type="number"]');
                 if (!input) {
-                    return false;
+                    return question;
                 }
 
                 question.input = {
@@ -218,7 +218,7 @@ angular.module('mm.addons.mod_lesson')
                     var answerEl = fieldContainer.querySelector('.reviewessay');
                     if (!answerEl) {
                         // Answer not found, stop.
-                        return false;
+                        return question;
                     }
                     question.useranswer = answerEl.innerHTML;
                 } else {

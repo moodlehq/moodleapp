@@ -14,8 +14,8 @@
 
 angular.module('mm.addons.mod_lesson')
 
-.constant('mmaModLessonAttemptsStore', 'mod_lesson_attempts')
-.constant('mmaModLessonAnswersStore', 'mod_lesson_answers')
+.constant('mmaModLessonAttemptsStore', 'mma_mod_lesson_attempts')
+.constant('mmaModLessonAnswersStore', 'mma_mod_lesson_answers')
 
 .config(function($mmSitesFactoryProvider, mmaModLessonAttemptsStore, mmaModLessonAnswersStore) {
     var stores = [
@@ -42,7 +42,7 @@ angular.module('mm.addons.mod_lesson')
         },
         {
             name: mmaModLessonAnswersStore,
-            keyPath: ['lessonid', 'attempt', 'pageid'],
+            keyPath: ['lessonid', 'attempt', 'pageid', 'timemodified'], // A user can answer several times per page and attempt.
             indexes: [
                 {
                     name: 'lessonid'
@@ -57,7 +57,7 @@ angular.module('mm.addons.mod_lesson')
                     name: 'pageid'
                 },
                 {
-                    name: 'type' // Type of the page: TYPE_QUESTION or TYPE_STRUCTURE.
+                    name: 'type' // Type of the page: mmaModLessonTypeQuestion or mmaModLessonTypeStructure.
                 },
                 {
                     name: 'timemodified'
@@ -73,6 +73,10 @@ angular.module('mm.addons.mod_lesson')
                 {
                     name: 'lessonAndAttemptAndType',
                     keyPath: ['lessonid', 'attempt', 'type']
+                },
+                {
+                    name: 'lessonAndAttemptAndPage',
+                    keyPath: ['lessonid', 'attempt', 'pageid']
                 }
             ]
         }
@@ -88,11 +92,30 @@ angular.module('mm.addons.mod_lesson')
  * @name $mmaModLessonOffline
  */
 .factory('$mmaModLessonOffline', function($log, $mmSitesManager, $mmUtil, $q, mmaModLessonAttemptsStore, mmaModLessonAnswersStore,
-            $mmSite) {
+            $mmSite, mmaModLessonTypeQuestion) {
 
     $log = $log.getInstance('$mmaModLessonOffline');
 
     var self = {};
+
+    /**
+     * Delete offline answer.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#deleteAnswer
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {Number} attempt      Attempt number.
+     * @param  {Number} pageId       Page ID.
+     * @param  {Number} timemodified The time modified of the answer.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved when done.
+     */
+    self.deleteAnswer = function(lessonId, attempt, pageId, timemodified, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId, timemodified]);
+        });
+    };
 
     /**
      * Delete offline attempt.
@@ -115,16 +138,25 @@ angular.module('mm.addons.mod_lesson')
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#deleteAttemptAnswerForPage
+     * @name $mmaModLessonOffline#deleteAttemptAnswersForPage
      * @param  {Number} lessonId Lesson ID.
      * @param  {Number} attempt  Attempt number.
      * @param  {Number} pageId   Page ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when done.
      */
-    self.deleteAttemptAnswerForPage = function(lessonId, attempt, pageId, siteId) {
+    self.deleteAttemptAnswersForPage = function(lessonId, attempt, pageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId]);
+            // Get the answers and delete them.
+            return self.getAttemptAnswersForPage(lessonId, attempt, pageId, siteId).then(function(answers) {
+                var promises = [];
+
+                angular.forEach(answers, function(answer) {
+                    promises.push(site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId, answer.timemodified]));
+                });
+
+                return $q.all(promises);
+            });
         });
     };
 
@@ -269,16 +301,16 @@ angular.module('mm.addons.mod_lesson')
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getAttemptAnswerForPage
+     * @name $mmaModLessonOffline#getAttemptAnswersForPage
      * @param  {Number} lessonId Lesson ID.
      * @param  {Number} attempt  Attempt number.
      * @param  {Number} pageId   Page ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with the attempt answers.
      */
-    self.getAttemptAnswerForPage = function(lessonId, attempt, pageId, siteId) {
+    self.getAttemptAnswersForPage = function(lessonId, attempt, pageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().get(mmaModLessonAnswersStore, [lessonId, attempt, pageId]);
+            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttemptAndPage', [lessonId, attempt, pageId]);
         });
     };
 
@@ -290,7 +322,7 @@ angular.module('mm.addons.mod_lesson')
      * @name $mmaModLessonOffline#getAttemptAnswersForType
      * @param  {Number} lessonId Lesson ID.
      * @param  {Number} attempt  Attempt number.
-     * @param  {Number} type     Type of the pages to get: TYPE_QUESTION or TYPE_STRUCTURE.
+     * @param  {Number} type     Type of the pages to get: mmaModLessonTypeQuestion or mmaModLessonTypeStructure.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with the attempt answers.
      */
@@ -328,6 +360,37 @@ angular.module('mm.addons.mod_lesson')
     }
 
     /**
+     * Retrieve the last offline answer stored in an attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getLastQuestionPageAnswer
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the attempt (undefined if no attempts).
+     */
+    self.getLastQuestionPageAnswer = function(lessonId, attempt, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return getAttemptWithFallback(lessonId, 0, attempt, siteId).then(function(attemptData) {
+            if (!attemptData.lastquestionpage) {
+                // No question page answered.
+                return;
+            }
+
+            return self.getAttemptAnswersForPage(lessonId, attempt, attemptData.lastquestionpage, siteId).then(function(answers) {
+                // Return the answer with highest timemodified.
+                return answers.reduce(function(a, b) {
+                    return a.timemodified > b.timemodified ? a : b;
+                });
+            });
+        }).catch(function() {
+            // Error, return undefined.
+        });
+    };
+
+    /**
      * Retrieve all offline answers for a lesson.
      *
      * @module mm.addons.mod_lesson
@@ -340,6 +403,39 @@ angular.module('mm.addons.mod_lesson')
     self.getLessonAnswers = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonid', lessonId);
+        });
+    };
+
+    /**
+     * Get questions attempts for a lesson and attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getQuestionsAttempts
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} attempt        Attempt number.
+     * @param  {Boolean} correct       True to only fetch correct attempts, false to get them all.
+     * @param  {Number} [pageId]       If defined, only get attempts on this page.
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the questions attempts.
+     */
+    self.getQuestionsAttempts = function(lessonId, attempt, correct, pageId, siteId) {
+        var promise;
+        if (pageId) {
+            // Page ID is set, only get the answers for that page.
+            promise = self.getAttemptAnswersForPage(lessonId, attempt, pageId, siteId);
+        } else {
+            // Page ID not specified, get all the question answers.
+            promise = self.getAttemptAnswersForType(lessonId, attempt, mmaModLessonTypeQuestion, siteId);
+        }
+
+        return promise.then(function(answers) {
+            if (correct) {
+                return answers.filter(function(answer) {
+                    return !!answer.correct;
+                });
+            }
+            return answers;
         });
     };
 
@@ -419,16 +515,21 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLessonOffline#processPage
-     * @param  {Number} lessonId   Lesson ID.
-     * @param  {Number} courseId   Course ID the lesson belongs to.
-     * @param  {Number} attempt    Attempt number.
-     * @param  {Object} page       Page.
-     * @param  {Object} data       Data to save.
-     * @param  {Number} newPageId  New page ID (calculated).
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved in success, rejected otherwise.
+     * @param  {Number} lessonId    Lesson ID.
+     * @param  {Number} courseId    Course ID the lesson belongs to.
+     * @param  {Number} attempt     Attempt number.
+     * @param  {Object} page        Page.
+     * @param  {Object} data        Data to save.
+     * @param  {Number} newPageId   New page ID (calculated).
+     * @param  {Number} [answerId]  The answer ID that the user answered.
+     * @param  {Boolean} [correct]  If answer is correct. Only for question pages.
+     * @param  {Mixed} [userAnswer] The user's answer (userresponse from checkAnswer).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved in success, rejected otherwise.
      */
-    self.processPage = function(lessonId, courseId, attempt, page, data, newPageId, siteId) {
+    self.processPage = function(lessonId, courseId, attempt, page, data, newPageId, answerId, correct, userAnswer, siteId) {
+        siteId = siteId || $mmSite.getId();
+
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var entry = {
                 lessonid: lessonId,
@@ -438,10 +539,45 @@ angular.module('mm.addons.mod_lesson')
                 data: data,
                 type: page.type,
                 newpageid: newPageId,
+                correct: !!correct,
+                answerid: parseInt(answerId, 10),
+                userAnswer: userAnswer,
                 timemodified: $mmUtil.timestamp()
             };
 
             return site.getDb().insert(mmaModLessonAnswersStore, entry);
+        }).then(function() {
+            if (page.type == mmaModLessonTypeQuestion) {
+                // It's a question page, set it as last question page answered.
+                return self.setLastQuestionPageAnswered(lessonId, courseId, attempt, page.id, siteId);
+            }
+        });
+    };
+
+    /**
+     * Set the last question page answered in an attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#setLastQuestionPageAnswered
+     * @param  {Number} lessonId  Lesson ID.
+     * @param  {Number} courseId  Course ID the lesson belongs to.
+     * @param  {Number} attempt   Attempt number.
+     * @param  {Number} lastPage  ID of the last question page answered.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved in success, rejected otherwise.
+     */
+    self.setLastQuestionPageAnswered = function(lessonId, courseId, attempt, lastPage, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        // Get current stored attempt.
+        return getAttemptWithFallback(lessonId, courseId, attempt, siteId).then(function(entry) {
+            return $mmSitesManager.getSite(siteId).then(function(site) {
+                entry.lastquestionpage = lastPage;
+                entry.timemodified = $mmUtil.timestamp();
+
+                return site.getDb().insert(mmaModLessonAttemptsStore, entry);
+            });
         });
     };
 

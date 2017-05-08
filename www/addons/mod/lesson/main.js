@@ -18,6 +18,10 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
 .constant('mmaModLessonAutomSyncedEvent', 'mma_mod_lesson_autom_synced')
 .constant('mmaModLessonSyncTime', 300000) // In milliseconds.
 
+// Constants used to identify the type of pages and questions.
+.constant('mmaModLessonTypeQuestion', 0)
+.constant('mmaModLessonTypeStructure', 1)
+
 .config(function($stateProvider) {
 
     $stateProvider
@@ -42,7 +46,9 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
         courseid: null,
         lessonid: null,
         pageid: null,
-        password: null
+        password: null,
+        review: false,
+        attempt: null // Only if review=true. To verify that the attempt can be reviewed.
       },
       views: {
         'site': {

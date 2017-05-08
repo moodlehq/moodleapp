@@ -406,14 +406,17 @@ angular.module('mm.addons.mod_lesson')
                     promises.push($mmFilepool.updatePackageDownloadTime(siteId, self.component, module.id).catch(function() {
                         // Ignore errors.
                     }));
-                    promises.push($mmaModLesson.getAccessInformation(lesson.id, false, true, siteId));
+                    promises.push($mmaModLesson.getAccessInformation(lesson.id, false, true, siteId).then(function(info) {
+                        accessInfo = info;
+                    }));
 
                     return $q.all(promises);
                 });
             }
         }).then(function() {
             var promises = [],
-                files;
+                files,
+                attempt = accessInfo.attemptscount;
 
             // Download intro files and media files.
             files = lesson.mediafiles || [];
@@ -467,7 +470,10 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, false, true, siteId));
 
             // Prefetch viewed pages in last attempt to calculate progress.
-            promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, accessInfo.attemptscount, false, true, siteId));
+            promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, attempt, false, true, siteId));
+
+            // Prefetch question attempts in last attempt for offline calculations.
+            promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, attempt, false, undefined, false, true, siteId));
 
             return $q.all(promises);
         }).then(function() {

@@ -93,6 +93,10 @@ angular.module('mm.core')
         if (!text) {
             return '';
         }
+        if (!text.replace) {
+            // Not a string, leave it as it is.
+            return text;
+        }
 
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig,"");
@@ -699,6 +703,26 @@ angular.module('mm.core')
             // Error, use the json text.
         }
         return json;
+    };
+
+    /**
+     * Add quotes to HTML characters.
+     *
+     * Returns text with HTML characters (like "<", ">", etc.) properly quoted.
+     * Based on Moodle's s() function.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#s
+     * @param  {String} text Text to treat.
+     * @return {String}      Treated text.
+     */
+    self.s = function(text) {
+        if (!text && text !== '') {
+            return '0';
+        }
+
+        return self.escapeHTML(text).replace(/&amp;#(\d+|x[0-9a-f]+);/i, '&#$1;');
     };
 
     return self;
