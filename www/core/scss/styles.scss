@@ -358,10 +358,10 @@ p.item-text-wrap {
   .mm-split-pane-menu {
     @include flex(0, 0, $menu-width);
     width: $menu-width;
-    border-right: 1px solid #ddd;
   }
   .mm-split-pane-content {
     display: block;
+    box-shadow: $menu-side-shadow;
   }
 }
 
@@ -572,11 +572,21 @@ mm-navigation-bar {
 
 .row-buttons {
   @include display-flex();
-  padding: $item-padding - ($button-block-margin / 2);
+  padding: 0;
+
+  &.item {
+    padding: $item-padding - ($button-block-margin / 2);
+  }
+  &.padding-top {
+    padding-top: $content-padding;
+  }
 
   .button.button-block {
     @include flex(1);
-    margin: ($button-block-margin / 2);
+    margin: ($button-block-margin/2) $button-block-margin ($button-block-margin/2) 0;
+    &:last-child {
+      margin-right: 0;
+    }
   }
 }
 
@@ -844,7 +854,7 @@ mm-timer {
   .icon {
     font-size: $mm-text-with-icon-height;
     padding: 0 5px;
-    color: $positive;
+    color: $mm-buttons-color;
   }
 }
 
@@ -1067,7 +1077,7 @@ input[type="radio"].mm-radio {
     border: 0;
   }
   .tabs-icon-round {
-    color: $positive;
+    color: $mm-buttons-color;
 
     .tab-item.activated {
       opacity: 0.7;
@@ -1079,7 +1089,7 @@ input[type="radio"].mm-radio {
       font-size: 22px;
       line-height: 32px;
       color: white;
-      background-color: $positive;
+      background-color: $mm-buttons-color;
       margin-bottom: 5px;
 
       &:before {
@@ -1439,4 +1449,8 @@ progress {
 
 .padding > .button.button-block:only-child {
   margin-bottom: 0;
+}
+
+h2.invert {
+  color: $white;
 }
