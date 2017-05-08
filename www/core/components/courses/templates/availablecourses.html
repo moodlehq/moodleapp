@@ -4,10 +4,11 @@
         </ion-refresher>
         <mm-loading hide-until="coursesLoaded">
             <div ng-if="courses.length > 0">
-                <mm-course-list-item ng-if="course.id != frontpageCourseId" ng-repeat="course in courses track by course.id" course="course"></mm-course-list-item>
+                <mm-course-list-item ng-repeat="course in courses track by course.id" course="course"></mm-course-list-item>
             </div>
-            <div ng-if="!courses.length" class="item">
-                {{ 'mm.courses.nocourses' | translate }}
+            <div ng-if="!courses.length" class="mm-empty-box block">
+                <i class="icon ion-ionic"></i>
+                <p>{{ 'mm.courses.nocourses' | translate }}</p>
             </div>
         </mm-loading>
     </ion-content>

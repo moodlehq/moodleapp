@@ -22,7 +22,8 @@
             </li>
         </ul>
 
-        <div ng-if="!hasContacts" class="padding">
+        <div ng-if="!hasContacts" class="mm-empty-box block">
+            <i class="icon ion-person-stalker"></i>
             <p ng-if="!contacts[searchType]">{{ 'mma.messages.contactlistempty' | translate}}</p>
             <p ng-if="contacts[searchType]">{{ 'mma.messages.nousersfound' | translate}}</p>
         </div>

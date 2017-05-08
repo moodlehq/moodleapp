@@ -51,8 +51,9 @@
                     </div>
                 </div>
 
-                <div ng-if="showNoEntries" class="mm-info-card">
-                    {{ 'mma.mod_glossary.noentriesfound' | translate }}
+                <div ng-if="showNoEntries" class="mm-empty-box block">
+                    <i class="icon ion-ios-list"></i>
+                    <p>{{ 'mma.mod_glossary.noentriesfound' | translate }}</p>
                 </div>
 
                 <ion-infinite-scroll ng-if="canLoadMore" immediate-check="false" on-infinite="loadMoreEntries()"></ion-infinite-scroll>

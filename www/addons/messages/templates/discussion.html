@@ -38,7 +38,8 @@
                     <div class="clearfix"></div>
                 </ion-list>
 
-                <div ng-if="!messages || messages.length <= 0">
+                <div ng-if="!messages || messages.length <= 0" class="mm-empty-box block">
+                    <i class="icon ion-chatboxes"></i>
                     <p>{{ 'mma.messages.nomessages' | translate}}</p>
                 </div>
             </section>

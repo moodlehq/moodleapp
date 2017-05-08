@@ -1,6 +1,15 @@
 
 .mma-forum-discussion-link {
     text-decoration: none;
+    &.mm-split-item-selected,
+    &.mm-split-item-selected>.item {
+        border-left: 0;
+        padding-left: 0;
+        article .item-heading {
+            border-top: 5px solid $mm-color;
+            margin-top: -1px;
+        }
+    }
 }
 
 .mma-forum-align-right {
