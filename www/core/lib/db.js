@@ -280,7 +280,11 @@ angular.module('mm.core')
             for (var x in keyPath) {
                 var val = value[keyPath[x]];
                 if (typeof val == "undefined" || val === null || (typeof val == "number" && isNaN(val))) {
-                    throw new Error("Value inserted does not have key " + keyPath[x] + " required on store " + storeName);
+                    var error = "Value inserted does not have key " + keyPath[x] + " required on store " + storeName;
+                    if (typeof sendErrorReport == 'function') {
+                        sendErrorReport(error);
+                    }
+                    throw new Error(error);
                 }
             }
         }
