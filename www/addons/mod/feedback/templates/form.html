@@ -78,7 +78,7 @@
                 <p ng-if="completionPageContents"><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ completionPageContents }}</mm-format-text></p>
             </div>
             <div class="item item-text-wrap row-buttons responsive-sm" ng-if="completed">
-                <button ng-if="access.canviewanalysis" class="button button-block icon-left ion-stats-bars" ng-click="openFeature('analysis')">
+                <button ng-if="access.canviewanalysis" class="button button-block icon-left ion-stats-bars" ng-click="showAnalysis()">
                     {{ 'mma.mod_feedback.completed_feedbacks' | translate }}
                 </button>
                 <button class="button button-block button-positive icon-right ion-chevron-right" ng-click="continue()">

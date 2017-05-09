@@ -73,11 +73,19 @@ angular.module('mm.addons.mod_feedback')
      * @param {Number}  group            Course module activity object.
      */
     self.openFeature = function(feature, module, courseId, group) {
-        var pageName = feature ? 'site.mod_feedback-' + feature : 'site.mod_feedback',
+        var pageName = feature && feature != "analysis" ? 'site.mod_feedback-' + feature : 'site.mod_feedback';
             backTimes = 0;
 
+        var stateParams = {
+            module: module,
+            moduleid: module.id,
+            courseid: courseId,
+            feedbackid: module.instance,
+            group: group || 0
+        };
         // Only check history if navigating through tabs.
-        if (!feature || feature == "analysis") {
+        if (pageName == 'site.mod_feedback') {
+            stateParams.tab = feature == "analysis" ? 'analysis' : 'overview';
             backTimes = getHistoryBackCounter(pageName, module.instance);
         }
 
@@ -86,13 +94,6 @@ angular.module('mm.addons.mod_feedback')
             $ionicHistory.goBack(backTimes);
         } else {
             // Not found, open new state.
-            var stateParams = {
-                module: module,
-                moduleid: module.id,
-                courseid: courseId,
-                feedbackid: module.instance,
-                group: group || 0
-            };
             $state.go(pageName, stateParams);
         }
 
