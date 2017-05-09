@@ -345,7 +345,7 @@ angular.module('mm.addons.mod_feedback')
 
                 answered = !!value;
                 responses[name] = 1;
-                responses.recaptcha_challenge_field = itemData.captcha.challengehash;
+                responses.recaptcha_challenge_field = itemData.captcha && itemData.captcha.challengehash;
                 responses.recaptcha_response_field = value;
                 responses.recaptcha_element = 'dummyvalue';
 
