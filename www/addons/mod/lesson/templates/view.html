@@ -1,0 +1,62 @@
+<mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+<!-- Prevent access messages. Only show the first one. -->
+<div class="mm-info-card" ng-if="lesson && preventMessages && preventMessages.length">
+    <!-- The messages can have html, use format-text. -->
+    <i class="icon ion-information-circled padding"></i> <mm-format-text watch="true">{{ preventMessages[0].message }}</mm-format-text>
+</div>
+
+<!-- Lesson has data to be synchronized -->
+<div class="mm-warning" ng-if="hasOffline">
+    <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+</div>
+
+<!-- Input password for protected lessons. -->
+<form ng-if="askPassword" class="card">
+    <ion-input class="item item-input item-stacked-label">
+        <ion-label>{{ 'mma.mod_lesson.enterpassword' | translate }}</ion-label>
+        <input id="mma-mod-lesson-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="data.password" mm-show-password>
+        <button class="button button-block" ng-click="submitPassword(data.password)">{{ 'mma.mod_lesson.continue' | translate }}</button>
+    </ion-input>
+</form>
+
+<div ng-if="lesson && (!preventMessages || !preventMessages.length) && !showSpinner">
+    <div ng-if="attemptToReview" class="card">
+        <!-- An attempt was finished in a synchronization, allow reviewing it. -->
+        <p class="item item-text-wrap">{{ 'mma.mod_lesson.attemptfinishedinsync' | translate }}</p>
+        <div class="item">
+            <button class="button button-block" ng-click="review()">{{ 'mma.mod_lesson.review' | translate }}</button>
+        </div>
+    </div>
+    <div ng-if="leftDuringTimed && !lesson.timelimit" class="card">
+        <!-- User left during the session and there is no time limit, ask to continue. -->
+        <p class="item item-text-wrap" ng-bind-html="'mma.mod_lesson.youhaveseen' | translate"></p>
+        <div class="item button-bar">
+            <button class="button" ng-click="start(true)">{{ 'mm.core.yes' | translate }}</button>
+            <button class="button" ng-click="start(false)">{{ 'mm.core.no' | translate }}</button>
+        </div>
+    </div>
+    <div ng-if="leftDuringTimed && lesson.timelimit && lesson.retake" class="card">
+        <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
+        <p class="item item-text-wrap" ng-bind-html="'mma.mod_lesson.leftduringtimed' | translate"></p>
+        <div class="item">
+            <button class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.continue' | translate }}</button>
+        </div>
+    </div>
+    <div ng-if="leftDuringTimed && lesson.timelimit && !lesson.retake" class="card">
+        <!-- User left during the session with time limit and retakes not allowed. This should be handled by preventMessages -->
+        <p class="item item-text-wrap" ng-bind-html="'mma.mod_lesson.leftduringtimednoretake' | translate"></p>
+    </div>
+    <div ng-if="!leftDuringTimed" class="card">
+        <!-- User hasn't left during the session, show a start button. -->
+        <div class="item">
+            <button ng-if="!canManage" class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.startattempt' | translate }}</button>
+            <button ng-if="canManage" class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.preview' | translate }}</button>
+        </div>
+    </div>
+</div>
+<div class="card" ng-if="showSpinner">
+    <div class="item text-center">
+        <ion-spinner></ion-spinner>
+    </div>
+</div>

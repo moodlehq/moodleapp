@@ -1008,6 +1008,65 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get cache key for get attempts overview WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} groupId  Group ID.
+     * @return {String}          Cache key.
+     */
+    function getAttemptsOverviewCacheKey(lessonId, groupId) {
+        return getAttemptsOverviewCommonCacheKey(lessonId) + ':' + groupId;
+    }
+
+    /**
+     * Get common cache key for get attempts overview WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @return {String}          Cache key.
+     */
+    function getAttemptsOverviewCommonCacheKey(lessonId) {
+        return 'mmaModLesson:attemptsOverview:' + lessonId;
+    }
+
+    /**
+     * Get the overview of attempts in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getAttemptsOverview
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} [groupId]      The group to get. If not defined, all participants.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the access information.
+     */
+    self.getAttemptsOverview = function(lessonId, groupId, forceCache, ignoreCache, siteId) {
+        groupId = groupId || 0;
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    lessonid: lessonId,
+                    groupid: groupId
+                },
+                preSets = {
+                    cacheKey: getAttemptsOverviewCacheKey(lessonId, groupId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_attempts_overview', params, preSets).then(function(response) {
+                return response.data;
+            });
+        });
+    };
+
+    /**
      * Get content pages viewed in online and offline.
      *
      * @module mm.addons.mod_lesson
@@ -2052,6 +2111,39 @@ angular.module('mm.addons.mod_lesson')
     self.invalidateAccessInformation = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAccessInformationCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates attempts overview for all groups in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateAttemptsOverview
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateAttemptsOverview = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getAttemptsOverviewCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates attempts overview for a certain group in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateAttemptsOverviewForGroup
+     * @param  {Number} lessonId Attempt ID.
+     * @param  {Number} groupId  Group ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateAttemptsOverviewForGroup = function(lessonId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPageDataCacheKey(lessonId, groupId));
         });
     };
 

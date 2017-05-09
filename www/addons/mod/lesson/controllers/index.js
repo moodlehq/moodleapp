@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_lesson')
 .controller('mmaModLessonIndexCtrl', function($scope, $stateParams, $mmaModLesson, $mmCourse, $q, $translate, $ionicScrollDelegate,
             $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged,
             $ionicHistory, mmCoreEventPackageStatusChanged, mmCoreDownloading, mmCoreDownloaded, $mmCoursePrefetchDelegate,
-            $mmaModLessonPrefetchHandler, $mmSite, $mmaModLessonSync, mmaModLessonAutomSyncedEvent) {
+            $mmaModLessonPrefetchHandler, $mmSite, $mmaModLessonSync, mmaModLessonAutomSyncedEvent, $mmGroups, $mmUser) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -36,7 +36,12 @@ angular.module('mm.addons.mod_lesson')
         currentStatus,
         statusObserver, syncObserver;
 
+    // Constants for display modes.
+    $scope.DISPLAY_VIEW = 'view';
+    $scope.DISPLAY_REPORTS = 'reports';
+
     $scope.title = module.name;
+    $scope.courseId = courseId;
     $scope.moduleUrl = module.url;
     $scope.refreshIcon = 'spinner';
     $scope.syncIcon = 'spinner';
@@ -46,6 +51,8 @@ angular.module('mm.addons.mod_lesson')
     $scope.data = {
         password: ''
     };
+    $scope.display = $scope.DISPLAY_VIEW;
+    $scope.selectedGroup = 0;
 
     // Convenience function to get Lesson data.
     function fetchLessonData(refresh, sync, showErrors) {
@@ -73,6 +80,7 @@ angular.module('mm.addons.mod_lesson')
 
             accessInfo = info;
             $scope.canManage = info.canmanage;
+            $scope.canViewReports = info.canviewreports;
 
             if ($mmaModLesson.isLessonOffline(lesson)) {
                 // Handle status.
@@ -120,6 +128,10 @@ angular.module('mm.addons.mod_lesson')
                     $scope.preventMessages = info.preventaccessreasons;
                     return;
                 }
+            }
+
+            if ($scope.display == $scope.DISPLAY_REPORTS) {
+                promises.push(fetchReportData());
             }
 
             return $q.all(promises).then(function() {
@@ -170,6 +182,87 @@ angular.module('mm.addons.mod_lesson')
         $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModLessonComponent);
     }
 
+    // Fetch the reports data.
+    function fetchReportData() {
+        return $mmGroups.getActivityGroupInfo(module.id).then(function(groupInfo) {
+            $scope.groupInfo = groupInfo;
+
+            return setGroup($scope.selectedGroup);
+        }).finally(function() {
+            $scope.reportLoaded = true;
+        });
+    }
+
+    // Set a group to view the reports.
+    function setGroup(groupId) {
+        $scope.selectedGroup = groupId;
+        $scope.selectedGroupName = false;
+
+        // Search the name of the group if it's not participants.
+        if (groupId) {
+            for (var i = 0; i < $scope.groupInfo.groups.length; i++) {
+                var group = $scope.groupInfo.groups[i];
+                if (groupId == group.id) {
+                    $scope.selectedGroupName = group.name;
+                    break;
+                }
+            }
+        }
+
+        return $mmaModLesson.getAttemptsOverview(lesson.id, groupId).then(function(data) {
+            var promises = [];
+
+            // Format times and grades.
+            if (data && data.avetime != null && data.numofattempts) {
+                data.avetime = parseInt(data.avetime / data.numofattempts, 10);
+                promises.push($mmUtil.formatTime(data.avetime).then(function(formatted) {
+                    data.avetimeReadable = formatted;
+                }));
+            }
+
+            if (data && data.hightime != null) {
+                promises.push($mmUtil.formatTime(data.hightime).then(function(formatted) {
+                    data.hightimeReadable = formatted;
+                }));
+            }
+
+            if (data && data.lowtime != null) {
+                promises.push($mmUtil.formatTime(data.lowtime).then(function(formatted) {
+                    data.lowtimeReadable = formatted;
+                }));
+            }
+
+            if (data && data.lessonscored) {
+                if (data.numofattempts) {
+                    data.avescore = $mmUtil.roundToDecimals(data.avescore, 2);
+                }
+                if (data.highscore != null) {
+                    data.highscore = $mmUtil.roundToDecimals(data.highscore, 2);
+                }
+                if (data.lowscore != null) {
+                    data.lowscore = $mmUtil.roundToDecimals(data.lowscore, 2);
+                }
+            }
+
+            // Get the user data for each student returned.
+            angular.forEach(data && data.students, function(student) {
+                student.bestgrade = $mmUtil.roundToDecimals(student.bestgrade, 2);
+
+                promises.push($mmUser.getProfile(student.id, courseId, true).then(function(user) {
+                    student.profileimageurl = user.profileimageurl;
+                }).catch(function() {
+                    // Error getting profile, resolve promise without adding any extra data.
+                }));
+            });
+
+            return $mmUtil.allPromises(promises).catch(function() {
+                // Shouldn't happen.
+            }).then(function() {
+                $scope.overview = data;
+            });
+        });
+    }
+
     // Validate a password and retrieve extra data.
     function validatePassword(pwd, refresh) {
         return $mmaModLesson.getLessonWithPassword(lesson.id, pwd).then(function(lessonData) {
@@ -198,6 +291,8 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.invalidateTimers(lesson.id));
             promises.push($mmaModLesson.invalidateContentPagesViewed(lesson.id));
             promises.push($mmaModLesson.invalidateQuestionsAttempts(lesson.id));
+            promises.push($mmaModLesson.invalidateAttemptsOverview(lesson.id));
+            promises.push($mmGroups.invalidateActivityGroupInfo(module.id));
         }
 
         return $q.all(promises).finally(function() {
@@ -379,6 +474,33 @@ angular.module('mm.addons.mod_lesson')
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
+    };
+
+    // Change the display mode.
+    $scope.changeDisplay = function(type) {
+        if ($scope.display == type) {
+            // Hasn't changed, stop.
+            return;
+        }
+
+        $scope.display = type;
+        if (type == $scope.DISPLAY_REPORTS && !$scope.groupInfo) {
+            fetchReportData().catch(function(message) {
+                $mmUtil.showErrorModalDefault(message, 'Error getting report.');
+                return $q.reject();
+            });
+        }
+    };
+
+    // Change the group displayed.
+    $scope.setGroup = function(groupId) {
+        $scope.reportLoaded = false;
+        return setGroup(groupId).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error getting report.');
+            return $q.reject();
+        }).finally(function() {
+            $scope.reportLoaded = true;
+        });
     };
 
     // Confirm and Remove action.

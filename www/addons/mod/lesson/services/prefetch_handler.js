@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLessonPrefetchHandler
  */
-.factory('$mmaModLessonPrefetchHandler', function($mmaModLesson, $q, $mmPrefetchFactory, mmaModLessonComponent, $mmUtil,
+.factory('$mmaModLessonPrefetchHandler', function($mmaModLesson, $q, $mmPrefetchFactory, mmaModLessonComponent, $mmUtil, $mmGroups,
     $mmSite, $mmFilepool, $rootScope, $timeout, $ionicModal, mmCoreDontShowError) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModLessonComponent, false);
@@ -465,6 +465,22 @@ angular.module('mm.addons.mod_lesson')
 
             // Prefetch question attempts in last attempt for offline calculations.
             promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, attempt, false, undefined, false, true, siteId));
+
+            if (accessInfo.canviewreports) {
+                // Prefetch reports data.
+                promises.push($mmGroups.getActivityAllowedGroupsIfEnabled(module.id, undefined, siteId).then(function(groups) {
+                    var subPromises = [];
+
+                    angular.forEach(groups, function(group) {
+                        subPromises.push($mmaModLesson.getAttemptsOverview(lesson.id, group.id, false, true, siteId));
+                    });
+
+                    // Always get group 0, even if there are no groups.
+                    subPromises.push($mmaModLesson.getAttemptsOverview(lesson.id, 0, false, true, siteId));
+
+                    return $q.all(subPromises);
+                }));
+            }
 
             return $q.all(promises);
         }).then(function() {

@@ -16,3 +16,17 @@
   color: #666;
   font-size: 14px;
 }
+
+.mma-mod_lesson-lessonstats {
+  .item.row {
+    padding: 0;
+
+    .col-33, .col-50 {
+      border-color: $item-default-border;
+      border-style: solid;
+      &:not(:first-child) {
+        border-left-width: $item-border-width;
+      }
+    }
+  }
+}
