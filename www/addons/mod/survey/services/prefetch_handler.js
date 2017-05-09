@@ -225,9 +225,7 @@ angular.module('mm.addons.mod_survey')
             timemod = $mmFilepool.getTimemodifiedFromFileList(files);
 
             // Prefetch files.
-            angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // If survey isn't answered, prefetch the questions.
             if (!survey.surveydone) {

@@ -422,10 +422,7 @@ angular.module('mm.addons.mod_lesson')
             files = lesson.mediafiles || [];
             files = files.concat(self.getIntroFilesFromInstance(module, lesson));
 
-            angular.forEach(files, function(file) {
-                var url = file.url || file.fileurl;
-                promises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // Get the list of pages.
             promises.push($mmaModLesson.getPages(lesson.id, password, false, true, siteId).then(function(pages) {
@@ -437,8 +434,7 @@ angular.module('mm.addons.mod_lesson')
                             true, undefined, undefined, siteId).then(function(pageData) {
 
                         // Download the page files.
-                        var filePromises = [],
-                            pageFiles = pageData.contentfiles || [];
+                        var pageFiles = pageData.contentfiles || [];
 
                         angular.forEach(pageData.answers, function(answer) {
                             if (answer.answerfiles && answer.answerfiles.length) {
@@ -449,12 +445,7 @@ angular.module('mm.addons.mod_lesson')
                             }
                         });
 
-                        angular.forEach(pageFiles, function(file) {
-                            var url = file.url || file.fileurl;
-                            filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-                        });
-
-                        return $q.all(filePromises);
+                        return $mmFilepool.addFilesToQueueByUrl(siteId, pageFiles, self.component, module.id);
                     }));
                 });
 

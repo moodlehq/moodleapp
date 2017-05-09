@@ -944,6 +944,22 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the "type" of an extension, something like "image", "video" or "audio".
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getExtensionType
+     * @param  {String} extension Extension.
+     * @return {Mixed}            Type of the extension.
+     * @since 3.3
+     */
+    self.getExtensionType = function(extension) {
+        if (extToMime[extension] && extToMime[extension].string) {
+            return extToMime[extension].string;
+        }
+    };
+
+    /**
      * Guess the extension of a file from its URL.
      *
      * This is very weak and unreliable.
@@ -1331,6 +1347,44 @@ angular.module('mm.core')
         }).catch(function() {
             // Ignore errors, maybe it doesn't exist.
         });
+    };
+
+    /**
+     * Check if an extension belongs to at least one of the groups.
+     * Similar to Moodle's file_mimetype_in_typegroup, but using the extension instead of mimetype.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#isExtensionInGroup
+     * @param  {String} extension Extension.
+     * @param  {String[]} groups  List of groups to check.
+     * @return {Boolean}          Whether the extension belongs to any of the groups.
+     * @since 3.3
+     */
+    self.isExtensionInGroup = function(extension, groups) {
+        if (groups && groups.length && extToMime[extension] && extToMime[extension].groups) {
+            for (var i = 0; i < extToMime[extension].groups.length; i++) {
+                var group = extToMime[extension].groups[i];
+                if (groups.indexOf(group) != -1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Check if a file can be embedded without using iframes.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#canBeEmbedded
+     * @param  {String} extension Extension.
+     * @return {Boolean}          Whether it can be embedded.
+     * @since 3.3
+     */
+    self.canBeEmbedded = function(extension) {
+        return self.isExtensionInGroup(extension, ['web_image', 'web_video', 'web_audio']);
     };
 
     return self;

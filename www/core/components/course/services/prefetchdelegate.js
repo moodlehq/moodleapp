@@ -68,7 +68,7 @@ angular.module('mm.core')
      *                             - prefetch(module, courseid, single) (Promise) Prefetches a module.
      *                             - (Optional) getFiles(module, courseid) (Object[]|Promise) Get list of files. If not defined,
      *                                                                 we'll assume they're in module.contents.
-     *                             - (Optional) determineStatus(status, canCheck) (String) Returns status to show based on
+     *                             - (Optional) determineStatus(status, canCheck, module) (String) Returns status to show based on
      *                                                                 current. E.g. for books we'll show "outdated" even if state
      *                                                                 is "downloaded" if canCheck=false.
      *                             - (Optional) getRevision(module, courseid) (String|Number|Promise) Returns the module revision.
@@ -295,7 +295,7 @@ angular.module('mm.core')
                     }
                 } else if (handler.determineStatus) {
                     // The handler implements a determineStatus function. Apply it.
-                    return handler.determineStatus(status, canCheck);
+                    return handler.determineStatus(status, canCheck, module);
                 }
             }
             return status;
@@ -926,7 +926,7 @@ angular.module('mm.core')
 
                     // Get the saved package status.
                     return $mmFilepool.getPackageCurrentStatus(siteid, handler.component, module.id).then(function(status) {
-                        status = handler.determineStatus ? handler.determineStatus(status, canCheck) : status;
+                        status = handler.determineStatus ? handler.determineStatus(status, canCheck, module) : status;
                         if (status == mmCoreNotDownloaded || status == mmCoreOutdated || status == mmCoreDownloading) {
                             self.updateStatusCache(handler.component, module.id, status);
                             return self.determineModuleStatus(module, status, true, canCheck);

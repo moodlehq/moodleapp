@@ -177,7 +177,9 @@ angular.module('mm.core')
         queueState,
         urlAttributes = [
             tokenRegex,
-            new RegExp('(\\?|&)forcedownload=[0-1]')
+            new RegExp('(\\?|&)forcedownload=[0-1]'),
+            new RegExp('(\\?|&)preview=[A-Za-z0-9]+'),
+            new RegExp('(\\?|&)offline=[0-1]', 'g')
         ],
         revisionRegex = new RegExp('/content/([0-9]+)/'),
         queueDeferreds = {}, // To handle file downloads using the queue.
@@ -318,13 +320,7 @@ angular.module('mm.core')
      * @return {Promise} Resolved on success. The returned value can be inconsistent, do not use.
      */
     self.addFilesToQueueByUrl = function(siteId, files, component, componentId) {
-        var promises = [];
-        // Prefetch files.
-        angular.forEach(files, function(file) {
-            promises.push(self.addToQueueByUrl(siteId, file.url || file.fileurl, component, componentId, file.timemodified));
-        });
-
-        return $q.all(promises);
+        return self.downloadOrPrefetchFiles(siteId, files, true, false, component, componentId);
     };
 
     /**
@@ -333,16 +329,19 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#addToQueueByUrl
-     * @param {String} siteId The site ID.
-     * @param {String} fileUrl The absolute URL to the file.
-     * @param {String} [component] The component to link the file to.
-     * @param {Mixed} [componentId] An ID to use in conjunction with the component (optional).
+     * @param {String} siteId           The site ID.
+     * @param {String} fileUrl          The absolute URL to the file.
+     * @param {String} [component]      The component to link the file to.
+     * @param {Mixed} [componentId]     An ID to use in conjunction with the component (optional).
      * @param {Number} [timemodified=0] The time this file was modified. Can be used to check file state.
      * @param {String} [filePath]       Filepath to download the file to.
-     * @param {Number} [priority=0] The priority this file should get in the queue (range 0-999).
-     * @return {Promise} Resolved on success. The returned value can be inconsistent, do not use.
+     * @param {Number} [priority=0]     The priority this file should get in the queue (range 0-999).
+     * @param {Object} [options]        Extra options (isexternalfile, repositorytype).
+     * @return {Promise}                Resolved on success. The returned value can be inconsistent, do not use.
      */
-    self.addToQueueByUrl = function(siteId, fileUrl, component, componentId, timemodified, filePath, priority) {
+    self.addToQueueByUrl = function(siteId, fileUrl, component, componentId, timemodified, filePath, priority, options) {
+        options = options || {};
+
         var db = $mmApp.getDB(),
             fileId,
             now = new Date(),
@@ -400,6 +399,14 @@ angular.module('mm.core')
                             update = true;
                             fileObject.path = filePath;
                         }
+                        if (fileObject.isexternalfile !== options.isexternalfile) {
+                            update = true;
+                            fileObject.isexternalfile = options.isexternalfile;
+                        }
+                        if (fileObject.repositorytype !== options.repositorytype) {
+                            update = true;
+                            fileObject.repositorytype = options.repositorytype;
+                        }
 
                         if (link) {
                             // We need to add the new link if it does not exist yet.
@@ -448,6 +455,8 @@ angular.module('mm.core')
                         url: fileUrl,
                         revision: revision,
                         timemodified: timemodified,
+                        isexternalfile: options.isexternalfile,
+                        repositorytype: options.repositorytype,
                         path: filePath,
                         links: link ? [link] : []
                     }).then(function() {
@@ -600,6 +609,42 @@ angular.module('mm.core')
     };
 
     /**
+     * Download or prefetch several files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#downloadOrPrefetchFiles
+     * @param {String} siteId         The site ID.
+     * @param {Array}  files          Array of files to download.
+     * @param {Boolean} prefetch      True if prefetching.
+     * @param {Boolean} [ignoreStale] True if 'stale' should be ignored. Only if prefetch=false.
+     * @param {String} [component]    The component to link the file to.
+     * @param {Mixed}  [componentId]  An ID to use in conjunction with the component (optional).
+     * @return {Promise}              Resolved on success. The returned value can be inconsistent, do not use.
+     */
+    self.downloadOrPrefetchFiles = function(siteId, files, prefetch, ignoreStale, component, componentId) {
+        var promises = [];
+
+        // Download files.
+        angular.forEach(files, function(file) {
+            var url = file.url || file.fileurl,
+                timemodified = file.timemodified,
+                options = {
+                    isexternalfile: file.isexternalfile,
+                    repositorytype: file.repositorytype
+                };
+
+            if (prefetch) {
+                promises.push(self.addToQueueByUrl(siteId, url, component, componentId, timemodified, undefined, 0, options));
+            } else {
+                promises.push(self.downloadUrl(siteId, url, ignoreStale, component, componentId, timemodified, undefined, options));
+            }
+        });
+
+        return $mmUtil.allPromises(promises);
+    };
+
+    /**
      * Downloads or prefetches a list of files.
      *
      * @module mm.core
@@ -644,7 +689,11 @@ angular.module('mm.core')
                 var path,
                     promise,
                     fileLoaded = 0,
-                    fileUrl = file.url || file.fileurl;
+                    fileUrl = file.url || file.fileurl,
+                    options = {
+                        isexternalfile: file.isexternalfile,
+                        repositorytype: file.repositorytype
+                    };
 
                 if (dirPath) {
                     // Calculate the path to the file.
@@ -656,9 +705,9 @@ angular.module('mm.core')
                 }
 
                 if (prefetch) {
-                    promise = self.addToQueueByUrl(siteId, fileUrl, component, componentId, file.timemodified, path);
+                    promise = self.addToQueueByUrl(siteId, fileUrl, component, componentId, file.timemodified, path, options);
                 } else {
-                    promise = self.downloadUrl(siteId, fileUrl, false, component, componentId, file.timemodified, path);
+                    promise = self.downloadUrl(siteId, fileUrl, false, component, componentId, file.timemodified, path, options);
                 }
 
                 // Using undefined for success & fail will pass the success/failure to the parent promise.
@@ -725,14 +774,15 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#downloadUrl
-     * @param {String} siteId The site ID.
-     * @param {String} fileUrl The file URL.
-     * @param {Boolean} [ignoreStale] True if 'stale' should be ignored.
-     * @param {String} component The component to link the file to.
-     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
+     * @param {String} siteId           The site ID.
+     * @param {String} fileUrl          The file URL.
+     * @param {Boolean} [ignoreStale]   True if 'stale' should be ignored.
+     * @param {String} component        The component to link the file to.
+     * @param {Mixed} [componentId]     An ID to use in conjunction with the component.
      * @param {Number} [timemodified=0] The time this file was modified. Can be used to check file state.
      * @param {String} [filePath]       Filepath to download the file to.
-     * @return {Promise} Resolved with internal URL on success, rejected otherwise.
+     * @param {Object} [options]        Extra options (isexternalfile, repositorytype).
+     * @return {Promise}                Resolved with internal URL on success, rejected otherwise.
      * @description
      * Downloads a file on the spot.
      *
@@ -743,16 +793,17 @@ angular.module('mm.core')
      *
      * See {@link $mmFilepool#_getInternalUrlById} for the type of local URL returned.
      */
-    self.downloadUrl = function(siteId, fileUrl, ignoreStale, component, componentId, timemodified, filePath) {
+    self.downloadUrl = function(siteId, fileUrl, ignoreStale, component, componentId, timemodified, filePath, options) {
+        options = options || {};
+
         var fileId,
-            revision,
             promise;
 
         if ($mmFS.isAvailable()) {
             return self._fixPluginfileURL(siteId, fileUrl).then(function(fixedUrl) {
                 fileUrl = fixedUrl;
-                timemodified = timemodified || 0;
-                revision = self.getRevisionFromUrl(fileUrl);
+                options.timemodified = timemodified || 0;
+                options.revision = self.getRevisionFromUrl(fileUrl);
                 fileId = self._getFileIdByUrl(fileUrl);
 
                 // Restore old file if needed.
@@ -764,12 +815,13 @@ angular.module('mm.core')
                     if (typeof fileObject === 'undefined') {
                         // We do not have the file, download and add to pool.
                         self._notifyFileDownloading(siteId, fileId);
-                        return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath);
+                        return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath);
 
-                    } else if (self._isFileOutdated(fileObject, revision, timemodified) && $mmApp.isOnline() && !ignoreStale) {
+                    } else if (self._isFileOutdated(fileObject, options.revision, options.timemodified) &&
+                                $mmApp.isOnline() && !ignoreStale) {
                         // The file is outdated, force the download and update it.
                         self._notifyFileDownloading(siteId, fileId);
-                        return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject);
+                        return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath, fileObject);
                     }
 
                     // Everything is fine, return the file on disk.
@@ -783,13 +835,13 @@ angular.module('mm.core')
                     }, function() {
                         // The file was not found in the pool, weird.
                         self._notifyFileDownloading(siteId, fileId);
-                        return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject);
+                        return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath, fileObject);
                     });
 
                 }, function() {
                     // The file is not in the pool just yet.
                     self._notifyFileDownloading(siteId, fileId);
-                    return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath);
+                    return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath);
                 })
                 .then(function(response) {
                     if (typeof component !== 'undefined') {
@@ -818,14 +870,15 @@ angular.module('mm.core')
      * @name $mmFilepool#_downloadForPoolByUrl
      * @param {String} siteId           The site ID.
      * @param {String} fileUrl          The file URL.
-     * @param {Number} [revision]       File revision number.
-     * @param {Number} [timemodified]   The time this file was modified. Can be used to check file state.
+     * @param {Object} [options]        Extra options (revision, timemodified, isexternalfile, repositorytype).
      * @param {String} [filePath]       Filepath to download the file to. If defined, no extension will be added.
      * @param {Object} [poolFileObject] When set, the object will be updated, a new entry will not be created.
      * @return {Promise} Resolved with internal URL on success, rejected otherwise.
      * @protected
      */
-    self._downloadForPoolByUrl = function(siteId, fileUrl, revision, timemodified, filePath, poolFileObject) {
+    self._downloadForPoolByUrl = function(siteId, fileUrl, options, filePath, poolFileObject) {
+        options = options || {};
+
         var fileId = self._getFileIdByUrl(fileUrl),
             extension = $mmFS.guessExtensionFromUrl(fileUrl),
             addExtension = typeof filePath == "undefined",
@@ -860,8 +913,10 @@ angular.module('mm.core')
                     data.downloaded = now.getTime();
                     data.stale = false;
                     data.url = fileUrl;
-                    data.revision = revision;
-                    data.timemodified = timemodified;
+                    data.revision = options.revision;
+                    data.timemodified = options.timemodified;
+                    data.isexternalfile = options.isexternalfile;
+                    data.repositorytype = options.repositorytype;
                     data.path = fileEntry.path;
                     data.extension = fileEntry.extension;
 
@@ -1366,16 +1421,17 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#_getFileUrlByUrl
-     * @param {String} siteId            The site ID.
-     * @param {String} fileUrl           The absolute URL to the file.
-     * @param {String} [mode=url]        The type of URL to return. Accepts 'url' or 'src'.
-     * @param {String} component         The component to link the file to.
-     * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
-     * @param {Number} [timemodified=0]  The time this file was modified.
-     * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
-     * @param {Boolean} downloadUnknown  True to download file in WiFi if their size is unknown, false otherwise.
-     *                                   Ignored if checkSize=false.
-     * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done.
+     * @param {String} siteId             The site ID.
+     * @param {String} fileUrl            The absolute URL to the file.
+     * @param {String} [mode=url]         The type of URL to return. Accepts 'url' or 'src'.
+     * @param {String} component          The component to link the file to.
+     * @param {Mixed} [componentId]       An ID to use in conjunction with the component.
+     * @param {Number} [timemodified=0]   The time this file was modified.
+     * @param {Boolean} [checkSize=true]  True if we shouldn't download files if their size is big, false otherwise.
+     * @param {Boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
+     *                                    Ignored if checkSize=false.
+     * @param {Object} [options]          Extra options (isexternalfile, repositorytype).
+     * @return {Promise}                  Resolved with the URL to use. When rejected, nothing could be done.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      *
@@ -1387,7 +1443,10 @@ angular.module('mm.core')
      * When the file cannot be found, and we are offline, then we reject the promise because
      * there was nothing we could do.
      */
-    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId, timemodified, checkSize, downloadUnknown) {
+    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId, timemodified, checkSize, downloadUnknown,
+                options) {
+        options = options || {};
+
         var fileId,
             revision;
 
@@ -1483,14 +1542,14 @@ angular.module('mm.core')
                     // Check if the file should be downloaded.
                     if (sizeUnknown) {
                         if (downloadUnknown && isWifi) {
-                            self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                            self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, 0, options);
                         }
                     } else if (size <= mmFilepoolDownloadThreshold || (isWifi && size <= mmFilepoolWifiDownloadThreshold)) {
-                        self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                        self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, 0, options);
                     }
                 });
             } else {
-                self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, 0, options);
             }
         }
     };
@@ -1877,23 +1936,25 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#getSrcByUrl
-     * @param {String} siteId            The site ID.
-     * @param {String} fileUrl           The absolute URL to the file.
-     * @param {String} component         The component to link the file to.
-     * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
-     * @param {Number} [timemodified]    The time this file was modified.
-     * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
-     * @param {Boolean} downloadUnknown  True to download file in WiFi if their size is unknown, false otherwise.
-     *                                   Ignored if checkSize=false.
-     * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
-     *                                   which means that you should not even use the fileUrl passed.
+     * @param {String} siteId             The site ID.
+     * @param {String} fileUrl            The absolute URL to the file.
+     * @param {String} component          The component to link the file to.
+     * @param {Mixed} [componentId]       An ID to use in conjunction with the component.
+     * @param {Number} [timemodified]     The time this file was modified.
+     * @param {Boolean} [checkSize=true]  True if we shouldn't download files if their size is big, false otherwise.
+     * @param {Boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
+     *                                    Ignored if checkSize=false.
+     * @param {Object} [options]          Extra options (isexternalfile, repositorytype).
+     * @return {Promise}                  Resolved with the URL to use. When rejected, nothing could be done,
+     *                                    which means that you should not even use the fileUrl passed.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with IMG tags.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId, timemodified, checkSize, downloadUnknown);
+    self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown, options) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId,
+                timemodified, checkSize, downloadUnknown, options);
     };
 
     /**
@@ -1923,23 +1984,25 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#getUrlByUrl
-     * @param {String} siteId            The site ID.
-     * @param {String} fileUrl           The absolute URL to the file.
-     * @param {String} component         The component to link the file to.
-     * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
-     * @param {Number} [timemodified]    The time this file was modified.
-     * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
-     * @param {Boolean} downloadUnknown  True to download file in WiFi if their size is unknown, false otherwise.
-     *                                   Ignored if checkSize=false.
-     * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
-     *                                   which means that you should not even use the fileUrl passed.
+     * @param {String} siteId             The site ID.
+     * @param {String} fileUrl            The absolute URL to the file.
+     * @param {String} component          The component to link the file to.
+     * @param {Mixed} [componentId]       An ID to use in conjunction with the component.
+     * @param {Number} [timemodified]     The time this file was modified.
+     * @param {Boolean} [checkSize=true]  True if we shouldn't download files if their size is big, false otherwise.
+     * @param {Boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
+     *                                    Ignored if checkSize=false.
+     * @param {Object} [options]          Extra options (isexternalfile, repositorytype).
+     * @return {Promise}                  Resolved with the URL to use. When rejected, nothing could be done,
+     *                                    which means that you should not even use the fileUrl passed.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with a local browser.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId, timemodified, checkSize, downloadUnknown);
+    self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown, options) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId,
+                timemodified, checkSize, downloadUnknown, options);
     };
 
     /**
@@ -2283,15 +2346,19 @@ angular.module('mm.core')
         var siteId = item.siteId,
             fileId = item.fileId,
             fileUrl = item.url,
-            revision = item.revision,
-            timemodified = item.timemodified,
+            options = {
+                revision: item.revision,
+                timemodified: item.timemodified,
+                isexternalfile: item.isexternalfile,
+                repositorytype: item.repositorytype
+            },
             filePath = item.path,
             links = item.links || [];
 
         $log.debug('Processing queue item: ' + siteId + ', ' + fileId);
         return getSiteDb(siteId).then(function(db) {
             return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
-                if (fileObject && !self._isFileOutdated(fileObject, revision, timemodified)) {
+                if (fileObject && !self._isFileOutdated(fileObject, options.revision, options.timemodified)) {
                     // We have the file, it is not stale, we can update links and remove from queue.
                     $log.debug('Queued file already in store, ignoring...');
                     self._addFileLinks(siteId, fileId, links);
@@ -2322,7 +2389,7 @@ angular.module('mm.core')
         function download(siteId, fileUrl, fileObject, links) {
             // Restore old file if needed.
             return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl, filePath).then(function() {
-                return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject).then(function() {
+                return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath, fileObject).then(function() {
                     var promise;
 
                     // Success, we add links and remove from queue.

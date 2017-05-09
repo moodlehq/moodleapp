@@ -103,16 +103,8 @@ angular.module('mm.core.course')
 
                         if (dirPath) {
                             // Download intro files in filepool root folder.
-                            angular.forEach(introFiles, function(file) {
-                                var fileUrl = file.url || file.fileurl;
-                                if (prefetch) {
-                                    promises.push($mmFilepool.addToQueueByUrl(siteId, fileUrl,
-                                            that.component, module.id, file.timemodified));
-                                } else {
-                                    promises.push($mmFilepool.downloadUrl(siteId, fileUrl, false,
-                                            that.component, module.id, file.timemodified));
-                                }
-                            });
+                            promises.push($mmFilepool.downloadOrPrefetchFiles(siteId, introFiles, prefetch, false,
+                                    that.component, module.id));
 
                             // Download content files inside dirPath.
                             promises.push(downloadFn(siteId, contentFiles, that.component,

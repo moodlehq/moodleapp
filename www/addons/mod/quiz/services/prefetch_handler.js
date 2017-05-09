@@ -372,10 +372,7 @@ angular.module('mm.addons.mod_quiz')
                 attemptAccessInfo = info;
             }));
 
-            angular.forEach(introFiles, function(file) {
-                var url = file.fileurl;
-                promises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, introFiles, self.component, module.id));
 
             return $q.all(promises);
         }).then(function() {
