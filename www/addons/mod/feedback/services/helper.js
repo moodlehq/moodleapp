@@ -35,16 +35,17 @@ angular.module('mm.addons.mod_feedback')
      * @ngdoc method
      * @name $mmaModFeedbackHelper#getFeedbackGroupInfo
      * @param  {Number} cmId        Course Module Id of the feedback.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @return {Object}             Containing the group info related to the activity.
      */
-    self.getFeedbackGroupInfo = function(cmId) {
+    self.getFeedbackGroupInfo = function(cmId, siteId) {
         var groupInfo = {};
 
-        return $mmGroups.getActivityGroupMode(cmId).then(function(groupMode) {
+        return $mmGroups.getActivityGroupMode(cmId, siteId).then(function(groupMode) {
             if (groupMode === $mmGroups.SEPARATEGROUPS || groupMode === $mmGroups.VISIBLEGROUPS) {
                 groupInfo.separateGroups = groupMode === $mmGroups.SEPARATEGROUPS;
                 groupInfo.visibleGroups = groupMode === $mmGroups.VISIBLEGROUPS;
-                return $mmGroups.getActivityAllowedGroups(cmId);
+                return $mmGroups.getActivityAllowedGroups(cmId, undefined, siteId);
             }
             return [];
         }).then(function (groups) {
