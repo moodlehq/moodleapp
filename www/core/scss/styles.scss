@@ -31,7 +31,7 @@ $item-message-note-font-size: $font-size-small !default;
 $item-message-mine-bg: $turquoise-light !default;
 
 // Disabled items.
-$item-disabled-color: #999 !default;
+$item-disabled-color: $gray-medium !default;
 
 // Messages boxes.
 $mm-warning-color: $energized !default; // Energized / yellow.

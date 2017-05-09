@@ -4,14 +4,16 @@
   </ion-nav-buttons>
   <ion-content padding="true" id="mm-login-site" mm-state-class class="mm-center-view">
     <div class="mm-view-content">
-      <h2 class="padding-top">{{ 'mm.login.siteaddress' | translate }}</h2>
-      <div class="card">
-        <div class="item item-text-wrap">{{ 'mm.login.newsitedescription' | translate }}</div>
+      <div class="box">
+        <div class="text-center padding">
+          <img ng-src="img/moodle.png" class="avatar-full" role="presentation">
+        </div>
+        <p class="padding">{{ 'mm.login.newsitedescription' | translate }}</p>
+        <div class="list item item-input">
+          <input type="url" placeholder="{{ 'mm.login.siteaddress' | translate }}" ng-model="siteurl" mm-no-input-validation mm-auto-focus >
+        </div>
+        <button class="button button-block button-positive" ng-click="connect(siteurl)" ng-disabled="!siteurl">{{ 'mm.login.connect' | translate }}</button>
       </div>
-      <div class="list item item-input">
-        <input type="url" placeholder="moodle.org" ng-model="siteurl" mm-no-input-validation mm-auto-focus >
-      </div>
-      <button class="button button-block button-positive" ng-click="connect(siteurl)" ng-disabled="!siteurl">{{ 'mm.login.connect' | translate }}</button>
     </div>
   </ion-content>
 </ion-view>

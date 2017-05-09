@@ -39,9 +39,21 @@
   }
 }
 
-.mm-mm_login_credentials, .mm-mm_login_reconnect {
+.mm-mm_login_credentials, .mm-mm_login_reconnect, .mm-mm_login_site {
   .mm-ioninput-password {
     padding-top: 0;
     padding-bottom: 0;
+  }
+  background: -webkit-radial-gradient(white, $gray-light);
+  background: radial-gradient(white, $gray-light);
+
+  img {
+    max-width: 100%;
+  }
+
+  .box {
+    padding: 16px;
+    background: $white;
+    border: 1px solid $item-default-border;
   }
 }
