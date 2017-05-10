@@ -1,0 +1,210 @@
+<project name="ydn-db" basedir="." default="compile-main-dev">
+    <dirname property="ydn-db.dir" file="${ant.file.ydn-db}"/>
+    <property name="work.dir" location="${ydn-db.dir}/.." />
+    <property name="ydn-base.dir" location="${work.dir}/ydn-base" />
+    <import file="${ydn-base.dir}/build.xml"/>
+    <property name="ver-major" value="1"/>
+    <property name="ver-minor" value="3"/>
+    <property name="ver-patch" value="3"/>
+    <property name="version" value="${ver-major}.${ver-minor}.${ver-patch}"/>
+
+    <property name="buildno" value="${ver-major}${ver-minor}${ver-patch}"/>
+    <script language="javascript" description="Generate ascending order build no
+    , so that last version are sorted at top on blob file server."><![CDATA[
+            var toChar = function(x) {
+                return String.fromCharCode(122 - x);
+            };
+            var major = parseInt(project.getProperty("ver-major"), 10);
+            var minor = parseInt(project.getProperty("ver-minor"), 10);
+            var patch = parseInt(project.getProperty("ver-patch"), 10);
+            var buildno = toChar(major) + toChar(minor) + toChar(patch);
+            project.setProperty("buildno", buildno);
+            ]]></script>
+    <property name="out.dir" location="${work.dir}/ydn-dev/public/jsc/"/>
+
+    <property name="quoted-version" value="'${version}'"/>
+
+    <target name="count-test" description="count number of test functions">
+        <exec executable="echo">
+            <arg value="grep -c -h '^var test_' -r test --include='*.js' | paste -sd+ - | bc"/>
+        </exec>
+    </target>
+
+    <target name="to-doc" description="copy file to documentation site">
+        <copy file="${ydn-db.dir}/jsc/${buildno}-ydn.db-crud.js"
+              tofile="${ydn-db.dir}/jsc/ydn.db-crud.js"/>
+        <copy file="${ydn-db.dir}/jsc/${buildno}-ydn.db-crud.js"
+              tofile="${out.dir}/ydn.db-crud.js"/>
+        <copy file="${ydn-db.dir}/jsc/${buildno}-ydn.db-core.js"
+              tofile="${ydn-db.dir}/jsc/ydn.db-core.js"/>
+        <copy file="${ydn-db.dir}/jsc/${buildno}-ydn.db-core.js"
+              tofile="${out.dir}/ydn.db-core.js"/>
+        <copy todir="${out.dir}/../test/">
+            <fileset dir="${ydn-db.dir}/test/qunit">
+               <exclude name="*.html"/>
+            </fileset>
+        </copy>
+        <copy todir="${out.dir}/../test/perf/">
+            <fileset dir="${ydn-db.dir}/test/perf">
+                <exclude name="*.html"/>
+            </fileset>
+        </copy>
+    </target>
+
+
+    <target name="gen-all-test-js" description="generate all test js">
+        <gen-js-test base.dir="${ydn-db.dir}/test" ext="db"></gen-js-test>
+    </target>
+    <target name="deps" description="list dependency files">
+        <delete file="${ydn-db.dir}/src/deps.js"/>
+        <calc-deps
+                input.dir="${ydn-db.dir}/src"
+                output.fn="${ydn-db.dir}/src/deps.js">
+        </calc-deps>
+    </target>
+    <target name="jstd" description="print out jstd file for JS test driver">
+        <jstd-gen base.dir="${ydn-db.dir}" input.fn="${ydn-db.dir}/config/test.js">
+            <deps-options>
+                <arg line='--path "${ydn-base.dir}/src"'/>
+            </deps-options>
+        </jstd-gen>
+    </target>
+
+    <target name="jsdoc" description="create document">
+        <mkdir dir="${work.dir}/ydn-dev/out/ydn-db/docs"/>
+        <java jar="${jsdoc.dir}/jsrun.jar" fork="true" failonerror="true" logError="true">
+            <arg line="${jsdoc.dir}/app/run.js" />
+            <arg line="${ydn-db.dir}/src"/>
+            <arg line="--verbose"/>
+            <arg line="--recurse=6"/>
+            <arg line="--template=${jsdoc.dir}/templates/jsdoc"/>
+            <arg line="--directory=${work.dir}/ydn-dev/out/ydn-db/docs"/>
+        </java>
+    </target>
+    <target name="jsdoc1" description="create document for storage class only">
+        <mkdir dir="${work.dir}/ydn-dev/out/ydn-db/docs"/>
+        <java jar="${jsdoc.dir}/jsrun.jar" fork="true" failonerror="true" logError="true">
+            <arg line="${jsdoc.dir}/app/run.js" />
+            <arg line="${ydn-db.dir}/src/ydn/db/storage.js"/>
+            <arg line="--verbose"/>
+            <arg line="--template=${work.dir}/ydn-dev/content/jsdoc-templates/jsdoc"/>
+            <arg line="--directory=${work.dir}/ydn-dev/out/ydn-db/docs"/>
+        </java>
+    </target>
+    <macrodef name="adv-comp">
+        <attribute name="input.fn"/>
+        <attribute name="input.dir" default="${ydn-db.dir}/src"/>
+        <attribute name="output.fn"/>
+        <attribute name="output.dir" default="${ydn-db.dir}/jsc"/>
+        <element name="exjs.dir" optional="yes"/>
+        <sequential>
+            <closure-compile compilationlevel="ADVANCED_OPTIMIZATIONS"
+                             base.dir="@{input.dir}"
+                             input="@{input.fn}"
+                             input.dir="@{input.dir}"
+                             output.fn="@{output.dir}/@{output.fn}">
+                <options>
+                    <arg line='-p "${ydn-base.dir}/src"'/>
+                    <exjs.dir/>
+                    <arg line='-f "--externs=${ydn-db.dir}/externs/misc.js"'/>
+                    <arg line='-f "--externs=${ydn-db.dir}/externs/schema.js"'/>
+                    <arg line='-f "--externs=${ydn-db.dir}/externs/websql.js"'/>
+                    <arg line='-f "--externs=${ydn-base.dir}/externs/misc.js"'/>
+                    <arg line='-f "--externs=${ydn-base.dir}/externs/atom.js"'/>
+                    <arg line='-f "--externs=${ydn-base.dir}/externs/gapi.js"'/>
+                    <arg line='-f "--closure_entry_point=ydn.db.Storage.main_entry"'/>
+                    <arg line='-f "--define=ydn.db.version=${quoted-version}"'/>
+                    <arg line='-f "--source_map_format=V3"'/>
+                    <arg line='-f "--create_source_map=@{output.dir}/@{output.fn}.map"'/>
+                    <arg line='-f "--output_wrapper=(function(){%output%})();"'/>
+                </options>
+            </closure-compile>
+            <concat destfile="@{output.dir}/@{output.fn}" append="true">
+                //# sourceMappingURL=@{output.fn}.map
+            </concat>
+            <copy tofile="@{output.dir}/ydn.db-npm-dev.js" file="@{output.dir}/@{output.fn}"/>
+            <concat destfile="@{output.dir}/ydn.db-npm-dev.js" append="true">
+                exports.ydn = ydn;
+            </concat>
+
+            <replace description="replace so with online repo path"
+                     file="@{output.dir}/@{output.fn}.map"
+                     token="${work.dir}/ydn-base/"
+                     value="../../ydn-base/"/>
+            <replace description="replace so with online repo path"
+                     file="@{output.dir}/@{output.fn}.map"
+                     token="${work.dir}/ydn-db/"
+                     value="../../ydn-db/"/>
+            <replace description="replace so with online repo path"
+                     file="@{output.dir}/@{output.fn}.map"
+                     token="${work.dir}/ydn-db-sync/"
+                     value="../../ydn-db-sync/"/>
+            <replace description="replace so with online repo path"
+                     file="@{output.dir}/@{output.fn}.map"
+                     token="${work.dir}/closure-library/"
+                     value="../../closure-library/"/>
+        </sequential>
+
+    </macrodef>
+
+    <target name="compile-main-dev"
+            description="generates compiled files for crud distribution">
+        <mkdir dir="${ydn-db.dir}/jsc"/>
+        <sequential>
+            <adv-comp
+                    input.fn="${ydn-db.dir}/config/main.js"
+                    output.dir="${ydn-db.dir}/jsc"
+                    output.fn="ydn.db-dev.js">
+
+            </adv-comp>
+
+        </sequential>
+    </target>
+    <target name="copy-files" description="copy output file to website">
+        <copy todir="${home.dir}/work/ydn-website/src/site/jsc/">
+            <fileset dir="jsc">
+                <include name="ydn.db.js"/>
+                <include name="ydn.db.js.map"/>
+                <include name="ydn.db-dev.js"/>
+                <include name="ydn.db-dev.js.map"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="compile-main"
+            description="generates compiled files for crud distribution">
+        <mkdir dir="${ydn-db.dir}/jsc"/>
+        <sequential>
+            <adv-comp
+                    input.fn="${ydn-db.dir}/config/main.js"
+                    output.dir="${ydn-db.dir}/jsc"
+                    output.fn="ydn.db.js">
+                <exjs.dir>
+                    <arg line='-f "--define=goog.DEBUG=false"'/>
+                    <arg line='-f "--define=goog.log.ENABLED=false"'/>
+                </exjs.dir>
+            </adv-comp>
+
+        </sequential>
+    </target>
+
+
+    <target name="github" description="push to github">
+        <echo>git branch github</echo>
+        <echo>ant build</echo>
+        <echo>git add src/deps.js</echo>
+        <echo>git add jsc/ydn.db-dev.js</echo>
+        <echo>git add jsc/ydn.db-npm-dev.js</echo>
+        <echo>git add jsc/ydn.db-dev.js.map</echo>
+        <echo>git add bower.json</echo>
+        <echo>git add ydn.db.jquery.json</echo>
+        <echo>git commit -m 'compile update'</echo>
+        <echo>git push github github:master</echo>
+        <echo>git checkout master</echo>
+        <echo>;; updating</echo>
+        <echo>git checkout github</echo>
+    </target>
+    <target name="build" description="build all distributions"
+            depends="deps,compile-main,compile-main-dev,copy-files">
+
+    </target>
+</project>

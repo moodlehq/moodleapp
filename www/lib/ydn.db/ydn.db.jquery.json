@@ -1,0 +1,39 @@
+{
+  "name": "ydn.db",
+  "title": "YDN-DB Database library",
+  "description": "Javascript database library for IndexedDB, WebDatabase (WebSQL) and WebStorage (localStorage) storage mechanisms supporting version migration, advanced query and transaction workflow.",
+  "keywords": [
+    "indexeddb",
+    "database",
+    "query",
+    "storage",
+    "websql",
+    "sqlite"
+  ],
+  "version": "1.0.3",
+  "author": {
+    "name": "YDN Authors, Yathit",
+    "url": "https://raw.github.com/yathit/ydn-db/master/AUTHORS"
+  },
+  "maintainers": [
+    {
+      "name": "Kyaw Tun",
+      "email": "kyawtun@yathit.com",
+      "url": "https://twitter.com/yathit"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "Apache License",
+      "url": "https://raw.github.com/yathit/ydn-db/master/LICENSE"
+    }
+  ],
+  "bugs": "https://github.com/yathit/ydn-db/issues",
+  "homepage": "http://dev.yathit.com",
+  "docs": "http://dev.yathit.com/api-reference/ydn-db/storage.html",
+  "download": "http://dev.yathit.com/index/downloads.html",
+  "demo": "http://dev.yathit.com/index/demos.html",
+  "dependencies": {
+    "jquery": ">=1"
+  }
+}
