@@ -16,10 +16,10 @@
                     <option value="sortbycourses">{{ 'mma.myoverview.sortbycourses' | translate }}</option>
                 </select>
             </div>
-            <mm-loading hide-until="timeline.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbydates'">
+            <mm-loading hide-until="timeline.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbydates'" class="mm-loading-centered">
                 <mma-my-overview-event-list events="timeline.events" show-course="true" can-load-more="timeline.canLoadMore" load-more="loadMoreTimeline()"></mma-my-overview-event-list>
             </mm-loading>
-            <mm-loading hide-until="timelineCourses.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbycourses'" class="block">
+            <mm-loading hide-until="timelineCourses.loaded" ng-show="tabShown == 'timeline' && timeline.sort == 'sortbycourses'" class="block mm-loading-centered">
                 <div class="block mm-course-grid">
                     <mm-course-list-progress ng-repeat="course in timelineCourses.courses" course="course" round-progress="true" show-summary="true">
                         <mma-my-overview-event-list events="course.events" can-load-more="course.canLoadMore" load-more="loadMoreCourse(course)"></mma-my-overview-event-list>
@@ -30,7 +30,7 @@
                     <p>{{ 'mma.myoverview.nocourses' | translate }}</p>
                 </div>
             </mm-loading>
-            <mm-loading hide-until="courses.loaded" ng-show="tabShown == 'courses'">
+            <mm-loading hide-until="courses.loaded" ng-show="tabShown == 'courses'" class="mm-loading-centered">
                 <div class="row row-no-padding">
                     <div class="col-10 text-left">
                         <a ng-if="courses[courses.selected] && courses[courses.selected].length > 5" ng-class="{'ion-funnel': !showFilter, 'ion-close-round': showFilter}" class="button button-dark button-icon icon" ng-click="switchFilter()"></a>

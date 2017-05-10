@@ -444,7 +444,8 @@ button.item.item-button-right {
 }
 
 .scroll > .padding > mm-loading > .mm-loading-container,
-.scroll > mm-loading > .mm-loading-container {
+.scroll > mm-loading > .mm-loading-container,
+.mm-loading-centered .mm-loading-container {
   position: absolute;
   top: 50%;
   left: 0;
@@ -1433,6 +1434,14 @@ i, cite, em, var, address, dfn {
   right: 0;
   transform: translateY(-65%);
 
+  &.mm-empty-box-inline {
+    transform: none;
+    position: relative;
+    top: initial;
+    left: initial;
+    right: initial;
+  }
+
   .icon {
     font-size: 120px;
   }
@@ -1452,6 +1461,8 @@ progress {
   -webkit-appearance: none;
   appearance: none;
   height: 5px;
+  margin: 15px 0;
+  padding: 0;
 
   &[value]::-webkit-progress-bar {
     background-color: $gray-light;
