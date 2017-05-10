@@ -51884,8 +51884,8 @@ angular.module('mm.addons.messageoutput_airnotifier')
 angular.module('mm.core')
 
 .constant('mmCoreConfigConstants', {
-    "app_id" : "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id" : "com.mymarcellin.moodlemobile",
+    "appname": "MyMarcellin Mobile",
     "versioncode" : "2017",
     "versionname" : "3.2.1",
     "cache_expiration_time" : 300000,
@@ -51896,9 +51896,9 @@ angular.module('mm.core')
     "demo_sites": {"student": {"url": "http://school.demo.moodle.net", "username": "student", "password": "moodle"}, "teacher": {"url": "http://school.demo.moodle.net", "username": "teacher", "password": "moodle"}, "cva": {"url": "http://mm.cvaconsulting.com/moodle", "username": "student", "password": "student"}},
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
+    "siteurl": "http://ec2-54-202-80-182.us-west-2.compute.amazonaws.com/moodledemo/moodle",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
-    "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
+    "privacypolicy": "http://marcellin.vic.edu.au/privacy-policy"
 }
 );
