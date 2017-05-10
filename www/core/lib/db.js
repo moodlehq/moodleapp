@@ -229,26 +229,65 @@ angular.module('mm.core')
     }
 
     /**
+     * Convenience function that returns the store object for a given store name and db.
+     *
+     * @param  {Object} db        Database to get the schema.
+     * @param  {String} storeName The store to found.
+     * @return {Object|false}     Store object or false if not found.
+     */
+    function getStoreFromName(db, storeName) {
+        var stores = db.getSchema().stores;
+        for (var x in stores) {
+            if (stores[x].name == storeName) {
+                return stores[x];
+            }
+        }
+        return false;
+    }
+
+    /**
      * Convenience function that returns the Compound Index for a given store and db.
+     *
      * @param  {Object} db        Database to get the schema.
      * @param  {String} storeName The store where to find the index.
      * @param  {String} index     Index to get.
      * @return {Mixed}            KeyPath of the index found or false.
      */
     function getCompoundIndex(db, storeName, index) {
-        var stores = db.getSchema().stores;
-        for (var x in stores) {
-            if (stores[x].name == storeName) {
-                var indexes = stores[x].indexes;
-                for (var y in indexes) {
-                    if (indexes[y].name == index) {
-                        return indexes[y].keyPath;
-                    }
+        var store = getStoreFromName(db, storeName);
+        if (store) {
+            var indexes = store.indexes;
+            for (var y in indexes) {
+                if (indexes[y].name == index) {
+                    return indexes[y].keyPath;
                 }
-                return false;
             }
         }
         return false;
+    }
+
+    /**
+     * Convenience function that checks if a value has all required fields of the key path store.
+     *
+     * @param  {Object} db        Database to get the schema.
+     * @param  {String} storeName The store to be found.
+     * @param  {Object} value     Value to be stored.
+     */
+    function checkKeyPathIsPresent(db, storeName, value) {
+        var store = getStoreFromName(db, storeName);
+        if (store) {
+            keyPath = Array.isArray(store.keyPath) ? store.keyPath : [store.keyPath];
+            for (var x in keyPath) {
+                var val = value[keyPath[x]];
+                if (typeof val == "undefined" || val === null || (typeof val == "number" && isNaN(val))) {
+                    var error = "Value inserted does not have key " + keyPath[x] + " required on store " + storeName;
+                    if (typeof sendErrorReport == 'function') {
+                        sendErrorReport(error);
+                    }
+                    throw new Error(error);
+                }
+            }
+        }
     }
 
     /**
@@ -344,6 +383,7 @@ angular.module('mm.core')
             query;
 
         try {
+            checkKeyPathIsPresent(db, store, values);
             query = db.from(store);
             query = applyWhere(query, where);
             query.patch(values).then(deferred.resolve, deferred.reject);
@@ -435,7 +475,14 @@ angular.module('mm.core')
                  * @return {Promise}     Promise resolved when the entry is inserted. Resolve param: new entry's primary key.
                  */
                 insert: function(store, value, id) {
-                    return callDBFunction(db, 'put', store, value, id);
+                    try {
+                        checkKeyPathIsPresent(db, store, value);
+                        return callDBFunction(db, 'put', store, value, id);
+                    } catch(ex) {
+                        $log.error('Error executing function put to DB ' + db.getName());
+                        $log.error(ex.name + ': ' + ex.message);
+                    }
+                    return false;
                 },
                 /**
                  * Add an entry to a store, returning a synchronous value.
@@ -451,11 +498,12 @@ angular.module('mm.core')
                 insertSync: function(store, value) {
                     if (db) {
                         try {
+                            checkKeyPathIsPresent(db, store, value);
                             db.put(store, value);
                             return true;
                         } catch(ex) {
-                            $log.error('Error executing function sync put to DB '+db.getName());
-                            $log.error(ex.name+': '+ex.message);
+                            $log.error('Error executing function sync put to DB ' + db.getName());
+                            $log.error(ex.name + ': ' + ex.message);
                         }
                     }
 
