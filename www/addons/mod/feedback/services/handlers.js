@@ -186,9 +186,10 @@ angular.module('mm.addons.mod_feedback')
                         module: module,
                         moduleid: module.id,
                         feedbackid: module.instance,
-                        courseid: module.course
+                        courseid: module.course,
+                        tab: 'analysis'
                     };
-                    return $mmContentLinksHelper.goInSite('site.mod_feedback-analysis', stateParams, siteId);
+                    return $mmContentLinksHelper.goInSite('site.mod_feedback', stateParams, siteId);
                 }).finally(function() {
                     modal.dismiss();
                 });

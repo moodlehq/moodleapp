@@ -50,7 +50,7 @@ angular.module('mm.addons.mod_feedback')
             $scope.users = [];
 
             // Get groups (only for teachers).
-            return $mmaModFeedbackHelper.getFeedbackGroupInfo(feedback.coursemodule).then(function(groupInfo) {
+            return $mmGroups.getActivityGroupInfo(feedback.coursemodule).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
                 return loadGroupUsers($scope.selectedGroup);
             });
@@ -112,8 +112,7 @@ angular.module('mm.addons.mod_feedback')
         promises.push($mmaModFeedback.invalidateFeedbackData(courseId));
         if (feedback) {
             promises.push($mmaModFeedback.invalidateNonRespondentsData(feedback.id));
-            promises.push($mmGroups.invalidateActivityAllowedGroups(feedback.coursemodule));
-            promises.push($mmGroups.invalidateActivityGroupMode(feedback.coursemodule));
+            promises.push($mmGroups.invalidateActivityGroupInfo(feedback.coursemodule));
         }
         return $q.all(promises).finally(function() {
             return fetchFeedbackRespondentsData(true);

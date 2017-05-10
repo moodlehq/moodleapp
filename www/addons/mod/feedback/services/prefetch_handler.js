@@ -201,17 +201,29 @@ angular.module('mm.addons.mod_feedback')
                 if (accessData.canedititems || accessData.canviewreports) {
                     // Get all groups analysis.
                     p2.push($mmaModFeedback.getAnalysis(feedback.id, undefined, siteId));
-                    p2.push($mmGroups.getActivityAllowedGroupsIfEnabled(feedback.coursemodule, undefined, siteId).then(function(groups) {
+                    p2.push($mmGroups.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId)
+                            .then(function(groupInfo) {
                         var p3 = [],
                             userIds = [];
-                        angular.forEach(groups, function(group) {
+                        if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                            groupInfo.groups = [{id: 0}];
+                        }
+                        angular.forEach(groupInfo.groups, function(group) {
                             p3.push($mmaModFeedback.getAnalysis(feedback.id, group.id, siteId));
-                            p3.push($mmaModFeedback.getAllResponsesAnalysis(feedback.id, group.id, siteId).then(function(responses) {
-                                userIds.push(responses.userid);
+                            p3.push($mmaModFeedback.getAllResponsesAnalysis(feedback.id, group.id, siteId)
+                                    .then(function(responses) {
+                                angular.forEach(responses.attempts, function(attempt) {
+                                    userIds.push(attempt.userid);
+                                });
                             }));
-                            p3.push($mmaModFeedback.getAllNonRespondents(feedback.id, group.id, siteId).then(function(responses) {
-                                userIds.push(responses.userid);
-                            }));
+                            if (!accessData.isanonymous) {
+                                p3.push($mmaModFeedback.getAllNonRespondents(feedback.id, group.id, siteId)
+                                        .then(function(responses) {
+                                    angular.forEach(responses.users, function(user) {
+                                        userIds.push(user.userid);
+                                    });
+                                }));
+                            }
                         });
 
                         return $q.all(p3).then(function() {

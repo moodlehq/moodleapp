@@ -56,17 +56,8 @@ angular.module('mm.addons.mod_feedback')
             $scope.title = feedback.name || $scope.title;
             $scope.feedback = feedback;
 
-            return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, $scope.offline, true).catch(function(error) {
-                if (!$scope.offline && !$mmUtil.isWebServiceError(error)) {
-                    // If it fails, go offline.
-                    $scope.offline = true;
-                    return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, true);
-                }
-                return $q.reject(error);
-            });
+            return fetchAccessData();
         }).then(function(accessData) {
-            $scope.access = accessData;
-
             if (!$scope.preview && accessData.cansubmit && !accessData.isempty) {
                 return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id, $scope.offline, true) :
                     $q.when(currentPage);
@@ -91,6 +82,22 @@ angular.module('mm.addons.mod_feedback')
         }).finally(function() {
             $scope.feedbackLoaded = true;
         });
+    }
+
+    // Fetch access information.
+    function fetchAccessData() {
+        return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, $scope.offline, true).catch(function(error) {
+            if (!$scope.offline && !$mmUtil.isWebServiceError(error)) {
+                // If it fails, go offline.
+                $scope.offline = true;
+                return $mmaModFeedback.getFeedbackAccessInformation(feedback.id, true);
+            }
+            return $q.reject(error);
+         }).then(function(accessData) {
+            $scope.access = accessData;
+
+            return accessData;
+         });
     }
 
     function fetchFeedbackPageData(page) {
@@ -162,9 +169,13 @@ angular.module('mm.addons.mod_feedback')
                     submitted = true;
 
                     // Invalidate access information so user will see home page updated (continue form or completion messages).
-                    // No need to wait the promises to finish.
-                    $mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id);
-                    $mmaModFeedback.invalidateResumePageData(feedback.id);
+                    var promises = [];
+                    promises.push($mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id));
+                    promises.push($mmaModFeedback.invalidateResumePageData(feedback.id));
+
+                    return $q.all(promises).then(function () {
+                        return fetchAccessData();
+                    });
                 } else if (isNaN(jumpTo) || jumpTo == currentPage) {
                     // Errors on questions, stay in page.
                     return $q.when();
@@ -238,8 +249,9 @@ angular.module('mm.addons.mod_feedback')
     };
 
     // Function to link implemented features.
-    $scope.openFeature = function(feature) {
-        $mmaModFeedbackHelper.openFeature(feature, module, courseId);
+    $scope.showAnalysis = function(feature) {
+        submitted = 'analysis';
+        $mmaModFeedbackHelper.openFeature('analysis', module, courseId);
     };
 
     fetchFeedbackFormData();
@@ -260,8 +272,9 @@ angular.module('mm.addons.mod_feedback')
 
     $scope.$on('$destroy', function() {
         if (submitted) {
+            var tab = submitted = 'analysis' ? 'analysis' : 'overview';
             // If form has been submitted, the info has been already invalidated but we should update index view.
-            $mmEvents.trigger(mmaModFeedbackEventFormSubmitted, {feedbackId: feedback.id});
+            $mmEvents.trigger(mmaModFeedbackEventFormSubmitted, {feedbackId: feedback.id, tab: tab});
         }
         onlineObserver && onlineObserver.off && onlineObserver.off();
     });

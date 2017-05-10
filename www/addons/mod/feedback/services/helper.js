@@ -29,39 +29,6 @@ angular.module('mm.addons.mod_feedback')
         MODE_CATEGORY = 3;
 
     /**
-     * Get activity feedback group info to be shown on templates.
-     *
-     * @module mm.addons.mod_feedback
-     * @ngdoc method
-     * @name $mmaModFeedbackHelper#getFeedbackGroupInfo
-     * @param  {Number} cmId        Course Module Id of the feedback.
-     * @return {Object}             Containing the group info related to the activity.
-     */
-    self.getFeedbackGroupInfo = function(cmId) {
-        var groupInfo = {};
-
-        return $mmGroups.getActivityGroupMode(cmId).then(function(groupMode) {
-            if (groupMode === $mmGroups.SEPARATEGROUPS || groupMode === $mmGroups.VISIBLEGROUPS) {
-                groupInfo.separateGroups = groupMode === $mmGroups.SEPARATEGROUPS;
-                groupInfo.visibleGroups = groupMode === $mmGroups.VISIBLEGROUPS;
-                return $mmGroups.getActivityAllowedGroups(cmId);
-            }
-            return [];
-        }).then(function (groups) {
-            if (groups.length <= 0) {
-                groupInfo.separateGroups = false;
-                groupInfo.visibleGroups = false;
-            } else {
-                groupInfo.groups = [
-                    {'id': 0, 'name': $translate.instant('mm.core.allparticipants')}
-                ];
-                groupInfo.groups = groupInfo.groups.concat(groups);
-            }
-            return groupInfo;
-        });
-    };
-
-    /**
      * Helper function to open a feature in the app.
      *
      * @module mm.addons.mod_feedback
@@ -73,11 +40,19 @@ angular.module('mm.addons.mod_feedback')
      * @param {Number}  group            Course module activity object.
      */
     self.openFeature = function(feature, module, courseId, group) {
-        var pageName = feature ? 'site.mod_feedback-' + feature : 'site.mod_feedback',
+        var pageName = feature && feature != "analysis" ? 'site.mod_feedback-' + feature : 'site.mod_feedback';
             backTimes = 0;
 
+        var stateParams = {
+            module: module,
+            moduleid: module.id,
+            courseid: courseId,
+            feedbackid: module.instance,
+            group: group || 0
+        };
         // Only check history if navigating through tabs.
-        if (!feature || feature == "analysis") {
+        if (pageName == 'site.mod_feedback') {
+            stateParams.tab = feature == "analysis" ? 'analysis' : 'overview';
             backTimes = getHistoryBackCounter(pageName, module.instance);
         }
 
@@ -86,13 +61,6 @@ angular.module('mm.addons.mod_feedback')
             $ionicHistory.goBack(backTimes);
         } else {
             // Not found, open new state.
-            var stateParams = {
-                module: module,
-                moduleid: module.id,
-                courseid: courseId,
-                feedbackid: module.instance,
-                group: group || 0
-            };
             $state.go(pageName, stateParams);
         }
 
@@ -344,7 +312,7 @@ angular.module('mm.addons.mod_feedback')
 
                 answered = !!value;
                 responses[name] = 1;
-                responses.recaptcha_challenge_field = itemData.captcha.challengehash;
+                responses.recaptcha_challenge_field = itemData.captcha && itemData.captcha.challengehash;
                 responses.recaptcha_response_field = value;
                 responses.recaptcha_element = 'dummyvalue';
 
