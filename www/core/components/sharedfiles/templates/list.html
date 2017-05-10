@@ -14,11 +14,8 @@
                     </a>
                 </li>
             </ul>
-            <div ng-if="files && !files.length" class="mm-empty-box block">
-                <i class="icon ion-folder"></i>
-                <p ng-if="manage">{{ 'mm.sharedfiles.nosharedfiles' | translate }}</p>
-                <p ng-if="!manage">{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}</p>
-            </div>
+            <mm-empty-box ng-if="files && !files.length && manage" icon="ion-folder" message="{{ 'mm.sharedfiles.nosharedfiles' | translate }}"></mm-empty-box>
+            <mm-empty-box ng-if="files && !files.length && !manage" icon="ion-folder" message="{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

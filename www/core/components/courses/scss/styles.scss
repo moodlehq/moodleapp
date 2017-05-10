@@ -45,13 +45,12 @@ $doughnut-text-colour: $gray-dark;
     border: $doughnut-border-size solid $doughnut-empty-colour;
     border-radius: 50%;
     box-sizing: border-box;
+    display: table;
 
     .progress-text {
-      position: absolute;
-      top: 50%;
-      /*rtl:ignore*/
-      left: 50%;
-      transform: translate(-50%, -50%);
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
       color: $doughnut-text-colour;
     }
 

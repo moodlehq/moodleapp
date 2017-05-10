@@ -24,10 +24,7 @@
                         <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.notallparticipantsareshown' | translate }}
                     </li>
                 </ul>
-                <div ng-if="!submissions || submissions.length == 0" class="mm-empty-box block">
-                    <i class="icon ion-archive"></i>
-                    <p>{{ 'mma.mod_assign.submissionstatus_' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="!submissions || submissions.length == 0" icon="ion-archive" message="{{ 'mma.mod_assign.submissionstatus_' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

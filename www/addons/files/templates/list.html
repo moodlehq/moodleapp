@@ -15,10 +15,7 @@
                     <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>
                 </li>
             </ul>
-            <div ng-if="count == 0" class="mm-empty-box block">
-                <i class="icon ion-folder"></i>
-                <p>{{ 'mma.files.emptyfilelist' | translate }}</p>
-            </div>
+            <mm-empty-box ng-if="count == 0" icon="ion-folder" message="{{ 'mma.files.emptyfilelist' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

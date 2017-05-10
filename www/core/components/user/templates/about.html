@@ -87,10 +87,7 @@
                 </div>
             </div>
 
-            <div ng-if="!user || !hasContact || !hasDetails || !user.description" class="mm-empty-box block">
-                <i class="icon ion-person"></i>
-                <p>{{ 'mm.user.detailsnotavailable' | translate }}</p>
-            </div>
+            <mm-empty-box ng-if="!user || !hasContact || !hasDetails || !user.description" icon="ion-person" message="{{ 'mm.user.detailsnotavailable' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

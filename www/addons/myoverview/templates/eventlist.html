@@ -36,7 +36,6 @@
     <button ng-if="!loadingMore" class="button button-block" ng-click="loadMoreEvents()">{{ 'mm.core.loadmore' | translate }}</button>
     <ion-spinner ng-if="loadingMore"></ion-spinner>
 </div>
-<div ng-if="empty" class="mm-empty-box block" ng-class="{'mm-empty-box-inline': !showCourse}">
-    <img ng-if="showCourse" src="addons/myoverview/img/activities.svg">
-    <p>{{ 'mma.myoverview.noevents' | translate }}</p>
-</div>
+
+<mm-empty-box ng-if="empty && showCourse" icon="addons/myoverview/img/activities.svg" message="{{ 'mma.myoverview.noevents' | translate }}"></mm-empty-box>
+<mm-empty-box ng-if="empty && !showCourse" message="{{ 'mma.myoverview.noevents' | translate }}"></mm-empty-box>

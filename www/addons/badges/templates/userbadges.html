@@ -13,10 +13,7 @@
                         </a>
                     </li>
                 </ul>
-                <div ng-if="badges && badges.length == 0" class="mm-empty-box block">
-                    <i class="icon ion-trophy"></i>
-                    <p>{{ 'mma.badges.nobadges' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="badges && badges.length == 0" icon="ion-trophy" message="{{ 'mma.badges.nobadges' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

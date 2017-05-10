@@ -12,10 +12,7 @@
                         </a>
                     </li>
                 </ul>
-                <div ng-if="plans.length == 0" class="mm-empty-box block">
-                    <i class="icon ion-map"></i>
-                    <p>{{ 'mma.competency.noplanswerecreated' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="plans.length == 0" icon="ion-map" message="{{ 'mma.competency.noplanswerecreated' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

@@ -350,6 +350,7 @@ p.item-text-wrap {
   width: 100%;
   height: 100%;
   position: relative;
+  margin-right: 2px;
 }
 
 .mm-split-pane-content {
@@ -445,12 +446,21 @@ button.item.item-button-right {
 
 .scroll > .padding > mm-loading > .mm-loading-container,
 .scroll > mm-loading > .mm-loading-container,
-.mm-loading-centered .mm-loading-container {
+.mm-loading-center .mm-loading-container {
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
-  transform: translateY(-50%);
+  height: 100%;
+  display: table;
+  z-index: -1;
+
+  .mm-loading-spinner {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
 }
 
 .mm-loading-content {
@@ -459,19 +469,6 @@ button.item.item-button-right {
 
 mm-loading.mm-loading-noheight .mm-loading-content {
   height: auto;
-}
-
-mm-loading.mm-loading-center {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: inline-block;
-
-  .mm-loading-container {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
 }
 
 // Align ion-spinner right
@@ -1425,21 +1422,34 @@ i, cite, em, var, address, dfn {
 
 
 .mm-empty-box {
-  padding: $item-padding;
-  text-align: center;
-  color: $dark;
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
-  transform: translateY(-65%);
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+  clear: both;
+
+  .mm-empty-box-content {
+    color: $dark;
+    margin: 0;
+    padding: $item-padding;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
 
   &.mm-empty-box-inline {
-    transform: none;
     position: relative;
     top: initial;
     left: initial;
     right: initial;
+    z-index: initial;
   }
 
   .icon {

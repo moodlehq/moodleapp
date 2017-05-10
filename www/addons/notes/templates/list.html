@@ -30,10 +30,7 @@
                     </div>
                 </article>
             </div>
-            <div ng-if="notes.length == 0" class="mm-empty-box block">
-                <i class="icon ion-ios-list"></i>
-                <p>{{ 'mma.notes.nonotes' | translate }}</p>
-            </div>
+            <mm-empty-box ng-if="notes.length == 0" icon="ion-ios-list" message="{{ 'mma.notes.nonotes' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

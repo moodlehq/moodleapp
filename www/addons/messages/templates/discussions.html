@@ -44,14 +44,7 @@
             </li>
         </ul>
 
-        <div ng-if="(!discussions || discussions.length <= 0) && !showSearchResults" class="mm-empty-box block">
-            <i class="icon ion-chatboxes"></i>
-            <p>{{ 'mma.messages.nomessages' | translate}}</p>
-        </div>
-
-        <div ng-if="(!results || results.length <= 0) && showSearchResults" class="mm-empty-box block">
-            <i class="icon ion-ios-search-strong"></i>
-            <p>{{ 'mm.core.noresults' | translate}}</p>
-        </div>
+        <mm-empty-box ng-if="(!discussions || discussions.length <= 0) && !showSearchResults" icon="ion-chatboxes" message="{{ 'mma.messages.nomessages' | translate}}"></mm-empty-box>
+        <mm-empty-box ng-if="(!results || results.length <= 0) && showSearchResults" icon="ion-ios-search-strong" message="{{ 'mm.core.noresults' | translate}}"></mm-empty-box>
     </mm-loading>
 </ion-content>
