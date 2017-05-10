@@ -60,32 +60,39 @@ $item-input-padding: 16px !default;
  * App Branding
  */
 .mm-bglogo {
-  background-color: white; /* Change this to add a bg image or change color */
+  background-color: #ff5c00; /* Change this to add a bg image or change color */
+  background: -webkit-radial-gradient(#ff7600, #ff5c00);
+  background: radial-gradient(#ff7600, #ff5c00);
   background-repeat: no-repeat;
   background-position: center center;
-  width: 100%;
   position: absolute;
   top: 0;
   bottom: 0;
-}
-
-.mm-logo {
-  background-image: url('../img/moodle.png'); /* Change logo here */
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  text-align: center;
-}
-
-.mm-logo:before {
-  content: '';
-  display: inline-block;
+  left: 0;
+  right: 0;
   height: 100%;
-  vertical-align: middle;
-  margin-top: 120px; /* Change this to place spinner under the logo (usually double of the logo size) */
+  width: 100%;
+  display: table;
+
+  .mm-logo {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  img {
+    width: 60%;
+    max-width: 300px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 30px;
+  }
+
+  .spinner {
+    color: white;
+    stroke: white;
+    fill: white;
+  }
 }
 
 /**
