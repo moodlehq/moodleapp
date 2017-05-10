@@ -1,0 +1,3002 @@
+/**
+ * Core styles for the app.
+ *
+ * Here you will find all the styles that Moodle Mobile creates for you to use, as well
+ * as all the necessary overrides for the app to look nice everywhere.
+ *
+ * Any style that cannot be re-used has to be placed in the its component or addon.
+ *
+ * There should always be a variable for anything that is styleable, but do not
+ * over create variables try to re-use as manu as you can. Always remember to add !default
+ * to your variable declarations to allow a themer to override in app.scss.
+ */
+
+/**
+ * Variables
+ */
+
+// Bar content.
+$bar-content-bg: #f70 !default;
+$bar-content-border: transparent !default;
+$bar-content-text: #fff !default;
+
+// Small avatar ideal for icons.
+$item-media-width: 32px !default;
+$item-media-height: 32px !default;
+
+// Howto tips.
+$item-howto-color: #d9edf7 !default;
+
+// Messages.
+$item-message-bg: $stable !default;
+$item-message-note-text: #999 !default;
+$item-message-note-font-size: $font-size-small !default;
+$item-message-mine-bg: rgba(17, 193, 243, .1) !default;
+
+// Disabled items.
+$item-disabled-color: #999 !default;
+
+// Warnings (energized).
+$mm-warning-color: $energized !default;
+
+// Errors (red).
+$mm-error-color: #c00 !default;
+
+// Timer variables.
+$mm-timer-warn-color:     #f00 !default;
+$mm-timer-color:          #fff !default;
+$mm-timer-iterations:     15 !default;
+
+// Text with icon.
+$mm-text-with-icon-height: 22px !default;
+
+// Smaller button icon.
+$mm-button-icon-small-height: 22px !default;
+
+// Required inputs asterisk color.
+$mm-input-required-asterisk-color: #ff4136 !default;
+
+// Item padding.
+$item-input-padding: 16px !default;
+
+// Rich text editor.
+$mm-rte-min-height: 80px !default;
+
+/**
+ * App Branding
+ */
+.mm-bglogo {
+  background-color: white; /* Change this to add a bg image or change color */
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.mm-logo {
+  background-image: url('../img/moodle.png'); /* Change logo here */
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+.mm-logo:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-top: 120px; /* Change this to place spinner under the logo (usually double of the logo size) */
+}
+
+/**
+ * Styles revert.
+ */
+
+em {
+  font-style: italic;
+}
+
+/**
+ * Styles.
+ */
+
+.mm-big   { font-size: 115%; }
+
+.item-stacked-label {
+  background-color: $item-default-bg;
+}
+
+.item-stacked-label, .item-checkbox {
+  .input-label {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+// Default bar.
+.bar-content {
+  @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
+  .button {
+    @include button-style($bar-content-bg, $bar-content-border, $bar-content-bg, $bar-content-border, $bar-content-text);
+    @include button-clear(#fff, $bar-title-font-size);
+  }
+}
+
+// Define an alternative way to set a heading in an item without using a heading tag.
+// This is done for accessibility reasons when a heading is semantically incorrect.
+.item .item-heading {
+  @extend h2;
+  &.padding {
+    @extend .padding;
+  }
+}
+
+.item.item-text-wrap .item-heading,
+p.item-text-wrap {
+  overflow: visible;
+  white-space: normal;
+}
+
+.item h1:first-child,
+.item h2:first-child,
+.item .item-heading:first-child,
+.item h3:first-child,
+.item h4:first-child,
+.item h5:first-child,
+.item h6:first-child,
+.item p:first-child {
+    margin-top: 0;
+}
+
+// More options for grids.
+.col-65 {
+  @include flex(0, 0, 65%);
+  max-width: 65%;
+  width: 65%;
+}
+.col-60 {
+  @include flex(0, 0, 60%);
+  width: 60%;
+  max-width: 60%;
+}
+.col-40 {
+  @include flex(0, 0, 40%);
+  max-width: 40%;
+  width: 40%;
+}
+
+// Media item, ideal for icons.
+.item-media {
+  @extend .item-avatar;
+  padding-left: $item-media-width + ($item-padding * 2);
+  min-height: $item-media-width + ($item-padding * 2);
+  > img:first-child {
+    max-width: $item-media-width;
+    max-height: $item-media-height;
+    border-radius: 0;
+  }
+  p {
+    margin: 0px;
+  }
+  &.item-button-right {
+    > .button,
+    > .buttons,
+    > .spinner {
+      top: $item-padding;
+    }
+  }
+}
+
+// Howto tips.
+.item.item-howto {
+  padding-bottom: 12px;
+  padding: 9px;
+  margin-bottom: 12px;
+  background-color: $item-howto-color;
+  border-color: $item-howto-color;
+  color: #666;
+
+  &.item-icon-left {
+    padding-left: 35px;
+
+    .icon:first-child {
+      left: 4px;
+    }
+  }
+
+  &.item-icon-right {
+    @extend .item-icon-right;
+  }
+}
+
+// Message item.
+.item-message {
+  clear: both;
+  max-width: 80%;
+  border-radius: 12px;
+  border-width: 0;
+  padding: 4px 10px;
+  margin: 4px 0;
+  background-color: $item-message-bg;
+  float: left;
+
+  .item-note {
+    color: $item-message-note-text;
+    font-size: $item-message-note-font-size;
+    margin-left: 20px;
+  }
+
+  mm-format-text > p:only-child {
+    display: inline;
+  }
+}
+
+.item-message .item-content {
+  background-color: $item-message-bg;
+  padding: 0;
+}
+
+// Defines when an item-message is the user's.
+.item-message-mine {
+  background-color: $item-message-mine-bg;
+  float: right;
+  max-width: 80%;
+
+  .spinner {
+    float: right;
+    margin-left: 5px;
+    margin-right: -3px;
+    margin-top: 2px;
+    margin-bottom: -2px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.item-message-mine .item-content {
+  background-color: transparent;
+  padding: 0;
+}
+
+// Defines a "disabled" item.
+.item.item-disabled,
+.item-toggle[disabled],
+.platform-android .item.item-disabled {
+  color: $item-disabled-color;
+  h2 {
+    color: $item-disabled-color;
+  }
+}
+
+// Avoid adding too much padding.
+.item-complex .item-checkbox .item-content {
+  padding: 0;
+}
+
+// Large centered avatar.
+.item-avatar-center {
+    @extend .item-avatar;
+    text-align: center;
+    padding-left: 16px;
+
+    &.item-complex .item-content {
+        text-align: center;
+        padding-left: 49px;
+    }
+
+    > img:first-child,
+    &.item-complex .item-content > img:first-child,
+    img.avatar {
+        position: static;
+        width: 90px;
+        height: 90px;
+        max-width: 90px;
+        max-height: 90px;
+        margin-bottom: 10px;
+        border-radius : 50%;
+        padding: 4px;
+        border: 1px solid #ddd;
+
+        &.avatar-full {
+          border-radius: 2%;
+          border: 0;
+          max-width: 100%;
+          max-height: 200px;
+          width: auto;
+          height: auto;
+        }
+    }
+}
+
+.item-stack-top {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Show buttons as tabs */
+.tabs.tabs-free {
+  position: initial;
+  background: transparent;
+  border: 0;
+  margin-bottom: 0;
+  margin-top: 10px;
+
+  .tab-item {
+    margin-top: -1px;
+    max-width: initial;
+    font-size: 120%;
+
+    &.active, &.activated {
+      margin-top: -1px;
+      border-top-width: 0;
+      border-bottom-width: 3px;
+    }
+  }
+}
+
+.user-with-avatar {
+  position: relative;
+  z-index: 2;
+  display: block;
+  padding: 4px;
+  padding-left: 56px;
+  min-height: 48px;
+  text-decoration: none;
+}
+.user-with-avatar > img:first-child {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    max-width: 40px;
+    max-height: 40px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+// Split pane.
+.mm-split-pane {
+  @include display-flex();
+  @include align-items(stretch);
+  width: 100%;
+  height: 100%;
+}
+
+.mm-split-pane-menu {
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mm-split-pane-content {
+  @include flex(1, 0, auto);
+  position: relative;
+  display: none;
+}
+
+.tablet {
+  .mm-split-pane-menu {
+    @include flex(0, 0, $menu-width);
+    width: $menu-width;
+    border-right: 1px solid #ddd;
+  }
+  .mm-split-pane-content {
+    display: block;
+  }
+}
+
+// Spinners.
+.button-block {
+  .spinner {
+    position: absolute;
+    right: $button-padding;
+    padding-top: 0;
+    line-height: 28px;
+  }
+}
+.item-button-right {
+  > .spinner {
+    // Copied from .item-button-right > .button.
+    @include display-flex();
+    @include align-items(center);
+    position: absolute;
+    top: ceil($item-padding / 2);
+    right: $item-padding;
+    min-width: $item-icon-font-size + ($button-border-width * 2);
+    min-height: $item-icon-font-size + ($button-border-width * 2);
+    font-size: $item-button-font-size;
+    line-height: $item-button-line-height;
+  }
+}
+
+// Buttons.
+.item-button-right,
+a.item.item-button-right,
+button.item.item-button-right {
+  &.item-2-button-right {
+    padding-right: $item-padding * 7;
+  }
+  &.item-3-button-right {
+    padding-right: $item-padding * 10;
+  }
+}
+
+.item-button-right > .buttons.buttons-vertical {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.button.button-block {
+  line-height: 28px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+
+  .icon:before,
+  &.icon:before,
+  &.icon-left:before,
+  &.icon-right:before {
+    line-height: 28px;
+  }
+}
+
+/**
+ * Core directives.
+ */
+.mm-iframe {
+  position: relative;
+  max-height: 100%;
+  max-width: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.mm-loading-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.mm-loading-content {
+  padding-bottom: 1px; /* This makes height be real */
+}
+
+mm-loading.mm-loading-noheight .mm-loading-content {
+  height: auto;
+}
+
+mm-loading.mm-loading-center {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+
+  .mm-loading-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+// Align ion-spinner right
+.spinner-right {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+}
+
+.mm-split-item-selected, .mm-split-item-selected .item {
+  border-color: #ccc;
+  background-color: #D9D9D9;
+}
+
+.mm-module-buttons {
+  float: right;
+  width: $button-height;
+  height: 30px;
+  margin-top: - ($button-padding);
+  margin-bottom: $button-padding;
+  margin-left: 2px;
+  position: relative;
+  text-align: center;
+
+  &.mm-button-completion {
+    margin-left: $button-icon-size + ($button-padding * 2) + 2;
+  }
+
+  .spinner {
+    bottom: - ($button-padding);
+    right: 7px;
+    position: absolute;
+  }
+}
+
+.mm-completion-container {
+  // Based on .item-checkbox .checkbox and .item-checkbox.item-checkbox-right
+  position: absolute;
+  top: 0;
+  right: $button-height;
+  padding: $button-padding;
+
+  img {
+    width: $button-icon-size;
+  }
+}
+
+.mm-media-adapt-width {
+  max-width: 100%;
+}
+
+.mm-enabled-media-adapt img.mm-media-adapt-width,
+img.mm-media-adapt-width-enabled {
+  height: auto;
+}
+
+.mm-adapted-img-container {
+  position: relative;
+  display: inline-block;
+}
+
+.mm-image-viewer-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: black;
+  font-size: 20px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .5);
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+}
+
+// Remove padding-top and bottom from navigation bar to minimize height used.
+mm-navigation-bar {
+  .row {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
+// Accessibility: text 'seen' by screen readers but not visual users.
+.accesshide {
+  position: absolute;
+  left: -10000px;
+  font-weight: normal;
+  font-size: 1em;
+}
+
+// When using .item and .row in the same element, .row's padding prevails. Use this class to keep .item's padding.
+.item.row.mm-item-padding {
+  padding: $item-padding / 2;
+}
+
+p.mm-error {
+  color: $mm-error-color;
+}
+
+.mm-warning {
+  border-bottom: 3px solid $mm-warning-color;
+  padding: $card-padding;
+  box-shadow: $card-box-shadow;
+  margin: 20px 10px;
+  background-color: #fff;
+  position: relative;
+  padding-left: $item-padding * 3;
+  text-align: left;
+
+  i.icon {
+    @include display-flex();
+    @include align-items(center);
+    position: absolute;
+    top: 0;
+    height: 100%;
+    font-size: ceil(($item-icon-font-size / 4) * 3);
+    left: ceil($item-padding / 4);
+    color: $mm-warning-color;
+
+    &:before {
+      display: block;
+      width: ceil(($item-icon-font-size / 4) * 3);
+      text-align: center;
+    }
+  }
+}
+
+// Extra attributes to ionic classes to force frames via directive 100% height.
+.scroll {
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  // Fix too much padding when a card is on top.
+  &.padding>.card:first-child,
+  &.padding .mm-loading-content>.card:first-child,
+  &.padding .scroll-refresher>.card:first-child {
+    margin-top: $content-padding;
+  }
+}
+
+// Fix padding for modal.
+.padding .scroll {
+  padding: $content-padding;
+}
+
+.iframe-wrapper {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: auto;
+  width: auto;
+  position: absolute !important; // Position fixed causes problems in Android 4.1-4.3.
+}
+
+.mm-zoom-pane {
+  height: 100%;
+}
+
+.mm-has-navigation-bar {
+  .iframe-wrapper {
+    top: $button-height + 5px;
+  }
+}
+
+.mm-bar-button-image, .bar .button.mm-bar-button-image {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  max-width: $button-bar-button-height - 1;
+  max-height: $button-bar-button-height - 1;
+  border-radius: 50%;
+}
+
+.badge.badge-inline {
+  display: inline-block;
+  position: relative;
+  top: initial;
+  right: initial;
+  white-space: normal;
+}
+
+// Timer.
+mm-timer {
+  display: block;
+}
+
+// Style timer in items.
+.item mm-timer.mm-timer, mm-timer.mm-timer.item {
+  p, span, label {
+    color: $item-default-text;
+    font-size: $item-font-size;
+  }
+}
+
+// Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
+@for $i from 0 through $mm-timer-iterations {
+  mm-timer.mm-timer.mm-timer-timeleft-#{$i} {
+    background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
+  }
+}
+
+.mm-monospaced {
+  font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+}
+
+.mm-bold {
+  font-weight: bold;
+}
+
+// Context Menu
+
+.popover.mm-context-menu {
+  width: 320px;
+  max-width: 100%;
+}
+
+.popup-container .popup-title
+
+
+.mm-icon-with-badge {
+  position: relative;
+
+  .icon {
+    font-size: $button-large-icon-size;
+  }
+
+  .mm-icon-badge {
+    width: auto;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    top: -18px;
+    right: -8px;
+    color: red;
+    font-size: $button-large-icon-size / 2;
+  }
+}
+
+.popup-container.mm-nohead .popup-head {
+  display: none;
+}
+
+.popup-container.mm-bigpopup .popup {
+  width: 90%; // Fallback of calc.
+  width: calc(100% - 20px);
+  max-width: none;
+}
+
+// Inline icons and inputs.
+
+.mm-text-with-icon-right {
+  line-height: $mm-text-with-icon-height;
+  .icon {
+    font-size: $mm-text-with-icon-height;
+    padding: 0 5px;
+    color: $positive;
+  }
+}
+
+.mm-full-width {
+  width: 100%;
+}
+
+.item-input-inset.mm-input-inset-no-padding {
+  padding: 0;
+}
+
+.item-input.mm-item-input-padding-right {
+  padding-right: $item-input-padding;
+}
+
+.item-input.item-stacked-label {
+  padding: $item-input-padding;
+
+  .item-input-wrapper.item-select {
+    display: block;
+
+    select {
+      background: transparent;
+      padding: 12px;
+      margin: 0;
+      width: 100%;
+      position: relative;
+      max-width: 100%;
+      direction: ltr;
+      line-height: 14px;
+    }
+  }
+}
+
+.item-select .mm-select-fix {
+  // Taken from .item-select select.
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0 ($item-padding * 3) 0 $item-padding;
+  max-width: 65%;
+  width: 100%;
+  border: none;
+  background: $item-default-bg;
+  color: #333;
+  text-indent: .01px;
+  white-space: nowrap;
+  font-size: $font-size-base;
+  cursor: pointer;
+  direction: rtl; // right align the select text
+
+  pointer-events: none;
+}
+
+
+.item-input-inset .item-input-wrapper input,
+.item-input .item-input-wrapper input {
+  width: 100%;
+  background: transparent;
+}
+
+.button.mm-button-icon-small {
+  padding: 0 3px;
+  min-height: $mm-button-icon-small-height;
+
+  .icon:before {
+    font-size: $mm-button-icon-small-height;
+  }
+}
+
+// Increase size for buttons with only an icon inside.
+.button.icon {
+  &:before {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 30px;
+  }
+
+  &.button-small:before {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 20px;
+  }
+}
+
+.item-input-wrapper ~ .button.mm-button-icon-small {
+  margin-left: 5px;
+}
+
+// This is to allow clicks in links inside buttons.
+.mm-button-with-inner-link, .button.mm-button-with-inner-link {
+  &:after {
+    display: none;
+  }
+}
+
+// Squared checkboxes.
+.checkbox input:before, .checkbox-icon:before {
+  border-radius: 0;
+}
+
+.item-title {
+  border: 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: white;
+
+  input {
+    font-size: 20px;
+    line-height: 22px;
+    width: 100%;
+  }
+}
+
+.item-noborder {
+  border: 0;
+  padding: 0;
+}
+
+.padding .mm-searchbox .item-input-inset {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.item.mm-not-clickable {
+  cursor: default;
+
+  &[ng-click]:hover {
+    cursor: default;
+  }
+
+  &.activated {
+    border-color: $item-default-border;
+    background-color: $item-default-bg;
+  }
+}
+
+.item.mm-tab-handlers,
+.mm-tab-handlers {
+  padding: 6px 2px;
+
+  .tabs {
+    background: white;
+    border: 0;
+  }
+  .tabs-icon-round {
+    color: $positive;
+
+    .tab-item.activated {
+      opacity: 0.7;
+    }
+
+    .icon {
+      border-radius: 50%;
+      max-width: 32px;
+      font-size: 22px;
+      line-height: 32px;
+      color: white;
+      background-color: $positive;
+      margin-bottom: 5px;
+
+      &:before {
+        line-height: 32px;
+      }
+    }
+  }
+
+  .mm-loading-handlers {
+    padding: 7px;
+    padding-bottom: 6px;
+  }
+}
+
+/**
+ * This CSS uses adjacent selectors instead of general sibling (~) selectors
+ * for ion radio that are broken in iOS 9 UIWebView.
+ *
+ * To apply the patch, include this CSS after your ionic.css include.
+ */
+  .item-radio input:checked + .radio-content .item-content {
+    /* style the item content when its checked */
+    background: #f7f7f7;
+  }
+
+  .item-radio input:checked + .radio-content .radio-icon {
+    /* show the checkmark icon when its checked */
+    visibility: visible;
+  }
+
+/** Hide PTR when slowly released */
+.scroll-refresher .ionic-refresher-content.ionic-refresher-with-text {
+  bottom: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+  .hidden-phone {
+    display: none !important;
+  }
+}
+/**
+ * RichTextEditor.
+ */
+
+.mm-textarea {
+  width: 100%;
+  resize: none;
+
+  &[mm-auto-rows] {
+    height: auto;
+    line-height: 18px;
+    padding: 5px;
+  }
+  &:not([mm-auto-rows]) {
+    height: 200px;
+    min-height: $mm-rte-min-height;
+  }
+}
+
+.item-input-wrapper .mm-textarea {
+  background: transparent;
+}
+
+.item.mm-item-has-rich-text-editor {
+  &.item-input {
+    padding: 0;
+  }
+  padding: 0;
+  display: block;
+
+  .input-label, .mm-textarea {
+    padding-left: $item-padding;
+    padding-top: $item-padding/2;
+  }
+}
+
+.mm-rich-text-editor-container {
+
+  .cke.cke_chrome {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .cke_bottom.cke_expanded {
+    height: auto;
+  }
+
+  .cke_bottom .cke_path {
+    display: none;
+    float: none;
+    margin: 0;
+  }
+
+  .cke_bottom.cke_expanded .cke_path {
+    display: block;
+  }
+
+  textarea.cke_source {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .cke_contents {
+    min-height: $mm-rte-min-height;
+  }
+}
+
+.mm-rich-text-editor-container,
+.cke_inner.cke_maximized {
+
+  .cke_bottom {
+    padding: 0;
+    border-color: #ddd;
+    box-shadow: none;
+    background: #F2F2F2;
+    height: 30px;
+  }
+
+  .cke_button:first-child, .cke_button:last-child {
+    border-radius: 0;
+  }
+
+  .cke_button,
+  a.cke_combo_button,
+  .cke_toolbox_collapser {
+    background: white;
+    background-image: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+    padding: 5px 8px;
+    border-radius: 0;
+    border: 0;
+    margin: 1px;
+  }
+
+  a.cke_combo_button {
+    min-height: 26px;
+    padding: 1px;
+  }
+
+  .cke_button:hover,
+  a.cke_combo_button:hover,
+  .cke_combo_off a.cke_combo_button:hover,
+  .cke_toolbox_collapser:hover {
+    background-image: radial-gradient(ellipse at center, #ffffff 60%,#dfdfdf 100%);
+    background-color: #ebebeb;
+  }
+
+  .cke_button:active,
+  a.cke_combo_button:active,
+  .cke_toolbox_collapser:active {
+    background-image: radial-gradient(ellipse at center, #ffffff 50%, #dfdfdf 100%);
+    background-color: #ebebeb;
+    border: 0;
+  }
+
+  .cke_toolgroup {
+    margin: 0;
+    border: 0;
+    background: none;
+    background-image: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .cke_toolbar_separator,
+  .cke_toolbar_break {
+    clear: none;
+    display: none;
+  }
+
+  .cke_toolbox_collapser {
+    padding-top: 9px;
+    padding-bottom: 8px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .cke_toolbox_main {
+    margin-right: 30px;
+    float: left;
+    display: block !important;
+  }
+
+  .cke_button__source_label {
+    display: none;
+  }
+}
+
+.cke_inner.cke_maximized {
+  .cke_bottom {
+    height: auto;
+  }
+
+  .cke_toolbox_collapser {
+    display: none;
+  }
+
+  .cke_toolbox_main {
+    margin: 0;
+  }
+}
+
+// Disable input copy to prevent errors in iOS.
+
+.previous-input-focus, .previous-input-focus.mm-textarea, .cloned-text-input + input, .cloned-text-input + textarea.mm-textarea {
+  width: 100%;
+  position: relative !important;
+  left: 0px;
+}
+
+.cloned-text-input, textarea.cloned-text-input, input.cloned-text-input {
+  display: none;
+}
+
+// InApp notifications.
+
+.mm-inapp-notification-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  width: 100%;
+  opacity: 0;
+  margin-top: -130px;
+  -webkit-transition: 0.5s all ease-in-out;
+  transition: 0.5s all ease-in-out;
+
+  &.active {
+    opacity: 1;
+    margin-top: 0;
+  }
+
+  &.hide {
+    opacity: 0;
+    margin-top: -130px;
+    display: block;
+    pointer-events: none;
+  }
+
+  .mm-inapp-notification {
+    position: static;
+    height: auto;
+    width: auto;
+    max-width: 400px;
+    margin-left: auto  !important;
+    margin-right: auto  !important;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    padding: 2px 0;
+
+    .scroll-content, .scroll {
+      position: relative;
+      top: auto;
+      bottom: auto;
+      left: auto;
+      right: auto;
+    }
+  }
+}
+
+.mm-toast {
+  pointer-events: none;
+  bottom: 100px;
+  -ms-flex-align: flex-end;
+  -webkit-align-items: flex-end;
+  -moz-align-items: flex-end;
+  align-items: flex-end;
+
+  .loading {
+    padding: 10px 20px;
+    border-radius: 25px;
+    margin: 0 10px;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .mm-inapp-notification-backdrop .mm-inapp-notification {
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+  }
+}
+
+// Toggles with relative positioning.
+
+.item-toggle-relative {
+  .item.item-toggle {
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+
+    .toggle {
+      position: relative;
+      top: 0px;
+      right: 0px;
+    }
+  }
+}
+
+// Spinner aligned right.
+
+ion-spinner.mm-spinner-right {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    top: ($item-padding / 2) + 2; // Same top as toggle.
+    right: 5px;
+  }
+
+  .toggle {
+    right: $item-padding + 19px;
+  }
+}
+
+// If the item-toggle is nested inside another item then the spinner can be aligned to the right.
+.item .item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    right: 0px;
+  }
+
+  .toggle {
+    right: $item-padding + 14px;
+  }
+}
+
+.item-borderless.item-toggle {
+  padding-left: 0;
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+  .toggle {
+    top: 0;
+  }
+}
+
+.card .item-border,
+.item-border {
+  &:first-child {
+    border-top: $item-border-width solid $item-light-border;
+  }
+
+  &:last-child {
+    border-bottom: $item-border-width solid $item-light-border;
+  }
+}
+
+// Video subtitles.
+.platform-ios video::cue {
+  font-size: 12px;
+}
+// Add note below an input.
+.item .mm-input-footnote {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+// Mark input as required styles.
+.mm-input-required-asterisk, .icon.mm-input-required-asterisk, i.icon.mm-input-required-asterisk {
+  color: $mm-input-required-asterisk-color !important;
+  font-size: 8px;
+  padding-left: 4px;
+  line-height: 100%;
+  vertical-align: top;
+}
+
+// Allow placeholders in date inputs.
+.platform-android, .platform-ios {
+  input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="time"] {
+    &.ng-empty:before {
+      color: $input-color-placeholder;
+      content: attr(placeholder);
+    }
+  }
+}
+
+/**
+ * Form validation.
+ */
+
+.item.mm-input-has-errors, .item .mm-input-has-errors {
+  input {
+    border-bottom: 1px solid $mm-error-color;
+  }
+  .checkbox-icon, textarea {
+    border: 1px solid $mm-error-color;
+  }
+  &.mm-item-has-rich-text-editor, .mm-item-has-rich-text-editor {
+    .mm-rich-text-editor-container {
+      border: 1px solid $mm-error-color;
+    }
+  }
+}
+
+.mm-input-error-container {
+  margin: 0;
+
+  .mm-input-error {
+    padding: 4px;
+    color: $mm-error-color;
+    font-size: 12px;
+  }
+}
+
+// Ionic overrides italic font-style, apply it again.
+i, cite, em, var, address, dfn {
+    font-style: italic;
+}
+
+// Footer with auto height.
+.bar-footer.bar-footer-adjustable {
+  height: auto;
+}
+
+// Show password styles.
+.item,
+.card .item,
+.list-inset .item,
+.padding > .list .item,
+.padding-horizontal > .list .item {
+
+  &.item-input {
+    padding-right: $item-padding;
+
+    input {
+      padding-right: 0px;
+    }
+
+    .mm-show-password-container {
+      padding: 0px;
+      width: 100%;
+
+      .button {
+        margin-left: ($item-padding / 3) * 2;
+        padding: 0 $button-clear-padding;
+      }
+    }
+  }
+}
+
+.item-button-right > .buttons.buttons-small {
+  min-width: 20px;
+  height: 100%;
+  top: 0;
+
+  > .button.button-icon {
+    min-width: 20px;
+
+    .icon.icon-accessory:before {
+      font-size: 16px;
+    }
+  }
+}
+
+/** Format Text */
+mm-format-text, *[mm-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
+
+  // Fix lists styles in mm-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+}
+
+mm-format-text[max-height], *[mm-format-text][max-height] {
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // This is to allow clicks in radio/checkbox content.
+  &.mm-text-formatted {
+    cursor: pointer;
+
+    .mm-show-more {
+      display: none;
+    }
+
+    &:not(.mm-shortened) {
+      max-height: none !important;
+    }
+
+    &.mm-shortened {
+      color: #777;
+      overflow: hidden;
+      min-height: 50px;
+
+      .mm-show-more {
+        color: $dark;
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+        background-color: white;
+        padding-left: 10px;
+
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+      }
+
+      &.mm-expand-in-fullview .mm-show-more:after {
+        content: $ionicon-var-chevron-right;
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
+    }
+  }
+}
+
+.item.active,
+.item.activated,
+.item-complex.active .item-content,
+.item-complex.activated .item-content,
+.item .item-content.active,
+.item .item-content.activated {
+
+  mm-format-text[max-height], *[mm-format-text][max-height] {
+    // This is to allow clicking on activated areas and have background the same color.
+    &.mm-text-formatted.mm-shortened {
+      .mm-show-more {
+        background-color: $item-default-active-bg;
+      }
+
+      &:before {
+        background: -moz-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba($item-default-active-bg, 0)), color-stop(calc(100% - 15px), $item-default-active-bg));
+        background: -webkit-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+      }
+    }
+  }
+}
+
+// Position modals over action sheet. This means that modals will ALWAYS be over action sheet (in Ionic it's the opposite).
+.action-sheet-open .modal-backdrop.active {
+  z-index: 20;
+  .modal {
+    pointer-events: auto;
+  }
+}
+
+// Disable action sheet if loading is active.
+.action-sheet-open .backdrop-loading.active {
+  z-index: 21;
+}
+.action-sheet-open.loading-active .action-sheet-backdrop {
+  pointer-events: none;
+}
+
+
+.item.item-button-right .badge.mm-course-download{
+  right: $spinner-width + $item-padding;
+}
+
+.mm-course-module-handler mm-format-text + mm-format-text {
+  margin-top: 16px;
+}
+
+mm-course-mod-description .card .item {
+  padding: $item-padding / 2;
+}
+
+.padding mm-course-mod-description .card {
+  margin-top: 0;
+}
+
+/* - User grades table (most of it extracted from MM1)
+-------------------------------------------------------------------------- */
+.mm-grades-container {
+  padding-right: 2px;
+}
+
+.mm-grades-table {
+  border-collapse: collapse;
+  line-height: 20px;
+  width: 100%;
+  font-size: 16px;
+  color: $item-stable-text;
+  tr {
+    border-bottom: 1px solid $item-light-border;
+  }
+  th,
+  td {
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+    white-space: normal;
+  }
+  thead th {
+    padding-left: 10px;
+    vertical-align: bottom;
+    font-weight: bold;
+  }
+  tbody th {
+    font-weight: normal;
+  }
+  .item {
+    display: table-cell;
+  }
+  th {
+    &.b1b {
+      padding-left: 20px;
+    }
+    &.item {
+      padding-left: 30px;
+    }
+    &.baggt {
+      padding-left: 30px;
+    }
+    img {
+      margin-left: -20px;
+      float: left;
+    }
+  }
+  .b1l {
+    width: 10px;
+    min-width: 10px;
+  }
+  .b1t,
+  .baggt {
+    font-weight: bold;
+  }
+  .itemcenter {
+    @extend .item;
+    padding: 10px;
+    white-space: nowrap;
+  }
+  .feedbacktext {
+    padding-left: 10px;
+    .no-overflow {
+      overflow: auto;
+    }
+  }
+  .dimmed_text,
+  .hidden,
+  .hidden a {
+    color: #aaa;
+  }
+  .oddd1,
+  .oddd3,
+  .evend3,
+  .levelodd {
+    background-color: $item-divider-bg;
+  }
+  .oddd2,
+  .evend2,
+  .oddd4,
+  .evend4 {
+    background-color: $item-stable-bg;
+  }
+  .leveleven {
+    background-color: $item-light-bg;
+  }
+  .column-leader {
+    border-left: 1px solid $item-light-border;
+    border-top: 1px solid $item-light-border;
+    border-bottom: 1px solid $item-light-border;
+    &.level1 {
+      border-left: 0;
+    }
+  }
+  .column-itemname {
+    border-right: 1px solid $item-light-border;
+    border-top: 1px solid $item-light-border;
+    border-bottom: 1px solid $item-light-border;
+  }
+}
+
+.mm-fileuploader-file-handler {
+    input {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        opacity: 0;
+        outline: none;
+        z-index: 100;
+    }
+}
+
+
+.mm-mm_login_sites {
+  .item-thumbnail-left .item-content {
+    padding-top: $item-padding;
+    padding-right: $item-padding;
+  }
+
+  .list-left-editing .item-thumbnail-left .item-content {
+    padding-right: (ceil( ($item-padding * 3) + ($item-padding / 3) ) - 5);
+  }
+
+  .avatar {
+    margin: 0;
+    width: 80px;
+    height: 80px;
+    max-width: 80px;
+    max-height: 80px;
+    border-radius : 50%;
+    padding: 4px;
+    border: 1px solid #ddd;
+  }
+}
+
+.mm-login-sitepolicy-iframe {
+  height: 300px;
+}
+
+
+$mm-question-correct-color:         #468847 !default;
+$mm-question-incorrect-color:       #b94a48 !default;
+$mm-question-state-correct-color:   #cfc !default;
+$mm-question-state-partial-color:   #ffa !default;
+$mm-question-state-incorrect-color: #fcc !default;
+$mm-question-warning-color:         #c00 !default;
+
+.mm-question-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
+
+.mm-question-answer-correct,
+select.mm-question-answer-correct,
+input.mm-question-answer-correct,
+input[readonly]:not(.cloned-text-input).mm-question-answer-correct,
+textarea.mm-question-answer-correct,
+textarea[readonly]:not(.cloned-text-input).mm-question-answer-correct,
+label.mm-question-answer-correct,
+li.mm-question-answer-correct,
+.mm-question-answer-correct p,
+.mm-question-answer-correct input,
+.mm-question-answer-correct select,
+.mm-question-answer-correct .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-correct.item-radio input:checked + .radio-content .item-content,
+.mm-question-comment,
+.mm-question-comment p {
+  color: $mm-question-correct-color;
+  -webkit-text-fill-color: $mm-question-correct-color; /* Override iOS / Android font color change */
+  background-color: #dff0d8;
+}
+
+.mm-question-answer-correct .checkbox input:disabled:checked:before,
+.mm-question-answer-correct .checkbox input:disabled:checked + .checkbox-icon:before {
+  background-color: $mm-question-correct-color;
+  border-color: $mm-question-correct-color;
+}
+
+.mm-question-answer-incorrect,
+select.mm-question-answer-incorrect,
+input.mm-question-answer-incorrect,
+input[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
+textarea.mm-question-answer-incorrect,
+textarea[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
+label.mm-question-answer-incorrect,
+li.mm-question-answer-incorrect,
+.mm-question-answer-incorrect p,
+.mm-question-answer-incorrect input,
+.mm-question-answer-incorrect select,
+.mm-question-answer-incorrect .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-incorrect.item-radio input:checked + .radio-content .item-content,
+.mm-question-incorrect,
+.mm-question-incorrect p {
+  color: $mm-question-incorrect-color;
+  -webkit-text-fill-color: $mm-question-incorrect-color; /* Override iOS / Android font color change */
+  background-color: #f2dede;
+}
+
+.mm-question-answer-incorrect .checkbox input:disabled:checked:before,
+.mm-question-answer-incorrect .checkbox input:disabled:checked + .checkbox-icon:before {
+  background-color: $mm-question-incorrect-color;
+  border-color: $mm-question-incorrect-color;
+}
+
+.mm-question-answer-correct input:disabled,
+.mm-question-answer-incorrect input:disabled {
+  opacity: 1;
+}
+
+.mm-question-feedback-container {
+  background-color: #fcf8e3;
+  color: #8a6d3b;
+
+  .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+    margin: 0 0 .5em;
+  }
+
+  .correctness {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: #999;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+
+    &.incorrect {
+      background-color: $mm-question-incorrect-color;
+    }
+    &.correct {
+      background-color: $mm-question-correct-color;
+    }
+  }
+}
+
+.mm-question-feedback-inline {
+  display: inline-block;
+}
+
+.mm-question-feedback-padding {
+  padding: 8px 35px 8px 14px;
+}
+
+.item,
+.platform-android .item,
+.platform-ios .item {
+  &.mm-question-correct {
+    background-color: $mm-question-state-correct-color;
+  }
+  &.mm-question-partiallycorrect {
+    background-color: $mm-question-state-partial-color;
+  }
+  &.mm-question-notanswered,
+  &.mm-question-incorrect {
+    background-color: $mm-question-state-incorrect-color;
+  }
+}
+
+.mm-question-warning, p.mm-question-warning, .item .mm-question-warning {
+  color: $mm-question-warning-color;
+}
+
+#mm-settings-languagelabel {
+  color: $base-color;
+}
+
+// Variables.
+$bar-side-menu-height: 80px !default;
+$bar-side-menu-color: $bar-content-bg !default;
+$bar-side-menu-border-color: $bar-content-border !default;
+$bar-side-menu-text-color: $bar-content-text !default;
+
+// Bar styles
+.bar-side-menu {
+  @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
+  height: $bar-side-menu-height !important; // MOBILE-959: Added !important to fix side menu header in iOS.
+  .item {
+    background: transparent;
+    border: none;
+  }
+  .item-avatar {
+    margin-top: 0px !important; // MOBILE-959: Added to fix side menu header in iOS.
+    h2,
+    p {
+      color: $bar-side-menu-text-color;
+    }
+  }
+}
+
+.has-side-menu-header {
+  top: $bar-side-menu-height;
+}
+
+.mm-sidemenu-menu {
+  .item .badge {
+    right: 16px;
+  }
+}
+
+
+.foreground-ion-edit.ion-edit:before {
+    position: relative;
+    left: 120px;
+    bottom: 15px;
+    font-size: 24px;
+}
+
+.mm-site_mm_user-profile .mm-tab-handlers {
+    padding-bottom: 16px;
+}
+
+.mm-site_frontpage {
+    .mma-frontpage-item-container .item-media {
+        min-height: 55px;
+        padding-left: 54px;
+
+        img {
+            top: 11px;
+            left: 11px;
+        }
+    }
+
+    .mm-frontpageitemnews {
+        img {
+            max-width: 30px;
+            max-height: 30px;
+        }
+
+        .mm-module-buttons {
+            width: 30px;
+            height: 22px;
+        }
+    }
+}
+.mm-site_coursesgrades .item .badge {
+  right: 16px;
+}
+$mma-messages-date-badge: "stable" !default;
+
+// The date displayed in the list.
+.mma-messages-date,
+.mma-messages-unreadfrom {
+
+  text-align: center;
+  margin-top: 10px;
+
+  span {
+    @extend .badge;
+    @extend .badge-#{$mma-messages-date-badge};
+  }
+}
+
+.mma-messages-unreadfrom {
+  color: $positive;
+}
+
+.mma-messages-input-inset {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+}
+
+.mma-messages-footer-note {
+    color: $button-light-text;
+    font-size: $font-size-base;
+    text-align: center;
+    margin: 0;
+    width: 100%;
+}
+
+.button.mma-messages-clear-search {
+  top: 0px;
+}
+
+.mma-messages-discussion-container {
+  padding-bottom: 15px;
+}
+
+.button.button-icon.mma-messages-delete-button {
+  min-height: initial;
+  line-height: initial;
+  &:before {
+    font-size: 100%;
+    line-height: initial;
+  }
+}
+
+.mma-messages-send-message-bar {
+  width: 100%;
+}
+.mm-site_messages-discussion {
+  .list-left-editing .item-message.item-left-editable,
+  .item-left-editing.item-message.item-left-editable {
+    max-width: calc(80% + 35px);
+    -moz-transition: max-width ease-in-out 125ms;
+    -o-transition: max-width ease-in-out 125ms;
+    -webkit-transition: max-width ease-in-out 125ms;
+    transition: max-width ease-in-out 125ms;
+  }
+
+  .list-left-editing .item-left-editable .item-content,
+  .item-left-editing.item-left-editable .item-content {
+    -webkit-transform: none;
+    transform: none;
+    padding-left: 35px;
+    -moz-transition: padding-left ease-in-out 125ms;
+    -o-transition: padding-left ease-in-out 125ms;
+    -webkit-transition: padding-right ease-in-out 125ms;
+    transition: padding-left ease-in-out 125ms;
+    background-color: transparent;
+  }
+
+  .list-left-editing .item-left-editable.item-message-mine .item-content,
+  .item-left-editing.item-left-editable.item-message-mine .item-content {
+    padding-left: 0;
+    padding-right: 35px;
+    -moz-transition: padding-right ease-in-out 125ms;
+    -o-transition: padding-right ease-in-out 125ms;
+    -webkit-transition: right-right ease-in-out 125ms;
+    transition: padding-right ease-in-out 125ms;
+  }
+
+  .item-message-mine .item-left-edit.visible.active {
+    right: 0;
+    left: initial;
+  }
+}
+
+.mma-messages-showprevious-spinner-container {
+  width: 100%;
+  text-align: center;
+}
+
+
+$mma-mod-assign-warning-color:      #c00 !default;
+
+.mm-site_mod_assign,
+.mm-site_mod_assign-submission {
+
+  div.latesubmission {
+    background-color: #efcfcf;
+  }
+
+  div.earlysubmission {
+    background-color: #cfefcf;
+  }
+
+  div.submissioneditable {
+    color: red;
+  }
+}
+
+p.mma-mod-assign-warning {
+  color: $mma-mod-assign-warning-color;
+}
+
+/** Grading */
+.mm-grading-summary .advancedgrade {
+  display: none;
+}
+
+.gradingform_rubric {
+  overflow: auto;
+  padding-bottom: 1.5em;
+
+  .criterion {
+    border: 1px solid #DDD;
+    overflow: hidden;
+
+    &.even {
+      background: #F0F0F0;
+    }
+
+    .description,
+    .levels,
+    .remark,
+    .levels .level {
+      vertical-align: top;
+    }
+
+    .description,
+    .remark,
+    .levels .level {
+      padding: 3px;
+    }
+
+    .description {
+      width: 150px;
+      font-weight: bold;
+    }
+
+    .levels table {
+      width: 100%;
+      height: 100%;
+    }
+
+    .levels,
+    .levels table,
+    .levels table tbody {
+      padding: 0;
+      margin: 0;
+    }
+
+    .levels .level {
+      border-left: 1px solid #DDD;
+      max-width: 150px;
+    }
+
+    .levels .level .level-wrapper {
+      position: relative;
+    }
+
+    .levels .level.last {
+      border-right: 1px solid #DDD;
+    }
+
+    .levels .level .score {
+      font-style: italic;
+      color: #575;
+      font-weight: bold;
+      margin-top: 5px;
+      white-space: nowrap;
+    }
+
+    .levels .level .score .scorevalue {
+      padding-right: 5px;
+    }
+
+    .levels .level.currentchecked {
+      background: #fff0f0;
+    }
+
+    .levels .level.checked {
+      background: #d0ffd0;
+    }
+
+    .description.error,
+    .levels .level .definition.error,
+    .levels .level .score.error {
+      background: #FFDDDD;
+    }
+
+    .levels.error {
+      border: 1px solid red;
+    }
+  }
+
+  .options .optionsheading {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-bottom: 5px;
+  }
+  .options .option {
+    padding-bottom: 2px;
+  }
+  .options .option label {
+    margin-left: 5px;
+  }
+  .options .option .value {
+    margin-left: 5px;
+    font-weight: bold;
+  }
+
+  .plainvalue.empty {
+    font-style: italic;
+    color: #AAA;
+  }
+
+  .criteria {
+    height:100%;
+  }
+}
+
+.gradingform_rubric-regrade {
+  padding: 10px;
+  background: #FFDDDD;
+  border: 1px solid #F00;
+  margin-bottom: 10px;
+}
+.gradingform_rubric-restored {
+  padding: 10px;
+  background: #FFFFDD;
+  border: 1px solid #FF0;
+  margin-bottom: 10px;
+}
+.gradingform_rubric-error {
+  color: red;
+  font-weight: bold;
+}
+
+
+.gradingform_guide-regrade {padding:10px;background:#FFDDDD;border:1px solid #F00;margin-bottom:10px;}
+.gradingform_guide-restored {padding:10px;background:#FFFFDD;border:1px solid #FF0;margin-bottom:10px;}
+.gradingform_guide-error {color:red;font-weight:bold;}
+
+.gradingform_guide {
+  .hidden {
+    display: none;
+  }
+
+  td {
+    padding: 8px;
+  }
+
+  .criterion {
+    border: 1px solid #DDD;
+    overflow: hidden;
+
+    .description,
+    .remark {
+      vertical-align: top;
+    }
+
+    &.even {
+      background: #F0F0F0;
+    }
+
+    .description {
+      width: 100%;
+    }
+    .description .criterionname {
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      padding-right: 5px;
+    }
+    .description.error {
+      background: #FFDDDD;
+    }
+  }
+
+  .criterionnamelabel {
+    display: none;
+  }
+  .criterionshortname {
+    font-weight: bold;
+  }
+
+  .plainvalue.empty {
+    font-style: italic;
+    color: #AAA;
+  }
+  .plainvalue.editname {
+    font-weight: bold;
+  }
+
+  .options {
+    .optionsheading {
+      font-weight: bold;
+      font-size: 1.1em;
+      padding-bottom: 5px;
+    }
+    .option {
+      padding-bottom:2px;
+    }
+    .option label {
+      margin-left: 5px;
+    }
+    .option .value {
+      margin-left: 5px;
+      font-weight: bold;
+    }
+  }
+
+  .commentheader  {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-bottom:5px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .descriptionreadonly {
+      vertical-align: top;
+  }
+
+  .criteriondescriptionmarkers {
+    width: 300px;
+  }
+
+  .markingguideremark {
+      margin: 0;
+      width: 100%;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+  }
+  .criteriondescriptionscore {
+    display: inline;
+  }
+  .score label {
+      display: block;
+  }
+  .score input {
+      margin: 0;
+      width: auto;
+  }
+}
+
+$mma-chat-notice-badge: "stable" !default;
+
+// The notice displayed in the list.
+.mma-chat-notice {
+
+  text-align: center;
+  margin-top: 10px;
+
+  span {
+    @extend .badge;
+    @extend .badge-#{$mma-chat-notice-badge};
+    white-space: normal;
+  }
+}
+
+.mma-chat-input-inset {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+}
+
+.mma-chat-footer-note {
+    color: $button-light-text;
+    font-size: $font-size-base;
+    text-align: center;
+    margin: 0;
+    width: 100%;
+}
+
+.mma-chat-send-form {
+  width: 100%;
+}
+
+.mma-chat-reconnect-button, .button.mma-chat-reconnect-button {
+  margin: 0;
+}
+
+.mma-mod_chat-users-modal {
+  .item-complex .item-avatar {
+    padding-bottom: 0;
+
+    .tabs {
+      border: 0;
+    }
+  }
+}
+.mm-site_mod_choice {
+  .chart {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 767px) {
+    .col {
+      border-left: $item-border-width solid $item-default-border;
+
+      &.item, .chart-item {
+        margin-top: 0;
+        border-top: 0;
+      }
+
+      &:first-child {
+        border-left: 0;
+      }
+    }
+  }
+}
+
+.mma-forum-discussion-link {
+    text-decoration: none;
+}
+
+.mma-forum-align-right {
+    justify-content: flex-end;
+}
+
+.mma-forum-border {
+    border-color: $item-default-border;
+    border-width: $item-border-width;
+    border-style: solid;
+}
+
+.mma-forum-reply-edit {
+    padding: $item-padding/2;
+}
+
+.mm-site_mod_forum, .mm-site_mod_forum-discussion {
+    .item.item-heading {
+        padding-bottom: 2px;
+
+        .mm-subject {
+            font-size: 90%;
+        }
+
+        .item-note {
+            font-size: 80%;
+            margin-left: 5px;
+        }
+    }
+
+    .card.highlight .item.item-heading {
+        background-color: $stable;
+
+        h2 {
+            font-weight: bold;
+        }
+    }
+}
+
+.mm-nest-cards {
+    .mm-nested-card {
+        padding: 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        margin: 1px 10px 10px;
+        border-radius: 0;
+        background-color: #fff;
+
+        .item {
+            border-left: 0;
+            border-right: 0;
+        }
+        .item-media:first-child {
+            border-top: 0;
+        }
+        .item-media:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .item-divider {
+        display: none;
+    }
+
+    .mm-nested {
+        margin-left: 10px;
+
+        &>article:nth-child(even)>.mm-nested-card>mma-mod-forum-discussion-post>.item-heading {
+            background: #eee;
+        }
+    }
+
+    .mma-forum-reply-edit {
+        padding: 0;
+        border: 0
+    }
+}
+
+
+$mma-mod-quiz-warning-color:      #c00 !default;
+$mma-mod-quiz-highlight-color:    #d9edf7 !default;
+$mma-mod-quiz-alternate-color:    #fbfbfb !default;
+$mma-mod-quiz-conecterr-color:    #fcc !default;
+$mma-mod-quiz-selected-color:     #666 !default;
+
+p.mma-mod-quiz-warning {
+  color: $mma-mod-quiz-warning-color;
+}
+
+.mm-site_mod_quiz, .mm-site_mod_quiz-player {
+  .row {
+    min-height: $button-height + $grid-padding-width + 5px;
+
+    .button.button-block {
+      margin: 0;
+    }
+  }
+}
+
+.item.mma-mod-quiz-highlighted,
+.platform-android .item.mma-mod-quiz-highlighted,
+.platform-ios .item.mma-mod-quiz-highlighted,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-highlighted {
+  background-color: $mma-mod-quiz-highlight-color;
+}
+
+.mma-quiz-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
+
+// Remove padding-top and bottom from navigation bar to minimize height used.
+.mma-mod-quiz-subheader {
+  .row {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .mm-timer {
+    line-height: $button-bar-button-height
+  }
+}
+
+// Alternate background color in rows.
+.mma-mod-quiz-table .row:nth-child(odd) {
+  background-color: $mma-mod-quiz-alternate-color;
+}
+
+.mma-mod_quiz-connection-error, ion-popover-view.popover.mma-mod_quiz-connection-error {
+  background-color: $mma-mod-quiz-conecterr-color;
+}
+
+.mm-site_mod_quiz-review .item {
+  h3 {
+    font-size: 18px;
+  }
+}
+
+.item.mma-mod-quiz-selected,
+.platform-android .item.mma-mod-quiz-selected,
+.platform-ios .item.mma-mod-quiz-selected,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-selected {
+  border: 3px solid $mma-mod-quiz-selected-color;
+  &:not(.mma-mod-quiz-last-of-page) {
+    border-bottom: 0;
+  }
+}
+
+
+$mma-mod-scorm-level-margin:		25px !default;
+$mma-mod-scorm-warning-color:		#c00 !default;
+
+@for $i from 0 through 15 {
+  .mma-scorm-level-#{$i} {
+    padding-left: $item-padding + 15px * $i
+  }
+}
+
+.mma-mod-scorm-checkbox-padding {
+  padding: 5px 10px;
+}
+
+.mma-mod-scorm-warning {
+  color: $mma-mod-scorm-warning-color;
+}
+
+ion-popover-view {
+  /* Adapt popover to content's height. The popover's ion-content needs to disable Ionic scroll. */
+  &.mma-scorm-popover {
+    height: auto;
+    max-height: 80%;
+    overflow: scroll;
+
+    ion-content {
+      position: relative;
+    }
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    p.padding {
+      margin: 0px; /* Don't add margins to p with padding inside the TOC. */
+    }
+  }
+
+  /* Decrease items padding in popover. */
+  .mma-scorm-popover-item {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+/* Fix popover styles in iOS. */
+.platform-ios ion-popover-view.mma-scorm-popover {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.mma-mod_survey-darkbg {
+  background-color: $item-divider-bg;
+}
+
+.mma-mod_survey-padding-top {
+  padding-top: 20px;
+}
+
+textarea.mma-mod_survey-textarea {
+  height: 100px;
+  border:1px solid $item-default-border;
+}
+
+select.mma-mod_survey-select {
+  background-color: transparent;
+  padding-left: 0px;
+  padding-right: $item-padding * 2;
+  max-width: 100%;
+
+  .mma-mod_survey-defaultoption {
+    display: none;
+  }
+}
+
+$mma-mod-wiki-toc-level-padding:    12px !default;
+$mma-mod-wiki-newentry-link-color:   red !default;
+$mma-mod-wiki-toc-title-color:   #666 !default;
+$mma-mod-wiki-toc-border-color:   #bbb !default;
+$mma-mod-wiki-toc-background-color:   #eee !default;
+$mma-mod-wiki-subwiki-selected-background-color:   #eee !default;
+
+.wiki-toc {
+  border: 1px solid $mma-mod-wiki-toc-border-color;
+  background: $mma-mod-wiki-toc-background-color;
+  margin: 16px;
+  padding: 8px;
+}
+
+.wiki-toc-title {
+  color: $mma-mod-wiki-toc-title-color;
+  font-size: 1.1em;
+  font-variant: small-caps;
+  text-align: center;
+}
+
+.wiki-toc-section {
+  padding: 0;
+  margin: 2px 8px;
+}
+
+.wiki-toc-section-2 {
+  padding-left: $mma-mod-wiki-toc-level-padding;
+}
+
+.wiki-toc-section-3 {
+  padding-left: $mma-mod-wiki-toc-level-padding * 2;
+}
+
+.mm-site_mod_wiki .wiki_newentry {
+  color: $mma-mod-wiki-newentry-link-color;
+  font-style: italic;
+}
+
+/* Hide edit section links */
+.mma-mod_wiki-noedit a.wiki_edit_section {
+  display: none;
+}
+
+.mma-mod_wiki-subwiki-picker .item-divider {
+  font-weight: bold;
+}
+
+.mma-mod_wiki-subwiki-picker .item.item-selected {
+  background-color: $mma-mod-wiki-subwiki-selected-background-color;
+}
+
+.mma-mod_wiki-subwiki-picker .item.item-selected .icon {
+  font-size: 24px;
+}
+
+
+$mma-qbehaviour-deferredcbm-judgementok-color:  #080 !default;
+$mma-qbehaviour-deferredcbm-slightly-color:     #600 !default;
+$mma-qbehaviour-deferredcbm-confident-color:    #c00 !default;
+
+.qbehaviour_deferredcbm_actual_percentage {
+  font-weight: bold;
+}
+.qbehaviour_deferredcbm_judgementok {
+  font-weight: bold;
+  color: $mma-qbehaviour-deferredcbm-judgementok-color;
+}
+.qbehaviour_deferredcbm_slightlyunderconfident, .qbehaviour_deferredcbm_slightlyoverconfident {
+  font-weight: bold;
+  color: $mma-qbehaviour-deferredcbm-slightly-color;
+}
+.qbehaviour_deferredcbm_underconfident, .qbehaviour_deferredcbm_overconfident {
+  font-weight: bold;
+  color: $mma-qbehaviour-deferredcbm-confident-color;
+}
+
+.mma-qbehaviour-deferredcbm-certainty-title, .item.mma-qbehaviour-deferredcbm-certainty-title, .item.mma-qbehaviour-deferredcbm-certainty-title p {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+// Style ddimageortext content a bit. Almost all these styles are copied from Moodle.
+.mma-qtype-ddimageortext-container {
+  mm-loading {
+    position: absolute;
+    left: 50%;
+  }
+
+  .qtext {
+    margin-bottom: 0.5em;
+    display: block;
+  }
+
+  div.droparea img {
+    border: 1px solid #000000;
+    max-width: 100%;
+  }
+
+  .draghome {
+    vertical-align: top;
+    margin: 5px;
+    visibility : hidden;
+  }
+  .draghome img {
+    display: block;
+  }
+
+  div.draghome {
+    border: 1px solid black;
+    cursor: pointer;
+    background-color: #B0C4DE;
+    display:inline-block;
+    height: auto;
+    width: auto;
+    zoom: 1;
+  }
+
+  .group1 {
+    background-color: #FFFFFF;
+  }
+  .group2 {
+    background-color: #B0C4DE;
+  }
+  .group3 {
+    background-color: #DCDCDC;
+  }
+  .group4 {
+    background-color: #D8BFD8;
+  }
+  .group5 {
+    background-color: #87CEFA;
+  }
+  .group6 {
+    background-color: #DAA520;
+  }
+  .group7 {
+    background-color: #FFD700;
+  }
+  .group8 {
+    background-color: #F0E68C;
+  }
+  .drag {
+    border: 1px solid black;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .dragitems.readonly .drag {
+    cursor: auto;
+  }
+  .dragitems>div {
+    clear: both;
+  }
+  .dragitems {
+    cursor: pointer;
+  }
+  .dragitems.readonly {
+    cursor: auto;
+  }
+  .drag img {
+    display: block;
+  }
+
+  div.ddarea {
+    text-align : center;
+    position: relative;
+  }
+  .dropbackground {
+    margin:0 auto;
+  }
+  .dropzone {
+    border: 1px solid black;
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+  }
+  .readonly .dropzone {
+    cursor: auto;
+  }
+
+  div.dragitems div.draghome, div.dragitems div.drag {
+    font:13px/1.231 arial,helvetica,clean,sans-serif;
+  }
+  .drag.beingdragged {
+    z-index: 3;
+    box-shadow: 3px 3px 4px #000;
+  }
+}
+// Style ddmarker content a bit. Almost all these styles are copied from Moodle.
+.mma-qtype-ddmarker-container {
+  mm-loading {
+    position: absolute;
+    left: 50%;
+  }
+
+  .qtext {
+    margin-bottom: 0.5em;
+    display: block;
+  }
+
+  div.droparea img  {
+    border: 1px solid #000;
+    max-width: 100%;
+  }
+
+  .draghome img, .draghome span {
+    visibility: hidden;
+  }
+
+  .dragitems .dragitem {
+    cursor: pointer;
+    position: absolute;
+    z-index: 2;
+  }
+
+  .dropzones {
+    position: absolute;
+  }
+  .dropzones svg {
+    z-index: 3;
+  }
+
+  .dragitem.beingdragged .markertext {
+    z-index: 5;
+    box-shadow: 3px 3px 4px #000;
+  }
+  .dragitems .draghome {
+    margin: 10px;
+    display: inline-block;
+  }
+
+  .dragitems.readonly .dragitem {
+    cursor: auto;
+  }
+  div.ddarea {
+    text-align: center;
+  }
+  div.ddarea .markertexts {
+    min-height: 80px;
+    position: absolute;
+    text-align: left;
+  }
+  .dropbackground {
+    margin: 0 auto;
+  }
+
+  div.dragitems div.draghome, div.dragitems div.dragitem,
+  div.draghome, div.drag {
+    font: 13px/1.231 arial,helvetica,clean,sans-serif;
+  }
+  div.dragitems span.markertext,
+  div.markertexts span.markertext{
+    margin: 0 5px;
+    z-index: 2;
+    background-color: white;
+    border: 2px solid black;
+    padding: 5px;
+    display: inline-block;
+    zoom: 1;
+    border-radius: 10px;
+  }
+  div.markertexts span.markertext {
+    z-index: 3;
+    background-color: yellow;
+    border-style: solid;
+    border-width: 2px;
+    border-color: khaki;
+    position: absolute;
+  }
+  span.wrongpart {
+    background-color: yellow;
+    border-style: solid;
+    border-width: 2px;
+    border-color: khaki;
+    padding: 5px;
+    border-radius: 10px;
+    filter: alpha(opacity=60);
+    opacity: 0.6;
+    margin: 5px;
+    display: inline-block;
+  }
+  div.dragitems img.target {
+    position: absolute;
+    left: -7px; /* This must be half the size of the target image, minus 0.5. */
+    top: -7px;  /* In other words, this works for a 15x15 cross-hair. */
+  }
+  div.dragitems div.draghome img.target {
+    display: none;
+  }
+}
+// Style ddwtos content a bit. Almost all these styles are copied from Moodle.
+.mma-qtype-ddwtos-container {
+  .qtext {
+      margin-bottom: 0.5em;
+      display: block;
+  }
+
+  .draghome {
+      margin-bottom: 1em;
+  }
+
+  .answertext {
+      margin-bottom: 0.5em;
+  }
+
+  .drop {
+      display: inline-block;
+      text-align: center;
+      border: 1px solid #000000;
+      margin-bottom: 2px;
+  }
+  .draghome, .drag {
+      display: inline-block;
+      text-align: center;
+      background: transparent;
+      border: 0;
+  }
+  .draghome, .drag.unplaced{
+      border: 1px solid #000000;
+  }
+  .draghome {
+      visibility: hidden;
+  }
+  .drag {
+      z-index: 2;
+  }
+  .drag.selected {
+      z-index: 3;
+      box-shadow: 3px 3px 4px #000;
+  }
+
+  .drop.selected {
+      border-color: #0a0;
+      box-shadow: 0 0 5px 5px rgba(255, 255, 150, 1);
+  }
+
+  &.notreadonly .drag,
+  &.notreadonly .draghome,
+  &.notreadonly .drop,
+  &.notreadonly .answercontainer {
+      cursor: pointer;
+  }
+
+  &.readonly .drag,
+  &.readonly .draghome,
+  &.readonly .drop,
+  &.readonly .answercontainer {
+      cursor: default;
+  }
+
+  span.incorrect {
+      background-color: #faa;
+  }
+  span.correct {
+      background-color: #afa;
+  }
+
+  .group1 {
+      background-color: #FFFFFF;
+  }
+  .group2 {
+      background-color: #DCDCDC;
+  }
+  .group3 {
+      background-color: #B0C4DE;
+  }
+  .group4 {
+      background-color: #D8BFD8;
+  }
+  .group5 {
+      background-color: #87CEFA;
+  }
+  .group6 {
+      background-color: #DAA520;
+  }
+  .group7 {
+      background-color: #FFD700;
+  }
+  .group8 {
+      background-color: #F0E68C;
+  }
+
+  sub, sup {
+      font-size: 80%;
+      position: relative;
+      vertical-align: baseline;
+  }
+  sup {
+      top: -0.4em;
+  }
+  sub {
+      bottom: -0.2em;
+  }
+}
+
+
+
+
+// Style gapselect content a bit. All these styles are copied from Moodle.
+.mma-qtype-gapselect-container {
+  p {
+    margin: 0 0 .5em;
+  }
+
+  select {
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+}
+
+
+// Style match content a bit.
+.mma-qtype-match-container .item-select {
+  select,
+  .mm-select-fix {
+    padding: 0 36px 0 0;
+    max-width: 100%;
+    display: flex;
+    justify-content:center;
+    align-content:center;
+    flex-direction:column;
+  }
+}
+
+// Style multianswer content a bit. All these styles are copied from Moodle.
+.mma-qtype-multianswer-container {
+  p {
+    margin: 0 0 .5em;
+  }
+
+  .answer div.r0, .answer div.r1 {
+    padding: 0.3em;
+  }
+
+  table {
+    width: 100%;
+    display: table;
+  }
+
+  tr {
+    display: table-row;
+  }
+
+  td {
+    display: table-cell;
+  }
+
+  input, select {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  select {
+    height: 30px;
+    line-height: 30px;
+  }
+
+  input[type="radio"], input[type="checkbox"] {
+    margin-top: -4px;
+    margin-right: 7px;
+  }
+}
+

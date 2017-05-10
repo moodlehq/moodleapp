@@ -5,7 +5,6 @@ node_modules/
 platforms/
 /plugins/
 hooks/
-www/build
 .sass-cache/
 www/lib
 e2e/build
