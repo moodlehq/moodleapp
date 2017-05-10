@@ -215,21 +215,15 @@ angular.module('mm.addons.mod_lesson')
             // Format times and grades.
             if (data && data.avetime != null && data.numofattempts) {
                 data.avetime = parseInt(data.avetime / data.numofattempts, 10);
-                promises.push($mmUtil.formatTime(data.avetime).then(function(formatted) {
-                    data.avetimeReadable = formatted;
-                }));
+                data.avetimeReadable = $mmUtil.formatTimeInstant(data.avetime);
             }
 
             if (data && data.hightime != null) {
-                promises.push($mmUtil.formatTime(data.hightime).then(function(formatted) {
-                    data.hightimeReadable = formatted;
-                }));
+                data.hightimeReadable = $mmUtil.formatTimeInstant(data.hightime);
             }
 
             if (data && data.lowtime != null) {
-                promises.push($mmUtil.formatTime(data.lowtime).then(function(formatted) {
-                    data.lowtimeReadable = formatted;
-                }));
+                data.lowtimeReadable = $mmUtil.formatTimeInstant(data.lowtime);
             }
 
             if (data && data.lessonscored) {
