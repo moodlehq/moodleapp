@@ -476,7 +476,26 @@ angular.module('mm.addons.mod_lesson')
                     });
 
                     // Always get group 0, even if there are no groups.
-                    subPromises.push($mmaModLesson.getAttemptsOverview(lesson.id, 0, false, true, siteId));
+                    subPromises.push($mmaModLesson.getAttemptsOverview(lesson.id, 0, false, true, siteId).then(function(data) {
+                        // Prefetch the last attempt for each user.
+                        var attemptPromises = [];
+
+                        angular.forEach(data && data.students, function(student) {
+                            if (!student.attempts || !student.attempts.length) {
+                                return;
+                            }
+
+                            var lastAttempt = student.attempts[student.attempts.length - 1];
+                            if (!lastAttempt) {
+                                return;
+                            }
+
+                            attemptPromises.push($mmaModLesson.getUserAttempt(
+                                    lesson.id, lastAttempt.try, student.id, false, true, siteId));
+                        });
+
+                        return $q.all(attemptPromises);
+                    }));
 
                     return $q.all(subPromises);
                 }));

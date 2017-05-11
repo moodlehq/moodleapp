@@ -17,7 +17,7 @@
   font-size: 14px;
 }
 
-.mma-mod_lesson-lessonstats {
+.mma-mod_lesson-lessonstats, .mma-mod_lesson-userstats {
   .item.row {
     padding: 0;
 
@@ -27,6 +27,15 @@
       &:not(:first-child) {
         border-left-width: $item-border-width;
       }
+    }
+  }
+}
+
+.mm-site_mod_lesson-userattempt {
+  .mma-mod_lesson-contentpage {
+    padding: 0;
+    .row {
+      padding: 0;
     }
   }
 }

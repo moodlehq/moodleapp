@@ -116,7 +116,7 @@
         </div>
 
         <div ng-repeat="student in overview.students">
-            <a class="item item-text-wrap item-icon-right" ng-class="{'item-avatar': student.profileimageurl}">
+            <a class="item item-text-wrap item-icon-right" ng-class="{'item-avatar': student.profileimageurl}" ui-sref="site.mod_lesson-userattempt({courseid: courseId, lessonid: lesson.id, userid: student.id})">
                 <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" mm-user-link userid="{{student.id}}" courseid="{{courseId}}">
                 <h2>{{student.fullname}}</h2>
                 <p>{{ 'mm.core.percentagenumber' | translate:{$a: student.bestgrade} }}</p>
