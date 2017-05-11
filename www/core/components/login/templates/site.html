@@ -3,7 +3,7 @@
       <button class="button button-icon ion-help-circled" ng-click="showHelp()" aria-label="{{ 'mm.core.help' | translate }}"></button>
   </ion-nav-buttons>
   <ion-content padding="true" id="mm-login-site" mm-state-class class="mm-center-view">
-    <div class="mm-view-content">
+    <form class="mm-view-content">
       <div class="box">
         <div class="text-center padding">
           <img ng-src="img/moodle.png" class="avatar-full" role="presentation">
@@ -14,6 +14,6 @@
         </div>
         <button class="button button-block button-positive" ng-click="connect(siteurl)" ng-disabled="!siteurl">{{ 'mm.login.connect' | translate }}</button>
       </div>
-    </div>
+    </form>
   </ion-content>
 </ion-view>

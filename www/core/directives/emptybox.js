@@ -27,7 +27,8 @@ angular.module('mm.core')
  * This directive will show an optional icon or image and a text centered on page.
  *
  * @param {String} message       Static message to show on the page.
- * @param {String} [icon]        Ion Icon or image source.
+ * @param {String} [icon]        Icon class to use.
+ * @param {String} [image]       Image source. If an icon is provided. Image won't be used.
  */
 .directive('mmEmptyBox', function($translate) {
 
@@ -37,13 +38,12 @@ angular.module('mm.core')
         transclude: true,
         scope: {
             message: '@',
-            icon: '@?'
+            icon: '@?',
+            image: '@?'
         },
         link: function(scope) {
-            console.log(scope.icon);
-            if (scope.icon && !scope.icon.startsWith('ion')) {
-                scope.image = scope.icon;
-                scope.icon = false;
+            if (scope.icon && scope.icon != "") {
+                scope.image = false;
             }
         }
     };

@@ -36,16 +36,16 @@
                     <h2>{{ 'mma.mod_quiz.summaryofattempts' | translate }}</h2>
                 </div>
                 <div class="item item-text-wrap row row-center">
-                    <p class="col text-center col-10" ng-if="quiz.showAttemptColumn"><b>{{ 'mma.mod_quiz.attemptnumber' | translate }}</b></p>
-                    <p class="col"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
+                    <p class="col text-center" ng-if="quiz.showAttemptColumn"><b>{{ 'mma.mod_quiz.attemptnumber' | translate }}</b></p>
+                    <p class="col col-65"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
                     <p class="col text-center hidden-phone" ng-if="quiz.showMarkColumn"><b>{{ 'mma.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</b></p>
                     <p class="col text-center" ng-if="quiz.showGradeColumn"><b>{{ 'mma.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</b></p>
                     <p class="col col-10"></p>
                 </div>
                 <a class="item item-text-wrap row row-center" ng-repeat="attempt in attempts" ng-class='{"mma-mod-quiz-highlighted": attempt.highlightGrade}' ui-sref="site.mod_quiz-attempt({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})" aria-label="{{ 'mm.core.seemoredetail' | translate }}">
-                    <p class="col text-center col-10" ng-if="quiz.showAttemptColumn && attempt.preview">{{ 'mma.mod_quiz.preview' | translate }}</p>
-                    <p class="col text-center col-10" ng-if="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</p>
-                    <div class="col">
+                    <p class="col text-center" ng-if="quiz.showAttemptColumn && attempt.preview">{{ 'mma.mod_quiz.preview' | translate }}</p>
+                    <p class="col text-center" ng-if="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</p>
+                    <div class="col col-65">
                         <p ng-repeat="sentence in attempt.readableState">{{ sentence }}</p>
                     </div>
                     <p class="col text-center hidden-phone" ng-if="quiz.showMarkColumn">{{ attempt.readableMark }}</p>
@@ -94,7 +94,7 @@
                     <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
                 </div>
                 <div class="item" ng-if="buttonText && !showSpinner">
-                    <a class="button button-block" ng-click="attemptQuiz()">{{ buttonText | translate }}</a>
+                    <a class="button button-block button-positive" ng-click="attemptQuiz()">{{ buttonText | translate }}</a>
                 </div>
                 <div class="item" ng-if="!buttonText && ((unsupportedQuestions && unsupportedQuestions.length) || (unsupportedRules && unsupportedRules.length) || behaviourSupported === false)">
                     <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>

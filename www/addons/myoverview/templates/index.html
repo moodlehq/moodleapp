@@ -25,7 +25,7 @@
                         <mma-my-overview-event-list events="course.events" can-load-more="course.canLoadMore" load-more="loadMoreCourse(course)"></mma-my-overview-event-list>
                     </mm-course-list-progress>
                 </div>
-                <mm-empty-box ng-if="timelineCourses.courses.length == 0" icon="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocourses' | translate }}"></mm-empty-box>
+                <mm-empty-box ng-if="timelineCourses.courses.length == 0" image="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocourses' | translate }}"></mm-empty-box>
             </mm-loading>
             <mm-loading hide-until="courses.loaded" ng-show="tabShown == 'courses'" class="mm-loading-center">
                 <div class="row row-no-padding">
@@ -55,9 +55,9 @@
                     <mm-course-list-progress ng-repeat="course in courses[courses.selected] | filter:{fullname: courses.filter}" course="course" round-progress="showGrid" show-summary="showGrid"></mm-course-list-progress>
                 </div>
 
-                <mm-empty-box ng-if="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" icon="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocoursesinprogress' | translate }}"></mm-empty-box>
-                <mm-empty-box ng-if="courses[courses.selected].length == 0 && courses.selected == 'future'" icon="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocoursesfuture' | translate }}"></mm-empty-box>
-                <mm-empty-box ng-if="courses[courses.selected].length == 0 && courses.selected == 'past'" icon="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocoursespast' | translate }}"></mm-empty-box>
+                <mm-empty-box ng-if="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocoursesinprogress' | translate }}"></mm-empty-box>
+                <mm-empty-box ng-if="courses[courses.selected].length == 0 && courses.selected == 'future'" image="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocoursesfuture' | translate }}"></mm-empty-box>
+                <mm-empty-box ng-if="courses[courses.selected].length == 0 && courses.selected == 'past'" image="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocoursespast' | translate }}"></mm-empty-box>
             </mm-loading>
         </div>
     </ion-content>

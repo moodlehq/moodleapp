@@ -3,8 +3,8 @@ $doughnut-border-size: 15px;
 $doughnut-dasharray: 173;
 $doughnut-empty-colour: $gray-light;
 $doughnut-fill-colour: $orange-light;
-$doughnut-border-colour:  $gray-medium;
-$doughnut-text-colour: $gray-dark;
+$doughnut-border-colour:  $gray-dark;
+$doughnut-text-colour: $gray-darker;
 
 .item-course {
   >.icon, >ion-spinner {
@@ -101,10 +101,15 @@ $doughnut-text-colour: $gray-dark;
       left: 50%;
       margin: 0;
       transform: translate(-42%, -50%);
-      color: #fff;
+      color: $white;
       height: ($chart-size / 2) + 10px;
       width: ($chart-size / 2) + 10px;
       font-size: ($chart-size / 2) + 10px;
     }
   }
+}
+
+.mm-site_mm_coursescategories .item-icon-left,
+mm-course-list-item .item-icon-left {
+  color: $black;
 }

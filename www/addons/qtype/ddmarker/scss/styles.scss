@@ -11,7 +11,7 @@
   }
 
   div.droparea img  {
-    border: 1px solid $gray-dark;
+    border: 1px solid $gray-darker;
     max-width: 100%;
   }
 
@@ -34,7 +34,7 @@
 
   .dragitem.beingdragged .markertext {
     z-index: 5;
-    box-shadow: 3px 3px 4px $gray-dark;
+    box-shadow: 3px 3px 4px $gray-darker;
   }
   .dragitems .draghome {
     margin: 10px;
@@ -64,8 +64,8 @@
   div.markertexts span.markertext{
     margin: 0 5px;
     z-index: 2;
-    background-color: white;
-    border: 2px solid $gray-dark;
+    background-color: $white;
+    border: 2px solid $gray-darker;
     padding: 5px;
     display: inline-block;
     zoom: 1;
@@ -73,14 +73,14 @@
   }
   div.markertexts span.markertext {
     z-index: 3;
-    background-color: $yellow-lighter;
+    background-color: $yellow-light;
     border-style: solid;
     border-width: 2px;
     border-color: $yellow;
     position: absolute;
   }
   span.wrongpart {
-    background-color: $yellow-lighter;
+    background-color: $yellow-light;
     border-style: solid;
     border-width: 2px;
     border-color: $yellow;

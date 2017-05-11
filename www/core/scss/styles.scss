@@ -15,23 +15,15 @@
  * Variables
  */
 
-// Bar content.
-$bar-content-bg: $mm-color !default;
-$bar-content-border: transparent !default;
-$bar-content-text: $white !default;
-
 // Small avatar ideal for icons.
 $item-media-width: 32px !default;
 $item-media-height: 32px !default;
 
 // Messages.
-$item-message-bg: $white !default;
-$item-message-note-text: $gray-dark !default;
+$item-message-bg: $gray-lighter !default;
+$item-message-note-text: $gray-darker !default;
 $item-message-note-font-size: $font-size-small !default;
-$item-message-mine-bg: $turquoise-light !default;
-
-// Disabled items.
-$item-disabled-color: $gray-medium !default;
+$item-message-mine-bg: $blue-light !default;
 
 // Messages boxes.
 $mm-warning-color: $energized !default; // Energized / yellow.
@@ -107,6 +99,10 @@ em {
  * Styles.
  */
 
+a.button {
+  line-height: $button-height + 5px - ($button-border-width * 2);
+}
+
 .mm-big   { font-size: 115%; }
 
 .item-stacked-label {
@@ -125,7 +121,7 @@ em {
   @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
   .button {
     @include button-style($bar-content-bg, $bar-content-border, $bar-content-bg, $bar-content-border, $bar-content-text);
-    @include button-clear($white, $bar-title-font-size);
+    @include button-clear($bar-content-text, $bar-title-font-size);
   }
 }
 
@@ -310,7 +306,7 @@ p.item-text-wrap {
   box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2);
 
   .tab-item {
-    color: $gray-dark;
+    color: $gray-darker;
     margin-top: 0;
     max-width: initial;
     font-size: 120%;
@@ -357,7 +353,6 @@ p.item-text-wrap {
   width: 100%;
   height: 100%;
   position: relative;
-  margin-right: 2px;
 }
 
 .mm-split-pane-content {
@@ -370,6 +365,7 @@ p.item-text-wrap {
   .mm-split-pane-menu {
     @include flex(0, 0, $menu-width);
     width: $menu-width;
+    margin-right: 2px;
   }
   .mm-split-pane-content {
     display: block;
@@ -802,6 +798,12 @@ p.mm-error { // Deprecated, use one of the above mm-error classes.
   text-align: left;
 }
 
+.badge-positive, .badge-calm, .badge-balanced, .badge-energize, .badge-assertive, .badge-royal, badge-dark {
+  a {
+    color: white;
+  }
+}
+
 // Timer.
 mm-timer {
   display: block;
@@ -1067,14 +1069,14 @@ input[type="radio"].mm-radio {
   padding: 0;
 }
 
-.padding .mm-searchbox .item-input-inset {
+.padding mm-searchbox .item-input-inset {
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
+}
 
-  .item-input-wrapper {
-    background: white;
-  }
+mm-searchbox .item-input-inset .item-input-wrapper {
+  background: white;
 }
 
 .item.mm-not-clickable {
@@ -1424,7 +1426,7 @@ i, cite, em, var, address, dfn {
 }
 
 .item-divider .item-note {
-  color: $gray-dark;
+  color: $gray-darker;
 }
 
 
@@ -1505,14 +1507,17 @@ h2.invert {
   color: $white;
 }
 
-.mm-center-view .scroll {
-  margin: 0 auto;
-  max-width: 600px;
-  display: table !important;
-  width: 100% !important;
-  height: 100% !important;
-  .mm-view-content {
-    display: table-cell;
-    vertical-align: middle;
+
+@media only screen and (min-width: 430px) {
+  .mm-center-view .scroll {
+    margin: 0 auto;
+    max-width: 600px;
+    display: table !important;
+    width: 100% !important;
+    height: 100% !important;
+    .mm-view-content {
+      display: table-cell;
+      vertical-align: middle;
+    }
   }
 }
