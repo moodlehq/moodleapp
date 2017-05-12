@@ -3038,7 +3038,7 @@ angular.module('mm.addons.mod_lesson')
                 });
             }
 
-            promise.then(function() {
+            promise = promise.then(function() {
                 if (stop) {
                     return;
                 }

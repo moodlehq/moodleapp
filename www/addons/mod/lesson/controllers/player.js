@@ -334,8 +334,10 @@ angular.module('mm.addons.mod_lesson')
             if (result.nodefaultresponse || result.inmediatejump) {
                 // Don't display feedback or force a redirect to a new page. Load the new page.
                 return jumpToPage(result.newpageid);
-            } else{
+            } else {
+
                 // Not inmediate jump, show the feedback.
+                result.feedback = $mmaModLessonHelper.removeQuestionFromFeedback(result.feedback);
                 $scope.messages = result.messages;
                 $scope.processData = result;
                 $scope.processData.buttons = [];

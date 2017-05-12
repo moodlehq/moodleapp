@@ -458,5 +458,30 @@ angular.module('mm.addons.mod_lesson')
         return $q.when(model);
     };
 
+    /**
+     * Given the feedback of a process page in HTML, remove the question text.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#removeQuestionFromFeedback
+     * @param  {String} html Feedback's HTML.
+     * @return {String}      Feedback without the question text.
+     */
+    self.removeQuestionFromFeedback = function(html) {
+        var questionContainer,
+            rootElement = document.createElement('div');
+
+        // Search the container of the question.
+        rootElement.innerHTML = html;
+        questionContainer = rootElement.querySelector('.generalbox:not(.feedback):not(.correctanswer)');
+
+        if (questionContainer) {
+            // Remove it from the HTML.
+            angular.element(questionContainer).remove();
+        }
+
+        return rootElement.innerHTML.trim();
+    };
+
     return self;
 });
