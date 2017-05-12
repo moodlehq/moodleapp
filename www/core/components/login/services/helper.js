@@ -369,19 +369,10 @@ angular.module('mm.core.login')
 
         loginUrl += '&oauthsso=' + params.id;
 
-        // Google will be opened in browser, others will be opened in InAppBrowser.
-        // There's no reliable attribute to check if it's google (ID is not reliable), search for "google" in icon and name.
-        if ((provider.name && provider.name.match(/google/i)) || (provider.iconurl && provider.iconurl.match(/google/i))) {
-            $mmUtil.openInBrowser(loginUrl);
-            if (navigator.app) {
-                navigator.app.exitApp();
-            }
-        } else {
-            var options = {
-                clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
-                closebuttoncaption: $translate.instant('mm.login.cancel'),
-            };
-            $mmUtil.openInApp(loginUrl, options);
+        // Always open it in browser because the user might have the session stored in there.
+        $mmUtil.openInBrowser(loginUrl);
+        if (navigator.app) {
+            navigator.app.exitApp();
         }
 
         return true;
