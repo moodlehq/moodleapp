@@ -13,4 +13,5 @@
     "siteurl": "http://edu.jbrccsi.com",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false"
+    "presets" : {"url": "http://edu.jbrccsi.com", "username" : ""},
 }
