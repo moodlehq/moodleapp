@@ -1,6 +1,6 @@
 {
     "app_id" : "com.richdcn.cyberunivmobil",
-    "appname": "BC Cyver University Mobile",
+    "appname": "BC Cyber University Mobile",
     "versioncode" : "2016",
     "versionname" : "3.2.0",
     "cache_expiration_time" : 300000,
@@ -10,7 +10,7 @@
     "wsextservice" : "local_mobile",
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "http://agu.richdcn.com",
+    "siteurl": "http://edu.jbrccsi.com",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false"
 }
