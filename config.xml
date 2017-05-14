@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.richdcn.cyberunivmobile" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>BC - Cyber University Mobile</name>
-  <description>Official BC Cyber University Mobile app</description>
-  <author href="http://richdcn.com" email="bccum@richdcn.com">Rolando Cruz</author>
+  <name>JBRC - Cyber University Mobile</name>
+  <description>Official JBRC Cyber University Mobile app</description>
+  <author href="http://jbrccsi.com" email="rcruz@jbrccsi.com">Rolando Cruz</author>
   <content src="index.html"/>
   <access origin="*"/>
   <allow-navigation href="cdvfile:*"/>
