@@ -3,7 +3,7 @@
   <name>JBRC - Cyber University Mobile</name>
   <description>Official JBRC Cyber University Mobile App</description>
   <author href="http://www.jbrccsi.com" email="rcruz@jbrccsi.com">Rolando Cruz</author>
-  <content src="index.php"/>
+  <content src="index.html"/>
   <access origin="*"/>
   <allow-navigation href="cdvfile:*"/>
   <allow-navigation href="content:*"/>
