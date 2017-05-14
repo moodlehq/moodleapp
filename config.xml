@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.jbrccsi.cyberunivmobile" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.jbrccsi.cyberunivmobile" version="3.2.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>JBRC - Cyber University Mobile</name>
   <description>Official JBRC Cyber University Mobile App</description>
   <author href="http://www.jbrccsi.com" email="rcruz@jbrccsi.com">Rolando Cruz</author>
-  <content src="index.html"/>
+  <content src="index.php"/>
   <access origin="*"/>
   <allow-navigation href="cdvfile:*"/>
   <allow-navigation href="content:*"/>
