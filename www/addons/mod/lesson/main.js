@@ -30,7 +30,9 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
       url: '/mod_lesson',
       params: {
         module: null,
-        courseid: null
+        courseid: null,
+        action: null,
+        group: null // Only if action == 'report'.
       },
       views: {
         'site': {
@@ -80,6 +82,7 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModLesson', 'lesson', '$mmaModLessonHandlers.courseContentHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModLesson', 'lesson', '$mmaModLessonPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModLesson:view', '$mmaModLessonHandlers.viewLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModLesson:overview', '$mmaModLessonHandlers.overviewLinksHandler');
 })
 
 .run(function($mmCronDelegate) {

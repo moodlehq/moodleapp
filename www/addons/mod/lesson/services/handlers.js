@@ -261,5 +261,107 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
+    /**
+     * Content links handler for report overview.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHandlers#overviewLinksHandler
+     */
+    self.overviewLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/lesson\/report\.php.*([\&\?]id=\d+)/, '$mmCourseDelegate_mmaModLesson');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.overviewLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+        if (params.action == 'reportdetail' && !params.userid) {
+            // Individual details are only available if the teacher is seeing a certain user.
+            return false;
+        }
+
+        return $mmContentLinksHelper.isModuleIndexEnabled($mmaModLesson, siteId, courseId);
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.overviewLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+
+        return [{
+            action: function(siteId) {
+                if (!params.action || params.action == 'reportoverview') {
+                    // Go to overview.
+                    openReportOverview(parseInt(params.id, 10), courseId, parseInt(params.group, 10), siteId);
+                } else if (params.action == 'reportdetail') {
+                    openUserAttempt(parseInt(params.id, 10), parseInt(params.userid, 10), courseId,
+                            parseInt(params.try, 10), siteId);
+                }
+            }
+        }];
+    };
+
+    /**
+     * Open report overview.
+     *
+     * @param  {Number} moduleId   Module ID.
+     * @param  {Number} [courseId] Course ID.
+     * @param  {String} [groupId]  Group ID.
+     * @param  {String} siteId     Site ID.
+     * @return {Promise}           Promise resolved when navigated.
+     */
+    function openReportOverview(moduleId, courseId, groupId, siteId) {
+        var modal = $mmUtil.showModalLoading();
+
+        // Get the module object.
+        return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            courseId = courseId || module.course;
+
+            var stateParams = {
+                module: module,
+                courseid: courseId ? parseInt(courseId, 10) : courseId,
+                action: 'report',
+                group: groupId
+            };
+            $mmContentLinksHelper.goInSite('site.mod_lesson', stateParams, siteId);
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error processing link.');
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Open a user's attempt.
+     *
+     * @param  {Number} moduleId   Module ID.
+     * @param  {Number} userId     User ID.
+     * @param  {Number} [courseId] Course ID.
+     * @param  {Number} [attempt]  Attempt to open.
+     * @param  {String} [groupId]  Group ID.
+     * @param  {String} siteId     Site ID.
+     * @return {Promise}           Promise resolved when navigated.
+     */
+    function openUserAttempt(moduleId, userId, courseId, attempt, siteId) {
+        var modal = $mmUtil.showModalLoading();
+
+        // Get the module object.
+        return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            courseId = courseId || module.course;
+
+            var stateParams = {
+                lessonid: module.instance,
+                courseid: courseId ? parseInt(courseId, 10) : courseId,
+                userid: userId,
+                attempt: attempt || 0
+            };
+            $mmContentLinksHelper.goInSite('site.mod_lesson-userattempt', stateParams, siteId);
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error processing link.');
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+
     return self;
 });

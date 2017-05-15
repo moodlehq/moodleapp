@@ -51,8 +51,8 @@ angular.module('mm.addons.mod_lesson')
     $scope.data = {
         password: ''
     };
-    $scope.display = $scope.DISPLAY_VIEW;
-    $scope.selectedGroup = 0;
+    $scope.display = $stateParams.action == 'report' ? $scope.DISPLAY_REPORTS : $scope.DISPLAY_VIEW;
+    $scope.selectedGroup = $stateParams.group || 0;
 
     // Convenience function to get Lesson data.
     function fetchLessonData(refresh, sync, showErrors) {
