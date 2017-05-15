@@ -320,6 +320,20 @@ p.item-text-wrap {
   }
 }
 
+.mm-menu-selected:not(.button) {
+  background-color: $gray-lighter;
+  border-left: 5px solid $mm-color-light;
+  padding-left: $item-padding - 4;
+
+  &.item-avatar,
+  &.item-avatar-left {
+    padding-left: $item-avatar-width + ($item-padding * 2) - 4;
+    > img:first-child {
+      left: $item-padding - 4;
+    }
+  }
+}
+
 .user-with-avatar {
   position: relative;
   z-index: 2;
@@ -481,19 +495,9 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   right: 16px;
 }
 
-.mm-split-item-selected:not(.button),
-.mm-split-item-selected.item:not(.button) {
-  background-color: $gray-lighter;
-  border-left: 5px solid $mm-color-light;
-  padding-left: $item-padding - 4;
-
-  &.item-avatar,
-  &.item-avatar-left {
-    padding-left: $item-avatar-width + ($item-padding * 2) - 4;
-    > img:first-child {
-      left: $item-padding - 4;
-    }
-  }
+.mm-split-item-selected,
+.mm-split-item-selected.item {
+  @extend .mm-menu-selected;
 }
 
 .mm-module-buttons {
@@ -584,6 +588,7 @@ mm-navigation-bar {
 // When using .item and .row in the same element, .row's padding prevails. Use this class to keep .item's padding.
 .item.row.mm-item-padding {
   padding: $item-padding / 2;
+  width: initial;
 }
 
 .row-buttons {
@@ -810,17 +815,26 @@ mm-timer {
 }
 
 // Style timer in items.
-.item mm-timer.mm-timer, mm-timer.mm-timer.item {
-  p, span, label {
+mm-timer.mm-timer .item {
+  span, label {
     color: $item-default-text;
     font-size: $item-font-size;
+  }
+  span {
+    font-weight: bold;
   }
 }
 
 // Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
 @for $i from 0 through $mm-timer-iterations {
-  mm-timer.mm-timer.mm-timer-timeleft-#{$i} {
+  mm-timer.mm-timer.mm-timer-timeleft-#{$i} .item {
     background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
+    @if $i <= $mm-timer-iterations / 2 {
+      label, span, i {
+        color: $white;
+      }
+    }
+
   }
 }
 
