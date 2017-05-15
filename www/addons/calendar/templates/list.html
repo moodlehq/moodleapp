@@ -19,10 +19,7 @@
                         </a>
                     </li>
                 </ul>
-                <div ng-if="filtered.length == 0" class="mm-empty-box block">
-                    <i class="icon ion-calendar"></i>
-                    <p>{{ 'mma.calendar.noevents' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="filtered.length == 0" icon="ion-calendar" message="{{ 'mma.calendar.noevents' | translate }}"></mm-empty-box>
 
                 <ion-infinite-scroll ng-if="canLoadMore" on-infinite="loadMoreEvents()" >
                 </ion-infinite-scroll>

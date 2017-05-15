@@ -12,10 +12,7 @@
                         </a>
                     </li>
                 </ul>
-                <div ng-if="grades.length == 0" class="mm-empty-box block">
-                    <i class="icon ion-stats-bars"></i>
-                    <p>{{ 'mma.grades.nogradesreturned' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="grades.length == 0" icon="ion-stats-bars" message="{{ 'mma.grades.nogradesreturned' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

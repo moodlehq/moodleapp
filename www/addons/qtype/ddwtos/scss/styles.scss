@@ -16,7 +16,7 @@
   .drop {
       display: inline-block;
       text-align: center;
-      border: 1px solid $gray-dark;
+      border: 1px solid $gray-darker;
       margin-bottom: 2px;
       border-radius: 5px;
   }
@@ -27,7 +27,7 @@
       border: 0;
   }
   .draghome, .drag.unplaced{
-      border: 1px solid $gray-dark;
+      border: 1px solid $gray-darker;
       border-radius: 5px;
   }
   .draghome {
@@ -39,12 +39,12 @@
   }
   .drag.selected {
       z-index: 3;
-      box-shadow: 3px 3px 4px $gray-dark;
+      box-shadow: 3px 3px 4px $gray-darker;
   }
 
   .drop.selected {
-      border-color: $yellow-lighter;
-      box-shadow: 0 0 5px 5px $yellow-lighter;
+      border-color: $yellow-light;
+      box-shadow: 0 0 5px 5px $yellow-light;
   }
 
   &.notreadonly .drag,
@@ -63,20 +63,20 @@
   }
 
   span.incorrect {
-      background-color: $red-lighter;
+      background-color: $red-light;
   }
   span.correct {
-      background-color: $green-lighter;
+      background-color: $green-light;
   }
 
   .group1 {
-      background-color: #FFFFFF;
+      background-color: $white;
   }
   .group2 {
       background-color: #DCDCDC;
   }
   .group3 {
-      background-color: #B0C4DE;
+      background-color: $blue-light;
   }
   .group4 {
       background-color: #D8BFD8;

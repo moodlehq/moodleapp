@@ -13,10 +13,7 @@
                     </li>
                 </ul>
 
-                <div ng-if="participants && participants.length == 0" class="mm-empty-box block">
-                    <i class="icon ion-person-stalker"></i>
-                    <p>{{ 'mma.participants.noparticipants' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="participants && participants.length == 0" icon="ion-person-stalker" message="{{ 'mma.participants.noparticipants' | translate }}"></mm-empty-box>
 
                 <ion-infinite-scroll ng-if="canLoadMore"
                         immediate-check="false"

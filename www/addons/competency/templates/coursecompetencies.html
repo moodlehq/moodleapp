@@ -39,10 +39,7 @@
                     <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
                     <mm-format-text>{{ user.fullname }}</mm-format-text>
                 </p>
-                <div ng-if="competencies.statistics.competencycount == 0" class="mm-empty-box block">
-                    <i class="icon ion-ribbon-a"></i>
-                    <p>{{ 'mma.competency.nocompetencies' | translate }}</p>
-                </div>
+                <mm-empty-box ng-if="competencies.statistics.competencycount == 0" icon="ion-ribbon-a" message="{{ 'mma.competency.nocompetencies' | translate }}"></mm-empty-box>
 
                 <div class="list card" ng-repeat="competency in competencies.competencies">
                     <a ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}" class="item item-heading item-text-wrap clearfix">

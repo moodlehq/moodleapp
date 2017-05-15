@@ -1,6 +1,6 @@
 
 $mma-mod-scorm-level-margin:		25px !default;
-$mma-mod-scorm-warning-color:		#c00 !default;
+$mma-mod-scorm-warning-color:		$red !default;
 
 @for $i from 0 through 15 {
   .mma-scorm-level-#{$i} {

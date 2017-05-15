@@ -28,7 +28,7 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
     }
 
     &.mm-shortened {
-      color: #777;
+      color: $gray-darker;
       overflow: hidden;
       min-height: 50px;
 
@@ -41,7 +41,7 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
         bottom: 0;
         right: 0;
         z-index: 1001;
-        background-color: white;
+        background-color: $white;
         padding-left: 10px;
 
         &:after {
@@ -126,12 +126,5 @@ mm-format-text, *[mm-format-text] {
 .item-message {
   mm-format-text > p:only-child {
     display: inline;
-  }
-}
-
-.item mm-format-text,
-.item *[mm-format-text] {
-  p {
-    color: inherit;
   }
 }

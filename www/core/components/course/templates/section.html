@@ -29,10 +29,7 @@
                     {{ 'mm.course.nocontentavailable' | translate }}
                 </div>
             </section>
-            <div ng-if="!hasContent" class="mm-empty-box block">
-                <i class="icon ion-qr-scanner"></i>
-                <p>{{ 'mm.course.nocontentavailable' | translate }}</p>
-            </div>
+            <mm-empty-box ng-if="!hasContent" icon="ion-qr-scanner" message="{{ 'mm.course.nocontentavailable' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

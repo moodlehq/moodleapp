@@ -1,14 +1,14 @@
 
 $mm-question-correct-color:         $green-dark !default;
-$mm-question-correct-color-bg:      $green-lighter !default;
+$mm-question-correct-color-bg:      $green-light !default;
 $mm-question-incorrect-color:       $red !default;
-$mm-question-incorrect-color-bg:    $red-lighter !default;
-$mm-question-feedback-color:        $yellow-darker !default;
-$mm-question-feedback-color-bg:     $yellow-lighter !default;
+$mm-question-incorrect-color-bg:    $red-light !default;
+$mm-question-feedback-color:        $yellow-dark !default;
+$mm-question-feedback-color-bg:     $yellow-light !default;
 
-$mm-question-state-correct-color:   $green-lighter !default;
-$mm-question-state-partial-color:   $yellow-lighter !default;
-$mm-question-state-incorrect-color: $red-lighter !default;
+$mm-question-state-correct-color:   $green-light !default;
+$mm-question-state-partial-color:   $yellow-light !default;
+$mm-question-state-incorrect-color: $red-light !default;
 
 $mm-question-warning-color:         $red !default;
 
@@ -91,7 +91,7 @@ li.mm-question-answer-incorrect,
     line-height: 14px;
     color: $white;
     text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
-    background-color: $gray-medium;
+    background-color: $gray-dark;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 
