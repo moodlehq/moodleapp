@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc service
  * @name $mmaModResource
  */
-.factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, $mmSitesManager,
+.factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, $mmSitesManager, $mmLang,
             $mmText, mmaModResourceComponent, mmCoreNotDownloaded, mmCoreDownloading, mmCoreDownloaded, $mmCourse) {
     $log = $log.getInstance('$mmaModResource');
 
@@ -307,7 +307,37 @@ angular.module('mm.addons.mod_resource')
 
         var siteId = $mmSite.getId(),
             file = contents[0],
-            files = [file];
+            files = [file],
+            component = mmaModResourceComponent,
+            revision,
+            timeMod;
+
+        if (self.shouldOpenInBrowser(contents[0])) {
+            if ($mmApp.isOnline()) {
+                // Open in browser.
+                var fixedUrl = $mmSite.fixPluginfileURL(file.fileurl).replace('&offline=1', '');
+                fixedUrl = fixedUrl.replace(/forcedownload=\d+&/, ''); // Remove forcedownload when followed by another param.
+                fixedUrl = fixedUrl.replace(/[\?|\&]forcedownload=\d+/, ''); // Remove forcedownload when not followed by any param.
+                $mmUtil.openInBrowser(fixedUrl);
+
+                if ($mmFS.isAvailable()) {
+                    // Download the file if needed (file outdated or not downloaded).
+                    // Download will be in background, don't return the promise.
+                    revision = $mmFilepool.getRevisionFromFileList(files);
+                    timeMod = $mmFilepool.getTimemodifiedFromFileList(files);
+                    $mmFilepool.downloadPackage(siteId, files, component, moduleId, revision, timeMod);
+                }
+
+                return $q.when();
+            } else {
+                // Not online, get the offline file. It will fail if not found.
+                return $mmFilepool.getInternalUrlByUrl(siteId, file.fileurl).then(function(path) {
+                    return $mmUtil.openFile(path);
+                }).catch(function() {
+                    return $mmLang.translateAndReject('mm.core.networkerrormsg');
+                });
+            }
+        }
 
         return treatResourceMainFile(file, moduleId).then(function(result) {
             if (result.path.indexOf('http') === 0) {
@@ -452,6 +482,36 @@ angular.module('mm.addons.mod_resource')
         promises.push($mmCourse.invalidateModule(moduleId, siteId));
 
         return $mmUtil.allPromises(promises);
+    };
+
+    /**
+     * Whether the resource has to be opened in browser.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#shouldOpenInBrowser
+     * @param {Object} file Module's main file.
+     * @return {Boolean}    Whether the resource should be opened in browser.
+     * @since 3.3
+     */
+    self.shouldOpenInBrowser = function(file) {
+        if (!file || !file.isexternalfile || !file.mimetype) {
+            return false;
+        }
+
+        var mimetype = file.mimetype;
+        if (mimetype.indexOf('application/vnd.google-apps.') != -1) {
+            // Google Docs file, always open in browser.
+            return true;
+        }
+
+        if (file.repositorytype == 'onedrive') {
+            // In OneDrive, open in browser the office docs
+            return mimetype.indexOf('application/vnd.openxmlformats-officedocument') != -1 ||
+                    mimetype == 'text/plain' || mimetype == 'document/unknown';
+        }
+
+        return false;
     };
 
     /**
