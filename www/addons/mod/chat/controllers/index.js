@@ -48,9 +48,7 @@ angular.module('mm.addons.mod_chat')
             var span = chat.chattime - now;
 
             if (chat.chattime && chat.schedule > 0 && span > 0) {
-                $mmUtil.formatTime(span).then(function(time) {
-                    $scope.chatScheduled = time;
-                });
+                $scope.chatScheduled = $mmUtil.formatTimeInstant(span);
             }
 
         }, function(error) {

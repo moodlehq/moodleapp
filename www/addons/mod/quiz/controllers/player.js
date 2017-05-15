@@ -94,9 +94,7 @@ angular.module('mm.addons.mod_quiz')
 
             if (quiz.timelimit > 0) {
                 $scope.isTimed = true;
-                $mmUtil.formatTime(quiz.timelimit).then(function(time) {
-                    quiz.readableTimeLimit = time;
-                });
+                quiz.readableTimeLimit = $mmUtil.formatTimeInstant(quiz.timelimit);
             }
 
             $scope.quiz = quiz;

@@ -980,70 +980,79 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#formatTime
          * @param  {Integer} seconds A number of seconds
-         * @return {String}         Human readable seconds formatted
+         * @return {Promise}         Promise resolved with human readable seconds formatted
+         * @deprecated since 3.3. Please use $mmUtil#formatTimeInstant instead.
          */
         self.formatTime = function(seconds) {
-            var langKeys = ['mm.core.day', 'mm.core.days', 'mm.core.hour', 'mm.core.hours', 'mm.core.min', 'mm.core.mins',
-                            'mm.core.sec', 'mm.core.secs', 'mm.core.year', 'mm.core.years', 'mm.core.now'];
+            return $q.when(self.formatTimeInstant(seconds));
+        };
 
-            return $translate(langKeys).then(function(translations) {
+        /**
+         * Returns hours, minutes and seconds in a human readable format.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatTimeInstant
+         * @param  {Integer} seconds A number of seconds
+         * @return {String}          Human readable seconds formatted
+         * @since 3.3
+         */
+        self.formatTimeInstant = function(seconds) {
+            var totalSecs = Math.abs(seconds);
+            var years     = Math.floor(totalSecs / mmCoreSecondsYear);
+            var remainder = totalSecs - (years * mmCoreSecondsYear);
+            var days      = Math.floor(remainder / mmCoreSecondsDay);
+            remainder = totalSecs - (days * mmCoreSecondsDay);
+            var hours     = Math.floor(remainder / mmCoreSecondsHour);
+            remainder = remainder - (hours * mmCoreSecondsHour);
+            var mins      = Math.floor(remainder / mmCoreSecondsMinute);
+            var secs      = remainder - (mins * mmCoreSecondsMinute);
 
-                totalSecs = Math.abs(seconds);
+            var ss = $translate.instant('mm.core.' + (secs == 1 ? 'sec' : 'secs'));
+            var sm = $translate.instant('mm.core.' + (mins == 1 ? 'min' : 'mins'));
+            var sh = $translate.instant('mm.core.' + (hours == 1 ? 'hour' : 'hours'));
+            var sd = $translate.instant('mm.core.' + (days == 1 ? 'day' : 'days'));
+            var sy = $translate.instant('mm.core.' + (years == 1 ? 'year' : 'years'));
 
-                var years     = Math.floor(totalSecs / mmCoreSecondsYear);
-                var remainder = totalSecs - (years * mmCoreSecondsYear);
-                var days      = Math.floor(remainder / mmCoreSecondsDay);
-                remainder = totalSecs - (days * mmCoreSecondsDay);
-                var hours     = Math.floor(remainder / mmCoreSecondsHour);
-                remainder = remainder - (hours * mmCoreSecondsHour);
-                var mins      = Math.floor(remainder / mmCoreSecondsMinute);
-                var secs      = remainder - (mins * mmCoreSecondsMinute);
+            var oyears = '',
+                odays = '',
+                ohours = '',
+                omins = '',
+                osecs = '';
 
-                var ss = (secs == 1)  ? translations['mm.core.sec']  : translations['mm.core.secs'];
-                var sm = (mins == 1)  ? translations['mm.core.min']  : translations['mm.core.mins'];
-                var sh = (hours == 1) ? translations['mm.core.hour'] : translations['mm.core.hours'];
-                var sd = (days == 1)  ? translations['mm.core.day']  : translations['mm.core.days'];
-                var sy = (years == 1) ? translations['mm.core.year'] : translations['mm.core.years'];
+            if (years) {
+                oyears  = years + ' ' + sy;
+            }
+            if (days) {
+                odays  = days + ' ' + sd;
+            }
+            if (hours) {
+                ohours = hours + ' ' + sh;
+            }
+            if (mins) {
+                omins  = mins + ' ' + sm;
+            }
+            if (secs) {
+                osecs  = secs + ' ' + ss;
+            }
 
-                var oyears = '',
-                    odays = '',
-                    ohours = '',
-                    omins = '',
-                    osecs = '';
+            if (years) {
+                return oyears + ' ' + odays;
+            }
+            if (days) {
+                return odays + ' ' + ohours;
+            }
+            if (hours) {
+                return ohours + ' ' + omins;
+            }
+            if (mins) {
+                return omins + ' ' + osecs;
+            }
+            if (secs) {
+                return osecs;
+            }
 
-                if (years) {
-                    oyears  = years + ' ' + sy;
-                }
-                if (days) {
-                    odays  = days + ' ' + sd;
-                }
-                if (hours) {
-                    ohours = hours + ' ' + sh;
-                }
-                if (mins) {
-                    omins  = mins + ' ' + sm;
-                }
-                if (secs) {
-                    osecs  = secs + ' ' + ss;
-                }
-
-                if (years) {
-                    return oyears + ' ' + odays;
-                }
-                if (days) {
-                    return odays + ' ' + ohours;
-                }
-                if (hours) {
-                    return ohours + ' ' + omins;
-                }
-                if (mins) {
-                    return omins + ' ' + osecs;
-                }
-                if (secs) {
-                    return osecs;
-                }
-                return translations['mm.core.now'];
-            });
+            return $translate.instant('mm.core.now');
         };
 
         /**

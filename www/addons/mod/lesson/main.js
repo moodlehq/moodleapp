@@ -56,6 +56,22 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
           templateUrl: 'addons/mod/lesson/templates/player.html'
         }
       }
+    })
+
+    .state('site.mod_lesson-userattempt', {
+      url: '/mod_lesson-userattempt',
+      params: {
+        courseid: null,
+        lessonid: null,
+        userid: null,
+        attempt: null
+      },
+      views: {
+        'site': {
+          controller: 'mmaModLessonUserAttemptCtrl',
+          templateUrl: 'addons/mod/lesson/templates/userattempt.html'
+        }
+      }
     });
 
 })

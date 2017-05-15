@@ -83,6 +83,69 @@ angular.module('mm.addons.mod_lesson')
     }
 
     /**
+     * Check if an answer page (from getUserAttempt) is a content page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#answerPageIsContent
+     * @param  {Object} page Answer page.
+     * @return {Boolean}     True if content page.
+     */
+    self.answerPageIsContent = function(page) {
+        // The page doesn't have any reliable field to use for checking this. Check qtype first (translated string).
+        if (page.qtype == $translate.instant('mma.mod_lesson.branchtable')) {
+            return true;
+        }
+
+        // qtype doesn't match, but that doesn't mean it's not a content page, maybe the language is different.
+        // Check it's not a question page.
+        if (page.answerdata && !self.answerPageIsQuestion(page)) {
+            // It isn't a question page, but it can be an end of branch, etc. Check if the first answer has a button.
+            // Check if the first answer has a button.
+            if (page.answerdata.answers && page.answerdata.answers[0]) {
+                var rootElement = document.createElement('div');
+                rootElement.innerHTML = page.answerdata.answers[0][0];
+
+                return !!rootElement.querySelector('input[type="button"]');
+            }
+        }
+
+        return false;
+    };
+
+    /**
+     * Check if an answer page (from getUserAttempt) is a question page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#answerPageIsQuestion
+     * @param  {Object} page Answer page.
+     * @return {Boolean}     True if question page.
+     */
+    self.answerPageIsQuestion = function(page) {
+        if (!page.answerdata) {
+            return false;
+        }
+
+        if (page.answerdata.score) {
+            // Only question pages have a score.
+            return true;
+        }
+
+        if (page.answerdata.answers) {
+            for (var i = 0; i < page.answerdata.answers.length; i++) {
+                var answer = page.answerdata.answers[i];
+                if (answer[1]) {
+                    // Only question pages have a statistic.
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    /**
      * Calculate some offline data like progress and ongoingscore.
      *
      * @param  {Object} lesson      Lesson.
@@ -1004,6 +1067,65 @@ angular.module('mm.addons.mod_lesson')
             }
 
             return site.read('mod_lesson_get_lesson_access_information', params, preSets);
+        });
+    };
+
+    /**
+     * Get cache key for get attempts overview WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} groupId  Group ID.
+     * @return {String}          Cache key.
+     */
+    function getAttemptsOverviewCacheKey(lessonId, groupId) {
+        return getAttemptsOverviewCommonCacheKey(lessonId) + ':' + groupId;
+    }
+
+    /**
+     * Get common cache key for get attempts overview WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @return {String}          Cache key.
+     */
+    function getAttemptsOverviewCommonCacheKey(lessonId) {
+        return 'mmaModLesson:attemptsOverview:' + lessonId;
+    }
+
+    /**
+     * Get the overview of attempts in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getAttemptsOverview
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} [groupId]      The group to get. If not defined, all participants.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the access information.
+     */
+    self.getAttemptsOverview = function(lessonId, groupId, forceCache, ignoreCache, siteId) {
+        groupId = groupId || 0;
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    lessonid: lessonId,
+                    groupid: groupId
+                },
+                preSets = {
+                    cacheKey: getAttemptsOverviewCacheKey(lessonId, groupId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_attempts_overview', params, preSets).then(function(response) {
+                return response.data;
+            });
         });
     };
 
@@ -2001,6 +2123,77 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get cache key for get user attempt WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} userId   User ID.
+     * @param  {Number} attempt  Attempt number
+     * @return {String}          Cache key.
+     */
+    function getUserAttemptCacheKey(lessonId, userId, attempt) {
+        return getUserAttemptUserCacheKey(lessonId, userId) + ':' + attempt;
+    }
+
+    /**
+     * Get user cache key for get user attempt WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} userId   User ID.
+     * @return {String}          Cache key.
+     */
+    function getUserAttemptUserCacheKey(lessonId, userId) {
+        return getUserAttemptLessonCacheKey(lessonId) + ':' + userId;
+    }
+
+    /**
+     * Get lesson cache key for get user attempts WS calls.
+     *
+     * @param {Number} lessonId Lesson ID.
+     * @return {String}         Cache key.
+     */
+    function getUserAttemptLessonCacheKey(lessonId) {
+        return 'mmaModLesson:userAttempt:' + lessonId;
+    }
+
+    /**
+     * Get a user's attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getUserAttempt
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} attempt        Attempt number
+     * @param  {Number} [userId]       User ID. Undefined for current user.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the pages.
+     */
+    self.getUserAttempt = function(lessonId, attempt, userId, forceCache, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var params = {
+                    lessonid: lessonId,
+                    userid: userId,
+                    lessonattempt: attempt
+                },
+                preSets = {
+                    cacheKey: getUserAttemptCacheKey(lessonId, userId, attempt)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_user_attempt', params, preSets);
+        });
+    };
+
+    /**
      * Check if a jump is correct.
      * Based in Moodle's jumpto_is_correct.
      *
@@ -2052,6 +2245,39 @@ angular.module('mm.addons.mod_lesson')
     self.invalidateAccessInformation = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAccessInformationCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates attempts overview for all groups in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateAttemptsOverview
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateAttemptsOverview = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getAttemptsOverviewCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates attempts overview for a certain group in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateAttemptsOverviewForGroup
+     * @param  {Number} lessonId Attempt ID.
+     * @param  {Number} groupId  Group ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateAttemptsOverviewForGroup = function(lessonId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPageDataCacheKey(lessonId, groupId));
         });
     };
 
@@ -2251,6 +2477,59 @@ angular.module('mm.addons.mod_lesson')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getTimersCacheKey(lessonId, userId));
+        });
+    };
+
+    /**
+     * Invalidates all attempts for all users in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateUserAttempts
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserAttemptsForLesson = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getUserAttemptLessonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates all attempts for a certain user in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateUserAttempts
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} [userId] User ID. Undefined for current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserAttemptsForUser = function(lessonId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKeyStartingWith(getUserAttemptUserCacheKey(lessonId, userId));
+        });
+    };
+
+    /**
+     * Invalidates a certain attempt for a certain user.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateUserAttempt
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} [userId] User ID. Undefined for current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserAttempt = function(lessonId, attempt, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKey(getUserAttemptCacheKey(lessonId, userId, attempt));
         });
     };
 
@@ -2759,7 +3038,7 @@ angular.module('mm.addons.mod_lesson')
                 });
             }
 
-            promise.then(function() {
+            promise = promise.then(function() {
                 if (stop) {
                     return;
                 }

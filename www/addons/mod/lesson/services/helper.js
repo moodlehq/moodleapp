@@ -52,6 +52,74 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get a label to identify an attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#getAttemptLabel
+     * @param  {Object} attempt          Attempt.
+     * @param  {Boolean} includeDuration Whether to include the duration of the attempt.
+     * @return {String}                  Attempt label.
+     */
+    self.getAttemptLabel = function(attempt, includeDuration) {
+        var data = {
+                attempt: attempt.try + 1,
+                grade: '',
+                timestart: '',
+                duration: ''
+            },
+            hasGrade = attempt.grade != null;
+
+        if (hasGrade || attempt.end) {
+            // Attempt finished with or without grade (if the lesson only has content pages, it has no grade).
+            if (hasGrade) {
+                data.grade = $translate.instant('mm.core.percentagenumber', {$a: attempt.grade});
+            }
+            data.timestart = moment(attempt.timestart * 1000).format('LLL');
+            if (includeDuration) {
+                data.duration = $mmUtil.formatTimeInstant(attempt.timeend - attempt.timestart);
+            }
+        } else {
+            // This is what the link does/looks like when the user has not completed the attempt.
+            data.grade = $translate.instant('mma.mod_lesson.notcompleted');
+            if (attempt.timestart) {
+                data.timestart = moment(attempt.timestart * 1000).format('LLL');
+            }
+        }
+
+        return $translate.instant('mma.mod_lesson.attemptlabel' + (includeDuration ? 'full' : 'short'), data);
+    };
+
+    /**
+     * Given the HTML of an answer from a content page, extract the data to render the answer.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#getContentPageAnswerDataFromHtml
+     * @param  {String} html Answer's HTML.
+     * @return {Object}      Object with buttonText and content.
+     */
+    self.getContentPageAnswerDataFromHtml = function(html) {
+        var data = {},
+            button,
+            rootElement = document.createElement('div');
+
+        // Search the input button.
+        rootElement.innerHTML = html;
+        button = rootElement.querySelector('input[type="button"]');
+
+        if (button) {
+            // Extract the button content and remove it from the HTML.
+            data.buttonText = button.value;
+            angular.element(button).remove();
+        }
+
+        data.content = rootElement.innerHTML.trim();
+
+        return data;
+    };
+
+    /**
      * Get the buttons to change pages.
      *
      * @module mm.addons.mod_lesson
@@ -101,6 +169,71 @@ angular.module('mm.addons.mod_lesson')
         });
 
         return buttons;
+    };
+
+    /**
+     * Given the HTML of an answer from a question page, extract the data to render the answer.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#getQuestionPageAnswerDataFromHtml
+     * @param  {String} html Answer's HTML.
+     * @return {Mixed}       Object with the data to render the answer.
+     *                       If the answer doesn't require any parsing, return a string with the HTML.
+     */
+    self.getQuestionPageAnswerDataFromHtml = function(html) {
+        var data = {},
+            input,
+            select,
+            rootElement = document.createElement('div');
+
+        rootElement.innerHTML = html;
+
+        // Check if it has a checkbox.
+        input = rootElement.querySelector('input[type="checkbox"][name*="answer"]');
+
+        if (input) {
+            // Truefalse or multichoice.
+            data.isCheckbox = true;
+            data.checked = input.checked;
+            data.name = input.name;
+            data.value = input.value;
+            data.highlight = !!rootElement.querySelector('.highlight');
+
+            angular.element(input).remove();
+            data.content = rootElement.innerHTML.trim();
+            return data;
+        }
+
+        // Check if it has an input text or number.
+        input = rootElement.querySelector('input[type="number"],input[type="text"]');
+        if (input) {
+            // Short answer or numeric.
+            data.isText = true;
+            data.value = input.value;
+            return data;
+        }
+
+        // Check if it has a select.
+        select = rootElement.querySelector('select');
+        if (select && select.options) {
+            // Matching.
+            var selectedOption = select.options[select.selectedIndex];
+            data.isSelect = true;
+            data.id = select.id;
+            if (selectedOption) {
+                data.value = selectedOption.value;
+            } else {
+                data.value = '';
+            }
+
+            angular.element(select).remove();
+            data.content = rootElement.innerHTML.trim();
+            return data;
+        }
+
+        // The answer doesn't need any parsing, return the HTML as it is.
+        return html;
     };
 
     /**
@@ -323,6 +456,31 @@ angular.module('mm.addons.mod_lesson')
         }
 
         return $q.when(model);
+    };
+
+    /**
+     * Given the feedback of a process page in HTML, remove the question text.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#removeQuestionFromFeedback
+     * @param  {String} html Feedback's HTML.
+     * @return {String}      Feedback without the question text.
+     */
+    self.removeQuestionFromFeedback = function(html) {
+        var questionContainer,
+            rootElement = document.createElement('div');
+
+        // Search the container of the question.
+        rootElement.innerHTML = html;
+        questionContainer = rootElement.querySelector('.generalbox:not(.feedback):not(.correctanswer)');
+
+        if (questionContainer) {
+            // Remove it from the HTML.
+            angular.element(questionContainer).remove();
+        }
+
+        return rootElement.innerHTML.trim();
     };
 
     return self;

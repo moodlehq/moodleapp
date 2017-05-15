@@ -1155,6 +1155,12 @@ mm-searchbox .item-input-inset .item-input-wrapper {
   }
 }
 
+@media only screen and (min-width: 769px) {
+  .hidden-tablet {
+    display: none !important;
+  }
+}
+
 // Disable input copy to prevent errors in iOS.
 
 .previous-input-focus, .previous-input-focus.mm-textarea, .cloned-text-input + input, .cloned-text-input + textarea.mm-textarea {
