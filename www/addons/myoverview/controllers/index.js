@@ -167,7 +167,7 @@ angular.module('mm.addons.myoverview')
                     switch ($scope.timeline.sort) {
                         case 'sortbydates':
                             $scope.timeline.events = [];
-                            promise = fetchMyOverviewTimesort();
+                            promise = fetchMyOverviewTimeline();
                             break;
                         case 'sortbycourses':
                             $scope.timeline.courses = [];
