@@ -23,7 +23,7 @@ angular.module('mm.addons.myoverview')
  */
 .controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourses, $mmCoursesDelegate) {
 
-    $scope.tabShown = 'timeline';
+    $scope.tabShown = 'courses';
     $scope.timeline = {
         sort: 'sortbydates',
         events: [],
@@ -167,7 +167,7 @@ angular.module('mm.addons.myoverview')
                     switch ($scope.timeline.sort) {
                         case 'sortbydates':
                             $scope.timeline.events = [];
-                            promise = fetchMyOverviewTimesort();
+                            promise = fetchMyOverviewTimeline();
                             break;
                         case 'sortbycourses':
                             $scope.timeline.courses = [];
@@ -227,11 +227,7 @@ angular.module('mm.addons.myoverview')
         }
     };
 
-    $scope.switchTab('timeline').finally(function() {
-        if ($scope.timeline.events.length == 0) {
-            $scope.switchTab('courses');
-        }
-    });
+    $scope.switchTab($scope.tabShown);
 
     // Load more events.
     $scope.loadMoreTimeline = function() {

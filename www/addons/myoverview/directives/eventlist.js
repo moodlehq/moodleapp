@@ -27,7 +27,7 @@ angular.module('mm.addons.myoverview')
  * @param {Array} events        Array of event items to show.
  * @param {Boolean} showCourse  Whether of not show course name.
  */
-.directive('mmaMyOverviewEventList', function($mmCourse, $mmUtil) {
+.directive('mmaMyOverviewEventList', function($mmCourse, $mmUtil, $mmText, $mmContentLinksHelper, $mmSite) {
 
     function filterEventsByTime(events, start, end) {
         start = moment().add(start, 'days').unix();
@@ -79,6 +79,24 @@ angular.module('mm.addons.myoverview')
                     scope.loadingMore = false;
                 });
             };
+
+            scope.action = function(e, url) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Fix URL format.
+                url = $mmText.decodeHTMLEntities(url);
+
+                var modal = $mmUtil.showModalLoading();
+                $mmContentLinksHelper.handleLink(url).then(function(treated) {
+                    if (!treated) {
+                        return $mmSite.openInBrowserWithAutoLoginIfSameSite(url);
+                    }
+                }).finally(function() {
+                    modal.dismiss();
+                });
+                return false;
+            }
         }
     };
 });
