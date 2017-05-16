@@ -74,6 +74,11 @@ angular.module('mm.addons.calendar')
                     return fetchEvents();
                 }
             } else {
+                // Sort the events by timestart, they're ordered by id.
+                events.sort(function(a, b) {
+                    return a.timestart - b.timestart;
+                });
+
                 angular.forEach(events, $mmaCalendar.formatEventData);
                 if (refresh) {
                     $scope.events = events;
@@ -90,11 +95,7 @@ angular.module('mm.addons.calendar')
             // Resize the scroll view so infinite loading is able to calculate if it should load more items or not.
             scrollView.resize();
         }, function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.calendar.errorloadevents', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.calendar.errorloadevents', true);
             $scope.eventsLoaded = true;
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
