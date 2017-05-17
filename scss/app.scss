@@ -97,6 +97,18 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
     @include button-style($button-default-bg, $button-default-border, $button-default-active-bg, $button-default-active-border, $button-default-text);
     @include button-clear($button-default-border);
     @include button-outline($button-default-border);
+
+    &.active,
+    &.activated {
+      box-shadow: none;
+      color: $white;
+    }
+  }
+
+  &.active,
+  &.activated {
+    box-shadow: none;
+    color: $white;
   }
 
   &.button-dark {

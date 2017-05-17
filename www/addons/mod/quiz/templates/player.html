@@ -71,7 +71,7 @@
                 <div class="item item-text-wrap" ng-if="attempt.dueDateWarning">
                     {{ attempt.dueDateWarning }}
                 </div>
-                <mm-timer ng-if="endTime" class="item item-text-wrap" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></mm-timer>
+                <mm-timer ng-if="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></mm-timer>
                 <div class="item item-text-wrap" ng-if="preventSubmitMessages.length">
                     <p class="item-heading">{{ 'mma.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
                     <p ng-repeat="message in preventSubmitMessages">{{message}}</p>

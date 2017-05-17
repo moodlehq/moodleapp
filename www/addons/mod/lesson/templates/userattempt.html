@@ -6,7 +6,10 @@
                 <a class="item item-text-wrap" ng-class="{'item-avatar': student.profileimageurl}" mm-user-link userid="{{student.id}}" courseid="{{courseId}}" title="{{student.fullname}}">
                     <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" >
                     <h2>{{student.fullname}}</h2>
-                    <p>{{ 'mm.core.percentagenumber' | translate:{$a: student.bestgrade} }}</p>
+                    <div class="row row-no-padding">
+                        <progress class="col-80" max="100" value="{{ student.bestgrade }}"></progress>
+                        <div class="col col-center mm-progress-text">{{ 'mm.core.percentagenumber' | translate:{$a: student.bestgrade} }}</div>
+                    </div>
                 </a>
 
                 <!-- Attempt selector if there is more than one attempt. -->
@@ -18,13 +21,13 @@
 
                 <!-- Attempt stats. -->
                 <div ng-if="attempt && attempt.userstats && attempt.userstats.gradeinfo" class="mma-mod_lesson-userstats">
-                    <div class="item item-text-wrap row">
-                        <div class="item col-50">
+                    <div class="item item-text-wrap row mm-item-padding">
+                        <div class="col col-50">
                             <p class="item-heading">{{ 'mma.mod_lesson.grade' | translate }}</p>
                             <p>{{ 'mm.core.percentagenumber' | translate:{$a: attempt.userstats.grade} }}</p>
                         </div>
 
-                        <div class="item col-50">
+                        <div class="col col-50">
                             <p class="item-heading">{{ 'mma.mod_lesson.rawgrade' | translate }}</p>
                             <p>{{ attempt.userstats.gradeinfo.earned }} / {{ attempt.userstats.gradeinfo.total }}</p>
                         </div>
@@ -45,7 +48,7 @@
                 </div>
 
                 <!-- Pages. -->
-                <div ng-if="attempt" ng-repeat="page in attempt.answerpages" class="mma-mod_lesson-answerpage" ng-class="{'dimmed': page.grayout}">
+                <div ng-if="attempt" ng-repeat="page in attempt.answerpages" class="mma-mod_lesson-answerpage card" ng-class="{'dimmed': page.grayout}">
                     <div class="item item-divider item-text-wrap">
                         <h2>{{page.qtype}}: {{page.title}}</h2>
                     </div>
@@ -59,14 +62,14 @@
                     <div class="item item-text-wrap" ng-if="!page.answerdata || !page.answerdata.answers || !page.answerdata.answers.length">
                         <p>{{ 'mma.mod_lesson.didnotanswerquestion' | translate }}</p>
                     </div>
-                    <div ng-if="page.answerdata && page.answerdata.answers && page.answerdata.answers.length">
-                        <div ng-repeat="answer in page.answerdata.answers" ng-class="{'mma-mod_lesson-contentpage': page.isContent}">
+                    <div ng-if="page.answerdata && page.answerdata.answers && page.answerdata.answers.length" class="mma-mod_lesson-answer">
+                        <div ng-repeat="answer in page.answerdata.answers">
                             <div ng-if="page.isContent" class="item item-text-wrap row">
                                 <!-- Content page, display a button and the content. -->
-                                <div class="col-50 padding">
+                                <div class="col col-50 padding">
                                     <button class="button button-block" disabled="disabled">{{ answer[0].buttonText }}</button>
                                 </div>
-                                <div class="col-50 padding">
+                                <div class="col col-50 padding">
                                     <p ng-bind-html="answer[0].content"></p>
                                 </div>
                             </div>
@@ -76,38 +79,36 @@
                                 <!-- Truefalse or matching. -->
                                 <ion-checkbox ng-if="answer[0].isCheckbox" name="{{answer[0].name}}" value="{{answer[0].value}}" ng-disabled="true" readonly="readonly" class="item-text-wrap item-checkbox-right" ng-checked="answer[0].checked" ng-class="{'highlight': answer[0].highlight}">
                                     <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0].content}}</mm-format-text></p>
-                                    <span ng-if="answer[1]" class="badge badge-inline"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></span>
+                                    <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
                                 </ion-checkbox>
 
                                 <!-- Short answer or numeric. -->
                                 <div ng-if="answer[0].isText" class="item item-text-wrap">
                                     <p>{{ answer[0].value }}</p>
-                                    <span ng-if="answer[1]" class="badge badge-inline"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></span>
+                                    <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
                                 </div>
 
                                 <!-- Matching. -->
                                 <div ng-if="answer[0].isSelect" class="item item-text-wrap row mm-item-padding">
-                                    <div class="col">
+                                    <div class="col col-50">
                                         <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{ answer[0].content }}</mm-format-text></p>
                                     </div>
-                                    <div class="col">
-                                        <p class="mm-select-fix">
-                                            {{answer[0].value}}
-                                        </p>
+                                    <div class="col  col-50">
+                                        <p>{{answer[0].value}}</p>
+                                        <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
                                     </div>
-                                    <span ng-if="answer[1]" class="badge"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></span>
                                 </div>
 
                                 <!-- Essay or couldn't determine. -->
                                 <div ng-if="!answer[0].isCheckbox && !answer[0].isText && !answer[0].isSelect" class="item item-text-wrap">
-                                    <mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0]}}</mm-format-text>
-                                    <span ng-if="answer[1]" class="badge badge-inline"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></span>
+                                    <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0]}}</mm-format-text></p>
+                                    <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
                                 </div>
                             </div>
                             <div ng-if="!page.isContent && !page.isQuestion" class="item item-text-wrap">
                                 <!-- Another page (end of branch, ...). -->
                                 <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0]}}</mm-format-text></p>
-                                <span ng-if="answer[1]" class="badge badge-inline"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></span>
+                                <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
                             </div>
                         </div>
                         <div ng-if="page.answerdata.response" class="item item-text-wrap">

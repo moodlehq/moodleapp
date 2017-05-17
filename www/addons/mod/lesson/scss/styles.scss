@@ -1,6 +1,5 @@
-
 .item.mma-mod-lesson-selected {
-  font-weight: bold;
+  @extend .mm-menu-selected;
 }
 
 .mma-mod-lesson-slideshow {
@@ -13,29 +12,33 @@
 .mma-mod-lesson-ongoingscore span,
 .item.mma-mod-lesson-ongoingscore span {
   // Same styles as .item p.
-  color: #666;
+  color: $gray-darker;
   font-size: 14px;
 }
 
 .mma-mod_lesson-lessonstats, .mma-mod_lesson-userstats {
-  .item.row {
-    padding: 0;
-
-    .col-33, .col-50 {
-      border-color: $item-default-border;
-      border-style: solid;
-      &:not(:first-child) {
-        border-left-width: $item-border-width;
-      }
+  .item.row .col-33,
+  .item.row .col-50 {
+    border-color: $item-default-border;
+    border-style: solid;
+    &:not(:first-child) {
+      border-left-width: $item-border-width;
     }
   }
 }
 
 .mm-site_mod_lesson-userattempt {
-  .mma-mod_lesson-contentpage {
-    padding: 0;
-    .row {
-      padding: 0;
+  .mma-mod_lesson-answer {
+    .item {
+      border-top: 1px solid $item-default-border;
+      border-radius: 0;
+    }
+  }
+
+  .highlight {
+    background-color: $blue-light;
+    p {
+      color: $blue-dark;
     }
   }
 }
