@@ -2059,16 +2059,26 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#invalidateAllFiles
-     * @param {String} siteId The site ID.
-     * @return {Promise} Resolved on success. Rejected on failure. It is advised to ignore a failure.
+     * @param {String}  siteId             The site ID.
+     * @param {Boolean} [onlyUnknown=true] True to only invalidate files from external repos or without revision/timemodified.
+     *                                     It is advised to set it to true to reduce the performance and data usage of the app.
+     * @return {Promise}                   Resolved on success. Rejected on failure. It is advised to ignore a failure.
      * @description
      * Invalidates all files by marking it stale. See {@link $mmFilepool#invalidateFileByUrl} for more details.
      */
-    self.invalidateAllFiles = function(siteId) {
+    self.invalidateAllFiles = function(siteId, onlyUnknown) {
+        if (typeof onlyUnknown == 'undefined') {
+            onlyUnknown = true;
+        }
+
         return getSiteDb(siteId).then(function(db) {
             return db.getAll(mmFilepoolStore).then(function(items) {
                 var promises = [];
                 angular.forEach(items, function(item) {
+                    if (onlyUnknown && !isFileUpdateUnknown(item)) {
+                        // It doesn't need to be invalidated.
+                        return;
+                    }
                     item.stale = true;
                     promises.push(db.insert(mmFilepoolStore, item));
                 });
@@ -2116,14 +2126,20 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#invalidateFilesByComponent
-     * @param {String} siteId The site ID.
-     * @param {String} component The component to link the file to.
-     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise} Resolved on success. Rejected on failure. It is advised to ignore a failure.
+     * @param {String} siteId              The site ID.
+     * @param {String} component           The component to invalidate.
+     * @param {Mixed} [componentId]        An ID to use in conjunction with the component.
+     * @param {Boolean} [onlyUnknown=true] True to only invalidate files from external repos or without revision/timemodified.
+     *                                     It is advised to set it to true to reduce the performance and data usage of the app.
+     * @return {Promise}                   Resolved on success. Rejected on failure. It is advised to ignore a failure.
      * @description
-     * Invalidates a file by marking it stale. See {@link $mmFilepool#invalidateFileByUrl} for more details.
+     * Invalidates files by marking them stale. See {@link $mmFilepool#invalidateFileByUrl} for more details.
      */
-    self.invalidateFilesByComponent = function(siteId, component, componentId) {
+    self.invalidateFilesByComponent = function(siteId, component, componentId, onlyUnknown) {
+        if (typeof onlyUnknown == 'undefined') {
+            onlyUnknown = true;
+        }
+
         return getSiteDb(siteId).then(function(db) {
             return getComponentFiles(db, component, componentId).then(function(items) {
                 var promise,
@@ -2132,6 +2148,10 @@ angular.module('mm.core')
                 angular.forEach(items, function(item) {
                     promise = db.get(mmFilepoolStore, item.fileId).then(function(fileEntry) {
                         if (!fileEntry) {
+                            return;
+                        }
+                        if (onlyUnknown && !isFileUpdateUnknown(fileEntry)) {
+                            // It doesn't need to be invalidated.
                             return;
                         }
                         fileEntry.stale = true;
@@ -2176,6 +2196,16 @@ angular.module('mm.core')
     self._isFileOutdated = function(fileObject, revision, timemodified) {
         return fileObject.stale || revision > fileObject.revision || timemodified > fileObject.timemodified;
     };
+
+    /**
+     * Check if cannot determine if a file has been updated.
+     *
+     * @param  {Object}  entry Filepool object.
+     * @return {Boolean}       True if cannot determine updates.
+     */
+    function isFileUpdateUnknown(entry) {
+        return entry.isexternalfile || (!entry.revision && !entry.timemodified);
+    }
 
     /**
      * Notify a file has been deleted.
