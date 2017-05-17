@@ -52,45 +52,6 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Get a label to identify an attempt.
-     *
-     * @module mm.addons.mod_lesson
-     * @ngdoc method
-     * @name $mmaModLessonHelper#getAttemptLabel
-     * @param  {Object} attempt          Attempt.
-     * @param  {Boolean} includeDuration Whether to include the duration of the attempt.
-     * @return {String}                  Attempt label.
-     */
-    self.getAttemptLabel = function(attempt, includeDuration) {
-        var data = {
-                attempt: attempt.try + 1,
-                grade: '',
-                timestart: '',
-                duration: ''
-            },
-            hasGrade = attempt.grade != null;
-
-        if (hasGrade || attempt.end) {
-            // Attempt finished with or without grade (if the lesson only has content pages, it has no grade).
-            if (hasGrade) {
-                data.grade = $translate.instant('mm.core.percentagenumber', {$a: attempt.grade});
-            }
-            data.timestart = moment(attempt.timestart * 1000).format('LLL');
-            if (includeDuration) {
-                data.duration = $mmUtil.formatTimeInstant(attempt.timeend - attempt.timestart);
-            }
-        } else {
-            // This is what the link does/looks like when the user has not completed the attempt.
-            data.grade = $translate.instant('mma.mod_lesson.notcompleted');
-            if (attempt.timestart) {
-                data.timestart = moment(attempt.timestart * 1000).format('LLL');
-            }
-        }
-
-        return $translate.instant('mma.mod_lesson.attemptlabel' + (includeDuration ? 'full' : 'short'), data);
-    };
-
-    /**
      * Given the HTML of an answer from a content page, extract the data to render the answer.
      *
      * @module mm.addons.mod_lesson
@@ -421,6 +382,45 @@ angular.module('mm.addons.mod_lesson')
         }
 
         return question;
+    };
+
+    /**
+     * Get a label to identify a retake (lesson attempt).
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#getRetakeLabel
+     * @param  {Object} retake           Retake.
+     * @param  {Boolean} includeDuration Whether to include the duration of the retake.
+     * @return {String}                  Retake label.
+     */
+    self.getRetakeLabel = function(retake, includeDuration) {
+        var data = {
+                retake: retake.try + 1,
+                grade: '',
+                timestart: '',
+                duration: ''
+            },
+            hasGrade = retake.grade != null;
+
+        if (hasGrade || retake.end) {
+            // Retake finished with or without grade (if the lesson only has content pages, it has no grade).
+            if (hasGrade) {
+                data.grade = $translate.instant('mm.core.percentagenumber', {$a: retake.grade});
+            }
+            data.timestart = moment(retake.timestart * 1000).format('LLL');
+            if (includeDuration) {
+                data.duration = $mmUtil.formatTimeInstant(retake.timeend - retake.timestart);
+            }
+        } else {
+            // The user has not completed the retake.
+            data.grade = $translate.instant('mma.mod_lesson.notcompleted');
+            if (retake.timestart) {
+                data.timestart = moment(retake.timestart * 1000).format('LLL');
+            }
+        }
+
+        return $translate.instant('mma.mod_lesson.retakelabel' + (includeDuration ? 'full' : 'short'), data);
     };
 
     /**

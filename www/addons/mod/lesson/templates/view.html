@@ -22,9 +22,9 @@
 
 <mm-loading hide-until="!showSpinner">
     <section class="list" ng-if="lesson && (!preventMessages || !preventMessages.length)">
-        <div ng-if="attemptToReview" class="item item-text-wrap">
-            <!-- An attempt was finished in a synchronization, allow reviewing it. -->
-            <p>{{ 'mma.mod_lesson.attemptfinishedinsync' | translate }}</p>
+        <div ng-if="retakeToReview" class="item item-text-wrap">
+            <!-- A retake was finished in a synchronization, allow reviewing it. -->
+            <p>{{ 'mma.mod_lesson.retakefinishedinsync' | translate }}</p>
             <button class="button button-block" ng-click="review()">{{ 'mma.mod_lesson.review' | translate }}</button>
         </div>
         <div ng-if="leftDuringTimed && !lesson.timelimit" class="item item-text-wrap">

@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_lesson')
  */
 .factory('$mmaModLessonHandlers', function($mmCourse, $mmaModLesson, $state, $mmaModLessonPrefetchHandler, $mmUtil, $mmEvents,
             $mmSite, $mmCoursePrefetchDelegate, mmCoreEventPackageStatusChanged, mmaModLessonComponent, mmCoreDownloading,
-            mmCoreNotDownloaded, mmCoreOutdated, $mmaModLessonSync) {
+            mmCoreNotDownloaded, mmCoreOutdated, $mmaModLessonSync, $mmCourseHelper, $mmContentLinksHelper, $q,
+            $mmContentLinkHandlerFactory) {
 
     var self = {};
 
@@ -196,6 +197,171 @@ angular.module('mm.addons.mod_lesson')
 
         return self;
     };
+
+    /**
+     * Content links handler for lesson view.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHandlers#viewLinksHandler
+     */
+    self.viewLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/lesson\/view\.php.*([\&\?]id=\d+)/, '$mmCourseDelegate_mmaModLesson');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.viewLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+        return $mmContentLinksHelper.isModuleIndexEnabled($mmaModLesson, siteId, courseId);
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.viewLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+
+        return [{
+            action: function(siteId) {
+                // Ignore the pageid param. If we open the lesson player with a certain page and the user hasn't started
+                // the lesson, an error is thrown: could not find lesson_timer records.
+                if (params.userpassword) {
+                    navigateToModuleWithPassword(parseInt(params.id, 10), courseId, params.userpassword, siteId);
+                } else {
+                    $mmCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                }
+            }
+        }];
+    };
+
+    /**
+     * Navigate to a lesson module (index page) with a fixed password.
+     *
+     * @param  {Number} moduleId   Module ID.
+     * @param  {Number} [courseId] Course ID.
+     * @param  {String} [password] Password.
+     * @param  {String} siteId     Site ID.
+     * @return {Promise}           Promise resolved when navigated.
+     */
+    function navigateToModuleWithPassword(moduleId, courseId, password, siteId) {
+        var modal = $mmUtil.showModalLoading();
+
+        // Get the module.
+        return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            courseId = courseId || module.course;
+
+            // Store the password so it's automatically used.
+            return $mmaModLesson.storePassword(parseInt(module.instance, 10), password).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmCourseHelper.navigateToModule(moduleId, siteId, courseId, module.section);
+            });
+        }).catch(function() {
+            // Error, go to index page.
+            return $mmCourseHelper.navigateToModule(moduleId, siteId, courseId);
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Content links handler for report overview.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHandlers#overviewLinksHandler
+     */
+    self.overviewLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/lesson\/report\.php.*([\&\?]id=\d+)/, '$mmCourseDelegate_mmaModLesson');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.overviewLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+        if (params.action == 'reportdetail' && !params.userid) {
+            // Individual details are only available if the teacher is seeing a certain user.
+            return false;
+        }
+
+        return $mmContentLinksHelper.isModuleIndexEnabled($mmaModLesson, siteId, courseId);
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.overviewLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+
+        return [{
+            action: function(siteId) {
+                if (!params.action || params.action == 'reportoverview') {
+                    // Go to overview.
+                    openReportOverview(parseInt(params.id, 10), courseId, parseInt(params.group, 10), siteId);
+                } else if (params.action == 'reportdetail') {
+                    openUserRetake(parseInt(params.id, 10), parseInt(params.userid, 10), courseId,
+                            parseInt(params.try, 10), siteId);
+                }
+            }
+        }];
+    };
+
+    /**
+     * Open report overview.
+     *
+     * @param  {Number} moduleId   Module ID.
+     * @param  {Number} [courseId] Course ID.
+     * @param  {String} [groupId]  Group ID.
+     * @param  {String} siteId     Site ID.
+     * @return {Promise}           Promise resolved when navigated.
+     */
+    function openReportOverview(moduleId, courseId, groupId, siteId) {
+        var modal = $mmUtil.showModalLoading();
+
+        // Get the module object.
+        return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            courseId = courseId || module.course;
+
+            var stateParams = {
+                module: module,
+                courseid: courseId ? parseInt(courseId, 10) : courseId,
+                action: 'report',
+                group: groupId
+            };
+            $mmContentLinksHelper.goInSite('site.mod_lesson', stateParams, siteId);
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error processing link.');
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Open a user's retake.
+     *
+     * @param  {Number} moduleId   Module ID.
+     * @param  {Number} userId     User ID.
+     * @param  {Number} [courseId] Course ID.
+     * @param  {Number} [retake]   Retake to open.
+     * @param  {String} [groupId]  Group ID.
+     * @param  {String} siteId     Site ID.
+     * @return {Promise}           Promise resolved when navigated.
+     */
+    function openUserRetake(moduleId, userId, courseId, retake, siteId) {
+        var modal = $mmUtil.showModalLoading();
+
+        // Get the module object.
+        return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            courseId = courseId || module.course;
+
+            var stateParams = {
+                lessonid: module.instance,
+                courseid: courseId ? parseInt(courseId, 10) : courseId,
+                userid: userId,
+                retake: retake || 0
+            };
+            $mmContentLinksHelper.goInSite('site.mod_lesson-userretake', stateParams, siteId);
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error processing link.');
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
 
     return self;
 });

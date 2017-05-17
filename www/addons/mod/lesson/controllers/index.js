@@ -51,8 +51,8 @@ angular.module('mm.addons.mod_lesson')
     $scope.data = {
         password: ''
     };
-    $scope.display = $scope.DISPLAY_VIEW;
-    $scope.selectedGroup = 0;
+    $scope.display = $stateParams.action == 'report' ? $scope.DISPLAY_REPORTS : $scope.DISPLAY_VIEW;
+    $scope.selectedGroup = $stateParams.group || 0;
 
     // Convenience function to get Lesson data.
     function fetchLessonData(refresh, sync, showErrors) {
@@ -92,15 +92,15 @@ angular.module('mm.addons.mod_lesson')
                     $scope.hasOffline = hasOffline;
                 }));
 
-                // Check if there is an attempt finished in a synchronization.
-                promises.push($mmaModLessonSync.getAttemptFinishedInSync(lesson.id).then(function(attempt) {
-                    if (attempt && attempt.attempt == accessInfo.attemptscount - 1) {
-                        // The attempt finished is still the last attempt. Allow reviewing it.
-                        $scope.attemptToReview = attempt;
+                // Check if there is a retake finished in a synchronization.
+                promises.push($mmaModLessonSync.getRetakeFinishedInSync(lesson.id).then(function(retake) {
+                    if (retake && retake.retake == accessInfo.attemptscount - 1) {
+                        // The retake finished is still the last retake. Allow reviewing it.
+                        $scope.retakeToReview = retake;
                     } else {
-                        $scope.attemptToReview = undefined;
-                        if (attempt) {
-                            $mmaModLessonSync.deleteAttemptFinishedInSync(lesson.id);
+                        $scope.retakeToReview = undefined;
+                        if (retake) {
+                            $mmaModLessonSync.deleteRetakeFinishedInSync(lesson.id);
                         }
                     }
                 }));
@@ -124,7 +124,7 @@ angular.module('mm.addons.mod_lesson')
                         $scope.preventMessages = info.preventaccessreasons;
                     });
                 } else  {
-                    // Lesson cannot be attempted, stop.
+                    // Lesson cannot be started, stop.
                     $scope.preventMessages = info.preventaccessreasons;
                     return;
                 }
@@ -135,7 +135,7 @@ angular.module('mm.addons.mod_lesson')
             }
 
             return $q.all(promises).then(function() {
-                // Lesson can be attempted, don't ask the password and don't show prevent messages.
+                // Lesson can be started, don't ask the password and don't show prevent messages.
                 fetchDataFinished(refresh);
             });
         }).catch(function(message) {
@@ -209,7 +209,7 @@ angular.module('mm.addons.mod_lesson')
             }
         }
 
-        return $mmaModLesson.getAttemptsOverview(lesson.id, groupId).then(function(data) {
+        return $mmaModLesson.getRetakesOverview(lesson.id, groupId).then(function(data) {
             var promises = [];
 
             // Format times and grades.
@@ -285,7 +285,7 @@ angular.module('mm.addons.mod_lesson')
             promises.push($mmaModLesson.invalidateTimers(lesson.id));
             promises.push($mmaModLesson.invalidateContentPagesViewed(lesson.id));
             promises.push($mmaModLesson.invalidateQuestionsAttempts(lesson.id));
-            promises.push($mmaModLesson.invalidateAttemptsOverview(lesson.id));
+            promises.push($mmaModLesson.invalidateRetakesOverview(lesson.id));
             promises.push($mmGroups.invalidateActivityGroupInfo(module.id));
         }
 
@@ -376,7 +376,7 @@ angular.module('mm.addons.mod_lesson')
     // Fetch the Lesson data.
     fetchLessonData(false, true).then(function() {
         if (!$scope.preventMessages || !$scope.preventMessages.length) {
-            // Lesson can be attempted, log viewing it.
+            // Lesson can be started, log viewing it.
             logView();
         }
     }).finally(function() {
@@ -421,18 +421,18 @@ angular.module('mm.addons.mod_lesson')
 
     // Review the lesson.
     $scope.review = function() {
-        if (!$scope.attemptToReview) {
-            // No attempt to review, stop.
+        if (!$scope.retakeToReview) {
+            // No retake to review, stop.
             return;
         }
 
         $state.go('site.mod_lesson-player', {
             courseid: courseId,
             lessonid: lesson.id,
-            pageid: $scope.attemptToReview.pageid,
+            pageid: $scope.retakeToReview.pageid,
             password: password,
             review: true,
-            attempt: $scope.attemptToReview.attempt
+            retake: $scope.retakeToReview.retake
         });
     };
 

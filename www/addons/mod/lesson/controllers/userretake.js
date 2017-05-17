@@ -15,19 +15,19 @@
 angular.module('mm.addons.mod_lesson')
 
 /**
- * View user attempt controller.
+ * View user retake controller.
  *
  * @module mm.addons.mod_lesson
  * @ngdoc controller
- * @name mmaModLessonUserAttemptCtrl
+ * @name mmaModLessonUserRetakeCtrl
  */
-.controller('mmaModLessonUserAttemptCtrl', function($scope, $stateParams, $mmaModLesson, $q, $mmLang, $mmUtil, $mmSite, $mmUser,
+.controller('mmaModLessonUserRetakeCtrl', function($scope, $stateParams, $mmaModLesson, $q, $mmLang, $mmUtil, $mmSite, $mmUser,
     $mmaModLessonHelper, mmaModLessonComponent) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
         userId = $stateParams.userid || $mmSite.getUserId(),
-        attemptNumber = $stateParams.attempt,
+        retakeNumber = $stateParams.retake,
         lesson;
 
     $scope.courseId = courseId;
@@ -39,8 +39,8 @@ angular.module('mm.addons.mod_lesson')
             lesson = lessonData;
             $scope.lesson = lesson;
 
-            // Get the attempts overview for all participants.
-            return $mmaModLesson.getAttemptsOverview(lesson.id);
+            // Get the retakes overview for all participants.
+            return $mmaModLesson.getRetakesOverview(lesson.id);
         }).then(function(data) {
             // Search the student.
             var student;
@@ -60,22 +60,23 @@ angular.module('mm.addons.mod_lesson')
                 return $mmLang.translateAndReject('mma.mod_lesson.cannotfinduser');
             }
             if (!student.attempts || !student.attempts.length) {
+                // No retakes.
                 return $mmLang.translateAndReject('mma.mod_lesson.cannotfindattempt');
             }
 
             student.bestgrade = $mmUtil.roundToDecimals(student.bestgrade, 2);
-            angular.forEach(student.attempts, function(attempt) {
-                if (attemptNumber == attempt.try) {
-                    // The attempt specified as parameter exists. Use it.
-                    $scope.selectedAttempt = attemptNumber;
+            angular.forEach(student.attempts, function(retake) {
+                if (retakeNumber == retake.try) {
+                    // The retake specified as parameter exists. Use it.
+                    $scope.selectedRetake = retakeNumber;
                 }
 
-                attempt.label = $mmaModLessonHelper.getAttemptLabel(attempt);
+                retake.label = $mmaModLessonHelper.getRetakeLabel(retake);
             });
 
-            if (!$scope.selectedAttempt) {
-                // Attempt number not specified or not valid, use the last attempt.
-                $scope.selectedAttempt = student.attempts[student.attempts.length - 1].try;
+            if (!$scope.selectedRetake) {
+                // Retake number not specified or not valid, use the last retake.
+                $scope.selectedRetake = student.attempts[student.attempts.length - 1].try;
             }
 
            return $mmUser.getProfile(student.id, courseId, true).then(function(user) {
@@ -87,7 +88,7 @@ angular.module('mm.addons.mod_lesson')
             });
         }).then(function(student) {
             $scope.student = student;
-            return setAttempt($scope.selectedAttempt);
+            return setRetake($scope.selectedRetake);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'Error getting data.', true);
             return $q.reject();
@@ -95,10 +96,10 @@ angular.module('mm.addons.mod_lesson')
     }
 
     // Set a group to view the reports.
-    function setAttempt(attemptNumber) {
-        $scope.selectedAttempt = attemptNumber;
+    function setRetake(retakeNumber) {
+        $scope.selectedRetake = retakeNumber;
 
-        return $mmaModLesson.getUserAttempt(lesson.id, attemptNumber, userId).then(function(data) {
+        return $mmaModLesson.getUserRetake(lesson.id, retakeNumber, userId).then(function(data) {
 
             if (data && data.completed != -1) {
                 // Completed.
@@ -122,7 +123,7 @@ angular.module('mm.addons.mod_lesson')
                 }
             });
 
-            $scope.attempt = data;
+            $scope.retake = data;
         });
     }
 
@@ -132,8 +133,8 @@ angular.module('mm.addons.mod_lesson')
 
         promises.push($mmaModLesson.invalidateLessonData(courseId));
         if (lesson) {
-            promises.push($mmaModLesson.invalidateAttemptsOverview(lesson.id));
-            promises.push($mmaModLesson.invalidateUserAttemptsForUser(lesson.id, userId));
+            promises.push($mmaModLesson.invalidateRetakesOverview(lesson.id));
+            promises.push($mmaModLesson.invalidateUserRetakesForUser(lesson.id, userId));
         }
 
         return $q.all(promises).finally(function() {
@@ -143,7 +144,7 @@ angular.module('mm.addons.mod_lesson')
 
     // Fetch the data.
     fetchData().finally(function() {
-        $scope.attemptLoaded = true;
+        $scope.retakeLoaded = true;
     });
 
     // Pull to refresh.
@@ -153,14 +154,14 @@ angular.module('mm.addons.mod_lesson')
         });
     };
 
-    // Change the attempt displayed.
-    $scope.setAttempt = function(attemptNumber) {
-        $scope.attemptLoaded = false;
-        return setAttempt(attemptNumber).catch(function(message) {
+    // Change the retake displayed.
+    $scope.setRetake = function(retakeNumber) {
+        $scope.retakeLoaded = false;
+        return setRetake(retakeNumber).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'Error getting attempt.');
             return $q.reject();
         }).finally(function() {
-            $scope.attemptLoaded = true;
+            $scope.retakeLoaded = true;
         });
     };
 });

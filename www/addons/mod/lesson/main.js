@@ -30,7 +30,9 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
       url: '/mod_lesson',
       params: {
         module: null,
-        courseid: null
+        courseid: null,
+        action: null,
+        group: null // Only if action == 'report'.
       },
       views: {
         'site': {
@@ -48,7 +50,7 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
         pageid: null,
         password: null,
         review: false,
-        attempt: null // Only if review=true. To verify that the attempt can be reviewed.
+        retake: null // Only if review=true. To verify that the retake can be reviewed.
       },
       views: {
         'site': {
@@ -58,27 +60,29 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
       }
     })
 
-    .state('site.mod_lesson-userattempt', {
-      url: '/mod_lesson-userattempt',
+    .state('site.mod_lesson-userretake', {
+      url: '/mod_lesson-userretake',
       params: {
         courseid: null,
         lessonid: null,
         userid: null,
-        attempt: null
+        retake: null
       },
       views: {
         'site': {
-          controller: 'mmaModLessonUserAttemptCtrl',
-          templateUrl: 'addons/mod/lesson/templates/userattempt.html'
+          controller: 'mmaModLessonUserRetakeCtrl',
+          templateUrl: 'addons/mod/lesson/templates/userretake.html'
         }
       }
     });
 
 })
 
-.config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModLesson', 'lesson', '$mmaModLessonHandlers.courseContentHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModLesson', 'lesson', '$mmaModLessonPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModLesson:view', '$mmaModLessonHandlers.viewLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModLesson:overview', '$mmaModLessonHandlers.overviewLinksHandler');
 })
 
 .run(function($mmCronDelegate) {

@@ -75,16 +75,16 @@ angular.module('mm.addons.mod_lesson')
             $scope.canManage = info.canmanage;
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
-                // If it's a password protected lesson and we have the password, allow attempting it.
+                // If it's a password protected lesson and we have the password, allow playing it.
                 if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
-                    // Lesson cannot be attempted, show message and go back.
+                    // Lesson cannot be played, show message and go back.
                     return $q.reject(info.preventaccessreasons[0].message);
                 }
             }
 
-            if ($scope.review && $stateParams.attempt != accessInfo.attemptscount - 1) {
-                // Reviewing an attempt that isn't the last one. Error.
-                return $mmLang.translateAndReject('mma.mod_lesson.errorreviewattemptnotlast');
+            if ($scope.review && $stateParams.retake != accessInfo.attemptscount - 1) {
+                // Reviewing a retake that isn't the last one. Error.
+                return $mmLang.translateAndReject('mma.mod_lesson.errorreviewretakenotlast');
             }
 
             if (password) {
@@ -110,14 +110,14 @@ angular.module('mm.addons.mod_lesson')
             $scope.lessonWidth = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediawidth) : '';
             $scope.lessonHeight = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediaheight) : '';
 
-            return launchAttempt($scope.currentPage);
+            return launchRetake($scope.currentPage);
         }).catch(function(message) {
             // An error occurred.
             var promise;
 
-            if ($scope.review && $stateParams.attempt && $mmUtil.isWebServiceError(message)) {
-                // The user cannot review the attempt. Unmark the attempt as being finished in sync.
-                promise = $mmaModLessonSync.deleteAttemptFinishedInSync(lessonId);
+            if ($scope.review && $stateParams.retake && $mmUtil.isWebServiceError(message)) {
+                // The user cannot review the retake. Unmark the retake as being finished in sync.
+                promise = $mmaModLessonSync.deleteRetakeFinishedInSync(lessonId);
             } else {
                 promise = $q.when();
             }
@@ -130,19 +130,19 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
-    // Start or continue an attempt.
-    function launchAttempt(pageId) {
+    // Start or continue a retake.
+    function launchRetake(pageId) {
         var promise;
 
         if ($scope.review) {
-            // Review mode, no need to launch the attempt
+            // Review mode, no need to launch the retake.
             promise = $q.when({});
         } else if (!offline) {
-            // Not in offline mode, launch the attempt.
-            promise = $mmaModLesson.launchAttempt(lesson.id, password, pageId);
+            // Not in offline mode, launch the retake.
+            promise = $mmaModLesson.launchRetake(lesson.id, password, pageId);
         } else {
-            // Check if there is a finished offline attempt.
-            promise = $mmaModLessonOffline.hasFinishedAttempt(lesson.id).then(function(finished) {
+            // Check if there is a finished offline retake.
+            promise = $mmaModLessonOffline.hasFinishedRetake(lesson.id).then(function(finished) {
                 if (finished) {
                     // Always show EOL page.
                     pageId = $mmaModLesson.LESSON_EOL;
@@ -165,7 +165,7 @@ angular.module('mm.addons.mod_lesson')
         }).then(function() {
             if ($scope.currentPage == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
-                return finishAttempt();
+                return finishRetake();
             }
             return loadPage($scope.currentPage);
         });
@@ -175,14 +175,14 @@ angular.module('mm.addons.mod_lesson')
     function loadPage(pageId) {
         if (pageId == $mmaModLesson.LESSON_EOL) {
             // End of lesson reached.
-            return finishAttempt();
+            return finishRetake();
         }
 
         var args = [lesson, pageId, password, $scope.review, true, offline, true, accessInfo, jumps];
         return callFunction($mmaModLesson.getPageData, args, 5, 8).then(function(data) {
             if (data.newpageid == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
-                return finishAttempt();
+                return finishRetake();
             }
 
             $scope.pageData = data;
@@ -213,8 +213,8 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
-    // Finish the attempt.
-    function finishAttempt(outOfTime) {
+    // Finish the retake.
+    function finishRetake(outOfTime) {
         var promise;
 
         $scope.messages = [];
@@ -225,15 +225,15 @@ angular.module('mm.addons.mod_lesson')
                 if (result.warnings && result.warnings.length) {
                     var error = result.warnings[0];
 
-                    // Some data was deleted. Check if the attempt has changed.
+                    // Some data was deleted. Check if the retake has changed.
                     return $mmaModLesson.getAccessInformation(lesson.id).then(function(info) {
                         if (info.attemptscount != accessInfo.attemptscount) {
-                            // The attempt has changed. Leave the view and show the error.
+                            // The retake has changed. Leave the view and show the error.
                             blockData && blockData.back();
                             return $q.reject(error);
                         }
 
-                        // Attempt hasn't changed, show the warning and finish the attempt in online.
+                        // Retake hasn't changed, show the warning and finish the retake in online.
                         offline = false;
                         $mmUtil.showErrorModal(error);
                     });
@@ -248,9 +248,9 @@ angular.module('mm.addons.mod_lesson')
         }
 
         return promise.then(function() {
-            // Now finish the attempt.
+            // Now finish the retake.
             var args = [lesson, courseId, password, outOfTime, $scope.review, offline, accessInfo];
-            return callFunction($mmaModLesson.finishAttempt, args, 5);
+            return callFunction($mmaModLesson.finishRetake, args, 5);
         }).then(function(data) {
             $scope.title = lesson.name;
             $scope.eolData = data.data;
@@ -285,7 +285,7 @@ angular.module('mm.addons.mod_lesson')
         $scope.pageLoaded = false;
     }
 
-    // Function called when the user wants to leave the player. Save the attempt before leaving.
+    // Function called when the user wants to leave the player. Save the data before leaving.
     function leavePlayer() {
         if ($scope.question && !$scope.eolData && !$scope.processData && originalData) {
             // Question shown. Check if there is any change.
@@ -382,7 +382,7 @@ angular.module('mm.addons.mod_lesson')
             return;
         } else if (pageId == $mmaModLesson.LESSON_EOL) {
             // End of lesson reached.
-            return finishAttempt();
+            return finishRetake();
         }
 
         // Load new page.
@@ -423,8 +423,8 @@ angular.module('mm.addons.mod_lesson')
 
     // Fetch the Lesson data.
     fetchLessonData().then(function() {
-        // Review data loaded or new attempt started, remove any attempt being finished in sync.
-        $mmaModLessonSync.deleteAttemptFinishedInSync(lessonId);
+        // Review data loaded or new retake started, remove any retake being finished in sync.
+        $mmaModLessonSync.deleteRetakeFinishedInSync(lessonId);
     }).finally(function() {
         $scope.pageLoaded = true;
     });
@@ -468,7 +468,7 @@ angular.module('mm.addons.mod_lesson')
         $scope.endTime = false;
         showLoading();
 
-        return finishAttempt(true).catch(function(error) {
+        return finishRetake(true).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error finishing attempt');
             return $q.reject();
         }).finally(function() {

@@ -7,7 +7,7 @@
         </select>
     </div>
 
-    <!-- No lesson attempts. -->
+    <!-- No lesson retakes. -->
     <mm-empty-box ng-if="!overview && selectedGroupName" icon="ion-stats-bars" message="{{ 'mma.mod_lesson.nolessonattemptsgroup' | translate:{$a: selectedGroupName} }}">
     </mm-empty-box>
     <mm-empty-box ng-if="!overview && !selectedGroupName" icon="ion-stats-bars" message="{{ 'mma.mod_lesson.nolessonattempts' | translate }}">
@@ -108,13 +108,13 @@
         </div>
     </div>
 
-    <!-- List of students that have attempts. -->
+    <!-- List of students that have retakes. -->
     <div class="card" ng-if="overview">
         <div class="item item-divider">
             <h2>{{ 'mma.mod_lesson.overview' | translate }}</h2>
         </div>
 
-        <a ng-repeat="student in overview.students" class="item item-text-wrap item-icon-right" ng-class="{'item-avatar': student.profileimageurl}" ui-sref="site.mod_lesson-userattempt({courseid: courseId, lessonid: lesson.id, userid: student.id})">
+        <a ng-repeat="student in overview.students" class="item item-text-wrap item-icon-right" ng-class="{'item-avatar': student.profileimageurl}" ui-sref="site.mod_lesson-userretake({courseid: courseId, lessonid: lesson.id, userid: student.id})">
             <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" mm-user-link userid="{{student.id}}" courseid="{{courseId}}">
             <h2>{{student.fullname}}</h2>
             <div class="row row-no-padding">

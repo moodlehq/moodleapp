@@ -14,16 +14,16 @@
 
 angular.module('mm.addons.mod_lesson')
 
-.constant('mmaModLessonAttemptsFinishedSyncStore', 'mma_mod_lesson_attempts_finished_sync')
+.constant('mmaModLessonRetakesFinishedSyncStore', 'mma_mod_lesson_retakes_finished_sync')
 
-.config(function($mmSitesFactoryProvider, mmaModLessonAttemptsFinishedSyncStore) {
+.config(function($mmSitesFactoryProvider, mmaModLessonRetakesFinishedSyncStore) {
     var stores = [
         {
-            name: mmaModLessonAttemptsFinishedSyncStore,
-            keyPath: 'lessonid', // Only 1 attempt per lesson.
+            name: mmaModLessonRetakesFinishedSyncStore,
+            keyPath: 'lessonid', // Only 1 retake per lesson.
             indexes: [
                 {
-                    name: 'attempt'
+                    name: 'retake'
                 },
                 {
                     name: 'timefinished'
@@ -43,7 +43,7 @@ angular.module('mm.addons.mod_lesson')
  */
 .factory('$mmaModLessonSync', function($log, $mmaModLesson, $mmSite, $mmSitesManager, $q, $mmaModLessonOffline, $mmUtil,
             $mmLang, $mmApp, $mmEvents, $translate, mmaModLessonSyncTime, $mmSync, mmaModLessonAutomSyncedEvent,
-            mmaModLessonComponent, $mmaModLessonPrefetchHandler, $mmCourse, $mmSyncBlock, mmaModLessonAttemptsFinishedSyncStore) {
+            mmaModLessonComponent, $mmaModLessonPrefetchHandler, $mmCourse, $mmSyncBlock, mmaModLessonRetakesFinishedSyncStore) {
 
     $log = $log.getInstance('$mmaModLessonSync');
 
@@ -51,36 +51,36 @@ angular.module('mm.addons.mod_lesson')
     var self = $mmSync.createChild(mmaModLessonComponent, mmaModLessonSyncTime);
 
     /**
-     * Unmark an attempt as finished in a synchronization.
+     * Unmark a retake as finished in a synchronization.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonSync#deleteAttemptFinishedInSync
+     * @name $mmaModLessonSync#deleteRetakeFinishedInSync
      * @param  {Number} lessonId Lesson ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when done.
      */
-    self.deleteAttemptFinishedInSync = function(lessonId, siteId) {
+    self.deleteRetakeFinishedInSync = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().remove(mmaModLessonAttemptsFinishedSyncStore, lessonId);
+            return site.getDb().remove(mmaModLessonRetakesFinishedSyncStore, lessonId);
         }).catch(function() {
             // Ignore errors, maybe there is none.
         });
     };
 
     /**
-     * Get the number of an attempt finished in a synchronization for a certain lesson (if any).
+     * Get a retake finished in a synchronization for a certain lesson (if any).
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonSync#getAttemptFinishedInSync
+     * @name $mmaModLessonSync#getRetakeFinishedInSync
      * @param  {Number} lessonId Lesson ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the attempt entry (undefined if no attempt).
+     * @return {Promise}         Promise resolved with the retake entry (undefined if no retake).
      */
-    self.getAttemptFinishedInSync = function(lessonId, siteId) {
+    self.getRetakeFinishedInSync = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().get(mmaModLessonAttemptsFinishedSyncStore, lessonId);
+            return site.getDb().get(mmaModLessonRetakesFinishedSyncStore, lessonId);
         }).catch(function() {
             // Ignore errors, return undefined.
         });
@@ -93,21 +93,21 @@ angular.module('mm.addons.mod_lesson')
      * @ngdoc method
      * @name $mmaModLessonSync#hasDataToSync
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} retake   Retake number.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with boolean: true if has data to sync, false otherwise.
      */
-    self.hasDataToSync = function(lessonId, attempt, siteId) {
+    self.hasDataToSync = function(lessonId, retake, siteId) {
         var promises = [],
             hasDataToSync = false;
 
-        promises.push($mmaModLessonOffline.hasAttemptAnswers(lessonId, attempt, siteId).then(function(hasAnswers) {
-            hasDataToSync = hasDataToSync || hasAnswers;
+        promises.push($mmaModLessonOffline.hasRetakeAttempts(lessonId, retake, siteId).then(function(hasAttempts) {
+            hasDataToSync = hasDataToSync || hasAttempts;
         }).catch(function() {
             // Ignore errors.
         }));
 
-        promises.push($mmaModLessonOffline.hasFinishedAttempt(lessonId, siteId).then(function(hasFinished) {
+        promises.push($mmaModLessonOffline.hasFinishedRetake(lessonId, siteId).then(function(hasFinished) {
             hasDataToSync = hasDataToSync || hasFinished;
         }));
 
@@ -117,22 +117,22 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Mark an attempt as finished in a synchronization.
+     * Mark a retake as finished in a synchronization.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonSync#setAttemptFinishedInSync
+     * @name $mmaModLessonSync#setRetakeFinishedInSync
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  The attempt number.
+     * @param  {Number} retake   The retake number.
      * @param  {Number} pageId   The page ID to start reviewing from.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when done.
      */
-    self.setAttemptFinishedInSync = function(lessonId, attempt, pageId, siteId) {
+    self.setRetakeFinishedInSync = function(lessonId, retake, pageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().insert(mmaModLessonAttemptsFinishedSyncStore, {
+            return site.getDb().insert(mmaModLessonRetakesFinishedSyncStore, {
                 lessonid: lessonId,
-                attempt: parseInt(attempt, 10),
+                retake: parseInt(retake, 10),
                 pageid: parseInt(pageId, 10),
                 timefinished: $mmUtil.timestamp()
             });
@@ -253,16 +253,16 @@ angular.module('mm.addons.mod_lesson')
 
         $log.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
 
-        // Try to synchronize the answers first.
-        syncPromise = $mmaModLessonOffline.getLessonAnswers(lessonId, siteId).then(function(answers) {
-            if (!answers.length) {
+        // Try to synchronize the attempts first.
+        syncPromise = $mmaModLessonOffline.getLessonAttempts(lessonId, siteId).then(function(attempts) {
+            if (!attempts.length) {
                 return;
             } else if (!$mmApp.isOnline()) {
                 // Cannot sync in offline.
                 return $q.reject();
             }
 
-            courseId = answers[0].courseid;
+            courseId = attempts[0].courseid;
 
             // Get the info, access info and the lesson password if needed.
             return $mmaModLesson.getLessonById(courseId, lessonId).then(function(lessonData) {
@@ -270,7 +270,7 @@ angular.module('mm.addons.mod_lesson')
 
                 return $mmaModLessonPrefetchHandler.gatherLessonPassword(lessonId, false, true, askPassword, siteId);
             }).then(function(data) {
-                var answersLength = answers.length;
+                var attemptsLength = attempts.length;
 
                 accessInfo = data.accessinfo;
                 password = data.password;
@@ -278,11 +278,11 @@ angular.module('mm.addons.mod_lesson')
 
                 var promises = [];
 
-                // Filter the answers, get only the ones that belong to the current attempt.
-                answers = answers.filter(function(answer) {
-                    if (answer.attempt != accessInfo.attemptscount) {
-                        promises.push($mmaModLessonOffline.deleteAnswer(lesson.id, answer.attempt, answer.pageid,
-                                answer.timemodified, siteId).catch(function() {
+                // Filter the attempts, get only the ones that belong to the current retake.
+                attempts = attempts.filter(function(attempt) {
+                    if (attempt.retake != accessInfo.attemptscount) {
+                        promises.push($mmaModLessonOffline.deleteAttempt(lesson.id, attempt.retake, attempt.pageid,
+                                attempt.timemodified, siteId).catch(function() {
                             // Ignore errors.
                         }));
                         return false;
@@ -290,42 +290,42 @@ angular.module('mm.addons.mod_lesson')
                     return true;
                 });
 
-                if (answers.length != answersLength) {
-                    // Some answers won't be sent, add a warning.
+                if (attempts.length != attemptsLength) {
+                    // Some attempts won't be sent, add a warning.
                     result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                         component: $mmCourse.translateModuleName('lesson'),
                         name: lesson.name,
-                        error: $translate.instant('mma.mod_lesson.warningattemptfinished')
+                        error: $translate.instant('mma.mod_lesson.warningretakefinished')
                     }));
                 }
 
                 return $q.all(promises);
             }).then(function() {
-                if (!answers.length) {
+                if (!attempts.length) {
                     return;
                 }
 
-                // Send the answers in the same order they were answered.
-                answers.sort(function(a, b) {
+                // Send the attempts in the same order they were answered.
+                attempts.sort(function(a, b) {
                     return a.timemodified - b.timemodified;
                 });
 
-                answers = answers.map(function(answer) {
+                attempts = attempts.map(function(attempt) {
                     return {
-                        func: sendAnswer,
-                        params: [lesson, password, answer, result, siteId],
+                        func: sendAttempt,
+                        params: [lesson, password, attempt, result, siteId],
                         blocking: true
                     };
                 });
 
-                return $mmUtil.executeOrderedPromises(answers);
+                return $mmUtil.executeOrderedPromises(attempts);
             });
         }).then(function() {
-            // Answers sent or there was none. If there is a finished attempt, send it.
-            return $mmaModLessonOffline.getAttempt(lessonId, siteId).then(function(attempt) {
-                if (!attempt.finished) {
-                    // The attempt isn't marked as finished, nothing to send. Delete the attempt.
-                    return $mmaModLessonOffline.deleteAttempt(lessonId, siteId);
+            // Attempts sent or there was none. If there is a finished retake, send it.
+            return $mmaModLessonOffline.getRetake(lessonId, siteId).then(function(retake) {
+                if (!retake.finished) {
+                    // The retake isn't marked as finished, nothing to send. Delete the retake.
+                    return $mmaModLessonOffline.deleteRetake(lessonId, siteId);
                 } else if (!$mmApp.isOnline()) {
                     // Cannot sync in offline.
                     return $q.reject();
@@ -333,10 +333,10 @@ angular.module('mm.addons.mod_lesson')
 
                 var promise;
 
-                courseId = attempt.courseid;
+                courseId = retake.courseid;
 
                 if (lesson) {
-                    // Data already retrieved when syncing answers.
+                    // Data already retrieved when syncing attempts.
                     promise = $q.when();
                 } else {
                     promise = $mmaModLesson.getLessonById(courseId, lessonId).then(function(lessonData) {
@@ -351,41 +351,41 @@ angular.module('mm.addons.mod_lesson')
                 }
 
                 return promise.then(function() {
-                    if (attempt.attempt != accessInfo.attemptscount) {
-                        // The attempt changed, add a warning if it isn't there already.
+                    if (retake.retake != accessInfo.attemptscount) {
+                        // The retake changed, add a warning if it isn't there already.
                         if (!result.warnings.length) {
                             result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                 component: $mmCourse.translateModuleName('lesson'),
                                 name: lesson.name,
-                                error: $translate.instant('mma.mod_lesson.warningattemptfinished')
+                                error: $translate.instant('mma.mod_lesson.warningretakefinished')
                             }));
                         }
 
-                        return $mmaModLessonOffline.deleteAttempt(lessonId, siteId);
+                        return $mmaModLessonOffline.deleteRetake(lessonId, siteId);
                     }
 
-                    // All good, finish the attempt.
-                    return $mmaModLesson.finishAttemptOnline(lessonId, password, false, false, siteId).then(function(response) {
+                    // All good, finish the retake.
+                    return $mmaModLesson.finishRetakeOnline(lessonId, password, false, false, siteId).then(function(response) {
                         result.updated = true;
 
                         if (!ignoreBlock) {
-                            // Mark the attempt as finished in a sync if it can be reviewed.
+                            // Mark the retake as finished in a sync if it can be reviewed.
                             if (response.data && response.data.reviewlesson) {
                                 var params = $mmUtil.extractUrlParams(response.data.reviewlesson.value);
                                 if (params && params.pageid) {
-                                    // The attempt can be reviewed, mark it as finished. Don't block the user for this.
-                                    self.setAttemptFinishedInSync(lessonId, attempt.attempt, params.pageid, siteId);
+                                    // The retake can be reviewed, mark it as finished. Don't block the user for this.
+                                    self.setRetakeFinishedInSync(lessonId, retake.retake, params.pageid, siteId);
                                 }
                             }
                         }
 
-                        return $mmaModLessonOffline.deleteAttempt(lessonId, siteId);
+                        return $mmaModLessonOffline.deleteRetake(lessonId, siteId);
                     }).catch(function(error) {
                         if (error && $mmUtil.isWebServiceError(error)) {
                             // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
                             result.updated = true;
-                            return $mmaModLessonOffline.deleteAttempt(lessonId, siteId).then(function() {
-                                // Attempt deleted, add a warning.
+                            return $mmaModLessonOffline.deleteRetake(lessonId, siteId).then(function() {
+                                // Retake deleted, add a warning.
                                 result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                     component: $mmCourse.translateModuleName('lesson'),
                                     name: lesson.name,
@@ -399,7 +399,7 @@ angular.module('mm.addons.mod_lesson')
                     });
                 });
             }, function() {
-                // No attempt stored, nothing to do.
+                // No retake stored, nothing to do.
             });
         }).then(function() {
             if (result.updated && courseId) {
@@ -417,11 +417,11 @@ angular.module('mm.addons.mod_lesson')
                     // Sync successful, update some data that might have been modified.
                     return $mmaModLesson.getAccessInformation(lessonId, false, false, siteId).then(function(info) {
                         var promises = [],
-                            attempt = info.attemptscount;
+                            retake = info.attemptscount;
 
-                        promises.push($mmaModLesson.getContentPagesViewedOnline(lessonId, attempt, false, false, siteId));
+                        promises.push($mmaModLesson.getContentPagesViewedOnline(lessonId, retake, false, false, siteId));
                         promises.push($mmaModLesson.getQuestionsAttemptsOnline(
-                                    lessonId, attempt, false, undefined, false, false, siteId));
+                                    lessonId, retake, false, undefined, false, false, siteId));
 
                         return $q.all(promises);
                     }).catch(function() {
@@ -444,27 +444,27 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Send an answer to the site and delete it afterwards.
+     * Send an attempt to the site and delete it afterwards.
      *
      * @param  {Object} lesson   Lesson.
      * @param  {String} password Password (if any).
-     * @param  {Object} answer   Answer to send.
+     * @param  {Object} attempt  Attempt to send.
      * @param  {Object} result   Result where to store the data.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when done.
      */
-    function sendAnswer(lesson, password, answer, result, siteId) {
-        return $mmaModLesson.processPageOnline(lesson.id, answer.pageid, answer.data, password, false, siteId).then(function() {
+    function sendAttempt(lesson, password, attempt, result, siteId) {
+        return $mmaModLesson.processPageOnline(lesson.id, attempt.pageid, attempt.data, password, false, siteId).then(function() {
             result.updated = true;
 
-            return $mmaModLessonOffline.deleteAnswer(lesson.id, answer.attempt, answer.pageid, answer.timemodified, siteId);
+            return $mmaModLessonOffline.deleteAttempt(lesson.id, attempt.retake, attempt.pageid, attempt.timemodified, siteId);
         }).catch(function(error) {
             if (error && $mmUtil.isWebServiceError(error)) {
-                // The WebService has thrown an error, this means that the answer cannot be submitted. Delete it.
+                // The WebService has thrown an error, this means that the attempt cannot be submitted. Delete it.
                 result.updated = true;
-                return $mmaModLessonOffline.deleteAnswer(lesson.id, answer.attempt, answer.pageid, answer.timemodified, siteId)
+                return $mmaModLessonOffline.deleteAttempt(lesson.id, attempt.retake, attempt.pageid, attempt.timemodified, siteId)
                         .then(function() {
-                    // Answer deleted, add a warning.
+                    // Attempt deleted, add a warning.
                     result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                         component: $mmCourse.translateModuleName('lesson'),
                         name: lesson.name,

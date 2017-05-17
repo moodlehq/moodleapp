@@ -34,7 +34,7 @@ angular.module('mm.core.contentlinks')
      *
      * @module mm.core.contentlinks
      * @ngdoc method
-     * @name $mmContentLinksHelper#createModuleIndexLinkHandler
+     * @name $mmContentLinksHelper#createModuleGradeLinkHandler
      * @param  {String} addon          Name of the addon as it's registered in $mmCourseDelegateProvider.
      * @param  {String} modName        Name of the module (assign, book, ...)
      * @param  {Object} service        Module's service. Should implement a 'isPluginEnabled(siteId)' function.
