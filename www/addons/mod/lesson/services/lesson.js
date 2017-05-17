@@ -1080,65 +1080,6 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Get cache key for get retakes overview WS calls.
-     *
-     * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} groupId  Group ID.
-     * @return {String}          Cache key.
-     */
-    function getRetakesOverviewCacheKey(lessonId, groupId) {
-        return getRetakesOverviewCommonCacheKey(lessonId) + ':' + groupId;
-    }
-
-    /**
-     * Get common cache key for get retakes overview WS calls.
-     *
-     * @param  {Number} lessonId Lesson ID.
-     * @return {String}          Cache key.
-     */
-    function getRetakesOverviewCommonCacheKey(lessonId) {
-        return 'mmaModLesson:retakesOverview:' + lessonId;
-    }
-
-    /**
-     * Get the overview of retakes in a lesson (named "attempts overview" in Moodle).
-     *
-     * @module mm.addons.mod_lesson
-     * @ngdoc method
-     * @name $mmaModLesson#getRetakesOverview
-     * @param  {Number} lessonId       Lesson ID.
-     * @param  {Number} [groupId]      The group to get. If not defined, all participants.
-     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {String} [siteId]       Site ID. If not defined, current site.
-     * @return {Promise}               Promise resolved with the retakes overview.
-     */
-    self.getRetakesOverview = function(lessonId, groupId, forceCache, ignoreCache, siteId) {
-        groupId = groupId || 0;
-
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var params = {
-                    lessonid: lessonId,
-                    groupid: groupId
-                },
-                preSets = {
-                    cacheKey: getRetakesOverviewCacheKey(lessonId, groupId)
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
-
-            return site.read('mod_lesson_get_attempts_overview', params, preSets).then(function(response) {
-                return response.data;
-            });
-        });
-    };
-
-    /**
      * Get content pages viewed in online and offline.
      *
      * @module mm.addons.mod_lesson
@@ -2023,6 +1964,65 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get cache key for get retakes overview WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} groupId  Group ID.
+     * @return {String}          Cache key.
+     */
+    function getRetakesOverviewCacheKey(lessonId, groupId) {
+        return getRetakesOverviewCommonCacheKey(lessonId) + ':' + groupId;
+    }
+
+    /**
+     * Get common cache key for get retakes overview WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @return {String}          Cache key.
+     */
+    function getRetakesOverviewCommonCacheKey(lessonId) {
+        return 'mmaModLesson:retakesOverview:' + lessonId;
+    }
+
+    /**
+     * Get the overview of retakes in a lesson (named "attempts overview" in Moodle).
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getRetakesOverview
+     * @param  {Number} lessonId       Lesson ID.
+     * @param  {Number} [groupId]      The group to get. If not defined, all participants.
+     * @param  {Boolean} [forceCache]  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the retakes overview.
+     */
+    self.getRetakesOverview = function(lessonId, groupId, forceCache, ignoreCache, siteId) {
+        groupId = groupId || 0;
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    lessonid: lessonId,
+                    groupid: groupId
+                },
+                preSets = {
+                    cacheKey: getRetakesOverviewCacheKey(lessonId, groupId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_attempts_overview', params, preSets).then(function(response) {
+                return response.data;
+            });
+        });
+    };
+
+    /**
      * Finds all pages that appear to be a subtype of the provided pageid until
      * an end point specified within "ends" is encountered or no more pages exist.
      * Based on Moodle's get_sub_pages_of.
@@ -2258,39 +2258,6 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Invalidates retakes overview for all groups in a lesson.
-     *
-     * @module mm.addons.mod_lesson
-     * @ngdoc method
-     * @name $mmaModLesson#invalidateRetakesOverview
-     * @param  {Number} lessonId Lesson ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the data is invalidated.
-     */
-    self.invalidateRetakesOverview = function(lessonId, siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKeyStartingWith(getRetakesOverviewCommonCacheKey(lessonId));
-        });
-    };
-
-    /**
-     * Invalidates retakes overview for a certain group in a lesson.
-     *
-     * @module mm.addons.mod_lesson
-     * @ngdoc method
-     * @name $mmaModLesson#invalidateRetakesOverviewForGroup
-     * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} groupId  Group ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the data is invalidated.
-     */
-    self.invalidateRetakesOverviewForGroup = function(lessonId, groupId, siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(getRetakesOverviewCacheKey(lessonId, groupId));
-        });
-    };
-
-    /**
      * Invalidates content pages viewed for all retakes.
      *
      * @module mm.addons.mod_lesson
@@ -2452,6 +2419,39 @@ angular.module('mm.addons.mod_lesson')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getQuestionsAttemptsCacheKey(lessonId, retake, userId));
+        });
+    };
+
+    /**
+     * Invalidates retakes overview for all groups in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateRetakesOverview
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateRetakesOverview = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getRetakesOverviewCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates retakes overview for a certain group in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateRetakesOverviewForGroup
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} groupId  Group ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateRetakesOverviewForGroup = function(lessonId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getRetakesOverviewCacheKey(lessonId, groupId));
         });
     };
 
