@@ -1516,8 +1516,22 @@ progress {
   }
 }
 
-.mm-progress-text {
-  margin-left: 10px;
+
+mm-progress-bar {
+  padding-right: 55px;
+  position: relative;
+  display: block;
+  @extend .clearfix;
+
+  .mm-progress-text {
+    margin-left: 10px;
+    line-height: 35px;
+    color: $gray-darker;
+    right: 0;
+    top: 0;
+    color: #626262;
+    position: absolute;
+  }
 }
 
 .padding > .button.button-block:only-child {

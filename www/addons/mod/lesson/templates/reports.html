@@ -117,10 +117,7 @@
         <a ng-repeat="student in overview.students" class="item item-text-wrap item-icon-right" ng-class="{'item-avatar': student.profileimageurl}" ui-sref="site.mod_lesson-userretake({courseid: courseId, lessonid: lesson.id, userid: student.id})">
             <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" mm-user-link userid="{{student.id}}" courseid="{{courseId}}">
             <h2>{{student.fullname}}</h2>
-            <div class="row row-no-padding">
-                <progress class="col-80" max="100" value="{{ student.bestgrade }}"></progress>
-                <div class="col col-center mm-progress-text">{{ 'mm.core.percentagenumber' | translate:{$a: student.bestgrade} }}</div>
-            </div>
+            <mm-progress-bar progress="student.bestgrade"></mm-progress-bar>
             <i class="icon icon-accessory ion-chevron-right"></i>
         </a>
     </div>

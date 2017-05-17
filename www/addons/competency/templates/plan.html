@@ -31,10 +31,7 @@
                     <li class="item item-text-wrap">
                         <strong>{{ 'mma.competency.progress' | translate }}</strong>:
                         {{ 'mma.competency.xcompetenciesproficientoutofy' | translate: {$a: {x: plan.proficientcompetencycount, y: plan.competencycount} } }}
-                        <div class="row row-no-padding">
-                            <progress class="col-80" max="100" value="{{ plan.proficientcompetencypercentage }}"></progress>
-                            <div class="col col-center text-right mm-progress-text">{{plan.proficientcompetencypercentageformatted}}&#37;</div>
-                        </div>
+                        <mm-progress-bar progress="plan.proficientcompetencypercentage" text="plan.proficientcompetencypercentageformatted"></mm-progress-bar>
                     </li>
                 </ul>
             </article>
@@ -49,7 +46,7 @@
                     </li>
                     <a ng-repeat="competency in plan.competencies" class="item item-text-wrap clearfix" ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}">
                         {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
-                        <span ng-class="{'badge-balanced': competency.usercompetency.proficiency, 'badge-assertive': !competency.usercompetency.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetency.gradename }}</span><br>
+                        <span ng-class="{'badge-balanced': competency.usercompetency.proficiency, 'badge-assertive': !competency.usercompetency.proficiency}" class="badge badge-inline item-note text-center">{{ competency.usercompetency.gradename }}</span><br>
 
                     </a>
                 </ul>

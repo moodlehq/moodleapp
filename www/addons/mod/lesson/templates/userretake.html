@@ -6,10 +6,7 @@
                 <a class="item item-text-wrap" ng-class="{'item-avatar': student.profileimageurl}" mm-user-link userid="{{student.id}}" courseid="{{courseId}}" title="{{student.fullname}}">
                     <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" >
                     <h2>{{student.fullname}}</h2>
-                    <div class="row row-no-padding">
-                        <progress class="col-80" max="100" value="{{ student.bestgrade }}"></progress>
-                        <div class="col col-center mm-progress-text">{{ 'mm.core.percentagenumber' | translate:{$a: student.bestgrade} }}</div>
-                    </div>
+                    <mm-progress-bar progress="student.bestgrade"></mm-progress-bar>
                 </a>
 
                 <!-- Retake selector if there is more than one retake. -->

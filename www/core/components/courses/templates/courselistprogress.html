@@ -17,10 +17,7 @@
             </div>
         </div>
         <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
-        <div ng-if="!roundProgress && course.progress !== false" class="row row-no-padding">
-            <progress class="col-90" max="100" value="{{ course.progress }}"></progress>
-            <div class="col col-center text-right mm-progress-text">{{course.progress}}&#37;</div>
-        </div>
+        <mm-progress-bar ng-if="!roundProgress && course.progress !== false" progress="course.progress"></mm-progress-bar>
         <i ng-if="showActions && loaded" class="icon ion-android-more-vertical" ng-click="showCourseActions($event)"></i>
         <ion-spinner ng-if="!loaded"></ion-spinner>
     </a>
