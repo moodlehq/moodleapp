@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_lesson')
  * @name $mmaModLessonPrefetchHandler
  */
 .factory('$mmaModLessonPrefetchHandler', function($mmaModLesson, $q, $mmPrefetchFactory, mmaModLessonComponent, $mmUtil, $mmGroups,
-    $mmSite, $mmFilepool, $rootScope, $timeout, $ionicModal, mmCoreDontShowError) {
+    $mmSite, $mmFilepool, $rootScope, $timeout, $ionicModal, mmCoreDontShowError, $mmCourse) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModLessonComponent, false);
 
@@ -83,7 +83,7 @@ angular.module('mm.addons.mod_lesson')
                         return $q.reject(info.preventaccessreasons[0].message);
                     });
                 } else  {
-                    // Lesson cannot be attempted, reject.
+                    // Lesson cannot be played, reject.
                     return $q.reject(info.preventaccessreasons[0].message);
                 }
             }
@@ -261,7 +261,7 @@ angular.module('mm.addons.mod_lesson')
             // Get the list of pages.
             promises.push($mmaModLesson.getPages(lesson.id, password, false, false, siteId).then(function(pages) {
                 // Check the timemodified of each page. Don't check the files in each page because it requires a WS call
-                // per page and it will fail if the user hasn't attempted the lesson yet.
+                // per page and it will fail if the user hasn't started the lesson yet.
                 angular.forEach(pages, function(data) {
                     timemodified = Math.max(timemodified, data.page.timemodified || data.page.timecreated || 0);
                 });
@@ -398,8 +398,8 @@ angular.module('mm.addons.mod_lesson')
             accessInfo = data.accessinfo;
 
             if (!$mmaModLesson.leftDuringTimed(accessInfo)) {
-                // The user didn't left during a timed session. Call launch attempt to make sure there is a started attempt.
-                return $mmaModLesson.launchAttempt(lesson.id, password, false, false, siteId).then(function() {
+                // The user didn't left during a timed session. Call launch retake to make sure there is a started retake.
+                return $mmaModLesson.launchRetake(lesson.id, password, false, false, siteId).then(function() {
                     var promises = [];
 
                     // New data generated, update the download time and refresh the access info.
@@ -416,7 +416,7 @@ angular.module('mm.addons.mod_lesson')
         }).then(function() {
             var promises = [],
                 files,
-                attempt = accessInfo.attemptscount;
+                retake = accessInfo.attemptscount;
 
             // Download intro files and media files.
             files = lesson.mediafiles || [];
@@ -460,11 +460,11 @@ angular.module('mm.addons.mod_lesson')
             // Prefetch the list of possible jumps for offline navigation.
             promises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, false, true, siteId));
 
-            // Prefetch viewed pages in last attempt to calculate progress.
-            promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, attempt, false, true, siteId));
+            // Prefetch viewed pages in last retake to calculate progress.
+            promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, retake, false, true, siteId));
 
-            // Prefetch question attempts in last attempt for offline calculations.
-            promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, attempt, false, undefined, false, true, siteId));
+            // Prefetch question attempts in last retake for offline calculations.
+            promises.push($mmaModLesson.getQuestionsAttemptsOnline(lesson.id, retake, false, undefined, false, true, siteId));
 
             // Get module info to be able to handle links.
             promises.push($mmCourse.getModuleBasicInfo(module.id, siteId));
@@ -475,29 +475,29 @@ angular.module('mm.addons.mod_lesson')
                     var subPromises = [];
 
                     angular.forEach(groups, function(group) {
-                        subPromises.push($mmaModLesson.getAttemptsOverview(lesson.id, group.id, false, true, siteId));
+                        subPromises.push($mmaModLesson.getRetakesOverview(lesson.id, group.id, false, true, siteId));
                     });
 
                     // Always get group 0, even if there are no groups.
-                    subPromises.push($mmaModLesson.getAttemptsOverview(lesson.id, 0, false, true, siteId).then(function(data) {
-                        // Prefetch the last attempt for each user.
-                        var attemptPromises = [];
+                    subPromises.push($mmaModLesson.getRetakesOverview(lesson.id, 0, false, true, siteId).then(function(data) {
+                        // Prefetch the last retake for each user.
+                        var retakePromises = [];
 
                         angular.forEach(data && data.students, function(student) {
                             if (!student.attempts || !student.attempts.length) {
                                 return;
                             }
 
-                            var lastAttempt = student.attempts[student.attempts.length - 1];
-                            if (!lastAttempt) {
+                            var lastRetake = student.attempts[student.attempts.length - 1];
+                            if (!lastRetake) {
                                 return;
                             }
 
-                            attemptPromises.push($mmaModLesson.getUserAttempt(
-                                    lesson.id, lastAttempt.try, student.id, false, true, siteId));
+                            retakePromises.push($mmaModLesson.getUserRetake(
+                                    lesson.id, lastRetake.try, student.id, false, true, siteId));
                         });
 
-                        return $q.all(attemptPromises);
+                        return $q.all(retakePromises);
                     }));
 
                     return $q.all(subPromises);

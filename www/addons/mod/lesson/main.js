@@ -50,7 +50,7 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
         pageid: null,
         password: null,
         review: false,
-        attempt: null // Only if review=true. To verify that the attempt can be reviewed.
+        retake: null // Only if review=true. To verify that the retake can be reviewed.
       },
       views: {
         'site': {
@@ -60,18 +60,18 @@ angular.module('mm.addons.mod_lesson', ['mm.core'])
       }
     })
 
-    .state('site.mod_lesson-userattempt', {
-      url: '/mod_lesson-userattempt',
+    .state('site.mod_lesson-userretake', {
+      url: '/mod_lesson-userretake',
       params: {
         courseid: null,
         lessonid: null,
         userid: null,
-        attempt: null
+        retake: null
       },
       views: {
         'site': {
-          controller: 'mmaModLessonUserAttemptCtrl',
-          templateUrl: 'addons/mod/lesson/templates/userattempt.html'
+          controller: 'mmaModLessonUserRetakeCtrl',
+          templateUrl: 'addons/mod/lesson/templates/userretake.html'
         }
       }
     });

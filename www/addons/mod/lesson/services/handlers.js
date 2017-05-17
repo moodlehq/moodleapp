@@ -292,7 +292,7 @@ angular.module('mm.addons.mod_lesson')
                     // Go to overview.
                     openReportOverview(parseInt(params.id, 10), courseId, parseInt(params.group, 10), siteId);
                 } else if (params.action == 'reportdetail') {
-                    openUserAttempt(parseInt(params.id, 10), parseInt(params.userid, 10), courseId,
+                    openUserRetake(parseInt(params.id, 10), parseInt(params.userid, 10), courseId,
                             parseInt(params.try, 10), siteId);
                 }
             }
@@ -331,17 +331,17 @@ angular.module('mm.addons.mod_lesson')
     }
 
     /**
-     * Open a user's attempt.
+     * Open a user's retake.
      *
      * @param  {Number} moduleId   Module ID.
      * @param  {Number} userId     User ID.
      * @param  {Number} [courseId] Course ID.
-     * @param  {Number} [attempt]  Attempt to open.
+     * @param  {Number} [retake]   Retake to open.
      * @param  {String} [groupId]  Group ID.
      * @param  {String} siteId     Site ID.
      * @return {Promise}           Promise resolved when navigated.
      */
-    function openUserAttempt(moduleId, userId, courseId, attempt, siteId) {
+    function openUserRetake(moduleId, userId, courseId, retake, siteId) {
         var modal = $mmUtil.showModalLoading();
 
         // Get the module object.
@@ -352,9 +352,9 @@ angular.module('mm.addons.mod_lesson')
                 lessonid: module.instance,
                 courseid: courseId ? parseInt(courseId, 10) : courseId,
                 userid: userId,
-                attempt: attempt || 0
+                retake: retake || 0
             };
-            $mmContentLinksHelper.goInSite('site.mod_lesson-userattempt', stateParams, siteId);
+            $mmContentLinksHelper.goInSite('site.mod_lesson-userretake', stateParams, siteId);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'Error processing link.');
             return $q.reject();

@@ -41,7 +41,7 @@
                 <!-- End of lesson reached. -->
                 <div ng-if="eolData && !processData" class="card">
                     <div class="mm-warning" ng-if="eolData.offline && eolData.offline.value">
-                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_lesson.finishattemptoffline' | translate }}
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_lesson.finishretakeoffline' | translate }}
                     </div>
                     <h3 class="padding" ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
                     <p class="item item-text-wrap" ng-if="eolData.notenoughtimespent"><mm-format-text>{{ eolData.notenoughtimespent.message }}</mm-format-text></p>

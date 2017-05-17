@@ -1,7 +1,7 @@
 <ion-view view-title="{{ 'mma.mod_lesson.detailedstats' | translate }}">
-    <ion-content mm-state-class delegate-handle="mmaModLessonUserAttemptScroll">
-        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="attemptLoaded" on-refresh="refreshData()"></ion-refresher>
-        <mm-loading hide-until="attemptLoaded">
+    <ion-content mm-state-class delegate-handle="mmaModLessonUserRetakeScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="retakeLoaded" on-refresh="refreshData()"></ion-refresher>
+        <mm-loading hide-until="retakeLoaded">
             <div class="list" ng-if="student">
                 <a class="item item-text-wrap" ng-class="{'item-avatar': student.profileimageurl}" mm-user-link userid="{{student.id}}" courseid="{{courseId}}" title="{{student.fullname}}">
                     <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" >
@@ -12,43 +12,43 @@
                     </div>
                 </a>
 
-                <!-- Attempt selector if there is more than one attempt. -->
+                <!-- Retake selector if there is more than one retake. -->
                 <div ng-if="student.attempts && student.attempts.length > 1" class="item item-text-wrap item-input item-select">
-                    <ion-label id="mma-mod_lesson-attemptslabel">{{ 'mma.mod_lesson.attemptheader' | translate }}</ion-label>
-                    <select ng-model="selectedAttempt" ng-change="setAttempt(selectedAttempt)" aria-labelledby="mma-mod_lesson-attemptslabel" ng-options="attempt.try as attempt.label for attempt in student.attempts" mm-ios-select-fix>
+                    <ion-label id="mma-mod_lesson-retakeslabel">{{ 'mma.mod_lesson.attemptheader' | translate }}</ion-label>
+                    <select ng-model="selectedRetake" ng-change="setRetake(selectedRetake)" aria-labelledby="mma-mod_lesson-retakeslabel" ng-options="retake.try as retake.label for retake in student.attempts" mm-ios-select-fix>
                     </select>
                 </div>
 
-                <!-- Attempt stats. -->
-                <div ng-if="attempt && attempt.userstats && attempt.userstats.gradeinfo" class="mma-mod_lesson-userstats">
+                <!-- Retake stats. -->
+                <div ng-if="retake && retake.userstats && retake.userstats.gradeinfo" class="mma-mod_lesson-userstats">
                     <div class="item item-text-wrap row mm-item-padding">
                         <div class="col col-50">
                             <p class="item-heading">{{ 'mma.mod_lesson.grade' | translate }}</p>
-                            <p>{{ 'mm.core.percentagenumber' | translate:{$a: attempt.userstats.grade} }}</p>
+                            <p>{{ 'mm.core.percentagenumber' | translate:{$a: retake.userstats.grade} }}</p>
                         </div>
 
                         <div class="col col-50">
                             <p class="item-heading">{{ 'mma.mod_lesson.rawgrade' | translate }}</p>
-                            <p>{{ attempt.userstats.gradeinfo.earned }} / {{ attempt.userstats.gradeinfo.total }}</p>
+                            <p>{{ retake.userstats.gradeinfo.earned }} / {{ retake.userstats.gradeinfo.total }}</p>
                         </div>
                     </div>
                     <div class="item item-text-wrap">
                         <p class="item-heading">{{ 'mma.mod_lesson.timetaken' | translate }}</p>
-                        <p>{{ attempt.userstats.timetakenReadable }}</p>
+                        <p>{{ retake.userstats.timetakenReadable }}</p>
                     </div>
                     <div class="item item-text-wrap">
                         <p class="item-heading">{{ 'mma.mod_lesson.completed' | translate }}</p>
-                        <p>{{ attempt.userstats.completed * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+                        <p>{{ retake.userstats.completed * 1000 | mmFormatDate:"dfmediumdate" }}</p>
                     </div>
                 </div>
 
                 <!-- Not completed, no stats. -->
-                <div ng-if="attempt && (!attempt.userstats || !attempt.userstats.gradeinfo)" class="item item-text-wrap">
+                <div ng-if="retake && (!retake.userstats || !retake.userstats.gradeinfo)" class="item item-text-wrap">
                     {{ 'mma.mod_lesson.notcompleted' | translate }}
                 </div>
 
                 <!-- Pages. -->
-                <div ng-if="attempt" ng-repeat="page in attempt.answerpages" class="mma-mod_lesson-answerpage card" ng-class="{'dimmed': page.grayout}">
+                <div ng-if="retake" ng-repeat="page in retake.answerpages" class="mma-mod_lesson-answerpage card" ng-class="{'dimmed': page.grayout}">
                     <div class="item item-divider item-text-wrap">
                         <h2>{{page.qtype}}: {{page.title}}</h2>
                     </div>

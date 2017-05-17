@@ -14,17 +14,17 @@
 
 angular.module('mm.addons.mod_lesson')
 
-.constant('mmaModLessonAttemptsStore', 'mma_mod_lesson_attempts')
-.constant('mmaModLessonAnswersStore', 'mma_mod_lesson_answers')
+.constant('mmaModLessonRetakesStore', 'mma_mod_lesson_retakes')
+.constant('mmaModLessonPageAttemptsStore', 'mma_mod_lesson_page_attempts')
 
-.config(function($mmSitesFactoryProvider, mmaModLessonAttemptsStore, mmaModLessonAnswersStore) {
+.config(function($mmSitesFactoryProvider, mmaModLessonRetakesStore, mmaModLessonPageAttemptsStore) {
     var stores = [
         {
-            name: mmaModLessonAttemptsStore,
-            keyPath: 'lessonid', // Only 1 offline attempt per lesson.
+            name: mmaModLessonRetakesStore,
+            keyPath: 'lessonid', // Only 1 offline retake per lesson.
             indexes: [
                 {
-                    name: 'attempt'
+                    name: 'retake'
                 },
                 {
                     name: 'lessonid'
@@ -41,8 +41,8 @@ angular.module('mm.addons.mod_lesson')
             ]
         },
         {
-            name: mmaModLessonAnswersStore,
-            keyPath: ['lessonid', 'attempt', 'pageid', 'timemodified'], // A user can answer several times per page and attempt.
+            name: mmaModLessonPageAttemptsStore,
+            keyPath: ['lessonid', 'retake', 'pageid', 'timemodified'], // A user can attempt several times per page and retake.
             indexes: [
                 {
                     name: 'lessonid'
@@ -51,7 +51,7 @@ angular.module('mm.addons.mod_lesson')
                     name: 'courseid'
                 },
                 {
-                    name: 'attempt'
+                    name: 'retake'
                 },
                 {
                     name: 'pageid'
@@ -67,16 +67,16 @@ angular.module('mm.addons.mod_lesson')
                     keyPath: ['lessonid', 'pageid']
                 },
                 {
-                    name: 'lessonAndAttempt',
-                    keyPath: ['lessonid', 'attempt']
+                    name: 'lessonAndRetake',
+                    keyPath: ['lessonid', 'retake']
                 },
                 {
-                    name: 'lessonAndAttemptAndType',
-                    keyPath: ['lessonid', 'attempt', 'type']
+                    name: 'lessonAndRetakeAndType',
+                    keyPath: ['lessonid', 'retake', 'type']
                 },
                 {
-                    name: 'lessonAndAttemptAndPage',
-                    keyPath: ['lessonid', 'attempt', 'pageid']
+                    name: 'lessonAndRetakeAndPage',
+                    keyPath: ['lessonid', 'retake', 'pageid']
                 }
             ]
         }
@@ -91,68 +91,69 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLessonOffline
  */
-.factory('$mmaModLessonOffline', function($log, $mmSitesManager, $mmUtil, $q, mmaModLessonAttemptsStore, mmaModLessonAnswersStore,
-            $mmSite, mmaModLessonTypeQuestion) {
+.factory('$mmaModLessonOffline', function($log, $mmSitesManager, $mmUtil, $q, $mmSite, mmaModLessonRetakesStore,
+             mmaModLessonPageAttemptsStore, mmaModLessonTypeQuestion) {
 
     $log = $log.getInstance('$mmaModLessonOffline');
 
     var self = {};
 
     /**
-     * Delete offline answer.
-     *
-     * @module mm.addons.mod_lesson
-     * @ngdoc method
-     * @name $mmaModLessonOffline#deleteAnswer
-     * @param  {Number} lessonId     Lesson ID.
-     * @param  {Number} attempt      Attempt number.
-     * @param  {Number} pageId       Page ID.
-     * @param  {Number} timemodified The time modified of the answer.
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}             Promise resolved when done.
-     */
-    self.deleteAnswer = function(lessonId, attempt, pageId, timemodified, siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId, timemodified]);
-        });
-    };
-
-    /**
-     * Delete offline attempt.
+     * Delete an offline attempt.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLessonOffline#deleteAttempt
-     * @param  {Number} lessonId Lesson ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when done.
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {Number} retake       Lesson retake number.
+     * @param  {Number} pageId       Page ID.
+     * @param  {Number} timemodified The timemodified of the attempt.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved when done.
      */
-    self.deleteAttempt = function(lessonId, siteId) {
+    self.deleteAttempt = function(lessonId, retake, pageId, timemodified, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().remove(mmaModLessonAttemptsStore, lessonId);
+            return site.getDb().remove(mmaModLessonPageAttemptsStore, [lessonId, retake, pageId, timemodified]);
         });
     };
 
     /**
-     * Delete offline answers for an attempt and page.
+     * Delete offline lesson retake.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#deleteAttemptAnswersForPage
+     * @name $mmaModLessonOffline#deleteRetake
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.deleteRetake = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonRetakesStore, lessonId);
+        });
+    };
+
+    /**
+     * Delete offline attempts for a retake and page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#deleteRetakeAttemptsForPage
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} retake   Lesson retake number.
      * @param  {Number} pageId   Page ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when done.
      */
-    self.deleteAttemptAnswersForPage = function(lessonId, attempt, pageId, siteId) {
+    self.deleteRetakeAttemptsForPage = function(lessonId, retake, pageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            // Get the answers and delete them.
-            return self.getAttemptAnswersForPage(lessonId, attempt, pageId, siteId).then(function(answers) {
+            // Get the attempts and delete them.
+            return self.getRetakeAttemptsForPage(lessonId, retake, pageId, siteId).then(function(attempts) {
                 var promises = [];
 
-                angular.forEach(answers, function(answer) {
-                    promises.push(site.getDb().remove(mmaModLessonAnswersStore, [lessonId, attempt, pageId, answer.timemodified]));
+                angular.forEach(attempts, function(attempt) {
+                    var timeMod = attempt.timemodified;
+                    promises.push(site.getDb().remove(mmaModLessonPageAttemptsStore, [lessonId, retake, pageId, timeMod]));
                 });
 
                 return $q.all(promises);
@@ -161,55 +162,36 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Mark an attempt as finished.
+     * Mark a retake as finished.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#finishAttempt
+     * @name $mmaModLessonOffline#finishRetake
      * @param  {Number} lessonId   Lesson ID.
      * @param  {Number} courseId   Course ID the lesson belongs to.
-     * @param  {Number} attempt    Attempt number.
-     * @param  {Boolean} finished  Whether attempt is finished.
+     * @param  {Number} retake     Retake number.
+     * @param  {Boolean} finished  Whether retake is finished.
      * @param  {Boolean} outOfTime If the user ran out of time.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved in success, rejected otherwise.
      */
-    self.finishAttempt = function(lessonId, courseId, attempt, finished, outOfTime, siteId) {
+    self.finishRetake = function(lessonId, courseId, retake, finished, outOfTime, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        // Get current stored attempt.
-        return getAttemptWithFallback(lessonId, courseId, attempt, siteId).then(function(entry) {
+        // Get current stored retake.
+        return getRetakeWithFallback(lessonId, courseId, retake, siteId).then(function(entry) {
             return $mmSitesManager.getSite(siteId).then(function(site) {
                 entry.finished = !!finished;
                 entry.outoftime = !!outOfTime;
                 entry.timemodified = $mmUtil.timestamp();
 
-                return site.getDb().insert(mmaModLessonAttemptsStore, entry);
+                return site.getDb().insert(mmaModLessonRetakesStore, entry);
             });
         });
     };
 
     /**
-     * Get all the offline answers in a certain site.
-     *
-     * @module mm.addons.mod_lesson
-     * @ngdoc method
-     * @name $mmaModLessonOffline#getAllAnswers
-     * @param {String} [siteId] Site ID. If not set, use current site.
-     * @return {Promise}        Promise resolved when the offline answers are retrieved.
-     */
-    self.getAllAnswers = function(siteId) {
-        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
-            if (!db) {
-                return $q.reject();
-            }
-
-            return db.getAll(mmaModLessonAnswersStore);
-        });
-    };
-
-    /**
-     * Get all the offline attempts in a certain site.
+     * Get all the offline page attempts in a certain site.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
@@ -223,7 +205,26 @@ angular.module('mm.addons.mod_lesson')
                 return $q.reject();
             }
 
-            return db.getAll(mmaModLessonAttemptsStore);
+            return db.getAll(mmaModLessonPageAttemptsStore);
+        });
+    };
+
+    /**
+     * Get all the offline retakes in a certain site.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonOffline#getAllRetakes
+     * @param {String} [siteId] Site ID. If not set, use current site.
+     * @return {Promise}        Promise resolved when the offline retakes are retrieved.
+     */
+    self.getAllRetakes = function(siteId) {
+        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
+            if (!db) {
+                return $q.reject();
+            }
+
+            return db.getAll(mmaModLessonRetakesStore);
         });
     };
 
@@ -241,7 +242,7 @@ angular.module('mm.addons.mod_lesson')
             lessons = {};
 
         promises.push(getLessons(self.getAllAttempts(siteId)));
-        promises.push(getLessons(self.getAllAnswers(siteId)));
+        promises.push(getLessons(self.getAllRetakes(siteId)));
 
         return $q.all(promises).then(function() {
             return lessons;
@@ -264,95 +265,95 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Retrieve an attempt from site DB.
+     * Retrieve a retake from site DB.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getAttempt
+     * @name $mmaModLessonOffline#getRetake
      * @param  {Number} lessonId Lesson ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the attempt.
+     * @return {Promise}         Promise resolved with the retake.
      */
-    self.getAttempt = function(lessonId, siteId) {
+    self.getRetake = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().get(mmaModLessonAttemptsStore, lessonId);
+            return site.getDb().get(mmaModLessonRetakesStore, lessonId);
         });
     };
 
     /**
-     * Retrieve all offline answers for an attempt.
+     * Retrieve all offline attempts for a retake.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getAttemptAnswers
+     * @name $mmaModLessonOffline#getRetakeAttempts
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} retake   Retake number.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the attempt answers.
+     * @return {Promise}         Promise resolved with the retake attempts.
      */
-    self.getAttemptAnswers = function(lessonId, attempt, siteId) {
+    self.getRetakeAttempts = function(lessonId, retake, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttempt', [lessonId, attempt]);
+            return site.getDb().whereEqual(mmaModLessonPageAttemptsStore, 'lessonAndRetake', [lessonId, retake]);
         });
     };
 
     /**
-     * Retrieve offline answers for an attempt and page.
+     * Retrieve offline attempts for a retake and page.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getAttemptAnswersForPage
+     * @name $mmaModLessonOffline#getRetakeAttemptsForPage
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} retake   Lesson retake number.
      * @param  {Number} pageId   Page ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the attempt answers.
+     * @return {Promise}         Promise resolved with the retake attempts.
      */
-    self.getAttemptAnswersForPage = function(lessonId, attempt, pageId, siteId) {
+    self.getRetakeAttemptsForPage = function(lessonId, retake, pageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttemptAndPage', [lessonId, attempt, pageId]);
+            return site.getDb().whereEqual(mmaModLessonPageAttemptsStore, 'lessonAndRetakeAndPage', [lessonId, retake, pageId]);
         });
     };
 
     /**
-     * Retrieve offline answers for certain pages for an attempt.
+     * Retrieve offline attempts for certain pages for a retake.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getAttemptAnswersForType
+     * @name $mmaModLessonOffline#getRetakeAttemptsForType
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} retake   Retake number.
      * @param  {Number} type     Type of the pages to get: mmaModLessonTypeQuestion or mmaModLessonTypeStructure.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the attempt answers.
+     * @return {Promise}         Promise resolved with the retake attempts.
      */
-    self.getAttemptAnswersForType = function(lessonId, attempt, type, siteId) {
+    self.getRetakeAttemptsForType = function(lessonId, retake, type, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttemptAndType', [lessonId, attempt, type]);
+            return site.getDb().whereEqual(mmaModLessonPageAttemptsStore, 'lessonAndRetakeAndType', [lessonId, retake, type]);
         });
     };
     /**
-     * Get stored attempt. If not found or doesn't match the attempt number, return a new one.
+     * Get stored retake. If not found or doesn't match the retake number, return a new one.
      *
      * @param  {Number} lessonId  Lesson ID.
      * @param  {Number} courseId  Course ID the lesson belongs to.
-     * @param  {Number} attempt   Attempt number.
+     * @param  {Number} retake    Retake number.
      * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved with the attempt.
+     * @return {Promise}          Promise resolved with the retake.
      */
-    function getAttemptWithFallback(lessonId, courseId, attempt, siteId) {
-        // Get current stored attempt.
-        return self.getAttempt(lessonId, siteId).then(function(attemptData) {
-            if (attemptData.attempt != attempt) {
-                // The stored attempt doesn't match the attempt number, create a new one.
+    function getRetakeWithFallback(lessonId, courseId, retake, siteId) {
+        // Get current stored retake.
+        return self.getRetake(lessonId, siteId).then(function(retakeData) {
+            if (retakeData.retake != retake) {
+                // The stored retake doesn't match the retake number, create a new one.
                 return $q.reject();
             }
-            return attemptData;
+            return retakeData;
         }).catch(function() {
-            // No attempt, create a new one.
+            // No retake, create a new one.
             return {
                 lessonid: lessonId,
-                attempt: attempt,
+                retake: retake,
                 courseid: courseId,
                 finished: false
             };
@@ -360,28 +361,28 @@ angular.module('mm.addons.mod_lesson')
     }
 
     /**
-     * Retrieve the last offline answer stored in an attempt.
+     * Retrieve the last offline attempt stored in a retake.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getLastQuestionPageAnswer
+     * @name $mmaModLessonOffline#getLastQuestionPageAttempt
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} retake   Retake number.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with the attempt (undefined if no attempts).
      */
-    self.getLastQuestionPageAnswer = function(lessonId, attempt, siteId) {
+    self.getLastQuestionPageAttempt = function(lessonId, retake, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        return getAttemptWithFallback(lessonId, 0, attempt, siteId).then(function(attemptData) {
-            if (!attemptData.lastquestionpage) {
-                // No question page answered.
+        return getRetakeWithFallback(lessonId, 0, retake, siteId).then(function(retakeData) {
+            if (!retakeData.lastquestionpage) {
+                // No question page attempted.
                 return;
             }
 
-            return self.getAttemptAnswersForPage(lessonId, attempt, attemptData.lastquestionpage, siteId).then(function(answers) {
-                // Return the answer with highest timemodified.
-                return answers.reduce(function(a, b) {
+            return self.getRetakeAttemptsForPage(lessonId, retake, retakeData.lastquestionpage, siteId).then(function(attempts) {
+                // Return the attempt with highest timemodified.
+                return attempts.reduce(function(a, b) {
                     return a.timemodified > b.timemodified ? a : b;
                 });
             });
@@ -391,88 +392,88 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
-     * Retrieve all offline answers for a lesson.
+     * Retrieve all offline attempts for a lesson.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#getLessonAnswers
+     * @name $mmaModLessonOffline#getLessonAttempts
      * @param  {Number} lessonId Lesson ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the answers.
+     * @return {Promise}         Promise resolved with the attempts.
      */
-    self.getLessonAnswers = function(lessonId, siteId) {
+    self.getLessonAttempts = function(lessonId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonid', lessonId);
+            return site.getDb().whereEqual(mmaModLessonPageAttemptsStore, 'lessonid', lessonId);
         });
     };
 
     /**
-     * Get questions attempts for a lesson and attempt.
+     * Get attempts for question pages and retake in a lesson.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLessonOffline#getQuestionsAttempts
-     * @param  {Number} lessonId       Lesson ID.
-     * @param  {Number} attempt        Attempt number.
-     * @param  {Boolean} correct       True to only fetch correct attempts, false to get them all.
-     * @param  {Number} [pageId]       If defined, only get attempts on this page.
-     * @param  {String} [siteId]       Site ID. If not defined, current site.
-     * @return {Promise}               Promise resolved with the questions attempts.
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} retake   Retake number.
+     * @param  {Boolean} correct True to only fetch correct attempts, false to get them all.
+     * @param  {Number} [pageId] If defined, only get attempts on this page.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the attempts.
      */
-    self.getQuestionsAttempts = function(lessonId, attempt, correct, pageId, siteId) {
+    self.getQuestionsAttempts = function(lessonId, retake, correct, pageId, siteId) {
         var promise;
         if (pageId) {
-            // Page ID is set, only get the answers for that page.
-            promise = self.getAttemptAnswersForPage(lessonId, attempt, pageId, siteId);
+            // Page ID is set, only get the attempts for that page.
+            promise = self.getRetakeAttemptsForPage(lessonId, retake, pageId, siteId);
         } else {
-            // Page ID not specified, get all the question answers.
-            promise = self.getAttemptAnswersForType(lessonId, attempt, mmaModLessonTypeQuestion, siteId);
+            // Page ID not specified, get all the attempts.
+            promise = self.getRetakeAttemptsForType(lessonId, retake, mmaModLessonTypeQuestion, siteId);
         }
 
-        return promise.then(function(answers) {
+        return promise.then(function(attempts) {
             if (correct) {
-                return answers.filter(function(answer) {
-                    return !!answer.correct;
+                return attempts.filter(function(attempt) {
+                    return !!attempt.correct;
                 });
             }
-            return answers;
+            return attempts;
         });
     };
 
     /**
-     * Check if there are offline answers for an attempt.
+     * Check if there are offline attempts for a retake.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#hasAttemptAnswers
+     * @name $mmaModLessonOffline#hasRetakeAttempts
      * @param  {Number} lessonId Lesson ID.
-     * @param  {Number} attempt  Attempt number.
+     * @param  {Number} retake   Retake number.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with a boolean.
      */
-    self.hasAttemptAnswers = function(lessonId, attempt, siteId) {
+    self.hasRetakeAttempts = function(lessonId, retake, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModLessonAnswersStore, 'lessonAndAttempt', [lessonId, attempt]).then(function(list) {
-                return !!list.length;
-            });
+            return site.getDb().whereEqual(mmaModLessonPageAttemptsStore, 'lessonAndRetake', [lessonId, retake]);
+        }).then(function(list) {
+            return !!list.length;
         }).catch(function() {
             return false;
         });
     };
 
     /**
-     * Check if there is a finished attempt for a certain lesson.
+     * Check if there is a finished retake for a certain lesson.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#hasFinishedAttempt
+     * @name $mmaModLessonOffline#hasFinishedRetake
      * @param  {Number} lessonId Lesson ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with boolean.
      */
-    self.hasFinishedAttempt = function(lessonId, siteId) {
-        return self.getAttempt(lessonId, siteId).then(function(attempt) {
-            return !!attempt.finished;
+    self.hasFinishedRetake = function(lessonId, siteId) {
+        return self.getRetake(lessonId, siteId).then(function(retake) {
+            return !!retake.finished;
         }).catch(function() {
             return false;
         });
@@ -492,14 +493,14 @@ angular.module('mm.addons.mod_lesson')
         var promises = [],
             hasData = false;
 
-        promises.push(self.getAttempt(lessonId, siteId).then(function() {
+        promises.push(self.getRetake(lessonId, siteId).then(function() {
             hasData = true;
         }).catch(function() {
             // Ignore errors.
         }));
 
-        promises.push(self.getLessonAnswers(lessonId, siteId).then(function(answers) {
-            hasData = hasData || !!answers.length;
+        promises.push(self.getLessonAttempts(lessonId, siteId).then(function(attempts) {
+            hasData = hasData || !!attempts.length;
         }).catch(function() {
             // Ignore errors.
         }));
@@ -517,7 +518,7 @@ angular.module('mm.addons.mod_lesson')
      * @name $mmaModLessonOffline#processPage
      * @param  {Number} lessonId    Lesson ID.
      * @param  {Number} courseId    Course ID the lesson belongs to.
-     * @param  {Number} attempt     Attempt number.
+     * @param  {Number} retake      Retake number.
      * @param  {Object} page        Page.
      * @param  {Object} data        Data to save.
      * @param  {Number} newPageId   New page ID (calculated).
@@ -527,13 +528,13 @@ angular.module('mm.addons.mod_lesson')
      * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved in success, rejected otherwise.
      */
-    self.processPage = function(lessonId, courseId, attempt, page, data, newPageId, answerId, correct, userAnswer, siteId) {
+    self.processPage = function(lessonId, courseId, retake, page, data, newPageId, answerId, correct, userAnswer, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var entry = {
                 lessonid: lessonId,
-                attempt: attempt,
+                retake: retake,
                 pageid: page.id,
                 courseid: courseId,
                 data: data,
@@ -545,38 +546,38 @@ angular.module('mm.addons.mod_lesson')
                 timemodified: $mmUtil.timestamp()
             };
 
-            return site.getDb().insert(mmaModLessonAnswersStore, entry);
+            return site.getDb().insert(mmaModLessonPageAttemptsStore, entry);
         }).then(function() {
             if (page.type == mmaModLessonTypeQuestion) {
-                // It's a question page, set it as last question page answered.
-                return self.setLastQuestionPageAnswered(lessonId, courseId, attempt, page.id, siteId);
+                // It's a question page, set it as last question page attempted.
+                return self.setLastQuestionPageAttempted(lessonId, courseId, retake, page.id, siteId);
             }
         });
     };
 
     /**
-     * Set the last question page answered in an attempt.
+     * Set the last question page attempted in a retake.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLessonOffline#setLastQuestionPageAnswered
+     * @name $mmaModLessonOffline#setLastQuestionPageAttempted
      * @param  {Number} lessonId  Lesson ID.
      * @param  {Number} courseId  Course ID the lesson belongs to.
-     * @param  {Number} attempt   Attempt number.
-     * @param  {Number} lastPage  ID of the last question page answered.
+     * @param  {Number} retake    Retake number.
+     * @param  {Number} lastPage  ID of the last question page attempted.
      * @param  {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}          Promise resolved in success, rejected otherwise.
      */
-    self.setLastQuestionPageAnswered = function(lessonId, courseId, attempt, lastPage, siteId) {
+    self.setLastQuestionPageAttempted = function(lessonId, courseId, retake, lastPage, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        // Get current stored attempt.
-        return getAttemptWithFallback(lessonId, courseId, attempt, siteId).then(function(entry) {
+        // Get current stored retake.
+        return getRetakeWithFallback(lessonId, courseId, retake, siteId).then(function(entry) {
             return $mmSitesManager.getSite(siteId).then(function(site) {
                 entry.lastquestionpage = lastPage;
                 entry.timemodified = $mmUtil.timestamp();
 
-                return site.getDb().insert(mmaModLessonAttemptsStore, entry);
+                return site.getDb().insert(mmaModLessonRetakesStore, entry);
             });
         });
     };
