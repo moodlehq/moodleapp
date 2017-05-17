@@ -3,7 +3,7 @@
         <a ui-sref="site.mm_searchcourses" ng-if="searchEnabled" class="button button-icon ion-ios-search-strong"></a>
     </ion-nav-buttons>
     <ion-content mm-state-class>
-        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="timeline.loaded" on-refresh="refreshMyOverview()">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="timeline.loaded || timelineCourses.loaded || courses.loaded" on-refresh="refreshMyOverview()">
         </ion-refresher>
         <div class="tabs tabs-striped tabs-free mm-tabs-color">
             <a class="tab-item" ng-class="{'active': tabShown == 'timeline'}" ng-click="switchTab('timeline')">{{ 'mma.myoverview.timeline' | translate }}</a>
@@ -28,11 +28,11 @@
                 <mm-empty-box ng-if="timelineCourses.courses.length == 0" image="addons/myoverview/img/courses.svg" message="{{ 'mma.myoverview.nocourses' | translate }}"></mm-empty-box>
             </mm-loading>
             <mm-loading hide-until="courses.loaded" ng-show="tabShown == 'courses'" class="mm-loading-center">
-                <div class="row row-no-padding">
+                <div class="row row-no-padding padding-bottom" ng-show="!showFilter">
                     <div class="col-10 text-left">
-                        <a ng-if="courses[courses.selected] && courses[courses.selected].length > 5" ng-class="{'ion-funnel': !showFilter, 'ion-close-round': showFilter}" class="button button-dark button-icon icon" ng-click="switchFilter()"></a>
+                        <a ng-if="courses[courses.selected] && courses[courses.selected].length > 5" class="button button-dark button-icon icon ion-funnel" ng-click="switchFilter()"></a>
                     </div>
-                    <div class="col text-center" ng-show="!showFilter">
+                    <div class="col text-center">
                         <div class="item-select mm-full-width-centered">
                             <select ng-model="courses.selected">
                                 <option value="inprogress">{{ 'mma.myoverview.inprogress' | translate }}</option>
@@ -41,16 +41,19 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-10 text-right" ng-show="!showFilter">
-                        <a ng-class="{'ion-grid': !showGrid, 'ion-navicon': showGrid}" class="button button-dark button-icon icon" ng-click="switchGrid()"></a>
-                    </div>
-                    <div class="col" ng-show="showFilter">
-                        <ion-input class="item item-input">
-                            <i class="icon ion-funnel placeholder-icon"></i>
-                            <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="courses.filter">
-                        </ion-input>
+                    <div class="col-10 text-right">
+                        <a ng-class="{'ion-android-apps': !showGrid, 'ion-ios-list-outline': showGrid}" class="button button-dark button-icon icon" ></a>
                     </div>
                 </div>
+                <div ng-show="showFilter" class="item mm-filter-box item-input-inset">
+                    <button type="submit" class="button button-dark button-clear button-icon icon ion-close-circled" ng-click="switchFilter()"></button>
+                    <ion-input class="item-input-wrapper">
+                        <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="courses.filter">
+                        <i class="icon ion-funnel placeholder-icon"></i>
+                    </ion-input>
+
+                </div>
+
                 <div ng-class="{'mm-course-grid': showGrid}">
                     <mm-course-list-progress ng-repeat="course in courses[courses.selected] | filter:{fullname: courses.filter}" course="course" round-progress="showGrid" show-summary="showGrid"></mm-course-list-progress>
                 </div>
