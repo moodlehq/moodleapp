@@ -457,7 +457,7 @@ button.item.item-button-right {
 .mm-loading-container {
   width: 100%;
   text-align: center;
-  margin-top: 10px;
+  padding-top: 10px;
   clear: both;
 }
 
@@ -472,6 +472,7 @@ button.item.item-button-right {
   height: 100%;
   display: table;
   z-index: -1;
+  padding-top: 0px;
 
   .mm-loading-spinner {
     display: table-cell;
