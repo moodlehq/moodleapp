@@ -37,6 +37,8 @@ angular.module('mm.addons.calendar')
             fullname: $translate.instant('mm.core.fulllistofcourses')
         };
 
+    $scope.events = [];
+
     if ($stateParams.eventid) {
         // We arrived here via notification click, let's clear history and redirect to event details.
         $ionicHistory.clearHistory();
@@ -47,7 +49,6 @@ angular.module('mm.addons.calendar')
     function initVars() {
         daysLoaded = 0;
         emptyEventsTimes = 0;
-        $scope.events = [];
     }
 
     // Fetch all the data required for the view.
@@ -69,11 +70,19 @@ angular.module('mm.addons.calendar')
                 if (emptyEventsTimes > 5) { // Stop execution if we retrieve empty list 6 consecutive times.
                     $scope.canLoadMore = false;
                     $scope.eventsLoaded = true;
+                    if (refresh) {
+                        $scope.events = [];
+                    }
                 } else {
                     // No events returned, load next events.
-                    return fetchEvents();
+                    return fetchEvents(refresh);
                 }
             } else {
+                // Sort the events by timestart, they're ordered by id.
+                events.sort(function(a, b) {
+                    return a.timestart - b.timestart;
+                });
+
                 angular.forEach(events, $mmaCalendar.formatEventData);
                 if (refresh) {
                     $scope.events = events;
@@ -90,11 +99,7 @@ angular.module('mm.addons.calendar')
             // Resize the scroll view so infinite loading is able to calculate if it should load more items or not.
             scrollView.resize();
         }, function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.calendar.errorloadevents', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.calendar.errorloadevents', true);
             $scope.eventsLoaded = true;
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
@@ -149,9 +154,7 @@ angular.module('mm.addons.calendar')
         promises.push($mmaCalendar.invalidateEventsList());
 
         return $q.all(promises).finally(function() {
-            fetchData(true).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+            return fetchData(true);
         });
     };
 
