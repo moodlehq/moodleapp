@@ -23,8 +23,8 @@
                     <div ng-class="{'item-avatar': user.profileimageurl}" class="item item-text-wrap item-icon-right">
                         <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
                         <h2>{{user.fullname}}</h2>
-                        <p ng-if="user.started" class="badge badge-inline badge-balanced">{{ 'mma.mod_feedback.started' | translate}}</p>
-                        <p ng-if="!user.started" class="badge badge-inline badge-balanced">{{ 'mma.mod_feedback.not_started' | translate}}</p>
+                        <p ng-if="user.started" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_feedback.started' | translate}}</p>
+                        <p ng-if="!user.started" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_feedback.not_started' | translate}}</p>
                     </div>
                 </div>
                 <div class="item padding text-center" ng-if="canLoadMore">

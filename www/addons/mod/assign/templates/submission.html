@@ -9,8 +9,8 @@
             <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
             <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
         </p>
-        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </a>
     <div ng-if="blindMarking && !user" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.hiddenuser' | translate }}{{blindId}}</h2>
@@ -20,8 +20,8 @@
             <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
             <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
         </p>
-        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </div>
     <div ng-if="(blindMarking && user) || (!blindMarking && !user)" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
@@ -31,8 +31,8 @@
             <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
             <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
         </p>
-        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </div>
 
     <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="feedback || isGrading">

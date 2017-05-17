@@ -44,7 +44,7 @@
                 <div class="list card" ng-repeat="competency in competencies.competencies">
                     <a ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}" class="item item-heading item-text-wrap clearfix">
                         {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
-                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
+                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline text-center item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
                     </a>
                     <div class="item item-body">
                         <div ng-if="competency.competency.description">

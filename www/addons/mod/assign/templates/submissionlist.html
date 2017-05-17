@@ -15,8 +15,8 @@
                                 <span ng-if="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
                                 <span ng-if="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
                             </p>
-                            <p ng-if="submission.statusTranslated" class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
-                            <p ng-if="submission.gradingStatusTranslationId" class="badge badge-inline {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
+                            <p ng-if="submission.statusTranslated" class="badge badge-inline text-center {{submission.statusClass}}">{{submission.statusTranslated}}</p>
+                            <p ng-if="submission.gradingStatusTranslationId" class="badge badge-inline text-center {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
                             <i class="icon icon-accessory ion-chevron-right"></i>
                         </a>
                     </li>
