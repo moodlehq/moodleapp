@@ -41,7 +41,7 @@ angular.module('mm.core.user')
             $scope.title = user.fullname;
             $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
             $scope.hasDetails = user.url || user.interests || (user.customfields && user.customfields.length > 0);
-        }, function(message) {
+        }).catch(function(message) {
             if (message) {
                 $mmUtil.showErrorModal(message);
             }
