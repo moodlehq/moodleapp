@@ -272,7 +272,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
                                 $ionicScrollDelegate.$getByHandle(delegateHandle) : $ionicScrollDelegate;
 
                         // Scroll to the position.
-                        $ionicScrollDelegate.scrollTo(position[0], position[1]);
+                        scrollView.scrollTo(position[0], position[1]);
                     }
                 }
             }
