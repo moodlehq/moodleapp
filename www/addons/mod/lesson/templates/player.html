@@ -31,7 +31,7 @@
                     </div>
                     <div ng-if="lesson.progressbar && !canManage" class="item">
                         <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>
-                        <progress max="100" value="{{pageData.progress}}"></progress>
+                        <mm-progress-bar progress="pageData.progress"></mm-progress-bar>
                     </div>
                     <div ng-if="lesson.progressbar && canManage" class="mm-info-card">
                         <i class="icon ion-information-circled padding"></i>{{ 'mma.mod_lesson.progressbarteacherwarning2' | translate }}
@@ -55,7 +55,7 @@
                     <p class="item item-text-wrap" ng-if="eolData.welldone"><mm-format-text>{{ eolData.welldone.message }}</mm-format-text></p>
                     <div class="item item-text-wrap" ng-if="lesson.progressbar && eolData.progresscompleted">
                         <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}</p>
-                        <progress max="100" value="{{eolData.progresscompleted.value}}"></progress>
+                        <mm-progress-bar progress="eolData.progresscompleted.value"></mm-progress-bar>
                     </div>
                     <p class="item item-text-wrap" ng-if="eolData.displayofgrade"><mm-format-text>{{ eolData.displayofgrade.message }}</mm-format-text></p>
                     <div class="item item-text-wrap" ng-if="eolData.reviewlesson"><button class="button button-block" ng-click="reviewLesson(eolData.reviewlesson.pageid)"><mm-format-text>{{ 'mma.mod_lesson.reviewlesson' | translate }}</mm-format-text></button></div>

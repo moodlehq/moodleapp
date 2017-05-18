@@ -91,6 +91,10 @@ $mma-messages-date-badge: "stable" !default;
   }
 }
 
+.tab-content .mm-site_messages-discussion {
+  background: $base-background-color;
+}
+
 .mma-messages-showprevious-spinner-container {
   width: 100%;
   text-align: center;

@@ -28,12 +28,12 @@ angular.module('mm.addons.myoverview')
         sort: 'sortbydates',
         events: [],
         loaded: false,
-        canLoadMore: false,
+        canLoadMore: false
     };
     $scope.timelineCourses = {
         courses: [],
         loaded: false,
-        canLoadMore: false,
+        canLoadMore: false
     };
     $scope.courses = {
         selected: 'inprogress',
@@ -45,8 +45,9 @@ angular.module('mm.addons.myoverview')
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable() && !$mmCourses.isSearchCoursesDisabledInSite();
 
-    function fetchMyOverviewTimeline(afterEventId) {
+    function fetchMyOverviewTimeline(afterEventId, refresh) {
         return $mmaMyOverview.getActionEventsByTimesort(afterEventId).then(function(events) {
+            $scope.timeline.events = [];
             $scope.timeline.events = $scope.timeline.events.concat(events.events);
             $scope.timeline.canLoadMore = events.canLoadMore;
         }).catch(function(message) {
@@ -159,18 +160,16 @@ angular.module('mm.addons.myoverview')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions());
 
-        $q.all(promises).finally(function() {
+        return $q.all(promises).finally(function() {
             var promise;
 
             switch ($scope.tabShown) {
                 case 'timeline':
                     switch ($scope.timeline.sort) {
                         case 'sortbydates':
-                            $scope.timeline.events = [];
-                            promise = fetchMyOverviewTimeline();
+                            promise = fetchMyOverviewTimeline(undefined, true);
                             break;
                         case 'sortbycourses':
-                            $scope.timeline.courses = [];
                             promise = fetchMyOverviewTimelineByCourses();
                             break;
                     }
@@ -180,9 +179,7 @@ angular.module('mm.addons.myoverview')
                     break;
             }
 
-            promise.finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+            return promise;
         });
     };
 

@@ -17,7 +17,7 @@
                     <li class="item item-text-wrap">
                         <strong>{{ 'mma.competency.progress' | translate }}</strong>:
                         {{ 'mma.competency.xcompetenciesproficientoutofyincourse' | translate:{$a: {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
-                        <progress max="100" value="{{ competencies.statistics.proficientcompetencypercentage }}"></progress>
+                        <mm-progress-bar progress="competencies.statistics.proficientcompetencypercentage"></mm-progress-bar>
                     </li>
                     <li class="item item-text-wrap" ng-if="competencies.statistics.leastproficientcount > 0">
                         <strong>{{ 'mma.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
@@ -44,7 +44,7 @@
                 <div class="list card" ng-repeat="competency in competencies.competencies">
                     <a ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}" class="item item-heading item-text-wrap clearfix">
                         {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
-                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
+                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline text-center item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
                     </a>
                     <div class="item item-body">
                         <div ng-if="competency.competency.description">

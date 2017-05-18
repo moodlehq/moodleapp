@@ -538,6 +538,10 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   max-width: 100%;
 }
 
+audio.mm-media-adapt-width {
+  width: 100%;
+}
+
 .mm-enabled-media-adapt img.mm-media-adapt-width,
 img.mm-media-adapt-width-enabled {
   height: auto;
@@ -934,11 +938,10 @@ mm-timer.mm-timer .item {
   select {
     max-width: 100%;
     background: transparent;
-    direction: ltr;
     text-indent: 0;
     margin: 0 auto;
-    padding: $item-input-padding ($item-input-padding*3) $item-input-padding $item-input-padding;
-    line-height: 14px;
+    padding: ($item-input-padding - 1) ($item-input-padding/2*5) ($item-input-padding - 1) $item-input-padding;
+    line-height: $font-size-base + 2;
     border: 0;
     position: relative;
   }
@@ -1084,6 +1087,17 @@ input[type="radio"].mm-radio {
   padding: 0;
 }
 
+.item-transparent {
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+
+  &.item-input-inset .item-input-wrapper {
+    background: white;
+    height: 36px;
+  }
+}
+
 .padding mm-searchbox .item-input-inset {
   padding-top: 0;
   padding-left: 0;
@@ -1092,6 +1106,21 @@ input[type="radio"].mm-radio {
 
 mm-searchbox .item-input-inset .item-input-wrapper {
   background: white;
+}
+
+.mm-filter-box {
+  @extend .item-transparent;
+
+  padding-bottom: $item-padding - 4;
+  &.item-input-inset .item-input-wrapper {
+    height: 36px;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .mm-filter-box {
+    padding-right: ($item-padding / 2);
+  }
 }
 
 .item.mm-not-clickable {
@@ -1167,6 +1196,9 @@ mm-searchbox .item-input-inset .item-input-wrapper {
 @media only screen and (max-width: 768px) {
   .hidden-phone {
     display: none !important;
+  }
+  .item-badge-right-phone {
+    padding-right: $item-avatar-width + ($item-padding * 2);
   }
 }
 
@@ -1430,6 +1462,10 @@ i, cite, em, var, address, dfn {
   }
 }
 
+.button.button-icon.icon.ion-funnel:before {
+  font-size: 26px;
+}
+
 // Position modals over action sheet. This means that modals will ALWAYS be over action sheet (in Ionic it's the opposite).
 .action-sheet-open .modal-backdrop.active {
   z-index: 20;
@@ -1516,8 +1552,22 @@ progress {
   }
 }
 
-.mm-progress-text {
-  margin-left: 10px;
+
+mm-progress-bar {
+  padding-right: 55px;
+  position: relative;
+  display: block;
+  @extend .clearfix;
+
+  .mm-progress-text {
+    margin-left: 10px;
+    line-height: 35px;
+    color: $gray-darker;
+    right: 0;
+    top: 0;
+    color: #626262;
+    position: absolute;
+  }
 }
 
 .padding > .button.button-block:only-child {

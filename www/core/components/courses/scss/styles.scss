@@ -29,7 +29,7 @@ $doughnut-text-colour: $gray-darker;
     left: $item-padding;
   }
   h2 {
-    font-size: 24px;
+    font-size: 21px;
   }
 }
 
@@ -52,6 +52,7 @@ $doughnut-text-colour: $gray-darker;
       text-align: center;
       vertical-align: middle;
       color: $doughnut-text-colour;
+      font-size: 95%;
     }
 
     .progress-indicator {

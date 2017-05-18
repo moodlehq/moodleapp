@@ -48,13 +48,9 @@
                 </div>
             </div>
 
-            <div ng-if="!user && !isDeleted">
-                {{ 'mm.user.detailsnotavailable' | translate }}
-            </div>
+            <mm-empty-box ng-if="!user && !isDeleted" icon="ion-person" message="{{ 'mm.user.detailsnotavailable' | translate }}"></mm-empty-box>
 
-            <div ng-if="isDeleted">
-                {{ 'mm.core.userdeleted' | translate }}
-            </div>
+            <mm-empty-box ng-if="isDeleted" icon="ion-person" message="{{ 'mm.core.userdeleted' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

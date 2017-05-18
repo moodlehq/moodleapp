@@ -56,6 +56,9 @@ $mm-buttons-color: $positive;
 $base-color: $black !default;
 $base-background-color: $gray-light !default;
 
+$item-default-text: $black;
+$sheet-options-text-color: $positive;
+
 // Header.
 $bar-content-bg: $mm-color !default;
 $bar-content-border: transparent !default;
@@ -84,6 +87,32 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
 
 // Include all of Ionic.
 @import "www/lib/ionic/scss/ionic";
+
+.icon {
+  color: $gray-darker;
+
+  &.positive {
+    color: $positive;
+  }
+  &.assertive {
+    color: $assertive;
+  }
+  &.dark {
+    color: $dark;
+  }
+}
+
+.action-sheet .button .icon {
+  color: $sheet-options-text-color;
+}
+
+.platform-android .action-sheet .button .icon {
+  color: inherit;
+}
+
+.bar-content .icon , .bar-side-menu .icon{
+  color: $bar-content-text;
+}
 
 // Setting the default button to button-outline positive.
 .button {
@@ -117,7 +146,7 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
     @include button-outline($button-default-border);
 
     &.button-icon {
-      color: $dark;
+      color: $gray-darker;
     }
   }
 }
