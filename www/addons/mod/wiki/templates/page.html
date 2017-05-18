@@ -11,10 +11,8 @@
         </div>
 
         <!-- Page warning. -->
-        <div class="padding" ng-if="pageWarning">
-            <p class="badge badge-inline badge-assertive padding">
-                <i class="icon ion-alert-circled padding"></i> {{ pageWarning }}
-            </p>
+        <div class="mm-warning-card-icon" ng-if="pageWarning">
+            <i class="icon ion-alert-circled padding"></i> {{ pageWarning }}
         </div>
 
         <article ng-class="{'mma-mod_wiki-noedit': !canEdit}">

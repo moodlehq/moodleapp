@@ -6,7 +6,7 @@
     <ion-content mm-state-class delegate-handle="mmaModLessonPlayerScroll">
         <mm-loading hide-until="pageLoaded">
             <!-- Info messages. Only show the first one. -->
-            <div class="mm-info-card" ng-if="lesson && messages && messages.length">
+            <div class="mm-info-card-icon" ng-if="lesson && messages && messages.length">
                 <i class="icon ion-information-circled padding"></i> {{ messages[0].message }}
             </div>
 
@@ -33,14 +33,14 @@
                         <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>
                         <mm-progress-bar progress="pageData.progress"></mm-progress-bar>
                     </div>
-                    <div ng-if="lesson.progressbar && canManage" class="mm-info-card">
+                    <div ng-if="lesson.progressbar && canManage" class="mm-info-card-icon">
                         <i class="icon ion-information-circled padding"></i>{{ 'mma.mod_lesson.progressbarteacherwarning2' | translate }}
                     </div>
                 </div>
 
                 <!-- End of lesson reached. -->
                 <div ng-if="eolData && !processData" class="card">
-                    <div class="mm-warning" ng-if="eolData.offline && eolData.offline.value">
+                    <div class="mm-warning-card-icon" ng-if="eolData.offline && eolData.offline.value">
                         <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_lesson.finishretakeoffline' | translate }}
                     </div>
                     <h3 class="padding" ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
