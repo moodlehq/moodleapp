@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackRespondentsCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmText, $translate,
         mmaModFeedbackComponent, $mmGroups, $mmaModFeedbackHelper, $ionicHistory) {
-    var module = $stateParams.module || {},
+    var module = $stateParams.module ? angular.copy($stateParams.module) : {},
         courseId = $stateParams.courseid,
         page = 0,
         feedback;

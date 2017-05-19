@@ -25,7 +25,7 @@ angular.module('mm.addons.mod_forum')
             $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate,
             mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync, $mmCourseHelper,
             mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
-    var module = $stateParams.module || {},
+    var module = $stateParams.module ? angular.copy($stateParams.module) : {},
         courseid = $stateParams.courseid,
         forum,
         page = 0,
