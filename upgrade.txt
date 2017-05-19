@@ -5,7 +5,7 @@ information provided here is intended especially for developers.
 
  * The project now supports Ionic CLI v2 and Node 6.9. We recommend updating node, npm, Ionic CLI and project dependencies:
     npm install -g npm@latest
-    npm install -g ionic
+    npm install -g ionic@2.2.1
     npm install
  * mm-error CSS class has been deprecated. Use mm-error-card or similar instead.
  * The function $mmaMessages#isSearchEnabled has been deprecated. Please use $mmaMessages#isSearchContactsEnabled instead.
