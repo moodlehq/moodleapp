@@ -142,14 +142,19 @@ angular.module('mm.core.course')
             scrollView = $ionicScrollDelegate.$getByHandle('mmSectionScroll');
         }
 
-        if (scrollView && scrollView.getScrollPosition()) {
-            $scope.loadingPaddingTop = scrollView.getScrollPosition().top;
-        }
+        // Save scroll position to restore it once done.
+        var scrollPosition = scrollView.getScrollPosition() || {};
+
         $scope.sectionLoaded = false;
         $scope.sections = [];
+        scrollView.scrollTop(); // Scroll top so the spinner is seen.
+
         loadContent(sectionId).finally(function() {
             $scope.sectionLoaded = true;
-            $scope.loadingPaddingTop = 0;
+            // Wait for the view to render and scroll back to the user's position.
+            $timeout(function() {
+                scrollView.scrollTo(scrollPosition.left, scrollPosition.top);
+            });
         });
     }
 
