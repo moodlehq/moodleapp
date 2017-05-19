@@ -1,5 +1,11 @@
 {
+    "activities": "Δραστηριότητες",
+    "duedate": "Καταληκτική ημερομηνία",
     "errornocompetenciesfound": "Δεν βρέθηκαν ικανότητες",
     "mylearningplans": "Το μαθησιακό πλάνο μου",
-    "nocompetencies": "Δεν βρέθηκαν ικανότητες"
+    "nocompetencies": "Δεν βρέθηκαν ικανότητες",
+    "path": "Διαδρομή",
+    "progress": "Πρόοδος μαθητών",
+    "status": "Κατάσταση",
+    "template": "Πρότυπο"
 }

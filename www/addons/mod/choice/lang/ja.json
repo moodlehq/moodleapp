@@ -7,7 +7,7 @@
     "notopenyet": "申し訳ございません、この活動は {{$a}} まで利用することができません。",
     "numberofuser": "投票者数",
     "numberofuserinpercentage": "投票者数 (%)",
-    "previewonly": "これはこの活動に関する利用可能なオプションのプレビューです。あなたの投票は {{$a}} まで送信することができません。",
+    "previewonly": "これはこの活動で利用可能なオプションのプレビューです。あなたの投票は {{$a}} まで送信することができません。",
     "removemychoice": "私の投票を削除する",
     "responses": "投票結果",
     "responsesresultgraphheader": "グラフ表示",

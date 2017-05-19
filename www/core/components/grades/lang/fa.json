@@ -5,6 +5,9 @@
     "grade": "نمره",
     "grades": "نمرات",
     "itemname": "نام مورد",
+    "lettergrade": "نمرهٔ حرفی",
     "percentage": "درصد",
-    "range": "محدوده"
+    "range": "محدوده",
+    "rank": "رتبه",
+    "weight": "وزن"
 }

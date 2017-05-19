@@ -1,4 +1,5 @@
 {
+    "activitydisabled": "Vaše organizace zakázal tuto činnost v mobilní aplikaci.",
     "activitynotyetviewable": "Tato činnost ještě není v aplikaci zobrazitelná.",
     "activitynotyetviewablegothere": "Tato činnost nebo zdroj ještě není v aplikaci zobrazitelná, pro přístup z webu klikněte na tlačítko dole.",
     "activitynotyetviewableinapp": "Pracujeme na úpravě aktivity {{$a}}.",
@@ -17,6 +18,7 @@
     "errordownloadingsection": "Chyba při stahování sekce.",
     "errorgetmodule": "Chyba při načítání",
     "gotothesite": "Přejít na stránky",
+    "hiddenfromstudents": "Skryté před studenty",
     "nocontentavailable": "V tuto chvíli není k dispozici žádný obsah.",
     "overriddennotice": "Vaše výsledná známka za tuto činnost byla ručně upravena.",
     "showall": "Zobrazit vše",

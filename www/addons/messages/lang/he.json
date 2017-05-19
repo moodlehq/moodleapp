@@ -12,6 +12,7 @@
     "errorwhileretrievingmessages": "שגיאה בזמן טעינת המסרים מהשרת.",
     "message": "גוף ההודעה",
     "messagenotsent": "מסר זה לא נשלח, אנא נסה שוב מאוחר יותר.",
+    "messagepreferences": "העדפות בהודעות",
     "messages": "מסרים",
     "mustbeonlinetosendmessages": "עליך להיות מחובר/ת בכדי לשלוח מסר.",
     "newmessage": "מסר חדש...",

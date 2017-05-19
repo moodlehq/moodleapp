@@ -20,7 +20,6 @@
     "errorwhiledownloading": "Si è verificato un errore durante lo scaricamento del file.",
     "errorwhilerecordingaudio": "Si è verificato un errore durante la registrazione dell'audio.",
     "errorwhileuploading": "Si è verificato un errore durante il caricamento del file.",
-    "file": "File",
     "files": "File personali",
     "fileuploaded": "Il file è stato caricato correttamente.",
     "myfiles": "I miei file",
@@ -32,7 +31,6 @@
     "sitefiles": "File del sito",
     "sitefilesdesc": "Altri file del sito Moodle ai quali puoi accedere.",
     "success": "Effettuato correttamente!",
-    "uploadafile": "Carica un file",
     "uploadfiles": "Carica file",
     "uploading": "Caricamento in corso",
     "video": "Video"

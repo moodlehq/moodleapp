@@ -20,7 +20,6 @@
     "errorwhiledownloading": "Při pokusu o stahování souboru došlo k chybě .",
     "errorwhilerecordingaudio": "Při pokusu o nahrání zvuku došlo k chybě .",
     "errorwhileuploading": "Při pokusu o nahrání souboru došlo k chybě .",
-    "file": "Soubor",
     "files": "Osobní soubory",
     "fileuploaded": "Soubor byl úspěšně nahrán.",
     "myfiles": "Moje soubory",
@@ -32,7 +31,6 @@
     "sitefiles": "Soubory stránek",
     "sitefilesdesc": "Další soubory, které jsou dostupné na těchto stránkách Moodle.",
     "success": "Úspěch!",
-    "uploadafile": "Nahrát soubor",
     "uploadfiles": "Nahrát soubory",
     "uploading": "Nahrávání",
     "video": "Video"

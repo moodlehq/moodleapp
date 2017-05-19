@@ -3,12 +3,17 @@
     "coursecompetencies": "شایستگی‌های درس",
     "coursecompetencyratingsarenotpushedtouserplans": "امتیازهای شایستگی‌ها در این درس تاثیری در برنامه‌های آموزشی ندارند.",
     "coursecompetencyratingsarepushedtouserplans": "امتیازهای شایستگی‌ها در این درس بلافاصله در برنامه‌های آموزشی به‌روز می‌شوند.",
+    "crossreferencedcompetencies": "شایستگی‌های دارای ارجاع متقابل",
     "duedate": "مهلت تحویل",
+    "errornocompetenciesfound": "هیچ شایستگی‌ای پیدا نشد",
     "evidence": "مدرک",
     "learningplancompetencies": "شایستگی‌های برنامه آموزشی",
     "learningplans": "برنامه‌های آزموشی",
+    "mylearningplans": "برنامه‌های آموزشی من",
     "myplans": "برنامه‌های آموزشی من",
+    "nocrossreferencedcompetencies": "هیچ شایستگی دیگری به این شایستگی به‌طور متقابل ارجاع داده نشده است.",
     "noevidence": "بدون مدرک",
+    "noplanswerecreated": "هیچ برنامهٔ یادگیری‌ای ساخته نشده است.",
     "path": "مسیر",
     "proficient": "کسب مهارت",
     "progress": "پیشروی شاگردان",
@@ -16,5 +21,6 @@
     "reviewstatus": "بازبینی وضعیت",
     "status": "وضعیت",
     "template": "الگو",
-    "xcompetenciesproficientoutofy": "در {{$a.x}} شایستگی از مجموع {{$a.y}} شایستگی مهارت کسب شده است"
+    "xcompetenciesproficientoutofy": "در {{$a.x}} شایستگی از مجموع {{$a.y}} شایستگی مهارت کسب شده است",
+    "xcompetenciesproficientoutofyincourse": "شما در {{$a.x}} شایستگی از {{$a.y}} شایستگی ماهر هستید."
 }

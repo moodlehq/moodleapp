@@ -1,4 +1,5 @@
 {
+    "activitydisabled": "Jouw organisatie heeft deze activiteit uitgeschakeld in de mobiele app.",
     "activitynotyetviewable": "Deze activiteit of bron kan nog niet bekeken worden met deze app.",
     "activitynotyetviewablegothere": "Deze activiteit of bron kan nog niet bekeken worden met deze app. Klik op onderstaande knop om het te bekijken op de site.",
     "activitynotyetviewableinapp": "We werken aan de ondersteuning van de activiteit {{$a}}.",
@@ -17,6 +18,7 @@
     "errordownloadingsection": "Fout bij het downloaden van de sectie.",
     "errorgetmodule": "Fout bij het ophalen van modulegegevens.",
     "gotothesite": "Ga naar de site",
+    "hiddenfromstudents": "Verborgen voor leerlingen",
     "nocontentavailable": "Geen inhoud beschikbaar.",
     "overriddennotice": "Je totaalcijfer voor deze activiteit is manueel aangepast.",
     "showall": "Toon alle",

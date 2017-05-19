@@ -1,0 +1,14 @@
+{
+    "answer": "Απάντηση",
+    "answersaved": "Η απάντηση αποθηκεύτηκε",
+    "complete": "Ολοκλήρωση",
+    "correct": "Σωστό",
+    "feedback": "Ανάδραση",
+    "incorrect": "Λάθος",
+    "invalidanswer": "Ημιτελής απάντηση",
+    "notanswered": "Δεν απαντήθηκε ακόμα",
+    "notyetanswered": "Δεν έχει απαντηθεί ακόμα",
+    "partiallycorrect": "Μερικώς σωστή",
+    "questionno": "Ερώτηση {{$a}}",
+    "unknown": "Άγνωστο"
+}

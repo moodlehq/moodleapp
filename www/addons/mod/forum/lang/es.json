@@ -5,6 +5,8 @@
     "cannotcreatediscussion": "No se pudo crear un debate nuevo",
     "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
     "discussion": "Tema",
+    "discussionlocked": "Este tema ha sido bloqueado así que no podrás responder en el.",
+    "discussionpinned": "Fijado",
     "discussionsubscription": "Suscripción a la discusión",
     "edit": "Editar",
     "erroremptymessage": "El mensaje no puede estar vacío",

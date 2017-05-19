@@ -1,3 +1,5 @@
 {
-    "itemname": "Įvertinti"
+    "itemname": "Įvertinti",
+    "nogradesreturned": "Įverčių nepateikta",
+    "viewgrades": "Peržiūrėti įverčius"
 }

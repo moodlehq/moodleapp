@@ -6,6 +6,7 @@
     "couldnotadd": "Non è possibile aggiungere l'intervento a causa di un errore sconosciuto.",
     "discussion": "Discussione",
     "discussionlocked": "Questa discussione è stata bloccata e non è più possibile intervenire.",
+    "discussionpinned": "In evidenza",
     "discussionsubscription": "Sottoscrizione della discussione",
     "edit": "Modifica",
     "erroremptymessage": "Il corpo del messaggio non può essere vuoto",

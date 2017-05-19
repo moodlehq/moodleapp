@@ -1,6 +1,7 @@
 {
     "activities": "Jarduerak",
     "coursecompetencies": "Ikastaroko gaitasunak",
+    "coursecompetencyratingsarepushedtouserplans": "Ikastaro honetan gaitasunen kalifikazioek ikasketa-planak berehala eguneratzen dituzte.",
     "duedate": "Entregatze-data",
     "errornocompetenciesfound": "Ez da gaitasunik aurkitu",
     "evidence": "Ebidentzia",
@@ -13,6 +14,7 @@
     "noevidence": "Ez dago ebidentziarik",
     "noplanswerecreated": "Ez da ikasketa-planik sortu.",
     "path": "Bidea",
+    "proficient": "Gai",
     "progress": "Ikaslearen aurrerapena",
     "rating": "Puntuazioa",
     "reviewstatus": "Berrikusi egora",
