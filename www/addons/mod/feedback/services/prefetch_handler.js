@@ -236,8 +236,15 @@ angular.module('mm.addons.mod_feedback')
                 p2.push($mmaModFeedback.getItems(feedback.id, siteId));
 
                 if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
-                    p2.push($mmaModFeedback.getCurrentValues(feedback.id, false, true, siteId));
-                    p2.push($mmaModFeedback.getResumePage(feedback.id, false, true, siteId));
+                    // Send empty data, so it will recover last completed feedback attempt values.
+                    p2.push($mmaModFeedback.processPage(feedback.id, 0, {}, undefined, undefined, undefined, siteId).finally(function() {
+                        var p4 = [];
+
+                        p4.push($mmaModFeedback.getCurrentValues(feedback.id, false, true, siteId));
+                        p4.push($mmaModFeedback.getResumePage(feedback.id, false, true, siteId));
+
+                        return $q.all(p4);
+                    }));
                 }
 
                 return $q.all(p2);
