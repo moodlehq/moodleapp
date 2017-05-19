@@ -1,6 +1,8 @@
 {
     "emptyfilelist": "表示するファイルはありません。",
+    "errorreceivefilenosites": "登録されているサイトがありません。ファイルをアップロードする前にサイトを追加してください。",
     "files": "マイファイル",
+    "myfiles": "マイファイル",
     "privatefiles": "プライベートファイル",
     "sitefiles": "サイトファイル",
     "uploadfiles": "ファイルをアップロードできる"

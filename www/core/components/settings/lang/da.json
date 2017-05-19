@@ -1,5 +1,6 @@
 {
     "about": "Om",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "App klar",
     "cacheexpirationtime": "Cache udløbstid (milisekunder)",
     "cordovadevicemodel": "Cordova Device model",
@@ -11,6 +12,7 @@
     "currentlanguage": "Nuværende sprog",
     "deletesitefiles": "Er du sikker på du vil slette de downloadede filer fra webstedet '{{sitename}}'?",
     "deletesitefilestitle": "Slet webstedsfiler",
+    "development": "Udvikling",
     "deviceinfo": "Enhedsinfo",
     "deviceos": "Enheds operativsystem",
     "disableall": "Deaktiver midlertidigt underretninger",
@@ -37,6 +39,7 @@
     "sites": "Steder",
     "spaceusage": "Pladsforbrug",
     "storagetype": "Lagertype",
+    "success": "Succes!",
     "synchronization": "Synkronisering",
     "synchronizenow": "Synkroniser nu",
     "synchronizing": "Synkroniserer",

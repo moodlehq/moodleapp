@@ -1,11 +1,13 @@
 {
     "authenticating": "Godkender",
     "cancel": "Afbryd",
+    "cannotdownloadfiles": "Download af filer er deaktiveret i din Moodleservice. Appen virker ikke med denne indstilling deaktiveret. Kontakt din administrator.",
     "confirmdeletesite": "Er du sikker på at du ønsker at slette websiden {{sitename}}?",
     "connect": "Tilslut!",
     "connecttomoodle": "Tilslut til Moodle",
     "createaccount": "Opret ny profil",
     "createuserandpass": "Vælg  brugernavn og adgangskode",
+    "credentials": "Referencer",
     "credentialsdescription": "Skriv dit brugernavn og adgangskode for at logge på",
     "emailconfirmsent": "<p>En e-mail skulle være sendt til din adresse <b>{{$a}}</b></p> <p>Den indeholder anvisninger på, hvordan du fuldfører din registrering.</p> <p>Hvis du stadig har problemer, så kontakt webadministratoren.</p>",
     "enterthewordsabove": "Skriv ordene herover",

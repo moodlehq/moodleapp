@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "請接受提交聲明.",
     "addattempt": "允許另一次的繳交",
     "addnewattempt": "新增一個繳交管道",
     "addnewattemptfromprevious": "依據先前的作業新增一個繳交管道",
@@ -13,6 +14,9 @@
     "attemptreopenmethod_manual": "手動的",
     "attemptreopenmethod_untilpass": "自動的，直到通過",
     "attemptsettings": "繳交設定",
+    "cannoteditduetostatementsubmission": "您無法在應用程式中新增或編輯提交內容, 因為我們無法從該網站擷取提交內容.",
+    "cannotgradefromapp": "應用程式尚未支援部分評分方式, 無法修改.",
+    "cannotsubmitduetostatementsubmission": "您無法在應用程式中提交評分,  因為我們無法從網站存取提交聲明",
     "confirmsubmission": "您確定要繳交作業並請求評分嗎？一旦這麼做，您將不能再修改作業。",
     "currentattempt": "這是第{{$a}}次繳交",
     "currentattemptof": "這是第{{$a.attemptnumber}}次繳交(允許繳交 {{$a.maxattempts}} 次)",
@@ -24,7 +28,10 @@
     "duedatereached": "此作業的規定繳交時間已經過了",
     "editingstatus": "編修狀態",
     "editsubmission": "修改我已繳交的作業",
+    "erroreditpluginsnotsupported": "您無法在應用程式中新增或修改提交, 因為某些外掛不支援編輯:",
+    "errorshowinginformation": "我們無法顯示提交資訊",
     "extensionduedate": "展延到期日",
+    "feedbacknotsupported": "該應用程式不支援此回饋, 並且可能不包含所有資訊",
     "grade": "成績",
     "graded": "已評分",
     "gradedby": "已評分由",
@@ -47,6 +54,7 @@
     "nomoresubmissionsaccepted": "只接受已被寬延期限的學生的繳交作業",
     "noonlinesubmissions": "這個作業不需要您在網上繳交任何東西",
     "nosubmission": "這個作業還沒人繳交",
+    "notallparticipantsareshown": "沒有提交的參與者不會被顯示出來",
     "noteam": "不屬於任何群組",
     "notgraded": "尚未評分",
     "numberofdraftsubmissions": "草稿",
@@ -61,6 +69,7 @@
     "submission": "繳交作業",
     "submissioneditable": "學生可以編編輯這一繳交的作業",
     "submissionnoteditable": "學生不能編輯這一繳交的作業",
+    "submissionnotsupported": "該應用程式不支援此提交, 並且可能不包含所有資訊",
     "submissionslocked": "此作業不接受繳交",
     "submissionstatus": "繳交狀態",
     "submissionstatus_": "未繳交",
@@ -80,5 +89,8 @@
     "ungroupedusers": "\"需要以群組方式提交作業\"的設定已經被啟動，但是仍有某些用戶沒有被指派到群組中，或者同一個人屬於多個群組，因此無法提交作業。",
     "unlimitedattempts": "無限制的",
     "userswhoneedtosubmit": "需要提交作業的用戶：{{$a}}",
-    "viewsubmission": "檢視繳交的作業"
+    "userwithid": "ID為{{id}}的使用者",
+    "viewsubmission": "檢視繳交的作業",
+    "warningsubmissiongrademodified": "在網站上修改了提交成績.",
+    "warningsubmissionmodified": "使用者的提交已在網站中修改."
 }

@@ -1,5 +1,6 @@
 {
     "about": "Über diese App",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "App nutzbar",
     "cacheexpirationtime": "Speicherdauer im Cache (Millisekunden)",
     "cannotsyncoffline": "Offline kann nicht synchronisiert werden.",
@@ -14,6 +15,7 @@
     "currentlanguage": "Sprache",
     "deletesitefiles": "Möchten Sie wirklich alle von der Website '{{sitename}}' geladenen Dateien löschen?",
     "deletesitefilestitle": "Website-Dateien löschen",
+    "development": "Entwicklung",
     "deviceinfo": "Geräteinfo",
     "deviceos": "Geräte-OS",
     "devicewebworkers": "Device Web Workers unterstützt",
@@ -47,6 +49,7 @@
     "sites": "Websites",
     "spaceusage": "Speicherplatz",
     "storagetype": "Speicherart",
+    "success": "Fertig!",
     "synchronization": "Synchronisieren",
     "synchronizenow": "Synchronisieren",
     "synchronizing": "Synchronisieren ...",

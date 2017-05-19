@@ -79,5 +79,6 @@
     "timeremaining": "Återstående tid",
     "unlimitedattempts": "Obegränsad",
     "userswhoneedtosubmit": "Användare som behöver lämna in: {{$a}}",
+    "userwithid": "Användare men Id {{id}}",
     "viewsubmission": "Visa inlämning"
 }

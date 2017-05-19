@@ -9,6 +9,7 @@
     "deletemessage": "Nachricht löschen",
     "deletemessageconfirmation": "Möchten Sie wirklich diese Nachricht löschen? Die Nachricht wird ausschließlich aus Ihrem Nachrichtenverlauf gelöscht, ist aber weiterhin bei der Person zu sehen, die Ihnen die Nachricht geschickt hat.",
     "errordeletemessage": "Fehler beim Löschen der Mitteilung",
+    "erroruseronlyacceptsmessagefromcontacts": "Fehler: Diese Person erlaubt den Empfang von Mitteilungen nur von ihren Kontakten.",
     "errorwhileretrievingcontacts": "Fehler beim Lesen der Kontakte vom Server",
     "errorwhileretrievingdiscussions": "Fehler beim Lesen der Themen vom Server",
     "errorwhileretrievingmessages": "Fehler beim Empfang der Mitteilungen vom Server",

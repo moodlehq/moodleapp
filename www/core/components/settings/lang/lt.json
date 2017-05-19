@@ -1,5 +1,6 @@
 {
     "about": "Apie",
+    "appname": "Moodle mobili {{version}}",
     "appready": "Programėlė paruošta",
     "cacheexpirationtime": "Laikinas galiojimo laikas (ms)",
     "cannotsyncoffline": "Negalima sinchronizuoti neprisijungus.",
@@ -14,6 +15,7 @@
     "currentlanguage": "Vartojama kalba",
     "deletesitefiles": "Ar esate tikri, kad norite ištrinti atsisiųstus failus iš svetainės '{{sitename}}'?",
     "deletesitefilestitle": "Ištrinti svetainės failus",
+    "development": "Kūrimas",
     "deviceinfo": "Informacija apie įrenginį",
     "deviceos": "Įrenginio OS",
     "devicewebworkers": "Įrenginio palaikymas",
@@ -46,6 +48,7 @@
     "sites": "Svetainės",
     "spaceusage": "Vietos naudojimas",
     "storagetype": "Atminties tipas",
+    "success": "Sėkmė!!",
     "synchronization": "Sinchronizavimas",
     "synchronizenow": "Sinchronizuoti dabar",
     "synchronizing": "Sinchronizuojama",

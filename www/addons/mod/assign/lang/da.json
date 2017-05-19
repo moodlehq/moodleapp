@@ -80,5 +80,6 @@
     "ungroupedusers": "Indstillingen 'Kræv gruppeaflevering' er slået til, og nogle brugere er forhindret i at aflevere opgaver da de ikke er med i en gruppe eller er medlem af mere end en gruppe.",
     "unlimitedattempts": "Ubegrænset",
     "userswhoneedtosubmit": "Brugere, der skal aflevere: {{$a}}",
+    "userwithid": "Bruger med Id {{id}}",
     "viewsubmission": "Se aflevering"
 }

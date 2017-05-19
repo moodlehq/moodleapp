@@ -3,6 +3,7 @@
     "cacheexpirationtime": "キャッシュ有効期限（ミリ秒単位）",
     "currentlanguage": "現在の言語",
     "deletesitefiles": "本当にこのサイトからダウンロードしたファイルを消去しますか？",
+    "development": "開発",
     "disableall": "一時的に通知を無効にする",
     "disabled": "無効",
     "enabledebugging": "デバッグを有効にする",

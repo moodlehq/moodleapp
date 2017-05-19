@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Por favor acepte las condiciones de envío.",
     "addattempt": "Permitir otro intento",
     "addnewattempt": "Añadir una nueva entrega",
     "addnewattemptfromprevious": "Añadir un nuevo intento basado en el envío anterior",
@@ -13,6 +14,9 @@
     "attemptreopenmethod_manual": "Manual",
     "attemptreopenmethod_untilpass": "Automática hasta aprobar",
     "attemptsettings": "Configuración de intentos",
+    "cannoteditduetostatementsubmission": "No puede añadir o editar un envío en la app porque no pudimos recuperar las condiciones de envío del sitio.",
+    "cannotgradefromapp": "Algunos métodos de calificación no son compatibles aún con la aplicación y no se pueden modificar.",
+    "cannotsubmitduetostatementsubmission": "No puede enviar para calificar en la app porque no pudimos recuperar las condiciones de envío del sitio.",
     "confirmsubmission": "¿Está seguro que quiere enviar su trabajo para que sea evaluado? Una vez enviado ya no podrá realizar modificaciones.",
     "currentattempt": "Este es el intento {{$a}}.",
     "currentattemptof": "Este es el intento {{$a.attemptnumber}} ( {{$a.maxattempts}} intentos permitidos ).",
@@ -24,7 +28,10 @@
     "duedatereached": "La fecha de vencimiento de esta tarea ya ha pasado",
     "editingstatus": "Edición de estado",
     "editsubmission": "Editar entrega",
+    "erroreditpluginsnotsupported": "No puede añadir o editar un envío en la app porque algunos plugins no tienen soporte para editar:",
+    "errorshowinginformation": "No se puede mostrar la información del envío",
     "extensionduedate": "Ampliar plazo",
+    "feedbacknotsupported": "La retroalimentación no está soportada por la app y podría no mostrar la información completa",
     "grade": "Calificación",
     "graded": "Calificado",
     "gradedby": "Calificado por",
@@ -47,6 +54,7 @@
     "nomoresubmissionsaccepted": "No se aceptan más entregas",
     "noonlinesubmissions": "Esta tarea no requiere que usted envíe nada de forma online",
     "nosubmission": "No se ha enviado nada en esta tarea",
+    "notallparticipantsareshown": "Los participantes sin envíos no se muestran",
     "noteam": "No perteneces a ningún grupo.",
     "notgraded": "Sin calificar",
     "numberofdraftsubmissions": "Borradores",
@@ -61,6 +69,7 @@
     "submission": "Entrega",
     "submissioneditable": "El estudiante puede editar esta entrega",
     "submissionnoteditable": "El estudiante no puede editar esta entrega",
+    "submissionnotsupported": "Este envío no está soportada por la app y es posible que no muestre la información completa",
     "submissionslocked": "Esta tarea no acepta entregas",
     "submissionstatus": "Estado de la entrega",
     "submissionstatus_": "Sin entrega",
@@ -80,5 +89,8 @@
     "ungroupedusers": "Si se activa la configuración \"se requiere formar parte de un grupo para realizar la entrega\" se evitará que los usuarios no asignados a lo sgrupos realicen entregas.",
     "unlimitedattempts": "Ilimitado",
     "userswhoneedtosubmit": "Componentes del equipo pendientes de entrega: {{$a}}",
-    "viewsubmission": "Ver entrega"
+    "userwithid": "Usuario con ID {{id}}",
+    "viewsubmission": "Ver entrega",
+    "warningsubmissiongrademodified": "La calificación del envío se modificó en el sitio.",
+    "warningsubmissionmodified": "El envío del usuario fue modificado en el sitio."
 }

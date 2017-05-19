@@ -1,8 +1,10 @@
 {
     "about": "Hakkında",
+    "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Önbellek zaman aşımı (milisaniye)",
     "currentlanguage": "Geçerli dil",
     "deletesitefiles": "Bu siteden indirdiğiniz dosyaları silmek istediğinizden eminmisiniz?",
+    "development": "Gelişmiş ayarlar",
     "disableall": "Bildirimleri devre dışı bırak",
     "disabled": "Devre dışı bırakıldı",
     "enabledebugging": "Hata ayıklamayı etkinleştir",

@@ -3,6 +3,7 @@
     "cacheexpirationtime": "缓存过期时间（毫秒）",
     "currentlanguage": "当前语言",
     "deletesitefiles": "您确定要删除从本站下载的文件？",
+    "development": "开发",
     "disableall": "临时禁用通知",
     "disabled": "禁用",
     "enabledebugging": "启用调试功能",
@@ -15,5 +16,6 @@
     "settings": "设置",
     "sites": "网站",
     "spaceusage": "空间使用情况",
+    "synchronization": "同步",
     "total": "总共"
 }

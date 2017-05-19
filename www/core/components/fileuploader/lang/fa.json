@@ -1,4 +1,6 @@
 {
+    "confirmuploadfile": "شما در آستانهٔ ارسال {{size}} هستید. آیا مطمئنید که می‌خواهید ادامه دهید؟",
+    "confirmuploadunknownsize": "ما نتوانستیم حجم ارسال را محاسبه کنیم. آیا مطمئنید که می‌خواهید ادامه دهید؟",
     "errorcapturingaudio": "خطا در ضبط صدا",
     "errorcapturingvideo": "خطا در ضبط ویدئو",
     "errorreadingfile": "خطا در خواندن فایل «{{$a}}»",
