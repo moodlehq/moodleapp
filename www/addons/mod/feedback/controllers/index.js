@@ -224,8 +224,8 @@ angular.module('mm.addons.mod_feedback')
         switch (item.typ) {
             case 'numeric':
                 item.average = item.data.reduce(function (prev, current) {
-                    return prev + current;
-                }) / item.data.length;
+                    return prev + parseInt(current, 10);
+                }, 0) / item.data.length;
                 item.template = 'numeric';
                 break;
 
@@ -270,7 +270,7 @@ angular.module('mm.addons.mod_feedback')
 
                 if (item.typ == 'multichoicerated') {
                     item.average = item.data.reduce(function (prev, current) {
-                        return prev + current.avg;
+                        return prev + parseFloat(current.avg);
                     }, 0.0);
                 }
 
