@@ -100,6 +100,17 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
   &.dark {
     color: $dark;
   }
+  &.icon-accessory {
+    color: $item-icon-accessory-color;
+  }
+}
+
+.button .icon {
+  color: $positive;
+
+  &.icon-accessory {
+    color: $item-icon-accessory-color;
+  }
 }
 
 .action-sheet .button .icon {
