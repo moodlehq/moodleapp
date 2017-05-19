@@ -6,6 +6,7 @@
     "couldnotadd": "Ezin izan da zure mezua gehitu; errore bat gertatu da nonbait.",
     "discussion": "Eztabaida",
     "discussionlocked": "Eztabaida hau blokeatu da eta beraz aurrerantzean ezingo duzu bertan erantzun.",
+    "discussionpinned": "Finkatuta",
     "discussionsubscription": "Eztabaidaren harpidetza",
     "edit": "Editatu",
     "erroremptymessage": "Mezua ezin da hutsik egon",
@@ -25,8 +26,6 @@
     "refreshdiscussions": "Freskatu eztabaidak",
     "refreshposts": "Freskatu eztabaidetako mezuak",
     "reply": "Erantzun",
-    "sortnewestfirst": "Erakutsi berrienak lehenago",
-    "sortoldestfirst": "Erakutsi zaharrenak lehenago",
     "subject": "Gaia",
     "unread": "Irakurri gabe",
     "unreadpostsnumber": "Irakurri gabeko {{$a}} mezu"

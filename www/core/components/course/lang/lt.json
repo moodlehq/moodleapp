@@ -1,6 +1,4 @@
 {
-    "activitynotyetviewable": "Programėlė šio veiksmo  kol kas neaktlieka.",
-    "activitynotyetviewablegothere": "Šios informacijos programėlėje šiuo metu peržiūrėti negalima, jeigu norite ją peržiūrėti svetainėje, paspauskite žemiau esantį mygtuką.",
     "activitynotyetviewableinapp": "Dirbame prie {{$a}} veiklos.",
     "activitynotyetviewableremoteaddon": "Jūsų įstaiga įdiegė papildinį, kuris dar nėra palaikomas.",
     "activitynotyetviewablesiteupgradeneeded": "Jūsų įstaigos Moodle versija turi būti atnaujinta.",
@@ -8,7 +6,6 @@
     "askadmintosupport": "Susisiekite su svetainės administratoriumi, jeigu norite naudoti šią veiklą Moodle mobiliojoje programėlėje.",
     "confirmdeletemodulefiles": "Ar tikrai norite ištrinti šiuos failus?",
     "confirmdownload": "Norite atsisiųsti {{size}}. Ar norite tęsti?",
-    "confirmdownloadsection": "Norite atsisiųsti {{size}}. Ar norite tęsti?",
     "confirmdownloadunknownsize": "Negalima apskaičiuoti failo, kurį norite atsisiųsti, dydžio. Ar tikrai norite atsisiųsti?",
     "confirmpartialdownloadsize": "Norite atsisiųsti <strong>mažiausiai</strong> {{size}}. Ar tikrai norite tęsti?",
     "contents": "Turiniai",
@@ -16,9 +13,9 @@
     "couldnotloadsections": "Negalima užkrauti pasirinkto turinio, prašome pamėginti vėliau.",
     "errordownloadingsection": "Klaida atsisiunčiant.",
     "errorgetmodule": "Klaida gaunant kurso duomenis.",
-    "gotothesite": "Eikite į svetainę",
+    "hiddenfromstudents": "Paslėpta nuo besimokančiųjų",
     "nocontentavailable": "Turinys šiuo metu nepasiekiamas.",
+    "overriddennotice": "Šios veiklos galutinis įvertis buvo koreguotas rankiniu būdu.",
     "showall": "Rodyti visus",
-    "useactivityonbrowser": "Galite naudoti savo naršyklėje.",
-    "whoops": "Oi!"
+    "useactivityonbrowser": "Galite naudoti savo naršyklėje."
 }

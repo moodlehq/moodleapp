@@ -30,6 +30,7 @@
     "policyagree": "برای ادامهٔ استفاده از این سایت باید موافقت خود را با خط مشی آن اعلام کنید. آیا موافقید؟",
     "policyagreement": "موافقت با خط مشی سایت",
     "policyagreementclick": "مشاهدهٔ موافقت‌نامهٔ خط مشی سایت",
+    "potentialidps": "ورود با استفاده از حساب شما روی:",
     "security_question": "سؤال امنیتی",
     "selectacountry": "انتخاب کشور",
     "siteinmaintenance": "سایت شما در حالت نگهداشت می باشد",
@@ -39,5 +40,6 @@
     "supplyinfo": "جزئیات بیشتر",
     "username": "نام کاربری",
     "usernamerequired": "نام کاربر لازم است",
+    "usernotaddederror": "کاربر اضافه نشد - خطا",
     "webservicesnotenabled": "وب سرویس سایت اشکال دارد.با مدیر سایت هماهنگ نمایید"
 }

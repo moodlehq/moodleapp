@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "No s'ha pogut obrir un debat nou",
     "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
     "discussion": "Debat",
+    "discussionpinned": "Fixat",
     "discussionsubscription": "Subscripció als debats",
     "edit": "Edita",
     "erroremptymessage": "El missatge no pot estar buit",
@@ -24,8 +25,6 @@
     "refreshdiscussions": "Actualitza els debats",
     "refreshposts": "Actualitza els missatges",
     "reply": "Respon",
-    "sortnewestfirst": "Mostra els més recents primer",
-    "sortoldestfirst": "Mostra els més antics primer",
     "subject": "Assumpte",
     "unread": "No llegit",
     "unreadpostsnumber": "{{$a}} missatges no llegits"

@@ -1,6 +1,5 @@
 {
     "about": "Acerca",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "Aplicação pronta",
     "cacheexpirationtime": "Intervalo de tempo para a cache expirar (milisegundos)",
     "cannotsyncoffline": "Não é possível sincronizar offline.",
@@ -15,7 +14,6 @@
     "currentlanguage": "Idioma atual",
     "deletesitefiles": "Tem a certeza que pretende apagar os ficheiros descarregados a partir do site '{{sitename}}'?",
     "deletesitefilestitle": "Excluir os ficheiros do site",
-    "development": "Desenvolvimento",
     "deviceinfo": "Informação do dispositivo",
     "deviceos": "Dispositivo OS",
     "devicewebworkers": "Device Web Workers suportados",
@@ -49,7 +47,6 @@
     "sites": "Sites",
     "spaceusage": "Utilização do espaço",
     "storagetype": "Tipo de armazenamento",
-    "success": "Sucesso!",
     "synchronization": "Sincronização",
     "synchronizenow": "Sincronizar agora",
     "synchronizing": "A sincronizar",

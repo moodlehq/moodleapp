@@ -1,6 +1,5 @@
 {
     "about": "關於",
-    "appname": "Moodle行動版{{version}}",
     "appready": "應用程式已就緒",
     "cacheexpirationtime": "快取到期時間(毫秒)",
     "cannotsyncoffline": "離線狀態無法進行同步",
@@ -15,7 +14,6 @@
     "currentlanguage": "選定語言",
     "deletesitefiles": "您確定想從這個網站位置刪除已下載的檔案?",
     "deletesitefilestitle": "刪除網站檔案",
-    "development": "開發",
     "deviceinfo": "裝置資訊",
     "deviceos": "裝置作業系統",
     "devicewebworkers": "裝置網路工作站已支援",
@@ -48,7 +46,6 @@
     "sites": "網站",
     "spaceusage": "使用空間",
     "storagetype": "儲存類型",
-    "success": "成功!",
     "synchronization": "同步",
     "synchronizenow": "立即同步",
     "synchronizing": "同步中",
