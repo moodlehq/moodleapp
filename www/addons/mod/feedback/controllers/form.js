@@ -146,7 +146,7 @@ angular.module('mm.addons.mod_feedback')
             formHasErrors = false;
 
         for (var x in $scope.items) {
-            if ($scope.items[x].isEmpty) {
+            if ($scope.items[x].isEmpty || $scope.items[x].hasError) {
                 formHasErrors = true;
                 break;
             }

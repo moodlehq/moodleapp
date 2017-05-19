@@ -268,6 +268,7 @@ angular.module('mm.addons.mod_feedback')
         var responses = {};
 
         angular.forEach(items, function(itemData) {
+            itemData.hasError = false;
             if (itemData.hasvalue) {
                 var name, value,
                     nameTemp = itemData.typ + '_' + itemData.id,
@@ -286,12 +287,22 @@ angular.module('mm.addons.mod_feedback')
                 } else {
                     if (itemData.typ == "multichoice") {
                         name = nameTemp + '[0]';
-                        value = itemData.value || 0;
-                    } else if (itemData.typ == "multichoicerated") {
-                        name = nameTemp;
-                        value = itemData.value || 0;
                     } else {
                         name = nameTemp;
+                    }
+
+                    if (itemData.typ == "multichoice" || itemData.typ == "multichoicerated") {
+                        value = itemData.value || 0;
+                    } else if (itemData.typ == "numeric") {
+                        value = itemData.value || itemData.value  == 0 ? itemData.value : "";
+
+                        if (value != "") {
+                            if ((itemData.rangefrom != "" && value < itemData.rangefrom) ||
+                                    (itemData.rangeto != "" && value > itemData.rangeto)) {
+                                itemData.hasError = true;
+                            }
+                        }
+                    } else {
                         value = itemData.value || itemData.value  == 0 ? itemData.value : "";
                     }
 
