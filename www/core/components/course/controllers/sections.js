@@ -27,7 +27,7 @@ angular.module('mm.core.course')
     var courseId = $stateParams.courseid,
         sectionId = $stateParams.sid,
         moduleId = $stateParams.moduleid,
-        course = $stateParams.course || false;
+        course = $stateParams.course ? angular.copy($stateParams.course) : false;
 
     $scope.courseId = courseId;
     $scope.sectionToLoad = 2; // Load "General" section by default.

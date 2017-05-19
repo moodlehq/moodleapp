@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_glossary')
         $mmaModGlossaryOffline, $mmEvents, mmaModGlossaryAddEntryEvent, mmCoreEventOnlineStatusChanged, $mmApp, $mmSite,
         mmaModGlossaryAutomSyncedEvent, $mmaModGlossarySync, mmaModGlossaryShowAllCategories) {
 
-    var module = $stateParams.module || {},
+    var module = $stateParams.module ? angular.copy($stateParams.module) : {},
         courseId = $stateParams.courseid,
         glossary,
         noop = function(){},
