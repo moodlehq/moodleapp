@@ -5,7 +5,7 @@ information provided here is intended especially for developers.
 
  * The project now supports Ionic CLI v2 and Node 6.9. We recommend updating node, npm, Ionic CLI and project dependencies:
     npm install -g npm@latest
-    npm install -g ionic
+    npm install -g ionic@2.2.1
     npm install
  * mm-error CSS class has been deprecated. Use mm-error-card or similar instead.
  * The function $mmaMessages#isSearchEnabled has been deprecated. Please use $mmaMessages#isSearchContactsEnabled instead.
@@ -14,6 +14,7 @@ information provided here is intended especially for developers.
  * The parameters of the following functions have changed to match the WS behaviour: $mmaModForum#addNewDiscussion, $mmaModForum#addNewDiscussionOnline, $mmaModForumOffline#addNewDiscussion, $mmaModForum#replyPost, $mmaModForum#replyPostOnline, $mmaModForumOffline#replyPost.
  * The function $mmUtil#getMimeType has been deprecated. Please use $mmUtil#getMimeTypeFromUrl instead.
  * The functions $mmFilepool#invalidateAllFiles and $mmFilepool#invalidateFilesByComponent now accept a new param onlyUnknown which defaults to true, so it only invalidates some of the files. It is advised to use onlyUnknown=true to decrease the network usage and improve the app's performance.
+ * The directive mm-loading no longer accepts the param loadingPaddingTop since now the spinner is centered vertically.
 
 === 3.2.1 ===
 

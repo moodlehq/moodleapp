@@ -806,10 +806,6 @@ angular.module('mm.core')
                 options.revision = self.getRevisionFromUrl(fileUrl);
                 fileId = self._getFileIdByUrl(fileUrl);
 
-                // Restore old file if needed.
-                return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl, filePath);
-            }).then(function() {
-
                 return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
 
                     if (typeof fileObject === 'undefined') {
@@ -1460,10 +1456,6 @@ angular.module('mm.core')
             revision = self.getRevisionFromUrl(fileUrl);
             fileId = self._getFileIdByUrl(fileUrl);
 
-            // Restore old file if needed.
-            return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl);
-        }).then(function() {
-
             return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
                 var response,
                     fn;
@@ -1728,9 +1720,6 @@ angular.module('mm.core')
             revision = self.getRevisionFromUrl(fileUrl);
             fileId = self._getFileIdByUrl(fileUrl);
 
-            // Restore old file if needed.
-            return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl);
-        }).then(function() {
             return self._hasFileInQueue(siteId, fileId).then(function() {
                 return mmCoreDownloading;
             }, function() {
@@ -2417,78 +2406,75 @@ angular.module('mm.core')
          * Download helper to avoid code duplication.
          */
         function download(siteId, fileUrl, fileObject, links) {
-            // Restore old file if needed.
-            return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl, filePath).then(function() {
-                return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath, fileObject).then(function() {
-                    var promise;
+            return self._downloadForPoolByUrl(siteId, fileUrl, options, filePath, fileObject).then(function() {
+                var promise;
 
-                    // Success, we add links and remove from queue.
-                    self._addFileLinks(siteId, fileId, links);
-                    promise = self._removeFromQueue(siteId, fileId);
+                // Success, we add links and remove from queue.
+                self._addFileLinks(siteId, fileId, links);
+                promise = self._removeFromQueue(siteId, fileId);
 
-                    self._treatQueueDeferred(siteId, fileId, true);
-                    self._notifyFileDownloaded(siteId, fileId);
+                self._treatQueueDeferred(siteId, fileId, true);
+                self._notifyFileDownloaded(siteId, fileId);
 
-                    // Wait for the item to be removed from queue before resolving the promise.
-                    // If the item could not be removed from queue we still resolve the promise.
-                    return promise.catch(function() {});
+                // Wait for the item to be removed from queue before resolving the promise.
+                // If the item could not be removed from queue we still resolve the promise.
+                return promise.catch(function() {});
 
-                }, function(errorObject) {
-                    // Whoops, we have an error...
-                    var dropFromQueue = false;
+            }, function(errorObject) {
+                // Whoops, we have an error...
+                var dropFromQueue = false;
 
-                    if (typeof errorObject !== 'undefined' && errorObject.source === fileUrl) {
-                        // This is most likely a $cordovaFileTransfer error.
+                if (typeof errorObject !== 'undefined' && errorObject.source === fileUrl) {
+                    // This is most likely a $cordovaFileTransfer error.
 
-                        if (errorObject.code === 1) { // FILE_NOT_FOUND_ERR.
-                            // The file was not found, most likely a 404, we remove from queue.
-                            dropFromQueue = true;
+                    if (errorObject.code === 1) { // FILE_NOT_FOUND_ERR.
+                        // The file was not found, most likely a 404, we remove from queue.
+                        dropFromQueue = true;
 
-                        } else if (errorObject.code === 2) { // INVALID_URL_ERR.
-                            // The URL is invalid, we drop the file from the queue.
-                            dropFromQueue = true;
+                    } else if (errorObject.code === 2) { // INVALID_URL_ERR.
+                        // The URL is invalid, we drop the file from the queue.
+                        dropFromQueue = true;
 
-                        } else if (errorObject.code === 3) { // CONNECTION_ERR.
-                            // If there was an HTTP status, then let's remove from the queue.
-                            dropFromQueue = true;
-                        } else if (errorObject.code === 4) { // ABORTED_ERR.
-                            // The transfer was aborted, we will keep the file in queue.
-                        } else if (errorObject.code === 5) { // NOT_MODIFIED_ERR.
-                            // We have the latest version of the file, HTTP 304 status.
-                            dropFromQueue = true;
-                        } else {
-                            // Unknown error, let's remove the file from the queue to avoid
-                            // locking down the queue because of one file.
-                            dropFromQueue = true;
-                        }
+                    } else if (errorObject.code === 3) { // CONNECTION_ERR.
+                        // If there was an HTTP status, then let's remove from the queue.
+                        dropFromQueue = true;
+                    } else if (errorObject.code === 4) { // ABORTED_ERR.
+                        // The transfer was aborted, we will keep the file in queue.
+                    } else if (errorObject.code === 5) { // NOT_MODIFIED_ERR.
+                        // We have the latest version of the file, HTTP 304 status.
+                        dropFromQueue = true;
                     } else {
+                        // Unknown error, let's remove the file from the queue to avoid
+                        // locking down the queue because of one file.
                         dropFromQueue = true;
                     }
+                } else {
+                    dropFromQueue = true;
+                }
 
-                    if (dropFromQueue) {
-                        var promise;
+                if (dropFromQueue) {
+                    var promise;
 
-                        $log.debug('Item dropped from queue due to error: ' + fileUrl);
-                        promise = self._removeFromQueue(siteId, fileId);
+                    $log.debug('Item dropped from queue due to error: ' + fileUrl);
+                    promise = self._removeFromQueue(siteId, fileId);
 
-                        // Consider this as a silent error, never reject the promise here.
-                        return promise.catch(function() {}).finally(function() {
-                            self._treatQueueDeferred(siteId, fileId, false);
-                            self._notifyFileDownloadError(siteId, fileId);
-                        });
-                    } else {
-                        // We considered the file as legit but did not get it, failure.
+                    // Consider this as a silent error, never reject the promise here.
+                    return promise.catch(function() {}).finally(function() {
                         self._treatQueueDeferred(siteId, fileId, false);
                         self._notifyFileDownloadError(siteId, fileId);
-                        return $q.reject();
-                    }
+                    });
+                } else {
+                    // We considered the file as legit but did not get it, failure.
+                    self._treatQueueDeferred(siteId, fileId, false);
+                    self._notifyFileDownloadError(siteId, fileId);
+                    return $q.reject();
+                }
 
-                }, function(progress) {
-                    // Send the progress object to the queue deferred.
-                    if (queueDeferreds[siteId] && queueDeferreds[siteId][fileId]) {
-                        queueDeferreds[siteId][fileId].notify(progress);
-                    }
-                });
+            }, function(progress) {
+                // Send the progress object to the queue deferred.
+                if (queueDeferreds[siteId] && queueDeferreds[siteId][fileId]) {
+                    queueDeferreds[siteId][fileId].notify(progress);
+                }
             });
         }
 
@@ -2589,10 +2575,7 @@ angular.module('mm.core')
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
             var fileId = self._getFileIdByUrl(fileUrl);
 
-            // Restore old file if needed.
-            return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl).then(function() {
-                return self._removeFileById(siteId, fileId);
-            });
+            return self._removeFileById(siteId, fileId);
         });
     };
 
@@ -2745,7 +2728,8 @@ angular.module('mm.core')
      * @param  {String} fileUrl    File URL.
      * @param  {String} [filePath] Filepath to download the file to (for packages).
      * @return {Promise}           Promise resolved when done. It's never rejected.
-     * @protected
+     * @deprecated since 3.3. A year has passed since the file ID changed, so this function isn't used anymore since it slows down
+     *                        the app.
      */
     self._restoreOldFileIfNeeded = function(siteId, fileId, fileUrl, filePath) {
         var fileObject,
