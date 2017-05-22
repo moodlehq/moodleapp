@@ -85,6 +85,13 @@ angular.module('mm.core')
     function hideContextMenu(close) {
         if (close) {
             $scope.contextMenuPopover.hide();
+            $timeout(function() {
+                if (!document.querySelector('.popover-backdrop.active')) {
+                    // No popover open, remove class from body to prevent Ionic bug:
+                    // https://github.com/driftyco/ionic-v1/issues/53
+                    angular.element(document.body).removeClass('popover-open');
+                }
+            }, 1); // Using default hide time for popovers.
         }
     }
 
@@ -96,11 +103,15 @@ angular.module('mm.core')
 
     $scope.$on('$destroy', function() {
         if ($scope.contextMenuPopover) {
+            hideContextMenu(true);
             $scope.contextMenuPopover.remove();
         } else {
             // Directive destroyed before popover was initialized. Wait a bit and try again.
             $timeout(function() {
-                $scope.contextMenuPopover && $scope.contextMenuPopover.remove();
+                if ($scope.contextMenuPopover) {
+                    hideContextMenu(true);
+                    $scope.contextMenuPopover.remove();
+                }
             }, 200);
         }
     });
