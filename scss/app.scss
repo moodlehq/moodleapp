@@ -105,11 +105,24 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
   }
 }
 
-.button .icon {
-  color: $positive;
+.button,
+.button.button-icon {
+  .icon,
+  &.active,
+  &.activated,
+  &.active .icon,
+  &.activated .icon {
+    color: $positive;
 
-  &.icon-accessory {
-    color: $item-icon-accessory-color;
+    &.assertive {
+      color: $assertive;
+    }
+    &.dark {
+      color: $dark;
+    }
+    &.icon-accessory {
+      color: $item-icon-accessory-color;
+    }
   }
 }
 
@@ -123,6 +136,12 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
 
 .bar-content .icon , .bar-side-menu .icon{
   color: $bar-content-text;
+}
+
+.item-delete .button.icon,
+.item-delete .button.icon.active,
+.item-delete .button.icon.actived {
+  color: $assertive;
 }
 
 // Setting the default button to button-outline positive.
@@ -142,6 +161,10 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
     &.activated {
       box-shadow: none;
       color: $white;
+
+      .icon {
+        color: $white;
+      }
     }
   }
 
@@ -149,6 +172,10 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
   &.activated {
     box-shadow: none;
     color: $white;
+
+    .icon {
+      color: $white;
+    }
   }
 
   &.button-dark {
