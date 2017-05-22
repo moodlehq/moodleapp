@@ -87,7 +87,8 @@ angular.module('mm.addons.calendar')
                 if (refresh) {
                     $scope.events = events;
                 } else {
-                    $scope.events = $scope.events.concat(events);
+                    // Filter events with same ID. Repeated events are returned once per WS call, show them only once.
+                    $scope.events = $mmUtil.mergeArraysWithoutDuplicates($scope.events, events, 'id');
                 }
                 $scope.eventsLoaded = true;
                 $scope.canLoadMore = true;

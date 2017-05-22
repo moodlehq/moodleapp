@@ -2063,10 +2063,11 @@ angular.module('mm.core')
          * @name $mmUtil#mergeArraysWithoutDuplicates
          * @param  {Array} array1 The first array.
          * @param  {Array} array2 The second array.
+         * @param  {String} [key] Key of the property that must be unique. If not specified, the whole entry.
          * @return {Array}        Merged array.
          */
-        self.mergeArraysWithoutDuplicates = function(array1, array2) {
-            return self.uniqueArray(array1.concat(array2));
+        self.mergeArraysWithoutDuplicates = function(array1, array2, key) {
+            return self.uniqueArray(array1.concat(array2), key);
         };
 
         /**
@@ -2075,19 +2076,25 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#uniqueArray
-         * @param  {Array} array The array to treat.
-         * @return {Array}       Array without duplicate values.
+         * @param  {Array} array  The array to treat.
+         * @param  {String} [key] Key of the property that must be unique. If not specified, the whole entry.
+         * @return {Array}        Array without duplicate values.
          */
-        self.uniqueArray = function(array) {
-            var unique = [],
+        self.uniqueArray = function(array, key) {
+            var filtered = [],
+                unique = [],
                 len = array.length;
+
             for (var i = 0; i < len; i++) {
-                var value = array[i];
+                var entry = array[i],
+                    value = key ? entry[key] : entry;
                 if (unique.indexOf(value) == -1) {
                     unique.push(value);
+                    filtered.push(entry);
                 }
             }
-            return unique;
+
+            return filtered;
         };
 
         /**

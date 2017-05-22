@@ -116,10 +116,13 @@ angular.module('mm.core.user')
         var filterMethods = ['album', 'camera'];
 
         return $mmFileUploaderHelper.selectAndUploadFile(maxSize, title, filterMethods).then(function(result) {
+            var modal = $mmUtil.showModalLoading('mm.core.sending', true);
             return $mmUser.changeProfilePicture(result.itemid, $scope.userId).then(function(profileimageurl) {
                 $mmEvents.trigger(mmUserProfilePictureUpdated, {userId: $scope.userId, picture: profileimageurl});
                 $mmSitesManager.updateSiteInfo($mmSite.getId());
                 $scope.refreshUser();
+            }).finally(function() {
+                modal.dismiss();
             });
         }).catch(function(message) {
             if (message) {
