@@ -26,8 +26,6 @@
     "refreshdiscussions": "Atnaujinti pokalbius",
     "refreshposts": "Atnaujinti pokalbių įrašus",
     "reply": "Atsakyti",
-    "sortnewestfirst": "Rodyti naujesnius",
-    "sortoldestfirst": "Rodyti senesnius",
     "subject": "Temos pavadinimas",
     "unread": "Neperskaityta",
     "unreadpostsnumber": "Neperskaitytų skelbimų: {{$a}}"

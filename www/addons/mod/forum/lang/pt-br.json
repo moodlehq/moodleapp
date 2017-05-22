@@ -24,8 +24,6 @@
     "refreshdiscussions": "Atualizar discussões",
     "refreshposts": "Atualizar as postagens da discussão",
     "reply": "Responder",
-    "sortnewestfirst": "Exibir os mais novos primeiro",
-    "sortoldestfirst": "Exibir os mais velhos primeiro",
     "subject": "Assunto",
     "unread": "Não lida",
     "unreadpostsnumber": "{{$a}} mensagens não lidas"

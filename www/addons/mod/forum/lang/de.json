@@ -26,8 +26,6 @@
     "refreshdiscussions": "Themen aktualisieren",
     "refreshposts": "Forenbeiträge aktualisieren",
     "reply": "Antworten",
-    "sortnewestfirst": "Neu zuerst",
-    "sortoldestfirst": "Alt zuerst",
     "subject": "Betreff",
     "unread": "Ungelesen",
     "unreadpostsnumber": "{{$a}} ungelesene Beiträge"

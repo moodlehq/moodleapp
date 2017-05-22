@@ -24,8 +24,6 @@
     "posttoforum": "Отправить в форум",
     "re": "Re:",
     "reply": "Ответить",
-    "sortnewestfirst": "Отобразить сначала новые",
-    "sortoldestfirst": "Отобразить сначала старые",
     "subject": "Тема",
     "unread": "Непрочтенные",
     "unreadpostsnumber": "Непрочитанных сообщений - {{$a}}"

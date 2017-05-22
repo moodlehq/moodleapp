@@ -24,8 +24,6 @@
     "refreshdiscussions": "Ανανεώστε τις συζητήσεις",
     "refreshposts": "Ανανεώστε τα μηνύματα της συζήτησης",
     "reply": "Απάντηση",
-    "sortnewestfirst": "Εμφανίστε πρώτα τα νεότερα",
-    "sortoldestfirst": "Εμφανίστε πρώτα τα παλαιότερα",
     "subject": "Θέμα",
     "unread": "Μη αναγνωσμένο",
     "unreadpostsnumber": "{{$a}} μη αναγνωσμένες δημοσιεύσεις"
