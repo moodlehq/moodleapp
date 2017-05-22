@@ -171,7 +171,7 @@ angular.module('mm.addons.mod_feedback')
             var range = item.presentation.split($mmaModFeedback.FEEDBACK_LINE_SEP) || [];
             item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
             item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
-            item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
+            item.value = typeof item.rawValue != "undefined" ? parseFloat(item.rawValue) : "";
 
             return item;
         }

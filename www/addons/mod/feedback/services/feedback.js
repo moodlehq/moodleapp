@@ -564,8 +564,16 @@ angular.module('mm.addons.mod_feedback')
          */
         function fillValues(feedbackId, items, offline, ignoreCache, siteId) {
             return self.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then(function(valuesArray) {
-                var values = {};
+                if (valuesArray.length == 0) {
+                    // Try sending empty values to get the last completed attempt values.
+                    return self.processPage(feedbackId, 0, {}).then(function() {
+                        return self.getCurrentValues(feedbackId, offline, ignoreCache, siteId);
+                    });
+                }
+                return valuesArray;
 
+            }).then(function(valuesArray) {
+                var values = {};
                 angular.forEach(valuesArray, function(value) {
                     values[value.item] = value.value;
                 });
