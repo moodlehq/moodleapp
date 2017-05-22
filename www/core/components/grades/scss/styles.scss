@@ -60,7 +60,7 @@
   .itemcenter {
     @extend .item;
     padding: 10px;
-    white-space: nowrap;
+    white-space: normal;
   }
   .feedbacktext {
     padding-left: 10px;
