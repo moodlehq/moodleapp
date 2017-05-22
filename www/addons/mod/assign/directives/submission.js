@@ -233,12 +233,8 @@ angular.module('mm.addons.mod_assign')
 
                 if (!scope.feedback || !scope.feedback.plugins) {
                     scope.feedback = {};
-
                     // Feedback plugins not present, we have to use assign configs to detect the plugins used.
                     scope.feedback.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
-                    console.error(assign, scope.feedback.plugins);
-                } else {
-                    console.error(scope.feedback);
                 }
 
                 // Check if there's any offline data for this submission.
@@ -254,10 +250,13 @@ angular.module('mm.addons.mod_assign')
                                 scope.grade.grade = data.grade;
                                 scope.gradingStatusTranslationId = 'mma.mod_assign.gradenotsynced';
                                 scope.gradingClass = "";
+                                originalGrades.grade = scope.grade.grade;
                             }
 
                             scope.grade.applyToAll = data.applytoall;
                             scope.grade.addAttempt = data.addattempt;
+                            originalGrades.applyToAll = scope.grade.applyToAll;
+                            originalGrades.addAttempt = scope.grade.addAttempt;
 
                             if (data.outcomes && Object.keys(data.outcomes).length) {
                                 angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
@@ -265,6 +264,7 @@ angular.module('mm.addons.mod_assign')
                                         // If outcome has been modified from gradebook, do not use offline.
                                         if (outcome.modified < data.timemodified) {
                                             outcome.selectedId = data.outcomes[outcome.itemNumber];
+                                            originalGrades.outcomes[outcome.id] = outcome.selectedId;
                                         }
                                     }
                                 });
@@ -822,7 +822,7 @@ angular.module('mm.addons.mod_assign')
                 }
 
                 if (scope.feedback && scope.feedback.plugins) {
-                    return $mmaModAssignHelper.hasFeedbackDraftData(scope.assign.id, submitId, scope.feedback).catch(function() {
+                    return $mmaModAssignHelper.hasFeedbackDataChanged(scope.assign, submitId, scope.feedback).catch(function() {
                         // Error ocurred, omit error as not modified.
                         return $q.when(false);
                     });

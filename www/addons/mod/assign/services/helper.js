@@ -271,34 +271,35 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Check if the feedback has draft data for a certain submission and assign.
+     * Check if the feedback data has changed for a certain submission and assign.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignHelper#hasFeedbackDraftData
-     * @param  {Number} assignId        Assignment Id.
+     * @name $mmaModAssignHelper#hasFeedbackDataChanged
+     * @param  {Object} assign        Assignment.
      * @param  {Number} userId          User Id.
      * @param  {Object} feedback        Feedback data.
-     * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    self.hasFeedbackDraftData = function(assignId, userId, feedback, siteId) {
-        var hasDraft = false,
+    self.hasFeedbackDataChanged = function(assign, userId, feedback) {
+        var hasChanged = false,
             promises = [];
 
         angular.forEach(feedback.plugins, function(plugin) {
-            promises.push($mmaModAssignFeedbackDelegate.hasPluginDraftData(assignId, userId, plugin, siteId)
-                    .then(function(draft) {
-                if (draft) {
-                    hasDraft = true;
-                }
-            }).catch(function() {
-                // Ignore errors.
+            promises.push(self.prepareFeedbackPluginData(assign.id, userId, feedback).then(function(inputData) {
+                return $mmaModAssignFeedbackDelegate.hasPluginDataChanged(assign, userId, plugin, inputData)
+                        .then(function(changed) {
+                    if (changed) {
+                        hasChanged = true;
+                    }
+                }).catch(function() {
+                    // Ignore errors.
+                });
             }));
         });
 
         return $mmUtil.allPromises(promises).then(function() {
-            return hasDraft;
+            return hasChanged;
         });
     };
 
