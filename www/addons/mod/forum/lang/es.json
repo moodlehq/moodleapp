@@ -26,8 +26,6 @@
     "refreshdiscussions": "Actualizar foro",
     "refreshposts": "Actualizar publicaciones del foro",
     "reply": "Responder",
-    "sortnewestfirst": "Mostrar los más nuevos primero",
-    "sortoldestfirst": "Mostrar los más antiguos primero",
     "subject": "Asunto",
     "unread": "No leído",
     "unreadpostsnumber": "{{$a}} mensajes no leídos"

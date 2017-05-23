@@ -26,8 +26,6 @@
     "refreshdiscussions": "Obnovit diskuse",
     "refreshposts": "Obnovit diskusní příspěvky",
     "reply": "Odpovědět",
-    "sortnewestfirst": "Zobrazit nejnovější",
-    "sortoldestfirst": "Zobrazit nejstarší",
     "subject": "Předmět",
     "unread": "Nepřečteno",
     "unreadpostsnumber": "Nepřečtené příspěvky: {{$a}}"
