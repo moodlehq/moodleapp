@@ -17,5 +17,5 @@
     "questionmessage": "Pregunta {{$a}}: {{$b}}",
     "questionno": "Pregunta {{$a}}",
     "requiresgrading": "Requiere re-calificar",
-    "unknown": "Desconocido"
+    "unknown": "No se puede determinar el estatus"
 }

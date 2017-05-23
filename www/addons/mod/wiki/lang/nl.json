@@ -10,7 +10,7 @@
     "newpagetitle": "Nieuwe paginatitel",
     "nocontent": "Er is geen inhoud voor deze pagina",
     "notingroup": "Niet in groep",
-    "page": "Pagina: {{$a}}",
+    "page": "Pagina",
     "pageexists": "Deze pagina bestaat al.",
     "pagename": "Paginanaam",
     "subwiki": "Subwiki",
