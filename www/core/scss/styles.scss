@@ -817,31 +817,28 @@ p.mm-error { // Deprecated, use one of the above mm-error classes.
 // Timer.
 mm-timer {
   display: block;
-}
 
-// Style timer in items.
-mm-timer.mm-timer .item {
   span, label {
-    color: $item-default-text;
     font-size: $item-font-size;
+    color: $item-default-text;
   }
   span {
     font-weight: bold;
   }
-}
 
-// Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
-@for $i from 0 through $mm-timer-iterations {
-  mm-timer.mm-timer.mm-timer-timeleft-#{$i} .item {
-    background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
-    @if $i <= $mm-timer-iterations / 2 {
-      label, span, i {
-        color: $white;
+  // Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
+  @for $i from 0 through $mm-timer-iterations {
+    &.mm-timer-timeleft-#{$i} {
+      background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
+      @if $i <= $mm-timer-iterations / 2 {
+        label, span, i {
+          color: $white;
+        }
       }
     }
-
   }
 }
+
 
 .mm-monospaced {
   font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
