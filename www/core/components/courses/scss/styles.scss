@@ -97,16 +97,21 @@ $doughnut-text-colour: $gray-darker;
 
     .icon {
       position: absolute;
-      top: 50%;
       text-align: center;
       /*rtl:ignore*/
-      left: 50%;
+      left: -1px;
+      top: -1px;
+      right: 0;
+      bottom: 0;
       margin: 0;
-      transform: translate(-42%, -50%);
       color: $white;
-      height: ($chart-size / 2) + 10px;
-      width: ($chart-size / 2) + 10px;
+      height: $chart-size;
+      width: $chart-size;
+      line-height: $chart-size;
       font-size: ($chart-size / 2) + 10px;
+      &:before {
+        width: $chart-size;
+      }
     }
   }
 }
