@@ -10,7 +10,7 @@
     "discussionsubscription": "Discussion subscription",
     "edit": "Edit",
     "erroremptymessage": "Post message cannot be empty",
-    "erroremptysubject": "Post subject cannot be empty",
+    "erroremptysubject": "Post subject cannot be empty.",
     "errorgetforum": "Error getting forum data.",
     "errorgetgroups": "Error getting group settings.",
     "forumnodiscussionsyet": "There are no discussion topics yet in this forum.",
