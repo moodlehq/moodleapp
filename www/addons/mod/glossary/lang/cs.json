@@ -1,6 +1,6 @@
 {
     "attachment": "Příloha",
-    "browsemode": "Prohlížení příspěvků",
+    "browsemode": "Režim náhledu",
     "byalphabet": "Abecedně",
     "byauthor": "Skupina podle autora",
     "bycategory": "Skupina podle kategorie",
@@ -9,7 +9,7 @@
     "bysearch": "Hledat",
     "cannoteditentry": "Záznam nelze upravit",
     "casesensitive": "Rozlišovat malá/VELKÁ",
-    "categories": "Kategorie kurzů",
+    "categories": "Kategorie",
     "entriestobesynced": "Příspěvky, které mají být synchronizovány",
     "entrypendingapproval": "Tato položka čeká na schválení",
     "errorloadingentries": "Při načítání položek došlo k chybě",

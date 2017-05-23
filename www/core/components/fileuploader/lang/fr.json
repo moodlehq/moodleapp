@@ -1,5 +1,5 @@
 {
-    "addfiletext": "Ajouter le fichier",
+    "addfiletext": "Ajouter un fichier",
     "audio": "Audio",
     "camera": "Caméra",
     "confirmuploadfile": "Vous allez déposer {{size}}. Voulez-vous vraiment continuer ?",
@@ -10,16 +10,16 @@
     "errorgettingimagealbum": "Erreur lors de la récupération de l'image de l'album.",
     "errormustbeonlinetoupload": "Vous devez être en ligne pour déposer des fichiers.",
     "errornoapp": "Vous n'avez pas d'app installée pour effectuer cette action.",
-    "errorreadingfile": "Erreur de lecture du fichier.",
+    "errorreadingfile": "Erreur lors de la lecture du fichier « {{$a}} »",
     "errorwhileuploading": "Une erreur est survenue lors du dépôt du fichier.",
-    "file": "Fichier",
+    "file": "Fichiers de feedback",
     "fileuploaded": "Le fichier a été déposé.",
-    "maxbytesfile": "Le fichier {{$a.file}} est trop gros. La taille maximale permise est de {{$a.size}}.",
+    "maxbytesfile": "La taille du fichier {{$a.file}} est trop grande. La taille maximale d'un fichier à déposer est de {{$a.size}}.",
     "photoalbums": "Albums de photos",
     "readingfile": "Lecture du fichier",
     "selectafile": "Choisir un fichier",
     "uploadafile": "Déposer un fichier",
-    "uploading": "Envoi",
+    "uploading": "En cours de dépôt...",
     "uploadingperc": "Dépôt en cours : {{$a}} %",
     "video": "Vidéo"
 }

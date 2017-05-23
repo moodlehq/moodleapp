@@ -10,7 +10,7 @@
     "discussionsubscription": "Подписаться на эту тему.",
     "edit": "Редактировать",
     "erroremptymessage": "Сообщение не может быть пустым",
-    "erroremptysubject": "Заголовок сообщения не может быть пустым",
+    "erroremptysubject": "Тема сообщения не может быть пустой",
     "errorgetforum": "Ошибка при получении данных форума",
     "errorgetgroups": "Ошибка получения параметров группы",
     "forumnodiscussionsyet": "В этом форуме ещё нет тем для обсуждения",

@@ -1,7 +1,7 @@
 {
     "emptyfilelist": "Nincs megjeleníthető állomány",
-    "files": "Saját állományaim",
+    "files": "Állományok",
     "privatefiles": "Saját állományaim",
-    "sitefiles": "A portálon levő fájlok",
-    "uploadfiles": "Feltölthet állományokat"
+    "sitefiles": "Portál állományai",
+    "uploadfiles": "Visszajelzések elküldése"
 }

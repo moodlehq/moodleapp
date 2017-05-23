@@ -7,9 +7,9 @@
     "incorrect": "نادرست",
     "information": "توضیح",
     "invalidanswer": "پاسخ ناقص",
-    "notanswered": "هنوز پاسخ نداده‌اند",
+    "notanswered": "پاسخ داده نشده",
     "notyetanswered": "هنوز پاسخ داده نشده است",
-    "partiallycorrect": "نیمه درست",
+    "partiallycorrect": "پاسخ نیمه درست",
     "questionno": "سؤال {{$a}}",
     "requiresgrading": "نمره‌دهی لازم است",
     "unknown": "نامعلوم"

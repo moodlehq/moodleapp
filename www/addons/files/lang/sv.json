@@ -3,14 +3,10 @@
     "clicktoupload": "Klicka på knappen nedan för att ladda upp filer till dina privata filer.",
     "couldnotloadfiles": "Listan över filer kunde inte läsas in.",
     "emptyfilelist": "Det finns inga filer att visa.",
-    "errorreceivefilenosites": "Det finns inga webbsidor sparade. Lägg till en sida innan du försöker ladda upp en fil.",
-    "files": "Mina privata filer",
-    "myfiles": "Mina filer",
-    "myprivatefiles": "Mina privata filer",
+    "files": "Filer",
     "myprivatefilesdesc": "De filer som finns i din privata område på denna Moodle webbplats.",
     "privatefiles": "Privata filer",
-    "sitefiles": "webbplats filer",
+    "sitefiles": "Webbplatsens filer",
     "sitefilesdesc": "De andra filer som är tillgängliga för dig på denna Moodle webbplats.",
-    "success": "Framgång!",
-    "uploadfiles": "Ladda upp filer"
+    "uploadfiles": "Skicka återkopplingsfiler"
 }

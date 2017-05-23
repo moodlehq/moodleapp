@@ -5,11 +5,11 @@
     "feedback": "Feedback",
     "grade": "Nota",
     "grades": "Notas",
-    "itemname": "Item de avaliação",
-    "lettergrade": "Nota alfabética",
+    "itemname": "Nome do item",
+    "lettergrade": "Nota Alfabética",
     "nooutcome": "Nenhum resultado da aprendizagem",
     "percentage": "Percentagem",
     "range": "Intervalo",
-    "rank": "Posição",
+    "rank": "Posição relativa",
     "weight": "Peso"
 }

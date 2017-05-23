@@ -1,20 +1,20 @@
 {
-    "addcontact": "コンタクトに追加",
-    "blockcontact": "コンタクトをブロック",
+    "addcontact": "コンタクトに追加する",
+    "blockcontact": "受信拒否",
     "blocknoncontacts": "不明なユーザをブロックする",
     "contactlistempty": "コンタクトリストは空です。",
     "contactname": "連絡先",
     "contacts": "コンタクト",
     "deletemessage": "メッセージを削除する",
     "deletemessageconfirmation": "本当にこのメッセージを削除してもよろしいですか? あなたのメッセージング履歴からのみ削除され、メッセージを送受信したユーザはまだ閲覧することができます。",
-    "message": "メッセージ本文",
+    "message": "メッセージ",
     "messagepreferences": "メッセージプリファレンス",
     "messages": "メッセージ",
     "newmessage": "新しいメッセージ",
-    "nomessages": "未読メッセージはありません。",
+    "nomessages": "メッセージはありません。",
     "nousersfound": "ユーザは見つかりませんでした。",
-    "removecontact": "コンタクトを削除",
+    "removecontact": "コンタクトから削除する",
     "send": "送信",
-    "sendmessage": "メッセージ送信",
-    "unblockcontact": "コンタクトのブロックを解除"
+    "sendmessage": "メッセージを送信する",
+    "unblockcontact": "コンタクトの拒否を解除する"
 }

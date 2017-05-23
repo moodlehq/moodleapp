@@ -1,5 +1,18 @@
 {
-    "inprogress": "En curso",
-    "nocourses": "No hay información del curso para mostrar.",
-    "pluginname": "Nombre de la extensión de repositorio"
+    "future": "Futuro",
+    "inprogress": "En progreso",
+    "morecourses": "Más cursos",
+    "next30days": "Próximos 30 días",
+    "next7days": "Próximos 7 días",
+    "nocourses": "Sin cursos",
+    "nocoursesfuture": "Sin cursos futuros",
+    "nocoursesinprogress": "Sin cursos en progreso",
+    "nocoursespast": "Sin cursos pasados",
+    "noevents": "No hay actividades próximas pendientes",
+    "past": "Pasado",
+    "pluginname": "Vista general de curso",
+    "recentlyoverdue": "Recientemente vencidas",
+    "sortbycourses": "Ordenar por curso",
+    "sortbydates": "Ordenar por fecha",
+    "timeline": "Línea de tiempo"
 }

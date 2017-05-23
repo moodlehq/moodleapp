@@ -7,17 +7,16 @@
     "evidence": "Ebidentzia",
     "learningplancompetencies": "Ikasketa-planaren gaitasunak",
     "learningplans": "Ikasketa-planak",
-    "mylearningplans": "Nire ikasketa-planak",
     "myplans": "Nire ikasketa-planak",
     "noactivities": "Ez dago jarduerarik",
-    "nocompetencies": "Gaitasunik ez",
+    "nocompetencies": "Ezin izan gaitasunik sortu marko honetan.",
     "noevidence": "Ez dago ebidentziarik",
     "noplanswerecreated": "Ez da ikasketa-planik sortu.",
-    "path": "Bidea",
+    "path": "Bidea:",
     "proficient": "Gai",
-    "progress": "Ikaslearen aurrerapena",
+    "progress": "Aurrerapena",
     "rating": "Puntuazioa",
     "reviewstatus": "Berrikusi egora",
-    "status": "Egoera",
-    "template": "Txantiloia"
+    "status": "Bisitarien sarbidea baimendu",
+    "template": "Ikasketa-planerako txantiloia"
 }
