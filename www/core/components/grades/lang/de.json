@@ -1,15 +1,15 @@
 {
     "average": "Durchschnitt",
     "badgrade": "Ungültige Bewertung",
-    "contributiontocoursetotal": "Teilbewertung",
+    "contributiontocoursetotal": "Beiträge zum Kurs insgesamt",
     "feedback": "Feedback",
     "grade": "Bewertung",
     "grades": "Bewertungen",
-    "itemname": "Bewertungsaspekt",
-    "lettergrade": "Buchstabenwertung",
+    "itemname": "Name des Aspekts",
+    "lettergrade": "Notenstufenbewertung",
     "nooutcome": "Kein Lernziel",
     "percentage": "Prozentsatz",
-    "range": "Bandbreite",
+    "range": "Bereich",
     "rank": "Rang",
     "weight": "Gewichtung"
 }

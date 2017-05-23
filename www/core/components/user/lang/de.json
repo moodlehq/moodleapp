@@ -1,6 +1,6 @@
 {
     "address": "Adresse",
-    "city": "Stadt",
+    "city": "Stadt/Ort",
     "contact": "Kontakt",
     "country": "Land",
     "description": "Beschreibung",
@@ -10,7 +10,7 @@
     "email": "E-Mail",
     "emailagain": "E-Mail (wiederholen)",
     "firstname": "Vorname",
-    "interests": "Interessen",
+    "interests": "Persönliche Interessen",
     "invaliduser": "Nutzer/in ungültig",
     "lastname": "Nachname",
     "manager": "Manager/in",
@@ -22,5 +22,5 @@
     "student": "Teilnehmer/in",
     "teacher": "Trainer/in ohne Bearbeitungsrecht",
     "viewprofile": "Profil anzeigen",
-    "webpage": "Website"
+    "webpage": "Webseite"
 }

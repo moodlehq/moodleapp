@@ -1,5 +1,5 @@
 {
-    "addfiletext": "añadir archivo",
+    "addfiletext": "Añadir fichero",
     "audio": "Audio",
     "camera": "Cámara",
     "confirmuploadfile": "Usted va a subir {{size}}. ¿Desea continuar?",
@@ -12,14 +12,14 @@
     "errornoapp": "Usted no tiene una app instalada para realizar esta acción.",
     "errorreadingfile": "Error al leer el archivo  \"{{$a}}\"",
     "errorwhileuploading": "Ocurrió un error al subir un archivo.",
-    "file": "Archivo",
+    "file": "Archivos de retroalimentación",
     "fileuploaded": "Archivo subido",
     "maxbytesfile": "El archivo {{$a.file}} es demasido grande. El tamaño máximo que puede subir es {{$a.size}}.",
     "photoalbums": "Álbumes de fotos",
     "readingfile": "Leyendo archivo",
     "selectafile": "Seleccionar un archivo",
     "uploadafile": "Subir un archivo",
-    "uploading": "Subiendo",
+    "uploading": "Subiendo...",
     "uploadingperc": "Subiendo: {{$a}}%",
     "video": "Vídeo"
 }

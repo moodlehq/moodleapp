@@ -5,11 +5,11 @@
     "feedback": "Feedback",
     "grade": "Notă",
     "grades": "Note",
-    "itemname": "Element al notei",
-    "lettergrade": "Notare prin litere",
+    "itemname": "Nume element",
+    "lettergrade": "Notă sub formă de literă",
     "nooutcome": "fără rezultat",
-    "percentage": "Procent",
+    "percentage": "Procentaj",
     "range": "Interval",
-    "rank": "Poziție",
-    "weight": "Greutate"
+    "rank": "Rang",
+    "weight": "pondere"
 }

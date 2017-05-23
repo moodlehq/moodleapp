@@ -1,7 +1,7 @@
 {
-    "complete": "詳細",
+    "complete": "完了",
     "completed": "完了",
-    "coursecompletion": "コース完了",
+    "coursecompletion": "ユーザはこのコースを完了する必要があります。",
     "criteria": "クライテリア",
     "criteriagroup": "クライテリアグループ",
     "criteriarequiredall": "下記のクライテリアすべてが必須である",
@@ -12,6 +12,6 @@
     "pending": "保留",
     "required": "必須",
     "requiredcriteria": "必須クライテリア",
-    "status": "状態",
+    "status": "ゲストアクセスを許可する",
     "viewcoursereport": "コースレポートを表示する"
 }

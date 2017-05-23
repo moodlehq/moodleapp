@@ -1,7 +1,7 @@
 {
     "emptyfilelist": "Brak plików do wyświetlenia",
-    "files": "Moje pliku",
+    "files": "Pliki",
     "privatefiles": "Prywatne pliki",
-    "sitefiles": "Pliki strony",
-    "uploadfiles": "Może przesłać pliki"
+    "sitefiles": "Pliki serwisu",
+    "uploadfiles": "Wyślij pliki informacji zwrotnej"
 }

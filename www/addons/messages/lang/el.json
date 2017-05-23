@@ -9,7 +9,7 @@
     "errorwhileretrievingcontacts": "Σφάλμα κατά την ανάκτηση των επαφών από το διακομιστή.",
     "errorwhileretrievingdiscussions": "Σφάλμα κατά την ανάκτηση των συζητήσεων από το διακομιστή.",
     "errorwhileretrievingmessages": "Σφάλμα κατά την ανάκτηση των μηνυμάτων από το διακομιστή.",
-    "message": "Σώμα μηνύματος",
+    "message": "Μήνυμα",
     "messagenotsent": "Το μήνυμα δεν στάλθηκε, δοκιμάστε ξανά αργότερα.",
     "messagepreferences": "Προτιμήσεις μηνύματος",
     "messages": "Μηνύματα",

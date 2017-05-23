@@ -1,13 +1,6 @@
 {
-    "errorcapturingaudio": "Ses çalma hatası",
-    "errorcapturingvideo": "Video oynatma hatası",
-    "files": "Dosyalarım",
-    "fileuploaded": "Dosya yüklendi",
-    "myfiles": "Dosyalarım",
-    "photoalbums": "Fotoğraf albümleri",
+    "files": "Dosyalar",
     "privatefiles": "Kişisel dosyalar",
     "sitefiles": "Site dosyaları",
-    "uploadfiles": "Dosya yükleyebilir",
-    "uploading": "Yükleniyor",
-    "video": "Video"
+    "uploadfiles": "Geribildirim dosyaları gönder"
 }
