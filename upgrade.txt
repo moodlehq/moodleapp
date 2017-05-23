@@ -15,6 +15,7 @@ information provided here is intended especially for developers.
  * The function $mmUtil#getMimeType has been deprecated. Please use $mmUtil#getMimeTypeFromUrl instead.
  * The functions $mmFilepool#invalidateAllFiles and $mmFilepool#invalidateFilesByComponent now accept a new param onlyUnknown which defaults to true, so it only invalidates some of the files. It is advised to use onlyUnknown=true to decrease the network usage and improve the app's performance.
  * The directive mm-loading no longer accepts the param loadingPaddingTop since now the spinner is centered vertically.
+ * Assignment feedback delegates hasDataChanged now accepts userId in order to manage offline data.
 
 === 3.2.1 ===
 

@@ -566,8 +566,10 @@ angular.module('mm.addons.mod_feedback')
             return self.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then(function(valuesArray) {
                 if (valuesArray.length == 0) {
                     // Try sending empty values to get the last completed attempt values.
-                    return self.processPage(feedbackId, 0, {}).then(function() {
+                    return self.processPageOnline(feedbackId, 0, {}, undefined, siteId).then(function() {
                         return self.getCurrentValues(feedbackId, offline, ignoreCache, siteId);
+                    }).catch(function() {
+                        // Ignore errors
                     });
                 }
                 return valuesArray;

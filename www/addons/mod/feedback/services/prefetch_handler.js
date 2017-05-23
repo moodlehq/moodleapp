@@ -237,7 +237,7 @@ angular.module('mm.addons.mod_feedback')
 
                 if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
                     // Send empty data, so it will recover last completed feedback attempt values.
-                    p2.push($mmaModFeedback.processPage(feedback.id, 0, {}, undefined, undefined, undefined, siteId).finally(function() {
+                    p2.push($mmaModFeedback.processPageOnline(feedback.id, 0, {}, undefined, siteId).finally(function() {
                         var p4 = [];
 
                         p4.push($mmaModFeedback.getCurrentValues(feedback.id, false, true, siteId));
