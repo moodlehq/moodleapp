@@ -38,16 +38,34 @@ p.mma-mod-quiz-warning {
 
 // Remove padding-top and bottom from navigation bar to minimize height used.
 .mma-mod-quiz-subheader {
-  .row {
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-  .col {
+  padding-top: 0px;
+  padding-bottom: 0px;
+
+  .row, .col {
     padding-top: 0px;
     padding-bottom: 0px;
   }
   .mm-timer {
-    line-height: $button-bar-button-height
+    min-height: 41px;
+    border: 0;
+    padding: 2px 0 1px 25px;
+
+    .icon {
+      left: 0;
+      font-size: $item-font-size * 3 /2;
+    }
+
+    label {
+      font-size: $item-font-size - 2;
+    }
+
+    span {
+      display: block;
+    }
+
+    span.mm-timesup {
+      line-height: 40px;
+    }
   }
 }
 
