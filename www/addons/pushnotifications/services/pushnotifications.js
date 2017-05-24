@@ -260,10 +260,10 @@ angular.module('mm.addons.pushnotifications')
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmaPushNotifications#updateAddonCounter
-     * @param  {String} siteId Site ID.
-     * @param  {String} addon  Registered addon name to set the badge number.
-     * @param  {Number} number The number to be stored.
-     * @return {Promise}       Promise resolved with the stored badge counter for the addon on the site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @param  {String} addon    Registered addon name to set the badge number.
+     * @param  {Number} number   The number to be stored.
+     * @return {Promise}         Promise resolved with the stored badge counter for the addon on the site.
      */
     self.updateAddonCounter = function(siteId, addon, number) {
         if ($mmPushNotificationsDelegate.isCounterHandlerRegistered(addon)) {
@@ -403,12 +403,14 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Save the addon/site badgecounter on the database.
      *
-     * @param  {String} siteId   Site ID.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
      * @param  {Number} number   The number to be stored.
      * @param  {String} [addon]  Registered addon name. If not defined it will store the site total.
      * @return {Promise}         Promise resolved with the stored badge counter for the addon or site.
      */
     function saveAddonBadge(siteId, number, addon) {
+        siteId = siteId || $mmSite.getId();
+
         var entry = {
             siteid: siteId,
             addon: addon || 'site',

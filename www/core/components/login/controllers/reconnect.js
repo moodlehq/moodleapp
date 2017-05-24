@@ -45,6 +45,15 @@ angular.module('mm.core.login')
 
         $scope.credentials.username = site.infos.username;
         $scope.siteurl = site.infos.siteurl;
+        $scope.sitename = site.infos.sitename;
+
+        // Check logoURL if user avatar is not set.
+        if ($scope.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
+            $scope.site.avatar = false;
+            return site.getPublicConfig().then(function(config) {
+                $scope.logourl = config.logourl || config.compactlogourl;
+            });
+        }
     });
 
     if (siteConfig) {
