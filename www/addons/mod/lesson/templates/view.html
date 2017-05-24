@@ -38,7 +38,7 @@
         <div ng-if="leftDuringTimed && lesson.timelimit && lesson.retake" class="item item-text-wrap">
             <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
             <p ng-bind-html="'mma.mod_lesson.leftduringtimed' | translate"></p>
-            <button class="button button-block" ng-click="start(false) button-positive icon-right ion-chevron-right">{{ 'mma.mod_lesson.continue' | translate }}</button>
+            <button class="button button-block button-positive icon-right ion-chevron-right" ng-click="start(false)">{{ 'mma.mod_lesson.continue' | translate }}</button>
         </div>
         <div ng-if="leftDuringTimed && lesson.timelimit && !lesson.retake" class="item item-text-wrap">
             <!-- User left during the session with time limit and retakes not allowed. This should be handled by preventMessages -->
