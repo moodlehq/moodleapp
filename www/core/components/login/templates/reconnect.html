@@ -2,10 +2,19 @@
     <ion-content mm-state-class padding="true" class="mm-center-view">
         <div class="mm-view-content">
             <div class="box">
-                <div class="item item-text-wrap item-avatar-center item-borderless">
-                    <img ng-src="{{site.avatar}}" class="avatar" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
-                    <h2 class="padding">{{siteurl}}</h2>
-                    <p ng-if="!isLoggedOut"><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
+                <div class="item item-text-wrap item-avatar-center item-borderless" ng-class="{'item-avatar-center': site.avatar, 'text-center': !site.avatar}">
+                    <img ng-if="site.avatar" ng-src="{{site.avatar}}" class="avatar" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+                    <!-- Show site logo or a default image. -->
+                    <img ng-if="!site.avatar && logourl" ng-src="{{logourl}}" class="avatar-full" mm-external-content role="presentation">
+                    <img ng-if="!site.avatar && !logourl" ng-src="img/moodle.png" class="avatar-full moodle-logo" role="presentation">
+
+                    <!-- If no sitename show big siteurl. -->
+                    <p ng-if="!sitename" class="item-heading padding">{{siteurl}}</p>
+                    <!-- If sitename, show big sitename and small siteurl. -->
+                    <p ng-if="sitename" class="item-heading padding">{{sitename}}</p>
+                    <p ng-if="sitename">{{siteurl}}</p>
+
+                    <p class="padding-top" ng-if="!isLoggedOut"><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
                 </div>
                 <div class="list item padding">
                     <h2>{{ 'mm.login.username' | translate }}</h2>
