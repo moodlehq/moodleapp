@@ -1530,6 +1530,26 @@ i, cite, em, var, address, dfn {
   }
 }
 
+@media only screen and (max-height: 420px) {
+  .mm-empty-box {
+    position: relative;
+
+    .mm-empty-box-content {
+      padding: $item-padding / 2;
+    }
+    .icon {
+      font-size: 100px;
+    }
+    img {
+      height: 104px;
+      width: 121px;
+    }
+    .icon + p, img + p {
+      padding-top: $item-padding / 2;
+    }
+  }
+}
+
 progress {
   -webkit-appearance: none;
   appearance: none;
