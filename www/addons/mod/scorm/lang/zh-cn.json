@@ -1,7 +1,7 @@
 {
     "asset": "资产",
     "assetlaunched": "资产 - 已浏览",
-    "attempts": "次",
+    "attempts": "试卷",
     "averageattempt": "平均分",
     "browse": "预览",
     "browsed": "已浏览",
@@ -15,7 +15,7 @@
     "gradeaverage": "平均分",
     "gradeforattempt": "尝试的得分",
     "gradehighest": "最高分",
-    "grademethod": "评分方法",
+    "grademethod": "评分办法",
     "gradereported": "成绩报告",
     "gradescoes": "学习对象",
     "gradesum": "分数和",
@@ -31,5 +31,5 @@
     "organizations": "组织",
     "passed": "已通过",
     "reviewmode": "复习模式",
-    "suspended": "已暂停"
+    "suspended": "停用账号"
 }

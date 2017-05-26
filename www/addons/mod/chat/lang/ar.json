@@ -11,8 +11,8 @@
     "messagebeepsyou": "{{$a}}  أرسل نغمة لك!",
     "messageenter": "{{$a}}  دخل غرفة محادثة",
     "messageexit": "{{$a}}  خرج من غرفة محادثة",
-    "nomessages": "لا توجد رسائل بعد",
-    "send": "إرسل",
+    "nomessages": "لا يوجد رساله/رسائل جديدة",
+    "send": "إرسال",
     "sessionstart": "ي  {{$a.date}}, ({{$a.fromnow}} وسوف تبدأ جلسة  الدردشة القادمة في من الآن",
     "talk": "حديث"
 }

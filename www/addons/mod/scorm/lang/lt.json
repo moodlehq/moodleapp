@@ -32,7 +32,7 @@
     "highestattempt": "Aukščiausiai įvertintas bandymas",
     "incomplete": "Neužbaigta",
     "lastattempt": "Paskutinis bandymas",
-    "mode": "Režimas",
+    "mode": "Moda",
     "newattempt": "Pradėti naują bandymą",
     "noattemptsallowed": "Leidžiamų bandymų skaičius",
     "noattemptsmade": "Išnaudotų bandymų skaičius",
@@ -45,7 +45,7 @@
     "reviewmode": "Peržiūros režimas",
     "scormstatusnotdownloaded": "SCORM neatsiųsta. Programa automatiškai atsisiųs ją atidarius.",
     "scormstatusoutdated": "SCORM pakeista nuo paskutiniojo atsisiuntimo. Programa automatiškai atsisiųs ją atidarius.",
-    "suspended": "Sulaikyta",
+    "suspended": "Sulaikyta paskyra",
     "warningofflinedatadeleted": "Kai kurie neprijungti  bandymo {{number}} duomenys  buvo ištrinti, nes jie negalėjo būti perkelti į naują bandymą.",
     "warningsynconlineincomplete": "Kaikurie bandymai negali būti sinchronizuoti su svetaine dėl to, kad paskutiniai prisijungimo duomenys nebuvo pabaigti. Prašome pabaigti."
 }

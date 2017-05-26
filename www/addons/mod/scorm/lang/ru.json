@@ -25,7 +25,7 @@
     "highestattempt": "Лучшая попытка",
     "incomplete": "Не завершено",
     "lastattempt": "Завершена последняя попытка",
-    "mode": "Режим",
+    "mode": "Мода",
     "newattempt": "Начать новую попытку",
     "noattemptsallowed": "Количество попыток",
     "noattemptsmade": "Выполнено попыток",
@@ -34,5 +34,5 @@
     "organizations": "Организаций",
     "passed": "Выполнено успешно",
     "reviewmode": "Режим просмотра",
-    "suspended": "Приостановлено"
+    "suspended": "Учетная запись заблокирована"
 }

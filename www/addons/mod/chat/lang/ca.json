@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} acaba d'entrar en aquest xat",
     "messageexit": "{{$a}} ha abandonat aquest xat",
     "mustbeonlinetosendmessages": "Heu d'estar connectat per poder enviar missatges",
-    "nomessages": "No hi ha missatges encara",
+    "nomessages": "No teniu missatges pendents",
     "send": "Envia",
     "sessionstart": "La propera sessió de xat començarà el: {{$a.date}}, (d'aquí a {{$a.fromnow}})",
     "talk": "Parla"

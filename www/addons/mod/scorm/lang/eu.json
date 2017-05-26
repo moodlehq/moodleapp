@@ -24,7 +24,7 @@
     "firstattempt": "Lehenengo saiakera",
     "gradeaverage": "Batez besteko kalifikazioa",
     "gradeforattempt": "Saikerarako kalifikazioa",
-    "gradehighest": "Kalifikazio altuena",
+    "gradehighest": "Notarik altuena",
     "grademethod": "Kalifikazio-metodoa",
     "gradereported": "Emandako kalifikazioa",
     "gradescoes": "Ikasteko objektuak",
@@ -45,7 +45,7 @@
     "reviewmode": "Berrikusketa-modua",
     "scormstatusnotdownloaded": "SCORM hau ez dago aurretik jaitsita. Automatikoki jaitsiko da irekitzen duzunean.",
     "scormstatusoutdated": "SCORM hau eguneratua izan da azkenekoz jaitsi zenuenetik. Automatikoki jaitsiko da irekitzen duzunean.",
-    "suspended": "Bere horretan utzia",
+    "suspended": "Etendako kontua",
     "warningofflinedatadeleted": "{{number}}. saiakeraren lineaz kanpoko datu batzuk ezabatu dira ezin izan direlako saiakera berri batean sortu.",
     "warningsynconlineincomplete": "Saiakera batzuk ezin izan dira Moodle gunearekin sinkronizatu azken online saiakera ez delako bukatu. Mesedez, bukatu online saiakera aurretik."
 }

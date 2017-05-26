@@ -17,7 +17,7 @@
     "non_respondents_students": "не отговорили студенти",
     "not_selected": "Няма избран",
     "not_started": "не започната",
-    "overview": "Представяне",
+    "overview": "Обобщение",
     "page_after_submit": "Съобщение след попълване",
     "preview": "Преглед",
     "previous_page": "Предишна страница",
@@ -27,6 +27,6 @@
     "save_entries": "Изпращане на отговорите",
     "show_entries": "Преглед на отговорите",
     "show_nonrespondents": "Показване на не отговорилите",
-    "started": "започната",
+    "started": "Започнато",
     "this_feedback_is_already_submitted": "Вие вече сте изпълнили тази дейност."
 }

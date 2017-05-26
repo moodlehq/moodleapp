@@ -32,7 +32,7 @@
     "highestattempt": "Tentativa com melhor nota",
     "incomplete": "Incompleto",
     "lastattempt": "Última tentativa concluída",
-    "mode": "Modo",
+    "mode": "Moda",
     "newattempt": "Iniciar uma nova tentativa",
     "noattemptsallowed": "Número de tentativas permitidas",
     "noattemptsmade": "Número de tentativas realizadas",
@@ -45,7 +45,7 @@
     "reviewmode": "Modo de revisão",
     "scormstatusnotdownloaded": "Este SCORM não foi descarregado. Será descarregado assim que o abrir.",
     "scormstatusoutdated": "Este SCORM foi modificado desde a última vez que o descarregou. A versão mais recente do mesmo será descarregada automaticamente assim que o abrir.",
-    "suspended": "Suspenso",
+    "suspended": "Conta suspensa",
     "warningofflinedatadeleted": "Alguns dados offline da tentativa {{number}} foram excluídos porque não podem ser utilizados numa nova tentativa.",
     "warningsynconlineincomplete": "Algumas tentativas ainda não foram sincronizadas com o site porque a última tentativa não se encontra finalizada. Por favor, termine a tentativa online primeiro."
 }

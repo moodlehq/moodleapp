@@ -9,6 +9,6 @@
     "maxbytesfile": "这个文件 {{$a.file}} 太大了。你可以上传的文件最大容量是 {{$a.size}}。",
     "readingfile": "Odczytywanie pliku",
     "uploadafile": "上传一个文件",
-    "uploading": "上传中",
+    "uploading": "上传中...",
     "video": "视频"
 }

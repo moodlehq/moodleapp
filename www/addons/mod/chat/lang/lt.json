@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} ką tik prisijungė prie šio pokalbio",
     "messageexit": "{{$a}} ką tik paliko šį pokalbį",
     "mustbeonlinetosendmessages": "Norėdamas išsiųsti žinutę, turite būti prisijungęs.",
-    "nomessages": "Žinučių dar nėra",
+    "nomessages": "Nėra žinučių",
     "send": "Siųsti",
     "sessionstart": "Pokalbio seansas bus pradėtas po: {{$a}}",
     "talk": "Kalbėti"

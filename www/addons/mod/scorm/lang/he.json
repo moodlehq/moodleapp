@@ -1,7 +1,7 @@
 {
     "asset": "נכס",
     "assetlaunched": "משאב - נצפה",
-    "attempts": "ניסיונות",
+    "attempts": "נסיונות מענה",
     "averageattempt": "ממוצע ניסיונות",
     "browse": "תצוגה מקדימה",
     "browsed": "נצפה",
@@ -12,10 +12,10 @@
     "exceededmaxattempts": "הגעת למספר המירבי המותר של נסיונות.",
     "failed": "נכשל",
     "firstattempt": "ניסיון מענה ראשון",
-    "gradeaverage": "ממוצע הניקוד בניסיונות המענה",
+    "gradeaverage": "ציון ממוצע",
     "gradeforattempt": "הניקוד לנסיון",
-    "gradehighest": "הניקוד הגבוה ביותר",
-    "grademethod": "שיטת מתן ניקוד",
+    "gradehighest": "הציון הגבוה ביותר",
+    "grademethod": "שיטת מתן ציונים",
     "gradereported": "הניקוד הסופי",
     "gradescoes": "רכיבי למידה",
     "gradesum": "סיכום הניקוד בניסיונות המענה",
@@ -31,5 +31,5 @@
     "organizations": "רצפי־למידה",
     "passed": "עבר",
     "reviewmode": "מצב עיון בתשובות",
-    "suspended": "מושהה"
+    "suspended": "חשבון מושהה"
 }

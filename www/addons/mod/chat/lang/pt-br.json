@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} entrou no chat",
     "messageexit": "{{$a}} abandonou este chat",
     "mustbeonlinetosendmessages": "Você deve estar online para enviar mensagens",
-    "nomessages": "Nenhuma mensagem ainda",
+    "nomessages": "Sem novas mensagens",
     "send": "Enviar",
     "sessionstart": "A próxima sessão de chat irá começar em {{$a}}",
     "talk": "Falar"

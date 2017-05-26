@@ -6,7 +6,7 @@
     "messagebeepsyou": "{{$a}} size sesleniyor!",
     "messageenter": "{{$a}} odaya girdi",
     "messageexit": "{{$a}} odadan ayrıldı",
-    "nomessages": "Henüz mesaj yok",
+    "nomessages": "Yeni ileti yok",
     "send": "Gönder",
     "sessionstart": "Bir sonraki görüşme oturumu {{$a.date}}, ({{$a.fromnow}} şu andan itibaren)",
     "talk": "Sohbet et"

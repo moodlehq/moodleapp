@@ -1,9 +1,9 @@
 {
     "errorgetchoice": "Eroare în obținerea de date pentru alegere",
-    "expired": "Ne pare rău, această activitate s-a închis la {{$a}} şi nu mai este disponibilă",
-    "full": "(plin)",
+    "expired": "Ne pare rău, această activitate închisă în {{$a}} nu mai este disponibilă",
+    "full": "Complet",
     "noresultsviewable": "În acest moment rezultatele nu pot fi vizualizate.",
-    "notopenyet": "Ne pare rău, această activitate nu este disponibilă mai devreme de {{$a}}",
+    "notopenyet": "Ne pare rău, această activitate nu este disponibilă până în {{$a}}",
     "numberofuser": "Numărul de răspunsuri",
     "numberofuserinpercentage": "Procentajul răspunsurilor",
     "previewonly": "Acesta este doar o prezentare a opțiunilor existente pentru această activitate. Nu veți putea trimite opțiunea dvs. până la {{$a}}.",

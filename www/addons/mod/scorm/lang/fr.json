@@ -1,7 +1,7 @@
 {
     "asset": "Élément",
     "assetlaunched": "Élément - affiché",
-    "attempts": "tentatives",
+    "attempts": "Tentatives",
     "averageattempt": "Moyenne des tentatives",
     "browse": "Prévisualiser",
     "browsed": "Consulté",
@@ -45,7 +45,7 @@
     "reviewmode": "Mode relecture",
     "scormstatusnotdownloaded": "Ce SCORM n'est pas téléchargé. Il sera téléchargé automatiquement dès que vous l'ouvrirez.",
     "scormstatusoutdated": "Ce SCORM a été modifié depuis son dernier téléchargement. Il sera téléchargé automatiquement dès que vous l'ouvrirez.",
-    "suspended": "Suspendu",
+    "suspended": "Compte suspendu",
     "warningofflinedatadeleted": "Des données hors ligne de la tentative {{number}} ont été supprimées, car elles n'ont pas pu être intégrées dans une nouvelle tentative.",
     "warningsynconlineincomplete": "Certaines tentatives n'ont pas pu être synchronisées avec la plateforme, car la dernière tentative en ligne n'est pas terminée. Veuillez d'abord finir votre tentative en ligne."
 }

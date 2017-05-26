@@ -1,7 +1,7 @@
 {
     "asset": "Fişier curs",
     "assetlaunched": "Fişier - Afişat",
-    "attempts": "Încercări de parcurgere",
+    "attempts": "Încercări",
     "averageattempt": "Numărul mediu de încercări de parcurgere",
     "browse": "Caută",
     "browsed": "Căutat",
@@ -22,9 +22,9 @@
     "exceededmaxattempts": "Ați atins numărul maxim de încercări",
     "failed": "Eşuat",
     "firstattempt": "Prima încercare parcurgere",
-    "gradeaverage": "Punctaj mediu",
-    "gradehighest": "Punctaj maxim",
-    "grademethod": "Metodă punctare",
+    "gradeaverage": "Nota medie",
+    "gradehighest": "Nota maximă",
+    "grademethod": "Metoda de notare",
     "gradescoes": "Modul de studiu",
     "gradesum": "Sumă punctaje",
     "highestattempt": "Cea mai completă încercare de parcurgere",
@@ -43,7 +43,7 @@
     "reviewmode": "Mod Verificare",
     "scormstatusnotdownloaded": "Acest SCORM nu a fost descărcat. Va fi descărcat automat când îl veți deschide.",
     "scormstatusoutdated": "Acest SCORM a fost modificat de la ultima descărcare. Va fi redescărcat automat când îl veți deschide.",
-    "suspended": "Suspendat",
+    "suspended": "Cont suspendat",
     "warningofflinedatadeleted": "Unele date ale încercării offline cu numărul {{number}} au fost șterse deoarece nu s-au putut constitui într-o nouă încercare.",
     "warningsynconlineincomplete": "Această încercare nu poate fi sincronizată cu siteul pentru că ultima încercare efectuată nu a fost finalizată. Vă rugăm să o finalizați."
 }

@@ -11,17 +11,17 @@
     "errordownloadscorm": "خطأ عن تنزيل الحزمة التعليمية: \"{{name}}\"",
     "failed": "فشل",
     "firstattempt": "المحاولة الأولى",
-    "gradeaverage": "المتوسط",
+    "gradeaverage": "متوسط الدرجة",
     "gradeforattempt": "درجة للمحاولة",
-    "gradehighest": "الدرجة العليا",
-    "grademethod": "طريقة رصد الدرجات",
+    "gradehighest": "أعلى درجة",
+    "grademethod": "أسلوب التقييم",
     "gradereported": "الدرجة المعلنة",
     "gradescoes": "كائنات تعلّم",
     "gradesum": "الدرجة الاجمالية",
     "highestattempt": "أعلى محاولة",
     "incomplete": "غير مكتمل",
     "lastattempt": "المحاولاة الأخيرة",
-    "mode": "نمط",
+    "mode": "وضع",
     "newattempt": "ابداء محاولة جديدة",
     "noattemptsallowed": "عدد المحاولات المسموح بها",
     "noattemptsmade": "عدد المحاولات التي قمت بها",
@@ -30,5 +30,5 @@
     "organizations": "تنظيمات",
     "passed": "نجح",
     "reviewmode": "وضع المراجعة",
-    "suspended": "معلّق"
+    "suspended": "حساب معلّق"
 }

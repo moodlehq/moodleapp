@@ -1,5 +1,5 @@
 {
-    "answer": "أجب",
+    "answer": "إجابة",
     "averagescore": "متوسط الدرجة",
     "averagetime": "متوسط الوقت",
     "branchtable": "محتوى",
@@ -29,7 +29,7 @@
     "numberofpagesviewed": "عدد الصفحات التي تم مشاهدتها: {{$a}}",
     "or": "أو",
     "overview": "عرض عام",
-    "preview": "معاينه",
+    "preview": "معاينة",
     "question": "سؤال",
     "reports": "تقارير",
     "response": "إجابة",
@@ -40,7 +40,7 @@
     "thatsthecorrectanswer": "هذه إجابة صحيحة",
     "thatsthewronganswer": "هذه إجابة خاطئة",
     "timeremaining": "الزمن المتبقى",
-    "timetaken": "الزمن المستنفذ",
+    "timetaken": "الوقت المستغرق",
     "welldone": "أحسنت!",
     "youranswer": "إجابتك",
     "youshouldview": "يجب أن تجب على الأقل: {{$a}}"

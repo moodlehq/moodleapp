@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} har precis kommit in i detta direktsamtal",
     "messageexit": "{{$a}} har lämnat det här direktsamtalet",
     "mustbeonlinetosendmessages": "Du måste vara online för att skicka meddelanden",
-    "nomessages": "Inga meddelanden än",
+    "nomessages": "Inga avvaktande meddelanden",
     "send": "Skicka",
     "sessionstart": "Sessionen för direktsamtal kommer att starta inom: {{$a}}",
     "talk": "Tala"

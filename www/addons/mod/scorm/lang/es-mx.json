@@ -22,7 +22,7 @@
     "exceededmaxattempts": "Ha alcanzado el número máximo de intentos",
     "failed": "Error",
     "firstattempt": "Primer intento",
-    "gradeaverage": "Calificación promedio",
+    "gradeaverage": "Promedio de calificaciones",
     "gradeforattempt": "Calificación del intento",
     "gradehighest": "Calificación más alta",
     "grademethod": "Método de calificación",
@@ -45,7 +45,7 @@
     "reviewmode": "Modo Revisión",
     "scormstatusnotdownloaded": "Este SCORM no está descargado. Será descargado automáticamente cuando Usted lo abra.",
     "scormstatusoutdated": "Este SCORM ha sido modificado desde la última descarga. Será descargado automáticamente cuando Usted lo abra.",
-    "suspended": "Suspendido",
+    "suspended": "Cuenta suspendida",
     "warningofflinedatadeleted": "Algunos datos fuera-de-línea del intento {{number}} han sido eliminados porque no pudieron usarse para crear un nuevo intento.",
     "warningsynconlineincomplete": "Algunos intentos no pudieron ser sincronizados con el sitio debido a que el último intento en-línea no está terminado. Por favor, termine primeramente el intento en-línea."
 }
