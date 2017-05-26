@@ -34,7 +34,8 @@ angular.module('mm.addons.mod_lesson')
         scrollView,
         originalData,
         blockData,
-        jumps;
+        jumps,
+        firstPageLoaded = false;
 
     // Block the lesson so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModLessonComponent, lessonId);
@@ -73,6 +74,8 @@ angular.module('mm.addons.mod_lesson')
 
             accessInfo = info;
             $scope.canManage = info.canmanage;
+            $scope.retake = accessInfo.attemptscount;
+            $scope.showRetake = !$scope.currentPage && $scope.retake > 0;
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 // If it's a password protected lesson and we have the password, allow playing it.
@@ -210,6 +213,12 @@ angular.module('mm.addons.mod_lesson')
                 loadMenu();
             }
             $scope.displayMenu = !!data.displaymenu;
+
+            if (!firstPageLoaded) {
+                firstPageLoaded = true;
+            } else {
+                $scope.showRetake = false;
+            }
         });
     }
 

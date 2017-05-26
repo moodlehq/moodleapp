@@ -15,6 +15,7 @@
                 <mm-timer ng-if="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_lesson.timeremaining' | translate }}"></mm-timer>
 
                 <!-- Page content, including questions and buttons. -->
+                <p ng-if="showRetake && !eolData && !processData" class="item item-text-wrap">{{ 'mma.mod_lesson.attempt' | translate:{$a: retake} }}</p>
                 <mm-format-text ng-if="pageData.ongoingscore && !eolData && !processData" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{pageData.ongoingscore}}</mm-format-text>
                 <form ng-if="!eolData && !processData" name="mma-mod_lesson-player-form" class="card">
                     <p class="item item-text-wrap" ng-class="{'item-divider': question}"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text></p>

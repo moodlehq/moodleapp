@@ -1,5 +1,6 @@
 {
     "answer": "Answer",
+    "attempt": "Attempt: {{$a}}",
     "attemptheader": "Attempt",
     "attemptsremaining": "You have {{$a}} attempt(s) remaining",
     "averagescore": "Average score",
