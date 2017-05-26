@@ -12,7 +12,7 @@
     "errornoapp": "Ez daukazu ekintza hau burutzeko app-ik instalatuta.",
     "errorreadingfile": "Errorea \"{{$a}}\" fitxategia irakurtzean",
     "errorwhileuploading": "Errorea gertatu da fitxategia igotzean.",
-    "file": "Feedback-fitxategiak",
+    "file": "Fitxategia",
     "fileuploaded": "Fitxategia ondo igo da.",
     "maxbytesfile": "{{$a.file}} fitxategia oso handia da. Igo ditzakezun fitxategien gehienezko tamaina {{$a.size}} da.",
     "photoalbums": "Argazki-bildumak",

@@ -16,6 +16,6 @@
     "hiddenfromstudents": "Paslėpta nuo besimokančiųjų",
     "nocontentavailable": "Turinys šiuo metu nepasiekiamas.",
     "overriddennotice": "Šios veiklos galutinis įvertis buvo koreguotas rankiniu būdu.",
-    "showall": "Rodyti visus klausimus viename puslapyje",
+    "showall": "Rodyti visus {{$a}}",
     "useactivityonbrowser": "Galite naudoti savo naršyklėje."
 }

@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} oraintxe sartu da gelan",
     "messageexit": "{{$a}} irten egin da gelatik",
     "mustbeonlinetosendmessages": "On-line egon behar duzu mezuak bidaltzeko",
-    "nomessages": "Ez duzu mezurik",
+    "nomessages": "Ez dago mezurik oraindik",
     "send": "Bidali",
     "sessionstart": "Txat-saioa {{$a.date}}-(e)tan hasiko da, (hemendik {{$a.fromnow}}-(e)ra)",
     "talk": "Hitz egin"

@@ -1,7 +1,7 @@
 {
     "answer": "Réponse",
     "answersaved": "Réponse enregistrée",
-    "complete": "Terminer",
+    "complete": "Complet",
     "correct": "Correct",
     "errorattachmentsnotsupported": "L'application ne permet pas encore d'annexer des fichiers aux réponses.",
     "errorinlinefilesnotsupported": "L'app ne permet pas encore la modification de fichiers en ligne.",
@@ -11,7 +11,7 @@
     "incorrect": "Incorrect",
     "information": "Description",
     "invalidanswer": "Réponse incomplète",
-    "notanswered": "Non répondue",
+    "notanswered": "Pas encore répondu",
     "notyetanswered": "Pas encore répondu",
     "partiallycorrect": "Partiellement correct",
     "questionmessage": "Question {{$a}} : {{$b}}",

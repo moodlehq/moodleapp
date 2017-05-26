@@ -9,5 +9,5 @@
     "hiddenfromstudents": "Nascosta agli studenti",
     "nocontentavailable": "Non sono presenti contenuti.",
     "overriddennotice": "La tua valutazione finale da questa attività è stata modificata manualmente.",
-    "showall": "Visualizza tutte le domande nella stessa pagina"
+    "showall": "Visualizza tutti i {{$a}}"
 }

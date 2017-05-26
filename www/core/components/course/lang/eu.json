@@ -17,6 +17,6 @@
     "hiddenfromstudents": "Ezkutuan ikasleentzat",
     "nocontentavailable": "Ez dago edukirik eskuragarri momentu honetan.",
     "overriddennotice": "Jarduera honetako zure azken kalifikazioa eskuz egokitu da.",
-    "showall": "Galdera guztiak orri batean erakutsi",
+    "showall": "Erakutsi denak: {{$a}}",
     "useactivityonbrowser": "Zure gailuko nabigatzailea erabilita erabili dezakezu."
 }

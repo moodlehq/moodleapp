@@ -1,7 +1,7 @@
 {
     "asset": "Materiale",
     "assetlaunched": "Materiale - vist",
-    "attempts": "Besvarelser",
+    "attempts": "Forsøg",
     "averageattempt": "Gennemsnitlige forsøg",
     "browse": "Vis",
     "browsed": "Vist",
@@ -22,10 +22,10 @@
     "exceededmaxattempts": "Du har nået det maksimale antal forsøg.",
     "failed": "Dumpet",
     "firstattempt": "Første forsøg",
-    "gradeaverage": "Gennemsnitlig vurdering",
+    "gradeaverage": "Gennemsnitlig bedømmelse",
     "gradeforattempt": "Karakter for besvarelse",
-    "gradehighest": "Højeste vurdering",
-    "grademethod": "Vurdering ved gentagne forsøg",
+    "gradehighest": "Højeste bedømmelse",
+    "grademethod": "Bedømmelsesmetode",
     "gradereported": "Karakter rapporteret",
     "gradescoes": "Læringsobjekter",
     "gradesum": "Samlet bedømmelse",
@@ -45,7 +45,7 @@
     "reviewmode": "Gennemsynstilstand",
     "scormstatusnotdownloaded": "Denne SCORM er ikke downloadet. Den bliver automatisk downloadet når du åbner den.",
     "scormstatusoutdated": "Denne SCORM er ændret efter den sidste download. Den bliver automatisk downloadet når du åbner den.",
-    "suspended": "Suspenderet konto",
+    "suspended": "Suspenderet",
     "warningofflinedatadeleted": "Nogle af forsøgets offlinedata {{number}} er blevet slettet fordi de ikke kunne oprettes i et nyt forsøg.",
     "warningsynconlineincomplete": "Nogle forsøg kunne ikke synkroniseres med webstedet, fordi det sidste onlineforsøg ikke er afsluttet. Afslut først onlineforsøget."
 }

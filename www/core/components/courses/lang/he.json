@@ -1,17 +1,17 @@
 {
     "allowguests": "הקורס הזה מרשה למשתמשים אורחים להכנס",
     "availablecourses": "קורסים זמינים",
-    "categories": "קטגוריות",
+    "categories": "קטגוריות קורסים",
     "courses": "קורסים",
     "enrolme": "רשום אותי",
     "errorloadcourses": "התרחשה שגיאה בזמן טעינת הקורסים.",
     "frontpage": "עמוד ראשי",
     "mycourses": "הקורסים שלי",
-    "nocourses": "טרם נרשמתם לקורס כלשהו",
+    "nocourses": "אין מידע שניתן להציג על הקורס",
     "nocoursesyet": "אין קורסים בקטגוריה זו",
-    "nosearchresults": "אין תוצאות",
+    "nosearchresults": "לחיפוש שלך לא היו תוצאות",
     "notenroled": "אינך רשום לקורס זה",
-    "password": "סיסמה",
-    "search": "חיפוש...",
+    "password": "סיסמה (secret)",
+    "search": "חיפוש",
     "searchcourses": "חיפוש קורסים"
 }

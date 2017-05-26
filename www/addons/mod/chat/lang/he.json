@@ -8,8 +8,8 @@
     "messageenter": "{{$a}} נכנס/ה לרב-שיח זה",
     "messageexit": "{{$a}} עזב/ה רב-שיח זה",
     "mustbeonlinetosendmessages": "עליך להיות מחובר בכדי לשלוח הודעות.",
-    "nomessages": "אין מסרים ממתינים",
-    "send": "לשלוח",
+    "nomessages": "אין הודעות עדיין",
+    "send": "שליחה",
     "sessionstart": "מפגש הרב-שיח הבא יתחיל ב: {{$a}}",
     "talk": "דברו"
 }

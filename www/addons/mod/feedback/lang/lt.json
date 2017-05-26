@@ -10,7 +10,7 @@
     "feedbackclose": "Uždaryti atsiliepimą",
     "feedbackopen": "Atidaryti atsiliepimą",
     "mapcourses": "Susieti atsiliepimą su kursais",
-    "mode": "Moda",
+    "mode": "Režimas",
     "next_page": "Kitas puslapis",
     "non_anonymous": "Naudotojo vardas bus užregistruotas ir rodomas su atsakymais",
     "non_anonymous_entries": "Neanoniminiai įrašai ({{$a}})",
@@ -28,6 +28,6 @@
     "save_entries": "Pateikite savo atsakymus",
     "show_entries": "Rodyti atsakymus",
     "show_nonrespondents": "Rodyti ne respondentus",
-    "started": "Pradėta",
+    "started": "Pradėjo",
     "this_feedback_is_already_submitted": "Jau užbaigėte šią veiklą."
 }

@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} právě vstoupil(a) do tohoto chatu",
     "messageexit": "{{$a}} opustil(a) tento chat",
     "mustbeonlinetosendmessages": "Pro odesílání zpráv musíte být online",
-    "nomessages": "Žádné zprávy",
+    "nomessages": "Zatím žádné zprávy",
     "send": "Odeslat",
     "sessionstart": "Další chatování začne v {{$a}}, (za {{$a.fromnow}})",
     "talk": "Diskuse"

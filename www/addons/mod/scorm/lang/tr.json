@@ -1,7 +1,7 @@
 {
     "asset": "Öge",
     "assetlaunched": "Öge - Bakıldı",
-    "attempts": "Uygulamalar",
+    "attempts": "Uygulama (lar)",
     "averageattempt": "Uygulama ortalaması",
     "browse": "Önizleme",
     "browsed": "Gözatıldı",
@@ -12,10 +12,10 @@
     "exceededmaxattempts": "En fazla uygulama sayısına ulaştınız.",
     "failed": "Hata oluştu",
     "firstattempt": "İlk uygulama",
-    "gradeaverage": "Not ortalaması",
+    "gradeaverage": "Ortalama not",
     "gradeforattempt": "Uygulama notu",
     "gradehighest": "En yüksek not",
-    "grademethod": "Notlandırma yöntemi",
+    "grademethod": "Not verme yöntemi",
     "gradereported": "Not verme raporu",
     "gradescoes": "Öğrenme Nesneleri",
     "gradesum": "Notları topla",
@@ -31,5 +31,5 @@
     "organizations": "Düzenlemeler",
     "passed": "Geçti",
     "reviewmode": "Önizleme Modu",
-    "suspended": "Askıya alınmış hesap"
+    "suspended": "Durduruldu"
 }

@@ -1,10 +1,10 @@
 {
-    "complete": "Terminer",
+    "complete": "Complet",
     "completecourse": "Terminer le cours",
     "completed": "Terminé",
     "completiondate": "Date d'achèvement",
     "couldnotloadreport": "Impossible de charger le rapport d'achèvement de cours. Veuillez essayer plus tard.",
-    "coursecompletion": "Les participants doivent achever ce cours.",
+    "coursecompletion": "Achèvement de cours",
     "criteria": "Critères",
     "criteriagroup": "Groupe de critères",
     "criteriarequiredall": "Tous les critères ci-dessous sont requis",
@@ -12,10 +12,10 @@
     "inprogress": "En cours",
     "manualselfcompletion": "Auto-achèvement manuel",
     "notyetstarted": "Pas encore commencé",
-    "pending": "En attente",
+    "pending": "En suspens",
     "required": "Requis",
     "requiredcriteria": "Critères requis",
     "requirement": "Condition",
-    "status": "Permettre l'accès anonyme",
+    "status": "Statut",
     "viewcoursereport": "Consulter le rapport du cours"
 }

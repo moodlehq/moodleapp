@@ -8,7 +8,7 @@
     "allowsubmissionsfromdatesummary": "سيبدأ قبول التسليمات لهذا التكليف (المهمة) ابتداءً من <strong>{{$a}}</strong>",
     "applytoteam": "تطبيق الدرجات والتغذية الراجعة (الملاحظات) على المجموعة بأكملها",
     "assignmentisdue": "فات موعد التسليم",
-    "attemptnumber": "محاولة",
+    "attemptnumber": "رقم المحاولة",
     "attemptreopenmethod": "تم إعادة فتح المحاولة",
     "attemptreopenmethod_manual": "يدوياً",
     "attemptreopenmethod_untilpass": "تلقائياً حتى النجاح",
@@ -17,7 +17,7 @@
     "currentattempt": "هذه المحاولة {{$a}}.",
     "currentattemptof": "هذه المحاولة رقم{{$a.attemptnumber}} ( {{$a.maxattempts}} محاولات مسموحة ).",
     "currentgrade": "الدرجة الحالية في",
-    "duedate": "موعد التسليم",
+    "duedate": "تاريخ تقديم مهمة",
     "duedateno": "لا يوجد موعد لتقديم المهمة",
     "editsubmission": "حرر تسليمي",
     "grade": "درجة",
@@ -32,8 +32,8 @@
     "numberofsubmittedassignments": "مسلمة",
     "numwords": "{{$a}} كلمات",
     "outof": "من {{$a}}",
-    "overdue": "متأخر جدا",
-    "savechanges": "أحفظ التغيرات",
+    "overdue": "<font color=\"red\"></font>فات موعد تسليم الوظيفة بـ: {{$a}}",
+    "savechanges": "حفظ التغييرات",
     "submission": "تسليم",
     "submissionslocked": "هذه الوظيفة لا تقبل التسليم الآن",
     "submissionstatus": "حالة التسليم",
@@ -45,5 +45,5 @@
     "submittedearly": "تم تسليم الوظيفة مبكرة بـ{{$a}}",
     "submittedlate": "تم تسليم الوظيفة متأخرة بـ{{$a}}",
     "timemodified": "وقت التعديل",
-    "timeremaining": "الزمن المتبقى"
+    "timeremaining": "الزمن المتبقي"
 }

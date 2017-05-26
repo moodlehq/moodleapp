@@ -1,16 +1,16 @@
 {
     "allowguests": "Bu derse konuk olarak girilebilir",
     "availablecourses": "Mevcut dersler",
-    "categories": "Kategoriler",
+    "categories": "Ders Kategorileri",
     "courses": "Dersler",
     "enrolme": "Beni kaydet",
     "frontpage": "Ön sayfa",
     "mycourses": "Derslerim",
-    "nocourses": "Henüz ders yok",
+    "nocourses": "Gösterilecek ders bilgisi yok",
     "nocoursesyet": "Bu kategoride ders yok",
-    "nosearchresults": "Sonuç yok",
+    "nosearchresults": "Aramanızla ilgili sonuç yok",
     "notenroled": "Bu derse kayıtlı değilsiniz",
-    "password": "Parola",
-    "search": "Arama...",
-    "searchcourses": "Kursları ara"
+    "password": "Şifre",
+    "search": "Ara",
+    "searchcourses": "Dersleri ara"
 }

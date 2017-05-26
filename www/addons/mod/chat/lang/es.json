@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} entró a la sala",
     "messageexit": "{{$a}} salió de la sala",
     "mustbeonlinetosendmessages": "Usted debe de estar conectado a Internet para enviar mensajes",
-    "nomessages": "No hay mensajes en espera",
+    "nomessages": "Aún no hay mensajes",
     "send": "Enviar",
     "sessionstart": "La próxima sesión de chat empezará el {{$a.date}}, (dentro de {{$a.fromnow}})",
     "talk": "Charla"

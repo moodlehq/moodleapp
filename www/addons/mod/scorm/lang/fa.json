@@ -1,7 +1,7 @@
 {
     "asset": "دارایی",
     "assetlaunched": "دارایی - دیده شده",
-    "attempts": "دفعات شرکت",
+    "attempts": "تلاش",
     "averageattempt": "متوسط تعداد دفعات تلاش",
     "browse": "پیش‌نمایش",
     "browsed": "به صورت پیش‌نمایش دیده شده",
@@ -16,15 +16,15 @@
     "firstattempt": "اولین تلاش",
     "gradeaverage": "نمرهٔ میانگین",
     "gradeforattempt": "نمرهٔ تلاش",
-    "gradehighest": "بیشترین نمره",
-    "grademethod": "روش نمره دادن",
+    "gradehighest": "بالاترین نمره",
+    "grademethod": "روش نمره‌دهی",
     "gradereported": "نمرهٔ گزارش شده",
     "gradescoes": "اهداف آموزشی",
     "gradesum": "جمع نمره",
     "highestattempt": "بالاترین تلاش",
     "incomplete": "ناتمام",
     "lastattempt": "آخرین تلاش",
-    "mode": "روش",
+    "mode": "حالت",
     "newattempt": "شروع یک تلاش جدید",
     "noattemptsallowed": "تعداد تلاش‌های مجاز",
     "noattemptsmade": "تعداد تلاش‌هایی که انجام داده‌اید",
@@ -33,5 +33,5 @@
     "organizations": "سازمان‌ها",
     "passed": "موفق",
     "reviewmode": "حالت مرور",
-    "suspended": "حساب کاربری تعلیق‌شده"
+    "suspended": "معلق"
 }

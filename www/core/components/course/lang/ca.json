@@ -17,6 +17,6 @@
     "hiddenfromstudents": "Ocult per a l'estudiantat",
     "nocontentavailable": "No hi ha contingut disponible en aquest moment.",
     "overriddennotice": "La vostra qualificació final en aquesta activitat s'ha modificat manualment.",
-    "showall": "Mostra totes les preguntes en una pàgina",
+    "showall": "Mostra'ls tots ({{$a}})",
     "useactivityonbrowser": "Tot i així, podeu fer-la servir al navegador del dispositiu."
 }

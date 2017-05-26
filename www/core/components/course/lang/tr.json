@@ -3,5 +3,5 @@
     "contents": "İçerik",
     "hiddenfromstudents": "Öğrencilerden gizli",
     "overriddennotice": "Bu etkinlikteki final notunuz, elle ayarlandı.",
-    "showall": "Bütün soruları tek sayfada göster"
+    "showall": "Tümünü göster: {{$a}}"
 }

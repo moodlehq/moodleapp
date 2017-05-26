@@ -1,7 +1,7 @@
 {
     "asset": "Zasób",
     "assetlaunched": "Zasób - obejrzany",
-    "attempts": "Podejścia",
+    "attempts": "Próby",
     "averageattempt": "Średnia prób",
     "browse": "Przeglądaj",
     "browsed": "Przeglądane",
@@ -31,5 +31,5 @@
     "organizations": "Organizacje",
     "passed": "Udane",
     "reviewmode": "Tryb przeglądu",
-    "suspended": "Zawieszone konto"
+    "suspended": "Zawieszone"
 }

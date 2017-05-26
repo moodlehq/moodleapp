@@ -17,6 +17,6 @@
     "hiddenfromstudents": "Oculto para os alunos",
     "nocontentavailable": "Nenhum conteúdo disponível neste momento.",
     "overriddennotice": "A sua nota final nesta atividade foi alterada manualmente na pauta.",
-    "showall": "Mostrar todas as perguntas numa página",
+    "showall": "Mostrar tudo {{$a}}",
     "useactivityonbrowser": "Ainda pode usá-lo se utilizar o navegador dos seus dispositivos."
 }

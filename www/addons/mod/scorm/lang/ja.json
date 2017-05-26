@@ -22,7 +22,7 @@
     "highestattempt": "最高評点",
     "incomplete": "不完全",
     "lastattempt": "最新の完了済み受験",
-    "mode": "最頻値",
+    "mode": "モード",
     "newattempt": "新しい受験を開始する",
     "noattemptsallowed": "許可された受験回数",
     "noattemptsmade": "あなたの受験回数",
@@ -31,5 +31,5 @@
     "organizations": "組織",
     "passed": "合格",
     "reviewmode": "レビューモード",
-    "suspended": "利用停止アカウント"
+    "suspended": "一時停止"
 }

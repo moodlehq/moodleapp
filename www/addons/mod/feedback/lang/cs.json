@@ -12,7 +12,7 @@
     "feedbackclose": "Povolit odpovědi",
     "feedbackopen": "Dostupné od",
     "mapcourses": "Mapování kurzů",
-    "mode": "Modus",
+    "mode": "Režim",
     "next_page": "Další stránka",
     "non_anonymous": "Jména respondentů budou zaznamenána a ukázána s odpověďmi",
     "non_anonymous_entries": "Neanonymní záznamy ({{$a}})",
@@ -24,12 +24,12 @@
     "page_after_submit": "Zpráva o dokončení",
     "preview": "Náhled",
     "previous_page": "Předchozí stránka",
-    "questions": "Úlohy",
+    "questions": "Otázky",
     "response_nr": "Číslo odpovědi",
     "responses": "Odpovědi",
     "save_entries": "Odevzdejte vaše odpovědi",
     "show_entries": "Ukázat odpovědi",
     "show_nonrespondents": "Ukázat uživatele, kteří neodpověděli",
-    "started": "Zahájeno",
+    "started": "Spuštěno",
     "this_feedback_is_already_submitted": "Tento dotazník jste již vyplnili."
 }

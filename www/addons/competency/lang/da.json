@@ -4,7 +4,7 @@
     "coursecompetencyratingsarenotpushedtouserplans": "Kompetencebedømmelser på dette kursus påvirker ikke læringsplaner.",
     "coursecompetencyratingsarepushedtouserplans": "Kompetencebedømmelser på dette kursus opdateres straks i læringsplaner.",
     "crossreferencedcompetencies": "Kryds-refererede kompetencer",
-    "duedate": "Udløbsdato",
+    "duedate": "Afleveringsdato",
     "errornocompetenciesfound": "Ingen kompetencer fundet",
     "evidence": "Vidnesbyrd",
     "learningplancompetencies": "Læringsplankompetencer",
@@ -15,9 +15,9 @@
     "nocrossreferencedcompetencies": "Ingen andre kompetencer er krydsrefereret til denne kompetence.",
     "noevidence": "Ingen vidnesbyrd",
     "noplanswerecreated": "Der blev ikke oprettet nogen læringsplaner.",
-    "path": "Sti:",
-    "progress": "Progression",
+    "path": "Sti",
+    "progress": "Studerendes fremskridt",
     "rating": "Bedømmelse",
-    "status": "Tillad gæsteadgang",
-    "template": "Læringsplanskabelon"
+    "status": "Status",
+    "template": "Skabelon"
 }

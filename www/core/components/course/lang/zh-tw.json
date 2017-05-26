@@ -16,6 +16,6 @@
     "hiddenfromstudents": "對學生隱藏",
     "nocontentavailable": "目前無內容可使用",
     "overriddennotice": "您在這活動的最後成績是手動調整的。",
-    "showall": "在一頁中顯示所有題目",
+    "showall": "顯示全部{{$a}}",
     "useactivityonbrowser": "你可以以瀏覽器一直使用"
 }

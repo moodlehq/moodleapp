@@ -12,8 +12,8 @@
     "messageenter": "{{$a}} 剛加入這次聊天",
     "messageexit": "{{$a}} 已退出這次聊天",
     "mustbeonlinetosendmessages": "您必須上線才能傳送訊息",
-    "nomessages": "沒有待處理的簡訊",
-    "send": "送出",
+    "nomessages": "尚無訊息",
+    "send": "傳送",
     "sessionstart": "下一個聊天時段即將在{{$a.date}}開始，(離現在{{$a.fromnow}} )",
     "talk": "交談"
 }

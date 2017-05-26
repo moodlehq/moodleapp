@@ -12,7 +12,7 @@
     "errornoapp": "Keine App zum Ausführen dieser Aktion gefunden",
     "errorreadingfile": "Fehler beim Lesen der Datei \"{{$a}}\"",
     "errorwhileuploading": "Fehler beim Hochladen der Datei",
-    "file": "Feedbackdateien",
+    "file": "Datei",
     "fileuploaded": "Datei hochgeladen",
     "maxbytesfile": "Die Datei {{$a.file}} ist zu groß. Die maximale Größe zum Hochladen ist {{$a.size}}.",
     "photoalbums": "Fotoalbum",

@@ -1,8 +1,8 @@
 {
-    "activities": "Veiklos",
+    "activities": "Veikla",
     "coursecompetencies": "Kurso kompetencijos",
     "coursecompetencyratingsarenotpushedtouserplans": "Kompetencijų reitingai šiame kurse neturi įtakos mokymosi planams.",
-    "duedate": "Terminas",
+    "duedate": "Data pristatymui",
     "errornocompetenciesfound": "Kompetencijų nerasta",
     "evidence": "Įrodymas",
     "learningplancompetencies": "Mokymosi plano kompetencijos",
@@ -12,8 +12,8 @@
     "nocompetencies": "Šioje sistemoje nebuvo sukurta kompetencijų.",
     "noplanswerecreated": "Nebuvo sukurta mokymosi planų.",
     "path": "Kelias",
-    "progress": "Progresas",
-    "rating": "Reitingas",
-    "status": "Leisti svečio prieigą",
-    "template": "Mokymosi plano šablonas"
+    "progress": "Besimokančiojo pažanga",
+    "rating": "Vertinimas",
+    "status": "Būsena",
+    "template": "Šablonas"
 }

@@ -11,7 +11,7 @@
     "errornoapp": "Nu aveți instalată o aplicație dedicată realizării acestei operațiuni.",
     "errorreadingfile": "Eroare la citirea fişierului {{$a}}",
     "errorwhileuploading": "A apărut o eroare în timpul încărcării fișierului.",
-    "file": "Fişiere de feedback",
+    "file": "Fişier",
     "fileuploaded": "Fișierul a fost încărcat cu succes.",
     "maxbytesfile": "Fișierul {{$a.file}} este prea mare. Dimensiunea maximă pe care o puteți încărca este {{$a.size}}.",
     "photoalbums": "Albume foto",

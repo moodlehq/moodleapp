@@ -1,10 +1,10 @@
 {
-    "complete": "Complet",
+    "complete": "Finalizează",
     "completecourse": "Curs complet",
-    "completed": "Finalizat",
+    "completed": "Finalizare",
     "completiondate": "Data limita până la completarea acțiunii",
     "couldnotloadreport": "Raportul cu privire la situația completării cursului nu se poate încărca, încercați mai târziu.",
-    "coursecompletion": "Utilizatorul trebuie să completeze acest curs.",
+    "coursecompletion": "Absolvire curs",
     "criteria": "Criterii",
     "criteriagroup": "Grup criterii",
     "criteriarequiredall": "Toate criteriile de mai jos sunt necesare",
@@ -13,9 +13,9 @@
     "manualselfcompletion": "Auto-finalizare manuală",
     "notyetstarted": "Nu a fost încă început",
     "pending": "În așteptare",
-    "required": "Necesar",
+    "required": "Obligatoriu",
     "requiredcriteria": "Criteriu necesar",
     "requirement": "Cerințe",
-    "status": "Permite accesul vizitatorilor",
+    "status": "Status",
     "viewcoursereport": "Vezi raportul cursului"
 }

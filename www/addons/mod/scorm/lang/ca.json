@@ -32,7 +32,7 @@
     "highestattempt": "Intent més alt",
     "incomplete": "Incomplet",
     "lastattempt": "Darrer intent completat",
-    "mode": "Moda",
+    "mode": "Mode",
     "newattempt": "Comença un nou intent",
     "noattemptsallowed": "Nombre d'intents permesos",
     "noattemptsmade": "Nombre d'intents realitzats",
@@ -45,7 +45,7 @@
     "reviewmode": "Mode de revisió",
     "scormstatusnotdownloaded": "Aquest SCORM no s'ha descarregat. Ho farà automàticament quan l'obriu.",
     "scormstatusoutdated": "Aquest SCORM s'ha modificat des de la darrera descàrrega. Es descarregarà automàticament quan l'obriu.",
-    "suspended": "Compte invalidat",
+    "suspended": "Suspès",
     "warningofflinedatadeleted": "Algunes dades fora de línia de l'intent {{number}} s'han eliminat perquè no poden crear-se al nou intent.",
     "warningsynconlineincomplete": "Alguns intents no poden sincronitzar-se amb el lloc perquè el darrer intent en línia no ha finalitzat. Acabeu l'intent primer."
 }

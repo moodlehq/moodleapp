@@ -17,6 +17,6 @@
     "hiddenfromstudents": "Oculto de estudiantes",
     "nocontentavailable": "Sin contenido disponible al momento.",
     "overriddennotice": "La calificación final de esta actividad ha sido ajustada manualmente.",
-    "showall": "Mostrar todas las preguntas en una página",
+    "showall": "Mostrar {{$a}}",
     "useactivityonbrowser": "Usted todavía puede usarla si usa su navegador del dispositivo."
 }

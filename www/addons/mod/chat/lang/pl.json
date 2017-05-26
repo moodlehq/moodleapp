@@ -7,7 +7,7 @@
     "messagebeepsyou": "{{$a}} właśnie do Ciebie napisał",
     "messageenter": "{{$a}} właśnie wszedł na czat",
     "messageexit": "{{$a}} opuścił czat",
-    "nomessages": "Brak oczekujących wiadomości",
+    "nomessages": "Brak wiadomości",
     "send": "Wyślij",
     "sessionstart": "Sesja czatu rozpocznie się za:  {$ a}}",
     "talk": "Dyskusja"

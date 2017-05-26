@@ -1,5 +1,5 @@
 {
-    "answer": "Atsakymas",
+    "answer": "Atsakyti",
     "attemptheader": "Bandymas",
     "attemptsremaining": "Turite likusių bandymų: {{$a}}",
     "averagescore": "Vidutinis balas",
@@ -8,7 +8,7 @@
     "cannotfindattempt": "Klaida: nepavyko rasti bandymo",
     "cannotfinduser": "Klaida: nepavyko rasti naudotojų",
     "clusterjump": "Telkinyje nematomas klausimas",
-    "completed": "Užbaigta",
+    "completed": "Baigta",
     "congratulations": "Sveikiname. Pasiekta pamokos pabaiga.",
     "continue": "Tęsti",
     "continuetonextpage": "Toliau į sekantį puslapį.",

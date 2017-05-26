@@ -1,7 +1,7 @@
 {
     "asset": "資源",
     "assetlaunched": "已閱讀的資源",
-    "attempts": "作答次數",
+    "attempts": "作答次",
     "averageattempt": "平均使用次數",
     "browse": "預覽",
     "browsed": "已瀏覽",
@@ -22,9 +22,9 @@
     "exceededmaxattempts": "你已經達到最大的作答次數",
     "failed": "失敗",
     "firstattempt": "第一次使用",
-    "gradeaverage": "平均分數",
+    "gradeaverage": "平均成績",
     "gradeforattempt": "作答次的分數",
-    "gradehighest": "最高分數",
+    "gradehighest": "最高成績",
     "grademethod": "評分方式",
     "gradereported": "成績報告",
     "gradescoes": "學習目標",
@@ -32,7 +32,7 @@
     "highestattempt": "最高使用次數",
     "incomplete": "不完整",
     "lastattempt": "最後完成的作答次",
-    "mode": "眾數",
+    "mode": "模式",
     "newattempt": "開始新的使用",
     "noattemptsallowed": "允許作答的次數",
     "noattemptsmade": "你已經作答的次數",
@@ -45,7 +45,7 @@
     "reviewmode": "複習模式",
     "scormstatusnotdownloaded": "此SCORM未下載. 它會在您打開時自動下載.",
     "scormstatusoutdated": "此SCORM自上次下載以來已被修改. 它會在您打開時自動下載.",
-    "suspended": "已被停用的帳號",
+    "suspended": "中止",
     "warningofflinedatadeleted": "嘗試{{number}}的某些離線資料已被刪除, 因為無法建立新的嘗試.",
     "warningsynconlineincomplete": "某些嘗試無法與網站同步, 因為上次上線嘗試未完成, 請先完成上線嘗試."
 }

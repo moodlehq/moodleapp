@@ -10,7 +10,7 @@
     "errornoapp": "Du behöver att ha en app installerat för att utföra den här åtgärden.",
     "errorreadingfile": "Fel i samband med läsningen av filen  \"{{$a}}\"",
     "errorwhileuploading": "Ett fel uppstod under filöverföringen.",
-    "file": "Återkopplingsfiler",
+    "file": "Fil",
     "fileuploaded": "Fil laddades upp",
     "photoalbums": "Fotoalbum",
     "readingfile": "Läsa fil",

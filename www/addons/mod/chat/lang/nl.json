@@ -12,8 +12,8 @@
     "messageenter": "{{$a}} is net deze chat binnen gekomen",
     "messageexit": "{{$a}} heeft deze chat verlaten",
     "mustbeonlinetosendmessages": "Je moet online zijn om berichten te versturen",
-    "nomessages": "Geen berichten",
-    "send": "Verstuur",
+    "nomessages": "Nog geen berichten",
+    "send": "Stuur",
     "sessionstart": "De volgende chatsessie zal beginnen op {{$a.date}}, ({{$a.fromnow}} vanaf nu)",
     "talk": "Spreek"
 }

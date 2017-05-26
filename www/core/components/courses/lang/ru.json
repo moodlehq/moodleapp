@@ -1,17 +1,17 @@
 {
     "allowguests": "Курс доступен гостю",
     "availablecourses": "Доступные курсы",
-    "categories": "Категории",
+    "categories": "Категории курсов",
     "courses": "Курсы",
     "enrolme": "Записаться на курс",
     "errorloadcourses": "При загрузке курсов произошла ошибка.",
     "frontpage": "Главная страница",
     "mycourses": "Мои курсы",
-    "nocourses": "Пока еще нет ни одного курса",
+    "nocourses": "Нет информации для отображения.",
     "nocoursesyet": "В этой категории нет курсов",
-    "nosearchresults": "Нет результатов",
+    "nosearchresults": "Поиск не дал результатов",
     "notenroled": "Вы не записаны на этот курс",
-    "password": "Пароль",
-    "search": "Искать...",
-    "searchcourses": "Поиск курсов"
+    "password": "Общий секретный ключ",
+    "search": "Найти",
+    "searchcourses": "Поиск курса"
 }

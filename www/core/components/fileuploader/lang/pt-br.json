@@ -12,7 +12,7 @@
     "errornoapp": "Você não tem um aplicativo instalado para fazer essa ação.",
     "errorreadingfile": "Erro na leitura do arquivo \"{{$a}}\"",
     "errorwhileuploading": "Houve um erro durante o envio do arquivo.",
-    "file": "Arquivos de feedback",
+    "file": "Arquivo",
     "fileuploaded": "Arquivo enviado",
     "maxbytesfile": "O arquivo {{$a.file}} é muito grande. O tamanho máximo que você pode enviar é {{$a.size}}.",
     "photoalbums": "Álbuns de fotos",

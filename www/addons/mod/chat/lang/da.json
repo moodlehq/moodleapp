@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} er lige kommet til",
     "messageexit": "{{$a}} har forladt chatten",
     "mustbeonlinetosendmessages": "Du skal være online for at sende beskeder",
-    "nomessages": "Ingen beskeder",
+    "nomessages": "Ingen beskeder endnu",
     "send": "Send",
     "sessionstart": "Næste chat starter {{$a.date}}, ({{$a.fromnow}} fra nu af)",
     "talk": "Tal"

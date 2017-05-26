@@ -10,5 +10,5 @@
     "hiddenfromstudents": "Ascuns de cursanţi",
     "nocontentavailable": "Pentru moment nu există conținut.",
     "overriddennotice": "Nota finală obţinută de dumneavoastră pentru această activitate a fost ajustată manual.",
-    "showall": "Afişează toate întrebările pe o singură pagină"
+    "showall": "Afişează toate {{$a}}"
 }

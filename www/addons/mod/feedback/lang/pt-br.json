@@ -10,7 +10,7 @@
     "feedbackclose": "Permitir respostas até",
     "feedbackopen": "Permitir respostas de",
     "mapcourses": "Mapear pesquisa para os cursos",
-    "mode": "Tendência",
+    "mode": "Modo",
     "next_page": "Próxima página",
     "non_anonymous": "O nome do usuário será registrado e mostrado com as respostas",
     "non_anonymous_entries": "entradas não anônimas",
@@ -19,7 +19,7 @@
     "not_started": "não iniciado",
     "overview": "Visão geral",
     "page_after_submit": "Mensagem de conclusão",
-    "preview": "Visualização prévia",
+    "preview": "Previsão",
     "previous_page": "Página anterior",
     "questions": "Questões",
     "response_nr": "Resposta numérica",
@@ -27,6 +27,6 @@
     "save_entries": "Submeter as suas respostas",
     "show_entries": "Mostrar respostas",
     "show_nonrespondents": "Mostrar não respondentes",
-    "started": "Iniciada",
+    "started": "iniciado",
     "this_feedback_is_already_submitted": "Você já terminou esta atividade."
 }

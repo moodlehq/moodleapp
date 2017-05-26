@@ -12,7 +12,7 @@
     "errornoapp": "Jūs neturite programėlės šiam veiksmui atlikti.",
     "errorreadingfile": "Įvyko klaida skaitant failą {{$a}}",
     "errorwhileuploading": "Klaida įkeliant failą.",
-    "file": "Grįžtamojo ryšio failai",
+    "file": "Failas",
     "fileuploaded": "Failas sėkmingai įkeltas.",
     "maxbytesfile": "Failas {{$a.file}} ) per didelis. Galite įkelti failus iki {{$a.size}}.",
     "photoalbums": "Nuotraukų albumai",

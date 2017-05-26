@@ -7,8 +7,8 @@
     "messagebeepsyou": "{{$a}} most csöngetett Önnek!",
     "messageenter": "{{$a}} most lépett be a csevegésbe",
     "messageexit": "{{$a}} most lépett ki a csevegésből",
-    "nomessages": "Nincs üzenet.",
-    "send": "Küldés",
+    "nomessages": "Még nincs üzenet",
+    "send": "Elküld",
     "sessionstart": "A következő csevegés kezdete  {{$a.date}}, (mostantól {{$a.fromnow}})",
     "talk": "Beszéljen"
 }

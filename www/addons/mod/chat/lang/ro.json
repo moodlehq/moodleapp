@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} a intrat în această cameră de discuţii",
     "messageexit": "{{$a}} a ieşit din această cameră de discuţii",
     "mustbeonlinetosendmessages": "Trebuie să fiți conectat pentru a trimite mesaje",
-    "nomessages": "Nu există mesaje în aşteptare",
-    "send": "Trimite",
+    "nomessages": "Nu a fost trimis încă niciun mesaj",
+    "send": "Trimis",
     "sessionstart": "Următoarea sesiune de chat va începe în {{$a}}"
 }

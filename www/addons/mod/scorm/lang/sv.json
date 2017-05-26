@@ -22,10 +22,10 @@
     "exceededmaxattempts": "Du har redan använt samtliga tillåtna försök.",
     "failed": "Det fungerade inte",
     "firstattempt": "Första försöket",
-    "gradeaverage": "Medelbetyg",
+    "gradeaverage": "Medelbetyg/omdöme",
     "gradeforattempt": "Betyg/omdöme för försök",
-    "gradehighest": "Högsta betyg",
-    "grademethod": "Betygsättningsmetod",
+    "gradehighest": "Högsta betyg/omdöme",
+    "grademethod": "Metod för betyg/omdömen",
     "gradereported": "Betyg rapporterat",
     "gradescoes": "Lärobjekt ",
     "gradesum": "Summera betyg/omdöme(n)",
@@ -45,7 +45,7 @@
     "reviewmode": "Läge för granskning",
     "scormstatusnotdownloaded": "Detta SCORM är inte nedladdat. Det kommer att laddas ner automatiskt när du öppnar den",
     "scormstatusoutdated": "Detta SCORM har modifierats sedan sista nedladdningen. Det kommer att laddas ner automatiskt när du öppnar den",
-    "suspended": "Avaktiverat konto",
+    "suspended": "Avstängd",
     "warningofflinedatadeleted": "Vissa offlinedata av försöket {{nummer}} har tagits bort eftersom den inte kunnat skapas in ett nytt försök .",
     "warningsynconlineincomplete": "Vissa försök kunde inte synkroniseras med sidan, eftersom senaste online försök inte är klar än . Vänligen avsluta online- försöket först ."
 }

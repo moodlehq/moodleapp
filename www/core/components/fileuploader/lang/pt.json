@@ -12,7 +12,7 @@
     "errornoapp": "Não possui a aplicação móvel necessária para executar esta ação.",
     "errorreadingfile": "Erro na leitura do ficheiro \"{{$a}}\"",
     "errorwhileuploading": "Ocorreu um erro durante o carregamento do ficheiro.",
-    "file": "Ficheiros de feedback",
+    "file": "Ficheiro",
     "fileuploaded": "Ficheiro carregado com sucesso",
     "maxbytesfile": "O ficheiro {{$a.file}} é muito grande. Apenas pode carregar ficheiros com um tamanho máximo de {{$a.size}}.",
     "photoalbums": "Álbuns de fotos",

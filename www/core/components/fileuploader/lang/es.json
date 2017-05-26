@@ -12,7 +12,7 @@
     "errornoapp": "Usted no tiene una app instalada para realizar esta acción.",
     "errorreadingfile": "Error al leer el archivo  \"{{$a}}\"",
     "errorwhileuploading": "Ocurrió un error al subir un archivo.",
-    "file": "Archivos de retroalimentación",
+    "file": "Archivo",
     "fileuploaded": "Archivo subido",
     "maxbytesfile": "El archivo {{$a.file}} es demasido grande. El tamaño máximo que puede subir es {{$a.size}}.",
     "photoalbums": "Álbumes de fotos",

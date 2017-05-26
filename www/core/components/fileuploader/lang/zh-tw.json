@@ -12,7 +12,7 @@
     "errornoapp": "您沒有安裝應用程式來執行此動作.",
     "errorreadingfile": "讀取檔案 \"{{$a}}\" 時發生錯誤",
     "errorwhileuploading": "檔案上傳時發生錯誤.",
-    "file": "回饋檔案",
+    "file": "檔案",
     "fileuploaded": "檔案已上傳",
     "maxbytesfile": "這檔案 {{$a.file}} 太大了。你可以上傳的檔案最大容量是 {{$a.size}}。",
     "photoalbums": "相簿",
