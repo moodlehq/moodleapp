@@ -98,9 +98,9 @@ angular.module('mm.addons.mod_lesson')
 
                     $mmaModLessonPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModLessonPrefetchHandler.prefetch(module, courseId).catch(function() {
+                            $mmaModLessonPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                                 }
                             });
                         }).catch(function() {

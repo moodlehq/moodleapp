@@ -64,6 +64,8 @@ angular.module('mm.addons.mod_lesson')
     self.LESSON_UNSEENBRANCHPAGE = -50;
     // Jump to a random page within a branch and end of branch or end of lesson.
     self.LESSON_RANDOMPAGE = -60;
+    // Jump to a random Branch.
+    self.LESSON_RANDOMBRANCH = -70;
     // Cluster Jump.
     self.LESSON_CLUSTERJUMP = -80;
 

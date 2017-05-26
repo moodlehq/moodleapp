@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_lesson')
  * @name $mmaModLessonPrefetchHandler
  */
 .factory('$mmaModLessonPrefetchHandler', function($mmaModLesson, $q, $mmPrefetchFactory, mmaModLessonComponent, $mmUtil, $mmGroups,
-    $mmSite, $mmFilepool, $rootScope, $timeout, $ionicModal, mmCoreDontShowError, $mmCourse) {
+    $mmSite, $mmFilepool, $rootScope, $timeout, $ionicModal, mmCoreDontShowError, $mmCourse, $mmLang) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModLessonComponent, false);
 
@@ -426,10 +426,19 @@ angular.module('mm.addons.mod_lesson')
 
             // Get the list of pages.
             promises.push($mmaModLesson.getPages(lesson.id, password, false, true, siteId).then(function(pages) {
-                var subPromises = [];
+                var subPromises = [],
+                    hasRandomBranch = false;
 
                 // Get the data for each page.
                 angular.forEach(pages, function(data) {
+                    // Check if any page has a RANDOMBRANCH jump.
+                    angular.forEach(data.jumps, function(jump) {
+                        if (jump == $mmaModLesson.LESSON_RANDOMBRANCH) {
+                            hasRandomBranch = true;
+                        }
+                    });
+
+                    // Get the page data.
                     subPromises.push($mmaModLesson.getPageData(lesson, data.page.id, password, false, true, false,
                             true, undefined, undefined, siteId).then(function(pageData) {
 
@@ -449,6 +458,16 @@ angular.module('mm.addons.mod_lesson')
                     }));
                 });
 
+                // Prefetch the list of possible jumps for offline navigation. Do it here so we know hasRandomBranch.
+                subPromises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, false, true, siteId).catch(function(error) {
+                    if (hasRandomBranch) {
+                        // The WebSevice probably failed because RANDOMBRANCH aren't supported if the user hasn't seen any page.
+                        return $mmLang.translateAndReject('mma.mod_lesson.errorprefetchrandombranch');
+                    } else {
+                        return $q.reject(error);
+                    }
+                }));
+
                 return $q.all(subPromises);
             }));
 
@@ -457,8 +476,6 @@ angular.module('mm.addons.mod_lesson')
                 // Ignore errors.
             }));
 
-            // Prefetch the list of possible jumps for offline navigation.
-            promises.push($mmaModLesson.getPagesPossibleJumps(lesson.id, false, true, siteId));
 
             // Prefetch viewed pages in last retake to calculate progress.
             promises.push($mmaModLesson.getContentPagesViewedOnline(lesson.id, retake, false, true, siteId));
