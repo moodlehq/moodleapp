@@ -1530,6 +1530,26 @@ i, cite, em, var, address, dfn {
   }
 }
 
+@media only screen and (max-height: 420px) {
+  .mm-empty-box {
+    position: relative;
+
+    .mm-empty-box-content {
+      padding: $item-padding / 2;
+    }
+    .icon {
+      font-size: 100px;
+    }
+    img {
+      height: 104px;
+      width: 121px;
+    }
+    .icon + p, img + p {
+      padding-top: $item-padding / 2;
+    }
+  }
+}
+
 progress {
   -webkit-appearance: none;
   appearance: none;
@@ -1587,5 +1607,29 @@ h2.invert {
       display: table-cell;
       vertical-align: middle;
     }
+  }
+}
+
+/* Animations */
+.mm-animate-show,
+.mm-animate-show-hide {
+  &.ng-enter {
+    transition: 0.5s ease all;
+    opacity: 0;
+  }
+
+  &.ng-enter.ng-enter-active {
+    opacity: 1;
+  }
+}
+
+.mm-animate-hide,
+.mm-animate-show-hide {
+  &.ng-leave {
+    transition: 0.5s ease all;
+    opacity: 1;
+  }
+  &.ng-leave.ng-leave-active {
+    opacity: 0;
   }
 }
