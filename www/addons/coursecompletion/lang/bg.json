@@ -1,14 +1,14 @@
 {
-    "complete": "Отговорен",
-    "completed": "Приключен",
-    "coursecompletion": "Напредване в курса",
+    "complete": "Завършен",
+    "completed": "Завършено",
+    "coursecompletion": "Завършване на курса",
     "criteria": "Критерии",
     "criteriagroup": "Група критерии",
     "criteriarequiredall": "Всички критерии по-долу са задължителни",
     "criteriarequiredany": "Някои критерии по-долу са задължителни",
     "inprogress": "Не е приключен",
     "manualselfcompletion": "Ръчно самоотбелязване на завършването",
-    "required": "Задължителен",
-    "status": "Позволяване достъп като гост",
+    "required": "Задължително",
+    "status": "Състояние",
     "viewcoursereport": "Вижте отчет за курса"
 }

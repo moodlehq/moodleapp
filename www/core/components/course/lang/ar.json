@@ -4,5 +4,5 @@
     "couldnotloadsections": "لم يتم تحميل كل الأقسام، من فضلك حاول مرة أخرى لاحقاَ",
     "errordownloadingsection": "خطأ عن تنزيل الأقسام",
     "hiddenfromstudents": "مخفي عن الطلاب",
-    "showall": "أعرض جميع الأسئلة في صفحة واحدة"
+    "showall": "عرض الكل {{$a}}"
 }

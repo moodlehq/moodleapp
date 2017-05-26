@@ -2,7 +2,7 @@
     "allsections": "Toate secțiunile",
     "confirmdownload": "Porniți o descărcare de {{size}}. Sunteți sigur ca doriți să continuați?",
     "confirmdownloadunknownsize": "Nu putem calcula dimensiunea fișierului pe care doriți să îl descărcați. Sunteți sigur că doriți să descărcați?",
-    "contents": "Conţinut",
+    "contents": "Conținut",
     "couldnotloadsectioncontent": "Nu se poate încărca conținutul acestei secțiuni, încercați mai târziu.",
     "couldnotloadsections": "Nu se pot încărca secțiunile, încercați mai târziu.",
     "errordownloadingsection": "A apărut o eroare la descărcarea secțiunii.",
@@ -10,5 +10,5 @@
     "hiddenfromstudents": "Ascuns de cursanţi",
     "nocontentavailable": "Pentru moment nu există conținut.",
     "overriddennotice": "Nota finală obţinută de dumneavoastră pentru această activitate a fost ajustată manual.",
-    "showall": "Afişează toate întrebările pe o singură pagină"
+    "showall": "Arată tot"
 }

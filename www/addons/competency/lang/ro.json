@@ -1,10 +1,10 @@
 {
-    "activities": "Activități",
+    "activities": "Activităţi",
     "duedate": "Termen de predare",
     "evidence": "Evidență",
     "path": "Cale",
     "progress": "Progres student",
     "rating": "Rating",
-    "status": "Permite accesul vizitatorilor",
+    "status": "Status",
     "template": "Șablon"
 }

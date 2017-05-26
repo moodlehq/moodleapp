@@ -1,16 +1,16 @@
 {
     "allowguests": "W tym kursie mogą uczestniczyć również goście",
     "availablecourses": "Dostępne kursy",
-    "categories": "Kategorie",
+    "categories": "Kategorie kursów",
     "courses": "Kursy",
     "enrolme": "Zapisz mnie",
     "frontpage": "Strona startowa",
     "mycourses": "Moje kursy",
-    "nocourses": "Nie ma jeszcze żadnych kursów",
+    "nocourses": "Nie ma informacji do pokazania",
     "nocoursesyet": "Brak kursów w tej kategorii",
-    "nosearchresults": "Brak wyników",
+    "nosearchresults": "Brak rezultatów wyszukiwania",
     "notenroled": "Nie jesteś zapisany w tym kursie",
-    "password": "Hasło",
-    "search": "Szukaj...",
-    "searchcourses": "Szukaj kursów"
+    "password": "Wspólne tajne hasło",
+    "search": "Wyszukaj",
+    "searchcourses": "Przeszukaj kursy"
 }

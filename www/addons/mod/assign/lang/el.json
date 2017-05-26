@@ -41,7 +41,7 @@
     "numberofsubmittedassignments": "Υποβλήθηκε",
     "numberofteams": "Ομάδες",
     "numwords": "{{$a}} λέξεις",
-    "outof": "{{$a.grade}} από ένα μέγιστο {{$a.maxgrade}}",
+    "outof": "Από τα {{$a}}",
     "overdue": "<font color=\"red\">Η εργασία είναι εκπρόθεσμη για: {{$a}}</font>",
     "savechanges": "Αποθήκευση αλλαγών",
     "submission": "Υποβολή",

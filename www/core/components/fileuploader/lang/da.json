@@ -11,7 +11,7 @@
     "errornoapp": "Du har ikke installeret en app som kan udføre denne handling.",
     "errorreadingfile": "Fejl under læsning af filen \"{{$a}}\"",
     "errorwhileuploading": "En fejl opstod under upload af filen.",
-    "file": "Feedback-filer",
+    "file": "Fil",
     "fileuploaded": "Filen er uploadet.",
     "maxbytesfile": "Filen {{$a.file}} er for stor. Maksimal upload-størrelse er {{$a.size}}.",
     "photoalbums": "Fotoalbum",

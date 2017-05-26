@@ -3,7 +3,7 @@
     "anonymous": "Anonym",
     "anonymous_entries": "Anonyme Einträge ({{$a}})",
     "average": "Mittelwert",
-    "captchaofflinewarning": "Ein Feedback mit Captcha kann nicht beendet werden, wenn der Server nicht konfiguriert ist oder nicht antwortet. Captcha funktioniert im Offline-Modus nicht.",
+    "captchaofflinewarning": "Ein Feedback mit Captcha kann offline nicht beendet werden. Captcha funktioniert nicht, wenn der Server nicht konfiguriert ist oder der Server nicht antwortet.",
     "complete_the_form": "Formular ausfüllen...",
     "completed_feedbacks": "Ausgefüllte Feedbacks",
     "continue_the_form": "Ausfüllen fortsetzen",
