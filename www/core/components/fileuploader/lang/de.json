@@ -10,7 +10,7 @@
     "errorgettingimagealbum": "Fehler beim Laden aus dem Fotoalbum",
     "errormustbeonlinetoupload": "Dateien können nur online hochgeladen werden.",
     "errornoapp": "Keine App zum Ausführen dieser Aktion gefunden",
-    "errorreadingfile": "Fehler beim Lesen der Datei \"{{$a}}\"",
+    "errorreadingfile": "Fehler beim Lesen der Datei",
     "errorwhileuploading": "Fehler beim Hochladen der Datei",
     "file": "Datei",
     "fileuploaded": "Datei hochgeladen",
@@ -19,7 +19,7 @@
     "readingfile": "Datei lesen",
     "selectafile": "Wählen Sie eine Datei.",
     "uploadafile": "Datei hochladen",
-    "uploading": "Wird hochgeladen...",
+    "uploading": "Hochladen",
     "uploadingperc": "Hochladen: {{$a}}%",
     "video": "Video"
 }

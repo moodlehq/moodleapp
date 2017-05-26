@@ -10,7 +10,7 @@
     "errorgettingimagealbum": "Erro ao pegar imagem a partir do álbum.",
     "errormustbeonlinetoupload": "Você precisa estar online para enviar arquivos.",
     "errornoapp": "Você não tem um aplicativo instalado para fazer essa ação.",
-    "errorreadingfile": "Erro na leitura do arquivo \"{{$a}}\"",
+    "errorreadingfile": "Erro ao ler arquivo.",
     "errorwhileuploading": "Houve um erro durante o envio do arquivo.",
     "file": "Arquivo",
     "fileuploaded": "Arquivo enviado",
@@ -18,8 +18,8 @@
     "photoalbums": "Álbuns de fotos",
     "readingfile": "Lendo arquivos",
     "selectafile": "Selecione um arquivo",
-    "uploadafile": "Enviar um arquivo",
-    "uploading": "Enviando...",
+    "uploadafile": "Enviando um arquivo",
+    "uploading": "Enviando",
     "uploadingperc": "Enviando: {{$a}}%",
     "video": "Vídeo"
 }

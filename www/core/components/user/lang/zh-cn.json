@@ -1,10 +1,10 @@
 {
     "address": "地址",
     "city": "市/县",
-    "contact": "联系",
+    "contact": "联系方式",
     "country": "国家和地区",
     "description": "简要描述",
-    "details": "查看详情",
+    "details": "详情",
     "email": "Email地址",
     "emailagain": "Email (重复)",
     "firstname": "名",

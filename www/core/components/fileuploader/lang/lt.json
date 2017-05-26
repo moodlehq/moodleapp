@@ -10,7 +10,7 @@
     "errorgettingimagealbum": "Klaida gaunant paveiksliuką iš albumo.",
     "errormustbeonlinetoupload": "Norint įkelti failą reikia prisijungti.",
     "errornoapp": "Jūs neturite programėlės šiam veiksmui atlikti.",
-    "errorreadingfile": "Įvyko klaida skaitant failą {{$a}}",
+    "errorreadingfile": "Klaida nuskaitant failą.",
     "errorwhileuploading": "Klaida įkeliant failą.",
     "file": "Failas",
     "fileuploaded": "Failas sėkmingai įkeltas.",
@@ -18,8 +18,8 @@
     "photoalbums": "Nuotraukų albumai",
     "readingfile": "Skaitomas failas",
     "selectafile": "Pasirinkite failą",
-    "uploadafile": "Įkelti failą",
-    "uploading": "Įkeliama...",
+    "uploadafile": "Įkelkite failą",
+    "uploading": "Įkeliama",
     "uploadingperc": "Įkeliama: {{$a}}%",
     "video": "Vaizdinė medžiaga"
 }

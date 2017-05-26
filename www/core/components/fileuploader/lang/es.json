@@ -1,5 +1,5 @@
 {
-    "addfiletext": "Añadir fichero",
+    "addfiletext": "añadir archivo",
     "audio": "Audio",
     "camera": "Cámara",
     "confirmuploadfile": "Usted va a subir {{size}}. ¿Desea continuar?",
@@ -19,7 +19,7 @@
     "readingfile": "Leyendo archivo",
     "selectafile": "Seleccionar un archivo",
     "uploadafile": "Subir un archivo",
-    "uploading": "Subiendo...",
+    "uploading": "Subiendo",
     "uploadingperc": "Subiendo: {{$a}}%",
     "video": "Vídeo"
 }

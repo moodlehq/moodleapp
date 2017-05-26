@@ -17,5 +17,5 @@
     "questionmessage": "問題 {{$a}}: {{$b}}",
     "questionno": "試題{{$a}}",
     "requiresgrading": "需要計分",
-    "unknown": "未知的"
+    "unknown": "無法偵測到狀態"
 }

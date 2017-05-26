@@ -3,6 +3,6 @@
     "defaultnotificationtime": "زمان پیش‌فرض اطلاع‌رسانی",
     "errorloadevent": "خطا در بارگیری رویداد.",
     "errorloadevents": "خطا در بارگیری رویدادها.",
-    "noevents": "هیچ مهلتی برای فعالیت‌های آتی وجود ندارد",
-    "notifications": "تذکرات"
+    "noevents": "هیچ رویدادی نیست",
+    "notifications": "هشدارها"
 }
