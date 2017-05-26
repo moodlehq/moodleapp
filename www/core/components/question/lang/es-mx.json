@@ -6,7 +6,7 @@
     "errorattachmentsnotsupported": "La aplicación todavía no soporta anexarle archivos a las respuestas.",
     "errorinlinefilesnotsupported": "La aplicación aun no soporta el editar archivos en-línea.",
     "errorquestionnotsupported": "Este tipo de pregunta no está soportada por la App: {{$a}}.",
-    "feedback": "Retroalimentación",
+    "feedback": "Comentario de retroalimentación",
     "howtodraganddrop": "Tocar para seleccionar y tocar para soltar",
     "incorrect": "Incorrecta",
     "information": "Información",

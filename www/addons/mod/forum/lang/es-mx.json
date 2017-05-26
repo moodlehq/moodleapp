@@ -6,6 +6,7 @@
     "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
     "discussion": "Discusión",
     "discussionlocked": "Esta discusión ha sido bloqueada, por lo que Usted ya no puede responder a ella.",
+    "discussionpinned": "Apuntalada",
     "discussionsubscription": "Suscripción a discusión",
     "edit": "Editar",
     "erroremptymessage": "El mensaje no puede estar vacío",
@@ -25,8 +26,6 @@
     "refreshdiscussions": "Refrescar discusiones",
     "refreshposts": "Refrescar publicaciones de discusiones",
     "reply": "Responder (réplica)",
-    "sortnewestfirst": "Mostrar primeramente los más nuevos",
-    "sortoldestfirst": "Mostrar primeramente los más antiguos",
     "subject": "Asunto",
     "unread": "No leído",
     "unreadpostsnumber": "{{$a}} mensajes no leídos"

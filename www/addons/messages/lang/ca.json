@@ -1,5 +1,5 @@
 {
-    "addcontact": "Afegeix com a contacte",
+    "addcontact": "Afegeix contacte",
     "blockcontact": "Bloca contacte",
     "blockcontactconfirm": "Ja no rebreu més missatges d'aquest contacte.",
     "blocknoncontacts": "Impedeix que m'enviïn missatges els usuaris que no siguin a la meva llista de contactes",
@@ -23,8 +23,8 @@
     "nousersfound": "No s'han trobat usuaris",
     "removecontact": "Suprimeix contacte",
     "removecontactconfirm": "El contacte s'eliminarà de la vostra llista de contactes.",
-    "send": "Envia",
-    "sendmessage": "Envia un missatge",
+    "send": "envia",
+    "sendmessage": "Envia missatge",
     "type_blocked": "Bloquejat",
     "type_offline": "Fora de línia",
     "type_online": "En línia",

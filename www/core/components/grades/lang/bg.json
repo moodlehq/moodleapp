@@ -4,10 +4,10 @@
     "feedback": "Обратна връзка",
     "grade": "Оценка",
     "grades": "Оценки",
-    "itemname": "Оценяване",
+    "itemname": "Име на единица",
     "lettergrade": "Оценка с буква",
-    "percentage": "В проценти",
-    "range": "Обхват",
-    "rank": "Ранг",
+    "percentage": "Проценти",
+    "range": "Диапазон",
+    "rank": "Rank",
     "weight": "Тегло"
 }

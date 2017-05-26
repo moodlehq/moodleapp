@@ -17,7 +17,7 @@
                     <li class="item item-text-wrap">
                         <strong>{{ 'mma.competency.progress' | translate }}</strong>:
                         {{ 'mma.competency.xcompetenciesproficientoutofyincourse' | translate:{$a: {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
-                        <progress max="100" value="{{ competencies.statistics.proficientcompetencypercentage }}"></progress>
+                        <mm-progress-bar progress="competencies.statistics.proficientcompetencypercentage"></mm-progress-bar>
                     </li>
                     <li class="item item-text-wrap" ng-if="competencies.statistics.leastproficientcount > 0">
                         <strong>{{ 'mma.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
@@ -33,20 +33,18 @@
             </article>
 
             <article>
-                <h3>{{ 'mma.competency.competencies' | translate }}</h3>
+                <h3 ng-if="competencies.statistics.competencycount > 0">{{ 'mma.competency.competencies' | translate }}</h3>
                 <p ng-if="user" class="item item-avatar">
                     <img ng-if="user.profileimageurl && user.profileimageurl !== true" ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
                     <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
                     <mm-format-text>{{ user.fullname }}</mm-format-text>
                 </p>
-                <span ng-if="competencies.statistics.competencycount == 0">
-                    {{ 'mma.competency.nocompetencies' | translate }}
-                </span>
+                <mm-empty-box ng-if="competencies.statistics.competencycount == 0" icon="ion-ribbon-a" message="{{ 'mma.competency.nocompetencies' | translate }}"></mm-empty-box>
 
                 <div class="list card" ng-repeat="competency in competencies.competencies">
                     <a ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}" class="item item-heading item-text-wrap clearfix">
                         {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
-                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
+                        <span ng-if="competency.usercompetencycourse.gradename" ng-class="{'badge-balanced': competency.usercompetencycourse.proficiency, 'badge-assertive': !competency.usercompetencycourse.proficiency}" class="badge badge-inline text-center item-note">{{ competency.usercompetencycourse.gradename }}</span><br>
                     </a>
                     <div class="item item-body">
                         <div ng-if="competency.competency.description">

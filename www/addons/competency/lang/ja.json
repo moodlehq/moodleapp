@@ -20,7 +20,7 @@
     "progress": "学生の進捗",
     "rating": "評価",
     "reviewstatus": "レビューステータス",
-    "status": "状態",
+    "status": "ステータス",
     "template": "テンプレート",
     "xcompetenciesproficientoutofy": "{{$a.x}} / {{$a.y}} のコンピテンシーで熟達しています。",
     "xcompetenciesproficientoutofyincourse": "あなたはこのコースに関して {{$a.x}} / {{$a.y}} のコンピテンシーで熟達しています。"

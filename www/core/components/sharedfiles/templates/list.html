@@ -5,7 +5,7 @@
         <mm-site-picker site-selected="changeSite(siteId)" ng-show="filesLoaded"></mm-site-picker>
         <li class="item item-divider"></li>
         <mm-loading hide-until="filesLoaded">
-            <ul class="list">
+            <ul class="list" ng-if="files.length > 0">
                 <li ng-repeat="file in files">
                     <mm-local-file ng-if="file.isFile" file="file" manage="manage" override-click="pick" file-deleted="fileDeleted($index)" file-clicked="filePicked(file)" file-renamed="fileRenamed($index, file)"></mm-local-file>
                     <a class="item item-media" ng-if="!file.isFile" ng-click="openFolder(file)">
@@ -13,11 +13,9 @@
                         {{ file.name }}
                     </a>
                 </li>
-                <li ng-if="files && !files.length" class="item item-text-wrap">
-                    <p ng-if="manage">{{ 'mm.sharedfiles.nosharedfiles' | translate }}</p>
-                    <p ng-if="!manage">{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}</p>
-                </li>
             </ul>
+            <mm-empty-box ng-if="files && !files.length && manage" icon="ion-folder" message="{{ 'mm.sharedfiles.nosharedfiles' | translate }}"></mm-empty-box>
+            <mm-empty-box ng-if="files && !files.length && !manage" icon="ion-folder" message="{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

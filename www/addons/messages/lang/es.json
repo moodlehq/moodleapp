@@ -1,5 +1,5 @@
 {
-    "addcontact": "Añadir como contacto",
+    "addcontact": "Añadir contacto",
     "blockcontact": "Bloquear contacto",
     "blocknoncontacts": "Bloquear mensajes de usuarios que no figuren en mi lista de contactos",
     "contactlistempty": "Lista de contactos vacía",
@@ -20,8 +20,8 @@
     "nomessages": "No hay mensajes en espera",
     "nousersfound": "No se encuentran usuarios",
     "removecontact": "Eliminar contacto",
-    "send": "Enviar",
-    "sendmessage": "Enviar un mensaje",
+    "send": "enviar",
+    "sendmessage": "Enviar mensaje",
     "type_blocked": "Bloqueado",
     "type_offline": "Desconectado",
     "type_online": "En línea",

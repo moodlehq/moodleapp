@@ -1,7 +1,5 @@
 {
     "activitydisabled": "Votre institution a désactivé cette activité dans l'App mobile.",
-    "activitynotyetviewable": "Cette activité n'est pas encore accessible via l'app.",
-    "activitynotyetviewablegothere": "Cette activité ou ressource n'est pas encore accessible via l'app ; cliquer sur le bouton ci-dessous pour y accéder sur la plateforme.",
     "activitynotyetviewableinapp": "L'activité {{$a}} sera bientôt supportée.",
     "activitynotyetviewableremoteaddon": "Votre institution a installé un plugin qui n'est pas encore supporté.",
     "activitynotyetviewablesiteupgradeneeded": "L'installation Moodle de votre institution doit être mise à jour.",
@@ -9,7 +7,6 @@
     "askadmintosupport": "Veuillez contacter l'administrateur de la plateforme et l'informer que vous désirez utiliser cette activité avec l'app mobile Moodle.",
     "confirmdeletemodulefiles": "Voulez-vous vraiment supprimer ces fichiers de module ?",
     "confirmdownload": "Vous allez télécharger {{size}}. Voulez-vous vraiment continuer ?",
-    "confirmdownloadsection": "Vous allez télécharger {{size}}. Voulez-vous vraiment continuer ?",
     "confirmdownloadunknownsize": "Il n'a pas été possible de calculer la taille du téléchargement. Voulez-vous vraiment effectuer le téléchargement ?",
     "confirmpartialdownloadsize": "Vous allez télécharger <strong>au moins</strong> {{size}}. Voulez-vous vraiment continuer ?",
     "contents": "Contenus",
@@ -17,10 +14,9 @@
     "couldnotloadsections": "Impossible de charger les sections. Veuillez essayer plus tard.",
     "errordownloadingsection": "Erreur lors du téléchargement de la section.",
     "errorgetmodule": "Erreur lors de l'obtention des données du module.",
-    "gotothesite": "Aller sur la plateforme",
+    "hiddenfromstudents": "Caché pour les participants",
     "nocontentavailable": "Aucun contenu disponible actuellement.",
     "overriddennotice": "Votre note finale pour cette activité a été ajustée manuellement.",
     "showall": "Tout afficher",
-    "useactivityonbrowser": "Vous pouvez continuer à l'utiliser avec le navigateur de votre appareil.",
-    "whoops": "Oups !"
+    "useactivityonbrowser": "Vous pouvez continuer à l'utiliser avec le navigateur de votre appareil."
 }

@@ -23,7 +23,7 @@ angular.module('mm.core.course')
  */
 .factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state, $mmText,
             mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmSitesManager, $mmAddonManager,
-            $controller, $mmCourseDelegate, $translate, $mmEvents, mmCoreEventPackageStatusChanged) {
+            $controller, $mmCourseDelegate, $translate, $mmEvents, mmCoreEventPackageStatusChanged, mmCoreNotDownloadable) {
 
     var self = {},
         calculateSectionStatus = false;
@@ -638,7 +638,8 @@ angular.module('mm.core.course')
      * @return {Boolean}       True if the section has content.
      */
     self.sectionHasContent = function(section) {
-        return !section.hiddenbynumsections  && (section.summary != '' || section.modules.length);
+        return !section.hiddenbynumsections && ((typeof section.availabilityinfo != "undefined" && section.availabilityinfo != '') ||
+            section.summary != '' || section.modules.length);
     };
 
     /**
@@ -715,11 +716,15 @@ angular.module('mm.core.course')
         return self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
             scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             scope.prefetchStatusIcon = moduleInfo.statusIcon;
-            if (moduleInfo.timemodified > 0) {
-                scope.timemodified = $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable;
-            } else {
-                // Cannot calculate time modified, show a default text.
-                scope.timemodified = $translate.instant('mm.core.download');
+
+            if (moduleInfo.status != mmCoreNotDownloadable) {
+                // Module is downloadable, calculate timemodified.
+                if (moduleInfo.timemodified > 0) {
+                    scope.timemodified = $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable;
+                } else {
+                    // Cannot calculate time modified, show a default text.
+                    scope.timemodified = $translate.instant('mm.core.download');
+                }
             }
 
             if (typeof scope.statusObserver == 'undefined' && component) {

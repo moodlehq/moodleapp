@@ -1,6 +1,6 @@
 {
-    "addcontact": "Ajouter un contact",
-    "blockcontact": "Bloquer le contact",
+    "addcontact": "Ajouter ce contact",
+    "blockcontact": "Bloquer ce contact",
     "blockcontactconfirm": "Vous ne recevrez plus de messages de ce contact.",
     "blocknoncontacts": "Empêcher les utilisateurs inconnus de m'envoyer des messages personnels",
     "contactlistempty": "La liste des contacts est vide",
@@ -22,15 +22,15 @@
     "newmessages": "Nouveaux messages",
     "nomessages": "Aucun message.",
     "nousersfound": "Aucun utilisateur trouvé",
-    "removecontact": "Supprimer contact",
+    "removecontact": "Supprimer ce contact",
     "removecontactconfirm": "Le contact sera retiré de votre liste.",
     "send": "Envoyer",
-    "sendmessage": "Envoyer un message",
+    "sendmessage": "Envoyer message",
     "type_blocked": "Bloqué",
     "type_offline": "Hors ligne",
     "type_online": "En ligne",
     "type_search": "Résultats de recherche",
     "type_strangers": "Autres",
-    "unblockcontact": "Débloquer contact",
+    "unblockcontact": "Débloquer ce contact",
     "warningmessagenotsent": "Impossible d'envoyer de message à l'utilisateur {{user}}. {{error}}"
 }

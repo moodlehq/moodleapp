@@ -1,6 +1,6 @@
 {
-    "attachment": "附件",
+    "attachment": "附件发送",
     "browsemode": "预览模式",
-    "casesensitive": "区分大小写字母",
+    "casesensitive": "使用正则表达式",
     "categories": "课程分类"
 }

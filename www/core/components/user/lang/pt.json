@@ -1,13 +1,13 @@
 {
-    "address": "Endereço",
-    "city": "Cidade",
+    "address": "Morada",
+    "city": "Cidade/Estado",
     "contact": "Contacto",
     "country": "País",
     "description": "Descrição",
     "details": "Detalhes",
     "detailsnotavailable": "Não tem acesso aos detalhes deste utilizador.",
     "editingteacher": "Professor",
-    "email": "Email",
+    "email": "Endereço de e-mail",
     "emailagain": "E-mail (novamente)",
     "firstname": "Nome",
     "interests": "Interesses",
@@ -17,10 +17,10 @@
     "newpicture": "Nova imagem",
     "phone1": "Telefone",
     "phone2": "Telemóvel",
-    "roles": "Papéis",
+    "roles": "Papéis atribuídos",
     "sendemail": "E-mail",
     "student": "Aluno",
     "teacher": "Professor não editor",
     "viewprofile": "Ver perfil",
-    "webpage": "Página da internet"
+    "webpage": "Página Web"
 }

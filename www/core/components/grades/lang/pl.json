@@ -1,15 +1,15 @@
 {
     "average": "Średnia",
     "badgrade": "Wprowadzona ocena jest niepoprawna",
-    "contributiontocoursetotal": "Całkowity udział w kursie",
-    "feedback": "Opinie",
+    "contributiontocoursetotal": "Udział w całym kursie",
+    "feedback": "Informacja zwrotna",
     "grade": "Ocena",
     "grades": "Oceny",
-    "itemname": "Przedmiot oceny",
-    "lettergrade": "Lista klas (?)",
+    "itemname": "Nazwa pozycji",
+    "lettergrade": "Nazwy ocen",
     "nooutcome": "Brak efektu kształcenia",
-    "percentage": "Procent",
-    "range": "Ranga",
-    "rank": "Ranking",
+    "percentage": "Procentowo",
+    "range": "Zakres",
+    "rank": "Pozycja",
     "weight": "Waga"
 }

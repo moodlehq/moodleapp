@@ -23,30 +23,32 @@ angular.module('mm.core.course')
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmCourseHelper, $mmEvents,
             $mmSite, $mmCoursePrefetchDelegate, $mmCourses, $q, $ionicHistory, $ionicPlatform, mmCoreCourseAllSectionsId,
-            mmCoreEventSectionStatusChanged, $state, $timeout) {
+            mmCoreEventSectionStatusChanged, $state, $timeout, $mmCoursesDelegate, $controller) {
     var courseId = $stateParams.courseid,
         sectionId = $stateParams.sid,
         moduleId = $stateParams.moduleid,
-        courseFullName = $stateParams.coursefullname;
+        course = $stateParams.course ? angular.copy($stateParams.course) : false;
 
     $scope.courseId = courseId;
     $scope.sectionToLoad = 2; // Load "General" section by default.
-    $scope.fullname = courseFullName;
+    $scope.fullname = course.fullname || "";
     $scope.downloadSectionsEnabled = $mmCourseHelper.isDownloadSectionsEnabled();
     $scope.downloadSectionsIcon = getDownloadSectionIcon();
     $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
+    $scope.courseActions = [];
 
     function loadSections(refresh) {
         var promise;
 
-        if (courseFullName) {
+        if (course) {
             promise = $q.when();
         } else {
             // We don't have the course name, get it.
             promise = $mmCourses.getUserCourse(courseId).catch(function() {
                 // Fail, maybe user isn't enrolled but he has capabilities to view it.
                 return $mmCourses.getCourse(courseId);
-            }).then(function(course) {
+            }).then(function(courseResponse) {
+                course = courseResponse;
                 return course.fullname;
             }).catch(function() {
                 // Fail again, return generic value.
@@ -59,29 +61,50 @@ angular.module('mm.core.course')
                 $scope.fullname = courseFullName;
             }
 
-            // Get the sections.
-            return $mmCourse.getSections(courseId, false, true).then(function(sections) {
-                // Add a fake first section (all sections).
-                return $translate('mm.course.allsections').then(function(str) {
-                    // Adding fake first section.
-                    var result = [{
-                        name: str,
-                        id: mmCoreCourseAllSectionsId
-                    }].concat(sections);
+            // Load course actions in background.
+            $mmCoursesDelegate.getNavHandlersForCourse(course, refresh, true).then(function(buttons) {
+                $scope.courseActions = buttons.map(function(button) {
+                    var newScope = $scope.$new();
+                    $controller(button.controller, {$scope: newScope});
 
-                    $scope.sections = result;
+                    var buttonInfo = {
+                            text: $translate.instant(newScope.title),
+                            icon: newScope.icon || false,
+                            priority: button.priority || false,
+                            action: function() {
+                                // Fake event (already prevented) to avoid errors on app.
+                                var ev = document.createEvent("MouseEvent");
+                                return newScope.action(ev, course);
+                            }
+                        };
 
-                    if ($scope.downloadSectionsEnabled) {
-                        calculateSectionStatus(refresh);
-                    }
+                    newScope.$destroy();
+                    return buttonInfo;
                 });
             });
+
+            // Get the sections.
+            return $mmCourse.getSections(courseId, false, true).then(function(sections) {
+                sections = sections.map(function(section) {
+                    section.name = section.name.trim() || section.section;
+                    return section;
+                });
+
+                // Add a fake first section (all sections).
+                var result = [{
+                    name: $translate.instant('mm.course.allsections'),
+                    id: mmCoreCourseAllSectionsId
+                }].concat(sections);
+
+
+                $scope.sections = result;
+
+                if ($scope.downloadSectionsEnabled) {
+                    calculateSectionStatus(refresh);
+                }
+            });
         }).catch(function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsections', true);
         });
     }
 
@@ -174,6 +197,7 @@ angular.module('mm.core.course')
 
     $scope.doRefresh = function() {
         var promises = [];
+
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourse.invalidateSections(courseId));
 
@@ -182,6 +206,8 @@ angular.module('mm.core.course')
             var modules = $mmCourseHelper.getSectionsModules($scope.sections);
             promises.push($mmCoursePrefetchDelegate.invalidateModules(modules, courseId));
         }
+
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions(courseId));
 
         $q.all(promises).finally(function() {
             loadSections(true).finally(function() {

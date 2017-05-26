@@ -14,6 +14,8 @@
 
 angular.module('mm.core')
 
+.constant('mmCoreCheckUpdatesTimesStore', 'check_updates_times')
+
 /**
  * Delegate to register prefetch handlers.
  *
@@ -30,9 +32,18 @@ angular.module('mm.core')
  *
  * To see the methods that must provide the prefetch handler see {@link $mmCoursePrefetchDelegateProvider#registerPrefetchHandler}.
  */
-.provider('$mmCoursePrefetchDelegate', function() {
+.provider('$mmCoursePrefetchDelegate', function($mmSitesFactoryProvider, mmCoreCheckUpdatesTimesStore) {
     var prefetchHandlers = {},
-        self = {};
+        self = {},
+        stores = [
+            {
+                name: mmCoreCheckUpdatesTimesStore,
+                keyPath: 'courseid',
+                indexes: []
+            }
+        ];
+
+    $mmSitesFactoryProvider.registerStores(stores);
 
     /**
      * Register a prefetch handler.
@@ -57,7 +68,7 @@ angular.module('mm.core')
      *                             - prefetch(module, courseid, single) (Promise) Prefetches a module.
      *                             - (Optional) getFiles(module, courseid) (Object[]|Promise) Get list of files. If not defined,
      *                                                                 we'll assume they're in module.contents.
-     *                             - (Optional) determineStatus(status, canCheck) (String) Returns status to show based on
+     *                             - (Optional) determineStatus(status, canCheck, module) (String) Returns status to show based on
      *                                                                 current. E.g. for books we'll show "outdated" even if state
      *                                                                 is "downloaded" if canCheck=false.
      *                             - (Optional) getRevision(module, courseid) (String|Number|Promise) Returns the module revision.
@@ -100,7 +111,8 @@ angular.module('mm.core')
     };
 
     self.$get = function($q, $log, $mmSite, $mmUtil, $mmFilepool, $mmEvents, $mmCourse, mmCoreDownloaded, mmCoreDownloading,
-                mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmCoreEventSectionStatusChanged, $mmFS, md5) {
+                mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmCoreEventSectionStatusChanged, $mmFS, md5,
+                $mmSitesManager, mmCoreCheckUpdatesTimesStore) {
         var enabledHandlers = {},
             self = {},
             deferreds = {},
@@ -283,7 +295,7 @@ angular.module('mm.core')
                     }
                 } else if (handler.determineStatus) {
                     // The handler implements a determineStatus function. Apply it.
-                    return handler.determineStatus(status, canCheck);
+                    return handler.determineStatus(status, canCheck, module);
                 }
             }
             return status;
@@ -339,7 +351,7 @@ angular.module('mm.core')
             return $q.all(promises).then(function() {
                 // Sort toCheck list.
                 result.toCheck.sort(function (a, b) {
-                    return a.id > b.id;
+                    return a.id >= b.id ? 1 : -1;
                 });
 
                 return result;
@@ -423,9 +435,7 @@ angular.module('mm.core')
             }
 
             promise = createToCheckList(modules, courseId).then(function(data) {
-                var result = {},
-                    params,
-                    preSets;
+                var result = {};
 
                 // Mark as false the modules that cannot use check updates WS.
                 angular.forEach(data.cannotUse, function(module) {
@@ -437,34 +447,49 @@ angular.module('mm.core')
                     return result;
                 }
 
-                params = {
-                    courseid: courseId,
-                    tocheck: data.toCheck
-                };
-                preSets = {
-                    cacheKey: getCourseUpdatesCacheKey(courseId),
-                    getEmergencyCacheUsingCacheKey: true,
-                    uniqueCacheKey: true
-                };
+                // Get the site, maybe the user changed site.
+                return $mmSitesManager.getSite(siteId).then(function(site) {
+                    var params = {
+                            courseid: courseId,
+                            tocheck: data.toCheck
+                        },
+                        preSets = {
+                            cacheKey: getCourseUpdatesCacheKey(courseId),
+                            emergencyCache: false, // If downloaded data has changed and offline, just fail. See MOBILE-2085.
+                            uniqueCacheKey: true
+                        };
 
-                return $mmSite.read('core_course_check_updates', params, preSets).then(function(response) {
-                    if (!response || typeof response.instances == 'undefined') {
-                        return $q.reject();
-                    }
-
-                    // Format the response to index it by module ID.
-                    angular.forEach(response.instances, function(instance) {
-                        result[instance.id] = instance;
-                    });
-
-                    // Treat warnings, adding the not supported modules.
-                    angular.forEach(response.warnings, function(warning) {
-                        if (warning.warningcode == 'missingcallback') {
-                            result[warning.itemid] = false;
+                    return site.read('core_course_check_updates', params, preSets).then(function(response) {
+                        if (!response || typeof response.instances == 'undefined') {
+                            return $q.reject();
                         }
-                    });
 
-                    return result;
+                        // Store the last execution of the check updates call.
+                        site.getDb().insert(mmCoreCheckUpdatesTimesStore, {
+                            courseid: courseId,
+                            time: $mmUtil.timestamp()
+                        });
+
+                        return treatCheckUpdatesResult(data.toCheck, response, result);
+                    }).catch(function(error) {
+                        // Cannot get updates. Get the cached entries but discard the modules with a download time higher
+                        // than the last execution of check updates.
+                        return site.getDb().get(mmCoreCheckUpdatesTimesStore, courseId).then(function(entry) {
+                            preSets.getCacheUsingCacheKey = true;
+                            preSets.omitExpires = true;
+
+                            return site.read('core_course_check_updates', params, preSets).then(function(response) {
+                                if (!response || typeof response.instances == 'undefined') {
+                                    return $q.reject(error);
+                                }
+
+                                return treatCheckUpdatesResult(data.toCheck, response, result, entry.time);
+                            });
+                        }, function() {
+                            // No previous executions, return result as it is.
+                            return result;
+                        });
+                    });
                 });
             }).finally(function() {
                 // Get updates finished, delete the promise.
@@ -474,6 +499,41 @@ angular.module('mm.core')
             courseUpdatesPromises[siteId][id] = promise;
             return promise;
         };
+
+        /**
+         * Treat the result of the check updates WS call.
+         *
+         * @param  {Object[]} toCheckList  List of modules to check (from createToCheckList).
+         * @param  {Object} response       WS call response.
+         * @param  {Object} result         Object where to store the result.
+         * @param  {Number} [previousTime] Time of the previous check updates execution. If set, modules downloaded
+         *                                 after this time will be ignored.
+         * @return {Object}                Result.
+         */
+        function treatCheckUpdatesResult(toCheckList, response, result, previousTime) {
+            // Format the response to index it by module ID.
+            angular.forEach(response.instances, function(instance) {
+                result[instance.id] = instance;
+            });
+
+            // Treat warnings, adding the not supported modules.
+            angular.forEach(response.warnings, function(warning) {
+                if (warning.warningcode == 'missingcallback') {
+                    result[warning.itemid] = false;
+                }
+            });
+
+            if (previousTime) {
+                // Remove from the list the modules downloaded after previousTime.
+                angular.forEach(toCheckList, function(entry) {
+                    if (result[entry.id] && entry.since > previousTime) {
+                        delete result[entry.id];
+                    }
+                });
+            }
+
+            return result;
+        }
 
         /**
          * Check for updates in a course.
@@ -648,9 +708,10 @@ angular.module('mm.core')
 
                             // Retrieve file size if it's downloaded.
                             angular.forEach(files, function(file) {
-                                promises.push($mmFilepool.getFilePathByUrl(siteId, file.fileurl).then(function(path) {
+                                var fileUrl = file.url || file.fileurl;
+                                promises.push($mmFilepool.getFilePathByUrl(siteId, fileUrl).then(function(path) {
                                     return $mmFS.getFileSize(path).catch(function () {
-                                        return $mmFilepool.isFileDownloadingByUrl(siteId, file.fileurl).then(function() {
+                                        return $mmFilepool.isFileDownloadingByUrl(siteId, fileUrl).then(function() {
                                             // If downloading, count as downloaded.
                                             return file.filesize;
                                         }).catch(function() {
@@ -813,7 +874,8 @@ angular.module('mm.core')
                 promise = self.getModuleFiles(module, courseid).then(function(files) {
                     var promises = [];
                     angular.forEach(files, function(file) {
-                        promises.push($mmFilepool.removeFileByUrl(siteId, file.fileurl).catch(function() {
+                        var fileUrl = file.url || file.fileurl;
+                        promises.push($mmFilepool.removeFileByUrl(siteId, fileUrl).catch(function() {
                             // Ignore errors.
                         }));
                     });
@@ -864,7 +926,7 @@ angular.module('mm.core')
 
                     // Get the saved package status.
                     return $mmFilepool.getPackageCurrentStatus(siteid, handler.component, module.id).then(function(status) {
-                        status = handler.determineStatus ? handler.determineStatus(status, canCheck) : status;
+                        status = handler.determineStatus ? handler.determineStatus(status, canCheck, module) : status;
                         if (status == mmCoreNotDownloaded || status == mmCoreOutdated || status == mmCoreDownloading) {
                             self.updateStatusCache(handler.component, module.id, status);
                             return self.determineModuleStatus(module, status, true, canCheck);

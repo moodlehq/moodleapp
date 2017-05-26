@@ -10,7 +10,7 @@
     "confirmclose": "Une fois la tentative envoyée, vous n'aurez plus la possibilité de modifier vos réponses pour cette tentative.",
     "confirmcontinueoffline": "La tentative n'a pas été synchronisée depuis {{$a}}. Si entretemps vous avez continué cette tentative avec un autre appareil, vous risquez de perdre des données.",
     "confirmleavequizonerror": "Une erreur est survenu lors de l'enregistrement des réponses. Voulez-vous vraiment quitter le test ?",
-    "confirmstart": "Ce test à une limite de temps de {{$a}}. Le temps commencera à être décompté dès le moment où vous commencerez votre tentative, et vous devrez l'envoyer avant la fin du compte à rebours. Voulez-vous commencer maintenant ?",
+    "confirmstart": "Ce test a une limite de temps de {{$a}}. Le temps commencera à être décompté dès le moment où vous commencerez votre tentative, et vous devrez l'envoyer avant la fin du compte à rebours. Voulez-vous commencer maintenant ?",
     "confirmstartheader": "Test avec limite de temps",
     "connectionerror": "Connexion réseau perdue (échec de l'enregistrement automatique).\n\nVeuillez prendre note de toutes les réponses que vous avez saisies sur cette page au cours des quelques dernières minutes, puis essayez de vous reconnecter.\n\nUne fois la connexion rétablie, vos réponses devraient être enregistrées et ce message disparaîtra.",
     "continueattemptquiz": "Continuer la dernière tentative",

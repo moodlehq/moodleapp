@@ -1,15 +1,15 @@
 {
-    "average": "Media",
+    "average": "Medie",
     "badgrade": "Nota furnizată nu este corectă",
     "contributiontocoursetotal": "Contribuția la totalul cursului",
     "feedback": "Feedback",
-    "grade": "Notă",
+    "grade": "Notează",
     "grades": "Note",
-    "itemname": "Element al notei",
-    "lettergrade": "Notare prin litere",
+    "itemname": "Nume element",
+    "lettergrade": "Notă sub formă de literă",
     "nooutcome": "fără rezultat",
-    "percentage": "Procent",
+    "percentage": "Procentaj",
     "range": "Interval",
-    "rank": "Poziție",
-    "weight": "Greutate"
+    "rank": "Rang",
+    "weight": "pondere"
 }

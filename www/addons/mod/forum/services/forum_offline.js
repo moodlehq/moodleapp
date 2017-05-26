@@ -195,17 +195,16 @@ angular.module('mm.addons.mod_forum')
      * @param  {Number} courseId      Course ID the forum belongs to.
      * @param  {String} subject       New discussion's subject.
      * @param  {String} message       New discussion's message.
-     * @param  {String} subscribe     True if should subscribe to the discussion, false otherwise.
+     * @param  {Object} [options]     Options (subscribe, pin, ...).
      * @param  {String} [groupId]     Group this discussion belongs to.
-     * @param  {Object} [attach]      Result of $mmFileUploader#storeFilesToUpload for attachments.
      * @param  {Number} [timecreated] The time the discussion was created. If not defined, current time.
      * @param  {String} [siteId]      Site ID. If not defined, current site.
      * @param  {Number} [userId]      User the discussion belong to. If not defined, current user in site.
      * @return {Promise}              Promise resolved when new discussion is successfully saved.
      */
-    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, attach, timecreated,
-                siteId, userId) {
+    self.addNewDiscussion = function(forumId, name, courseId, subject, message, options, groupId, timecreated, siteId, userId) {
         siteId = siteId || $mmSite.getId();
+        options = options || {};
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
@@ -217,15 +216,11 @@ angular.module('mm.addons.mod_forum')
                     courseid: courseId,
                     subject: subject,
                     message: message,
-                    subscribe: subscribe,
+                    options: options,
                     groupid: groupId || -1,
                     userid: userId,
                     timecreated: timecreated || new Date().getTime()
                 };
-
-            if (attach) {
-                entry.attachments = attach;
-            }
 
             return db.insert(mmaModForumOfflineDiscussionsStore, entry);
         });
@@ -419,13 +414,14 @@ angular.module('mm.addons.mod_forum')
      * @param {Number}  courseId     Course ID the forum belongs to.
      * @param {String}  subject      New post's subject.
      * @param {String}  message      New post's message.
-     * @param  {Object} [attach]     Result of $mmFileUploader#storeFilesToUpload for attachments.
+     * @param {Object} [options]     Options (subscribe, attachments, ...).
      * @param {String}  [siteId]     Site ID. If not defined, current site.
      * @param  {Number} [userId]     User the post belong to. If not defined, current user in site.
      * @return {Promise}             Promise resolved when the post is created.
      */
-    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, attach, siteId, userId) {
+    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, options, siteId, userId) {
         siteId = siteId || $mmSite.getId();
+        options = options || {};
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
@@ -439,13 +435,10 @@ angular.module('mm.addons.mod_forum')
                     courseid: courseId,
                     subject: subject,
                     message: message,
+                    options: options,
                     userid: userId,
                     timecreated: new Date().getTime()
                 };
-
-            if (attach) {
-                discussion.attachments = attach;
-            }
 
             return db.insert(mmaModForumOfflineRepliesStore, discussion);
         });

@@ -22,7 +22,7 @@ angular.module('mm.core.contentlinks')
  * @name $mmContentLinksHelper
  */
 .factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate,
-            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants, $mmCourse,
+            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants, $mmCourse, $mmApp,
             $mmContentLinkHandlerFactory) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
@@ -34,7 +34,7 @@ angular.module('mm.core.contentlinks')
      *
      * @module mm.core.contentlinks
      * @ngdoc method
-     * @name $mmContentLinksHelper#createModuleIndexLinkHandler
+     * @name $mmContentLinksHelper#createModuleGradeLinkHandler
      * @param  {String} addon          Name of the addon as it's registered in $mmCourseDelegateProvider.
      * @param  {String} modName        Name of the module (assign, book, ...)
      * @param  {Object} service        Module's service. Should implement a 'isPluginEnabled(siteId)' function.
@@ -196,8 +196,11 @@ angular.module('mm.core.contentlinks')
             url = url.replace(username + '@', ''); // Remove the username from the URL.
         }
 
-        // Check if the site is stored.
-        $mmSitesManager.getSiteIdsFromUrl(url, false, username).then(function(siteIds) {
+        // Wait for the app to be ready.
+        $mmApp.ready().then(function() {
+            // Check if the site is stored.
+            return $mmSitesManager.getSiteIdsFromUrl(url, false, username);
+        }).then(function(siteIds) {
             if (siteIds.length) {
                 modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
                 return self.handleLink(url, username).then(function(treated) {

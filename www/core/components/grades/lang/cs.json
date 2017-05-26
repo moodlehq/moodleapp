@@ -1,14 +1,14 @@
 {
     "average": "Průměr",
     "badgrade": "Poskytnutá známka není platná",
-    "contributiontocoursetotal": "Příspěvek do celkové známky kurzu",
-    "feedback": "Zpětná vazba",
+    "contributiontocoursetotal": "Podíl z celkové známky",
+    "feedback": "Komentář",
     "grade": "Známka",
     "grades": "Známky",
-    "itemname": "Položka známky",
+    "itemname": "Název položky",
     "lettergrade": "Slovní známka",
     "nooutcome": "Bez očekávaných výstupů",
-    "percentage": "Procenta",
+    "percentage": "Procentuální hodnota",
     "range": "Rozsah",
     "rank": "Pořadí",
     "weight": "Váha"

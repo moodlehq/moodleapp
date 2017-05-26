@@ -4,7 +4,6 @@
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="badgesLoaded" on-refresh="refreshBadges()">
             </ion-refresher>
             <mm-loading hide-until="badgesLoaded">
-                <p ng-if="badges && badges.length == 0" class="padding">{{ 'mma.badges.nobadges' | translate }}</p>
                 <ul class="list" ng-if="badges && badges.length > 0">
                     <li ng-repeat="badge in badges">
                         <a class="item item-avatar" mm-split-view-link="site.issuedbadge({cid: courseId, uid: userId, uniquehash: badge.uniquehash})" title="{{badge.name}}">
@@ -14,6 +13,7 @@
                         </a>
                     </li>
                 </ul>
+                <mm-empty-box ng-if="badges && badges.length == 0" icon="ion-trophy" message="{{ 'mma.badges.nobadges' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

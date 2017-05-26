@@ -1,15 +1,15 @@
 {
-    "average": "Batezbestekoa",
+    "average": "Batez bestekoa",
     "badgrade": "Emandako kalifikazioak ez du balio",
-    "contributiontocoursetotal": "Ikastarora guztira egindako ekarpena",
-    "feedback": "Feedback-a",
-    "grade": "Kalifikazioa",
+    "contributiontocoursetotal": "Ikastaroaren denerako ekarpena",
+    "feedback": "Feedbacka",
+    "grade": "Nota",
     "grades": "Kalifikazioak",
-    "itemname": "Elementua kalifikatu",
+    "itemname": "Elementuaren izena",
     "lettergrade": "Letren bidezko kalifikazioa",
     "nooutcome": "Ez dago ikas-emaitzarik",
-    "percentage": "Ehunekoa",
-    "range": "Tartea",
-    "rank": "Sailkapena",
+    "percentage": "Portzentajea",
+    "range": "Ibiltartea",
+    "rank": "Bitartea",
     "weight": "Pisua"
 }

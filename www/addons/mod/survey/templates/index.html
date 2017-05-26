@@ -22,7 +22,7 @@
             </section>
 
             <!-- Survey done in offline but not synchronized -->
-            <div class="mm-warning" ng-if="hasOffline">
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
             </div>
 
@@ -32,26 +32,30 @@
                     <!-- Parent question (Category header) -->
                     <div ng-if="question.multi && question.multi.length" ng-class="{'mma-mod_survey-padding-top': !$first}">
                         <h3 class="padding-horizontal">{{ question.text }}</h3>
-                        <div class="row" ng-if="isTablet">
-                            <div class="col col-50">{{ 'mma.mod_survey.responses' | translate }}</div>
-                            <div class="col text-center" ng-repeat="option in question.options">
-                                {{ option }}
+                        <div class="item item-text-wrap" ng-if="isTablet">
+                            <div class="row row-no-padding row-center">
+                                <div class="col col-50">{{ 'mma.mod_survey.responses' | translate }}</div>
+                                <div class="col text-center" ng-repeat="option in question.options">
+                                    {{ option }}
+                                </div>
                             </div>
                         </div>
-                        <div class="row" ng-class="{'mma-mod_survey-darkbg': $even}">
-                            <div class="col">{{ question.intro }}</div>
+                        <div class="item item-text-wrap" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <p>{{ question.intro }}</p>
                         </div>
                     </div>
                     <!-- Subquestion -->
-                    <div ng-if="question.parent !== 0" ng-class="{'mma-mod_survey-darkbg': $even}">
-                        <div class="row">
-                            <div id="mma-mod_survey-{{question.name}}" class="col" ng-class="{'col-50': isTablet, 'col-60': !isTablet}"><strong>{{question.num}}</strong> {{ question.text }}</div>
+                    <div ng-if="question.parent !== 0" class="item item-text-wrap mm-item-padding" ng-class="{'mma-mod_survey-darkbg': $even}">
+                        <div class="row row-no-padding">
+                            <div class="col col-center" ng-class="{'col-50': isTablet, 'col-60': !isTablet}">
+                                <label id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</label>
+                            </div>
                             <!-- Tablet view: radio buttons -->
-                            <div ng-if="isTablet" class="col text-center" ng-repeat="option in question.options track by $index">
-                                <input type="radio" name="{{question.name}}" ng-model="answers[question.name]" ng-value="$index + 1" aria-labelledby="mma-mod_survey-{{question.name}}">
+                            <div ng-if="isTablet" class="col col-center" ng-repeat="option in question.options track by $index">
+                                <input type="radio" class="mm-radio" name="{{question.name}}" ng-model="answers[question.name]" ng-value="$index + 1" aria-labelledby="mma-mod_survey-{{question.name}}">
                             </div>
                             <!-- Phone view: select -->
-                            <div ng-if="!isTablet" class="col-40 item-select">
+                            <div ng-if="!isTablet" class="col col-40 item-select">
                                 <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="question.options.indexOf(o)+1 as o for o in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
                                     <option class="mma-mod_survey-defaultoption" value="" disabled selected>{{ 'mm.core.choose' | translate }}</option>
                                 </select>
@@ -59,27 +63,26 @@
                         </div>
                     </div>
                     <!-- Single question (don't belong to a category) -->
-                    <div ng-if="question.multi && question.multi.length == 0 && question.parent === 0" class="mma-mod_survey-padding-top">
-                        <div ng-if="isTablet || question.type > 0" class="row">
-                            <div id="mma-mod_survey-{{question.name}}" class="col" ng-class="{'col-50': isTablet, 'col-60': !isTablet}"><strong>{{question.num}}</strong> {{ question.text }}</div>
-                            <div class="text-center" ng-class="{'item-select': question.type > 0, 'col-50': isTablet, 'col-40': !isTablet, 'item-input item-stacked-label': question.type == 0}">
-                                <textarea ng-if="question.type === 0" ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
-                                <select class="mma-mod_survey-select" ng-if="question.type > 0" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
-                                </select>
+                    <div ng-if="question.multi && question.multi.length == 0 && question.parent === 0">
+                        <div ng-if="question.type > 0" class="item item-text-wrap mm-item-padding" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <div class="row row-no-padding">
+                                <div class="col col-60">
+                                    <label id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</label>
+                                </div>
+                                <div class="col col-40 item-select">
+                                    <select class="mma-mod_survey-select" ng-if="question.type > 0" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div ng-if="!isTablet && question.type === 0">
-                            <div class="row">
-                                <div id="mma-mod_survey-{{question.name}}" class="col"><strong>{{question.num}}</strong> {{ question.text }}</div>
-                            </div>
-                            <div class="row text-center item-input item-stacked-label">
-                                <textarea ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
-                            </div>
-                        </div>
+                        <label ng-if="question.type === 0" class="item item-input item-stacked-label item-text-wrap mm-item-padding" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <span class="input-label" id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</span>
+                            <textarea ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
+                        </label>
                     </div>
                 </div>
-                <div class="padding">
-                    <button class="button button-block" ng-click="submit()" ng-disabled="!isValidResponse()">{{ 'mma.mod_survey.clicktocontinue' | translate }}</button>
+                <div class="item">
+                    <button class="button button-block button-positive" ng-click="submit()" ng-disabled="!isValidResponse()">{{ 'mm.core.submit' | translate }}</button>
                 </div>
             </section>
 

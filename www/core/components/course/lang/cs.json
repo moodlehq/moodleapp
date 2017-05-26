@@ -1,6 +1,5 @@
 {
-    "activitynotyetviewable": "Tato činnost ještě není v aplikaci zobrazitelná.",
-    "activitynotyetviewablegothere": "Tato činnost nebo zdroj ještě není v aplikaci zobrazitelná, pro přístup z webu klikněte na tlačítko dole.",
+    "activitydisabled": "Vaše organizace zakázal tuto činnost v mobilní aplikaci.",
     "activitynotyetviewableinapp": "Pracujeme na úpravě aktivity {{$a}}.",
     "activitynotyetviewableremoteaddon": "Tato aktivita je doplněk třetí strany, který ještě není aplikací podporován.",
     "activitynotyetviewablesiteupgradeneeded": "Instalace Moodle vaší organizace je třeba aktualizovat.",
@@ -8,7 +7,6 @@
     "askadmintosupport": "Obraťte se na správce webu a řekněte mu, že tuto činnost chcete používat s mobilní Moodle  aplikací.",
     "confirmdeletemodulefiles": "Jste si jisti, že chcete odstranit tyto soubory modulu?",
     "confirmdownload": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
-    "confirmdownloadsection": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
     "confirmdownloadunknownsize": "Nebyli jsme schopni vypočítat velikost stahování. Jste si jisti, že stahování chcete?",
     "confirmpartialdownloadsize": "Chystáte se stáhnout <strong> alespoň </strong> {{size}}. Jste si jisti, že chcete pokračovat?",
     "contents": "Obsah",
@@ -16,10 +14,9 @@
     "couldnotloadsections": "Nelze načíst sekce, zkuste to prosím později.",
     "errordownloadingsection": "Chyba při stahování sekce.",
     "errorgetmodule": "Chyba při načítání",
-    "gotothesite": "Přejít na stránky",
+    "hiddenfromstudents": "Skryté před studenty",
     "nocontentavailable": "V tuto chvíli není k dispozici žádný obsah.",
     "overriddennotice": "Vaše výsledná známka za tuto činnost byla ručně upravena.",
     "showall": "Zobrazit vše",
-    "useactivityonbrowser": "Můžete i nadále používat jej pomocí prohlížeče zařízení.",
-    "whoops": "Jejda!"
+    "useactivityonbrowser": "Můžete i nadále používat jej pomocí prohlížeče zařízení."
 }

@@ -56,7 +56,7 @@ angular.module('mm.core.login')
     // Treat the site's config, setting scope variables.
     function treatSiteConfig(siteConfig) {
         if (siteConfig && siteConfig.registerauth == 'email' && !$mmLoginHelper.isEmailSignupDisabled(siteConfig)) {
-            $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
+            $scope.sitename = siteConfig.sitename;
             $scope.authInstructions = siteConfig.authinstructions;
             initAuthInstructionsModal();
             return true;

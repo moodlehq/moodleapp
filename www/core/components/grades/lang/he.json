@@ -1,15 +1,15 @@
 {
     "average": "ממוצע",
     "badgrade": "הציון שנמסר איננו נאות",
-    "contributiontocoursetotal": "תרומה לציון הקורס הכללי",
-    "feedback": "משוב",
-    "grade": "ציון",
+    "contributiontocoursetotal": "ניקוד משוקלל, כתרומה לציון הסופי",
+    "feedback": "תגובות",
+    "grade": "ציונים",
     "grades": "ציונים",
-    "itemname": "פריט ציון",
-    "lettergrade": "אות ציון",
+    "itemname": "שם הפריט",
+    "lettergrade": "ציון אות",
     "nooutcome": "לא קיים מדד־הערכה",
-    "percentage": "אחוז",
+    "percentage": "הניקוד כאחוז מהציון המירבי בפעילות",
     "range": "טווח",
-    "rank": "דירוג",
+    "rank": "דרגה",
     "weight": "משקל"
 }

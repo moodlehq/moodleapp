@@ -1,7 +1,7 @@
 {
     "addcontact": "Adicionar contacto",
     "blockcontact": "Bloquear contacto",
-    "blockcontactconfirm": "Irá deixar de receber mensagens deste contacto.",
+    "blockcontactconfirm": "Deixará de receber mensagens deste contacto.",
     "blocknoncontacts": "Bloquear mensagens de pessoas que não estão na minha lista de contactos",
     "contactlistempty": "A lista de contactos está vazia",
     "contactname": "Nome do contacto",
@@ -9,7 +9,6 @@
     "deletemessage": "Apagar mensagem",
     "deletemessageconfirmation": "Tem a certeza que deseja apagar esta mensagem? A mesma será apagada apenas do seu histórico de mensagens, continuando visível para o utilizador que a enviou ou que recebeu a mensagem.",
     "errordeletemessage": "Erro ao eliminar a mensagem.",
-    "erroruseronlyacceptsmessagefromcontacts": "O utilizador apenas recebe mensagens dos seus contactos",
     "errorwhileretrievingcontacts": "Erro ao obter os contactos do servidor.",
     "errorwhileretrievingdiscussions": "Erro ao obter os tópicos de discussão do servidor.",
     "errorwhileretrievingmessages": "Erro ao obter as mensagens do servidor.",

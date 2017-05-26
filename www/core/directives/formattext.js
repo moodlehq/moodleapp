@@ -256,7 +256,12 @@ angular.module('mm.core')
                             container = angular.element('<span class="mm-adapted-img-container"></span>'),
                             jqImg = angular.element(img);
 
-                        container.css('float', img.style.float); // Copy the float to corretly position the search icon.
+                        container.css('float', img.style.float); // Copy the float to correctly position the search icon.
+                        if (jqImg.hasClass('atto_image_button_right')) {
+                            container.addClass('atto_image_button_right');
+                        } else if (jqImg.hasClass('atto_image_button_left')) {
+                            container.addClass('atto_image_button_left');
+                        }
                         jqImg.wrap(container);
 
                         if (imgWidth > elWidth) {

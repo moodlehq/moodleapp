@@ -19,12 +19,12 @@
     "nomessages": "Inga meddelanden",
     "nousersfound": "Inga användare hittades",
     "removecontact": "Ta bort kontakt",
-    "send": "Skicka",
-    "sendmessage": "Skicka ett meddelande",
+    "send": "skicka",
+    "sendmessage": "Skicka meddelande",
     "type_blocked": "blockerad",
     "type_offline": "Offline",
     "type_online": "Online",
     "type_search": "Sökresultat",
     "type_strangers": "Andra",
-    "unblockcontact": "Lås upp kontakt"
+    "unblockcontact": "Ta bort blockering av användare"
 }

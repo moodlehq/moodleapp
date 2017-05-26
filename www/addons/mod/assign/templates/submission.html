@@ -9,8 +9,8 @@
             <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
             <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
         </p>
-        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </a>
     <div ng-if="blindMarking && !user" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.hiddenuser' | translate }}{{blindId}}</h2>
@@ -20,8 +20,8 @@
             <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
             <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
         </p>
-        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </div>
     <div ng-if="(blindMarking && user) || (!blindMarking && !user)" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
@@ -31,13 +31,13 @@
             <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
             <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
         </p>
-        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </div>
 
-    <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback || isGrading">
-      <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submission' | translate }}</a>
-      <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.grade' | translate }}</a>
+    <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="feedback || isGrading">
+        <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submission' | translate }}</a>
+        <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.grade' | translate }}</a>
     </div>
 
     <div ng-show="showSubmission">
@@ -88,14 +88,14 @@
             <!-- Add or edit submission. -->
             <div ng-if="submitSupported && !unsupportedEditPlugins.length && !showErrorStatementEdit">
                 <!-- If has offline data, show edit. -->
-                <a ng-if="hasOffline" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+                <a ng-if="hasOffline" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
                 <!-- If no submission or is new, show add submission. -->
-                <a ng-if="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
+                <a ng-if="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
                 <!-- If reopened, show addfromprevious and addnewattempt. -->
                 <a ng-if="!hasOffline && userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="copyPrevious()">{{ 'mma.mod_assign.addnewattemptfromprevious' | translate }}</a>
-                <a ng-if="!hasOffline && userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addnewattempt' | translate }}</a>
+                <a ng-if="!hasOffline && userSubmission && userSubmission.status == statusReopened" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.addnewattempt' | translate }}</a>
                 <!-- Else show editsubmission. -->
-                <a ng-if="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+                <a ng-if="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
             </div>
             <div ng-if="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
                 <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
@@ -211,7 +211,7 @@
             </a>
         </div>
 
-        <div class="mm-warning" ng-if="isGrading && !canSaveGrades">
+        <div class="mm-warning-card-icon" ng-if="isGrading && !canSaveGrades">
             <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.cannotgradefromapp' | translate:{$a: moduleName} }}
             <a ng-if="gradeUrl" href="{{ gradeUrl }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.core.openinbrowser' | translate }}</a>
         </div>

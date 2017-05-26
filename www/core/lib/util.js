@@ -69,7 +69,7 @@ angular.module('mm.core')
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
                 $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
-                $window, $cordovaClipboard) {
+                $window, $cordovaClipboard, mmCoreDontShowError) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -265,7 +265,8 @@ angular.module('mm.core')
             } else {
                 url += '?';
             }
-            url += 'token=' + token;
+            // Always send offline=1 (for external repositories). It shouldn't cause problems for local files or old Moodles.
+            url += 'token=' + token + '&offline=1';
 
             // Some webservices returns directly the correct download url, others not.
             if (url.indexOf('/webservice/pluginfile') == -1) {
@@ -445,14 +446,15 @@ angular.module('mm.core')
 
             if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
                 // In Android we need the mimetype to open it.
-                var extension,
-                    iParams;
+                var iParams;
 
-                $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                self.getMimeTypeFromUrl(url).catch(function() {
+                    // Error getting mimetype, return undefined.
+                }).then(function(mimetype) {
                     if (!mimetype) {
-                        // Couldn't retireve mimetype. Try to guess it.
-                        extension = $mmFS.guessExtensionFromUrl(url);
-                        mimetype = $mmFS.getMimeType(extension);
+                        // Couldn't retrieve mimetype. Return error.
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                        return;
                     }
 
                     iParams = {
@@ -473,12 +475,7 @@ angular.module('mm.core')
                             $log.debug('url: ' + iParams.url);
                             $log.debug('type: ' + iParams.type);
 
-                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
-                                // Extension not found.
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
-                            } else {
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
-                            }
+                            $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
                         }
                     );
                 });
@@ -492,22 +489,42 @@ angular.module('mm.core')
         };
 
         /**
-         * Get the mimetype of a file given its URL. It'll perform a HEAD request to get it, if that
-         * fails it'll try to guess it using the URL.
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#getMimeType
          * @param  {String} url The URL of the file.
          * @return {Promise}    Promise resolved with the mimetype.
+         * @deprecated since 3.3. Use $mmUtil#getMimeTypeFromUrl.
          */
         self.getMimeType = function(url) {
+            $log.warn('$mmUtil#getMimeType is deprecated. Use $mmUtil#getMimeTypeFromUrl instead');
+            return self.getMimeTypeFromUrl(url);
+        };
+
+        /**
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getMimeTypeFromUrl
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved with the mimetype.
+         */
+        self.getMimeTypeFromUrl = function(url) {
+            // First check if it can be guessed from the URL.
+            var extension = $mmFS.guessExtensionFromUrl(url),
+                mimetype = $mmFS.getMimeType(extension);
+
+            if (mimetype) {
+                return $q.when(mimetype);
+            }
+
+            // Can't be guessed, get the remote mimetype.
             return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
-                if (!mimetype) {
-                    // Couldn't retireve mimetype. Try to guess it.
-                    extension = $mmFS.guessExtensionFromUrl(url);
-                    mimetype = $mmFS.getMimeType(extension);
-                }
                 return mimetype || '';
             });
         };
@@ -720,8 +737,10 @@ angular.module('mm.core')
          *                                    If not defined, modal won't be automatically closed.
          */
         self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
-            errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
-            return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
+            if (errorMessage != mmCoreDontShowError) {
+                errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
+                return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
+            }
         };
 
         /**
@@ -961,70 +980,79 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#formatTime
          * @param  {Integer} seconds A number of seconds
-         * @return {String}         Human readable seconds formatted
+         * @return {Promise}         Promise resolved with human readable seconds formatted
+         * @deprecated since 3.3. Please use $mmUtil#formatTimeInstant instead.
          */
         self.formatTime = function(seconds) {
-            var langKeys = ['mm.core.day', 'mm.core.days', 'mm.core.hour', 'mm.core.hours', 'mm.core.min', 'mm.core.mins',
-                            'mm.core.sec', 'mm.core.secs', 'mm.core.year', 'mm.core.years', 'mm.core.now'];
+            return $q.when(self.formatTimeInstant(seconds));
+        };
 
-            return $translate(langKeys).then(function(translations) {
+        /**
+         * Returns hours, minutes and seconds in a human readable format.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatTimeInstant
+         * @param  {Integer} seconds A number of seconds
+         * @return {String}          Human readable seconds formatted
+         * @since 3.3
+         */
+        self.formatTimeInstant = function(seconds) {
+            var totalSecs = Math.abs(seconds);
+            var years     = Math.floor(totalSecs / mmCoreSecondsYear);
+            var remainder = totalSecs - (years * mmCoreSecondsYear);
+            var days      = Math.floor(remainder / mmCoreSecondsDay);
+            remainder = totalSecs - (days * mmCoreSecondsDay);
+            var hours     = Math.floor(remainder / mmCoreSecondsHour);
+            remainder = remainder - (hours * mmCoreSecondsHour);
+            var mins      = Math.floor(remainder / mmCoreSecondsMinute);
+            var secs      = remainder - (mins * mmCoreSecondsMinute);
 
-                totalSecs = Math.abs(seconds);
+            var ss = $translate.instant('mm.core.' + (secs == 1 ? 'sec' : 'secs'));
+            var sm = $translate.instant('mm.core.' + (mins == 1 ? 'min' : 'mins'));
+            var sh = $translate.instant('mm.core.' + (hours == 1 ? 'hour' : 'hours'));
+            var sd = $translate.instant('mm.core.' + (days == 1 ? 'day' : 'days'));
+            var sy = $translate.instant('mm.core.' + (years == 1 ? 'year' : 'years'));
 
-                var years     = Math.floor(totalSecs / mmCoreSecondsYear);
-                var remainder = totalSecs - (years * mmCoreSecondsYear);
-                var days      = Math.floor(remainder / mmCoreSecondsDay);
-                remainder = totalSecs - (days * mmCoreSecondsDay);
-                var hours     = Math.floor(remainder / mmCoreSecondsHour);
-                remainder = remainder - (hours * mmCoreSecondsHour);
-                var mins      = Math.floor(remainder / mmCoreSecondsMinute);
-                var secs      = remainder - (mins * mmCoreSecondsMinute);
+            var oyears = '',
+                odays = '',
+                ohours = '',
+                omins = '',
+                osecs = '';
 
-                var ss = (secs == 1)  ? translations['mm.core.sec']  : translations['mm.core.secs'];
-                var sm = (mins == 1)  ? translations['mm.core.min']  : translations['mm.core.mins'];
-                var sh = (hours == 1) ? translations['mm.core.hour'] : translations['mm.core.hours'];
-                var sd = (days == 1)  ? translations['mm.core.day']  : translations['mm.core.days'];
-                var sy = (years == 1) ? translations['mm.core.year'] : translations['mm.core.years'];
+            if (years) {
+                oyears  = years + ' ' + sy;
+            }
+            if (days) {
+                odays  = days + ' ' + sd;
+            }
+            if (hours) {
+                ohours = hours + ' ' + sh;
+            }
+            if (mins) {
+                omins  = mins + ' ' + sm;
+            }
+            if (secs) {
+                osecs  = secs + ' ' + ss;
+            }
 
-                var oyears = '',
-                    odays = '',
-                    ohours = '',
-                    omins = '',
-                    osecs = '';
+            if (years) {
+                return oyears + ' ' + odays;
+            }
+            if (days) {
+                return odays + ' ' + ohours;
+            }
+            if (hours) {
+                return ohours + ' ' + omins;
+            }
+            if (mins) {
+                return omins + ' ' + osecs;
+            }
+            if (secs) {
+                return osecs;
+            }
 
-                if (years) {
-                    oyears  = years + ' ' + sy;
-                }
-                if (days) {
-                    odays  = days + ' ' + sd;
-                }
-                if (hours) {
-                    ohours = hours + ' ' + sh;
-                }
-                if (mins) {
-                    omins  = mins + ' ' + sm;
-                }
-                if (secs) {
-                    osecs  = secs + ' ' + ss;
-                }
-
-                if (years) {
-                    return oyears + ' ' + odays;
-                }
-                if (days) {
-                    return odays + ' ' + ohours;
-                }
-                if (hours) {
-                    return ohours + ' ' + omins;
-                }
-                if (mins) {
-                    return omins + ' ' + osecs;
-                }
-                if (secs) {
-                    return osecs;
-                }
-                return translations['mm.core.now'];
-            });
+            return $translate.instant('mm.core.now');
         };
 
         /**
@@ -1202,6 +1230,51 @@ angular.module('mm.core')
         };
 
         /**
+         * Execute promises one depending on the previous.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#executeOrderedPromises
+         * @param  {Object[]} orderedPromisesData       Data to be executed including the following values:
+         *                                               - func: Function to be executed.
+         *                                               - params: Array of data to be sent to the function.
+         *                                               - blocking: Boolean. If promise should block the following.
+         * @return {Promise}                        Promise resolved when all generated promises are resolved.
+         */
+        self.executeOrderedPromises = function(orderedPromisesData) {
+            var promises = [],
+                dependency = $q.when();
+
+            // Execute all the processes in order.
+            angular.forEach(orderedPromisesData, function(data) {
+                var promise;
+
+                // Add the process to the dependency stack.
+                promise = dependency.finally(function() {
+                    var prom, fn;
+
+                    try {
+                        fn = self.resolveObject(data.func);
+                        prom = fn.apply(prom, data.params || []);
+                    } catch (e) {
+                        $log.error(e.message);
+                        return;
+                    }
+                    return prom;
+                });
+                promises.push(promise);
+
+                // If the new process is blocking, we set it as the dependency.
+                if (data.blocking) {
+                    dependency = promise;
+                }
+            });
+
+            // Return when all promises are done.
+            return self.allPromises(promises);
+        };
+
+        /**
          * Check if a promise works and returns true if resolves or false if rejects.
          *
          * @module mm.core
@@ -1264,6 +1337,11 @@ angular.module('mm.core')
 
                 var equal = true;
                 angular.forEach(itemA, function(value, name) {
+                    if (name == '$$hashKey') {
+                        // Ignore $$hashKey property since it's a "calculated" property.
+                        return;
+                    }
+
                     if (!self.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
                         equal = false;
                     }
@@ -1880,18 +1958,35 @@ angular.module('mm.core')
          * @return {Object[]}         Array of objects with the name & value of each property.
          */
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
-            var keys = Object.keys(obj);
-
+            var entries = getEntries('', obj);
             if (sort) {
-                keys = keys.sort();
+                return entries.sort(function(a, b) {
+                    return a.name >= b.name ? 1 : -1;
+                });
             }
+            return entries;
 
-            return keys.map(function(key) {
-                var entry = {};
-                entry[keyName] = key;
-                entry[valueName] = obj[key];
-                return entry;
-            });
+            // Get the entries from an object or primitive value.
+            function getEntries(elKey, value) {
+                if (typeof value == 'object') {
+                    // It's an object, return at least an entry for each property.
+                    var keys = Object.keys(value),
+                        entries = [];
+
+                    angular.forEach(keys, function(key) {
+                        var newElKey = elKey ? elKey + '[' + key + ']' : key;
+                        entries = entries.concat(getEntries(newElKey, value[key]));
+                    });
+
+                    return entries;
+                } else {
+                    // Not an object, return a single entry.
+                    var entry = {};
+                    entry[keyName] = elKey;
+                    entry[valueName] = value;
+                    return entry;
+                }
+            }
         };
 
         /**
@@ -1907,6 +2002,30 @@ angular.module('mm.core')
             return Object.keys(obj).map(function(key) {
                 return obj[key];
             });
+        };
+
+        /**
+         * Converts an array of objects into an object with key and value.
+         * The contrary of objectToArrayOfObjects
+         * For example, it can convert [{name: 'size', value: 2}] into {size: 2}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToKeyValueMap
+         * @param  {Object} obj         Object to convert.
+         * @param  {String} keyName     Name of the properties where the keys are stored.
+         * @param  {String} valueName   Name of the properties where the keys are stored.
+         * @param  {String} [keyPrefix] Key prefix if needed to delete it.
+         * @return {Object[]}         Array of objects mapped.
+         */
+        self.objectToKeyValueMap = function(obj, keyName, valueName, keyPrefix) {
+            var prefixSubstr = keyPrefix ? keyPrefix.length : 0,
+                mapped = {};
+            angular.forEach(obj, function(item) {
+                var key = prefixSubstr > 0 ? item[keyName].substr(prefixSubstr) : item[keyName];
+                mapped[key] = item[valueName];
+            });
+            return mapped;
         };
 
 
@@ -1944,10 +2063,11 @@ angular.module('mm.core')
          * @name $mmUtil#mergeArraysWithoutDuplicates
          * @param  {Array} array1 The first array.
          * @param  {Array} array2 The second array.
+         * @param  {String} [key] Key of the property that must be unique. If not specified, the whole entry.
          * @return {Array}        Merged array.
          */
-        self.mergeArraysWithoutDuplicates = function(array1, array2) {
-            return self.uniqueArray(array1.concat(array2));
+        self.mergeArraysWithoutDuplicates = function(array1, array2, key) {
+            return self.uniqueArray(array1.concat(array2), key);
         };
 
         /**
@@ -1956,19 +2076,25 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#uniqueArray
-         * @param  {Array} array The array to treat.
-         * @return {Array}       Array without duplicate values.
+         * @param  {Array} array  The array to treat.
+         * @param  {String} [key] Key of the property that must be unique. If not specified, the whole entry.
+         * @return {Array}        Array without duplicate values.
          */
-        self.uniqueArray = function(array) {
-            var unique = [],
+        self.uniqueArray = function(array, key) {
+            var filtered = [],
+                unique = [],
                 len = array.length;
+
             for (var i = 0; i < len; i++) {
-                var value = array[i];
+                var entry = array[i],
+                    value = key ? entry[key] : entry;
                 if (unique.indexOf(value) == -1) {
                     unique.push(value);
+                    filtered.push(entry);
                 }
             }
-            return unique;
+
+            return filtered;
         };
 
         /**

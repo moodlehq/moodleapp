@@ -18,11 +18,11 @@
                 <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
                 <!-- Forum discussions found to be synchronized -->
-                <div class="mm-warning" ng-if="hasOffline">
+                <div class="mm-warning-card-icon" ng-if="hasOffline">
                     <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
                 </div>
 
-                <ul class="list" ng-if="forum">
+                <ul class="list" ng-if="forum && count > 0">
                     <li class="padding-horizontal" ng-if="isCreateEnabled && forum.cancreatediscussions">
                         <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
                             {{ 'mma.mod_forum.addanewdiscussion' | translate }}
@@ -51,7 +51,7 @@
                         </a>
                     </li>
                     <li class="card" ng-repeat="discussion in discussions track by $index">
-                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid, trackposts: discussion.numunread > 0,locked: discussion.locked && !discussion.canreply})">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid, trackposts: trackPosts, locked: discussion.locked && !discussion.canreply})">
                             <article>
                                 <div class="item item-text-wrap item-heading clearfix" ng-class="{'item-avatar': discussion.userfullname}">
                                     <img ng-if="discussion.userpictureurl && discussion.userfullname" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
@@ -82,8 +82,14 @@
                             </article>
                         </a>
                     </li>
-                    <li ng-if="count == 0" class="item item-text-wrap">{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}</li>
                 </ul>
+                <mm-empty-box ng-if="forum && count == 0" icon="ion-chatboxes" message="{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}">
+                    <div class="padding-top" ng-if="isCreateEnabled && forum.cancreatediscussions">
+                        <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
+                            {{ 'mma.mod_forum.addanewdiscussion' | translate }}
+                        </button>
+                    </div>
+                </mm-empty-box>
                 <ion-infinite-scroll ng-if="canLoadMore"
                         immediate-check="false"
                         on-infinite="loadMoreDiscussions()" >

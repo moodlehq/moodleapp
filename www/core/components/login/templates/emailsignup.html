@@ -7,8 +7,12 @@
         </ion-refresher>
         <mm-loading hide-until="settingsLoaded">
             <form name="signupForm" class="list list-inset" ng-if="settings" novalidate="">
-                <div class="item item-text-wrap item-avatar-center" ng-if="logourl">
-                    <img ng-src="{{logourl}}" class="avatar-full" mm-external-content role="presentation">
+                <div class="item item-text-wrap text-center">
+                    <!-- If no sitename show big siteurl. -->
+                    <p ng-if="!sitename" class="item-heading padding">{{siteurl}}</p>
+                    <!-- If sitename, show big sitename and small siteurl. -->
+                    <p ng-if="sitename" class="item-heading padding">{{sitename}}</p>
+                    <p ng-if="sitename">{{siteurl}}</p>
                 </div>
                 <!-- Username and password. -->
                 <div class="item item-divider item-text-wrap">
@@ -16,7 +20,7 @@
                 </div>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="usernameErrors">
                     <ion-label mm-mark-required="true">{{ 'mm.login.username' | translate }}</ion-label>
-                    <input type="text" name="username" placeholder="{{ 'mm.login.username' | translate }}" ng-model="data.username" autocapitalize="none" autocorrect="off" mm-auto-focus required>
+                    <input type="text" name="username" placeholder="{{ 'mm.login.username' | translate }}" ng-model="data.username" autocapitalize="none" autocorrect="off" required>
                 </ion-input>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="passwordErrors">
                     <ion-label mm-mark-required="true">{{ 'mm.login.password' | translate }}</ion-label>

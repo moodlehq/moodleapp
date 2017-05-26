@@ -163,8 +163,8 @@ angular.module('mm.addons.mod_glossary')
      */
     self.invalidateModule = function(module, courseId) {
         if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
-            // No need to invalidate anything if can check updates.
-            return $q.when();
+            // If can check updates only get glossary by course is needed.
+            return $mmaModGlossary.invalidateCourseGlossaries(courseId);
         }
 
         return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
@@ -261,9 +261,7 @@ angular.module('mm.addons.mod_glossary')
                 // Prefetch user profiles.
                 promises.push($mmUser.prefetchProfiles(userIds, courseId, siteId));
 
-                angular.forEach(files, function(file) {
-                    promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-                });
+                promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
                 return $q.all(promises);
             }));

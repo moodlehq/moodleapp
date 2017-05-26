@@ -23,7 +23,7 @@ angular.module('mm.core')
  * @ngdoc directive
  * @name mmAutoFocus
  */
-.directive('mmAutoFocus', function($mmUtil) {
+.directive('mmAutoFocus', function($mmUtil, $timeout) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -35,8 +35,16 @@ angular.module('mm.core')
                     (attrs.mmAutoFocus !== false && attrs.mmAutoFocus !== 'false' && attrs.mmAutoFocus !== '0');
 
                 if (!isActive && showKeyboard) {
-                    $mmUtil.focusElement(el[0]);
+                    // Enable keyboard. This is needed because Ionic doesn't listen for keyboard events until the user taps.
+                    // Calling this will make Ionic listen for keyboard events and resize the view as it should.
+                    ionic.keyboard.enable();
                     unregister(); // Stop watching.
+
+                    // Wait a bit before focusing the element. This is because Ionic closes the keyboard on
+                    // $ionicView.beforeEnter, and it might take a while to close it.
+                    $timeout(function() {
+                        $mmUtil.focusElement(el[0]);
+                    }, 400);
                 }
             });
         }

@@ -9,8 +9,8 @@
     "nocourses": "表示するコース情報はありません。",
     "nocoursesyet": "このカテゴリにコースはありません。",
     "nosearchresults": "あなたの検索の該当データは見つかりませんでした。",
-    "notenroled": "あなたはこのコースに受講登録されていません。",
-    "password": "パスワード",
+    "notenroled": "あなたはこのコースに登録されていません。",
+    "password": "共有秘密鍵",
     "search": "検索",
     "searchcourses": "コースを検索する"
 }

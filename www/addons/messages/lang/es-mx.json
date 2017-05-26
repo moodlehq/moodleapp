@@ -1,5 +1,5 @@
 {
-    "addcontact": "Añadir como contacto",
+    "addcontact": "Añadir contacto",
     "blockcontact": "Bloquear contacto",
     "blockcontactconfirm": "Usted dejará de recibir mensajes de este contacto.",
     "blocknoncontacts": "Bloquear mensajes de usuarios que no figuren en mi lista de contactos",
@@ -22,9 +22,9 @@
     "newmessages": "Nuevos mensajes",
     "nomessages": "Sin mensajes.",
     "nousersfound": "No se encontraron usuarios",
-    "removecontact": "Quitar contacto",
+    "removecontact": "Eliminar contacto",
     "removecontactconfirm": "El contacto será quitado de su lista de contactos.",
-    "send": "Enviar",
+    "send": "enviar",
     "sendmessage": "Enviar mensaje",
     "type_blocked": "Bloqueado",
     "type_offline": "Fuera-de-línea",

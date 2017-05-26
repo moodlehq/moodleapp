@@ -1,7 +1,5 @@
 {
     "activitydisabled": "Für diese Website ist die Aktivität in der App deaktiviert.",
-    "activitynotyetviewable": "Diese Aktivität kann bisher nicht in der App angezeigt werden.",
-    "activitynotyetviewablegothere": "Die Aktivität oder das Material kann bisher in der App nicht angezeigt werden. Tippen Sie auf die Taste, um die Website im Browser anzuzeigen.",
     "activitynotyetviewableinapp": "Wir arbeiten daran, die Aktivität {{$a}} zu unterstützen.",
     "activitynotyetviewableremoteaddon": "Für die Website ist ein Plugin installiert, das bisher nicht unterstützt wird.",
     "activitynotyetviewablesiteupgradeneeded": "Diese Website muss aktualisiert werden.",
@@ -9,7 +7,6 @@
     "askadmintosupport": "Wenden Sie sich an den Administrator der Website, um diese Aktivität mit der Moodle Mobile App verwenden zu können.",
     "confirmdeletemodulefiles": "Möchten Sie diese Dateien wirklich löschen?",
     "confirmdownload": "Möchten Sie wirklich {{size}} herunterladen?",
-    "confirmdownloadsection": "Möchten Sie wirklich {{size}} herunterladen?",
     "confirmdownloadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchten Sie wirklich herunterladen?",
     "confirmpartialdownloadsize": "Möchten Sie wirklich {{size}} herunterladen?",
     "contents": "Inhalte",
@@ -17,10 +14,9 @@
     "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuchen Sie es später noch einmal.",
     "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
     "errorgetmodule": "Fehler beim Laden von Moduldaten",
-    "gotothesite": "Zur Website",
-    "nocontentavailable": "Aktuell sind keine Inhalte verfügbar",
+    "hiddenfromstudents": "Für Teilnehmer/innen verborgen",
+    "nocontentavailable": "Momentan sind keine Inhalte verfügbar",
     "overriddennotice": "Die endgültige Bewertung zu dieser Aktivität wurde manuell bearbeitet.",
     "showall": "Alles anzeigen",
-    "useactivityonbrowser": "Sie können dafür weiterhin den normalen Browser verwenden.",
-    "whoops": "Whoops!"
+    "useactivityonbrowser": "Sie können dafür weiterhin den normalen Browser verwenden."
 }

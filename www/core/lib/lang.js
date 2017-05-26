@@ -39,11 +39,15 @@ angular.module('mm.core')
      * @return {Promise}        Promise resolved when the change is finished.
      */
     self.changeCurrentLanguage = function(language) {
-        var p1 = $translate.use(language),
-            p2 = $mmConfig.set('current_language', language);
+        var promises = [];
+
+        promises.push($translate.use(language));
+        promises.push($translate.preferredLanguage(language));
+        promises.push($mmConfig.set('current_language', language));
+
         moment.locale(language);
         currentLanguage = language;
-        return $q.all([p1, p2]);
+        return $q.all(promises);
     };
 
     /**
@@ -189,15 +193,7 @@ angular.module('mm.core')
      */
     self.registerLanguageFolder = function(path) {
         $translatePartialLoader.addPart(path);
-        // We refresh the languages one by one because if we refresh all of them at once and 1 file isn't found
-        // then no language will be loaded. This way if 1 language file is missing only that language won't be refreshed.
-        var promises = [];
-        promises.push($translate.refresh(currentLanguage));
-        if (currentLanguage !== fallbackLanguage) {
-            // Refresh fallback language.
-            promises.push($translate.refresh(fallbackLanguage));
-        }
-        return $q.all(promises);
+        return $translate.refresh();
     };
 
     /**
@@ -249,7 +245,7 @@ angular.module('mm.core')
 
     // Set fallback language and language to use until the app determines the right language to use.
     var lang = mmCoreConfigConstants.default_lang || 'en';
-    $translateProvider.fallbackLanguage(lang);
+    $translateProvider.fallbackLanguage('en'); // Always use English as fallback language.
     $translateProvider.preferredLanguage(lang);
 })
 
@@ -306,6 +302,7 @@ angular.module('mm.core')
     $ionicPlatform.ready(function() {
         $mmLang.getCurrentLanguage().then(function(language) {
             $translate.use(language);
+            $translate.preferredLanguage(language);
             moment.locale(language);
         });
     });

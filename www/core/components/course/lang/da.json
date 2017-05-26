@@ -1,17 +1,13 @@
 {
-    "activitynotyetviewable": "Denne aktivitet kan endnu ikke vises i app'en.",
-    "activitynotyetviewablegothere": "Denne aktivitet eller ressource er det endnu ikke muligt at vise i denne app, klik på knappen herunder for at åbne fra webstedet.",
     "allsections": "Alle sektioner",
     "confirmdownload": "Du er ved at hente {{size}}. Er du sikker på at du vil fortsætte?",
-    "confirmdownloadsection": "Du er ved at hente {{size}}. Er du sikker på at du vil fortsætte?",
     "confirmdownloadunknownsize": "Vi kunne ikke beregne størrelsen af dit download. Er du sikker på du vil hende det?",
     "contents": "Indhold",
     "couldnotloadsectioncontent": "Kunne ikke indlæse sektionens indhold, prøv igen senere.",
     "couldnotloadsections": "Kunne ikke indlæse sektionerne, prøv igen senere.",
     "errordownloadingsection": "Fejl ved indlæsning af sektion.",
-    "gotothesite": "Gå til webstedet",
+    "hiddenfromstudents": "Skjult for studerende",
     "nocontentavailable": "Intet indhold tilgængeligt lige nu.",
     "overriddennotice": "Din endelige karakter fra denne aktivitet blev justeret manuelt.",
-    "showall": "Vis alt",
-    "whoops": "Hovsa!"
+    "showall": "Vis alle {{$a}}"
 }

@@ -1,7 +1,9 @@
-<div class="mm-loading-container" ng-if="!hideUntil">
-    <ion-spinner></ion-spinner>
-    <p class="mm-loading-message" ng-if="dynMessage">{{dynMessage}}</p>
-    <p class="mm-loading-message" ng-if="message && !dynMessage">{{message}}</p>
+<div class="mm-loading-container mm-animate-show-hide" ng-if="!hideUntil">
+    <span class="mm-loading-spinner">
+        <ion-spinner></ion-spinner>
+        <p class="mm-loading-message" ng-if="dynMessage">{{dynMessage}}</p>
+        <p class="mm-loading-message" ng-if="message && !dynMessage">{{message}}</p>
+    </span>
 </div>
-<div class="mm-loading-content" ng-if="hideUntil" ng-transclude>
+<div class="mm-loading-content mm-animate-show-hide" ng-if="hideUntil" ng-transclude>
 </div>

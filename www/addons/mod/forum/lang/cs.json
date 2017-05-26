@@ -6,6 +6,7 @@
     "couldnotadd": "Neznámá chyba! Nemohu přidat váš příspěvek.",
     "discussion": "Diskuse",
     "discussionlocked": "Tato diskuse byla uzavřena, takže již nemůže odpovídat.",
+    "discussionpinned": "Připnuté navrch",
     "discussionsubscription": "Odebírání diskuse",
     "edit": "Upravit",
     "erroremptymessage": "Text příspěvku nemůže být prázdný",
@@ -25,8 +26,6 @@
     "refreshdiscussions": "Obnovit diskuse",
     "refreshposts": "Obnovit diskusní příspěvky",
     "reply": "Odpovědět",
-    "sortnewestfirst": "Zobrazit nejnovější",
-    "sortoldestfirst": "Zobrazit nejstarší",
     "subject": "Předmět",
     "unread": "Nepřečteno",
     "unreadpostsnumber": "Nepřečtené příspěvky: {{$a}}"

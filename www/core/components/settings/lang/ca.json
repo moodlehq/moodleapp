@@ -1,6 +1,5 @@
 {
     "about": "Quant a",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "App preparada",
     "cacheexpirationtime": "Temps de venciment de memòria cau (milisegons)",
     "cannotsyncoffline": "No es poden sincronitzar dades fora de línia.",
@@ -15,7 +14,6 @@
     "currentlanguage": "Idioma actual",
     "deletesitefiles": "Esteu segur que voleu esborrar els fitxers baixats d'aquest lloc?",
     "deletesitefilestitle": "Elimina els fitxers del lloc",
-    "development": "Desenvolupament",
     "deviceinfo": "Informació del dispositiu",
     "deviceos": "OS del dispositiu",
     "devicewebworkers": "És compatible amb Device Web Workers",
@@ -48,7 +46,6 @@
     "sites": "Llocs",
     "spaceusage": "Utilització de l'espai",
     "storagetype": "Tipus d'emmagatzematge",
-    "success": "Èxit!",
     "synchronization": "Sincronització",
     "synchronizenow": "Sincronitza ara",
     "synchronizing": "S'està sincronitzant",

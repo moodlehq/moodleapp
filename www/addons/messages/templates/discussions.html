@@ -1,7 +1,33 @@
 <ion-content class="has-tabs" mm-state-class>
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
-    <mm-loading hide-until="loaded">
-        <ul class="list">
+
+    <mm-searchbox ng-if="canSearch" submit-action="searchMessage" placeholder="{{ 'mma.messages.message' | translate }}" initial-value="{{formData.searchString}}" autocorrect="off" spellcheck="false" length-check="2"></mm-searchbox>
+
+    <mm-loading hide-until="loaded" dyn-message="loadingMessage">
+
+        <ul class="list" ng-if="showSearchResults">
+            <li>
+                <ion-item class="item-divider item-button-right" >
+                    <span class="item-note">{{ results.length }}</span>
+                    <h2>{{ 'mm.core.searchresults' | translate }}</h2>
+                    <button class="button button-clear mma-messages-clear-search" ng-click="clearSearch()" aria-label="{{ 'mm.core.clearsearch' | translate }}">
+                        <i class="icon ion-close-round"></i>
+                    </button>
+                </ion-item>
+            </li>
+            <li ng-repeat="result in results">
+                <a class="item item-avatar" mm-split-view-link="site.messages-discussion({userId: result.userid})" title="{{result.fullname}}">
+
+                    <img ng-src="{{result.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: result.fullname} }}" role="presentation" mm-external-content ng-if="result.profileimageurl">
+                    <img src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: result.fullname} }}" role="presentation" ng-if="!result.profileimageurl">
+
+                    <p class="item-heading">{{result.fullname}}</p>
+                    <p><mm-format-text watch="true" clean="true" singleline="true">{{result.lastmessage}}</mm-format-text></p>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="list" ng-if="!showSearchResults">
             <li>
                 <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user})" title="{{disc.fullname}}">
 
@@ -18,8 +44,7 @@
             </li>
         </ul>
 
-        <div ng-if="!discussions || discussions.length <= 0" class="padding">
-            <p>{{ 'mma.messages.nomessages' | translate}}</p>
-        </div>
+        <mm-empty-box ng-if="(!discussions || discussions.length <= 0) && !showSearchResults" icon="ion-chatboxes" message="{{ 'mma.messages.nomessages' | translate}}"></mm-empty-box>
+        <mm-empty-box ng-if="(!results || results.length <= 0) && showSearchResults" icon="ion-ios-search-strong" message="{{ 'mm.core.noresults' | translate}}"></mm-empty-box>
     </mm-loading>
 </ion-content>

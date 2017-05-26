@@ -1,15 +1,15 @@
 {
-    "average": "Genomsnitt",
+    "average": "Medel",
     "badgrade": "Det betyg som har avgivits är ogiltigt",
-    "contributiontocoursetotal": "Bidrag till kurs totalt",
-    "feedback": "Feedback",
-    "grade": "Betyg",
+    "contributiontocoursetotal": "Bidrag till totalen för kursen",
+    "feedback": "Återkoppling",
+    "grade": "Betyg/omdöme",
     "grades": "Betyg",
     "itemname": "Namn på komponent",
     "lettergrade": "Bokstavsbetyg/omdöme",
     "nooutcome": "Inget resultat",
-    "percentage": "Procentandel",
+    "percentage": "Procenttal",
     "range": "Omfång",
-    "rank": "Ranking",
-    "weight": "Viktning"
+    "rank": "Rangordna",
+    "weight": "vikt"
 }

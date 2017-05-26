@@ -1,27 +1,43 @@
 <ion-view view-title="{{ 'mm.login.reconnect' | translate }}">
-    <ion-content mm-state-class>
-        <div class="card">
-            <div class="item item-text-wrap item-avatar-center">
-                <img ng-src="{{site.avatar}}" class="avatar" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
-                <h2 class="padding">{{siteurl}}</h2>
-                <p ng-if="!isLoggedOut"><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
-            </div>
-        </div>
-        <div class="list list-inset">
-            <div class="item">
-                <h2>{{ 'mm.login.username' | translate }}</h2>
-                <p>{{credentials.username}}</p>
-            </div>
-            <form>
-                <ion-input class="item item-input item-stacked-label">
-                    <ion-label>{{ 'mm.login.password' | translate }}</ion-label>
-                    <input id="mm-login-reconnect-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus mm-show-password>
-                </ion-input>
-                <div class="item padding">
-                    <button class="button button-block button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
-                    <button class="button button-block button-outline button-positive" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+    <ion-content mm-state-class padding="true" class="mm-center-view">
+        <div class="mm-view-content">
+            <div class="box">
+                <div class="item item-text-wrap item-avatar-center item-borderless" ng-class="{'item-avatar-center': site.avatar, 'text-center': !site.avatar}">
+                    <img ng-if="site.avatar" ng-src="{{site.avatar}}" class="avatar" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+                    <!-- Show site logo or a default image. -->
+                    <img ng-if="!site.avatar && logourl" ng-src="{{logourl}}" class="avatar-full" mm-external-content role="presentation">
+                    <img ng-if="!site.avatar && !logourl" ng-src="img/moodle.png" class="avatar-full moodle-logo" role="presentation">
+
+                    <!-- If no sitename show big siteurl. -->
+                    <p ng-if="!sitename" class="item-heading padding">{{siteurl}}</p>
+                    <!-- If sitename, show big sitename and small siteurl. -->
+                    <p ng-if="sitename" class="item-heading padding">{{sitename}}</p>
+                    <p ng-if="sitename">{{siteurl}}</p>
+
+                    <p class="padding-top" ng-if="!isLoggedOut"><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
                 </div>
-            </form>
+                <div class="list item padding">
+                    <h2>{{ 'mm.login.username' | translate }}</h2>
+                    <p>{{credentials.username}}</p>
+                </div>
+                <form>
+                    <ion-input class="list item item-input mm-ioninput-password">
+                        <input id="mm-login-reconnect-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-show-password>
+                    </ion-input>
+                    <div class="button-bar">
+                        <a class="button" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</a>
+                        <button class="button button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
+                    </div>
+                </form>
+                <div ng-if="identityProviders && identityProviders.length" class="padding-top list">
+                    <p>{{ 'mm.login.potentialidps' | translate }}</p>
+                    <a ng-repeat="provider in identityProviders" class="item item-icon-right item-text-wrap mm-oauth-icon" ng-click="oauthClicked(provider)" title="{{provider.name}}">
+                        <img ng-src="{{provider.iconurl}}" alt="{{provider.name}}">
+                        <span>{{provider.name}}</span>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </ion-content>
 </ion-view>

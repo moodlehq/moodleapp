@@ -9,13 +9,13 @@
     "errorgettingimagealbum": "שגיאה בטעינת תמונה מאלבום.",
     "errormustbeonlinetoupload": "עליך להיות מחובר/ת בכדי להעלות קבצים.",
     "errornoapp": "לא נמצא יישומון זמין לביצוע פעולה הזו.",
-    "errorreadingfile": "שגיאה בקריאת קובץ.",
+    "errorreadingfile": "שגיאה בקריאת קובץ \"{{$a}}\"",
     "errorwhileuploading": "התרחשה שגיאה בזמן הניסיון להעלות את הקובץ.",
     "file": "קובץ",
     "fileuploaded": "הקובץ הועלה בהצלחה.",
     "photoalbums": "אלבומי תמונות",
     "readingfile": "קורא קובץ",
-    "uploadafile": "העלה קובץ",
-    "uploading": "מעלה קבצים",
+    "uploadafile": "העלאת קובץ",
+    "uploading": "מעלה את הקובץ...",
     "video": "וידאו"
 }

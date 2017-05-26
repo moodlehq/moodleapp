@@ -19,8 +19,8 @@
     "notenroled": "Não está inscrito nesta disciplina",
     "notenrollable": "Não se pode inscrever nesta disciplina.",
     "password": "Senha de inscrição",
-    "search": "Pesquisar",
-    "searchcourses": "Pesquisar disciplinas",
+    "search": "Procurar",
+    "searchcourses": "Procurar disciplinas",
     "searchcoursesadvice": "Pode usar o botão de pesquisa de disciplinas para aceder às mesmas como visitante ou autoinscrever-se caso o permitam.",
     "selfenrolment": "Autoinscrição",
     "totalcoursesearchresults": "Total de disciplinas: {{$a}}"

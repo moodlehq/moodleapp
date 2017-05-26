@@ -44,7 +44,7 @@ angular.module('mm.addons.pushnotifications')
  */
 .factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, $mmSitesManager,
             mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent,
-            mmaPushNotificationsBadgeStore) {
+            mmaPushNotificationsBadgeStore, $mmConfig, mmCoreSettingsNotificationSound) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
@@ -168,25 +168,29 @@ angular.module('mm.addons.pushnotifications')
      */
     self.registerDevice = function() {
         try {
-            var options = {
-                android: {
-                    senderID: mmCoreConfigConstants.gcmpn
-                },
-                ios: {
-                    alert: true,
-                    badge: true,
-                    sound: true
-                }
-            };
-            return $cordovaPushV5.initialize(options).then(function() {
-                // Start listening for notifications and errors.
-                $cordovaPushV5.onNotification();
-                $cordovaPushV5.onError();
+            // Check if sound is enabled for notifications.
+            return $mmConfig.get(mmCoreSettingsNotificationSound, true).then(function(soundEnabled) {
+                var options = {
+                    android: {
+                        senderID: mmCoreConfigConstants.gcmpn,
+                        sound: !!soundEnabled
+                    },
+                    ios: {
+                        alert: true,
+                        badge: true,
+                        sound: !!soundEnabled
+                    }
+                };
+                return $cordovaPushV5.initialize(options).then(function() {
+                    // Start listening for notifications and errors.
+                    $cordovaPushV5.onNotification();
+                    $cordovaPushV5.onError();
 
-                // Register the device in GCM or APNS.
-                return $cordovaPushV5.register().then(function(token) {
-                    pushID = token;
-                    return self.registerDeviceOnMoodle();
+                    // Register the device in GCM or APNS.
+                    return $cordovaPushV5.register().then(function(token) {
+                        pushID = token;
+                        return self.registerDeviceOnMoodle();
+                    });
                 });
             });
         } catch(ex) {}
@@ -256,10 +260,10 @@ angular.module('mm.addons.pushnotifications')
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmaPushNotifications#updateAddonCounter
-     * @param  {String} siteId Site ID.
-     * @param  {String} addon  Registered addon name to set the badge number.
-     * @param  {Number} number The number to be stored.
-     * @return {Promise}       Promise resolved with the stored badge counter for the addon on the site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @param  {String} addon    Registered addon name to set the badge number.
+     * @param  {Number} number   The number to be stored.
+     * @return {Promise}         Promise resolved with the stored badge counter for the addon on the site.
      */
     self.updateAddonCounter = function(siteId, addon, number) {
         if ($mmPushNotificationsDelegate.isCounterHandlerRegistered(addon)) {
@@ -399,12 +403,14 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Save the addon/site badgecounter on the database.
      *
-     * @param  {String} siteId   Site ID.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
      * @param  {Number} number   The number to be stored.
      * @param  {String} [addon]  Registered addon name. If not defined it will store the site total.
      * @return {Promise}         Promise resolved with the stored badge counter for the addon or site.
      */
     function saveAddonBadge(siteId, number, addon) {
+        siteId = siteId || $mmSite.getId();
+
         var entry = {
             siteid: siteId,
             addon: addon || 'site',

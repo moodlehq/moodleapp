@@ -1,0 +1,18 @@
+{
+    "future": "آینده",
+    "inprogress": "در جریان",
+    "morecourses": "",
+    "next30days": "۳۰ روز بعدی",
+    "next7days": "۷ روز بعدی",
+    "nocourses": "درسی وجود ندارد",
+    "nocoursesfuture": "هیچ درسی برای آینده وجود ندارد",
+    "nocoursesinprogress": "هیچ درسِ درجریانی وجود ندارد",
+    "nocoursespast": "هیچ درسی برای گذشته وجود ندارد",
+    "noevents": "هیچ مهلتی برای فعالیت‌های آتی وجود ندارد",
+    "past": "گذشته",
+    "pluginname": "نمای کلی درس",
+    "recentlyoverdue": "",
+    "sortbycourses": "مرتب‌سازی بر اساس درس‌ها",
+    "sortbydates": "مرتب‌سازی بر اساس تاریخ‌ها",
+    "timeline": "جدول زمانی"
+}

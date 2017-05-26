@@ -1,15 +1,15 @@
 {
     "average": "Gemiddelde",
     "badgrade": "Beoordeling ongeldig",
-    "contributiontocoursetotal": "Bijdrage aan het cursustotaal",
+    "contributiontocoursetotal": "Aandeel in cursustotaal",
     "feedback": "Feedback",
     "grade": "Cijfer",
     "grades": "Cijfers",
-    "itemname": "Beoordelingsitem",
+    "itemname": "Itemnaam",
     "lettergrade": "Letterbeoordeling",
     "nooutcome": "Geen competentie",
     "percentage": "Percentage",
-    "range": "Bereik",
-    "rank": "Volgorde",
+    "range": "Marge",
+    "rank": "Rangschikking",
     "weight": "Weging"
 }

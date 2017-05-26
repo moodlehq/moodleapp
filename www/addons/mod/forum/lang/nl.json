@@ -6,6 +6,7 @@
     "couldnotadd": "Door een onbekende fout was het niet mogelijk om je bericht toe te voegen .",
     "discussion": "Discussie",
     "discussionlocked": "Deze discussie is geblokkeerd, zodat u niet meer kan beantwoorden.",
+    "discussionpinned": "Vastgepind",
     "discussionsubscription": "Inschrijving discussie",
     "edit": "Wijzig",
     "erroremptymessage": "Bericht kan niet leeg zijn",
@@ -25,8 +26,6 @@
     "refreshdiscussions": "Discussie verversen",
     "refreshposts": "Discussieberichten verversen",
     "reply": "Antwoord",
-    "sortnewestfirst": "Toon nieuwste eerst",
-    "sortoldestfirst": "Toon oudste eerst",
     "subject": "Onderwerp",
     "unread": "Niet gelezen",
     "unreadpostsnumber": "{{$a}} ongelezen berichten"

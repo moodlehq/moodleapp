@@ -1,15 +1,15 @@
 {
     "average": "Ortalama",
     "badgrade": "Sağlanan not geçersiz",
-    "contributiontocoursetotal": "Katıldığınız toplam kurs sayısı",
-    "feedback": "Geribildirim",
-    "grade": "Puan",
-    "grades": "Puan(lar)",
-    "itemname": "Not ögesi",
-    "lettergrade": "Harf derecesi",
+    "contributiontocoursetotal": "Ders toplamına katkısı",
+    "feedback": "Geri bildirim",
+    "grade": "Not",
+    "grades": "Notlar",
+    "itemname": "Öge adı",
+    "lettergrade": "Harf notu",
     "nooutcome": "Hedef yok",
     "percentage": "Yüzde",
-    "range": "Aralık",
-    "rank": "Derece",
+    "range": "Fark",
+    "rank": "Sıra",
     "weight": "Ağırlık"
 }

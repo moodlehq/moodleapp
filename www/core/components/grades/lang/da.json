@@ -1,15 +1,15 @@
 {
     "average": "Gennemsnit",
     "badgrade": "Karakteren er ugyldig",
-    "contributiontocoursetotal": "Bidrag til kurset ialt",
-    "feedback": "Feedback",
-    "grade": "Bedømmelse",
-    "grades": "Bedømmelser",
-    "itemname": "Emne til bedømmelse",
+    "contributiontocoursetotal": "Bidrag til kursets total",
+    "feedback": "Tilbagemelding",
+    "grade": "Karakter",
+    "grades": "Karakterer",
+    "itemname": "Elementnavn",
     "lettergrade": "Bogstavkarakter",
     "nooutcome": "Intet slutresultat",
     "percentage": "Procentdel",
-    "range": "Omfang",
-    "rank": "Rang",
-    "weight": "Vægtning"
+    "range": "Opstilling",
+    "rank": "Rank",
+    "weight": "Vægt"
 }

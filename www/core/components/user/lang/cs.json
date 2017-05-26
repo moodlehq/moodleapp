@@ -1,13 +1,13 @@
 {
     "address": "Adresa",
-    "city": "Město",
+    "city": "Město/obec",
     "contact": "Kontakt",
     "country": "Země",
-    "description": "Popis",
+    "description": "Úvodní text",
     "details": "Detaily",
     "detailsnotavailable": "Podrobnosti o tomto uživateli nejsou k dispozici.",
     "editingteacher": "Učitel",
-    "email": "E-mail",
+    "email": "E-mailová adresa",
     "emailagain": "E-mail (znovu)",
     "firstname": "Křestní jméno",
     "interests": "Zájmy",
@@ -18,8 +18,9 @@
     "phone1": "Telefon",
     "phone2": "Mobil",
     "roles": "Role",
+    "sendemail": "Email",
     "student": "Student",
     "teacher": "Učitel bez práva upravovat",
     "viewprofile": "Zobrazit profil",
-    "webpage": "Webové stránky"
+    "webpage": "Webová stránka"
 }

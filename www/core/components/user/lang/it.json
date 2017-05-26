@@ -1,13 +1,13 @@
 {
     "address": "Indirizzo",
-    "city": "Città",
+    "city": "Città /Località",
     "contact": "Contatto",
-    "country": "Stato",
-    "description": "Descrizione",
+    "country": "Nazione",
+    "description": "Commento",
     "details": "Dettagli",
     "detailsnotavailable": "Non puoi visualizzare i dettagli di questo utente.",
     "editingteacher": "Docente",
-    "email": "Email",
+    "email": "Indirizzo email",
     "emailagain": "Indirizzo email (ripeti)",
     "firstname": "Nome",
     "interests": "Interessi",
@@ -20,6 +20,6 @@
     "roles": "Ruoli",
     "student": "Studente",
     "teacher": "Docente non editor",
-    "viewprofile": "Visualizza profilo",
+    "viewprofile": "Visualizza",
     "webpage": "Pagina web"
 }

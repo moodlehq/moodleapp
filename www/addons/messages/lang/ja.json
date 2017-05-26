@@ -1,6 +1,6 @@
 {
-    "addcontact": "コンタクトに追加",
-    "blockcontact": "コンタクトをブロック",
+    "addcontact": "コンタクトに追加する",
+    "blockcontact": "受信拒否",
     "blocknoncontacts": "不明なユーザをブロックする",
     "contactlistempty": "コンタクトリストは空です。",
     "contactname": "連絡先",
@@ -11,10 +11,10 @@
     "messagepreferences": "メッセージプリファレンス",
     "messages": "メッセージ",
     "newmessage": "新しいメッセージ",
-    "nomessages": "未読メッセージはありません。",
+    "nomessages": "メッセージがありません。",
     "nousersfound": "ユーザは見つかりませんでした。",
-    "removecontact": "コンタクトを削除",
+    "removecontact": "コンタクトから削除する",
     "send": "送信",
-    "sendmessage": "メッセージ送信",
-    "unblockcontact": "コンタクトのブロックを解除"
+    "sendmessage": "メッセージを送信する",
+    "unblockcontact": "コンタクトの拒否を解除する"
 }

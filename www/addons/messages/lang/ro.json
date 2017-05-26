@@ -8,7 +8,6 @@
     "deletemessage": "Șterge mesaj",
     "deletemessageconfirmation": "Sunteți sigur că doriți să ștergeți acest mesaj? Va fi șters numai din istoricul mesajelor și va fi în continuare vizibil de către utilizatorul care a trimis sau a primit mesajul.",
     "errordeletemessage": "Eroare la ștergerea mesajului.",
-    "erroruseronlyacceptsmessagefromcontacts": "-",
     "errorwhileretrievingcontacts": "A apărut o eroare în găsirea contactelor pe server.",
     "errorwhileretrievingdiscussions": "A apărut o eroare în găsirea conversațiilor de pe server.",
     "errorwhileretrievingmessages": "A apărut o eroare în găsirea mesajelor de pe server.",
@@ -20,12 +19,12 @@
     "nomessages": "Nu aveți mesaje.",
     "nousersfound": "Nu au fost găsiți utilizatori",
     "removecontact": "Şterge prieten din listă",
-    "send": "Trimite",
+    "send": "Trimis",
     "sendmessage": "Trimite mesaj",
     "type_blocked": "Blocat",
     "type_offline": "Deconectat",
     "type_online": "Conectat",
     "type_search": "Caută rezultatele",
     "type_strangers": "Alții",
-    "unblockcontact": "Deblocați contactul"
+    "unblockcontact": "Deblochează utilizator"
 }

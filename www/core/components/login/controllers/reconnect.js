@@ -26,7 +26,8 @@ angular.module('mm.core.login')
 
     var infositeurl = $stateParams.infositeurl, // Siteurl in site info. It might be different than siteurl (http/https).
         stateName = $stateParams.statename,
-        stateParams = $stateParams.stateparams;
+        stateParams = $stateParams.stateparams,
+        siteConfig = $stateParams.siteconfig;
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
@@ -44,7 +45,20 @@ angular.module('mm.core.login')
 
         $scope.credentials.username = site.infos.username;
         $scope.siteurl = site.infos.siteurl;
+        $scope.sitename = site.infos.sitename;
+
+        // Check logoURL if user avatar is not set.
+        if ($scope.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
+            $scope.site.avatar = false;
+            return site.getPublicConfig().then(function(config) {
+                $scope.logourl = config.logourl || config.compactlogourl;
+            });
+        }
     });
+
+    if (siteConfig) {
+        $scope.identityProviders = $mmLoginHelper.getValidIdentityProviders(siteConfig);
+    }
 
     $scope.cancel = function() {
         $mmSitesManager.logout().finally(function() {
@@ -97,6 +111,13 @@ angular.module('mm.core.login')
             modal.dismiss();
             $mmLoginHelper.treatUserTokenError(siteurl, error);
         });
+    };
+
+    // An OAuth button was clicked.
+    $scope.oauthClicked = function(provider) {
+        if (!$mmLoginHelper.openBrowserForOAuthLogin($scope.siteurl, provider, siteConfig.launchurl)) {
+            $mmUtil.showErrorModal('Invalid data.');
+        }
     };
 
 });

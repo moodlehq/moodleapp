@@ -1,6 +1,22 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.3 ===
+
+ * The project now supports Ionic CLI v2 and Node 6.9. We recommend updating node, npm, Ionic CLI and project dependencies:
+    npm install -g npm@latest
+    npm install -g ionic@2.2.1
+    npm install
+ * mm-error CSS class has been deprecated. Use mm-error-card or similar instead.
+ * The function $mmaMessages#isSearchEnabled has been deprecated. Please use $mmaMessages#isSearchContactsEnabled instead.
+ * Question type addons can now implement an optional prepareAnswers function. If provided, this function will be called before sending the quiz data to the server, and allows the addon to perform changes in the data to send.
+ * The promise returned by $mmaModForum#canAddDiscussion is now resolved with an object (WS response) instead of a boolean.
+ * The parameters of the following functions have changed to match the WS behaviour: $mmaModForum#addNewDiscussion, $mmaModForum#addNewDiscussionOnline, $mmaModForumOffline#addNewDiscussion, $mmaModForum#replyPost, $mmaModForum#replyPostOnline, $mmaModForumOffline#replyPost.
+ * The function $mmUtil#getMimeType has been deprecated. Please use $mmUtil#getMimeTypeFromUrl instead.
+ * The functions $mmFilepool#invalidateAllFiles and $mmFilepool#invalidateFilesByComponent now accept a new param onlyUnknown which defaults to true, so it only invalidates some of the files. It is advised to use onlyUnknown=true to decrease the network usage and improve the app's performance.
+ * The directive mm-loading no longer accepts the param loadingPaddingTop since now the spinner is centered vertically.
+ * Assignment feedback delegates hasDataChanged now accepts userId in order to manage offline data.
+
 === 3.2.1 ===
 
  * mmaGrades addon has been moved to core with mmGrades name (and derivatives).

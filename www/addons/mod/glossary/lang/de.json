@@ -1,5 +1,5 @@
 {
-    "attachment": "Anhang",
+    "attachment": "Auszeichnung an Mitteilung anhängen",
     "browsemode": "Einträge durchblättern",
     "byalphabet": "Alphabetisch",
     "byauthor": "Nach Autor/in",
@@ -8,7 +8,7 @@
     "byrecentlyupdated": "Gerade aktualisiert",
     "bysearch": "Suchen",
     "cannoteditentry": "Eintrag nicht bearbeitbar",
-    "casesensitive": "Groß-/Kleinschreibung",
+    "casesensitive": "Reguläre Ausdrücke verwenden",
     "categories": "Kursbereiche",
     "entriestobesynced": "Einträge zum Synchronisieren",
     "entrypendingapproval": "Dieser Eintrag wartet auf eine Freigabe.",

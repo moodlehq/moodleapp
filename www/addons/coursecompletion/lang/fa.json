@@ -1,7 +1,7 @@
 {
     "complete": "کامل",
-    "completed": "کامل شد",
-    "coursecompletion": "اتمام درس",
+    "completed": "تکمیل‌شده",
+    "coursecompletion": "تکمیل درس",
     "criteria": "ضابطه",
     "criteriagroup": "گروه ضوابط",
     "criteriarequiredall": "تمام ضوابط زیر باید برآورده شوند",
@@ -13,5 +13,5 @@
     "required": "لازم است",
     "requiredcriteria": "ضوابط مورد نیاز",
     "status": "وضعیت",
-    "viewcoursereport": "مشاهده گزارش درس"
+    "viewcoursereport": "مشاهدهٔ گزارش درس"
 }

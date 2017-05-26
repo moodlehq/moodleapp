@@ -231,9 +231,8 @@ angular.module('mm.addons.mod_assign')
                         $mmaModAssign.getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
                 }
 
-                if (!scope.feedback) {
+                if (!scope.feedback || !scope.feedback.plugins) {
                     scope.feedback = {};
-
                     // Feedback plugins not present, we have to use assign configs to detect the plugins used.
                     scope.feedback.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
                 }
@@ -251,10 +250,13 @@ angular.module('mm.addons.mod_assign')
                                 scope.grade.grade = data.grade;
                                 scope.gradingStatusTranslationId = 'mma.mod_assign.gradenotsynced';
                                 scope.gradingClass = "";
+                                originalGrades.grade = scope.grade.grade;
                             }
 
                             scope.grade.applyToAll = data.applytoall;
                             scope.grade.addAttempt = data.addattempt;
+                            originalGrades.applyToAll = scope.grade.applyToAll;
+                            originalGrades.addAttempt = scope.grade.addAttempt;
 
                             if (data.outcomes && Object.keys(data.outcomes).length) {
                                 angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
@@ -262,6 +264,7 @@ angular.module('mm.addons.mod_assign')
                                         // If outcome has been modified from gradebook, do not use offline.
                                         if (outcome.modified < data.timemodified) {
                                             outcome.selectedId = data.outcomes[outcome.itemNumber];
+                                            originalGrades.outcomes[outcome.id] = outcome.selectedId;
                                         }
                                     }
                                 });
@@ -481,7 +484,7 @@ angular.module('mm.addons.mod_assign')
                     promises.push(feedbackController(scope, assign, response.feedback, courseId, moduleId, submitId));
 
                     // Check if there's any unsupported plugin for editing.
-                    if (!scope.userSubmission) {
+                    if (!scope.userSubmission || !scope.userSubmission.plugins) {
                         scope.userSubmission = {};
                         // Submission not created yet, we have to use assign configs to detect the plugins used.
                         scope.userSubmission.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignsubmission');
@@ -819,7 +822,7 @@ angular.module('mm.addons.mod_assign')
                 }
 
                 if (scope.feedback && scope.feedback.plugins) {
-                    return $mmaModAssignHelper.hasFeedbackDraftData(scope.assign.id, submitId, scope.feedback).catch(function() {
+                    return $mmaModAssignHelper.hasFeedbackDataChanged(scope.assign, submitId, scope.feedback).catch(function() {
                         // Error ocurred, omit error as not modified.
                         return $q.when(false);
                     });

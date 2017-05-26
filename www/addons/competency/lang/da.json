@@ -1,5 +1,5 @@
 {
-    "activities": " Aktiviteter",
+    "activities": "Aktiviteter",
     "coursecompetencies": "Kursuskompetencer",
     "coursecompetencyratingsarenotpushedtouserplans": "Kompetencebedømmelser på dette kursus påvirker ikke læringsplaner.",
     "coursecompetencyratingsarepushedtouserplans": "Kompetencebedømmelser på dette kursus opdateres straks i læringsplaner.",
@@ -9,10 +9,9 @@
     "evidence": "Vidnesbyrd",
     "learningplancompetencies": "Læringsplankompetencer",
     "learningplans": "Læringsplaner",
-    "mylearningplans": "Mine læringsplaner",
     "myplans": "Mine læringsplaner",
     "noactivities": "Ingen aktiviteter",
-    "nocompetencies": "Ingen kompetencer",
+    "nocompetencies": "Ingen kompetencer er oprettet i denne ramme.",
     "nocrossreferencedcompetencies": "Ingen andre kompetencer er krydsrefereret til denne kompetence.",
     "noevidence": "Ingen vidnesbyrd",
     "noplanswerecreated": "Der blev ikke oprettet nogen læringsplaner.",

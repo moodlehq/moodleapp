@@ -1,10 +1,16 @@
 
-$mm-question-correct-color:         #468847 !default;
-$mm-question-incorrect-color:       #b94a48 !default;
-$mm-question-state-correct-color:   #cfc !default;
-$mm-question-state-partial-color:   #ffa !default;
-$mm-question-state-incorrect-color: #fcc !default;
-$mm-question-warning-color:         #c00 !default;
+$mm-question-correct-color:         $green-dark !default;
+$mm-question-correct-color-bg:      $green-light !default;
+$mm-question-incorrect-color:       $red !default;
+$mm-question-incorrect-color-bg:    $red-light !default;
+$mm-question-feedback-color:        $yellow-dark !default;
+$mm-question-feedback-color-bg:     $yellow-light !default;
+
+$mm-question-state-correct-color:   $green-light !default;
+$mm-question-state-partial-color:   $yellow-light !default;
+$mm-question-state-incorrect-color: $red-light !default;
+
+$mm-question-warning-color:         $red !default;
 
 .mm-question-textarea {
   width: 100%;
@@ -29,7 +35,7 @@ li.mm-question-answer-correct,
 .mm-question-comment p {
   color: $mm-question-correct-color;
   -webkit-text-fill-color: $mm-question-correct-color; /* Override iOS / Android font color change */
-  background-color: #dff0d8;
+  background-color: $mm-question-correct-color-bg;
 }
 
 .mm-question-answer-correct .checkbox input:disabled:checked:before,
@@ -55,7 +61,7 @@ li.mm-question-answer-incorrect,
 .mm-question-incorrect p {
   color: $mm-question-incorrect-color;
   -webkit-text-fill-color: $mm-question-incorrect-color; /* Override iOS / Android font color change */
-  background-color: #f2dede;
+  background-color: $mm-question-incorrect-color-bg;
 }
 
 .mm-question-answer-incorrect .checkbox input:disabled:checked:before,
@@ -69,9 +75,10 @@ li.mm-question-answer-incorrect,
   opacity: 1;
 }
 
-.mm-question-feedback-container {
-  background-color: #fcf8e3;
-  color: #8a6d3b;
+.mm-question-feedback-container,
+.mm-question-feedback-container p {
+  background-color: $mm-question-feedback-color-bg;
+  color: $mm-question-feedback-color;
 
   .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
     margin: 0 0 .5em;
@@ -82,17 +89,17 @@ li.mm-question-answer-incorrect,
     padding: 2px 4px;
     font-weight: bold;
     line-height: 14px;
-    color: #fff;
+    color: $white;
     text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
-    background-color: #999;
+    background-color: $gray-dark;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 
     &.incorrect {
-      background-color: $mm-question-incorrect-color;
+      background-color: $red;
     }
     &.correct {
-      background-color: $mm-question-correct-color;
+      background-color: $green;
     }
   }
 }

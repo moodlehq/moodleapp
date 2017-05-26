@@ -52,6 +52,8 @@ $mma-messages-date-badge: "stable" !default;
   width: 100%;
 }
 .mm-site_messages-discussion {
+  background: $white;
+
   .list-left-editing .item-message.item-left-editable,
   .item-left-editing.item-message.item-left-editable {
     max-width: calc(80% + 35px);
@@ -87,6 +89,10 @@ $mma-messages-date-badge: "stable" !default;
     right: 0;
     left: initial;
   }
+}
+
+.tab-content .mm-site_messages-discussion {
+  background: $base-background-color;
 }
 
 .mma-messages-showprevious-spinner-container {

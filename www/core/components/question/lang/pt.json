@@ -12,7 +12,7 @@
     "information": "Informação",
     "invalidanswer": "Resposta incompleta",
     "notanswered": "Ainda não respondeu",
-    "notyetanswered": "Ainda não respondeu",
+    "notyetanswered": "Por responder",
     "partiallycorrect": "Parcialmente correto",
     "questionmessage": "Pergunta {{$a}}: {{$b}}",
     "questionno": "Pergunta {{$a}}",

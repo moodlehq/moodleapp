@@ -39,8 +39,6 @@ angular.module('mm.core')
 .directive('mmSplitViewLink', function($log, $ionicPlatform, $state, $mmApp) {
     $log = $log.getInstance('mmSplitViewLink');
 
-    var srefRegex = new RegExp(/([^\(]*)(\((.*)\))?$/);
-
     /**
      * Create a new state for tablet view (split-view). The state created will be exactly the same as the target state
      * (stateName), but changing the name and the view name.
@@ -82,11 +80,20 @@ angular.module('mm.core')
     function scopeEval(scope, value) {
         if (typeof value == 'string') {
             try {
-                return scope.$eval(value);
+                return angular.copy(scope.$eval(value));
             } catch(ex) {
                 $log.error('Error evaluating string: ' + param);
             }
         }
+    }
+
+    // Function taken from uiSref directive.
+    function parseStateRef(ref, current) {
+      var preparsed = ref.match(/^\s*({[^}]*})\s*$/), parsed;
+      if (preparsed) ref = current + '(' + preparsed[1] + ')';
+      parsed = ref.replace(/\n/g, " ").match(/^([^(]+?)\s*(\((.*)\))?$/);
+      if (!parsed || parsed.length !== 4) return false;
+      return { state: parsed[1], paramExpr: parsed[3] || null };
     }
 
     /**
@@ -114,9 +121,8 @@ angular.module('mm.core')
         restrict: 'A',
         require: '^mmSplitView',
         link: function(scope, element, attrs, splitViewController) {
-            var sref = attrs.mmSplitViewLink,
+            var sref = attrs.mmSplitViewLink ? parseStateRef(attrs.mmSplitViewLink, $state.current.name) : false,
                 menuState = splitViewController.getMenuState(),
-                matches,
                 stateName,
                 stateParams,
                 stateParamsString,
@@ -124,58 +130,53 @@ angular.module('mm.core')
                 stateParamsFilled = false;
 
             if (sref) {
-                matches = sref.match(srefRegex);
-                if (matches && matches.length) {
-                    stateName = matches[1]; // E.g. site.mm_user-profile
-                    tabletStateName = menuState + '.' + stateName.substr(stateName.lastIndexOf('.') + 1);
+                stateName = sref.state; // E.g. site.mm_user-profile
+                tabletStateName = menuState + '.' + stateName.substr(stateName.lastIndexOf('.') + 1);
 
-                    stateParamsString = matches[3]; // E.g. {courseid: courseid, userid: userid}
-                    stateParams = scopeEval(scope, stateParamsString);
+                stateParamsString = sref.paramExpr; // E.g. {courseid: courseid, userid: userid}
+                stateParams = scopeEval(scope, stateParamsString);
 
-                    // Watch for changes on stateParams.
-                    scope.$watch(stateParamsString, function(newVal) {
-                        stateParams = newVal;
+                // Watch for changes on stateParams.
+                scope.$watch(stateParamsString, function(newVal) {
+                    stateParams = angular.copy(newVal);
+                    // Fill state params to prevent problems with missing params.
+                    fillStateParams(stateParams, $state.get(tabletStateName));
+                }, true);
+
+                element.on('click', function(event) {
+                    event.stopPropagation();
+                    event.preventDefault();
+
+                    if (!stateParamsFilled) {
                         // Fill state params to prevent problems with missing params.
                         fillStateParams(stateParams, $state.get(tabletStateName));
-                    });
+                        stateParamsFilled = true;
+                    }
 
-                    element.on('click', function(event) {
-                        event.stopPropagation();
-                        event.preventDefault();
-
-                        if ($ionicPlatform.isTablet()) {
-                            if (!$state.get(tabletStateName)) {
-                                // State doesn't exists. Let's create it.
-                                if (!createTabletState(stateName, tabletStateName, splitViewController.getComponent())) {
-                                    return;
-                                }
+                    if ($ionicPlatform.isTablet()) {
+                        if (!$state.get(tabletStateName)) {
+                            // State doesn't exists. Let's create it.
+                            if (!createTabletState(stateName, tabletStateName, splitViewController.getComponent())) {
+                                return;
                             }
-
-                            if (!stateParamsFilled) {
-                                // Fill state params to prevent problems with missing params.
-                                fillStateParams(stateParams, $state.get(tabletStateName));
-                                stateParamsFilled = true;
-                            }
-
-                            // Set this link as candidate to load. This is used when the split view blocks view changes.
-                            splitViewController.setCandidateLink(element);
-
-                            // Load the state.
-                            $state.go(tabletStateName, stateParams, {location:'replace'}).then(function() {
-                                // State change success, now mark the link as loaded.
-                                splitViewController.setLink(element);
-                                splitViewController.clearMarkedLinks();
-                                element.addClass('mm-split-item-selected');
-                            });
-                        } else {
-                            $state.go(stateName, stateParams);
                         }
-                    });
-                } else {
-                    $log.error('Invalid sref.');
-                }
+
+                        // Set this link as candidate to load. This is used when the split view blocks view changes.
+                        splitViewController.setCandidateLink(element);
+
+                        // Load the state.
+                        $state.go(tabletStateName, stateParams, {location:'replace'}).then(function() {
+                            // State change success, now mark the link as loaded.
+                            splitViewController.setLink(element);
+                            splitViewController.clearMarkedLinks();
+                            element.addClass('mm-split-item-selected');
+                        });
+                    } else {
+                        $state.go(stateName, stateParams);
+                    }
+                });
             } else {
-                $log.error('Invalid sref.');
+                $log.error('Invalid sref ' + attrs.mmSplitViewLink + '.');
             }
         }
     };

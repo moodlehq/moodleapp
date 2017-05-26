@@ -16,17 +16,19 @@
             <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
             <!-- Activity availability messages -->
-            <section class="card padding" ng-if="choice.timeopen != 0 && choice.timeopen > now">
+            <section class="mm-info-card-icon" ng-if="choiceNotOpenYet">
+                <i class="icon ion-information-circled padding"></i>
                 <p ng-if="options && options.length">{{ 'mma.mod_choice.previewonly' | translate:{$a: choice.openTimeReadable} }}</p>
                 <p ng-if="!options || !options.length">{{ 'mma.mod_choice.notopenyet' | translate:{$a: choice.openTimeReadable} }}</p>
             </section>
-            <section class="card padding" ng-if="choice.timeclose != 0 && choice.timeclose <= now">
+            <section class="mm-info-card-icon" ng-if="choiceClosed">
+                <i class="icon ion-information-circled padding"></i>
                 <p ng-if="options && options.length">{{ 'mma.mod_choice.yourselection' | translate }} <mm-format-text watch="true">{{options[0].text}}</mm-format-text></p>
                 <p>{{ 'mma.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
             </section>
 
             <!-- Choice done in offline but not synchronized -->
-            <div class="mm-warning" ng-if="hasOffline">
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
             </div>
 
@@ -43,7 +45,7 @@
                     </ion-radio>
                 </div>
                 <div class="item" ng-if="canEdit">
-                    <button class="button button-block" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
+                    <button class="button button-block button-positive" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
                 </div>
                 <div class="item" ng-if="canDelete">
                     <button class="button button-block" ng-click="delete()">{{ 'mma.mod_choice.removemychoice' | translate }}</button>
@@ -57,7 +59,7 @@
                 </div>
                 <div class="row row-no-padding responsive-md">
                     <div class="col col-33">
-                        <div class="mm-warning" ng-if="hasOffline">
+                        <div class="mm-warning-card-icon" ng-if="hasOffline">
                             <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_choice.resultsnotsynced' | translate }}
                         </div>
                         <div class="item chart-item">
@@ -76,7 +78,7 @@
                     </div>
                 </div>
             </section>
-            <section class="card padding" ng-if="!canSeeResults">
+            <section class="mm-info-card" ng-if="!canSeeResults && !choiceNotOpenYet">
                 <p>{{ 'mma.mod_choice.noresultsviewable' | translate }}</p>
             </section>
         </mm-loading>

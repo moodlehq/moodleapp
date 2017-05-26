@@ -1,7 +1,5 @@
 {
     "activitydisabled": "Su  organización ha deshabilitado esta actividad en la App mobile.",
-    "activitynotyetviewable": "Esta actividad aun no es visible en la App.",
-    "activitynotyetviewablegothere": "Esta actividad o recurso todavía no es visible en la app. Haga click en el botón inferior para acceder a ella desde el sitio.",
     "activitynotyetviewableinapp": "Nosotros estamos trabajando para soportar la actividad de {{$a}}.",
     "activitynotyetviewableremoteaddon": "Su organización instaló un plugin complemento de terceros que todavía no está soportada por la App.",
     "activitynotyetviewablesiteupgradeneeded": "La instalación Moodle de su organización necesita actualizarse.",
@@ -9,7 +7,6 @@
     "askadmintosupport": "Contacte al administrador del sitio y dígale que Usted quiere usar esta actividad junto con la App Moodle Mobile.",
     "confirmdeletemodulefiles": "¿Está Usted seguro de querer eliminar estos archivos del módulo?",
     "confirmdownload": "Usted está a punto de descargar {{size}}. ¿Está Usted seguro de querer continuar?",
-    "confirmdownloadsection": "Usted está a punto de descargar {{size}}. ¿Está seguro de querer continuar?",
     "confirmdownloadunknownsize": "No pudimos calcular el tamaño de la descarga. ¿Está Usted seguro de querer descargarla?",
     "confirmpartialdownloadsize": "Usted está a punto de descargar <strong>al menos</strong> {{size}}. ¿Está Usted seguro de querer continuar?",
     "contents": "Contenidos",
@@ -17,10 +14,9 @@
     "couldnotloadsections": "No pudieron cargarse las secciones; por favor inténtelo nuevamente después.",
     "errordownloadingsection": "Error al descargar sección",
     "errorgetmodule": "Error al obtener datos del módulo.",
-    "gotothesite": "Ir al sitio",
+    "hiddenfromstudents": "Oculto de estudiantes",
     "nocontentavailable": "Sin contenido disponible al momento.",
     "overriddennotice": "La calificación final de esta actividad ha sido ajustada manualmente.",
     "showall": "Mostrar todo",
-    "useactivityonbrowser": "Usted todavía puede usarla si usa su navegador del dispositivo.",
-    "whoops": "¡Órale!"
+    "useactivityonbrowser": "Usted todavía puede usarla si usa su navegador del dispositivo."
 }

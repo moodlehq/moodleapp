@@ -1,13 +1,13 @@
 {
-    "address": "Adresa",
-    "city": "Oraș",
+    "address": "Adresă",
+    "city": "Oraş/localitate",
     "contact": "Contact",
-    "country": "Țara",
-    "description": "Descriere",
+    "country": "Ţara",
+    "description": "Text introductiv",
     "details": "Detalii",
     "detailsnotavailable": "Detaliile acestui utilizator nu vă sunt disponibile.",
     "editingteacher": "Profesor",
-    "email": "Email",
+    "email": "Adresă email",
     "emailagain": "Email (reintroduceţi)",
     "firstname": "Prenume",
     "interests": "Interese",
@@ -21,5 +21,5 @@
     "student": "Student",
     "teacher": "Profesor asistent",
     "viewprofile": "Vezi profilul",
-    "webpage": "Pagina Web"
+    "webpage": "Pagină Web"
 }

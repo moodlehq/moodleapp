@@ -333,6 +333,8 @@ angular.module('mm.core')
                     // Store session.
                     self.login(siteId);
                     $mmEvents.trigger(mmCoreEventSiteAdded, siteId);
+
+                    return siteId;
                 });
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');

@@ -1,15 +1,15 @@
 {
     "average": "Média",
     "badgrade": "Nota fornecida é inválida",
-    "contributiontocoursetotal": "Contribuição ao total do curso",
-    "feedback": "Feedback",
-    "grade": "Nota",
+    "contributiontocoursetotal": "Contribuição para o total do curso",
+    "feedback": "Comentários",
+    "grade": "Avaliação",
     "grades": "Notas",
-    "itemname": "Item de nota",
-    "lettergrade": "Nota letra",
+    "itemname": "Nome do Item",
+    "lettergrade": "Notas por letras",
     "nooutcome": "Nenhum resultado de aprendizagem",
     "percentage": "Porcentagem",
-    "range": "Range",
-    "rank": "Posição",
+    "range": "Intervalo",
+    "rank": "Classificação",
     "weight": "Peso"
 }

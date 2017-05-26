@@ -1,6 +1,5 @@
 {
-    "activitynotyetviewable": "Deze activiteit of bron kan nog niet bekeken worden met deze app.",
-    "activitynotyetviewablegothere": "Deze activiteit of bron kan nog niet bekeken worden met deze app. Klik op onderstaande knop om het te bekijken op de site.",
+    "activitydisabled": "Jouw organisatie heeft deze activiteit uitgeschakeld in de mobiele app.",
     "activitynotyetviewableinapp": "We werken aan de ondersteuning van de activiteit {{$a}}.",
     "activitynotyetviewableremoteaddon": "Jouw organisatie heeft een plugin geïnstalleerd die nog niet ondersteund wordt.",
     "activitynotyetviewablesiteupgradeneeded": "De site gebruikt de niet laatste Moodle-versie en moet worden geüpdatet. Neem contact op met de site-beheerder.",
@@ -8,7 +7,6 @@
     "askadmintosupport": "Neem contact op met de sitebeheerder en geef aan dat je deze activiteit met de Moodle mobile app wilt gebruiken.",
     "confirmdeletemodulefiles": "Weet he zeker dat je deze modulebestanden wil verwijderen?",
     "confirmdownload": "Je gaat {{size}} downloaden. Weet je zeker dat je verder wil gaan?",
-    "confirmdownloadsection": "Je gaat {{size}} downloaden. Weet je zeker dat je verder wil gaan?",
     "confirmdownloadunknownsize": "We konden de grootte van de download niet berekenen. Weet je zeker dat je toch wil downloaden?",
     "confirmpartialdownloadsize": "Je staat op het punt om <strong>minstens</strong> {{size}} te downloaden. Weet je zeker dat je verder wil gaan?",
     "contents": "Inhoud",
@@ -16,10 +14,9 @@
     "couldnotloadsections": "Kon secties niet laden. Probeer later opnieuw",
     "errordownloadingsection": "Fout bij het downloaden van de sectie.",
     "errorgetmodule": "Fout bij het ophalen van modulegegevens.",
-    "gotothesite": "Ga naar de site",
+    "hiddenfromstudents": "Verborgen voor leerlingen",
     "nocontentavailable": "Geen inhoud beschikbaar.",
     "overriddennotice": "Je totaalcijfer voor deze activiteit is manueel aangepast.",
     "showall": "Toon alle",
-    "useactivityonbrowser": "Je kunt de activiteit nog steeds via de browser van je apparaat gebruiken",
-    "whoops": "Whoops!"
+    "useactivityonbrowser": "Je kunt de activiteit nog steeds via de browser van je apparaat gebruiken"
 }

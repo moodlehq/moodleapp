@@ -3,6 +3,7 @@
     <ion-nav-buttons side="secondary">
         <mm-context-menu>
             <mm-context-menu-item priority="900" content="'mm.settings.enabledownloadsection' | translate" action="toggleDownloadSections()" icon-action="downloadSectionsIcon"></mm-context-menu-item>
+            <mm-context-menu-item ng-repeat="item in courseActions" priority="item.priority" content="item.text" action="item.action()" icon-action="item.icon"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
     <mm-split-view load-when="sectionsLoaded" load="{{sectionToLoad}}" component="mmCoreCourseSectionsList">
@@ -10,8 +11,8 @@
            <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionsLoaded"></ion-refresher>
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">
-                    <li ng-repeat="section in sections" ng-if="sectionHasContent(section)">
-                        <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({cid: courseId, sectionid: section.id, mid: moduleId})" title="{{section.name}}">
+                    <li ng-repeat="section in sections" ng-if="sectionHasContent(section)" ng-class="{'item-dimmed': section.visible === 0 || section.uservisible === false}">
+                        <a class="item item-text-wrap" mm-split-view-link="site.mm_course-section({cid: courseId, sectionid: section.id, mid: moduleId})" title="{{section.name}}" ng-class="{'item-button-right': downloadSectionsEnabled}">
                             <mm-format-text watch="true">{{section.name}}</mm-format-text>
 
                             <button ng-if="downloadSectionsEnabled && section.showDownload && !section.isDownloading && !section.isCalculating" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.download' | translate }}">
@@ -23,6 +24,8 @@
 
                             <ion-spinner ng-if="downloadSectionsEnabled && ((section.isDownloading && section.total > 0) || section.isCalculating)"></ion-spinner>
                             <span class="badge mm-course-download" ng-if="downloadSectionsEnabled && section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</span>
+                            <p class="badge badge-calm badge-inline" ng-if="section.visible === 0">{{ 'mm.course.nocontentavailable' | translate }}</p>
+                            <p class="badge badge-calm badge-inline" ng-if="section.availabilityinfo"><mm-format-text watch="true">{{ section.availabilityinfo }}</mm-format-text></p>
                         </a>
                     </li>
                 </ul>

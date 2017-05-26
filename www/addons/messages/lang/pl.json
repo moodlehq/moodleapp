@@ -1,6 +1,6 @@
 {
-    "addcontact": "Dodaj jako kontakt",
-    "blockcontact": "Zablokuj kontakt",
+    "addcontact": "Dodaj kontakt",
+    "blockcontact": "Blokuj kontakt",
     "blocknoncontacts": "Blokuj wiadomości od użytkowników spoza listy kontaktów",
     "contactlistempty": "Lista kontaktów jest pusta",
     "contactname": "Nazwa kontaktu",
@@ -11,10 +11,10 @@
     "messagepreferences": "Preferencje wiadomości",
     "messages": "Wiadomości",
     "newmessage": "Nowa wiadomość",
-    "nomessages": "Brak oczekujących wiadomości",
+    "nomessages": "Brak wiadomości",
     "nousersfound": "Nie znaleziono użytkowników",
     "removecontact": "Usuń kontakt",
-    "send": "Wyślij",
+    "send": "wyślij",
     "sendmessage": "Wyślij wiadomość",
     "unblockcontact": "Odblokuj kontakt"
 }

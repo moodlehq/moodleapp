@@ -1,13 +1,10 @@
 {
-    "activitynotyetviewable": "פעילות או משאב זה עדיין לא ניתנים לצפיה ביישומון.",
-    "activitynotyetviewablegothere": "פעילות או משאב זה עדיין לא ניתנים לצפיה ביישומון, יש להקליק על הכפתור למטה לגישה מהאתר.",
     "allsections": "כל יחידות ההוראה",
     "contents": "תוכן",
     "couldnotloadsectioncontent": "אין אפשרות לטעון ולהציג את תוכן יחידת ההוראה. יש לנסות שוב מאוחר יותר.",
     "couldnotloadsections": "אין אפשרות לטעון ולהציג את יחידות ההוראה, יש לנסות שוב מאוחר יותר.",
-    "gotothesite": "צפיה בעזרת האתר",
+    "hiddenfromstudents": "מוסתר בפני סטודנטים",
     "nocontentavailable": "אין תוכן זמין כרגע.",
     "overriddennotice": "הציון הסופי שלך מפעילות זו הותאם ידנית.",
-    "showall": "הראה הכל",
-    "whoops": "אוווווופס!"
+    "showall": "תצוגת כל ה-{{$a}}"
 }

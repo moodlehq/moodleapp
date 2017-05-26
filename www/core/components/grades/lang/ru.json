@@ -1,14 +1,14 @@
 {
-    "average": "Среднее",
+    "average": "Средний",
     "badgrade": "Указана некорректная оценка",
-    "contributiontocoursetotal": "Вклад в курс",
+    "contributiontocoursetotal": "Вклад в итог курса",
     "feedback": "Отзыв",
     "grade": "Оценка",
     "grades": "Оценки",
-    "itemname": "Элемент оценки",
+    "itemname": "Название",
     "lettergrade": "Буквенная оценка",
     "nooutcome": "Нет показателя",
-    "percentage": "В процентах",
+    "percentage": "Проценты",
     "range": "Диапазон",
     "rank": "Ранг",
     "weight": "Вес"

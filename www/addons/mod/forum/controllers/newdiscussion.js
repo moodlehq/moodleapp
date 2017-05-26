@@ -40,12 +40,18 @@ angular.module('mm.addons.mod_forum')
         subject: '',
         text: '',
         subscribe: true,
+        pin: false,
         files: []
     };
 
     $scope.hasOffline = false;
     $scope.component = mmaModForumComponent;
-    $scope.canAddAttachments = $mmaModForum.canAddAttachments();
+    $scope.canCreateAttachments = true; // Assume he can by default.
+    $scope.canPin = false;
+
+    $mmaModForum.canAddAttachments().then(function(canAdd) {
+        $scope.canAddAttachments = canAdd;
+    });
 
     // Fetch if forum uses groups and the groups it uses.
     function fetchDiscussionData(refresh) {
@@ -79,6 +85,16 @@ angular.module('mm.addons.mod_forum')
                 }));
             } else {
                 $scope.showGroups = false;
+
+                if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                    // Use the canAddDiscussion WS to check if the user can add attachments and pin discussions.
+                    promises.push($mmaModForum.canAddDiscussionToAll(forumId).then(function(response) {
+                        $scope.canPin = !!response.canpindiscussions;
+                        $scope.canCreateAttachments = !!response.cancreateattachment;
+                    }).catch(function() {
+                        // Ignore errors, use default values.
+                    }));
+                }
             }
 
             // Get forum.
@@ -96,13 +112,15 @@ angular.module('mm.addons.mod_forum')
                     }
                     return $mmaModForumOffline.getNewDiscussion(forumId, timecreated).then(function(discussion) {
                         $scope.hasOffline = true;
+                        discussion.options = discussion.options || {};
                         $scope.newDiscussion.groupid = discussion.groupid ? discussion.groupid : $scope.newDiscussion.groupid;
                         $scope.newDiscussion.subject = discussion.subject;
                         $scope.newDiscussion.text = discussion.message;
-                        $scope.newDiscussion.subscribe = discussion.subscribe;
+                        $scope.newDiscussion.subscribe = discussion.options.discussionsubscribe;
+                        $scope.newDiscussion.pin = discussion.options.discussionpinned;
 
                         // Treat offline attachments if any.
-                        if (discussion.attachments && discussion.attachments.offline) {
+                        if (discussion.options.attachmentsid && discussion.options.attachmentsid.offline) {
                             return $mmaModForumHelper.getNewDiscussionStoredFiles(forumId, timecreated).then(function(files) {
                                 $scope.newDiscussion.files = files;
                             });
@@ -132,9 +150,16 @@ angular.module('mm.addons.mod_forum')
             // We first check if the user can post to all the groups.
             return $mmaModForum.canAddDiscussionToAll(forumId).catch(function() {
                 // The call failed, let's assume he can't.
-                return false;
-            }).then(function(canAdd) {
-                if (canAdd) {
+                return {
+                    status: false,
+                    canpindiscussions: false,
+                    cancreateattachment: true
+                };
+            }).then(function(response) {
+                $scope.canPin = !!response.canpindiscussions;
+                $scope.canCreateAttachments = !!response.cancreateattachment;
+
+                if (response.status) {
                     // The user can post to all groups, add the "All participants" option and return them all.
                     return addAllParticipantsOption(forumgroups);
                 } else {
@@ -146,9 +171,11 @@ angular.module('mm.addons.mod_forum')
                         promises.push($mmaModForum.canAddDiscussion(forumId, group.id).catch(function() {
                             // The call failed, let's return true so the group is shown. If the user can't post to
                             // it an error will be shown when he tries to add the discussion.
-                            return true;
-                        }).then(function(canAdd) {
-                            if (canAdd) {
+                            return {
+                                status: true
+                            };
+                        }).then(function(response) {
+                            if (response.status) {
                                 filtered.push(group);
                             }
                         }));
@@ -198,7 +225,11 @@ angular.module('mm.addons.mod_forum')
             return $q.when(groups);
         } else if (check) {
             // We need to check if the user can add a discussion to all participants.
-            promise = $mmaModForum.canAddDiscussionToAll(forumId).catch(function() {
+            promise = $mmaModForum.canAddDiscussionToAll(forumId).then(function(response) {
+                $scope.canPin = !!response.canpindiscussions;
+                $scope.canCreateAttachments = !!response.cancreateattachment;
+                return response.status;
+            }).catch(function() {
                 // The call failed, let's assume he can't.
                 return false;
             });
@@ -288,10 +319,13 @@ angular.module('mm.addons.mod_forum')
             forumName = $scope.forum.name,
             subject = $scope.newDiscussion.subject,
             message = $scope.newDiscussion.text,
-            subscribe = $scope.newDiscussion.subscribe,
+            pin = $scope.newDiscussion.pin,
             groupId = $scope.newDiscussion.groupid,
             attachments = $scope.newDiscussion.files,
             discTimecreated = timecreated || Date.now(),
+            options = {
+                discussionsubscribe: !!$scope.newDiscussion.subscribe
+            },
             saveOffline = false;
 
         if (!subject) {
@@ -322,17 +356,24 @@ angular.module('mm.addons.mod_forum')
                 });
             }
         }).then(function(attach) {
+            if (attach) {
+                options.attachmentsid = attach;
+            }
+            if (pin) {
+                options.discussionpinned = true;
+            }
+
             if (saveOffline) {
                 // Save discussion in offline.
                 return $mmaModForumOffline.addNewDiscussion(forumId, forumName, courseId, subject,
-                        message, subscribe, groupId, attach, discTimecreated).then(function() {
+                        message, options, groupId, discTimecreated).then(function() {
                     // Don't return anything.
                 });
             } else {
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
-                return $mmaModForum.addNewDiscussion(forumId, forumName, courseId, subject, message, subscribe,
-                        groupId, attach, undefined, discTimecreated, !attachments.length);
+                return $mmaModForum.addNewDiscussion(forumId, forumName, courseId, subject, message, options,
+                        groupId, undefined, discTimecreated, !attachments.length);
             }
         }).then(function(discussionId) {
             if (discussionId) {

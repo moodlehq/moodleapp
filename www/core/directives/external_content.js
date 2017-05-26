@@ -30,6 +30,9 @@ angular.module('mm.core')
  *
  * Attributes accepted:
  *     - siteid: Reference to the site ID if different than the site the user is connected to.
+ *
+ * @todo We can't detect changes in files from external repositories. A solution would be to always download them,
+ * but we could increase the data usage A LOT if we're always downloading the embedded files.
  */
 .directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q, $mmApp, $ionicPlatform) {
     $log = $log.getInstance('mmExternalContent');
@@ -91,7 +94,7 @@ angular.module('mm.core')
             };
         }
 
-        if (!url || !$mmUtil.isDownloadableUrl(url)) {
+        if (!url || !url.match(/^https?:\/\//i) || (dom.tagName === 'A' && !$mmUtil.isDownloadableUrl(url))) {
             $log.debug('Ignoring non-downloadable URL: ' + url);
             if (dom.tagName === 'SOURCE') {
                 // Restoring original src.

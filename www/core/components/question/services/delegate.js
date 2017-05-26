@@ -70,6 +70,8 @@ angular.module('mm.core.question')
      *                                              Return true if gradable, false if not gradable, -1 if cannot determine.
      *                             - isSameResponse(question, prevAnswers, newAnswers) (Boolean) Optional. Check if two responses
      *                                              are equal. Always return boolean.
+     *                             - prepareAnswers(question, answers, offline, siteId) (Promise|Void) Optional. Prepare and add to
+     *                                              answers the data to send to server based in the input. Return promise if async.
      */
     self.registerHandler = function(name, questionType, handler) {
         if (typeof handlers[questionType] !== 'undefined') {
@@ -237,6 +239,29 @@ angular.module('mm.core.question')
          */
         self.isQuestionSupported = function(type) {
             return typeof enabledHandlers['qtype_' + type] != 'undefined';
+        };
+
+        /**
+         * Prepare the answers for a certain question.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#prepareAnswersForQuestion
+         * @param  {Object} question The question.
+         * @param  {Object} answers  The answers retrieved from the form. Prepared answers must be stored in this object.
+         * @param  {Boolean} offline True if data should be saved in offline.
+         * @param  {String} [siteId] Site ID. If not defined, current site.
+         * @return {Promise}         Promise resolved when data has been prepared.
+         */
+        self.prepareAnswersForQuestion = function(question, answers, offline, siteId) {
+            var type = 'qtype_' + question.type,
+                handler = enabledHandlers[type];
+
+            // Check if there's a handler and it implements the required method.
+            if (typeof handler != 'undefined' && handler.prepareAnswers) {
+                return $q.when(handler.prepareAnswers(question, answers, offline, siteId));
+            }
+            return $q.when();
         };
 
         /**

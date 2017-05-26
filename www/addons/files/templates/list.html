@@ -6,7 +6,7 @@
     <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
         <mm-loading hide-until="filesLoaded">
-            <ul class="list">
+            <ul class="list" ng-if="count > 0">
                 <li ng-repeat="file in files">
                     <a ui-sref="site.files-list({path: file.link, title: file.filename})" class="item item-media" ng-if="file.isdir">
                         <img ng-src="{{file.imgpath}}" alt="" role="presentation">
@@ -14,8 +14,8 @@
                     </a>
                     <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>
                 </li>
-                <li ng-if="count == 0" class="item">{{ 'mma.files.emptyfilelist' | translate }}</li>
             </ul>
+            <mm-empty-box ng-if="count == 0" icon="ion-folder" message="{{ 'mma.files.emptyfilelist' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

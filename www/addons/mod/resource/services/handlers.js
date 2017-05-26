@@ -112,6 +112,9 @@ angular.module('mm.addons.mod_resource')
                     } else {
                         $scope.icon = $mmCourse.getModuleIconSrc('resource');
                     }
+                }).finally(function() {
+                    // Get current status to decide which icon should be shown.
+                    $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
                 });
 
                 $scope.action = function(e) {
@@ -156,6 +159,8 @@ angular.module('mm.addons.mod_resource')
 
                 // Show buttons according to module status.
                 function showStatus(status) {
+                    status = $mmaModResourcePrefetchHandler.determineStatus(status, false, module);
+
                     if (status) {
                         $scope.spinner = status === mmCoreDownloading;
                         downloadBtn.hidden = status !== mmCoreNotDownloaded;
@@ -171,9 +176,6 @@ angular.module('mm.addons.mod_resource')
                         showStatus(data.status);
                     }
                 });
-
-                // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();

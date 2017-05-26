@@ -11,7 +11,6 @@
             </ion-refresher>
             <mm-loading hide-until="eventsLoaded">
                 <ul class="list">
-                    <li ng-if="filtered.length == 0" class="item">{{ 'mma.calendar.noevents' | translate }}</li>
                     <li ng-repeat="event in events | filter:filterEvent as filtered">
                         <a class="item item-media item-text-wrap" mm-split-view-link="site.calendar-event({id: event.id})" title="{{event.name}}">
                             <img ng-src="{{event.icon}}">
@@ -20,6 +19,7 @@
                         </a>
                     </li>
                 </ul>
+                <mm-empty-box ng-if="filtered.length == 0" icon="ion-calendar" message="{{ 'mma.calendar.noevents' | translate }}"></mm-empty-box>
 
                 <ion-infinite-scroll ng-if="canLoadMore" on-infinite="loadMoreEvents()" >
                 </ion-infinite-scroll>

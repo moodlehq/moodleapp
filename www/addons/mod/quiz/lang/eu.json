@@ -64,7 +64,7 @@
     "stateabandoned": "Bidali gabeak",
     "statefinished": "Amaitutakoak",
     "statefinisheddetails": "{{$a}} bidali da",
-    "stateinprogress": "Egiten ari direnak",
+    "stateinprogress": "Ari da",
     "stateoverdue": "Atzeratutakoak",
     "stateoverduedetails": "{{$a}}-(e)k bidali behar du.",
     "status": "Egoera",

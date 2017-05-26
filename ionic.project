@@ -1,5 +1,5 @@
 {
-  "name": "mm2",
+  "name": "moodlemobile2",
   "app_id": "",
   "gulpStartupTasks": [
     "build",

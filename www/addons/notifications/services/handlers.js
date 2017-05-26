@@ -23,7 +23,7 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotificationsHandlers
  */
-.factory('$mmaNotificationsHandlers', function($log, $mmaNotifications, $mmEvents, $mmSitesManager, $mmUtil,
+.factory('$mmaNotificationsHandlers', function($log, $mmaNotifications, $mmEvents, $mmSitesManager, $mmUtil, $mmSite,
         mmaNotificationsReadChangedEvent, mmaNotificationsReadCronEvent, $mmAddonManager) {
     $log = $log.getInstance('$mmaNotificationsHandlers');
 
@@ -106,7 +106,8 @@ angular.module('mm.addons.notifications')
                     }
 
                     function updateUnreadNotificationsCount(siteId) {
-                        return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
+                        siteId = siteId || $mmSite.getId();
+                        return $mmaNotifications.getUnreadNotificationsCount(undefined, siteId).then(function(unread) {
                             // Leave badge enter if there is a 0+ or a 0.
                             $scope.badge = parseInt(unread, 10) > 0 ? unread : '';
                             // Update badge.
@@ -200,7 +201,7 @@ angular.module('mm.addons.notifications')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaNotifications.isNotificationPreferencesEnabled();
+            return true;
         };
 
         /**

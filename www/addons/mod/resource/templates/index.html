@@ -18,8 +18,12 @@
                 <mm-iframe src="src"></mm-iframe>
             </div>
 
+            <div ng-if="mode == 'embedded'">
+                <mm-format-text watch="true">{{content}}</mm-format-text>
+            </div>
+
             <div ng-if="mode == 'external'">
-                <a ng-click="open()" class="button button-block icon-left ion-document">{{ 'mma.mod_resource.openthefile' | translate }}</a>
+                <a ng-click="open()" class="button button-block icon-left ion-document button-positive">{{ 'mma.mod_resource.openthefile' | translate }}</a>
             </div>
         </mm-loading>
     </ion-content>

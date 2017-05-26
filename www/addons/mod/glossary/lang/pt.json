@@ -1,5 +1,5 @@
 {
-    "attachment": "Anexo",
+    "attachment": "Anexar Medalha à mensagem",
     "browsemode": "Ver entradas",
     "byalphabet": "Alfabeticamente",
     "byauthor": "Agrupar por autor",
@@ -8,7 +8,7 @@
     "byrecentlyupdated": "Recentemente atualizados",
     "bysearch": "Pesquisar",
     "cannoteditentry": "Não é possível editar a entrada",
-    "casesensitive": "Respeitar maiúsculas/minúsculas",
+    "casesensitive": "Usar regular expressions",
     "categories": "Categorias de disciplinas",
     "entriestobesynced": "Entradas a ser sincronizadas",
     "entrypendingapproval": "Este termo aguarda aprovação.",

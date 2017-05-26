@@ -43,4 +43,13 @@ $mma-chat-notice-badge: "stable" !default;
       border: 0;
     }
   }
+
+  .button-bar {
+    padding: 0;
+    border: 0;
+
+    .button {
+      border: 0;
+    }
+  }
 }

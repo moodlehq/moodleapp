@@ -1,16 +1,16 @@
 {
     "address": "Helbidea",
-    "city": "Hiria",
+    "city": "Hiria/Herria",
     "contact": "Kontaktua",
-    "country": "Herrialdea",
+    "country": "Herria",
     "description": "Deskribapena",
     "details": "Xehetasunak",
     "detailsnotavailable": "Erabiltzaile honen xehetasunak ez daude zuretzat eskuragarri",
     "editingteacher": "Irakaslea",
-    "email": "E-posta",
+    "email": "E-posta helbidea",
     "emailagain": "E-posta (berriro)",
     "firstname": "Izena",
-    "interests": "Interesak",
+    "interests": "Interesguneak",
     "invaliduser": "Erabiltzailea ez da zuzena.",
     "lastname": "Deitura",
     "manager": "Kudeatzailea",
@@ -21,6 +21,6 @@
     "sendemail": "E-posta",
     "student": "Ikaslea",
     "teacher": "Edizio-baimenik gabeko irakaslea",
-    "viewprofile": "Ikusi profila",
-    "webpage": "Web orria"
+    "viewprofile": "Profila ikusi",
+    "webpage": "Web-orria"
 }

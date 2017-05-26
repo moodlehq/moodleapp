@@ -23,7 +23,7 @@
             </div>
 
             <!-- Assign has something offline. -->
-            <div class="mm-warning" ng-if="hasOffline">
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
             </div>
 
@@ -57,7 +57,7 @@
                     <span class="badge badge-positive">{{summary.submissionsneedgradingcount}}</span>
                     <i class="icon icon-accessory ion-chevron-right" ng-if="needsGradingAvalaible"></i>
                 </div>
-                <p class="mm-warning" ng-if="assign.teamsubmission && summary.warnofungroupedusers">{{ 'mma.mod_assign.ungroupedusers' | translate }}</p>
+                <p class="mm-info-card" ng-if="assign.teamsubmission && summary.warnofungroupedusers">{{ 'mma.mod_assign.ungroupedusers' | translate }}</p>
             </div>
 
             <mma-mod-assign-submission ng-if="!canviewsubmissions" courseid="{{courseid}}" moduleid="{{moduleid}}" scroll-handle="mmaModAssignIndexScroll"></mma-mod-assign-submission>

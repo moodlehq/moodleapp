@@ -1,0 +1,18 @@
+{
+    "future": "Futuro",
+    "inprogress": "En progreso",
+    "morecourses": "Más cursos",
+    "next30days": "Siguientes 30 días",
+    "next7days": "Siguientes 7 días",
+    "nocourses": "Ningun curso",
+    "nocoursesfuture": "Sin cursos futuros",
+    "nocoursesinprogress": "Ningun curso en progreso",
+    "nocoursespast": "Sin cursos pasados",
+    "noevents": "No hay actividades próximas pendientes",
+    "past": "Pasado",
+    "pluginname": "Vista general del curso",
+    "recentlyoverdue": "Recientemente atrasado",
+    "sortbycourses": "Ordenar por cursos",
+    "sortbydates": "Ordenar por fechas",
+    "timeline": "Línea de tiempo"
+}

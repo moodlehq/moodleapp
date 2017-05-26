@@ -15,18 +15,16 @@
                                 <span ng-if="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
                                 <span ng-if="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
                             </p>
-                            <p ng-if="submission.statusTranslated" class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
-                            <p ng-if="submission.gradingStatusTranslationId" class="badge badge-inline {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
+                            <p ng-if="submission.statusTranslated" class="badge badge-inline text-center {{submission.statusClass}}">{{submission.statusTranslated}}</p>
+                            <p ng-if="submission.gradingStatusTranslationId" class="badge badge-inline text-center {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
                             <i class="icon icon-accessory ion-chevron-right"></i>
                         </a>
                     </li>
-                    <li class="mm-warning item item-text-wrap" ng-if="!haveAllParticipants">
+                    <li class="mm-warning-card-icon item item-text-wrap" ng-if="!haveAllParticipants">
                         <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.notallparticipantsareshown' | translate }}
                     </li>
-                    <li class="padding" ng-if="!submissions || submissions.length == 0">
-                        <p>{{ 'mma.mod_assign.submissionstatus_' | translate }}</p>
-                    </li>
                 </ul>
+                <mm-empty-box ng-if="!submissions || submissions.length == 0" icon="ion-archive" message="{{ 'mma.mod_assign.submissionstatus_' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

@@ -9,7 +9,7 @@
     "errorgettingimagealbum": "Fejl ved indhentning af billede fra album",
     "errormustbeonlinetoupload": "Du skal være online for at uploade filer.",
     "errornoapp": "Du har ikke installeret en app som kan udføre denne handling.",
-    "errorreadingfile": "Fejl ved læsning af fil.",
+    "errorreadingfile": "Fejl under læsning af filen \"{{$a}}\"",
     "errorwhileuploading": "En fejl opstod under upload af filen.",
     "file": "Fil",
     "fileuploaded": "Filen er uploadet.",
@@ -17,6 +17,6 @@
     "photoalbums": "Fotoalbum",
     "readingfile": "Læser fil",
     "uploadafile": "Upload en fil",
-    "uploading": "Uploader",
+    "uploading": "Uploader...",
     "video": "Video"
 }

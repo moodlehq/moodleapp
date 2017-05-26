@@ -415,16 +415,8 @@ angular.module('mm.addons.mod_assign')
 
             // Get related submissions files and fetch them.
             subPromises.push(self.getFiles(module, courseId, siteId).then(function(files) {
-                var filePromises = [];
-
                 revision = self.getRevision(module, courseId);
-
-                angular.forEach(files, function(file) {
-                    var url = file.fileurl;
-                    filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-                });
-
-                return $q.all(filePromises);
+                return $mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id);
             }));
 
             return $q.all(subPromises);

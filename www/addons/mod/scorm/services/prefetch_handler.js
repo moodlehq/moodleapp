@@ -73,19 +73,10 @@ angular.module('mm.addons.mod_scorm')
             promises.push(self._downloadOrPrefetchPackage(scorm, prefetch, siteId).then(undefined, undefined, deferred.notify));
 
             // Download intro files.
-            angular.forEach(introFiles, function(file) {
-                var promise;
-
-                if (prefetch) {
-                    promise = $mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified);
-                } else {
-                    promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, self.component, module.id, file.timemodified);
-                }
-
-                promises.push(promise.catch(function() {
-                    // Ignore errors for now.
-                }));
-            });
+            promises.push($mmFilepool.downloadOrPrefetchFiles(siteId, introFiles, prefetch, false, self.component, module.id)
+                    .catch(function() {
+                // Ignore errors.
+            }));
 
             return $q.all(promises);
         }).then(function() {
@@ -381,7 +372,7 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModScorm.getScorm(courseId, module.id, module.url, false, true).then(function(scorm) {
+        return $mmaModScorm.getScorm(courseId, module.id, module.url).then(function(scorm) {
             if (scorm.warningmessage) {
                 // SCORM closed or not opened yet.
                 return false;

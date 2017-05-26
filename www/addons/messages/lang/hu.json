@@ -1,5 +1,5 @@
 {
-    "addcontact": "Hozzáadás kapcsolatként",
+    "addcontact": "Kapcsolat hozzáadása",
     "blockcontact": "Kapcsolat zárolása",
     "blocknoncontacts": "Ismeretlenek üzeneteit ne kapjam meg",
     "contactlistempty": "Kapcsolatainak jegyzéke jelenleg üres.",
@@ -11,10 +11,10 @@
     "messagepreferences": "Üzenet beállításai",
     "messages": "Üzenetek",
     "newmessage": "Új üzenet",
-    "nomessages": "Nem várakozik üzenet",
+    "nomessages": "Még nincs üzenet",
     "nousersfound": "Nincs felhasználó",
     "removecontact": "Kapcsolat törlése",
-    "send": "Küldés",
+    "send": "Elküld",
     "sendmessage": "Üzenet küldése",
     "unblockcontact": "Kapcsolat zárolásának feloldása"
 }

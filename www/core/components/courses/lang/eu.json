@@ -20,7 +20,7 @@
     "notenrollable": "Ezin duzu zeure burua matrikulatu ikastaro honetan.",
     "password": "Matrikulazio-giltza",
     "search": "Bilatu",
-    "searchcourses": "Ikastaroak bilatu",
+    "searchcourses": "Bilatu Ikastaroak",
     "searchcoursesadvice": "Bilatu botoia erabil dezakezu ikastaroak topatu eta bisitari gisa sartu edo bertan matrikulatzeko ikastaroak baimentzen badu.",
     "selfenrolment": "Matrikulazio automatikoa",
     "totalcoursesearchresults": "Ikastaroak guztira: {{$a}}"
