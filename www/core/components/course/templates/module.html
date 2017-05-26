@@ -5,11 +5,11 @@
     <div class="buttons mm-module-buttons" ng-class="{'mm-button-completion': module.completionstatus}" ng-if="module.uservisible !== false && ((buttons && buttons.length > 0) || spinner || module.completionstatus)">
         <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="module.name" after-change="completionChanged"></mm-completion>
 
-        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
+        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon mm-animate-show-hide" aria-label="{{ button.label | translate }}">
             <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
         </button>
 
-        <ion-spinner ng-if="spinner"></ion-spinner>
+        <ion-spinner ng-if="spinner" class="mm-animate-show-hide"></ion-spinner>
     </div>
 
     <mm-format-text watch="true">{{ title }}</mm-format-text>
