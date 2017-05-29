@@ -1,6 +1,6 @@
 {
   "name": "mm2",
-  "version": "1.0.0",
+  "version": "3.3.0",
   "description": "Moodle Mobile 2: The official mobile app for Moodle.",
   "repository": {
     "type": "git",
@@ -13,8 +13,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "appium": "^1.6.0",
     "bower": "^1.3.3",
@@ -122,5 +121,6 @@
     "serve.e2e": "ionic serve -b -a",
     "serve.dev": "ionic serve",
     "e2e": "protractor e2e/build/protractor.conf.js"
-  }
+  },
+  "main": "www/electron.js"
 }

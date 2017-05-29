@@ -30,6 +30,12 @@ angular.module('mm.core.login', [])
         onEnter: function($ionicHistory) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
+        },
+        controller: function($scope) {
+            // Required for Electron app so the title doesn't change.
+            $scope.$on('$ionicView.afterEnter', function(ev) {
+                ev.stopPropagation();
+            });
         }
     })
 
