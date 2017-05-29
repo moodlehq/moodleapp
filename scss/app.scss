@@ -60,7 +60,7 @@ $base-color: $black !default;
 $base-background-color: $gray-light !default;
 
 $item-default-text: $black;
-$sheet-options-text-color: $positive;
+$sheet-options-text-color: $mm-buttons-color;
 
 // Header.
 $bar-content-bg: $mm-color !default;
@@ -73,7 +73,7 @@ $item-disabled-color: $gray-dark !default;
 
 $button-light-border: $gray;
 
-$toggle-on-default-bg: $blue;
+$toggle-on-default-bg: $mm-buttons-color;
 
 $tabs-off-opacity:                0.6;
 $tabs-striped-off-opacity:        $tabs-off-opacity;
@@ -85,6 +85,11 @@ $button-default-border: $mm-buttons-color !default;
 $button-default-active-bg: $mm-buttons-color !default;
 $button-default-active-border: $mm-buttons-color !default;
 
+$button-positive-bg:              $mm-buttons-color !default;
+$button-positive-border:          darken($mm-buttons-color, 10%) !default;
+$button-positive-active-bg:       darken($mm-buttons-color, 10%) !default;
+$button-positive-active-border:   darken($mm-buttons-color, 10%) !default;
+
 // The path to the font icons.
 $ionicons-font-path: "../lib/ionic/release/fonts" !default;
 
@@ -95,7 +100,7 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
   color: $gray-darker;
 
   &.positive {
-    color: $positive;
+    color: $mm-buttons-color;
   }
   &.assertive {
     color: $assertive;
@@ -115,7 +120,7 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
   &.activated,
   &.active .icon,
   &.activated .icon {
-    color: $positive;
+    color: $mm-buttons-color;
 
     &.assertive {
       color: $assertive;
@@ -147,7 +152,7 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
   color: $assertive;
 }
 
-// Setting the default button to button-outline positive.
+// Setting the default button to button-outline $mm-buttons-color.
 .button {
   &.button-light,
   &.button-stable,
