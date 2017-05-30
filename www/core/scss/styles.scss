@@ -81,9 +81,9 @@ $item-input-padding: 16px !default;
   }
 
   .spinner {
-    color: white;
-    stroke: white;
-    fill: white;
+    color: $mm-init-screen-spinner-color;
+    stroke: $mm-init-screen-spinner-color;
+    fill: $mm-init-screen-spinner-color;
   }
 }
 

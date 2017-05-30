@@ -50,8 +50,9 @@ $mm-color:          $orange;
 $mm-color-light:    lighten($mm-color, 10%);
 $mm-color-dark:     darken($mm-color, 10%);
 
-$mm-color-init-screen:      #ff5c00;
-$mm-color-init-screen-alt:  #ff7600;
+$mm-color-init-screen:         #ff5c00;
+$mm-color-init-screen-alt:     #ff7600;
+$mm-init-screen-spinner-color: $white;
 
 $mm-buttons-color: $positive;
 
