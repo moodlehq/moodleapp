@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc controller
  * @name $mmaModData
  */
-.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool) {
+.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite) {
     var self = {};
 
     /**
@@ -44,14 +44,59 @@ angular.module('mm.addons.mod_data')
         return 'mmaModData:' + dataId;
     }
 
+
     /**
-     * Get cache key for database access information data WS calls.
+     * Get prefix cache key for all database access information data WS calls.
      *
      * @param {Number} dataId   Data ID.
      * @return {String}         Cache key.
      */
-    function getDatabaseAccessInformationDataCacheKey(dataId) {
-        return getDatabaseDataPrefixCacheKey(dataId) + ':access';
+    function getDatabaseAccessInformationDataPrefixCacheKey(dataId) {
+        return getDatabaseDataPrefixCacheKey(dataId) + ':access:';
+    }
+
+    /**
+     * Get cache key for database access information data WS calls.
+     *
+     * @param {Number} dataId   Data ID.
+     * @param {Number} [groupId]  Group ID.
+     * @return {String}         Cache key.
+     */
+    function getDatabaseAccessInformationDataCacheKey(dataId, groupId) {
+        groupId = groupId || 0;
+        return getDatabaseAccessInformationDataPrefixCacheKey(dataId) + groupId;
+    }
+
+    /**
+     * Get prefix cache key for database all entries data WS calls.
+     *
+     * @param {Number} dataId     Data ID.
+     * @return {String}           Cache key.
+     */
+    function getEntriesPrefixCacheKey(dataId) {
+        return getDatabaseDataPrefixCacheKey(dataId) + ':entries:';
+    }
+
+    /**
+     * Get cache key for database entries data WS calls.
+     *
+     * @param {Number} dataId     Data ID.
+     * @param {Number} [groupId]  Group ID.
+     * @return {String}           Cache key.
+     */
+    function getEntriesCacheKey(dataId, groupId) {
+        groupId = groupId || 0;
+        return getEntriesPrefixCacheKey(dataId) + groupId;
+    }
+
+    /**
+     * Get cache key for database fields data WS calls.
+     *
+     * @param {Number} dataId     Data ID.
+     * @return {String}           Cache key.
+     */
+    function getFieldsCacheKey(dataId) {
+        return getDatabaseDataPrefixCacheKey(dataId) + ':fields';
     }
 
     /**
@@ -178,19 +223,24 @@ angular.module('mm.addons.mod_data')
      * @ngdoc method
      * @name $mmaModData#getDatabaseAccessInformation
      * @param   {Number}    dataId          Data ID.
+     * @param   {Number}    [groupId]       Group ID.
      * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
      * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the database is retrieved.
      */
-    self.getDatabaseAccessInformation = function(dataId, offline, ignoreCache, siteId) {
+    self.getDatabaseAccessInformation = function(dataId, groupId, offline, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     databaseid: dataId
                 },
                 preSets = {
-                    cacheKey: getDatabaseAccessInformationDataCacheKey(dataId)
+                    cacheKey: getDatabaseAccessInformationDataCacheKey(dataId, groupId)
                 };
+
+            if (typeof groupId !== "undefined") {
+                params.groupid = groupId;
+            }
 
             if (offline) {
                 preSets.omitExpires = true;
@@ -215,9 +265,188 @@ angular.module('mm.addons.mod_data')
      */
     self.invalidateDatabaseAccessInformationData = function(dataId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(getDatabaseAccessInformationDataCacheKey(dataId));
+            return site.invalidateWsCacheForKeyStartingWith(getDatabaseAccessInformationDataPrefixCacheKey(dataId));
         });
     };
+
+    /**
+     * Get entries for a specific database and group.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#getEntries
+     * @param   {Number}    dataId          Data ID.
+     * @param   {Number}    [groupId]       Group ID.
+     * @param   {Number}    [sort]          Sort the records by this field id, reserved ids are:
+     *                                          0: timeadded
+     *                                          -1: firstname
+     *                                          -2: lastname
+     *                                          -3: approved
+     *                                          -4: timemodified.
+     *                                          Empty for using the default database setting.
+     * @param   {String}    [order]         The direction of the sorting: 'ASC' or 'DESC'.
+     *                                          Empty for using the default database setting.
+     * @param   {Number}    [page]          Page of records to return.
+     * @param   {Number}    [perPage]       Number of records to return per page.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param   {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the database is retrieved.
+     */
+    self.getEntries = function(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    databaseid: dataId,
+                    returncontents: 1
+                },
+                preSets = {
+                    cacheKey: getEntriesCacheKey(dataId, groupId)
+                };
+
+            if (typeof sort != "undefined") {
+                params.sort = sort;
+            }
+
+            if (order) {
+                params.order = order;
+            }
+
+            if (page) {
+                params.page = page;
+            }
+
+            if (perPage) {
+                params.perpage = perPage;
+            }
+
+            if (typeof groupId !== "undefined") {
+                params.groupid = groupId;
+            }
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_data_get_entries', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidates database entries data.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#invalidateEntriesData
+     * @param {Number} dataId       Data ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateEntriesData = function(dataId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getEntriesPrefixCacheKey(dataId));
+        });
+    };
+
+    /**
+     * Get the list of configured fields for the given database.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#getFields
+     * @param   {Number}    dataId          Data ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the database is retrieved.
+     */
+    self.getFields = function(dataId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    databaseid: dataId
+                },
+                preSets = {
+                    cacheKey: getFieldsCacheKey(dataId)
+                };
+
+            return site.read('mod_data_get_fields', params, preSets).then(function(response) {
+                if (response && response.fields) {
+                    return response.fields;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates database fields data.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#invalidateFieldsData
+     * @param {Number} dataId       Data ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateFieldsData = function(dataId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getFieldsCacheKey(dataId));
+        });
+    };
+
+    /**
+     * Performs the whole fetch of the entries in the database.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataPrefetchHandler#fetchAllEntries
+     * @param  {Number}    dataId          Data ID.
+     * @param  {Number}    [groupId]       Group ID.
+     * @param  {Number}    [sort]          Sort the records by this field id. See $mmaModData#getEntries for more information.
+     * @param  {String}    [order]         The direction of the sorting.  See $mmaModData#getEntries for more information.
+     * @param  {Number}    [perPage]       Number of records to return per page. Default 10.
+     * @param  {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}    [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                   Promise resolved when done.
+     */
+    self.fetchAllEntries = function(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (typeof perPage == 'undefined') {
+            perPage = 10;
+        }
+
+        return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, [], 0, siteId);
+    };
+
+    /**
+     * Recursive call on fetch all entries.
+     *
+     * @param  {Number}    dataId          Data ID.
+     * @param  {Number}    groupId         Group ID.
+     * @param  {Number}    sort            Sort the records by this field id. See $mmaModData#getEntries for more information.
+     * @param  {String}    order           The direction of the sorting.  See $mmaModData#getEntries for more information.
+     * @param  {Number}    perPage         Number of records to return per page.
+     * @param  {Boolean}   forceCache      True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {Array}     entries         Entries already fetch (just to concatenate them).
+     * @param  {Number}    page            Page of records to return.
+     * @param  {String}    siteId          Site ID.
+     * @return {Promise}                   Promise resolved when done.
+     */
+    function fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page, siteId) {
+        return self.getEntries(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId).then(function(result) {
+            entries = entries.concat(result.entries);
+
+            var canLoadMore = ((page + 1) * perPage) < result.totalcount;
+            if (canLoadMore) {
+                return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries,
+                    page + 1, siteId);
+            }
+            return entries;
+        });
+    }
 
     /**
      * Invalidate the prefetched content except files.

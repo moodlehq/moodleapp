@@ -93,6 +93,7 @@ angular.module('mm.core')
      * @name $mmGroups#getActivityGroupInfo
      * @param  {Number} cmId                Course Module Id of the feedback.
      * @param  {Boolean} [addAllParts=true] True to add the all participants option, false otherwise.
+     *                                      Always true for visible groups.
      * @param  {Number} [userId]            User ID. If not defined, use current user.
      * @param  {String} [siteId]            Site ID. If not defined, current site.
      * @return {Object}                     Containing the group info related to the activity.
@@ -120,7 +121,7 @@ angular.module('mm.core')
                 groupInfo.separateGroups = false;
                 groupInfo.visibleGroups = false;
             } else {
-                if (addAllParts) {
+                if (addAllParts || groupInfo.visibleGroups) {
                     groupInfo.groups = [
                         {'id': 0, 'name': $translate.instant('mm.core.allparticipants')}
                     ];

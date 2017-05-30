@@ -24,7 +24,8 @@ angular.module('mm.addons.mod_data', ['mm.core'])
         url: '/mod_data',
         params: {
             module: null,
-            courseid: null
+            courseid: null,
+            group: null
         },
         views: {
             'site': {
@@ -36,7 +37,8 @@ angular.module('mm.addons.mod_data', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModData', 'data', '$mmaModDataHandlers.courseContent');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData', '$mmaModDataHandlers.linksHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModData', 'data', '$mmaModDataPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:index', '$mmaModDataHandlers.indexLinksHandler');
 });

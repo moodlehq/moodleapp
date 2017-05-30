@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name mmaModDataIndexCtrl
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
-        $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite) {
+        $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -33,13 +33,12 @@ angular.module('mm.addons.mod_data')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.moduleName = $mmCourse.translateModuleName('data');
-    $scope.courseId = courseId;
     $scope.refreshIcon = 'spinner';
     $scope.syncIcon = 'spinner';
     $scope.component = mmaModDataComponent;
     $scope.componentId = module.id;
     $scope.databaseLoaded = false;
-
+    $scope.selectedGroup = $stateParams.group || 0;
 
     function fetchDatabaseData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
@@ -49,10 +48,12 @@ angular.module('mm.addons.mod_data')
 
             $scope.title = data.name || $scope.title;
             $scope.description = data.intro || $scope.description;
+            $scope.data = databaseData;
 
             $scope.database = data;
 
             return $mmaModData.getDatabaseAccessInformation(data.id);
+
         }).then(function(accessData) {
             $scope.access = accessData;
 
@@ -66,13 +67,31 @@ angular.module('mm.addons.mod_data')
                 $scope.timeAvailableTo = data.timeavailableto && time > data.timeavailableto ?
                     parseInt(data.timeavailableto, 10) * 1000 : false;
                 $scope.timeAvailableToReadable = $scope.timeAvailableTo ? moment($scope.timeAvailableTo).format('LLL') : false;
-            } else {
-                // TODO: Calculate num entries based on get_entries WS.
-                $scope.numEntries = accessData.numentries;
-                $scope.entriesLeftToView = accessData.entrieslefttoview;
-                $scope.entriesLeftToAdd = accessData.entrieslefttoadd;
-                $scope.canAdd = accessData.canaddentry;
+
+                $scope.isEmpty = true;
+                $scope.groupInfo = false;
+                return false;
             }
+
+            return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
+                $scope.groupInfo = groupInfo;
+
+                // Check selected group is accessible.
+                if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
+                    var found = false;
+                    for (var x in groupInfo.groups) {
+                        if (groupInfo.groups[x].id == $scope.selectedGroup) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        $scope.selectedGroup = groupInfo.groups[0].id;
+                    }
+                }
+
+                return fetchEntriesData();
+            });
         }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModDataComponent);
@@ -89,9 +108,45 @@ angular.module('mm.addons.mod_data')
         });
     }
 
+    function fetchEntriesData() {
+        return $mmaModData.getDatabaseAccessInformation(data.id, $scope.selectedGroup).then(function(accessData) {
+            // Update values for current group.
+            $scope.access.canaddentry = accessData.canaddentry;
+
+            return $mmaModData.getEntries(data.id, $scope.selectedGroup).then(function(entries) {
+                $scope.isEmpty = !entries || entries.entries.length <= 0;
+                $scope.entries = "";
+
+                if (!$scope.isEmpty) {
+                    $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
+                    $scope.entries = entries.listviewcontents;
+                }
+            });
+        });
+    }
+
+
+    // Set group to see the database.
+    $scope.setGroup = function(groupId) {
+        $scope.selectedGroup = groupId;
+        return fetchEntriesData().catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        });
+    };
+
+
+
     // Convenience function to refresh all the data.
     function refreshAllData(sync, showErrors) {
         var promises = [];
+
+        promises.push($mmaModData.invalidateDatabaseData(courseId));
+        if (data) {
+            promises.push($mmaModData.invalidateDatabaseAccessInformationData(data.id));
+            promises.push($mmGroups.invalidateActivityGroupInfo(data.coursemodule));
+            promises.push($mmaModData.invalidateEntriesData(data.id));
+        }
 
         return $q.all(promises).finally(function() {
             return fetchDatabaseData(true, sync, showErrors);

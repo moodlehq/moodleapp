@@ -1,0 +1,18 @@
+
+.mm-site_mod_data {
+  .recordcheckbox {
+    display: none;
+  }
+}
+
+.mm-data-contents {
+  overflow: visible;
+  white-space: normal;
+  word-break: break-all;
+  padding: $item-padding;
+  background-color: white;
+  border-top-width: $item-border-width;
+  border-bottom-width: $item-border-width;
+  border-style: solid;
+  border-color: $item-default-border;
+}

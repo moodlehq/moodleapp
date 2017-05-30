@@ -21,12 +21,13 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataPrefetchHandler
  */
-.factory('$mmaModDataPrefetchHandler', function($mmaModData, mmaModDataComponent, $mmFilepool, $q, $mmUtil, $mmPrefetchFactory) {
+.factory('$mmaModDataPrefetchHandler', function($mmaModData, mmaModDataComponent, $mmFilepool, $q, $mmUtil, $mmPrefetchFactory,
+        $mmSite, $mmGroups) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModDataComponent);
 
     // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
-    self.updatesNames = /^configuration$|^.*files$|^entries|^gradeitems$|^outcomes$|^comments$|^ratings/;
+    self.updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
 
     /**
      * Download the module.
@@ -55,16 +56,114 @@ angular.module('mm.addons.mod_data')
      * @return {Promise}          Promise resolved with the list of files.
      */
     self.getFiles = function(module, courseId, siteId) {
-        var files = [];
-        return $mmaModData.getDatabase(courseId, module.id, siteId).then(function(database) {
-            // Get intro files.
-            files = self.getIntroFilesFromInstance(module, database);
-            return files;
-        }).catch(function() {
-            // Any error, return the list we have.
-            return files;
+        siteId = siteId || $mmSite.getId();
+
+        return getDatabaseInfoHelper(module, courseId, true, undefined, undefined, siteId).then(function(info) {
+            return info.files;
         });
     };
+
+    /**
+     * Helper function to get all database info just once.
+     *
+     * @param  {Object}  module         Module to get the files.
+     * @param  {Number}  courseId       Course ID the module belongs to.
+     * @param  {Boolean} [omitFail]     True to always return even if fails. Default false.
+     * @param  {Boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}  siteId         Site ID.
+     * @return {Promise}                Promise resolved with the info fetched.
+     */
+    function getDatabaseInfoHelper(module, courseId, omitFail, forceCache, ignoreCache, siteId) {
+        var database,
+            groups = [],
+            entries = [],
+            files = [];
+
+        return $mmaModData.getDatabase(courseId, module.id, siteId, forceCache).then(function(data) {
+            files = self.getIntroFilesFromInstance(module, database);
+
+            database = data;
+            return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
+                if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                    groupInfo.groups = [{id: 0}];
+                }
+                groups = groupInfo.groups;
+
+                return getAllUniqueEntries(database.id, groups, forceCache, ignoreCache, siteId);
+            });
+        }).then(function(uniqueEntries) {
+            entries = uniqueEntries;
+            files = files.concat(getEntriesFiles(entries));
+
+            return {
+                database: database,
+                groups: groups,
+                entries: entries,
+                files: files
+            };
+        }).catch(function(message) {
+            if (omitFail) {
+                // Any error, return the info we have.
+                return {
+                    database: database,
+                    groups: groups,
+                    entries: entries,
+                    files: files
+                };
+            }
+            return $q.reject(message);
+        });
+    }
+
+    /**
+     * Retrieves all the entries for all the groups and then returns only unique entries.
+     *
+     * @param  {Number}  dataId         Database Id.
+     * @param  {Array}   groups         Array of groups in the activity.
+     * @param  {Boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}  siteId         Site ID.
+     * @return {Promise}                All unique entries.
+     */
+    function getAllUniqueEntries(dataId, groups, forceCache, ignoreCache, siteId) {
+        var promises = [];
+
+        angular.forEach(groups, function(group) {
+            promises.push($mmaModData.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, forceCache,
+                ignoreCache, siteId));
+        });
+
+        return $q.all(promises).then(function(responses) {
+            var uniqueEntries = {};
+
+            angular.forEach(responses, function(groupEntries) {
+                angular.forEach(groupEntries.entries, function(entry) {
+                    uniqueEntries[entry.id] = entry;
+                });
+            });
+
+            return uniqueEntries;
+        });
+    }
+
+    /**
+     * Returns the file contained in the entries.
+     *
+     * @param  {Array} entries  List of entries to get files from.
+     * @return {Array}          List of files.
+     */
+    function getEntriesFiles(entries) {
+        var files = [];
+
+        angular.forEach(entries, function(entry) {
+            angular.forEach(entry.contents, function(content) {
+                files = files.concat(content.files);
+            });
+        });
+
+        return files;
+    }
 
     /**
      * Returns database intro files.
@@ -217,16 +316,18 @@ angular.module('mm.addons.mod_data')
      * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
      */
     function prefetchDatabase(module, courseId, single, siteId) {
+        siteId = siteId || $mmSite.getId();
+
         // Prefetch the database data.
-        return $mmaModData.getDatabase(courseId, module.id, siteId).then(function(database) {
-            var promises = [];
+        return getDatabaseInfoHelper(module, courseId, false, true, siteId).then(function(info) {
+            var database = info.database,
+                promises = [];
 
-            promises.push(self.getFiles(module, courseId, siteId).then(function(files) {
-                return $mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id);
-            }));
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
 
-            promises.push($mmaModData.getDatabaseAccessInformation(database.id, false, true, siteId));
-
+            angular.forEach(info.groups, function(group) {
+                promises.push($mmaModData.getDatabaseAccessInformation(database.id, group.id, false, true, siteId));
+            });
             return $q.all(promises);
         }).then(function() {
             // Get revision and timemodified.
