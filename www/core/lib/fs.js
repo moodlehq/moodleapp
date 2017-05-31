@@ -24,7 +24,8 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder,
+        $mmApp) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -591,7 +592,7 @@ angular.module('mm.core')
         return self.init().then(function() {
             // Create file (and parent folders) to prevent errors.
             return self.createFile(path).then(function(fileEntry) {
-                if (isHTMLAPI && typeof data == 'string') {
+                if (isHTMLAPI && !$mmApp.isDesktop() && typeof data == 'string') {
                     // We need to write Blobs.
                     var type = self.getMimeType(self.getFileExtension(path));
                     data = new Blob([data], {type: type || 'text/plain'});
@@ -851,8 +852,8 @@ angular.module('mm.core')
      * @return {String}           Internal URL.
      */
     self.getInternalURL = function(fileEntry) {
-        if (isHTMLAPI) {
-            // HTML API doesn't implement toInternalURL.
+        if (!fileEntry.toInternalURL) {
+            // File doesn't implement toInternalURL, use toURL.
             return fileEntry.toURL();
         }
         return fileEntry.toInternalURL();
