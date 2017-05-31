@@ -292,7 +292,11 @@ angular.module('mm.core')
         self.openFile = function(path) {
             var deferred = $q.defer();
 
-            if (window.plugins) {
+            if ($mmApp.isDesktop()) {
+                // It's a desktop app, send an event so the file is opened. It has to be done with an event
+                // because opening the file from here (renderer process) doesn't focus the opened app.
+                require('electron').ipcRenderer.send('openItem', path);
+            } else if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
 
@@ -378,7 +382,16 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.openInBrowser = function(url) {
-            window.open(url, '_system');
+            if ($mmApp.isDesktop()) {
+                // It's a desktop app, use Electron shell library to open the browser.
+                var shell = require('electron').shell;
+                if (!shell.openExternal(url)) {
+                    // Open browser failed, open a new window in the app.
+                    window.open(url, '_system');
+                }
+            } else {
+                window.open(url, '_system');
+            }
         };
 
         /**
