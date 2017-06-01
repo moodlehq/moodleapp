@@ -45,7 +45,7 @@
     "jasmine": "^2.2.1",
     "jasmine-core": "^2.2.0",
     "plist": "^1.1.0",
-    "protractor": "^5.1.0",
+    "protractor": "^4.0.9",
     "shelljs": "^0.3.0",
     "through": "^2.3.6",
     "wd": "^0.4.0",
