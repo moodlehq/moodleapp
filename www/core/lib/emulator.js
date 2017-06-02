@@ -21,14 +21,45 @@ angular.module('mm.core')
  * @description
  * This service handles the emulation of Cordova plugins in other environments like browser.
  */
-.factory('$mmEmulatorManager', function($log, $q, $http, $mmFS, $window, $mmApp, mmCoreConfigConstants) {
+.factory('$mmEmulatorManager', function($log, $q, $mmFS, $window, $mmApp, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmEmulatorManager');
 
-    var self = {};
+    var self = {},
+        fileTransferIdCounter = 0,
+        basePath;
 
     /**
-     * Emulate Cordova file plugin using NodeJS functions.
+     * Given a URL, check if it has a credentials in it and, if so, return them in a header object.
+     * This code is extracted from Cordova FileTransfer plugin.
+     *
+     * @param  {String} urlString The URL to get the credentials from.
+     * @return {Object}           The header with the credentials, null if no credentials.
+     */
+    function getBasicAuthHeader(urlString) {
+        var header =  null;
+
+        // This is changed due to MS Windows doesn't support credentials in http uris
+        // so we detect them by regexp and strip off from result url.
+        if (window.btoa) {
+            var credentials = getUrlCredentials(urlString);
+            if (credentials) {
+                var authHeader = "Authorization";
+                var authHeaderValue = "Basic " + window.btoa(credentials);
+
+                header = {
+                    name : authHeader,
+                    value : authHeaderValue
+                };
+            }
+        }
+
+        return header;
+    }
+
+    /**
+     * Emulate Cordova file plugin using NodeJS functions. This should only be used in NodeJS environments,
+     * browser works with the default resolveLocalFileSystemURL.
      *
      * @return {Void}
      */
@@ -178,6 +209,9 @@ angular.module('mm.core')
                     }
                 };
                 reader.readAsArrayBuffer(data);
+            } else if (data && data.toString() == '[object ArrayBuffer]') {
+                // Convert it to a Buffer.
+                write(Buffer.from(new Uint8Array(data)));
             } else {
                 write(data);
             }
@@ -457,6 +491,226 @@ angular.module('mm.core')
     }
 
     /**
+     * Emulate Cordova FileTransfer plugin for browser or NodeJS.
+     *
+     * @return {Void}
+     */
+    function emulateCordovaFileTransfer() {
+        // Create the FileTransferError object.
+        $window.FileTransferError = function(code, source, target, status, body, exception) {
+            this.code = code || null;
+            this.source = source || null;
+            this.target = target || null;
+            this.http_status = status || null;
+            this.body = body || null;
+            this.exception = exception || null;
+        };
+
+        $window.FileTransferError.FILE_NOT_FOUND_ERR = 1;
+        $window.FileTransferError.INVALID_URL_ERR = 2;
+        $window.FileTransferError.CONNECTION_ERR = 3;
+        $window.FileTransferError.ABORT_ERR = 4;
+        $window.FileTransferError.NOT_MODIFIED_ERR = 5;
+
+        // Create the FileTransfer object and its functions.
+        $window.FileTransfer = function() {
+            this._id = ++fileTransferIdCounter;
+            this.onprogress = null; // Optional callback.
+        };
+
+        $window.FileTransfer.prototype.download = function(source, target, successCallback, errorCallback, trustAllHosts, options) {
+            // Use XMLHttpRequest instead of $http to support onprogress and abort.
+            var basicAuthHeader = getBasicAuthHeader(source),
+                xhr = new XMLHttpRequest(),
+                isDesktop = $mmApp.isDesktop(),
+                deferred = $q.defer(), // Use a promise to make sure only one callback is called.
+                headers = null;
+
+            deferred.promise.then(function(entry) {
+                successCallback && successCallback(entry);
+            }).catch(function(error) {
+                errorCallback && errorCallback(error);
+            });
+
+            this.xhr = xhr;
+            this.deferred = deferred;
+            this.source = source;
+            this.target = target;
+
+            if (basicAuthHeader) {
+                source = source.replace(getUrlCredentials(source) + '@', '');
+
+                options = options || {};
+                options.headers = options.headers || {};
+                options.headers[basicAuthHeader.name] = basicAuthHeader.value;
+            }
+
+            if (options) {
+                headers = options.headers || null;
+            }
+
+            // Prepare the request.
+            xhr.open('GET', source, true);
+            xhr.responseType = isDesktop ? 'arraybuffer' : 'blob';
+            angular.forEach(headers, function(value, name) {
+                xhr.setRequestHeader(name, value);
+            });
+
+            if (this.onprogress) {
+                xhr.onprogress = this.onprogress;
+            }
+
+            xhr.onerror = function() {
+                deferred.reject(new FileTransferError(-1, source, target, xhr.status, xhr.statusText));
+            };
+
+            xhr.onload = function() {
+                // Finished dowloading the file.
+                var response = xhr.response;
+                if (!response) {
+                    deferred.reject();
+                } else {
+                    target = target.replace(basePath, ''); // Remove basePath from the target.
+                    target = target.replace(/%20/g, ' '); // Replace all %20 with spaces.
+                    if (isDesktop) {
+                        // In desktop we need to convert the arraybuffer into a Buffer.
+                        response = Buffer.from(new Uint8Array(response));
+                    }
+
+                    $mmFS.writeFile(target, response).then(deferred.resolve, deferred.reject);
+                }
+            };
+
+            xhr.send();
+        };
+
+        $window.FileTransfer.prototype.upload = function(filePath, server, successCallback, errorCallback, options, trustAllHosts) {
+            var fileKey = null,
+                fileName = null,
+                mimeType = null,
+                params = null,
+                headers = null,
+                httpMethod = null,
+                deferred = $q.defer(), // Use a promise to make sure only one callback is called.
+                basicAuthHeader = getBasicAuthHeader(server),
+                that = this;
+
+            deferred.promise.then(function(result) {
+                successCallback && successCallback(result);
+            }).catch(function(error) {
+                errorCallback && errorCallback(error);
+            });
+
+            if (basicAuthHeader) {
+                server = server.replace(getUrlCredentials(server) + '@', '');
+
+                options = options || {};
+                options.headers = options.headers || {};
+                options.headers[basicAuthHeader.name] = basicAuthHeader.value;
+            }
+
+            if (options) {
+                fileKey = options.fileKey;
+                fileName = options.fileName;
+                mimeType = options.mimeType;
+                headers = options.headers;
+                httpMethod = options.httpMethod || 'POST';
+
+                if (httpMethod.toUpperCase() == "PUT"){
+                    httpMethod = 'PUT';
+                } else {
+                    httpMethod = 'POST';
+                }
+
+                if (options.params) {
+                    params = options.params;
+                } else {
+                    params = {};
+                }
+            }
+
+            // Add fileKey and fileName to the headers.
+            headers = headers || {};
+            if (!headers['Content-Disposition']) {
+                headers['Content-Disposition'] = 'form-data;' + (fileKey ? ' name="' + fileKey + '";' : '') +
+                    (fileName ? ' filename="' + fileName + '"' : '')
+            }
+
+            // For some reason, adding a Content-Type header with the mimeType makes the request fail (it doesn't detect
+            // the token in the params). Don't include this header, and delete it if it's supplied.
+            delete headers['Content-Type'];
+
+            // Get the file to upload.
+            $mmFS.getFile(filePath).then(function(fileEntry) {
+                return $mmFS.getFileObjectFromFileEntry(fileEntry);
+            }).then(function(file) {
+                // Use XMLHttpRequest instead of $http to support onprogress and abort.
+                var xhr = new XMLHttpRequest();
+                xhr.open(httpMethod || 'POST', server);
+                angular.forEach(headers, function(value, name) {
+                    // Filter "unsafe" headers.
+                    if (name != 'Connection') {
+                        xhr.setRequestHeader(name, value);
+                    }
+                });
+
+                if (that.onprogress) {
+                    xhr.onprogress = that.onprogress;
+                }
+
+                that.xhr = xhr;
+                that.deferred = deferred;
+                this.source = filePath;
+                this.target = server;
+
+                xhr.onerror = function() {
+                    deferred.reject(new FileTransferError(-1, filePath, server, xhr.status, xhr.statusText));
+                };
+
+                xhr.onload = function() {
+                    // Finished uploading the file.
+                    deferred.resolve({
+                        bytesSent: file.size,
+                        responseCode: xhr.status,
+                        response: xhr.response,
+                        objectId: ''
+                    });
+                };
+
+                // Create a form data to send params and the file.
+                var fd = new FormData();
+                angular.forEach(params, function(value, name) {
+                    fd.append(name, value);
+                });
+                fd.append('file', file);
+
+                xhr.send(fd);
+            }).catch(deferred.reject);
+        };
+
+        $window.FileTransfer.prototype.abort = function() {
+            if (this.xhr) {
+                this.xhr.abort();
+                this.deferred.reject(new FileTransferError(FileTransferError.ABORT_ERR, this.source, this.target));
+            }
+        };
+    }
+
+    /**
+     * Get the credentials from a URL.
+     * This code is extracted from Cordova FileTransfer plugin.
+     *
+     * @param  {String} urlString The URL to get the credentials from.
+     * @return {String}           Retrieved credentials.
+     */
+    function getUrlCredentials(urlString) {
+        var credentialsPattern = /^https?\:\/\/(?:(?:(([^:@\/]*)(?::([^@\/]*))?)?@)?([^:\/?#]*)(?::(\d*))?).*$/,
+            credentials = credentialsPattern.exec(urlString);
+
+        return credentials && credentials[1];
+    }
+
+    /**
      * Loads HTML API to simulate Cordova APIs. Reserved for core use.
      *
      * @module mm.core
@@ -472,8 +726,7 @@ angular.module('mm.core')
             return $q.when();
         }
 
-        var deferred = $q.defer(),
-            basePath;
+        var deferred = $q.defer();
 
         $log.debug('Loading HTML API.');
 
@@ -485,34 +738,7 @@ angular.module('mm.core')
             PERSISTENT: 1
         };
 
-        // FileTransfer API.
-        $window.FileTransfer = function() {};
-
-        $window.FileTransfer.prototype.download = function(url, filePath, successCallback, errorCallback) {
-            var isDesktop = $mmApp.isDesktop(),
-                responseType = isDesktop ? 'arraybuffer' : 'blob';
-
-            $http.get(url, {responseType: responseType}).then(function(data) {
-                if (!data || !data.data) {
-                    errorCallback();
-                } else {
-                    filePath = filePath.replace(basePath, ''); // Remove basePath from the filePath.
-                    filePath = filePath.replace(/%20/g, ' '); // Replace all %20 with spaces.
-                    if (isDesktop) {
-                        // In desktop we need to convert the arraybuffer into a Buffer.
-                        data.data = Buffer.from(new Uint8Array(data.data));
-                    }
-
-                    $mmFS.writeFile(filePath, data.data).then(function(e) {
-                        successCallback(e);
-                    }).catch(function(error) {
-                        errorCallback(error);
-                    });
-                }
-            }).catch(function(error) {
-                errorCallback(error);
-            });
-        };
+        emulateCordovaFileTransfer();
 
         // Cordova ZIP plugin.
         $window.zip = {
@@ -551,8 +777,6 @@ angular.module('mm.core')
                 });
             }
         };
-
-        // @todo: Implement FileTransfer.upload.
 
         if ($mmApp.isDesktop()) {
             var fs = require('fs'),

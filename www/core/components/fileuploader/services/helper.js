@@ -756,9 +756,7 @@ angular.module('mm.core.fileuploader')
             }, function() {
                 // User cancelled. Delete the file if needed.
                 if (deleteAfterUpload) {
-                    angular.forEach(paths, function(path) {
-                        $mmFS.removeExternalFile(path);
-                    });
+                    $mmFS.removeExternalFile(path);
                 }
                 return $q.reject();
             });
