@@ -27,7 +27,8 @@ function createWindow () {
         minWidth: 400,
         minHeight: 400,
         textAreasAreResizable: false,
-        plugins: true
+        plugins: true,
+        show: false // Don't show it until it's ready to prevent showing a blank screen.
     });
 
     // And load the index.html of the app.
@@ -36,6 +37,10 @@ function createWindow () {
         protocol: 'file:',
         slashes: true
     }));
+
+    win.once('ready-to-show', () => {
+        win.show();
+    });
 
     // Emitted when the window is closed.
     win.on('closed', () => {
