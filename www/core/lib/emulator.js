@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @description
  * This service handles the emulation of Cordova plugins in other environments like browser.
  */
-.factory('$mmEmulatorManager', function($log, $q, $mmFS, $window, $mmApp, mmCoreConfigConstants) {
+.factory('$mmEmulatorManager', function($log, $q, $mmFS, $window, $mmApp, mmCoreConfigConstants, $cordovaClipboard) {
 
     $log = $log.getInstance('$mmEmulatorManager');
 
@@ -55,6 +55,82 @@ angular.module('mm.core')
         }
 
         return header;
+    }
+
+    /**
+     * Emulate Cordova clipboard plugin for browser and NodeJS.
+     *
+     * @return {Void}
+     */
+    function emulateCordovaClipboard() {
+        var isDesktop = $mmApp.isDesktop(),
+            clipboard,
+            copyTextarea;
+
+        if (isDesktop) {
+            clipboard = require('electron').clipboard;
+        } else {
+            // In browser the text must be selected in order to copy it. Create a hidden textarea to put the text in it.
+            copyTextarea = document.createElement('textarea');
+            angular.element(copyTextarea).addClass('mm-browser-copy-area');
+            copyTextarea.setAttribute('aria-hidden', 'true');
+            document.body.append(copyTextarea);
+        }
+
+        // We need to redefine $cordovaClipboard methods instead of the core plugin (window.cordova.plugins.clipboard)
+        // because creating window.cordova breaks the app (it thinks it's a real device).
+        $cordovaClipboard.copy = function(text) {
+            var deferred = $q.defer();
+
+            if (isDesktop) {
+                clipboard.writeText(text);
+                deferred.resolve();
+            } else {
+                // Put the text in the hidden textarea and select it.
+                copyTextarea.innerHTML = text;
+                copyTextarea.select();
+
+                try {
+                    if (document.execCommand('copy')) {
+                        deferred.resolve();
+                    } else {
+                        deferred.reject();
+                    }
+                } catch (err) {
+                    deferred.reject();
+                }
+
+                copyTextarea.innerHTML = '';
+            }
+
+            return deferred.promise;
+        };
+
+        $cordovaClipboard.paste = function() {
+            var deferred = $q.defer();
+
+            if (isDesktop) {
+                deferred.resolve(clipboard.readText());
+            } else {
+                // Paste the text in the hidden textarea and get it.
+                copyTextarea.innerHTML = '';
+                copyTextarea.select();
+
+                try {
+                    if (document.execCommand('paste')) {
+                        deferred.resolve(copyTextarea.innerHTML);
+                    } else {
+                        deferred.reject();
+                    }
+                } catch (err) {
+                    deferred.reject();
+                }
+
+                copyTextarea.innerHTML = '';
+            }
+
+            return deferred.promise;
+        };
     }
 
     /**
@@ -885,6 +961,7 @@ angular.module('mm.core')
         emulateCordovaFileTransfer();
         emulateCordovaGlobalization();
         emulateCordovaZip();
+        emulateCordovaClipboard();
 
         if ($mmApp.isDesktop()) {
             var fs = require('fs'),
