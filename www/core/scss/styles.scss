@@ -73,8 +73,8 @@ $item-input-padding: 16px !default;
   }
 
   img {
-    width: 60%;
-    max-width: 300px;
+    width: $mm-init-screen-logo-width;
+    max-width: $mm-init-screen-logo-max-width;
     display: block;
     margin: 0 auto;
     margin-bottom: 30px;
