@@ -17,7 +17,7 @@
         <mm-loading hide-until="databaseLoaded">
             <div class="card" ng-if="description" ng-click="expandDescription()">
                 <div class="item item-text-wrap">
-                    <mm-format-text max-height="120" fullview-on-click="true" component="{{dataComponent}}" component-id="{{data.cmid}}">{{ description }}</mm-format-text>
+                    <mm-format-text max-height="120" fullview-on-click="true" component="{{component}}" component-id="{{data.cmid}}">{{ description }}</mm-format-text>
                 </div>
             </div>
 
@@ -48,7 +48,7 @@
                     {{ cssTemplate }}
                 </style>
 
-                <mm-format-text component="{{dataComponent}}" component-id="{{data.cmid}}" watch="true">
+                <mm-format-text component="{{component}}" component-id="{{data.cmid}}" watch="true">
                     {{ entries }}
                 </mm-format-text>
             </div>
