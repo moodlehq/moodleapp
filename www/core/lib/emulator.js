@@ -134,12 +134,16 @@ angular.module('mm.core')
     }
 
     /**
-     * Emulate Cordova file plugin using NodeJS functions. This should only be used in NodeJS environments,
+     * Emulate Cordova file plugin using NodeJS functions. This is only for NodeJS environments,
      * browser works with the default resolveLocalFileSystemURL.
      *
      * @return {Void}
      */
     function emulateCordovaFile() {
+        if (!$mmApp.isDesktop()) {
+            return;
+        }
+
         var fs = require('fs');
 
         // Create the Entry object, parent of DirectoryEntry and FileEntry.
@@ -917,6 +921,22 @@ angular.module('mm.core')
     }
 
     /**
+     * Emulate Custom URL Schemes for NodeJS.
+     *
+     * @return {Void}
+     */
+    function emulateCustomURLScheme() {
+        if (!$mmApp.isDesktop()) {
+            return;
+        }
+
+        // Listen for app launched events.
+        require('electron').ipcRenderer.on('mmAppLaunched', (event, url) => {
+            window.handleOpenURL && window.handleOpenURL(url);
+        });
+    }
+
+    /**
      * Get the credentials from a URL.
      * This code is extracted from Cordova FileTransfer plugin.
      *
@@ -968,6 +988,7 @@ angular.module('mm.core')
                 app = require('electron').remote.app;
 
             emulateCordovaFile();
+            emulateCustomURLScheme();
 
             // Initialize File System. Get the path to use.
             basePath = app.getPath('documents') || app.getPath('home');

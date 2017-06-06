@@ -5,9 +5,9 @@ const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win;
+let mainWindow;
 
-function createWindow () {
+function createWindow() {
     // Create the browser window.
     var width = 800,
         height = 600;
@@ -21,7 +21,7 @@ function createWindow () {
         }
     }
 
-    win = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: width,
         height: height,
         minWidth: 400,
@@ -32,26 +32,31 @@ function createWindow () {
     });
 
     // And load the index.html of the app.
-    win.loadURL(url.format({
+    mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
 
-    win.once('ready-to-show', () => {
-        win.show();
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
     });
 
     // Emitted when the window is closed.
-    win.on('closed', () => {
+    mainWindow.on('closed', () => {
         // Dereference the window object.
-        win = null
+        mainWindow = null
     });
 }
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', function() {
+    createWindow();
+
+    // Open the app when a link with "moodlemobile://" is clicked.
+    app.setAsDefaultProtocolClient('moodlemobile');
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -60,10 +65,40 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
-    if (win === null) {
+    if (mainWindow === null) {
         createWindow();
     }
 });
+
+// Make sure that only a single instance of the app is running.
+var shouldQuit = app.makeSingleInstance((argv, workingDirectory) => {
+    // Another instance was launched. If it was launched with a URL, it should be in the second param.
+    if (argv && argv[1]) {
+        appLaunched(argv[1]);
+    }
+});
+
+if (shouldQuit) {
+    // It's not the main instance of the app, kill it.
+    app.quit();
+} else {
+    // Listen for open-url events (Mac OS only).
+    app.on('open-url', (event, url) => {
+        event.preventDefault();
+        appLaunched(url);
+    });
+}
+
+function appLaunched(url) {
+    // App was launched again with a URL. Focus the main window and send an event to treat the URL.
+    if (mainWindow) {
+        if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+        mainWindow.focus();
+        mainWindow.webContents.send('mmAppLaunched', url); // Send an event to the main window.
+    }
+}
 
 ipcMain.on('openItem', (event, path) => {
     shell.openItem(path);
