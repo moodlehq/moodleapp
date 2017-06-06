@@ -67,16 +67,27 @@ $base-background-color: $gray-light !default;
 $item-default-text: $black;
 $sheet-options-text-color: $mm-buttons-color;
 
-// Header.
-$bar-content-bg: $mm-color !default;
-$bar-content-border: transparent !default;
-$bar-content-text: $white !default;
-
 $item-default-bg: $white;
 $item-divider-bg: $gray-lighter;
 $item-disabled-color: $gray-dark !default;
 
 $button-light-border: $gray;
+
+// Header.
+$bar-content-bg: $mm-color !default;
+$bar-content-border: transparent !default;
+$bar-content-text: $white !default;
+
+$bar-side-menu-height: 80px !default;
+$bar-side-menu-color: $bar-content-bg !default;
+$bar-side-menu-border-color: $bar-content-border !default;
+$bar-side-menu-text-color: $bar-content-text !default;
+
+$bar-side-menu-item-border-color: $button-light-border;
+$bar-side-menu-item-divider-color: $item-divider-bg;
+$bar-side-menu-item-background-color: $item-default-bg;
+$bar-side-menu-item-text-color: $item-default-text;
+$bar-side-menu-item-icon-color: $gray-darker;
 
 $toggle-on-default-bg: $mm-buttons-color;
 

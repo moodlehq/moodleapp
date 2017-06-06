@@ -1,9 +1,3 @@
-// Variables.
-$bar-side-menu-height: 80px !default;
-$bar-side-menu-color: $bar-content-bg !default;
-$bar-side-menu-border-color: $bar-content-border !default;
-$bar-side-menu-text-color: $bar-content-text !default;
-
 // Bar styles
 .bar-side-menu {
   @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
@@ -15,7 +9,8 @@ $bar-side-menu-text-color: $bar-content-text !default;
   .item-avatar {
     margin-top: 0px !important; // MOBILE-959: Added to fix side menu header in iOS.
     h2,
-    p {
+    p,
+    .icon {
       color: $bar-side-menu-text-color;
     }
   }
@@ -29,4 +24,19 @@ $bar-side-menu-text-color: $bar-content-text !default;
   .item .badge {
     right: 16px;
   }
+}
+
+ion-side-menu li .item,
+ion-side-menu li.item {
+  border-color: $bar-side-menu-item-border-color;
+  background-color: $bar-side-menu-item-background-color;
+  color: $bar-side-menu-item-text-color;
+
+  .icon {
+    color: $bar-side-menu-item-icon-color;
+  }
+}
+
+ion-side-menu li.item.item-divider {
+  background-color: $bar-side-menu-item-divider-color;
 }
