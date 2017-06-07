@@ -16,7 +16,7 @@ describe('User can manage course chat', function() {
 
     it('Click All sections course chat tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -32,7 +32,7 @@ describe('User can manage course chat', function() {
 
     it('View course chat windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -49,7 +49,7 @@ describe('User can manage course chat', function() {
 
     it('Click description tab', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -69,7 +69,7 @@ describe('User can manage course chat', function() {
 
     it('Adding new chat message', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -79,10 +79,14 @@ describe('User can manage course chat', function() {
         }).then(function () {
             return MM.clickOn('Click here to enter the chat now');
         }).then(function () {
-            return $('[ng-model="newMessage.text"]').sendKeys('Hi All..');
+            browser.sleep(5000); //wait for everything to render
+            return $('[ng-model="newMessage.text"]').sendKeys('Hello World');
         }).then(function () {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/div/ion-footer-bar/form/div/button')).click();
-            expect(MM.getView().getText()).toMatch('Hi All..');
+            browser.sleep(5000); //wait for everything to render
+            return element(by.id('mma-chat-send-button')).click();
+        }).then(function () {
+            browser.sleep(5000); //wait for everything to render
+            expect(MM.getView().getText()).toContain('Hello World');
         }).then(function () {
             return MM.goBack();
         }).then(function () {
@@ -92,7 +96,7 @@ describe('User can manage course chat', function() {
 
     it('View chat users', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -102,8 +106,10 @@ describe('User can manage course chat', function() {
         }).then(function () {
             return MM.clickOn('Click here to enter the chat now');
         }).then(function () {
+            browser.sleep(7500); //wait for everything to render
             return $('[ng-click="showChatUsers()"]').click();
         }).then(function () {
+            browser.sleep(5000); //wait for everything to render
             return $('[ng-click="closeModal()"]').click();
         }).then(function () {
             return MM.goBack();
@@ -114,7 +120,7 @@ describe('User can manage course chat', function() {
 
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -122,9 +128,11 @@ describe('User can manage course chat', function() {
         }).then(function () {
             return MM.clickOn('Course chat');
         }).then(function () {
+            browser.sleep(5000); //wait for everything to render
             return $('.secondary-buttons').click();
         }).then(function() {
-            return MM.goBack();
+           browser.sleep(5000); //wait for button css to render
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();
         });

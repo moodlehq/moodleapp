@@ -86,10 +86,12 @@ describe('User can manage course book', function() {
         }).then(function () {
             return MM.clickOn('One approach to digital literacy');
         }).then(function () {
+            browser.sleep(5000); //wait for everything to render
             return $('[ng-click="openToc($event)"]').click();
         }).then(function () {
             return MM.clickOn('Cognitive');
         }).then(function() {
+            browser.sleep(5000); //wait for everything to render
             expect(MM.getView().getText()).toMatch('4. Cognitive');
         }).then(function () {
             done();
@@ -106,6 +108,7 @@ describe('User can manage course book', function() {
         }).then(function () {
             return MM.clickOn('One approach to digital literacy');
         }).then(function () {
+            browser.sleep(5000); //wait for everything to render
             return $('[ng-click="showContextMenu($event)"]').click();
        }).then(function () {
            browser.sleep(5000); //wait for button css to render
