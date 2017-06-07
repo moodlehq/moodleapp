@@ -100,6 +100,16 @@ function appLaunched(url) {
     }
 }
 
+// Listen for events sent by the renderer processes (windows).
 ipcMain.on('openItem', (event, path) => {
     shell.openItem(path);
+});
+
+ipcMain.on('closeSecondaryWindows', () => {
+    var windows = BrowserWindow.getAllWindows();
+    for (var i = 0; i < windows.length; i++) {
+        if (!mainWindow || windows[i].id != mainWindow.id) {
+            windows[i].close();
+        }
+    }
 });

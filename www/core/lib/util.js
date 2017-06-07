@@ -432,10 +432,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#closeInAppBrowser
+         * @param  {Boolean} [closeAll] Desktop only. True to close all secondary windows, false to close only the "current" one.
          * @return {Void}
          */
-        self.closeInAppBrowser = function() {
-            $cordovaInAppBrowser.close();
+        self.closeInAppBrowser = function(closeAll) {
+            // Use try/catch because it will fail if there is no opened InAppBrowser.
+            try {
+                $cordovaInAppBrowser.close();
+                if (closeAll && $mmApp.isDesktop()) {
+                    require('electron').ipcRenderer.send('closeSecondaryWindows');
+                }
+            } catch(ex) {}
         };
 
         /**

@@ -363,6 +363,10 @@ angular.module('mm.core.login', [])
             // Authentication ongoing, probably duplicated request.
             return true;
         }
+        if ($mmApp.isDesktop()) {
+            // In desktop, make sure InAppBrowser is closed.
+            $mmUtil.closeInAppBrowser(true);
+        }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
         $mmApp.startSSOAuthentication();
