@@ -16,7 +16,7 @@ describe('User can manage course folder', function() {
 
     it('Click All sections course folder tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -32,7 +32,7 @@ describe('User can manage course folder', function() {
 
     it('View course folder windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -48,31 +48,9 @@ describe('User can manage course folder', function() {
         });
     });
 
-    it('Click folder tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('Background information');
-        }).then(function () {
-            return MM.clickOn('Categories and Causes of Mental illness');
-        }).then(function () {
-            return MM.clickOn('Classification of mental disorders.pdf');
-        }).then(function () {
-            return MM.clickOn('CausesMentalIllness.docx');
-        }).then(function () {
-            return MM.clickOn('PsychoDefinitions.odt');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            done();
-        });
-    });
-
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Psychology in Cinema');
         }).then(function () {
@@ -80,9 +58,11 @@ describe('User can manage course folder', function() {
         }).then(function () {
             return MM.clickOn('Categories and Causes of Mental illness');
         }).then(function () {
+            browser.sleep(5000); //wait for button css to render
             return $('.secondary-buttons').click();
-        }).then(function() {
-            return MM.goBack();
+       }).then(function () {
+           browser.sleep(5000); //wait for button css to render
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();
         });
