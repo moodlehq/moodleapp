@@ -16,15 +16,15 @@ describe('User can manage course resource', function() {
 
     it('User can click resource tab and landing the resource page', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function() {
-            return MM.clickOn('Osborne:Transference/Counter transference in the Psycho-analysis process');
+            return MM.clickOn('Download the video introduction transcript');
         }).then(function () {
-            expect(MM.getNavBar().getText()).toMatch('Osborne:Transference/Counter transference in the Psycho-analysis process');
+            expect(MM.getNavBar().getText()).toMatch('Download the video introduction transcript');
             expect(MM.getView().getText()).toMatch('Open the file');
         }).then(function() {
             done();
@@ -33,17 +33,16 @@ describe('User can manage course resource', function() {
 
     it('Click Open the file button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function() {
-            return MM.clickOn('Osborne:Transference/Counter transference in the Psycho-analysis process');
+            return MM.clickOn('Download the video introduction transcript');
         }).then(function () {
-            return MM.clickOn('Open the file');
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('Osborne:Transference/Counter transference in the Psycho-analysis process');
+            browser.sleep(5000); //wait for css to render
+            return $('[ng-click="open()"]').click();
         }).then(function() {
             done();
         });
@@ -51,23 +50,23 @@ describe('User can manage course resource', function() {
 
     it('Click secondary button in the resource page', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function() {
-            return MM.clickOn('Osborne:Transference/Counter transference in the Psycho-analysis process');
+            return MM.clickOn('Download the video introduction transcript');
         }).then(function () {
-            return $('.button.button-icon.ion-ios-browsers-outline').click();
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('Osborne:Transference/Counter transference in the Psycho-analysis process');
-            expect(MM.getView().getText()).toMatch('Open the file');
+           browser.sleep(7500); //wait for button css to render
+           return $('.secondary-buttons').click();
+       }).then(function () {
+           browser.sleep(5000); //wait for css to render
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function() {
             done();
         });
     });
-
 
 });
 
