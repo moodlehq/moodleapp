@@ -1493,6 +1493,85 @@ angular.module('mm.core')
     }
 
     /**
+     * Emulate some of the features of push notifications.
+     *
+     * @return {Void}
+     */
+    function emulatePushNotifications() {
+        // Create the PushNotification object, but only some of its functions will be supported.
+        var PushNotification = function(options) {};
+
+        PushNotification.prototype.unregister = function(successCallback, errorCallback, options) {
+            errorCallback && errorCallback('Unregister is only supported in mobile devices');
+        };
+
+        PushNotification.prototype.subscribe = function(topic, successCallback, errorCallback) {
+            errorCallback && errorCallback('Suscribe is only supported in mobile devices');
+        };
+
+        PushNotification.prototype.unsubscribe = function(topic, successCallback, errorCallback) {
+            errorCallback && errorCallback('Unsuscribe is only supported in mobile devices');
+        };
+
+        PushNotification.prototype.setApplicationIconBadgeNumber = function(successCallback, errorCallback, badge) {
+            if (!$mmApp.isDesktop()) {
+                errorCallback && errorCallback('setApplicationIconBadgeNumber is not supported in browser');
+                return;
+            }
+
+            try {
+                var app = require('electron').remote.app;
+                if (app.setBadgeCount(badge)) {
+                    successCallback && successCallback();
+                } else {
+                    errorCallback && errorCallback();
+                }
+            } catch(ex) {
+                errorCallback && errorCallback(ex);
+            }
+        };
+
+        PushNotification.prototype.getApplicationIconBadgeNumber = function(successCallback, errorCallback) {
+            if (!$mmApp.isDesktop()) {
+                errorCallback && errorCallback('getApplicationIconBadgeNumber is not supported in browser');
+                return;
+            }
+
+            try {
+                var app = require('electron').remote.app;
+                successCallback && successCallback(app.getBadgeCount());
+            } catch(ex) {
+                errorCallback && errorCallback(ex);
+            }
+        };
+
+        PushNotification.prototype.clearAllNotifications = function(successCallback, errorCallback) {
+            errorCallback && errorCallback('clearAllNotifications is only supported in mobile devices');
+        };
+
+        PushNotification.prototype.on = function(eventName, callback) {};
+        PushNotification.prototype.off = function(eventName, handle) {};
+        PushNotification.prototype.emit = function() {};
+
+        PushNotification.prototype.finish = function(successCallback, errorCallback, id) {
+            errorCallback && errorCallback('finish is only supported in mobile devices');
+        };
+
+        // Create the visible PushNotification object.
+        $window.PushNotification = {
+            init: function(options) {
+                return new PushNotification(options);
+            },
+
+            hasPermission: function(successCallback, errorCallback) {
+                errorCallback && errorCallback('hasPermission is only supported in mobile devices');
+            },
+
+            PushNotification: PushNotification
+        };
+    }
+
+    /**
      * Get all the notification stored in local DB.
      *
      * @return {Promise} Promise resolved with the notifications.
@@ -1548,6 +1627,7 @@ angular.module('mm.core')
         emulateCordovaGlobalization();
         emulateCordovaZip();
         emulateCordovaClipboard();
+        emulatePushNotifications();
 
         if ($mmApp.isDesktop()) {
             var fs = require('fs'),
