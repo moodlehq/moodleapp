@@ -16,13 +16,13 @@ describe('User can manage course glossary', function() {
 
     it('Click All sections course glossary tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('All sections');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
             return MM.goBack();
         }).then(function() {
@@ -32,22 +32,18 @@ describe('User can manage course glossary', function() {
 
     it('View course glossary windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview')
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('A glossary of the key concepts and characters involved');
-            expect(MM.getView().getText()).toMatch('Dissociative Identity Disorder');
+            expect(MM.getView().getText()).toContain('Read through and add some common terms');
+            expect(MM.getView().getText()).toContain('Accessibility');
         }).then(function () {
-            return MM.clickOn('A glossary of the key concepts and characters involved');
-        }).then(function () {
-            expect(MM.getView().getText()).toMatch('A glossary of the key concepts and characters involved');
-        }).then(function () {
-            return MM.goBack()
+            return MM.goBack();
         }).then(function() {
             done();
         });
@@ -55,35 +51,23 @@ describe('User can manage course glossary', function() {
 
     it('Click course glossary tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview')
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            return MM.clickOn('Dissociative Identity Disorder');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('John Nash');
+            return MM.clickOn('Accessibility');
         }).then(function () {
             return MM.goBack();
         }).then(function () {
-            return MM.clickOn('Paranoid schizophrenia');
+            return MM.clickOn('Blended learning');
         }).then(function () {
             return MM.goBack();
         }).then(function () {
-            return MM.clickOn('Robert');
-        }).then(function () {
             return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('Tyler Durden');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.goBack()
         }).then(function() {
             done();
         });
@@ -91,25 +75,25 @@ describe('User can manage course glossary', function() {
 
     it('Search course glossary', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview')
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
             return $('[ng-click="pickMode($event)"]').click();
         }).then(function () {
             return MM.clickOn('Search');
         }).then(function () {
-            return $('[ng-model="searchData.searchQuery"]').sendKeys('Tyler Durden');
+            return $('[ng-model="data.value"]').sendKeys('Accessibility');
         }).then(function () {
             return MM.clickOn('Search');
         }).then(function () {
-            return MM.clickOn('Tyler Durden');
+            return MM.clickOn('Accessibility');
         }).then(function () {
-            return MM.goBack()
+            return MM.goBack();
         }).then(function() {
             done();
         });
@@ -117,17 +101,19 @@ describe('User can manage course glossary', function() {
 
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview')
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            return $('.secondary-buttons').click();
+            browser.sleep(5000); //wait for button css to render
+            return $('[ng-click="showContextMenu($event)"]').click();
         }).then(function() {
-            return MM.goBack();
+           browser.sleep(5000); //wait for css to render
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();
         });
