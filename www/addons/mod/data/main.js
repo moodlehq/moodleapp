@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_data', ['mm.core'])
 
 .constant('mmaModDataComponent', 'mmaModData')
+.constant('mmaModDataEventEntryChanged', 'mma-mod_data_entry_changed')
 
 .config(function($stateProvider) {
 
@@ -60,4 +61,5 @@ angular.module('mm.addons.mod_data', ['mm.core'])
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModData', 'data', '$mmaModDataPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:index', '$mmaModDataHandlers.indexLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:entry', '$mmaModDataHandlers.showEntryLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:approve', '$mmaModDataHandlers.approveEntryLinksHandler');
 });

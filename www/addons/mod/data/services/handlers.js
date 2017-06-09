@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataHandlers
  */
-.factory('$mmaModDataHandlers', function($mmCourse, $mmaModData, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite,
+.factory('$mmaModDataHandlers', function($mmCourse, $mmaModData, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite, $q,
         mmaModDataComponent, $mmaModDataPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, $mmContentLinkHandlerFactory,
-        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate) {
+        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, mmaModDataEventEntryChanged) {
     var self = {};
 
     /**
@@ -167,7 +167,7 @@ angular.module('mm.addons.mod_data')
     self.showEntryLinksHandler = $mmContentLinkHandlerFactory.createChild(
                 /\/mod\/data\/view\.php.*([\?\&](d|rid|page|group|mode)=\d+)/, '$mmCourseDelegate_mmaModData');
 
-    // Check if the printLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    // Check if the showEntryLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
     self.showEntryLinksHandler.isEnabled = $mmaModData.isPluginEnabled;
 
     // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
@@ -209,6 +209,59 @@ angular.module('mm.addons.mod_data')
 
                     return $mmContentLinksHelper.goInSite('site.mod_data-entry', stateParams, siteId);
                 }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
+
+     /**
+     * Content links handler for database approve/disapprove entry.
+     * Match mod/data/view.php?d=6&approve=5 with a valid data id and entryid.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHandlers#approveEntryLinksHandler
+     */
+    self.approveEntryLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/data\/view\.php.*([\?\&](d|approve|disapprove)=\d+)/, '$mmCourseDelegate_mmaModData');
+
+    // Check if the approveEntryLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.approveEntryLinksHandler.isEnabled = $mmaModData.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.approveEntryLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        if (typeof params.d == 'undefined' || (typeof params.approve == 'undefined' && typeof params.disapprove == 'undefined')) {
+            // Required fields not defined. Cannot treat the URL.
+            return false;
+        }
+
+        return [{
+            action: function(siteId) {
+                var modal = $mmUtil.showModalLoading(),
+                    dataId = parseInt(params.d, 10),
+                    entryId = parseInt(params.approve, 10) || parseInt(params.disapprove, 10),
+                    approve = parseInt(params.approve, 10) ? true : false;
+
+                // Approve/disapprove entry.
+                return $mmaModData.approveEntry(entryId, approve, siteId).catch(function(message) {
+                    modal.dismiss();
+                    $mmUtil.showErrorModal(message, 'mma.mod_data.errorapproving', true);
+
+                    return $q.reject();
+                }).then(function() {
+                    var promises = [];
+                    promises.push($mmaModData.invalidateEntryData(dataId, entryId, siteId));
+                    promises.push($mmaModData.invalidateEntriesData(dataId, siteId));
+
+                    return $q.all(promises);
+                }).then(function() {
+                    $mmEvents.trigger(mmaModDataEventEntryChanged, {dataId: dataId, entryId: entryId, siteId: siteId});
+
+                    modal.dismiss();
+                    $mmUtil.showToast(approve ? 'mma.mod_data.recordapproved' : 'mma.mod_data.recorddisapproved', true, 3000);
+                }).finally(function() {
+                    // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();
                 });
             }

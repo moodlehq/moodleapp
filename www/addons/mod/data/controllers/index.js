@@ -22,11 +22,13 @@ angular.module('mm.addons.mod_data')
  * @name mmaModDataIndexCtrl
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
-        $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups) {
+        $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
+        mmaModDataEventEntryChanged) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         data,
+        entryChangedObserver,
         onlineObserver;
 
     $scope.title = module.name;
@@ -201,7 +203,16 @@ angular.module('mm.addons.mod_data')
         $scope.isOnline = online;
     });
 
+    // Refresh entry on change.
+    entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
+        if (data.id == eventData.dataId && $mmSite.getId() == eventData.siteId) {
+            $scope.databaseLoaded = false;
+            return fetchDatabaseData(true);
+        }
+    });
+
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
+        entryChangedObserver && entryChangedObserver.off && entryChangedObserver.off();
     });
 });
