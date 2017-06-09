@@ -16,38 +16,19 @@ describe('User can manage course label content', function() {
 
     it('View course label in course content', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview')
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('About this course');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('Films reading:');
-            expect(MM.getView().getText()).toMatch('Pyschology reading:');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
-
-    it('View full content of course label when clicked', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('Background information');
-        }).then(function() {
-            return MM.clickOn('Films reading:');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Films reading:');
+            expect(MM.getView().getText()).toContain('This course explores Digital Literacy');
         }).then(function () {
             return MM.goBack();
         }).then(function () {
-            return MM.clickOn('Pyschology reading:');
+            return MM.clickOn('Extra resources');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('Pyschology reading:');
+            expect(MM.getView().getText()).toContain('Useful links to take your learning further.');
         }).then(function () {
             return MM.goBack();
         }).then(function() {
