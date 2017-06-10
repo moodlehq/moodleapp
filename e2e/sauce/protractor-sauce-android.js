@@ -11,10 +11,18 @@ exports.config = {
     },
     specs: [
         "../../e2e/*.js",
-        "../../www/**/e2e/mod_assign.spec.js",
-        "../../www/**/e2e/mod_book.spec.js",
-        "../../www/**/e2e/mod_chat.spec.js",
-        "../../www/**/e2e/mod_choice.spec.js"
+        //"../../www/**/e2e/mod_assign.spec.js",
+        //"../../www/**/e2e/mod_book.spec.js",
+        //"../../www/**/e2e/mod_chat.spec.js",
+        //"../../www/**/e2e/mod_choice.spec.js",
+        //"../../www/**/e2e/mod_folder.spec.js",
+        // "../../www/**/e2e/mod_forum.spec.js",
+        //"../../www/**/e2e/mod_glossary.spec.js",
+        //"../../www/**/e2e/mod_label.spec.js",
+        //"../../www/**/e2e/mod_resource.spec.js",
+        //"../../www/**/e2e/mod_survey.spec.js",
+        //"../../www/**/e2e/mod_wiki.spec.js"
+        "../../www/**/e2e/mod_*.spec.js"
     ],
     baseUrl: '',
     seleniumAddress: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub",
