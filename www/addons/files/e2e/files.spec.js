@@ -29,7 +29,7 @@ describe('User can manage course files section', function() {
             return MM.clickOnInSideMenu('My files');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('My files');
-            expect(MM.getView().getText()).toMatch('My private files');
+            expect(MM.getView().getText()).toMatch('Private files');
             expect(MM.getView().getText()).toMatch('The files that are available in your private area on this Moodle site.');
             expect(MM.getView().getText()).toMatch('Site files');
             expect(MM.getView().getText()).toMatch('The other files that are available to you on this Moodle site.');
@@ -38,13 +38,13 @@ describe('User can manage course files section', function() {
         });
     });
 
-    it('Visit My private files in files page', function (done) {
+    it('Visit Private files in files page', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
         }).then(function() {
-            return MM.clickOn('My private files');
+            return MM.clickOn('Private files');
         }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('My private files');
+            expect(MM.getNavBar().getText()).toMatch('My files');
             expect(MM.getView().getText()).toMatch('MyPictures');
             expect(MM.getView().getText()).toMatch('My essay notes.odt');
         }).then(function() {
@@ -52,29 +52,27 @@ describe('User can manage course files section', function() {
         });
     });
 
-    it('Click upload button in my private files section', function (done) {
+    it('Click upload button in Private files section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
         }).then(function() {
-            return MM.clickOn('My private files');
+            return MM.clickOn('Private files');
         }).then(function() {
-            return $('.button.button-icon.ion-plus').click();
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('Upload a file');
-            expect(MM.getView().getText()).toMatch('Photo albums');
-            expect(MM.getView().getText()).toMatch('Camera');
-            expect(MM.getView().getText()).toMatch('Audio');
-            expect(MM.getView().getText()).toMatch('Video');
+            browser.sleep(5000); // wait to render
+            return $('[ng-click="add()"]').click();
+        }).then(function () {
+           browser.sleep(5000); //wait for button css to render
+           expect($('.action-sheet-backdrop.active').isPresent()).toBeTruthy();
         }).then(function() {
             done();
         });
     });
 
-    it('Click My Pictures tab in my private files section', function (done) {
+    it('Click My Pictures tab in Private files section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
         }).then(function() {
-            return MM.clickOn('My private files');
+            return MM.clickOn('Private files');
         }).then(function() {
             return MM.clickOn('MyPictures');
         }).then(function() {
@@ -85,11 +83,11 @@ describe('User can manage course files section', function() {
         });
     });
 
-    it('Click essay notes tab in my private files section', function (done) {
+    it('Click essay notes tab in Private files section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
         }).then(function() {
-            return MM.clickOn('My private files');
+            return MM.clickOn('Private files');
         }).then(function() {
             return MM.clickOn('My essay notes.odt');
         }).then(function() {
