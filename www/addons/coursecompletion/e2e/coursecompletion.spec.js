@@ -16,10 +16,15 @@ describe('User can manage course completion', function() {
 
     it('View course completion inside the course in main page', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('Psychology in Cinema');
-            expect(MM.getView().getText()).toMatch('Course completion');
+            return MM.clickOn('Psychology in Cinema');
+       }).then(function () {
+           browser.sleep(7500); //wait for button css to render
+           return $('.secondary-buttons').click();
+       }).then(function () {
+           browser.sleep(5000); //wait for button css to render
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function() {
             done();
         });
@@ -27,9 +32,14 @@ describe('User can manage course completion', function() {
 
     it('User can land course completion page', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview'); 
         }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mma-coursecompletion-mine-handler').click();
+            return MM.clickOn('Psychology in Cinema');
+       }).then(function () {
+           browser.sleep(7500); //wait for button css to render
+           return $('.secondary-buttons').click();
+        }).then(function() {
+            return MM.clickOn('Course completion');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Course completion');
         }).then(function() {
@@ -39,23 +49,21 @@ describe('User can manage course completion', function() {
 
     it('User can view content of course completion page', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mma-coursecompletion-mine-handler').click();
+            return MM.clickOn('Psychology in Cinema');
+       }).then(function () {
+           browser.sleep(7500); //wait for button css to render
+           return $('.secondary-buttons').click();
         }).then(function() {
+            return MM.clickOn('Course completion');
+        }).then(function() {
+            browser.sleep(7500);
             expect(MM.getNavBar().getText()).toMatch('Course completion');
-            expect(MM.getView().getText()).toMatch('Status');
-            expect(MM.getView().getText()).toMatch('In progress');
-            expect(MM.getView().getText()).toMatch('Required');
-            expect(MM.getView().getText()).toMatch('All criteria below are required');
-            expect(MM.getView().getText()).toMatch('Required criteria');
-            expect(MM.getView().getText()).toMatch('Announcements from your tutor');
-            expect(MM.getView().getText()).toMatch('Marking yourself complete');
-            expect(MM.getView().getText()).toMatch('Yes');
-            expect(MM.getView().getText()).toMatch('Prior Knowledge assessment');
-            expect(MM.getView().getText()).toMatch('Factual recall test');
-            expect(MM.getView().getText()).toMatch('Achieving grade');
-            expect(MM.getView().getText()).toMatch('Yes');
+            expect(MM.getView().getText()).toContain('Status');
+            expect(MM.getView().getText()).toContain('In progress');
+            expect(MM.getView().getText()).toContain('Required');
+            expect(MM.getView().getText()).toContain('All criteria below are required');
         }).then(function() {
             done();
         });
