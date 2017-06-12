@@ -15,13 +15,13 @@ describe('User can filter courses correctly', function() {
 
     it('Filter course names by one letter', function (done) {
         return MM.loginAsStudent().then(function () {
-            return $('[ng-model="filter.filterText"]').click();
+            browser.sleep(5000); //wait to render and become clickable
+            return $('[ng-click="switchFilter()"]').click();
         }).then(function () {
-            return $('[ng-model="filter.filterText"]').sendKeys('a');
+            return $('[ng-model="courses.filter"]').sendKeys('a');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('Psychology in Cinema');
-            expect(MM.getView().getText()).toMatch('Celebrating Cultures');
-
+            expect(MM.getView().getText()).toContain('Celebrating Cultures');
+            expect(MM.getView().getText()).toContain('Digital Literacy');
         }).then(function () {
             done();
         });
@@ -29,12 +29,14 @@ describe('User can filter courses correctly', function() {
 
     it('Filter course names if it is single word or part of the word', function (done) {
         return MM.loginAsStudent().then(function () {
-            return $('[ng-model="filter.filterText"]').click();
+            browser.sleep(5000); //wait to render and become clickable
+            return $('[ng-click="switchFilter()"]').click();
         }).then(function () {
-            return $('[ng-model="filter.filterText"]').sendKeys('the');
+            browser.sleep(5000); //wait to render
+            return $('[ng-model="courses.filter"]').sendKeys('the');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('The Impressionists');
-            expect(MM.getView().getText()).toMatch('Junior Mathematics');
+            expect(MM.getView().getText()).toContain('The Impressionists');
+            expect(MM.getView().getText()).toContain('English: The Lake Poets');
         }).then(function () {
             done();
         });
@@ -42,26 +44,28 @@ describe('User can filter courses correctly', function() {
 
     it('Can delete some Filtered words and again check the current filter course names', function (done) {
         return MM.loginAsStudent().then(function () {
-            return $('[ng-model="filter.filterText"]').click();
+            browser.sleep(5000); //wait to render and become clickable
+            return $('[ng-click="switchFilter()"]').click();
         }).then(function () {
-            return $('[ng-model="filter.filterText"]').sendKeys('them');
+            browser.sleep(5000); //wait to render
+            return $('[ng-model="courses.filter"]').sendKeys('the ');
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('Junior Mathematics');
+            expect(MM.getView().getText()).toContain('English: The Lake Poets');
         }).then(function () {
-            var input = $('[ng-model="filter.filterText"]');
+            var input = $('[ng-model="courses.filter"]');
             input.sendKeys(protractor.Key.BACK_SPACE);
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('The Impressionists');
-            expect(MM.getView().getText()).toMatch('Junior Mathematics');
+            expect(MM.getView().getText()).toContain('The Impressionists');
+            expect(MM.getView().getText()).toContain('English: The Lake Poets');
         }).then(function () {
-            var input = $('[ng-model="filter.filterText"]');
+            var input = $('[ng-model="courses.filter"]');
             input.sendKeys(protractor.Key.BACK_SPACE);
         }).then(function () {
-            var input = $('[ng-model="filter.filterText"]');
+            var input = $('[ng-model="courses.filter"]');
             input.sendKeys(protractor.Key.BACK_SPACE);
         }).then(function() {
-            expect(MM.getView().getText()).toMatch('The Impressionists');
-            expect(MM.getView().getText()).toMatch('Celebrating Cultures');
+            expect(MM.getView().getText()).toContain('Digital Literacy');
+            expect(MM.getView().getText()).toContain('Celebrating Cultures');
         }).then(function () {
             done();
         });
