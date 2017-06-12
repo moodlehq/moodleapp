@@ -16,17 +16,15 @@ describe('User can see New staff induction test as a teacher', function() {
 
     it('User can see New staff induction page', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('New staff induction');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
             return MM.clickOn('New staff induction');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('New staff induction');
-            expect(MM.getView().getText()).toMatch('All sections');
-            expect(MM.getView().getText()).toMatch('Welcome');
-            expect(MM.getView().getText()).toMatch('Policies and Procedures');
-            expect(MM.getView().getText()).toMatch('IT skills');
+            expect(MM.getView().getText()).toContain('All sections');
+            expect(MM.getView().getText()).toContain('Welcome');
+            expect(MM.getView().getText()).toContain('Policies and Procedures');
+            expect(MM.getView().getText()).toContain('IT skills');
         }).then(function () {
             done();
         });
@@ -34,22 +32,14 @@ describe('User can see New staff induction test as a teacher', function() {
 
     it('User can click All sections tab', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('New staff induction');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
             return MM.clickOn('New staff induction');
-        }).then(function() {
-            var width = 500;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
         }).then(function() {
             return MM.clickOn('All sections');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('All sections');
-            expect(MM.getView().getText()).toMatch('Welcome');
-            expect(MM.getView().getText()).toMatch('Induction FAQ');
-            expect(MM.getView().getText()).toMatch('Policies and Procedures');
+            expect(MM.getView().getText()).toContain('Welcome');
         }).then(function () {
             done();
         });
@@ -57,22 +47,16 @@ describe('User can see New staff induction test as a teacher', function() {
 
     it('User can click Welcome tab', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('New staff induction');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
             return MM.clickOn('New staff induction');
-        }).then(function() {
-            var width = 500;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
         }).then(function() {
             return MM.clickOn('Welcome');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Welcome');
-            expect(MM.getView().getText()).toMatch('Welcome');
-            expect(MM.getView().getText()).toMatch('Welcome to this short new staff induction course.');
-            expect(MM.getView().getText()).toMatch('IT skills');
+            expect(MM.getView().getText()).toContain('Welcome');
+            expect(MM.getView().getText()).toContain('Welcome to this short new staff induction course.');
+            expect(MM.getView().getText()).toContain('Induction FAQ');
         }).then(function () {
             done();
         });
@@ -80,24 +64,17 @@ describe('User can see New staff induction test as a teacher', function() {
 
     it('User can click Policies and Procedures tab', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('New staff induction');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
             return MM.clickOn('New staff induction');
-        }).then(function() {
-            var width = 500;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
         }).then(function() {
             return MM.clickOn('Policies and Procedures');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Policies and Procedures');
-            expect(MM.getView().getText()).toMatch('Health and Safety');
-            expect(MM.getView().getText()).toMatch('Health and Safety');
-            expect(MM.getView().getText()).toMatch('Staff leave policy quiz');
-            expect(MM.getView().getText()).toMatch('Dress code');
-            expect(MM.getView().getText()).toMatch('Internet Usage policy');
+            expect(MM.getView().getText()).toContain('Health and Safety');
+            expect(MM.getView().getText()).toContain('Staff leave policy quiz');
+            expect(MM.getView().getText()).toContain('Dress code');
+            expect(MM.getView().getText()).toContain('Internet Usage policy');
         }).then(function () {
             done();
         });
@@ -105,22 +82,16 @@ describe('User can see New staff induction test as a teacher', function() {
 
     it('User can click IT skills tab', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('New staff induction');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function() {
             return MM.clickOn('New staff induction');
-        }).then(function() {
-            var width = 500;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
         }).then(function() {
             return MM.clickOn('IT skills');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('IT skills');
-            expect(MM.getView().getText()).toMatch('Your presentational skills');
-            expect(MM.getView().getText()).toMatch('Email task');
-            expect(MM.getView().getText()).toMatch('Spreadsheet basics');
+            expect(MM.getView().getText()).toContain('Your presentational skills');
+            expect(MM.getView().getText()).toContain('Email task');
+            expect(MM.getView().getText()).toContain('Spreadsheet basics');
         }).then(function () {
             done();
         });
