@@ -403,7 +403,7 @@ angular.module('mm.addons.mod_data')
      * @param   {Number}    entryId         Entry ID.
      * @param   {Boolean}   approve         Whether to approve (true) or unapprove the entry.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise}                   Promise resolved when the database entry is retrieved.
+     * @return  {Promise}                   Promise resolved when the action is done.
      */
     self.approveEntry = function(entryId, approve, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -413,6 +413,26 @@ angular.module('mm.addons.mod_data')
                 };
 
             return site.write('mod_data_approve_entry', params);
+        });
+    };
+
+    /**
+     * Deletes an entry.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#deleteEntry
+     * @param   {Number}    entryId         Entry ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the action is done.
+     */
+    self.deleteEntry = function(entryId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    entryid: entryId
+                };
+
+            return site.write('mod_data_delete_entry', params);
         });
     };
 
