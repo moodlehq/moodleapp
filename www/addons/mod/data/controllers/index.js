@@ -36,7 +36,6 @@ angular.module('mm.addons.mod_data')
     $scope.refreshIcon = 'spinner';
     $scope.syncIcon = 'spinner';
     $scope.component = mmaModDataComponent;
-    $scope.componentId = module.id;
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
 
@@ -134,8 +133,6 @@ angular.module('mm.addons.mod_data')
             return $q.reject();
         });
     };
-
-
 
     // Convenience function to refresh all the data.
     function refreshAllData(sync, showErrors) {

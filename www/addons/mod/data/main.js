@@ -33,6 +33,24 @@ angular.module('mm.addons.mod_data', ['mm.core'])
                 templateUrl: 'addons/mod/data/templates/index.html'
             }
         }
+    })
+
+    .state('site.mod_data-entry', {
+        url: '/mod_data-entry',
+        params: {
+            module: null,
+            moduleid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            courseid: null,
+            entryid: null,
+            page: null,
+            group: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModDataEntryCtrl',
+                templateUrl: 'addons/mod/data/templates/entry.html'
+            }
+        }
     });
 
 })
@@ -41,4 +59,5 @@ angular.module('mm.addons.mod_data', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModData', 'data', '$mmaModDataHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModData', 'data', '$mmaModDataPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:index', '$mmaModDataHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:entry', '$mmaModDataHandlers.showEntryLinksHandler');
 });

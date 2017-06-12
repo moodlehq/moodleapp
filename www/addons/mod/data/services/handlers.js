@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModDataHandlers
  */
 .factory('$mmaModDataHandlers', function($mmCourse, $mmaModData, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite,
-        mmaModDataComponent, $mmaModDataPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded,
+        mmaModDataComponent, $mmaModDataPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, $mmContentLinkHandlerFactory,
         mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate) {
     var self = {};
 
@@ -155,6 +155,65 @@ angular.module('mm.addons.mod_data')
      */
     self.indexLinksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModData', 'data', $mmaModData);
 
+
+    /**
+     * Content links handler for database show entry.
+     * Match mod/data/view.php?d=6&rid=5 with a valid data id and entryid.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHandlers#showEntryLinksHandler
+     */
+    self.showEntryLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/data\/view\.php.*([\?\&](d|rid|page|group|mode)=\d+)/, '$mmCourseDelegate_mmaModData');
+
+    // Check if the printLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.showEntryLinksHandler.isEnabled = $mmaModData.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.showEntryLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        if (typeof params.d == 'undefined') {
+            // Id not defined. Cannot treat the URL.
+            return false;
+        }
+
+        if ((!params.mode || params.mode != "single") && typeof params.rid == 'undefined') {
+            return false;
+        }
+
+        return [{
+            action: function(siteId) {
+                var modal = $mmUtil.showModalLoading(),
+                    dataId = parseInt(params.d, 10),
+                    rId = parseInt(params.rid, 10) || false,
+                    group = parseInt(params.group, 10) || false,
+                    page = parseInt(params.page, 10) || false;
+
+                return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
+                    var stateParams = {
+                        moduleid: module.id,
+                        module: module,
+                        courseid: module.course
+                    };
+
+                    if (group) {
+                        stateParams.group = group;
+                    }
+
+                    if (params.mode && params.mode == "single") {
+                        stateParams.page = page || 1;
+                    } else if (rId) {
+                        stateParams.entryid = rId;
+                    }
+
+
+                    return $mmContentLinksHelper.goInSite('site.mod_data-entry', stateParams, siteId);
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
 
     return self;
 });

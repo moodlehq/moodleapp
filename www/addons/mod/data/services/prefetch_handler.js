@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModDataPrefetchHandler
  */
 .factory('$mmaModDataPrefetchHandler', function($mmaModData, mmaModDataComponent, $mmFilepool, $q, $mmUtil, $mmPrefetchFactory,
-        $mmSite, $mmGroups) {
+        $mmSite, $mmGroups, $mmCourse) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModDataComponent);
 
@@ -138,7 +138,7 @@ angular.module('mm.addons.mod_data')
             var uniqueEntries = {};
 
             angular.forEach(responses, function(groupEntries) {
-                angular.forEach(groupEntries.entries, function(entry) {
+                angular.forEach(groupEntries, function(entry) {
                     uniqueEntries[entry.id] = entry;
                 });
             });
@@ -326,8 +326,16 @@ angular.module('mm.addons.mod_data')
             promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
 
             angular.forEach(info.groups, function(group) {
-                promises.push($mmaModData.getDatabaseAccessInformation(database.id, group.id, false, true, siteId));
+               promises.push($mmaModData.getDatabaseAccessInformation(database.id, group.id, false, true, siteId));
             });
+
+            angular.forEach(info.entries, function(entry) {
+                promises.push($mmaModData.getEntry(database.id, entry.id, siteId));
+            });
+
+            // Add Basic Info to manage links.
+            promises.push($mmCourse.getModuleBasicInfoByInstance(database.id, 'data', siteId));
+
             return $q.all(promises);
         }).then(function() {
             // Get revision and timemodified.

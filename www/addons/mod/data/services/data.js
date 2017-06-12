@@ -90,6 +90,17 @@ angular.module('mm.addons.mod_data')
     }
 
     /**
+     * Get cache key for database entry data WS calls.
+     *
+     * @param {Number} dataId     Data ID for caching purposes.
+     * @param {Number} entryId    Entry ID.
+     * @return {String}           Cache key.
+     */
+    function getEntryCacheKey(dataId, entryId) {
+        return getDatabaseDataPrefixCacheKey(dataId) + ':entry:' + entryId;
+    }
+
+    /**
      * Get cache key for database fields data WS calls.
      *
      * @param {Number} dataId     Data ID.
@@ -297,7 +308,10 @@ angular.module('mm.addons.mod_data')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     databaseid: dataId,
-                    returncontents: 1
+                    returncontents: 1,
+                    page: page || 0,
+                    perpage: perPage || 0,
+                    groupid: groupId || 0
                 },
                 preSets = {
                     cacheKey: getEntriesCacheKey(dataId, groupId)
@@ -307,20 +321,8 @@ angular.module('mm.addons.mod_data')
                 params.sort = sort;
             }
 
-            if (order) {
+            if (typeof order !== "undefined") {
                 params.order = order;
-            }
-
-            if (page) {
-                params.page = page;
-            }
-
-            if (perPage) {
-                params.perpage = perPage;
-            }
-
-            if (typeof groupId !== "undefined") {
-                params.groupid = groupId;
             }
 
             if (forceCache) {
@@ -347,6 +349,48 @@ angular.module('mm.addons.mod_data')
     self.invalidateEntriesData = function(dataId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getEntriesPrefixCacheKey(dataId));
+        });
+    };
+
+    /**
+     * Get an entry of the database activity.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#getEntry
+     * @param   {Number}    dataId          Data ID for caching purposes.
+     * @param   {Number}    entryId         Entry ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the database entry is retrieved.
+     */
+    self.getEntry = function(dataId, entryId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    entryid: entryId,
+                    returncontents: 1
+                },
+                preSets = {
+                    cacheKey: getEntryCacheKey(dataId, entryId)
+                };
+
+            return site.read('mod_data_get_entry', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidates database entry data.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#invalidateEntryData
+     * @param  {Number}  dataId     Data ID for caching purposes.
+     * @param  {Number}  entryId    Entry ID.
+     * @param  {String}  [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when the data is invalidated.
+     */
+    self.invalidateEntryData = function(dataId, entryId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getEntryCacheKey(dataId, entryId));
         });
     };
 
@@ -412,11 +456,6 @@ angular.module('mm.addons.mod_data')
      */
     self.fetchAllEntries = function(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
-
-        if (typeof perPage == 'undefined') {
-            perPage = 10;
-        }
-
         return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, [], 0, siteId);
     };
 
@@ -440,9 +479,9 @@ angular.module('mm.addons.mod_data')
             entries = entries.concat(result.entries);
 
             var canLoadMore = ((page + 1) * perPage) < result.totalcount;
-            if (canLoadMore) {
-                return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries,
-                    page + 1, siteId);
+            if (perPage && canLoadMore) {
+                return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page + 1,
+                    siteId);
             }
             return entries;
         });
