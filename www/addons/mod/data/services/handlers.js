@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_data')
  */
 .factory('$mmaModDataHandlers', function($mmCourse, $mmaModData, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite, $q,
         mmaModDataComponent, $mmaModDataPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, $mmContentLinkHandlerFactory,
-        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, mmaModDataEventEntryChanged) {
+        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, mmaModDataEventEntryChanged, $translate) {
     var self = {};
 
     /**
@@ -215,7 +215,7 @@ angular.module('mm.addons.mod_data')
         }];
     };
 
-     /**
+    /**
      * Content links handler for database approve/disapprove entry.
      * Match mod/data/view.php?d=6&approve=5 with a valid data id and entryid.
      *
@@ -263,6 +263,62 @@ angular.module('mm.addons.mod_data')
                 }).finally(function() {
                     // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();
+                });
+            }
+        }];
+    };
+
+    /**
+     * Content links handler for database delete entry.
+     * Match mod/data/view.php?d=6&delete=5 with a valid data id and entryid.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHandlers#deleteEntryLinksHandler
+     */
+    self.deleteEntryLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/data\/view\.php.*([\?\&](d|delete)=\d+)/, '$mmCourseDelegate_mmaModData');
+
+    // Check if the deleteEntryLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.deleteEntryLinksHandler.isEnabled = $mmaModData.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.deleteEntryLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        if (typeof params.d == 'undefined' || typeof params.delete == 'undefined') {
+            // Required fields not defined. Cannot treat the URL.
+            return false;
+        }
+
+        return [{
+            action: function(siteId) {
+                // Confirm before delete.
+                return $mmUtil.showConfirm($translate.instant('mma.mod_data.confirmdeleterecord')).then(function() {
+                    var modal = $mmUtil.showModalLoading(),
+                        dataId = parseInt(params.d, 10),
+                        entryId = parseInt(params.delete, 10);
+
+                    // Delete entry.
+                    return $mmaModData.deleteEntry(entryId, siteId).catch(function(message) {
+                        modal.dismiss();
+                        $mmUtil.showErrorModal(message, 'mma.mod_data.errordeleting', true);
+
+                        return $q.reject();
+                    }).then(function() {
+                        var promises = [];
+                        promises.push($mmaModData.invalidateEntryData(dataId, entryId, siteId));
+                        promises.push($mmaModData.invalidateEntriesData(dataId, siteId));
+
+                        return $q.all(promises);
+                    }).then(function() {
+                        $mmEvents.trigger(mmaModDataEventEntryChanged, {dataId: dataId, entryId: entryId, siteId: siteId,
+                                deleted: true});
+
+                        modal.dismiss();
+                        $mmUtil.showToast('mma.mod_data.recorddeleted', true, 3000);
+                    }).finally(function() {
+                        // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
+                        modal.dismiss();
+                    });
                 });
             }
         }];

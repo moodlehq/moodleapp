@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_data')
  * @name mmaModDataEntryCtrl
  */
 .controller('mmaModDataEntryCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $q, $mmEvents,
-        $mmText, $translate, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups, $ionicScrollDelegate, mmaModDataEventEntryChanged) {
+        $mmText, $translate, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups, $ionicScrollDelegate, mmaModDataEventEntryChanged,
+        $ionicHistory) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -174,8 +175,13 @@ angular.module('mm.addons.mod_data')
     // Refresh entry on change.
     entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
         if (eventData.entryId == entryId && data.id == eventData.dataId && $mmSite.getId() == eventData.siteId) {
-            $scope.databaseLoaded = false;
-            return fetchEntryData(true);
+            if (eventData.deleted) {
+                // If deleted, go back.
+                $ionicHistory.goBack();
+            } else {
+                $scope.databaseLoaded = false;
+                return fetchEntryData(true);
+            }
         }
     });
 
