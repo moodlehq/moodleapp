@@ -676,6 +676,24 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the base path where the application files are stored. Returns the value instantly, without waiting for it to be ready.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getBasePathInstant
+     * @return {String} Base path. If the service hasn't been initialized it will return an invalid value.
+     */
+    self.getBasePathInstant = function() {
+        if (!basePath) {
+            return basePath;
+        } else if (basePath.slice(-1) == '/') {
+            return basePath;
+        } else {
+            return basePath + '/';
+        }
+    };
+
+    /**
      * Get temporary directory path.
      *
      * @module mm.core
