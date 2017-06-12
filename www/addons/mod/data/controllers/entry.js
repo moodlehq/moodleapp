@@ -21,14 +21,15 @@ angular.module('mm.addons.mod_data')
  * @ngdoc controller
  * @name mmaModDataEntryCtrl
  */
-.controller('mmaModDataEntryCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $q,
-        $mmText, $translate, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups, $ionicScrollDelegate) {
+.controller('mmaModDataEntryCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $q, $mmEvents,
+        $mmText, $translate, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups, $ionicScrollDelegate, mmaModDataEventEntryChanged) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         entryId = $stateParams.entryid || false,
         page = $stateParams.page || false,
         data,
+        entryChangedObserver,
         scrollView;
 
     $scope.title = module.name;
@@ -169,4 +170,16 @@ angular.module('mm.addons.mod_data')
     $scope.gotoSearch = function() {
         $mmUtil.openInApp($mmSite.getURL() + '/mod/data/view.php?mode=asearch&d=' + data.id);
     };
+
+    // Refresh entry on change.
+    entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
+        if (eventData.entryId == entryId && data.id == eventData.dataId && $mmSite.getId() == eventData.siteId) {
+            $scope.databaseLoaded = false;
+            return fetchEntryData(true);
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        entryChangedObserver && entryChangedObserver.off && entryChangedObserver.off();
+    });
 });

@@ -395,6 +395,28 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Approves or unapproves an entry.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#approveEntry
+     * @param   {Number}    entryId         Entry ID.
+     * @param   {Boolean}   approve         Whether to approve (true) or unapprove the entry.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the database entry is retrieved.
+     */
+    self.approveEntry = function(entryId, approve, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    entryid: entryId,
+                    approve: approve ? 1 : 0
+                };
+
+            return site.write('mod_data_approve_entry', params);
+        });
+    };
+
+    /**
      * Get the list of configured fields for the given database.
      *
      * @module mm.addons.mod_data

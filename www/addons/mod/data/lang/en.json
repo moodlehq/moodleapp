@@ -2,8 +2,11 @@
     "addentries": "Add entries",
     "entrieslefttoadd": "You must add {{$a.entriesleft}} more entry/entries in order to complete this activity",
     "entrieslefttoaddtoview": "You must add {{$a.entrieslefttoview}} more entry/entries before you can view other participants' entries.",
+    "errorapproving": "Error approving or unapproving entry.",
     "expired": "Sorry, this activity closed on {{$a}} and is no longer available",
     "norecords": "No entries in database",
     "notopenyet": "Sorry, this activity is not available until {{$a}}",
+    "recordapproved": "Entry approved",
+    "recorddisapproved": "Entry unapproved",
     "search": "Search"
 }
