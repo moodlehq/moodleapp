@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc controller
  * @name $mmaModData
  */
-.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite) {
+.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage) {
     var self = {};
 
     /**
@@ -298,7 +298,7 @@ angular.module('mm.addons.mod_data')
      * @param   {String}    [order]         The direction of the sorting: 'ASC' or 'DESC'.
      *                                          Empty for using the default database setting.
      * @param   {Number}    [page]          Page of records to return.
-     * @param   {Number}    [perPage]       Number of records to return per page.
+     * @param   {Number}    [perPage]       Records per page to return. Default on mmaModDataPerPage.
      * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
      * @param   {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
@@ -310,7 +310,7 @@ angular.module('mm.addons.mod_data')
                     databaseid: dataId,
                     returncontents: 1,
                     page: page || 0,
-                    perpage: perPage || 0,
+                    perpage: perPage || mmaModDataPerPage,
                     groupid: groupId || 0
                 },
                 preSets = {
@@ -437,6 +437,56 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Performs search over a database.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#searchEntries
+     * @param {Number} databaseId      The data instance id.
+     * @param {Number} [groupId]       Group id, 0 means that the function will determine the user group.
+     * @param {String} [search]        Search text. It will be used if advSearch is not defined.
+     * @param {Array}  [advSearch]     Advanced search data.
+     * @param {String} [sort]          Sort by this field.
+     * @param {Number} [order]         The direction of the sorting.
+     * @param {Number} [page]          Page of records to return.
+     * @param {Number} [perPage]       Records per page to return. Default on mmaModDataPerPage.
+     * @param {String} [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}              Promise resolved when the action is done.
+     */
+    self.searchEntries = function(databaseId, groupId, search, advSearch, sort, order, page, perPage, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    databaseid: databaseId,
+                    groupid: groupId || 0,
+                    returncontents: 1,
+                    page: page || 0,
+                    perpage: perPage || mmaModDataPerPage
+                },
+                preSets = {
+                    getCache: 0,
+                    saveCache: 1,
+                    emergencyCache: 1
+                };
+
+            if (typeof sort != "undefined") {
+                params.sort = sort;
+            }
+
+            if (typeof order !== "undefined") {
+                params.order = order;
+            }
+
+            if (typeof advSearch !== "undefined") {
+                params.advsearch = advSearch;
+            } else {
+                params.search = search;
+            }
+
+            return site.read('mod_data_search_entries', params);
+        });
+    };
+
+    /**
      * Get the list of configured fields for the given database.
      *
      * @module mm.addons.mod_data
@@ -490,15 +540,14 @@ angular.module('mm.addons.mod_data')
      * @param  {Number}    [groupId]       Group ID.
      * @param  {Number}    [sort]          Sort the records by this field id. See $mmaModData#getEntries for more information.
      * @param  {String}    [order]         The direction of the sorting.  See $mmaModData#getEntries for more information.
-     * @param  {Number}    [perPage]       Number of records to return per page. Default 10.
      * @param  {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
      * @param  {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {String}    [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                   Promise resolved when done.
      */
-    self.fetchAllEntries = function(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, siteId) {
+    self.fetchAllEntries = function(dataId, groupId, sort, order, forceCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
-        return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, [], 0, siteId);
+        return fetchEntriesRecursive(dataId, groupId, sort, order, forceCache, ignoreCache, [], 0, siteId);
     };
 
     /**
@@ -508,7 +557,6 @@ angular.module('mm.addons.mod_data')
      * @param  {Number}    groupId         Group ID.
      * @param  {Number}    sort            Sort the records by this field id. See $mmaModData#getEntries for more information.
      * @param  {String}    order           The direction of the sorting.  See $mmaModData#getEntries for more information.
-     * @param  {Number}    perPage         Number of records to return per page.
      * @param  {Boolean}   forceCache      True to always get the value from cache, false otherwise. Default false.
      * @param  {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {Array}     entries         Entries already fetch (just to concatenate them).
@@ -516,13 +564,14 @@ angular.module('mm.addons.mod_data')
      * @param  {String}    siteId          Site ID.
      * @return {Promise}                   Promise resolved when done.
      */
-    function fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page, siteId) {
-        return self.getEntries(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId).then(function(result) {
+    function fetchEntriesRecursive(dataId, groupId, sort, order, forceCache, ignoreCache, entries, page, siteId) {
+        return self.getEntries(dataId, groupId, sort, order, page, mmaModDataPerPage, forceCache, ignoreCache, siteId)
+                .then(function(result) {
             entries = entries.concat(result.entries);
 
-            var canLoadMore = ((page + 1) * perPage) < result.totalcount;
-            if (perPage && canLoadMore) {
-                return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page + 1,
+            var canLoadMore = ((page + 1) * mmaModDataPerPage) < result.totalcount;
+            if (canLoadMore) {
+                return fetchEntriesRecursive(dataId, groupId, sort, order, forceCache, ignoreCache, entries, page + 1,
                     siteId);
             }
             return entries;

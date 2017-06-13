@@ -1,15 +1,27 @@
 {
     "addentries": "Add entries",
+    "approved": "Approved",
+    "ascending": "Ascending",
+    "authorfirstname": "Author first name",
+    "authorlastname": "Author surname",
     "confirmdeleterecord": "Are you sure you want to delete this entry?",
+    "descending": "Descending",
     "entrieslefttoadd": "You must add {{$a.entriesleft}} more entry/entries in order to complete this activity",
     "entrieslefttoaddtoview": "You must add {{$a.entrieslefttoview}} more entry/entries before you can view other participants' entries.",
     "errorapproving": "Error approving or unapproving entry.",
     "errordeleting": "Error deleting the entry.",
     "expired": "Sorry, this activity closed on {{$a}} and is no longer available",
+    "fields": "Fields",
+    "nomatch": "No matching entries found!",
     "norecords": "No entries in database",
     "notopenyet": "Sorry, this activity is not available until {{$a}}",
+    "numrecords": "{{$a}} entries",
+    "other": "Other",
     "recordapproved": "Entry approved",
     "recorddeleted": "Entry deleted",
     "recorddisapproved": "Entry unapproved",
-    "search": "Search"
+    "resetsettings": "Reset filters",
+    "search": "Search",
+    "timeadded": "Time added",
+    "timemodified": "Time modified"
 }

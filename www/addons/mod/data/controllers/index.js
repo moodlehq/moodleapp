@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged) {
+        mmaModDataEventEntryChanged, $ionicModal) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -40,6 +40,13 @@ angular.module('mm.addons.mod_data')
     $scope.component = mmaModDataComponent;
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
+
+    $scope.search = {
+        sortBy: "0",
+        sortDirection: "ASC",
+        page: 0,
+        text: ""
+    };
 
     function fetchDatabaseData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
@@ -91,7 +98,13 @@ angular.module('mm.addons.mod_data')
                     }
                 }
 
-                return fetchEntriesData();
+                var promises = [
+                    fetchEntriesData(),
+                    $mmaModData.getFields(data.id).then(function(fields) {
+                        $scope.fields = fields;
+                    })
+                ];
+                return $q.all(promises);
             });
         }).then(function() {
             // All data obtained, now fill the context menu.
@@ -114,15 +127,24 @@ angular.module('mm.addons.mod_data')
             // Update values for current group.
             $scope.access.canaddentry = accessData.canaddentry;
 
-            return $mmaModData.getEntries(data.id, $scope.selectedGroup).then(function(entries) {
-                $scope.isEmpty = !entries || entries.entries.length <= 0;
-                $scope.entries = "";
+            // TODO: Advanced search.
+            if ($scope.search.text) {
+                return $mmaModData.searchEntries(data.id, $scope.selectedGroup, $scope.search.text, undefined, $scope.search.sortBy,
+                    $scope.search.sortDirection, $scope.search.page);
+            } else {
+                return $mmaModData.getEntries(data.id, $scope.selectedGroup, $scope.search.sortBy, $scope.search.sortDirection,
+                    $scope.search.page);
+            }
+        }).then(function(entries) {
+            $scope.numEntries = entries && entries.totalcount;
+            $scope.isEmpty = $scope.numEntries <= 0;
+            $scope.hasNextPage = (($scope.search.page + 1) * $mmaModData.perPage) < $scope.numEntries;
+            $scope.entries = "";
 
-                if (!$scope.isEmpty) {
-                    $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
-                    $scope.entries = entries.listviewcontents;
-                }
-            });
+            if (!$scope.isEmpty) {
+                $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
+                $scope.entries = entries.listviewcontents;
+            }
         });
     }
 
@@ -188,9 +210,41 @@ angular.module('mm.addons.mod_data')
         }
     };
 
-    // Opens search.
-    $scope.gotoSearch = function() {
-        $mmUtil.openInApp($mmSite.getURL() + '/mod/data/view.php?mode=asearch&d=' + data.id);
+    // Setup search modal.
+    $ionicModal.fromTemplateUrl('addons/mod/data/templates/search-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(searchModal) {
+        $scope.showSearch = function() {
+            searchModal.show();
+        };
+        $scope.closeSearch = function() {
+            searchModal.hide();
+        };
+        $scope.$on('$destroy', function() {
+            searchModal.remove();
+        });
+    });
+
+    // Performs the search and closes the modal.
+    $scope.searchEntries = function(page) {
+        $scope.closeSearch();
+        $scope.databaseLoaded = false;
+        $scope.search.page = page;
+        return fetchEntriesData().catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        }).finally(function(){
+            $scope.databaseLoaded = true;
+        });
+    };
+
+    // Reset all search filters and closes the modal.
+    $scope.searchReset = function() {
+        $scope.search.sortBy = "0";
+        $scope.search.sortDirection = "ASC";
+        $scope.search.text = "";
+        $scope.searchEntries(0);
     };
 
     // Opens add entries form
