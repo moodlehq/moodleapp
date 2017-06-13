@@ -43,7 +43,7 @@
                 <i class="icon ion-information-circled padding"></i> {{ 'mma.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
             </div>
 
-            <div class="item" ng-if="search.text">
+            <div class="item" ng-if="search.searching && !isEmpty">
                 <h2>{{ 'mma.mod_data.numrecords' | translate: {$a: numEntries } }}</h2>
                 <a ng-click="searchReset()">{{ 'mma.mod_data.resetsettings' | translate}}</a>
             </div>
@@ -67,10 +67,10 @@
                 </button>
             </div>
 
-            <mm-empty-box ng-if="isEmpty && !search.text" icon="ion-archive" message="{{ 'mma.mod_data.norecords' | translate}}">
+            <mm-empty-box ng-if="isEmpty && !search.searching" icon="ion-archive" message="{{ 'mma.mod_data.norecords' | translate}}">
             </mm-empty-box>
 
-            <mm-empty-box ng-if="isEmpty && search.text" icon="ion-archive" message="{{ 'mma.mod_data.nomatch' | translate}}">
+            <mm-empty-box ng-if="isEmpty && search.searching" icon="ion-archive" message="{{ 'mma.mod_data.nomatch' | translate}}">
                 <a ng-click="searchReset()">{{ 'mma.mod_data.resetsettings' | translate}}</a>
             </mm-empty-box>
         </mm-loading>

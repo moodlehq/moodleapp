@@ -21,9 +21,93 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataHelper
  */
-.factory('$mmaModDataHelper', function($mmaModData) {
+.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q) {
 
     var self = {};
+
+    /**
+     * Displays Advanced Search Fields.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#displayAdvancedSearchFields
+     * @param {String} template Template HMTL.
+     * @param {Array}  fields   Fields that defines every content in the entry.
+     * @return {String}         Generated HTML.
+     */
+    self.displayAdvancedSearchFields = function(template, fields) {
+        // Replace the fields found on template.
+        angular.forEach(fields, function(field) {
+            var replace = "[[" + field.name + "]]";
+                pos = template.search(replace);
+            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            replace = new RegExp(replace);
+
+            // Replace field by a generic directive.
+            var render = '<mma-mod-data-field mode="search" field="fields['+ field.id + ']"></mma-mod-data-field-text>';
+            template = template.replace(replace, render);
+        });
+        return template;
+    };
+
+    /**
+     * Retrieve the entered data in search in a form.
+     * We don't use ng-model because it doesn't detect changes done by JavaScript.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getSearchDataFromForm
+     * @param  {Object} form     Form (DOM element).
+     * @param  {Array}  fields   Fields that defines every content in the entry.
+     * @return {Object}          Object with the answers.
+     */
+    self.getSearchDataFromForm = function(form, fields) {
+        if (!form || !form.elements) {
+            return {};
+        }
+
+        var searchedData = {},
+            promises =  [];
+
+        angular.forEach(form.elements, function(element) {
+            var name = element.name || '';
+            // Ignore submit inputs.
+            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                if (typeof searchedData[name] == "undefined") {
+                    searchedData[name] = {};
+                }
+                searchedData[name][element.value] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    searchedData[name] = element.value;
+                }
+            } else {
+                searchedData[name] = element.value;
+            }
+        });
+
+        // Filter and translate fields to each field plugin.
+        var advancedSearch = [];
+        angular.forEach(fields, function(field) {
+            var fieldData = $mmaModDataFieldsDelegate.getFieldSearchData(field, searchedData);
+            if (fieldData) {
+                angular.forEach(fieldData, function(data, index) {
+                    // WS wants values in Json format.
+                    advancedSearch.push({
+                        name: data.name,
+                        value: JSON.stringify(data.value)
+                    });
+                });
+            }
+        });
+
+        return advancedSearch;
+    };
 
     /**
      * Add a prefix to all rules in a CSS string.

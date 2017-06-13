@@ -45,7 +45,10 @@ angular.module('mm.addons.mod_data')
         sortBy: "0",
         sortDirection: "ASC",
         page: 0,
-        text: ""
+        text: "",
+        searching: false,
+        searchingAdvanced: false,
+        advanced: {}
     };
 
     function fetchDatabaseData(refresh, sync, showErrors) {
@@ -101,7 +104,13 @@ angular.module('mm.addons.mod_data')
                 var promises = [
                     fetchEntriesData(),
                     $mmaModData.getFields(data.id).then(function(fields) {
-                        $scope.fields = fields;
+                        $scope.search.advanced = {};
+
+                        $scope.fields = {};
+                        angular.forEach(fields, function(field) {
+                            $scope.fields[field.id] = field;
+                        });
+                        $scope.advancedSearch = $mmaModDataHelper.displayAdvancedSearchFields(data.asearchtemplate, $scope.fields);
                     })
                 ];
                 return $q.all(promises);
@@ -127,9 +136,10 @@ angular.module('mm.addons.mod_data')
             // Update values for current group.
             $scope.access.canaddentry = accessData.canaddentry;
 
-            // TODO: Advanced search.
-            if ($scope.search.text) {
-                return $mmaModData.searchEntries(data.id, $scope.selectedGroup, $scope.search.text, undefined, $scope.search.sortBy,
+            if ($scope.search.searching) {
+                var text = $scope.search.searchingAdvanced ? undefined : $scope.search.text;
+                    advanced = $scope.search.searchingAdvanced ? $scope.search.advanced : undefined;
+                return $mmaModData.searchEntries(data.id, $scope.selectedGroup, text, advanced, $scope.search.sortBy,
                     $scope.search.sortDirection, $scope.search.page);
             } else {
                 return $mmaModData.getEntries(data.id, $scope.selectedGroup, $scope.search.sortBy, $scope.search.sortDirection,
@@ -231,6 +241,14 @@ angular.module('mm.addons.mod_data')
         $scope.closeSearch();
         $scope.databaseLoaded = false;
         $scope.search.page = page;
+
+        if ($scope.search.searchingAdvanced) {
+            $scope.search.advanced = $mmaModDataHelper.getSearchDataFromForm(document.forms['mma-mod_data-advanced-search-form'],
+                $scope.fields);
+            $scope.search.searching = $scope.search.advanced.length > 0;
+        } else {
+            $scope.search.searching = $scope.search.text.length > 0;
+        }
         return fetchEntriesData().catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -244,6 +262,9 @@ angular.module('mm.addons.mod_data')
         $scope.search.sortBy = "0";
         $scope.search.sortDirection = "ASC";
         $scope.search.text = "";
+        $scope.search.advanced = {};
+        $scope.search.searchingAdvanced = false;
+        $scope.search.searching = false;
         $scope.searchEntries(0);
     };
 

@@ -1,5 +1,6 @@
 {
     "addentries": "Add entries",
+    "advancedsearch": "Advanced search",
     "approved": "Approved",
     "ascending": "Ascending",
     "authorfirstname": "Author first name",
@@ -12,6 +13,7 @@
     "errordeleting": "Error deleting the entry.",
     "expired": "Sorry, this activity closed on {{$a}} and is no longer available",
     "fields": "Fields",
+    "menuchoose": "Choose...",
     "nomatch": "No matching entries found!",
     "norecords": "No entries in database",
     "notopenyet": "Sorry, this activity is not available until {{$a}}",
@@ -22,6 +24,8 @@
     "recorddisapproved": "Entry unapproved",
     "resetsettings": "Reset filters",
     "search": "Search",
+    "selectedrequired": "All selected required",
     "timeadded": "Time added",
-    "timemodified": "Time modified"
+    "timemodified": "Time modified",
+    "usedate": "Include in search."
 }

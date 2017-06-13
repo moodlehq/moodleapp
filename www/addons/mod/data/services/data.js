@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc controller
  * @name $mmaModData
  */
-.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage) {
+.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage, $mmUtil) {
     var self = {};
 
     /**
@@ -476,13 +476,15 @@ angular.module('mm.addons.mod_data')
                 params.order = order;
             }
 
-            if (typeof advSearch !== "undefined") {
-                params.advsearch = advSearch;
-            } else {
+            if (typeof search !== "undefined") {
                 params.search = search;
             }
 
-            return site.read('mod_data_search_entries', params);
+            if (typeof advSearch !== "undefined") {
+                params.advsearch = advSearch;
+            }
+
+            return site.read('mod_data_search_entries', params, preSets);
         });
     };
 
