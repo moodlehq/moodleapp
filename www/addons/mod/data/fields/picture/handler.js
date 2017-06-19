@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldPictureHandler
  */
-.factory('$mmaModDataFieldPictureHandler', function($translate) {
+.factory('$mmaModDataFieldPictureHandler', function() {
 
     var self = {};
 

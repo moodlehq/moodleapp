@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc controller
  * @name $mmaModData
  */
-.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage, $mmUtil) {
+.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage) {
     var self = {};
 
     /**
@@ -542,14 +542,17 @@ angular.module('mm.addons.mod_data')
      * @param  {Number}    [groupId]       Group ID.
      * @param  {Number}    [sort]          Sort the records by this field id. See $mmaModData#getEntries for more information.
      * @param  {String}    [order]         The direction of the sorting.  See $mmaModData#getEntries for more information.
+     * @param  {Number}    [perPage]       Records per page to fetch. It has to match with the prefetch.
+     *                                     Default on mmaModDataPerPage.
      * @param  {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
      * @param  {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {String}    [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                   Promise resolved when done.
      */
-    self.fetchAllEntries = function(dataId, groupId, sort, order, forceCache, ignoreCache, siteId) {
+    self.fetchAllEntries = function(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
-        return fetchEntriesRecursive(dataId, groupId, sort, order, forceCache, ignoreCache, [], 0, siteId);
+        perPage = perPage || mmaModDataPerPage;
+        return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, [], 0, siteId);
     };
 
     /**
@@ -559,6 +562,7 @@ angular.module('mm.addons.mod_data')
      * @param  {Number}    groupId         Group ID.
      * @param  {Number}    sort            Sort the records by this field id. See $mmaModData#getEntries for more information.
      * @param  {String}    order           The direction of the sorting.  See $mmaModData#getEntries for more information.
+     * @param  {Number}    perPage         Records per page to fetch. It has to match with the prefetch.
      * @param  {Boolean}   forceCache      True to always get the value from cache, false otherwise. Default false.
      * @param  {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {Array}     entries         Entries already fetch (just to concatenate them).
@@ -566,14 +570,14 @@ angular.module('mm.addons.mod_data')
      * @param  {String}    siteId          Site ID.
      * @return {Promise}                   Promise resolved when done.
      */
-    function fetchEntriesRecursive(dataId, groupId, sort, order, forceCache, ignoreCache, entries, page, siteId) {
-        return self.getEntries(dataId, groupId, sort, order, page, mmaModDataPerPage, forceCache, ignoreCache, siteId)
+    function fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page, siteId) {
+        return self.getEntries(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId)
                 .then(function(result) {
             entries = entries.concat(result.entries);
 
-            var canLoadMore = ((page + 1) * mmaModDataPerPage) < result.totalcount;
+            var canLoadMore = ((page + 1) * perPage) < result.totalcount;
             if (canLoadMore) {
-                return fetchEntriesRecursive(dataId, groupId, sort, order, forceCache, ignoreCache, entries, page + 1,
+                return fetchEntriesRecursive(dataId, groupId, sort, order, perPage, forceCache, ignoreCache, entries, page + 1,
                     siteId);
             }
             return entries;

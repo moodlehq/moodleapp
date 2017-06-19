@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldCheckboxHandler
  */
-.factory('$mmaModDataFieldCheckboxHandler', function($translate) {
+.factory('$mmaModDataFieldCheckboxHandler', function() {
 
     var self = {};
 

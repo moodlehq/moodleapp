@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldDateHandler
  */
-.factory('$mmaModDataFieldDateHandler', function($translate) {
+.factory('$mmaModDataFieldDateHandler', function() {
 
     var self = {};
 

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged, $ionicModal) {
+        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -80,9 +80,14 @@ angular.module('mm.addons.mod_data')
                 $scope.timeAvailableToReadable = $scope.timeAvailableTo ? moment($scope.timeAvailableTo).format('LLL') : false;
 
                 $scope.isEmpty = true;
+                $scope.canSearch = false;
+                $scope.canAdd = false;
                 $scope.groupInfo = false;
                 return false;
             }
+
+            $scope.canSearch = true;
+            $scope.canAdd = accessData.canaddentry;
 
             return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
@@ -104,6 +109,10 @@ angular.module('mm.addons.mod_data')
                 var promises = [
                     fetchEntriesData(),
                     $mmaModData.getFields(data.id).then(function(fields) {
+                        if (fields.length == 0) {
+                            $scope.canSearch = false;
+                            $scope.canAdd = false;
+                        }
                         $scope.search.advanced = {};
 
                         $scope.fields = {};
@@ -148,12 +157,14 @@ angular.module('mm.addons.mod_data')
         }).then(function(entries) {
             $scope.numEntries = entries && entries.totalcount;
             $scope.isEmpty = $scope.numEntries <= 0;
-            $scope.hasNextPage = (($scope.search.page + 1) * $mmaModData.perPage) < $scope.numEntries;
+            $scope.hasNextPage = (($scope.search.page + 1) * mmaModDataPerPage) < $scope.numEntries;
             $scope.entries = "";
 
             if (!$scope.isEmpty) {
                 $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
                 $scope.entries = entries.listviewcontents;
+            } else if (!$scope.search.searching) {
+                $scope.canSearch = false;
             }
         });
     }

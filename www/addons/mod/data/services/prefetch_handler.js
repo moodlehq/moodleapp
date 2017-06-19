@@ -130,7 +130,7 @@ angular.module('mm.addons.mod_data')
         var promises = [];
 
         angular.forEach(groups, function(group) {
-            promises.push($mmaModData.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, forceCache,
+            promises.push($mmaModData.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, undefined, forceCache,
                 ignoreCache, siteId));
         });
 

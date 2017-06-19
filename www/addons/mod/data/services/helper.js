@@ -21,9 +21,14 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataHelper
  */
-.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q) {
+.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate) {
 
-    var self = {};
+    var self = {
+            searchOther: {
+                'fn': 'firstname',
+                'ln': 'lastname'
+            }
+        };
 
     /**
      * Displays Advanced Search Fields.
@@ -36,15 +41,25 @@ angular.module('mm.addons.mod_data')
      * @return {String}         Generated HTML.
      */
     self.displayAdvancedSearchFields = function(template, fields) {
+        var replace;
+
         // Replace the fields found on template.
         angular.forEach(fields, function(field) {
-            var replace = "[[" + field.name + "]]";
-                pos = template.search(replace);
+            replace = "[[" + field.name + "]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
             replace = new RegExp(replace);
 
             // Replace field by a generic directive.
-            var render = '<mma-mod-data-field mode="search" field="fields['+ field.id + ']"></mma-mod-data-field-text>';
+            var render = '<mma-mod-data-field mode="search" field="fields['+ field.id + ']"></mma-mod-data-field>';
+            template = template.replace(replace, render);
+        });
+
+        // Not pluginable other search elements.
+        angular.forEach(self.searchOther, function(field, name) {
+            replace = new RegExp("##" + field + "##");
+
+            // Replace field by the text input.
+            var render = '<input type="text" name="' + name + '" placeholder="{{ \'mma.mod_data.author' + field + '\' | translate }}">';
             template = template.replace(replace, render);
         });
         return template;
@@ -66,8 +81,7 @@ angular.module('mm.addons.mod_data')
             return {};
         }
 
-        var searchedData = {},
-            promises =  [];
+        var searchedData = {};
 
         angular.forEach(form.elements, function(element) {
             var name = element.name || '';
@@ -96,12 +110,23 @@ angular.module('mm.addons.mod_data')
         angular.forEach(fields, function(field) {
             var fieldData = $mmaModDataFieldsDelegate.getFieldSearchData(field, searchedData);
             if (fieldData) {
-                angular.forEach(fieldData, function(data, index) {
+                angular.forEach(fieldData, function(data) {
                     // WS wants values in Json format.
                     advancedSearch.push({
                         name: data.name,
                         value: JSON.stringify(data.value)
                     });
+                });
+            }
+        });
+
+        // Not pluginable other search elements.
+        angular.forEach(self.searchOther, function(field, name) {
+            if (searchedData[name]) {
+                // WS wants values in Json format.
+                advancedSearch.push({
+                    name: name,
+                    value: JSON.stringify(searchedData[name])
                 });
             }
         });
@@ -203,7 +228,7 @@ angular.module('mm.addons.mod_data')
      * @return {Promise}        Containing and array of EntryId.
      */
     self.getAllEntriesIds = function(dataId, groupId, siteId) {
-        return $mmaModData.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, true, undefined, siteId)
+        return $mmaModData.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, undefined, true, undefined, siteId)
                 .then(function(entries) {
             return entries.map(function(entry) {
                 return entry.id;
