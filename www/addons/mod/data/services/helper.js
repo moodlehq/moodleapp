@@ -135,6 +135,41 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Displays Edit Search Fields.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#displayEditFields
+     * @param {String} template   Template HMTL.
+     * @param {Array}  fields     Fields that defines every content in the entry.
+     * @param {Array}  [contents] Contents for the editing entry (if editing).
+     * @return {String}         Generated HTML.
+     */
+    self.displayEditFields = function(template, fields, contents) {
+        var replace;
+
+        // Replace the fields found on template.
+        angular.forEach(fields, function(field) {
+            replace = "[[" + field.name + "]]";
+            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            replace = new RegExp(replace);
+
+            // Replace field by a generic directive.
+            var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entryContents['+ field.id + ']" database="database"></mma-mod-data-field>';
+            template = template.replace(replace, render);
+
+            // Replace the field id tag.
+            replace = "[[" + field.name + "#id]]";
+            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            replace = new RegExp(replace);
+
+            template = template.replace(replace, 'field_'+ field.id);
+        });
+
+        return template;
+    };
+
+    /**
      * Add a prefix to all rules in a CSS string.
      *
      * @module mm.addons.mod_data

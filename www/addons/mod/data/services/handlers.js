@@ -324,5 +324,51 @@ angular.module('mm.addons.mod_data')
         }];
     };
 
+    /**
+     * Content links handler for database add or edit entry.
+     * Match mod/data/edit.php?d=6&rid=6 with a valid data and optional record id.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHandlers#editEntryLinksHandler
+     */
+    self.editEntryLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/data\/edit\.php.*([\?\&](d|rid)=\d+)/, '$mmCourseDelegate_mmaModData');
+
+    // Check if the showEntryLinksHandler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.editEntryLinksHandler.isEnabled = $mmaModData.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.editEntryLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        if (typeof params.d == 'undefined') {
+            // Id not defined. Cannot treat the URL.
+            return false;
+        }
+
+        return [{
+            action: function(siteId) {
+                var modal = $mmUtil.showModalLoading(),
+                    dataId = parseInt(params.d, 10),
+                    rId = parseInt(params.rid, 10) || false;
+
+                return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
+                    var stateParams = {
+                        moduleid: module.id,
+                        module: module,
+                        courseid: module.course
+                    };
+
+                    if (rId) {
+                        stateParams.entryid = rId;
+                    }
+
+                    return $mmContentLinksHelper.goInSite('site.mod_data-edit', stateParams, siteId);
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
+
     return self;
 });

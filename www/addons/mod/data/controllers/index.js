@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage) {
+        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -80,8 +80,6 @@ angular.module('mm.addons.mod_data')
                 $scope.timeAvailableToReadable = $scope.timeAvailableTo ? moment($scope.timeAvailableTo).format('LLL') : false;
 
                 $scope.isEmpty = true;
-                $scope.canSearch = false;
-                $scope.canAdd = false;
                 $scope.groupInfo = false;
                 return false;
             }
@@ -281,7 +279,13 @@ angular.module('mm.addons.mod_data')
 
     // Opens add entries form
     $scope.gotoAddEntries = function() {
-        $mmUtil.openInApp($mmSite.getURL() + '/mod/data/edit.php?d=' + data.id);
+        var stateParams = {
+            moduleid: module.id,
+            module: module,
+            courseid: courseId,
+            group: $scope.selectedGroup
+        };
+        $state.go('site.mod_data-edit', stateParams);
     };
 
     // Refresh online status when changes.
