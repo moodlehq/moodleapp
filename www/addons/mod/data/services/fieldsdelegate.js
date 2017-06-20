@@ -85,6 +85,43 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Get database data in the input data to add or update entry.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModDataFieldsDelegate#getFieldEditData
+     * @param  {Object} field      Defines the field to be rendered.
+     * @param  {Object} inputData  Data entered in the search form.
+     * @return {Array}             Name and data field.
+     */
+    self.getFieldEditData = function(field, inputData) {
+        var handler = self.getPluginHandler(field.type);
+        if (handler && handler.getFieldEditData) {
+            return handler.getFieldEditData(field, inputData);
+        }
+        return false;
+    };
+
+    /**
+     * Get files used by this plugin.
+     * The files returned by this function will be prefetched when the user prefetches the database.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataFieldsDelegate#getPluginFiles
+     * @param  {Object} field      Defines the field.
+     * @param  {Object} content    Defines the content that contains the files.
+     * @return {Array}             List of files.
+     */
+    self.getPluginFiles = function(field, content) {
+        var handler = self.getPluginHandler(field.type);
+        if (handler && handler.getPluginFiles) {
+            return handler.getPluginFiles(field, content);
+        }
+        return content.files;
+    };
+
+    /**
      * Get the directive to use for a certain feedback plugin.
      *
      * @module mm.addons.mod_data
@@ -131,6 +168,10 @@ angular.module('mm.addons.mod_data')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - getFieldSearchData(field, inputData) Optional.
      *                                                           Should return name and data entered to the field.
+     *                             - getFieldEditData(field, inputData) Optional.
+     *                                                           Should return name and data entered to the field.
+     *                             - getPluginFiles(plugin, inputData) Optional.
+     *                                                           Should return file list of the field.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

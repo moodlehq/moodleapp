@@ -31,7 +31,7 @@ angular.module('mm.addons.mod_data')
                 return {key: option, value: option};
             });
 
-            if (scope.mode == 'edit' && scope.value) {
+            if (scope.mode == 'edit' && scope.value && scope.value.content) {
                 angular.forEach(scope.value.content.split("##"), function(value) {
                     for (var x in scope.options) {
                         if (value == scope.options[x].key) {

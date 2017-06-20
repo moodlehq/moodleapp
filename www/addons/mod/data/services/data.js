@@ -437,6 +437,56 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Adds a new entry to a database.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#addEntry
+     * @param   {Number}    dataId          Data instance ID.
+     * @param   {Object}    data            The fields data to be created.
+     * @param   {Number}    [groupId]       Group id, 0 means that the function will determine the user group.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the action is done.
+     */
+    self.addEntry = function(dataId, data, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    databaseid: dataId,
+                    data: data
+                };
+
+            if (typeof groupId !== "undefined") {
+                params.groupid = groupId;
+            }
+
+            return site.write('mod_data_add_entry', params);
+        });
+    };
+
+    /**
+     * Updates an existing entry.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#addEntry
+     * @param   {Number}    entryId         Entry ID.
+     * @param   {Object}    data            The fields data to be updated.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the action is done.
+     */
+    self.editEntry = function(entryId, data, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    entryid: entryId,
+                    data: data
+                };
+
+            return site.write('mod_data_update_entry', params);
+        });
+    };
+
+
+    /**
      * Performs search over a database.
      *
      * @module mm.addons.mod_data

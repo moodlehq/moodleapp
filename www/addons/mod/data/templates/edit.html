@@ -1,5 +1,8 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()" aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
     <ion-content mm-state-class delegate-handle="mmaModDataEntryScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="databaseLoaded" on-refresh="refreshDatabase(false)"></ion-refresher>
         <mm-loading hide-until="databaseLoaded">

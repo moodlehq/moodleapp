@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataHelper
  */
-.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate) {
+.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q) {
 
     var self = {
             searchOther: {
@@ -66,6 +66,40 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Return the form data.
+     *
+     * @param  {Object} form Form (DOM element).
+     * @return {Object}      Data retrieved from form.
+     */
+    function getFormData(form) {
+        var formData = {};
+
+        angular.forEach(form.elements, function(element) {
+            var name = element.name || '';
+            // Ignore submit inputs.
+            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                if (typeof formData[name] == "undefined") {
+                    formData[name] = {};
+                }
+                formData[name][element.value] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    formData[name] = element.value;
+                }
+            } else {
+                formData[name] = element.value;
+            }
+        });
+
+        return formData;
+    }
+
+    /**
      * Retrieve the entered data in search in a form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *
@@ -81,29 +115,7 @@ angular.module('mm.addons.mod_data')
             return {};
         }
 
-        var searchedData = {};
-
-        angular.forEach(form.elements, function(element) {
-            var name = element.name || '';
-            // Ignore submit inputs.
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
-            }
-
-            // Get the value.
-            if (element.type == 'checkbox') {
-                if (typeof searchedData[name] == "undefined") {
-                    searchedData[name] = {};
-                }
-                searchedData[name][element.value] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    searchedData[name] = element.value;
-                }
-            } else {
-                searchedData[name] = element.value;
-            }
-        });
+        var searchedData = getFormData(form);
 
         // Filter and translate fields to each field plugin.
         var advancedSearch = [];
@@ -111,11 +123,9 @@ angular.module('mm.addons.mod_data')
             var fieldData = $mmaModDataFieldsDelegate.getFieldSearchData(field, searchedData);
             if (fieldData) {
                 angular.forEach(fieldData, function(data) {
+                    data.value = JSON.stringify(data.value);
                     // WS wants values in Json format.
-                    advancedSearch.push({
-                        name: data.name,
-                        value: JSON.stringify(data.value)
-                    });
+                    advancedSearch.push(data);
                 });
             }
         });
@@ -145,7 +155,7 @@ angular.module('mm.addons.mod_data')
      * @param {Array}  [contents] Contents for the editing entry (if editing).
      * @return {String}         Generated HTML.
      */
-    self.displayEditFields = function(template, fields, contents) {
+    self.displayEditFields = function(template, fields) {
         var replace;
 
         // Replace the fields found on template.
@@ -167,6 +177,45 @@ angular.module('mm.addons.mod_data')
         });
 
         return template;
+    };
+
+    /**
+     * Retrieve the entered data in the edit form.
+     * We don't use ng-model because it doesn't detect changes done by JavaScript.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getEditDataFromForm
+     * @param  {Object} form     Form (DOM element).
+     * @param  {Array}  fields   Fields that defines every content in the entry.
+     * @return {Object}          Object with the answers.
+     */
+    self.getEditDataFromForm = function(form, fields) {
+        if (!form || !form.elements) {
+            return {};
+        }
+
+        var formData = getFormData(form);
+
+        // Filter and translate fields to each field plugin.
+        var edit = [],
+            promises = [];
+        angular.forEach(fields, function(field) {
+            promises.push($q.when($mmaModDataFieldsDelegate.getFieldEditData(field, formData)).then(function (fieldData) {
+                if (fieldData) {
+                    angular.forEach(fieldData, function(data) {
+                        data.value = JSON.stringify(data.value);
+                        // WS wants values in Json format.
+                        edit.push(data);
+                    });
+                }
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            console.error(formData, edit);
+            return edit;
+        });
     };
 
     /**

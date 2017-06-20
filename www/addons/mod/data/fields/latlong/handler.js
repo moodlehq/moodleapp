@@ -43,6 +43,35 @@ angular.module('mm.addons.mod_data')
         return false;
     };
 
+    /**
+     * Get field edit data in the input data.
+     *
+     * @param  {Object} field      Defines the field to be rendered.
+     * @param  {Object} inputData  Data entered in the search form.
+     * @return {Array}             With name and value of the data to be sent.
+     */
+    self.getFieldEditData = function(field, inputData) {
+        var fieldName = 'f_' + field.id;
+
+        var values = [];
+
+        if (inputData[fieldName + '_0']) {
+            values.push({
+                fieldid: field.id,
+                subfield: '0',
+                value: inputData[fieldName + '_0']
+            });
+        }
+        if (inputData[fieldName + '_1']) {
+            values.push({
+                fieldid: field.id,
+                subfield: '1',
+                value: inputData[fieldName + '_1']
+            });
+        }
+        return values;
+    };
+
     return self;
 })
 

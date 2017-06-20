@@ -109,6 +109,25 @@ angular.module('mm.addons.mod_data')
         return fetchEntryData();
     };
 
+    // Saves data.
+    $scope.save = function(page) {
+        return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields)
+                .then(function(editData) {
+            if (editData.length > 0) {
+                var promise;
+
+                if (entry.id) {
+                    promise = $mmaModData.editEntry(entry.id, editData);
+                } else {
+                    promise = $mmaModData.addEntry(data.id, editData, $scope.selectedGroup);
+                }
+
+                // TODO: Treat result.
+                return promise;
+            }
+        });
+    };
+
     // Convenience function to refresh all the data.
     function refreshAllData() {
         var promises = [];
