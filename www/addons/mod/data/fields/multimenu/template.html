@@ -1,2 +1,3 @@
+<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
 <mm-multiple-select title="{{field.name}}" name="f_{{field.id}}" options="options"></mm-multiple-select>
-<ion-checkbox name="f_{{field.id}}_allreq" ng-value="1">{{ 'mma.mod_data.selectedrequired' | translate }}</ion-checkbox>
+<ion-checkbox ng-if="mode == 'search'" name="f_{{field.id}}_allreq" ng-value="1">{{ 'mma.mod_data.selectedrequired' | translate }}</ion-checkbox>

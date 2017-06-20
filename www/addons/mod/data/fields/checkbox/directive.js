@@ -28,6 +28,14 @@ angular.module('mm.addons.mod_data')
         templateUrl: 'addons/mod/data/fields/checkbox/template.html',
         link: function(scope) {
             scope.options = scope.field.param1.split("\n");
+
+            if (scope.mode == 'edit' && scope.value) {
+                scope.values = {};
+
+                angular.forEach(scope.value.content.split("##"), function(value) {
+                    scope.values[value] = true;
+                });
+            }
         }
     };
 });

@@ -28,6 +28,10 @@ angular.module('mm.addons.mod_data')
         templateUrl: 'addons/mod/data/fields/radiobutton/template.html',
         link: function(scope) {
             scope.options = scope.field.param1.split("\n");
+
+            if (scope.mode == 'edit' && scope.value) {
+                scope.value = scope.value.content;
+            }
         }
     };
 });

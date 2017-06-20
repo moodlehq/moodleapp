@@ -21,10 +21,17 @@ angular.module('mm.addons.mod_data')
  * @ngdoc directive
  * @name mmaModDataFieldFile
  */
-.directive('mmaModDataFieldFile', function() {
+.directive('mmaModDataFieldFile', function(mmaModDataComponent) {
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/mod/data/fields/file/template.html'
+        templateUrl: 'addons/mod/data/fields/file/template.html',
+        link: function(scope) {
+            if (scope.mode == 'edit') {
+                scope.component = mmaModDataComponent;
+                scope.componentId = scope.database.coursemodule;
+                scope.maxSizeBytes = parseInt(scope.field.param3, 10);
+            }
+        }
     };
 });

@@ -1,4 +1,5 @@
 <ion-list>
-    <ion-checkbox ng-repeat="option in options" name="f_{{field.id}}" ng-value="option">{{ option }}</ion-checkbox>
-    <ion-checkbox name="f_{{field.id}}_allreq" ng-value="1">{{ 'mma.mod_data.selectedrequired' | translate }}</ion-checkbox>
+    <span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
+    <ion-checkbox ng-repeat="option in options" name="f_{{field.id}}" ng-value="option" ng-model="values[option]">{{ option }}</ion-checkbox>
+    <ion-checkbox ng-if="mode == 'search'" name="f_{{field.id}}_allreq" ng-value="1">{{ 'mma.mod_data.selectedrequired' | translate }}</ion-checkbox>
 </ion-list>

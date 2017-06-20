@@ -1,1 +1,5 @@
-<input type="text" placeholder="{{field.name}}" name="f_{{field.id}}">
+<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
+<input ng-if="mode == 'search'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}">
+<div ng-if="mode == 'edit'" class="item item-text-wrap mm-item-has-rich-text-editor">
+    <mm-rich-text-editor model="model" placeholder="{{ field.name }}" name="f_{{field.id}}" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
+</div>

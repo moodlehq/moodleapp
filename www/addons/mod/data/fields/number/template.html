@@ -1,1 +1,2 @@
-<input type="number" placeholder="{{field.name}}" name="f_{{field.id}}">
+<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
+<input type="number" placeholder="{{field.name}}" name="f_{{field.id}}"  ng-model="value">

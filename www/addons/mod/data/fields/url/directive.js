@@ -25,6 +25,11 @@ angular.module('mm.addons.mod_data')
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/mod/data/fields/url/template.html'
+        templateUrl: 'addons/mod/data/fields/url/template.html',
+        link: function(scope) {
+            if (scope.mode == 'edit' && scope.value) {
+                scope.value = scope.value.content;
+            }
+        }
     };
 });

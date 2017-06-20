@@ -1,5 +1,6 @@
+<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
 <div class="item item-input item-select">
-    <select name="f_{{field.id}}">
+    <select name="f_{{field.id}}" ng-model="value">
         <option value="">{{ 'mma.mod_data.menuchoose' | translate }}</option>
         <option ng-repeat="option in options" value="{{option}}">{{ option }}</option>
     </select>

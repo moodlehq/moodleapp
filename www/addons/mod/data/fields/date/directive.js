@@ -27,8 +27,13 @@ angular.module('mm.addons.mod_data')
         priority: 100,
         templateUrl: 'addons/mod/data/fields/date/template.html',
         link: function(scope) {
-            scope.value = new Date().toISOString().substr(0, 10);
-            scope.enable = false;
+            if (scope.mode == 'edit' && scope.value) {
+                scope.value = new Date(scope.value.content * 1000).toISOString().substr(0, 10);
+                scope.enable = true;
+            } else {
+                scope.value = new Date().toISOString().substr(0, 10);
+                scope.enable = false;
+            }
         }
     };
 });

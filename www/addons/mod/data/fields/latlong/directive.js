@@ -25,6 +25,12 @@ angular.module('mm.addons.mod_data')
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/mod/data/fields/latlong/template.html'
+        templateUrl: 'addons/mod/data/fields/latlong/template.html',
+        link: function(scope) {
+            if (scope.value) {
+                scope.north = parseFloat(scope.value.content);
+                scope.east = parseFloat(scope.value.content1);
+            }
+        }
     };
 });

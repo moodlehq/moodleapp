@@ -39,12 +39,32 @@
   input[type="tel"],
   input[type="color"],
   .item-select,
-  mm-multiple-select .item {
+  mm-attachments>.item-border {
     width: 100%;
     margin: -1px;
     border: 1px solid $gray;
     padding: 16px 0 16px 16px;
     height: 56px;
+  }
+
+  mm-attachments .item-media {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    height: 56px;
+  }
+
+  mm-multiple-select .item {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    padding: 16px 0 16px 16px;
+  }
+
+  mm-attachments .item {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
   }
 
   .item-checkbox {
@@ -55,5 +75,17 @@
       width: 100%;
       left: 0;
       max-width: none;
+  }
+
+  .item-input.mm-latlong {
+    width: 100%;
+    margin: -1px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+
+    input {
+      border: 0;
+    }
   }
 }
