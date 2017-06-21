@@ -61,15 +61,15 @@ describe('User can manage course forum', function() {
             return MM.clickOn('Add a new discussion topic');
         }).then(function() {
             browser.sleep(5000); //wait for css to render
-            return $('[ng-model="newDiscussion.subject"]').sendKeys('Test Subject');
-        }).then(function() {
+            $('[ng-model="newDiscussion.subject"]').sendKeys('Test Subject');
             browser.sleep(5000); //wait for css to render
             return browser.switchTo().frame($('#cke_1_contents iframe').click().sendKeys('Test Message'));
         }).then(function() {
-            browser.sleep(5000); //wait for css to render
-            return element.all(by.css('[ng-click="add()"]')).get(1).click();
+            return browser.sleep(5000); //wait for css to render
+        }).then(function() {
+            return element(by.css('button[ng-click="add()"]')).click();
         }).then(function () {
-            return MM.goBack()
+            return MM.goBack();
         }).then(function() {
             done();
         });

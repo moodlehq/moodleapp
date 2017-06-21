@@ -105,6 +105,9 @@ MM.clickOnInSideMenu = function (text) {
  * @return {Element}
  */
 MM.getNavBar = function () {
+    waitForCondition();
+    browser.wait(EC.visibilityOf($(currentNavBar)), 10000);
+    browser.sleep(3000); //for contents to render
     return $(currentNavBar);
 };
 

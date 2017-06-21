@@ -56,7 +56,7 @@ describe('User can see New staff induction test as a teacher', function() {
             expect(MM.getNavBar().getText()).toMatch('Welcome');
             expect(MM.getView().getText()).toContain('Welcome');
             expect(MM.getView().getText()).toContain('Welcome to this short new staff induction course.');
-            expect(MM.getView().getText()).toContain('Induction FAQ');
+            expect(MM.getView().getText()).toContain('Induction Q and A');
         }).then(function () {
             done();
         });

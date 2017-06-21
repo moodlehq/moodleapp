@@ -1,6 +1,8 @@
-sudo: required
+sudo: true
 
 dist: trusty
+
+group: edge
 
 addons:
   apt:
@@ -14,6 +16,11 @@ language: node_js
 
 node_js:
 - '6.9.1'
+
+cache:
+    directories:
+      - $HOME/www/lib
+      - $HOME/node_modules
 
 before_install:
 - npm cache clean
@@ -35,10 +42,32 @@ before_script:
 #- gulp e2e-build --target browser
 - screen -dm ionic serve -b -a -d --nogulp --address localhost --port 8100 # We use screen here because nohup does not work with ionic serve.
 #- nohup bash -c "./node_modules/protractor/bin/webdriver-manager start 2>&1 &"
-- sleep 5  # Wait a lot here, selenium and ionic must be running.
+- sleep 15  # Wait a lot here, selenium and gulp:before task and ionic must be running.
 
-script:
+matrix:
+  fast_finish: false
+
+  include:
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-1.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-2.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-config.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-course.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-resource.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-teacher.js
+
+#script:
 #- ./node_modules/protractor/bin/protractor e2e/build/protractor.conf.js
 #- ./node_modules/protractor/bin/protractor e2e/sauce/protractor-sauce-android.js
 #- ./node_modules/protractor/bin/protractor e2e/sauce/protractor-sauce-ios.js
-- ./node_modules/protractor/bin/protractor e2e/sauce/protractor-sauce-browser.js
+#- ./node_modules/protractor/bin/protractor e2e/sauce/protractor-sauce-browser.js

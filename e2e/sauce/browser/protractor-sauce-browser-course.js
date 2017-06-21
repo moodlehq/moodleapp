@@ -10,19 +10,13 @@ exports.config = {
         onComplete: null
     },
     specs: [
-        "../../e2e/*.js",
-        //"../../www/**/e2e/mod_assign.spec.js",
-        //"../../www/**/e2e/mod_book.spec.js",
-        //"../../www/**/e2e/mod_chat.spec.js",
-        //"../../www/**/e2e/mod_choice.spec.js",
-        //"../../www/**/e2e/mod_folder.spec.js",
-        // "../../www/**/e2e/mod_forum.spec.js",
-        //"../../www/**/e2e/mod_glossary.spec.js",
-        //"../../www/**/e2e/mod_label.spec.js",
-        //"../../www/**/e2e/mod_resource.spec.js",
-        //"../../www/**/e2e/mod_survey.spec.js",
-        //"../../www/**/e2e/mod_wiki.spec.js"
-        "../../www/**/e2e/mod_*.spec.js"
+        "../../../e2e/*.js",
+        "../../../www/**/e2e/courses.spec.js",
+        "../../../www/**/e2e/course_filtering.spec.js",
+        "../../../www/**/e2e/grades.spec.js",
+        "../../../www/**/e2e/participants.spec.js",
+        "../../../www/**/e2e/coursecompletion.spec.js",
+        "../../../www/**/e2e/course_contents.spec.js"
     ],
     baseUrl: 'http://localhost:8100/',
     seleniumAddress: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub",
@@ -81,6 +75,6 @@ exports.config = {
     },
     getPageTimeout: 15000,
     plugins: [{
-        "path": "../../e2e/plugins/wait_for_transitions.js"
+        "path": "../../../e2e/plugins/wait_for_transitions.js"
     }]
 };
