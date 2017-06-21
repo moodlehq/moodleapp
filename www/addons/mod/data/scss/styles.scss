@@ -16,3 +16,43 @@
   border-style: solid;
   border-color: $item-default-border;
 }
+
+#mma-mod_data-advanced-search-form {
+  table {
+    width: 100%;
+  }
+
+  textarea,
+  input[type="text"],
+  input[type="password"],
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="month"],
+  input[type="time"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="color"],
+  .item-select,
+  mm-multiple-select .item {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    padding: 16px 0 16px 16px;
+    height: 56px;
+  }
+
+  .item-checkbox {
+    margin-right: 1px;
+  }
+
+  .item-select select {
+      width: 100%;
+      left: 0;
+      max-width: none;
+  }
+}

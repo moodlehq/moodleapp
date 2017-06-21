@@ -16,6 +16,7 @@ angular.module('mm.addons.mod_data', ['mm.core'])
 
 .constant('mmaModDataComponent', 'mmaModData')
 .constant('mmaModDataEventEntryChanged', 'mma-mod_data_entry_changed')
+.constant('mmaModDataPerPage', 25)
 
 .config(function($stateProvider) {
 
@@ -53,7 +54,6 @@ angular.module('mm.addons.mod_data', ['mm.core'])
             }
         }
     });
-
 })
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {

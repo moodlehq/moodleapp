@@ -167,11 +167,6 @@ angular.module('mm.addons.mod_data')
         }
     };
 
-    // Opens search.
-    $scope.gotoSearch = function() {
-        $mmUtil.openInApp($mmSite.getURL() + '/mod/data/view.php?mode=asearch&d=' + data.id);
-    };
-
     // Refresh entry on change.
     entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
         if (eventData.entryId == entryId && data.id == eventData.dataId && $mmSite.getId() == eventData.siteId) {
