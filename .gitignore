@@ -1,11 +1,10 @@
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
-
+www/build/lang/
 node_modules/
 platforms/
 /plugins/
 hooks/
-www/build
 .sass-cache/
 www/lib
 e2e/build
