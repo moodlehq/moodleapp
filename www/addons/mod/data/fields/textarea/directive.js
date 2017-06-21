@@ -30,13 +30,18 @@ angular.module('mm.addons.mod_data')
             // Check if rich text editor is enabled.
             if (scope.mode == 'edit') {
                 $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
-                    var text = scope.value ? $mmText.replacePluginfileUrls(scope.value.content, scope.value.files) : "";
+                    var files = (scope.value && scope.value.files) || [],
+                        text = scope.value ? $mmText.replacePluginfileUrls(scope.value.content, files) : "";
 
                     // Get the text.
                     scope.model = {
                         text: text
                     };
                 });
+
+                scope.firstRender = function() {
+                    scope.value.content = scope.model.text;
+                };
             }
         }
     };

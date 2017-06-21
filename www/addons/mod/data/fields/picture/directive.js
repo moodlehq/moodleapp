@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc directive
  * @name mmaModDataFieldPicture
  */
-.directive('mmaModDataFieldPicture', function(mmaModDataComponent) {
+.directive('mmaModDataFieldPicture', function(mmaModDataComponent, $mmFileSession) {
     return {
         restrict: 'A',
         priority: 100,
@@ -31,6 +31,9 @@ angular.module('mm.addons.mod_data')
                 scope.component = mmaModDataComponent;
                 scope.componentId = scope.database.coursemodule;
                 scope.maxSizeBytes = parseInt(scope.field.param3, 10);
+
+                scope.files = angular.copy((scope.value && scope.value.files) || []);
+                $mmFileSession.setFiles(mmaModDataComponent, scope.database.id + '_' + scope.field.id, scope.files);
             }
         }
     };

@@ -69,7 +69,7 @@ angular.module('mm.addons.mod_data')
     /**
      * Get database data in the input data to search.
      *
-     * @module mm.addons.mod_assign
+     * @module mm.addons.mod_data
      * @ngdoc method
      * @name $mmaModDataFieldsDelegate#getFieldSearchData
      * @param  {Object} field      Defines the field to be rendered.
@@ -87,38 +87,60 @@ angular.module('mm.addons.mod_data')
     /**
      * Get database data in the input data to add or update entry.
      *
-     * @module mm.addons.mod_assign
+     * @module mm.addons.mod_data
      * @ngdoc method
      * @name $mmaModDataFieldsDelegate#getFieldEditData
-     * @param  {Object} field      Defines the field to be rendered.
-     * @param  {Object} inputData  Data entered in the search form.
-     * @return {Array}             Name and data field.
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the search form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Array}               Name and data field.
      */
-    self.getFieldEditData = function(field, inputData) {
+    self.getFieldEditData = function(field, inputData, originalData) {
         var handler = self.getPluginHandler(field.type);
         if (handler && handler.getFieldEditData) {
-            return handler.getFieldEditData(field, inputData);
+            return handler.getFieldEditData(field, inputData, originalData);
         }
         return false;
     };
 
     /**
-     * Get files used by this plugin.
-     * The files returned by this function will be prefetched when the user prefetches the database.
+     * Get database data in the input files to add or update entry.
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModDataFieldsDelegate#getPluginFiles
-     * @param  {Object} field      Defines the field.
-     * @param  {Object} content    Defines the content that contains the files.
-     * @return {Array}             List of files.
+     * @name $mmaModDataFieldsDelegate#getFieldEditFiles
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the search form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Array}               Name and data field.
      */
-    self.getPluginFiles = function(field, content) {
+    self.getFieldEditFiles = function(field, inputData, originalData) {
         var handler = self.getPluginHandler(field.type);
-        if (handler && handler.getPluginFiles) {
-            return handler.getPluginFiles(field, content);
+        if (handler && handler.getFieldEditFiles) {
+            return handler.getFieldEditFiles(field, inputData, originalData);
         }
-        return content.files;
+        return [];
+    };
+
+    /**
+     * Check if the data has changed for a certain field.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataFieldsDelegate#hasFieldDataChanged
+     * @param  {Object} field         Defines the field to be rendered.
+     * @param  {Object} inputData     Data entered in the search form.
+     * @param  {Object} originalData  Original form data entered.
+     * @return {Promise}              Promise rejected if has changed, resolved if no changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalData) {
+        var handler = self.getPluginHandler(field.type);
+        if (handler && handler.hasFieldDataChanged) {
+            return $q.when(handler.hasFieldDataChanged(field, inputData, originalData)).then(function(result) {
+                return result ? $q.reject() : $q.when();
+            });
+        }
+        return $q.when();
     };
 
     /**
@@ -168,10 +190,13 @@ angular.module('mm.addons.mod_data')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - getFieldSearchData(field, inputData) Optional.
      *                                                           Should return name and data entered to the field.
-     *                             - getFieldEditData(field, inputData) Optional.
-     *                                                           Should return name and data entered to the field.
-     *                             - getPluginFiles(plugin, inputData) Optional.
-     *                                                           Should return file list of the field.
+     *                             - getFieldEditData(field, inputData, originalData) Optional.
+     *                                                           Should return fielid and data entered to the field in a promise
+     *                                                           or array.
+     *                             - hasFieldDataChanged(field, inputData, originalData) Optional.
+     *                                                           Should return if field has been changed by the user.
+     *                             - getFieldEditFiles(field, inputData, originalData) Optional.
+     *                                                           Should return an array of files stored in temp store.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

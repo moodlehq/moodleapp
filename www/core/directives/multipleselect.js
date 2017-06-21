@@ -56,6 +56,9 @@ angular.module('mm.core')
 
             scope.optionsRender = [];
             scope.selectedOptions = getSelectedOptionsText();
+            if (scope.name) {
+                scope.selectedValues = getSelectedOptionsValues();
+            }
 
             element.on('click', function(e) {
                 e.preventDefault();

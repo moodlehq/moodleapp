@@ -30,7 +30,7 @@ angular.module('mm.addons.mod_data')
             scope.options = scope.field.param1.split("\n");
 
             if (scope.mode == 'edit' && scope.value) {
-                scope.value = scope.value.content;
+                scope.val = scope.value.content;
             }
         }
     };

@@ -68,7 +68,7 @@ angular.module('mm.addons.mod_data')
     self.getFieldEditData = function(field, inputData) {
         var fieldName = 'f_' + field.id;
 
-        if (inputData[fieldName].length > 0) {
+        if (inputData[fieldName] && inputData[fieldName].length > 0) {
             var options = inputData[fieldName].split('###');
             if (options.length > 0) {
                 return [{
@@ -79,6 +79,22 @@ angular.module('mm.addons.mod_data')
         }
 
         return false;
+    };
+
+    /**
+     * Get field data in changed.
+     *
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Boolean}             If the field has changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalData) {
+        var fieldName = 'f_' + field.id,
+            input = inputData[fieldName] || "",
+            originalData = (originalData && originalData.content) || "";
+
+        return input != originalData;
     };
 
     return self;

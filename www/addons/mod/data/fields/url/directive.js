@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_data')
         templateUrl: 'addons/mod/data/fields/url/template.html',
         link: function(scope) {
             if (scope.mode == 'edit' && scope.value) {
-                scope.value = scope.value.content;
+                scope.val = scope.value.content;
             }
         }
     };

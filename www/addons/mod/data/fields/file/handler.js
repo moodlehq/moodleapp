@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldFileHandler
  */
-.factory('$mmaModDataFieldFileHandler', function() {
+.factory('$mmaModDataFieldFileHandler', function($mmFileSession, mmaModDataComponent, $mmFileUploaderHelper) {
 
     var self = {};
 
@@ -41,6 +41,49 @@ angular.module('mm.addons.mod_data')
             }];
         }
         return false;
+    };
+
+    /**
+     * Get field edit data in the input data.
+     *
+     * @param  {Object} field      Defines the field to be rendered.
+     * @return {Promise}           With name and value of the data to be sent.
+     */
+    self.getFieldEditData = function(field) {
+        var files = self.getFieldEditFiles(field);
+        if (!!files.length) {
+            return [{
+                fieldid: field.id,
+                subfield: 'file',
+                files: files
+            }];
+        }
+        return false;
+    };
+
+    /**
+     * Get field edit files in the input data.
+     *
+     * @param  {Object} field        Defines the field..
+     * @return {Promise}             With name and value of the data to be sent.
+     */
+    self.getFieldEditFiles = function(field) {
+        return $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id);
+    };
+
+    /**
+     * Get field data in changed.
+     *
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Boolean}             If the field has changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalData) {
+        var files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
+            originalFiles = (originalData && originalData.files) || [];
+
+        return $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
     };
 
     return self;

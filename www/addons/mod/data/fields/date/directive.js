@@ -28,12 +28,14 @@ angular.module('mm.addons.mod_data')
         templateUrl: 'addons/mod/data/fields/date/template.html',
         link: function(scope) {
             if (scope.mode == 'edit' && scope.value) {
-                scope.value = new Date(scope.value.content * 1000).toISOString().substr(0, 10);
                 scope.enable = true;
             } else {
-                scope.value = new Date().toISOString().substr(0, 10);
+                scope.value = {
+                        content: Math.floor(Date.now() / 1000)
+                    };
                 scope.enable = false;
             }
+            scope.val = new Date(scope.value.content * 1000).toISOString().substr(0, 10);
         }
     };
 });

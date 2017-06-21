@@ -68,7 +68,12 @@
             </div>
 
             <mm-empty-box ng-if="isEmpty && !search.searching" icon="ion-archive" message="{{ 'mma.mod_data.norecords' | translate}}">
-            </mm-empty-box>
+                <div class="padding-top" ng-if="canAdd">
+                    <button class="button button-block" ng-click="gotoAddEntries($event)">
+                        {{ 'mma.mod_data.addentries' | translate }}
+                    </button>
+                </div>
+        </mm-empty-box>
 
             <mm-empty-box ng-if="isEmpty && search.searching" icon="ion-archive" message="{{ 'mma.mod_data.nomatch' | translate}}">
                 <a ng-click="searchReset()">{{ 'mma.mod_data.resetsettings' | translate}}</a>

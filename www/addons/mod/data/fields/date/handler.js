@@ -73,27 +73,47 @@ angular.module('mm.addons.mod_data')
     self.getFieldEditData = function(field, inputData) {
         var fieldName = 'f_' + field.id;
 
-        var values = [],
-            date = inputData[fieldName].split('-'),
-            year = date[0],
-            month = date[1],
-            day = date[2];
-        values.push({
-            fieldid: field.id,
-            subfield: 'year',
-            value: year
-        });
-        values.push({
-            fieldid: field.id,
-            subfield: 'month',
-            value: month
-        });
-        values.push({
-            fieldid: field.id,
-            subfield: 'day',
-            value: day
-        });
-        return values;
+        if (inputData[fieldName]) {
+            var values = [],
+                date = inputData[fieldName].split('-'),
+                year = date[0],
+                month = date[1],
+                day = date[2];
+            values.push({
+                fieldid: field.id,
+                subfield: 'year',
+                value: year
+            });
+            values.push({
+                fieldid: field.id,
+                subfield: 'month',
+                value: month
+            });
+            values.push({
+                fieldid: field.id,
+                subfield: 'day',
+                value: day
+            });
+            return values;
+        }
+        return false;
+    };
+
+    /**
+     * Get field data in changed.
+     *
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Boolean}             If the field has changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalData) {
+        var fieldName = 'f_' + field.id,
+            input = inputData[fieldName] || "",
+            originalData = (originalData && originalData.content &&
+                new Date(originalData.content * 1000).toISOString().substr(0, 10)) || "";
+
+        return input != originalData;
     };
 
     return self;

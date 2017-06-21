@@ -87,6 +87,28 @@ angular.module('mm.addons.mod_data')
         return false;
     };
 
+    /**
+     * Get field data in changed.
+     *
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Boolean}             If the field has changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalData) {
+        var fieldName = 'f_' + field.id,
+            checkboxes = [];
+
+        angular.forEach(inputData[fieldName], function(value, option) {
+            if (value) {
+                checkboxes.push(option);
+            }
+        });
+
+        originalData = (originalData && originalData.content) || "";
+        return checkboxes.join("##") != originalData;
+    };
+
     return self;
 })
 

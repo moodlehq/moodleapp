@@ -44,30 +44,18 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
-     * Get the text to submit.
-     *
-     * @param  {Object} field     Field.
-     * @param  {Object} inputData Data entered in the edit form.
-     * @return {String}           Text to submit.
-     */
-    function getTextToSubmit(plugin, text) {
-
-
-        return
-    }
-
-    /**
      * Get field edit data in the input data.
      *
-     * @param  {Object} field      Defines the field to be rendered.
-     * @param  {Object} inputData  Data entered in the edit form.
-     * @return {Array}             With name and value of the data to be sent.
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Promise}             With name and value of the data to be sent.
      */
-    self.getFieldEditData = function(field, inputData) {
+    self.getFieldEditData = function(field, inputData, originalData) {
         var fieldName = 'f_' + field.id;
         if (inputData[fieldName]) {
             return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
-                var files = field.files ? field.files : [],
+                var files = self.getFieldEditFiles(field, inputData, originalData),
                     text = $mmText.restorePluginfileUrls(inputData[fieldName], files);
 
                 if (!enabled) {
@@ -78,10 +66,42 @@ angular.module('mm.addons.mod_data')
                 return [{
                     fieldid: field.id,
                     value: text
+                },
+                {
+                    fieldid: field.id,
+                    files: files
                 }];
             });
         }
         return false;
+    };
+
+    /**
+     * Get field edit files in the input data.
+     *
+     * @param  {Object} field        Defines the field..
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Promise}             With name and value of the data to be sent.
+     */
+    self.getFieldEditFiles = function(field, inputData, originalData) {
+        return (originalData && originalData.files) || [];
+    };
+
+    /**
+     * Get field data in changed.
+     *
+     * @param  {Object} field        Defines the field to be rendered.
+     * @param  {Object} inputData    Data entered in the edit form.
+     * @param  {Object} originalData Original form data entered.
+     * @return {Boolean}             If the field has changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalData) {
+        var fieldName = 'f_' + field.id,
+            input = inputData[fieldName] || "",
+            originalData = (originalData && originalData.content) || "";
+
+        return input != originalData;
     };
 
     return self;
