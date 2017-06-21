@@ -104,6 +104,30 @@ angular.module('mm.core')
             ssoAuthenticationDeferred;
 
         /**
+         * Check if the browser supports mediaDevices.getUserMedia.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canGetUserMedia
+         * @return {Boolean} Whether the function is supported.
+         */
+        self.canGetUserMedia = function() {
+            return !!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        };
+
+        /**
+         * Check if the browser supports MediaRecorder.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canRecordMedia
+         * @return {Boolean} Whether the function is supported.
+         */
+        self.canRecordMedia = function() {
+            return !!window.MediaRecorder;
+        };
+
+        /**
          * Create a new state in the UI-router.
          *
          * @module mm.core

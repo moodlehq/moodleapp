@@ -431,7 +431,8 @@ angular.module('mm.core.fileuploader')
         return fn({limit: 1}).then(function(medias) {
             // We used limit 1, we only want 1 media.
             var media = medias[0],
-                path = media.localURL;
+                path = media.localURL || media.toURL();
+
             if (upload) {
                 return uploadFile(true, path, maxSize, true, $mmFileUploader.uploadMedia, media);
             } else {
