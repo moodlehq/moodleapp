@@ -54,7 +54,7 @@ MM.clickOn = function (text, container) {
 MM.clickOnElement = function (el) {
     waitForCondition();
     browser.sleep(2000);
-    browser.wait(EC.presenceOf(el), 11000);
+    browser.wait(EC.presenceOf(el), 20000);
     browser.executeScript('arguments[0].scrollIntoView(true)', el.getWebElement());
     browser.wait(EC.elementToBeClickable(el), 13000);
     return el.click();
@@ -107,7 +107,7 @@ MM.clickOnInSideMenu = function (text) {
 MM.getNavBar = function () {
     waitForCondition();
     browser.wait(EC.visibilityOf($(currentNavBar)), 10000);
-    browser.sleep(3000); //for contents to render
+    browser.sleep(7000); //for contents to render
     return $(currentNavBar);
 };
 
@@ -119,7 +119,7 @@ MM.getNavBar = function () {
 MM.getView = function () {
     waitForCondition();
     browser.wait(EC.visibilityOf($(currentView)), 20000);
-    browser.sleep(3000); //for contents to render
+    browser.sleep(7000); //for contents to render
     return $(currentView);
 };
 
