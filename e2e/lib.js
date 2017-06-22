@@ -54,7 +54,7 @@ MM.clickOn = function (text, container) {
 MM.clickOnElement = function (el) {
     waitForCondition();
     browser.sleep(2000);
-    browser.wait(EC.presenceOf(el), 20000);
+    browser.wait(EC.presenceOf(el), 50000);
     browser.executeScript('arguments[0].scrollIntoView(true)', el.getWebElement());
     browser.wait(EC.elementToBeClickable(el), 13000);
     return el.click();
@@ -118,7 +118,7 @@ MM.getNavBar = function () {
  */
 MM.getView = function () {
     waitForCondition();
-    browser.wait(EC.visibilityOf($(currentView)), 20000);
+    browser.wait(EC.visibilityOf($(currentView)), 50000);
     browser.sleep(7000); //for contents to render
     return $(currentView);
 };

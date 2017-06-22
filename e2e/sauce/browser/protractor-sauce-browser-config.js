@@ -11,8 +11,8 @@ exports.config = {
     },
     specs: [
         "../../../e2e/*.js",
-        //"../../../www/**/e2e/messages.spec.js",
         "../../../www/**/e2e/notifications.spec.js",
+        "../../../www/**/e2e/messages.spec.js",
         "../../../www/**/e2e/login.spec.js",
         //"../../../www/**/e2e/settings.spec.js",
         "../../../www/**/e2e/files.spec.js",

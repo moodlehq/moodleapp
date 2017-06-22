@@ -108,7 +108,7 @@ describe('User can see course final grade as a teacher', function() {
         }).then(function() {
             return MM.clickOn('Grades');
         }).then(function() {
-            return MM.clickOn('Course total');
+            return MM.goToBottomAndClick('Course total');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Grade');
             expect(MM.getView().getText()).toContain('Grade');
