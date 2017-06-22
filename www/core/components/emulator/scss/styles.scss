@@ -26,6 +26,20 @@
         .mm-webcam-image-canvas {
             display: none;
         }
+
+        .mm-audio-record-container {
+            width: 100%;
+            height: 100%;
+
+            .mm-audio-canvas {
+                width: 100%;
+                height: 100%;
+            }
+
+            .mm-audio-captured {
+                width: 100%;
+            }
+        }
     }
 
 

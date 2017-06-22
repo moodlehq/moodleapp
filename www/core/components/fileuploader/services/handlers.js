@@ -132,7 +132,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmApp.isDevice();
+            return $mmApp.isDevice() || ($mmApp.canGetUserMedia() && $mmApp.canRecordMedia());
         };
 
         /**

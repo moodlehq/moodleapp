@@ -6,13 +6,22 @@
     </ion-header-bar>
 
     <ion-content class="mm-capture-media-modal-content">
+        <!-- Video stream for image and video. -->
+        <video ng-if="!isAudio" ng-show="!hasCaptured" class="mm-webcam-stream" autoplay></video>
+
         <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
-        <video ng-show="!hasCaptured" class="mm-webcam-stream" autoplay></video>
         <video ng-if="isVideo" ng-show="hasCaptured" class="mm-webcam-video-captured" controls></video>
 
         <div ng-if="isImage" ng-show="hasCaptured">
+            <!-- Canvas to treat the image and an img to show the result. -->
             <canvas class="mm-webcam-image-canvas"></canvas>
             <img class="mm-webcam-image" alt="{{ 'mm.core.capturedimage' | translate }}" />
+        </div>
+
+        <!-- Canvas to show audio waves when recording audio and audio player to listen to the result. -->
+        <div ng-if="isAudio" class="mm-audio-record-container">
+            <canvas ng-show="!hasCaptured" class="mm-audio-canvas"></canvas>
+            <audio ng-show="hasCaptured" class="mm-audio-captured" controls></audio>
         </div>
     </ion-content>
 

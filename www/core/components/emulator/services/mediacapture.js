@@ -26,12 +26,17 @@ angular.module('mm.core.emulator')
     $log = $log.getInstance('$mmEmulatorMediaCapture');
 
     var self = {},
+        possibleAudioMimeTypes = {
+            'audio/webm': 'weba',
+            'audio/ogg': 'ogg'
+        },
         possibleVideoMimeTypes = {
             'video/webm;codecs=vp9': 'webm',
             'video/webm;codecs=vp8': 'webm',
             'video/ogg': 'ogv'
         },
-        videoMimeType;
+        videoMimeType,
+        audioMimeType;
 
     /**
      * Capture media (image, audio, video).
@@ -52,7 +57,13 @@ angular.module('mm.core.emulator')
                 mimetype,
                 extension,
                 quality = 0.92, // Image only.
-                returnData = false; // Image only.
+                returnData = false, // Image only.
+                isCaptureImage = false; // To identify if it's capturing an image using media capture plugin (instead of camera).
+
+            if (type == 'captureimage') {
+                isCaptureImage = true;
+                type = 'image';
+            }
 
             // Initialize some data based on the type of media to capture.
             if (type == 'video') {
@@ -63,6 +74,8 @@ angular.module('mm.core.emulator')
             } else if (type == 'audio') {
                 scope.isAudio = true;
                 title = 'mm.core.captureaudio';
+                mimetype = audioMimeType;
+                extension = possibleAudioMimeTypes[mimetype];
             } else if (type == 'image') {
                 scope.isImage = true;
                 title = 'mm.core.captureimage';
@@ -106,19 +119,25 @@ angular.module('mm.core.emulator')
 
                 navigator.mediaDevices.getUserMedia(constraints).then(function(localMediaStream) {
                     var streamVideo,
-                        viewVideo,
+                        previewMedia,
                         canvas,
                         imgEl,
                         mediaRecorder,
                         chunks = [],
-                        mediaBlob;
+                        mediaBlob,
+                        audioDrawer;
 
                     if (scope.isImage) {
                         canvas = modal.modalEl.querySelector('canvas.mm-webcam-image-canvas');
                         imgEl = modal.modalEl.querySelector('img.mm-webcam-image');
                     } else {
                         if (scope.isVideo) {
-                            viewVideo = modal.modalEl.querySelector('video.mm-webcam-video-captured');
+                            previewMedia = modal.modalEl.querySelector('video.mm-webcam-video-captured');
+                        } else {
+                            previewMedia = modal.modalEl.querySelector('audio.mm-audio-captured');
+                            canvas = modal.modalEl.querySelector('canvas.mm-audio-canvas');
+                            audioDrawer = initAudioDrawer(localMediaStream, canvas);
+                            audioDrawer.start();
                         }
 
                         mediaRecorder = new MediaRecorder(localMediaStream, {mimeType: mimetype});
@@ -135,7 +154,7 @@ angular.module('mm.core.emulator')
                             mediaBlob = new Blob(chunks);
                             chunks = [];
 
-                            viewVideo.src = $window.URL.createObjectURL(mediaBlob);
+                            previewMedia.src = $window.URL.createObjectURL(mediaBlob);
                         };
                     }
 
@@ -151,6 +170,11 @@ angular.module('mm.core.emulator')
                             scope.readyToCapture = true;
                             streamVideo.onloadedmetadata = null;
                         };
+                    } else {
+                        // No need to wait to show the modal.
+                        loadingModal.dismiss();
+                        modal.show();
+                        scope.readyToCapture = true;
                     }
 
                     // Capture or stop capturing (stop is only for video and audio).
@@ -189,7 +213,8 @@ angular.module('mm.core.emulator')
 
                     // Stop capturing. Only for video and audio.
                     scope.stopCapturing = function() {
-                        viewVideo && streamVideo.pause();
+                        streamVideo && streamVideo.pause();
+                        audioDrawer && audioDrawer.stop();
                         mediaRecorder.stop();
                         scope.isCapturing = false;
                         scope.hasCaptured = true;
@@ -198,8 +223,9 @@ angular.module('mm.core.emulator')
 
                     // Discard the captured media.
                     scope.discard = function() {
-                        viewVideo && viewVideo.pause();
+                        previewMedia && previewMedia.pause();
                         streamVideo && streamVideo.play();
+                        audioDrawer && audioDrawer.start();
 
                         scope.hasCaptured = false;
                         scope.isCapturing = false;
@@ -228,9 +254,15 @@ angular.module('mm.core.emulator')
                         loadingModal = $mmUtil.showModalLoading();
 
                         $mmFS.writeFile(path, mediaBlob).then(function(fileEntry) {
-                            if (scope.isImage) {
+                            if (scope.isImage && !isCaptureImage) {
                                 success(fileEntry.toURL());
                             } else {
+                                // The capture plugin returns a MediaFile, not a FileEntry. The only difference is that
+                                // it supports a new function that won't be supported in desktop.
+                                fileEntry.getFormatData = function(successFn, errorFn) {
+                                    errorFn && errorFn('Not supported');
+                                };
+
                                 success([fileEntry]);
                             }
                         }).catch(function(err) {
@@ -253,7 +285,8 @@ angular.module('mm.core.emulator')
                     // Capture cancelled.
                     scope.cancel = function() {
                         scope.modal.hide();
-                        errorCallback && errorCallback({code: 3, message: "Canceled."});
+                        var error = scope.isImage && !isCaptureImage ? 'Camera cancelled' : {code: 3, message: 'Canceled.'};
+                        errorCallback && errorCallback(error);
                     };
 
                     scope.$on('modal.hidden', function() {
@@ -263,7 +296,8 @@ angular.module('mm.core.emulator')
                             track.stop();
                         });
                         streamVideo && streamVideo.pause();
-                        viewVideo && viewVideo.pause();
+                        previewMedia && previewMedia.pause();
+                        audioDrawer && audioDrawer.stop();
                         scope.$destroy();
                     });
 
@@ -274,6 +308,88 @@ angular.module('mm.core.emulator')
             }, errorCallback);
         } catch(ex) {
             errorCallback(ex.toString());
+        }
+    }
+
+    /**
+     * Initialize the audio drawer. This code has been extracted from MDN's example on MediaStream Recording:
+     * https://github.com/mdn/web-dictaphone
+     *
+     * @param  {Object} stream Stream returned by getUserMedia.
+     * @param  {Object} canvas Canvas element where to draw the audio waves.
+     * @return {Object}        Object to start and stop the drawer.
+     */
+    function initAudioDrawer(stream, canvas) {
+        var audioCtx = new (window.AudioContext || webkitAudioContext)(),
+            canvasCtx = canvas.getContext("2d"),
+            source = audioCtx.createMediaStreamSource(stream),
+            analyser = audioCtx.createAnalyser(),
+            bufferLength = analyser.frequencyBinCount,
+            dataArray = new Uint8Array(bufferLength),
+            width = canvas.width,
+            height = canvas.height,
+            running = false,
+            skip = true;
+
+        analyser.fftSize = 2048;
+        source.connect(analyser);
+
+        return {
+            start: function() {
+                if (running) {
+                    return;
+                }
+
+                running = true;
+                drawAudio();
+            },
+            stop: function() {
+                running = false;
+            }
+        };
+
+        function drawAudio() {
+            if (!running) {
+                return;
+            }
+
+            // Update the draw every animation frame.
+            requestAnimationFrame(drawAudio);
+
+             // Skip half of the frames to improve performance, shouldn't affect the smoothness.
+            skip = !skip;
+            if (skip) {
+                return;
+            }
+
+            var sliceWidth = width / bufferLength,
+                x = 0;
+
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+            canvasCtx.fillRect(0, 0, width, height);
+
+            canvasCtx.lineWidth = 1;
+            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+
+            canvasCtx.beginPath();
+
+            for(var i = 0; i < bufferLength; i++) {
+                var v = dataArray[i] / 128.0,
+                    y = v * height / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(width, height / 2);
+            canvasCtx.stroke();
         }
     }
 
@@ -312,10 +428,17 @@ angular.module('mm.core.emulator')
      * @return {Void}
      */
     function initMimeTypes() {
-        // Determine video mimetype.
+        // Determine video and audio mimetype to use.
         for (var mimeType in possibleVideoMimeTypes) {
             if (MediaRecorder.isTypeSupported(mimeType)) {
                 videoMimeType = mimeType;
+                break;
+            }
+        }
+
+        for (mimeType in possibleAudioMimeTypes) {
+            if (MediaRecorder.isTypeSupported(mimeType)) {
+                audioMimeType = mimeType;
                 break;
             }
         }
@@ -430,11 +553,23 @@ angular.module('mm.core.emulator')
 
         // Support Media Capture methods.
         navigator.device.capture.captureImage = function(successCallback, errorCallback, options) {
-            return captureMedia('image', successCallback, errorCallback, options);
+            return captureMedia('captureimage', successCallback, errorCallback, options);
         };
 
         navigator.device.capture.captureVideo = function(successCallback, errorCallback, options) {
             return captureMedia('video', successCallback, errorCallback, options);
+        };
+
+        navigator.device.capture.captureAudio = function(successCallback, errorCallback, options) {
+            return captureMedia('audio', successCallback, errorCallback, options);
+        };
+
+        // Support other Media Capture variables.
+        $window.CaptureAudioOptions = function() {};
+        $window.CaptureImageOptions = function() {};
+        $window.CaptureVideoOptions = function() {};
+        $window.CaptureError = function(c) {
+            this.code = c || null;
         };
 
         return $q.when();
