@@ -67,7 +67,8 @@ describe('User can manage course forum', function() {
         }).then(function() {
             return browser.sleep(5000); //wait for css to render
         }).then(function() {
-            return element(by.css('button[ng-click="add()"]')).click();
+            return MM.goToBottomAndClick('Post to forum');
+            //return element(by.css('button[ng-click="add()"]')).click();
         }).then(function () {
             return MM.goBack();
         }).then(function() {
