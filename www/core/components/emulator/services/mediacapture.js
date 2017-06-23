@@ -190,8 +190,8 @@ angular.module('mm.core.emulator')
                                 scope.$broadcast('mm-chrono-start');
                             } else {
                                 // Get the image from the video and set it to the canvas, using video width/height.
-                                var width = streamVideo.offsetWidth,
-                                    height = streamVideo.offsetHeight;
+                                var width = streamVideo.videoWidth,
+                                    height = streamVideo.videoHeight;
 
                                 canvas.width = width;
                                 canvas.height = height;
