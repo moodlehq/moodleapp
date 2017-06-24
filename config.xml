@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="online.org.vonkelemen" version="3.4.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="online.org.vonkelemen" version="3.4.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>VonKelemen Learn</name>
   <description>VonKelemen Learn Mobile app</description>
   <author href="https://vonkelemen.org/online" email="moodledman@gmail.com">dman2</author>
