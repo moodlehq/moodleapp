@@ -136,6 +136,23 @@ angular.module('mm.core.emulator')
     };
 
     /**
+     * Check if the app is running in a Windows environment.
+     *
+     * @module mm.core.emulator
+     * @ngdoc method
+     * @name $mmEmulatorHelper#isWindows
+     * @return {Boolean} Whether it's running in a Windows environment.
+     */
+    self.isWindows = function() {
+        try {
+            var os = require('os');
+            return os.platform().indexOf('win') === 0;
+        } catch(ex) {
+            return false;
+        }
+    };
+
+    /**
      * Store the last notification received in a certain site.
      *
      * @module mm.core.emulator
