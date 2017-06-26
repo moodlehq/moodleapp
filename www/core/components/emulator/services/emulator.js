@@ -23,7 +23,7 @@ angular.module('mm.core')
  */
 .factory('$mmEmulatorManager', function($log, $q, $mmFS, $mmEmulatorClipboard, $mmEmulatorCustomURLScheme, $mmEmulatorFile,
             $mmEmulatorFileTransfer, $mmEmulatorGlobalization, $mmEmulatorInAppBrowser, $mmEmulatorLocalNotifications,
-            $mmEmulatorPushNotifications, $mmEmulatorZip, $mmUtil) {
+            $mmEmulatorPushNotifications, $mmEmulatorZip, $mmUtil, $mmEmulatorMediaCapture) {
 
     $log = $log.getInstance('$mmEmulatorManager');
 
@@ -55,6 +55,7 @@ angular.module('mm.core')
         promises.push($mmEmulatorGlobalization.load());
         promises.push($mmEmulatorInAppBrowser.load());
         promises.push($mmEmulatorLocalNotifications.load());
+        promises.push($mmEmulatorMediaCapture.load());
         promises.push($mmEmulatorPushNotifications.load());
         promises.push($mmEmulatorZip.load());
 

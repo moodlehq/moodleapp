@@ -1639,3 +1639,19 @@ h2.invert {
   position: absolute;
   left: -10000px;
 }
+
+// Full screen modal.
+.modal-wrapper .modal.mm-fullscreen-modal {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0
+}
+
+// Buttons in header in modals.
+.modal .bar-header .button {
+  border-color: transparent;
+  background: none;
+}
