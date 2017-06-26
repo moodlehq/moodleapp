@@ -24,7 +24,8 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder,
+        $mmApp) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -591,7 +592,7 @@ angular.module('mm.core')
         return self.init().then(function() {
             // Create file (and parent folders) to prevent errors.
             return self.createFile(path).then(function(fileEntry) {
-                if (isHTMLAPI && typeof data == 'string') {
+                if (isHTMLAPI && !$mmApp.isDesktop() && (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
                     // We need to write Blobs.
                     var type = self.getMimeType(self.getFileExtension(path));
                     data = new Blob([data], {type: type || 'text/plain'});
@@ -672,6 +673,24 @@ angular.module('mm.core')
                 return basePath;
             }
         });
+    };
+
+    /**
+     * Get the base path where the application files are stored. Returns the value instantly, without waiting for it to be ready.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getBasePathInstant
+     * @return {String} Base path. If the service hasn't been initialized it will return an invalid value.
+     */
+    self.getBasePathInstant = function() {
+        if (!basePath) {
+            return basePath;
+        } else if (basePath.slice(-1) == '/') {
+            return basePath;
+        } else {
+            return basePath + '/';
+        }
     };
 
     /**
@@ -851,8 +870,8 @@ angular.module('mm.core')
      * @return {String}           Internal URL.
      */
     self.getInternalURL = function(fileEntry) {
-        if (isHTMLAPI) {
-            // HTML API doesn't implement toInternalURL.
+        if (!fileEntry.toInternalURL) {
+            // File doesn't implement toInternalURL, use toURL.
             return fileEntry.toURL();
         }
         return fileEntry.toInternalURL();

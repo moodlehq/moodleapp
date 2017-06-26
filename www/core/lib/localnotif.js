@@ -300,7 +300,7 @@ angular.module('mm.core')
      * @return {Boolean} True when local notifications plugin is installed.
      */
     self.isAvailable = function() {
-        return window.plugin && window.plugin.notification && window.plugin.notification.local ? true: false;
+        return $mmApp.isDesktop() || !!(window.plugin && window.plugin.notification && window.plugin.notification.local);
     };
 
     /**

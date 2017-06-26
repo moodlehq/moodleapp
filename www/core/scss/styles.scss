@@ -1633,3 +1633,9 @@ h2.invert {
     opacity: 0;
   }
 }
+
+// Textarea to copy text in browser or desktop. Don't use display none because otherwise it can't be selected.
+.mm-browser-copy-area {
+  position: absolute;
+  left: -10000px;
+}

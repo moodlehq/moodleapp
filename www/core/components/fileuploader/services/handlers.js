@@ -42,7 +42,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice();
         };
 
         /**
@@ -87,7 +87,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice();
         };
 
         /**
@@ -132,7 +132,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice();
         };
 
         /**
@@ -177,7 +177,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice();
         };
 
         /**
@@ -223,7 +223,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return ionic.Platform.isAndroid();
+            return ionic.Platform.isAndroid() || !$mmApp.isDevice();
         };
 
         /**

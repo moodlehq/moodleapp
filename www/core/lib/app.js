@@ -187,6 +187,18 @@ angular.module('mm.core')
         };
 
         /**
+         * Checks if the app is running in a desktop environment (not browser).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isDesktop
+         * @return {Bool} Whether the app is running in a desktop environment (not browser).
+         */
+        self.isDesktop = function() {
+            return !!(window.process && window.process.versions && typeof window.process.versions.electron != 'undefined');
+        };
+
+        /**
          * Checks if the app is running in a real device with cordova-plugin-device installed.
          *
          * @module mm.core
