@@ -16,6 +16,7 @@ angular.module('mm.core')
 
 .constant('mmCoreCronInterval', 3600000) // Default interval is 1 hour.
 .constant('mmCoreCronMinInterval', 300000) // Minimum interval is 5 minutes.
+.constant('mmCoreCronDesktopMinInterval', 60000) // Minimum interval in desktop is 1 minute.
 .constant('mmCoreCronMaxTimeProcess', 120000) // Max time a process can block the queue. Defaults to 2 minutes.
 .constant('mmCoreCronStore', 'cron')
 
@@ -37,7 +38,7 @@ angular.module('mm.core')
  * @name $mmCronDelegate
  */
 .factory('$mmCronDelegate', function($log, $mmConfig, $mmApp, $timeout, $q, $mmUtil, mmCoreCronInterval, mmCoreCronStore,
-            mmCoreSettingsSyncOnlyOnWifi, mmCoreCronMinInterval, mmCoreCronMaxTimeProcess) {
+            mmCoreSettingsSyncOnlyOnWifi, mmCoreCronMinInterval, mmCoreCronMaxTimeProcess, mmCoreCronDesktopMinInterval) {
 
     $log = $log.getInstance('$mmCronDelegate');
 
@@ -190,8 +191,9 @@ angular.module('mm.core')
             return mmCoreCronInterval;
         }
 
-        // Don't allow intervals lower than 5 minutes.
-        return Math.max(mmCoreCronMinInterval, parseInt(hooks[name].instance.getInterval(), 10));
+        // Don't allow intervals lower than the minimum.
+        var minInterval = $mmApp.isDesktop() ? mmCoreCronDesktopMinInterval : mmCoreCronMinInterval;
+        return Math.max(minInterval, parseInt(hooks[name].instance.getInterval(), 10));
     };
 
     /**

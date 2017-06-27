@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core')
+angular.module('mm.core.emulator')
 
 /**
  * @ngdoc service
  * @name $mmEmulatorManager
- * @module mm.core
+ * @module mm.core.emulator
  * @description
  * This service handles the emulation of Cordova plugins in other environments like browser.
  */
@@ -32,7 +32,7 @@ angular.module('mm.core')
     /**
      * Loads HTML API to simulate Cordova APIs. Reserved for core use.
      *
-     * @module mm.core
+     * @module mm.core.emulator
      * @ngdoc method
      * @name $mmEmulatorManager#loadHTMLAPI
      * @return {Promise} Promise resolved when the API is loaded.

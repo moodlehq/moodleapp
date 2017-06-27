@@ -40,7 +40,7 @@ angular.module('mm.core.emulator')
  */
 .factory('$mmEmulatorLocalNotifications', function($log, $q, $mmApp, $mmUtil, $timeout, $interval, $rootScope,
             $cordovaLocalNotification, mmCoreDesktopLocalNotificationsStore, mmCoreSecondsYear, mmCoreSecondsDay,
-            mmCoreSecondsHour, mmCoreSecondsMinute) {
+            mmCoreSecondsHour, mmCoreSecondsMinute, $mmEmulatorHelper, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmEmulatorLocalNotifications');
 
@@ -56,7 +56,17 @@ angular.module('mm.core.emulator')
             data:  undefined,
             every: undefined,
             at:    undefined
-        };
+        },
+        winNotif, // Library for Windows notifications.
+        toastTemplate = '<toast><visual><binding template="ToastText02"><text id="1" hint-wrap="true">%s</text>' +
+                        '<text id="2" hint-wrap="true">%s</text></binding></visual></toast>', // Template for Windows ToastNotifications.
+        tileBindingTemplate =   '<text hint-style="base" hint-wrap="true">%s</text>' +
+                                '<text hint-style="captionSubtle" hint-wrap="true">%s</text>',
+        tileTemplate = '<tile><visual branding="nameAndLogo">' +
+                            '<binding template="TileMedium">' + tileBindingTemplate + '</binding>' +
+                            '<binding template="TileWide">' + tileBindingTemplate + '</binding>' +
+                            '<binding template="TileLarge">' + tileBindingTemplate + '</binding>' +
+                        '</visual></tile>'; // Template for Windows TileNotifications. Use same template for all sizes.
 
     /**
      * Cancel a local notification.
@@ -218,6 +228,12 @@ angular.module('mm.core.emulator')
             return $q.when();
         }
 
+        if ($mmEmulatorHelper.isWindows()) {
+            try {
+                winNotif = require('electron-windows-notifications');
+            } catch(ex) {}
+        }
+
         // Redefine $cordovaLocalNotification methods instead of the core plugin (window.cordova.plugins.notification.local)
         // because creating window.cordova breaks the app (it thinks it's a real device).
         $cordovaLocalNotification.schedule = function(notifications, scope, isUpdate) {
@@ -242,9 +258,7 @@ angular.module('mm.core.emulator')
                 var toTrigger = notification.at * 1000 - Date.now();
                 scheduled[notification.id].timeout = $timeout(function trigger() {
                     // Trigger the notification.
-                    var notifInstance = new Notification(notification.title, {
-                        body: notification.text
-                    });
+                    triggerNotification(notification);
 
                     // Store the notification as triggered. Don't remove it from scheduled, it's how the plugin works.
                     triggered[notification.id] = notification;
@@ -252,11 +266,6 @@ angular.module('mm.core.emulator')
 
                     // Launch the trigger event.
                     $rootScope.$broadcast('$cordovaLocalNotification:trigger', notification, 'foreground');
-
-                    // Listen for click events.
-                    notifInstance.onclick = function() {
-                        $rootScope.$broadcast('$cordovaLocalNotification:click', notification, 'foreground');
-                    };
 
                     if (notification.every && scheduled[notification.id] && !scheduled[notification.id].interval) {
                         var interval = parseInterval(notification.every);
@@ -536,6 +545,50 @@ angular.module('mm.core.emulator')
         notification = angular.copy(notification);
         notification.triggered = !!triggered;
         return $mmApp.getDB().insert(mmCoreDesktopLocalNotificationsStore, notification);
+    }
+
+    /**
+     * Trigger a notification, using the best method depending on the OS.
+     *
+     * @param  {Object} notification Notification to trigger.
+     * @return {Void}
+     */
+    function triggerNotification(notification) {
+        if (winNotif) {
+            // Use Windows notifications.
+            var notifInstance = new winNotif.ToastNotification({
+                appId: mmCoreConfigConstants.app_id,
+                template: toastTemplate,
+                strings: [notification.title,  notification.text]
+            });
+
+            // Listen for click events.
+            notifInstance.on('activated', function() {
+                $rootScope.$broadcast('$cordovaLocalNotification:click', notification, 'foreground');
+            });
+
+            notifInstance.show()
+
+            // Show it in Tile too.
+            var tileNotif = new winNotif.TileNotification({
+                tag: notification.id + '',
+                template: tileTemplate,
+                strings: [notification.title,  notification.text, notification.title,  notification.text, notification.title,  notification.text],
+                expirationTime: new Date(Date.now() + mmCoreSecondsHour * 1000) // Expire in 1 hour.
+            })
+
+            tileNotif.show()
+        } else {
+            // Use Electron default notifications.
+            var notifInstance = new Notification(notification.title, {
+                body: notification.text
+            });
+
+            // Listen for click events.
+            notifInstance.onclick = function() {
+                $rootScope.$broadcast('$cordovaLocalNotification:click', notification, 'foreground');
+            };
+        }
     }
 
     return self;
