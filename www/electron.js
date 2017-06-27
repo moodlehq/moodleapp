@@ -2,6 +2,7 @@
 const {app, BrowserWindow, ipcMain, shell} = require('electron');
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -53,9 +54,6 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
     createWindow();
-
-    // Open the app when a link with "moodlemobile://" is clicked.
-    app.setAsDefaultProtocolClient('moodlemobile');
 });
 
 // Quit when all windows are closed.
@@ -68,6 +66,19 @@ app.on('activate', () => {
     if (mainWindow === null) {
         createWindow();
     }
+});
+
+// Read the config.json file to set app's protocol (custom URL scheme).
+fs.readFile(path.join(__dirname, 'config.json'), 'utf8', (err, data) => {
+    var ssoScheme = 'moodlemobile'; // Default value.
+    if (!err) {
+        try {
+            data = JSON.parse(data);
+            ssoScheme = data.customurlscheme;
+        } catch(ex) {}
+    }
+
+    app.setAsDefaultProtocolClient(ssoScheme);
 });
 
 // Make sure that only a single instance of the app is running.
