@@ -1,7 +1,11 @@
 {
-  "name": "mm2",
+  "name": "com.moodle.moodlemobile",
   "version": "3.3.0",
-  "description": "Moodle Mobile 2: The official mobile app for Moodle.",
+  "description": "The official app for Moodle.",
+  "author": {
+    "name": "Moodle Pty Ltd.",
+    "email": "mobile@moodle.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/moodlehq/moodlemobile2.git"
@@ -14,7 +18,8 @@
     }
   ],
   "dependencies": {
-    "electron-windows-notifications": "^1.1.13"
+    "electron-windows-notifications": "^1.1.13",
+    "electron-builder-squirrel-windows": "^19.3.0"
   },
   "devDependencies": {
     "appium": "^1.6.0",
@@ -123,7 +128,45 @@
     "android": "ionic run android",
     "serve.e2e": "ionic serve -b -a",
     "serve.dev": "ionic serve",
-    "e2e": "protractor e2e/build/protractor.conf.js"
+    "e2e": "protractor e2e/build/protractor.conf.js",
+    "desktop.pack": "build --dir",
+    "desktop.dist": "build",
+    "windows.store": "electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store --flatten true -a .\\resources\\desktop -m .\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
   },
-  "main": "www/electron.js"
+  "main": "www/electron.js",
+  "build": {
+    "appId": "com.moodle.moodlemobile",
+    "productName": "MoodleDesktop",
+    "files": [
+      "!desktop",
+      "!**/e2e",
+      "!hooks",
+      "!platforms",
+      "!plugins",
+      "!resources",
+      "!**/*.scss"
+    ],
+    "directories": {
+      "output": "desktop/dist"
+    },
+    "protocols": [
+      {
+        "name": "Moodle Mobile URL",
+        "schemes": [
+          "moodlemobile"
+        ],
+        "role": "Viewer"
+      }
+    ],
+    "compression": "maximum",
+    "electronVersion": "1.6.11",
+    "mac": {
+      "category": "public.app-category.education",
+      "icon": "resources/desktop/icon.icns"
+    },
+    "win": {
+      "target": "appx",
+      "icon": "resources/desktop/icon.ico"
+    }
+  }
 }

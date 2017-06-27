@@ -53,9 +53,6 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
     createWindow();
-
-    // Open the app when a link with "moodlemobile://" is clicked.
-    app.setAsDefaultProtocolClient('moodlemobile');
 });
 
 // Quit when all windows are closed.
@@ -69,6 +66,9 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+// Open the app when a link with "moodlemobile://" is clicked.
+app.setAsDefaultProtocolClient('moodlemobile');
 
 // Make sure that only a single instance of the app is running.
 var shouldQuit = app.makeSingleInstance((argv, workingDirectory) => {
