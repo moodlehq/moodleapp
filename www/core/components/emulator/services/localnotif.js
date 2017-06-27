@@ -254,6 +254,12 @@ angular.module('mm.core.emulator')
                 };
                 promises.push(storeNotification(notification, false));
 
+                if (Math.abs(moment().diff(notification.at * 1000, 'days')) > 15) {
+                    // Notification should trigger more than 15 days from now, don't schedule it. Using $timeout
+                    // with numbers higher than (2^31 - 1) will trigger the function immediately.
+                    return;
+                }
+
                 // Schedule the notification.
                 var toTrigger = notification.at * 1000 - Date.now();
                 scheduled[notification.id].timeout = $timeout(function trigger() {
