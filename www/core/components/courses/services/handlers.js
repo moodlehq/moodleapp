@@ -91,17 +91,29 @@ angular.module('mm.core.courses')
     self.courseLinksHandler.getActions = function(siteIds, url, params, courseId) {
         courseId = parseInt(params.id, 10);
 
+        var sectionId = params.sectionid ? parseInt(params.sectionid, 10) : null,
+            sectionNumber = typeof params.section != 'undefined' ? parseInt(params.section, 10) : NaN,
+            stateParams = {
+                courseid: courseId,
+                sid: sectionId || null
+            };
+
+        if (!isNaN(sectionNumber)) {
+            stateParams.sectionnumber = sectionNumber;
+        }
+
         return [{
             action: function(siteId) {
                 siteId = siteId || $mmSite.getId();
                 if (siteId == $mmSite.getId()) {
-                    actionEnrol(courseId, url);
+                    actionEnrol(courseId, url, stateParams);
                 } else {
+
                     // Use redirect to make the course the new history root (to avoid "loops" in history).
                     $state.go('redirect', {
                         siteid: siteId,
                         state: 'site.mm_course',
-                        params: {courseid: courseId}
+                        params: stateParams
                     });
                 }
             }
@@ -111,11 +123,12 @@ angular.module('mm.core.courses')
     /**
      * Action to perform when an enrol link is clicked.
      *
-     * @param  {Number} courseId Course ID.
-     * @param  {String} url      Treated URL.
+     * @param  {Number} courseId    Course ID.
+     * @param  {String} url         Treated URL.
+     * @param  {Object} stateParams Params to send to the new state.
      * @return {Void}
      */
-    function actionEnrol(courseId, url) {
+    function actionEnrol(courseId, url, stateParams) {
         var modal = $mmUtil.showModalLoading(),
             isEnrolUrl = !!url.match(/(\/enrol\/index\.php)|(\/course\/enrol\.php)/);
 
@@ -164,7 +177,7 @@ angular.module('mm.core.courses')
             $state.go('redirect', {
                 siteid: $mmSite.getId(),
                 state: 'site.mm_course',
-                params: {courseid: courseId}
+                params: stateParams
             });
         });
     }

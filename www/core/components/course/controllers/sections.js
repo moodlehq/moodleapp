@@ -26,6 +26,7 @@ angular.module('mm.core.course')
             mmCoreEventSectionStatusChanged, $state, $timeout, $mmCoursesDelegate, $controller) {
     var courseId = $stateParams.courseid,
         sectionId = $stateParams.sid,
+        sectionNumber = $stateParams.sectionnumber,
         moduleId = $stateParams.moduleid,
         course = $stateParams.course ? angular.copy($stateParams.course) : false;
 
@@ -171,14 +172,17 @@ angular.module('mm.core.course')
 
     // Convenience function to autoload a section if sectionId param is set.
     function autoloadSection() {
-        if (sectionId) {
+        if (sectionId || sectionNumber >= 0) {
             if ($ionicPlatform.isTablet()) {
                 // Search the position of the section to load.
-                angular.forEach($scope.sections, function(section, index) {
-                    if (section.id == sectionId) {
-                        $scope.sectionToLoad = index + 1;
+                for (var index in $scope.sections) {
+                    var section = $scope.sections[index];
+                    if (section.id == sectionId || (sectionNumber >= 0 && section.section === sectionNumber)) {
+                        $scope.sectionToLoad = parseInt(index, 10) + 1;
+                        break;
                     }
-                });
+                }
+
                 // Set moduleId to pass it to the new state when the section is autoloaded. We unset it after this
                 // to prevent autoloading the module when the user manually loads a section.
                 $scope.moduleId = moduleId;
@@ -186,11 +190,24 @@ angular.module('mm.core.course')
                     $scope.moduleId = null; // Unset moduleId when
                 }, 500);
             } else {
-                $state.go('site.mm_course-section', {
-                    sectionid: sectionId,
-                    cid: courseId,
-                    mid: moduleId
-                });
+                if (!sectionId) {
+                    // Search the section ID by section number.
+                    for (var index in $scope.sections) {
+                        var section = $scope.sections[index];
+                        if (section.section == sectionNumber) {
+                            sectionId = section.id
+                            break;
+                        }
+                    }
+                }
+
+                if (sectionId) {
+                    $state.go('site.mm_course-section', {
+                        sectionid: sectionId,
+                        cid: courseId,
+                        mid: moduleId
+                    });
+                }
             }
         }
     }
