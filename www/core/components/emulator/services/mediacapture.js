@@ -50,15 +50,18 @@ angular.module('mm.core.emulator')
     function captureMedia(type, successCallback, errorCallback, options) {
         options = options || {};
 
+        var loadingModal;
+
         try {
             var scope = $rootScope.$new(),
-                loadingModal = $mmUtil.showModalLoading(),
                 facingMode = 'environment',
                 mimetype,
                 extension,
                 quality = 0.92, // Image only.
                 returnData = false, // Image only.
                 isCaptureImage = false; // To identify if it's capturing an image using media capture plugin (instead of camera).
+
+            loadingModal = $mmUtil.showModalLoading();
 
             if (type == 'captureimage') {
                 isCaptureImage = true;
@@ -117,7 +120,7 @@ angular.module('mm.core.emulator')
                     audio: !scope.isImage
                 };
 
-                navigator.mediaDevices.getUserMedia(constraints).then(function(localMediaStream) {
+                return navigator.mediaDevices.getUserMedia(constraints).then(function(localMediaStream) {
                     var streamVideo,
                         previewMedia,
                         canvas,
@@ -304,10 +307,14 @@ angular.module('mm.core.emulator')
                     scope.$on('$destroy', function() {
                         scope.modal.remove();
                     });
-                  }).catch(errorCallback);
-            }, errorCallback);
+                });
+            }).catch(function(err) {
+                loadingModal && loadingModal.dismiss();
+                errorCallback && errorCallback(err);
+            });
         } catch(ex) {
-            errorCallback(ex.toString());
+            loadingModal && loadingModal.dismiss();
+            errorCallback && errorCallback(ex.toString());
         }
     }
 
