@@ -468,7 +468,7 @@ angular.module('mm.addons.mod_data')
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModData#addEntry
+     * @name $mmaModData#editEntry
      * @param   {Number}    entryId         Entry ID.
      * @param   {Object}    data            The fields data to be updated.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.

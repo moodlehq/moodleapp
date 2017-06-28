@@ -29,6 +29,7 @@ angular.module('mm.addons.mod_data')
             field: '=',
             value: '=?',
             database: '=?',
+            error: '=?',
             mode: '@'
         },
         templateUrl: 'addons/mod/data/templates/field.html',

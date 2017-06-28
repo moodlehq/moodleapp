@@ -1,3 +1,4 @@
-<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
 <input ng-if="mode == 'search'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}">
 <mm-attachments ng-if="mode == 'edit'" files="files" max-size="{{maxSizeBytes}}" max-submissions="1" component="{{component}}" component-id="{{componentId}}"></mm-attachments>

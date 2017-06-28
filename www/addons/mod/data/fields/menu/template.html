@@ -1,4 +1,5 @@
-<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
 <div class="item item-input item-select">
     <select name="f_{{field.id}}" ng-model="val">
         <option value="">{{ 'mma.mod_data.menuchoose' | translate }}</option>

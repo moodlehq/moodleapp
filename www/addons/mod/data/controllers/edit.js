@@ -22,11 +22,14 @@ angular.module('mm.addons.mod_data')
  * @name mmaModDataEditCtrl
  */
 .controller('mmaModDataEditCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $q, $mmUtil, $mmaModDataHelper,
-        $mmGroups, $ionicHistory, $mmEvents, mmaModDataEventEntryChanged, $mmSite, $translate, $mmFileUploaderHelper) {
+        $mmGroups, $ionicHistory, $mmEvents, mmaModDataEventEntryChanged, $mmSite, $translate, $mmFileUploaderHelper, $timeout,
+        $ionicScrollDelegate) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         data,
+        scrollView,
+        siteId = $mmSite.getId(),
         entryId = $stateParams.entryid || false;
 
     $scope.title = module.name;
@@ -45,8 +48,6 @@ angular.module('mm.addons.mod_data')
 
             $scope.title = data.name || $scope.title;
             $scope.data = databaseData;
-
-            $scope.database = data;
 
             return $mmaModData.getDatabaseAccessInformation(data.id);
         }).then(function(accessData) {
@@ -111,39 +112,77 @@ angular.module('mm.addons.mod_data')
                 $scope.entryContents).then(function(changed) {
 
             if (!changed) {
-                return returnToEntryList();
+                if (entryId) {
+                    return returnToEntryList();
+                } else {
+                    // New entry, no changes means no field filled, warn the user.
+                    return $q.reject('mma.mod_data.emptyaddform');
+                }
             }
 
             var modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
             return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
                     $scope.entryContents).then(function(editData) {
+
                 if (editData.length > 0) {
                     if (entryId) {
                         return $mmaModData.editEntry(entryId, editData);
-                    } else {
-                        return $mmaModData.addEntry(data.id, editData, $scope.selectedGroup);
                     }
+                    return $mmaModData.addEntry(data.id, editData, $scope.selectedGroup);
                 }
              }).then(function(result) {
                 if (!result) {
-                    // Nothing done, just go back.
-                    return returnToEntryList();
+                    // No field filled, warn the user.
+                    return $q.reject('mma.mod_data.emptyaddform');
                 }
 
                 // This is done if entry is updated when editing or creating if not.
                 if ((entryId && result.updated) || (!entryId && result.newentryid)) {
+                    var promises = [];
+
                     entryId = entryId || result.newentryid;
-                    $mmEvents.trigger(mmaModDataEventEntryChanged, {dataId: data.id, entryId: entryId, siteId: $mmSite.getId()});
-                    return returnToEntryList();
+
+                    promises.push($mmaModData.invalidateEntryData(data.id, entryId, siteId));
+                    promises.push($mmaModData.invalidateEntriesData(data.id, siteId));
+
+                    return $q.all(promises).then(function() {
+                        $mmEvents.trigger(mmaModDataEventEntryChanged, {dataId: data.id, entryId: entryId, siteId: siteId});
+                    }).finally(function() {
+                        return returnToEntryList();
+                    });
+                } else {
+                    $scope.errors = {};
+                    angular.forEach(result.fieldnotifications, function(field) {
+                        for (var x in $scope.fields) {
+                            if ($scope.fields[x].name == field.fieldname) {
+                                $scope.errors[$scope.fields[x].id] = field.notification;
+                                return;
+                            }
+                        }
+                    });
+                    $timeout(function() {
+                        scrollToFirstError();
+                    });
                 }
-            }).catch(function(error) {
-                $mmUtil.showErrorModalDefault(error, 'Cannot edit entry', true);
             }).finally(function() {
                 modal.dismiss();
             });
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Cannot edit entry', true);
+            return $q.reject();
         });
     };
+
+    // Scroll to first error.
+    function scrollToFirstError() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModDataEntryScroll');
+        }
+        if (!$mmUtil.scrollToElement(document.body, '.mm-data-error', scrollView)) {
+            scrollView && scrollView.scrollTop && scrollView.scrollTop();
+        }
+    }
 
     function returnToEntryList() {
         return $mmaModDataHelper.getEditTmpFiles(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
@@ -166,7 +205,7 @@ angular.module('mm.addons.mod_data')
             return  $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
         }).then(function() {
             // Delete the local files from the tmp folder.
-            $mmaModDataHelper.getEditTmpFiles(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
+            return $mmaModDataHelper.getEditTmpFiles(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
                     $scope.entryContents).then(function(files) {
                 $mmFileUploaderHelper.clearTmpFiles(files);
             });

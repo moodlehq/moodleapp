@@ -165,7 +165,7 @@ angular.module('mm.addons.mod_data')
             replace = new RegExp(replace);
 
             // Replace field by a generic directive.
-            var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entryContents['+ field.id + ']" database="database"></mma-mod-data-field>';
+            var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entryContents['+ field.id + ']" database="data" error="errors['+ field.id + ']"></mma-mod-data-field>';
             template = template.replace(replace, render);
 
             // Replace the field id tag.
@@ -188,7 +188,7 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModDataHelper#getEditDataFromForm
      * @param  {Object}  form            Form (DOM element).
      * @param  {Array}   fields          Fields that defines every content in the entry.
-     * @param  {Number}  [dataId]        Database Id. If set, fils will be uploaded and itemId set.
+     * @param  {Number}  [dataId]        Database Id. If set, files will be uploaded and itemId set.
      * @param  {Object}   entryContents  Original entry contents indexed by field id.
      * @return {Promise}                 That contains object with the answers.
      */
@@ -203,7 +203,7 @@ angular.module('mm.addons.mod_data')
         var edit = [],
             promises = [];
         angular.forEach(fields, function(field) {
-            promises.push($q.when($mmaModDataFieldsDelegate.getFieldEditData(field, formData, entryContents[field.id] || undefined))
+            promises.push($q.when($mmaModDataFieldsDelegate.getFieldEditData(field, formData, entryContents[field.id]))
                     .then(function (fieldData) {
                 if (fieldData) {
                     var proms = [];
@@ -213,7 +213,7 @@ angular.module('mm.addons.mod_data')
 
                         // Upload Files if asked.
                         if (dataId && data.files) {
-                            dataProm = self.uploadOrStoreFiles(dataId, data.fieldid, undefined, data.files).then(function(itemId) {
+                            dataProm = self.uploadOrStoreFiles(dataId, 0, undefined, data.files).then(function(itemId) {
                                 delete data.files;
                                 data.value = itemId;
                             });
@@ -224,6 +224,9 @@ angular.module('mm.addons.mod_data')
                         proms.push(dataProm.then(function() {
                             if (data.value) {
                                 data.value = JSON.stringify(data.value);
+                            }
+                            if (typeof data.subfield == "undefined") {
+                                data.subfield = "";
                             }
 
                             // WS wants values in Json format.
@@ -264,7 +267,7 @@ angular.module('mm.addons.mod_data')
         var promises = [];
         angular.forEach(fields, function(field) {
             promises.push(
-                $q.when($mmaModDataFieldsDelegate.getFieldEditFiles(field, formData, entryContents[field.id] || undefined))
+                $q.when($mmaModDataFieldsDelegate.getFieldEditFiles(field, formData, entryContents[field.id]))
             );
         });
 
@@ -295,7 +298,7 @@ angular.module('mm.addons.mod_data')
             promises = [];
 
         angular.forEach(fields, function(field) {
-            promises.push($mmaModDataFieldsDelegate.hasFieldDataChanged(field, inputData, entryContents[field.id] || undefined));
+            promises.push($mmaModDataFieldsDelegate.hasFieldDataChanged(field, inputData, entryContents[field.id]));
         });
         // Will reject on first change detected.
         return $q.all(promises).then(function() {

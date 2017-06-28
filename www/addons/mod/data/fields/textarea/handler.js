@@ -46,16 +46,16 @@ angular.module('mm.addons.mod_data')
     /**
      * Get field edit data in the input data.
      *
-     * @param  {Object} field        Defines the field to be rendered.
-     * @param  {Object} inputData    Data entered in the edit form.
-     * @param  {Object} originalData Original form data entered.
-     * @return {Promise}             With name and value of the data to be sent.
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Promise}                    With name and value of the data to be sent.
      */
-    self.getFieldEditData = function(field, inputData, originalData) {
+    self.getFieldEditData = function(field, inputData, originalFieldData) {
         var fieldName = 'f_' + field.id;
         if (inputData[fieldName]) {
             return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
-                var files = self.getFieldEditFiles(field, inputData, originalData),
+                var files = self.getFieldEditFiles(field, inputData, originalFieldData),
                     text = $mmText.restorePluginfileUrls(inputData[fieldName], files);
 
                 if (!enabled) {
@@ -64,13 +64,20 @@ angular.module('mm.addons.mod_data')
                 }
 
                 return [{
-                    fieldid: field.id,
-                    value: text
-                },
-                {
-                    fieldid: field.id,
-                    files: files
-                }];
+                        fieldid: field.id,
+                        value: text
+                    },
+                    {
+                        fieldid: field.id,
+                        subfield: 'content1',
+                        value: 1
+                    },
+                    {
+                        fieldid: field.id,
+                        subfield: 'itemid',
+                        files: files
+                    }
+                ];
             });
         }
         return false;
@@ -79,29 +86,29 @@ angular.module('mm.addons.mod_data')
     /**
      * Get field edit files in the input data.
      *
-     * @param  {Object} field        Defines the field..
-     * @param  {Object} inputData    Data entered in the edit form.
-     * @param  {Object} originalData Original form data entered.
-     * @return {Promise}             With name and value of the data to be sent.
+     * @param  {Object} field               Defines the field..
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Promise}                    With name and value of the data to be sent.
      */
-    self.getFieldEditFiles = function(field, inputData, originalData) {
-        return (originalData && originalData.files) || [];
+    self.getFieldEditFiles = function(field, inputData, originalFieldData) {
+        return (originalFieldData && originalFieldData.files) || [];
     };
 
     /**
      * Get field data in changed.
      *
-     * @param  {Object} field        Defines the field to be rendered.
-     * @param  {Object} inputData    Data entered in the edit form.
-     * @param  {Object} originalData Original form data entered.
-     * @return {Boolean}             If the field has changes.
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Boolean}                    If the field has changes.
      */
-    self.hasFieldDataChanged = function(field, inputData, originalData) {
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
         var fieldName = 'f_' + field.id,
             input = inputData[fieldName] || "",
-            originalData = (originalData && originalData.content) || "";
+            originalFieldData = (originalFieldData && originalFieldData.content) || "";
 
-        return input != originalData;
+        return input != originalFieldData;
     };
 
     return self;

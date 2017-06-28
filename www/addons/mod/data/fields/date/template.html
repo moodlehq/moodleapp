@@ -1,3 +1,4 @@
-<span ng-if="mode == 'edit' && field.required" mm-mark-required="mode == 'edit' && {{field.required}}"></span>
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
 <input type="date" placeholder="{{ 'mm.core.date' | translate }}" name="f_{{field.id}}" ng-disabled="!enable && mode == 'search'" ng-value="val">
 <ion-checkbox ng-if="mode == 'search'" name="f_{{field.id}}_z" ng-model="enable" ng-value="1">{{ 'mma.mod_data.usedate' | translate }}</ion-checkbox>

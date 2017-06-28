@@ -49,16 +49,27 @@ angular.module('mm.addons.mod_data')
      * @param  {Object} field      Defines the field to be rendered.
      * @return {Promise}           With name and value of the data to be sent.
      */
-    self.getFieldEditData = function(field) {
-        var files = self.getFieldEditFiles(field);
-        if (!!files.length) {
-            return [{
+    self.getFieldEditData = function(field, inputData) {
+        var files = self.getFieldEditFiles(field),
+            values = [],
+            fieldName = 'f_' + field.id + '_alttext';
+
+        if (files.length) {
+            values.push({
                 fieldid: field.id,
                 subfield: 'file',
                 files: files
-            }];
+            });
         }
-        return false;
+
+        if (inputData[fieldName]) {
+            values.push({
+                fieldid: field.id,
+                subfield: 'alttext',
+                value: inputData[fieldName]
+            });
+        }
+        return values;
     };
 
     /**
@@ -74,16 +85,19 @@ angular.module('mm.addons.mod_data')
     /**
      * Get field data in changed.
      *
-     * @param  {Object} field        Defines the field to be rendered.
-     * @param  {Object} inputData    Data entered in the edit form.
-     * @param  {Object} originalData Original form data entered.
-     * @return {Boolean}             If the field has changes.
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Boolean}                    If the field has changes.
      */
-    self.hasFieldDataChanged = function(field, inputData, originalData) {
-        var files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
-            originalFiles = (originalData && originalData.files) || [];
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
+        var fieldName = 'f_' + field.id + '_alttext',
+            altText = inputData[fieldName] || "",
+            originalAltText = (originalFieldData && originalFieldData.content1) || "",
+            files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
+            originalFiles = (originalFieldData && originalFieldData.files) || [];
 
-        return $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
+        return altText != originalAltText || $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
     };
 
     return self;

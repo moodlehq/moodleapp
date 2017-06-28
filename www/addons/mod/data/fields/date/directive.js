@@ -31,8 +31,8 @@ angular.module('mm.addons.mod_data')
                 scope.enable = true;
             } else {
                 scope.value = {
-                        content: Math.floor(Date.now() / 1000)
-                    };
+                    content: Math.floor(Date.now() / 1000)
+                };
                 scope.enable = false;
             }
             scope.val = new Date(scope.value.content * 1000).toISOString().substr(0, 10);

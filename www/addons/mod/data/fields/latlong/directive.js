@@ -28,8 +28,8 @@ angular.module('mm.addons.mod_data')
         templateUrl: 'addons/mod/data/fields/latlong/template.html',
         link: function(scope) {
             if (scope.value) {
-                scope.north = parseFloat(scope.value.content);
-                scope.east = parseFloat(scope.value.content1);
+                scope.north = scope.value && parseFloat(scope.value.content);
+                scope.east = scope.value && parseFloat(scope.value.content1);
             }
         }
     };

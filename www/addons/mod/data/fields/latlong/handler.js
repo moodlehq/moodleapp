@@ -75,17 +75,17 @@ angular.module('mm.addons.mod_data')
     /**
      * Get field data in changed.
      *
-     * @param  {Object} field        Defines the field to be rendered.
-     * @param  {Object} inputData    Data entered in the edit form.
-     * @param  {Object} originalData Original form data entered.
-     * @return {Boolean}             If the field has changes.
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Boolean}                    If the field has changes.
      */
-    self.hasFieldDataChanged = function(field, inputData, originalData) {
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
         var fieldName = 'f_' + field.id,
             lat = inputData[fieldName + '_0'] || "",
             long = inputData[fieldName + '_1'] || "",
-            originalLat = (originalData && originalData.content) || "",
-            originalLong = (originalData && originalData.content1) || "";
+            originalLat = (originalFieldData && originalFieldData.content) || "",
+            originalLong = (originalFieldData && originalFieldData.content1) || "";
 
         return lat != originalLat || long != originalLong;
     };

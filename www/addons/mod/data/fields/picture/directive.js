@@ -33,6 +33,7 @@ angular.module('mm.addons.mod_data')
                 scope.maxSizeBytes = parseInt(scope.field.param3, 10);
 
                 scope.files = angular.copy((scope.value && scope.value.files) || []);
+                scope.alttext = (scope.value && scope.value.content1) || "";
                 $mmFileSession.setFiles(mmaModDataComponent, scope.database.id + '_' + scope.field.id, scope.files);
             }
         }

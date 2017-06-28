@@ -40,6 +40,9 @@ angular.module('mm.addons.mod_data')
                 });
 
                 scope.firstRender = function() {
+                    if (!scope.value) {
+                        scope.value = {};
+                    }
                     scope.value.content = scope.model.text;
                 };
             }

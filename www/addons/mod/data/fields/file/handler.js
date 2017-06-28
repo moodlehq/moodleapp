@@ -51,7 +51,7 @@ angular.module('mm.addons.mod_data')
      */
     self.getFieldEditData = function(field) {
         var files = self.getFieldEditFiles(field);
-        if (!!files.length) {
+        if (files.length) {
             return [{
                 fieldid: field.id,
                 subfield: 'file',
@@ -74,14 +74,14 @@ angular.module('mm.addons.mod_data')
     /**
      * Get field data in changed.
      *
-     * @param  {Object} field        Defines the field to be rendered.
-     * @param  {Object} inputData    Data entered in the edit form.
-     * @param  {Object} originalData Original form data entered.
-     * @return {Boolean}             If the field has changes.
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Boolean}                    If the field has changes.
      */
-    self.hasFieldDataChanged = function(field, inputData, originalData) {
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
         var files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
-            originalFiles = (originalData && originalData.files) || [];
+            originalFiles = (originalFieldData && originalFieldData.files) || [];
 
         return $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
     };
