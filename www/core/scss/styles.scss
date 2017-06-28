@@ -1655,3 +1655,7 @@ h2.invert {
   border-color: transparent;
   background: none;
 }
+
+::-webkit-calendar-picker-indicator, ::-webkit-inner-spin-button, ::-webkit-clear-button {
+  display: none;
+}
