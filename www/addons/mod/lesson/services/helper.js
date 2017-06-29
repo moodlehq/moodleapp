@@ -93,8 +93,7 @@ angular.module('mm.addons.mod_lesson')
         var buttons = [],
             rootElement = document.createElement('div'),
             buttonsContainer,
-            forms,
-            isLegacy = false;
+            forms;
 
         // Get the container of the buttons if it exists.
         rootElement.innerHTML = html;
@@ -106,14 +105,12 @@ angular.module('mm.addons.mod_lesson')
                 // No buttons found.
                 return buttons;
             }
-            isLegacy = true;
             buttonsContainer = rootElement;
         }
 
         forms = buttonsContainer.querySelectorAll('form');
         angular.forEach(forms, function(form) {
-            var buttonSelector = isLegacy ? 'input[type="submit"]' : 'button[type="submit"]',
-                buttonEl = form.querySelector(buttonSelector),
+            var buttonEl = form.querySelector('input[type="submit"], button[type="submit"]'),
                 inputs = form.querySelectorAll('input'),
                 button;
 
@@ -125,7 +122,7 @@ angular.module('mm.addons.mod_lesson')
             button = {
                 id: buttonEl.id,
                 title: buttonEl.title || buttonEl.value,
-                content: isLegacy ? buttonEl.value : buttonEl.innerHTML.trim(),
+                content: buttonEl.tagName == 'INPUT' ? buttonEl.value : buttonEl.innerHTML.trim(),
                 data: {}
             };
 
