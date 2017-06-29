@@ -331,6 +331,10 @@ angular.module('mm.addons.mod_data')
 
             angular.forEach(info.entries, function(entry) {
                 promises.push($mmaModData.getEntry(database.id, entry.id, siteId));
+                if (database.comments) {
+                    promises.push($mmComments.getComments('module', database.coursemodule, 'mod_data', entry.id, 'database_entry',
+                        0, siteId));
+                }
             });
 
             // Add Basic Info to manage links.
