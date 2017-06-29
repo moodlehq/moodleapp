@@ -200,6 +200,19 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns if a URL has any protocol, if not is a relative URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isAbsoluteURL
+         * @param {String} url The url to test against the pattern
+         * @return {Boolean}   TRUE if the url is absolute. FALSE if it is relative.
+         */
+        self.isAbsoluteURL = function(url) {
+            return /^[^:]{2,10}:\/\//i.test(url);
+        };
+
+        /**
          * Returns if a URL is a theme image URL.
          *
          * @module mm.core

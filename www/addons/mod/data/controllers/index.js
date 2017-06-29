@@ -175,6 +175,8 @@ angular.module('mm.addons.mod_data')
                     }
                 }
                 $scope.entries = entries.listviewcontents;
+                // Solve picture field relative links problem.
+                $scope.entries = $scope.entries.replace("href\=\"view.php", "href\=\"/mod/data/view.php");
             } else if (!$scope.search.searching) {
                 $scope.canSearch = false;
             }

@@ -47,12 +47,22 @@ angular.module('mm.core')
             };
 
             /**
+             * Check if the URL is handled by this handler.
+             *
+             * @param  {String}  url URL to check.
+             * @return {Boolean}     If the URL is handled.
+             */
+            this.handles = function(url) {
+                return this.pattern && url.search(this.pattern) >= 0;
+            };
+
+            /**
              * Check if the URL is handled by this handler. If so, returns the URL of the site.
              *
              * @param  {String} url URL to check.
              * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
              */
-            this.handles = function(url) {
+            this.getHandlerUrl = function(url) {
                 if (this.pattern) {
                     var position = url.search(this.pattern);
                     if (position > -1) {
