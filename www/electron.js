@@ -103,11 +103,17 @@ if (shouldQuit) {
 function appLaunched(url) {
     // App was launched again with a URL. Focus the main window and send an event to treat the URL.
     if (mainWindow) {
+        focusApp();
+        mainWindow.webContents.send('mmAppLaunched', url); // Send an event to the main window.
+    }
+}
+
+function focusApp() {
+    if (mainWindow) {
         if (mainWindow.isMinimized()) {
             mainWindow.restore();
         }
         mainWindow.focus();
-        mainWindow.webContents.send('mmAppLaunched', url); // Send an event to the main window.
     }
 }
 
@@ -124,3 +130,5 @@ ipcMain.on('closeSecondaryWindows', () => {
         }
     }
 });
+
+ipcMain.on('focusApp', focusApp);
