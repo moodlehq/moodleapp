@@ -296,6 +296,7 @@ angular.module('mm.core')
                 // It's a desktop app, send an event so the file is opened. It has to be done with an event
                 // because opening the file from here (renderer process) doesn't focus the opened app.
                 require('electron').ipcRenderer.send('openItem', path);
+                deferred.resolve();
             } else if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
