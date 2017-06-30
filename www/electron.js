@@ -41,6 +41,7 @@ function createWindow() {
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
+        mainWindow.maximize();
     });
 
     // Emitted when the window is closed.
