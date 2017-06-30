@@ -162,17 +162,37 @@ angular.module('mm.core.emulator')
                     }
 
                     if (scope.isImage || scope.isVideo) {
+                        var hasLoaded = false,
+                            waitTimeout;
+
                         // Set the stream as the source of the video.
                         streamVideo = modal.modalEl.querySelector('video.mm-webcam-stream');
                         streamVideo.src = $window.URL.createObjectURL(localMediaStream);
 
                         // Stream ready, show modal.
                         streamVideo.onloadedmetadata = function() {
+                            if (hasLoaded) {
+                                // Already loaded or timeout triggered, stop.
+                                return;
+                            }
+
+                            hasLoaded = true;
+                            $timeout.cancel(waitTimeout);
                             loadingModal.dismiss();
                             modal.show();
                             scope.readyToCapture = true;
                             streamVideo.onloadedmetadata = null;
                         };
+
+                        // If stream isn't ready in a while, show error.
+                        waitTimeout = $timeout(function() {
+                            if (!hasLoaded) {
+                                // Show error.
+                                hasLoaded = true;
+                                loadingModal.dismiss();
+                                errorCallback && errorCallback({code: -1, message: 'Cannot connect to webcam.'});
+                            }
+                        }, 10000);
                     } else {
                         // No need to wait to show the modal.
                         loadingModal.dismiss();
