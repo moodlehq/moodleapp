@@ -50,15 +50,18 @@ angular.module('mm.core.emulator')
     function captureMedia(type, successCallback, errorCallback, options) {
         options = options || {};
 
+        var loadingModal;
+
         try {
             var scope = $rootScope.$new(),
-                loadingModal = $mmUtil.showModalLoading(),
                 facingMode = 'environment',
                 mimetype,
                 extension,
                 quality = 0.92, // Image only.
                 returnData = false, // Image only.
                 isCaptureImage = false; // To identify if it's capturing an image using media capture plugin (instead of camera).
+
+            loadingModal = $mmUtil.showModalLoading();
 
             if (type == 'captureimage') {
                 isCaptureImage = true;
@@ -117,7 +120,7 @@ angular.module('mm.core.emulator')
                     audio: !scope.isImage
                 };
 
-                navigator.mediaDevices.getUserMedia(constraints).then(function(localMediaStream) {
+                return navigator.mediaDevices.getUserMedia(constraints).then(function(localMediaStream) {
                     var streamVideo,
                         previewMedia,
                         canvas,
@@ -159,17 +162,37 @@ angular.module('mm.core.emulator')
                     }
 
                     if (scope.isImage || scope.isVideo) {
+                        var hasLoaded = false,
+                            waitTimeout;
+
                         // Set the stream as the source of the video.
                         streamVideo = modal.modalEl.querySelector('video.mm-webcam-stream');
                         streamVideo.src = $window.URL.createObjectURL(localMediaStream);
 
                         // Stream ready, show modal.
                         streamVideo.onloadedmetadata = function() {
+                            if (hasLoaded) {
+                                // Already loaded or timeout triggered, stop.
+                                return;
+                            }
+
+                            hasLoaded = true;
+                            $timeout.cancel(waitTimeout);
                             loadingModal.dismiss();
                             modal.show();
                             scope.readyToCapture = true;
                             streamVideo.onloadedmetadata = null;
                         };
+
+                        // If stream isn't ready in a while, show error.
+                        waitTimeout = $timeout(function() {
+                            if (!hasLoaded) {
+                                // Show error.
+                                hasLoaded = true;
+                                loadingModal.dismiss();
+                                errorCallback && errorCallback({code: -1, message: 'Cannot connect to webcam.'});
+                            }
+                        }, 10000);
                     } else {
                         // No need to wait to show the modal.
                         loadingModal.dismiss();
@@ -304,10 +327,14 @@ angular.module('mm.core.emulator')
                     scope.$on('$destroy', function() {
                         scope.modal.remove();
                     });
-                  }).catch(errorCallback);
-            }, errorCallback);
+                });
+            }).catch(function(err) {
+                loadingModal && loadingModal.dismiss();
+                errorCallback && errorCallback(err);
+            });
         } catch(ex) {
-            errorCallback(ex.toString());
+            loadingModal && loadingModal.dismiss();
+            errorCallback && errorCallback(ex.toString());
         }
     }
 

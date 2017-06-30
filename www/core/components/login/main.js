@@ -376,14 +376,8 @@ angular.module('mm.core.login', [])
         url = url.replace(ssoScheme, '');
 
         // Some platforms like Windows add a slash at the end. Remove it.
-        if (url.slice(-1) == '/') {
-            url = url.substring(0, url.length - 1);
-        }
-
         // Some sites add a # at the end of the URL. If it's there, remove it.
-        if (url.slice(-1) == '#') {
-            url = url.substring(0, url.length - 1);
-        }
+        url = url.replace(/\/?#?\/?$/, '');
 
         // Decode from base64.
         try {
