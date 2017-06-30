@@ -23,13 +23,14 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state) {
+        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         data,
         entryChangedObserver,
-        onlineObserver;
+        onlineObserver,
+        hasComments = false;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -139,6 +140,8 @@ angular.module('mm.addons.mod_data')
     }
 
     function fetchEntriesData() {
+        hasComments = false;
+
         return $mmaModData.getDatabaseAccessInformation(data.id, $scope.selectedGroup).then(function(accessData) {
             // Update values for current group.
             $scope.access.canaddentry = accessData.canaddentry;
@@ -160,7 +163,20 @@ angular.module('mm.addons.mod_data')
 
             if (!$scope.isEmpty) {
                 $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
+
+                // Are comments present on the template? Replace it with native ones.
+                if (data.comments) {
+                    var commentsNumber = data.listtemplate.match(/##comments##/g).length;
+                    if (commentsNumber > 0) {
+                        hasComments = true;
+
+                        entries.listviewcontents = $mmaModDataHelper.replaceComments(entries.listviewcontents, entries.entries,
+                            commentsNumber);
+                    }
+                }
                 $scope.entries = entries.listviewcontents;
+                // Solve picture field relative links problem.
+                $scope.entries = $scope.entries.replace("href\=\"view.php", "href\=\"/mod/data/view.php");
             } else if (!$scope.search.searching) {
                 $scope.canSearch = false;
             }
@@ -186,6 +202,9 @@ angular.module('mm.addons.mod_data')
             promises.push($mmaModData.invalidateDatabaseAccessInformationData(data.id));
             promises.push($mmGroups.invalidateActivityGroupInfo(data.coursemodule));
             promises.push($mmaModData.invalidateEntriesData(data.id));
+            if (hasComments) {
+                promises.push($mmComments.invalidateCommentsByInstance('module', data.coursemodule));
+            }
         }
 
         return $q.all(promises).finally(function() {

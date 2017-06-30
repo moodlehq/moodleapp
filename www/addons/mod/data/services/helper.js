@@ -354,6 +354,47 @@ angular.module('mm.addons.mod_data')
         return css.replace(regExp, prefix + " $1 $2");
     };
 
+    /**
+     * Replaces HTML comments by MM native comments.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#replaceComments
+     * @param {String} html             HTML to be replaced.
+     * @param {Array}  entries          Entries to be placed in the comments.
+     * @param {Number} commentsNumber   Number of times we have to add the comments to every entry.
+     * @return {String}                 HTML with native comments.
+     */
+    self.replaceComments = function(html, entries, commentsNumber) {
+        html = angular.element(html);
+
+        var links = html.find('a'),
+            entryIdx = 0,
+            timesAdded = 0;
+
+        // Replace current comment area by the native directive.
+        angular.forEach(links, function(link) {
+            link = angular.element(link);
+            if (link.hasClass('showcommentsnonjs')) {
+                var entryId = entries[entryIdx].id;
+                link.parent().replaceWith('<mm-comments context-level="module" instance-id="{{data.coursemodule}}" component="mod_data" item-id="' + entryId + '" area="database_entry"></mm-comments>');
+
+                // Only go forward the entries array if we've added the comments this number of times.
+                timesAdded++;
+                if (timesAdded >= commentsNumber) {
+                    entryIdx++;
+                    timesAdded = 0;
+                }
+            }
+        });
+
+        var content = "";
+        angular.forEach(html, function(entry) {
+            content += entry.outerHTML;
+        });
+        return content;
+    };
+
 
     /**
      * Get page info related to an entry.
