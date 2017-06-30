@@ -43,6 +43,53 @@ angular.module('mm.addons.mod_data')
         return false;
     };
 
+    /**
+     * Get field edit data in the input data.
+     *
+     * @param  {Object} field      Defines the field to be rendered.
+     * @param  {Object} inputData  Data entered in the search form.
+     * @return {Array}             With name and value of the data to be sent.
+     */
+    self.getFieldEditData = function(field, inputData) {
+        var fieldName = 'f_' + field.id;
+
+        var values = [];
+
+        if (inputData[fieldName + '_0']) {
+            values.push({
+                fieldid: field.id,
+                subfield: '0',
+                value: inputData[fieldName + '_0']
+            });
+        }
+        if (inputData[fieldName + '_1']) {
+            values.push({
+                fieldid: field.id,
+                subfield: '1',
+                value: inputData[fieldName + '_1']
+            });
+        }
+        return values;
+    };
+
+    /**
+     * Get field data in changed.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @param  {Object} originalFieldData   Original field entered data.
+     * @return {Boolean}                    If the field has changes.
+     */
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
+        var fieldName = 'f_' + field.id,
+            lat = inputData[fieldName + '_0'] || "",
+            long = inputData[fieldName + '_1'] || "",
+            originalLat = (originalFieldData && originalFieldData.content) || "",
+            originalLong = (originalFieldData && originalFieldData.content1) || "";
+
+        return lat != originalLat || long != originalLong;
+    };
+
     return self;
 })
 

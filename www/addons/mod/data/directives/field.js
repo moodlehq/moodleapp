@@ -27,7 +27,10 @@ angular.module('mm.addons.mod_data')
         priority: 100,
         scope: {
             field: '=',
-            mode: '='
+            value: '=?',
+            database: '=?',
+            error: '=?',
+            mode: '@'
         },
         templateUrl: 'addons/mod/data/templates/field.html',
         link: function(scope, element) {

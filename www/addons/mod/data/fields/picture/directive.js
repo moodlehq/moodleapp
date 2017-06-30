@@ -21,10 +21,21 @@ angular.module('mm.addons.mod_data')
  * @ngdoc directive
  * @name mmaModDataFieldPicture
  */
-.directive('mmaModDataFieldPicture', function() {
+.directive('mmaModDataFieldPicture', function(mmaModDataComponent, $mmFileSession) {
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/mod/data/fields/picture/template.html'
+        templateUrl: 'addons/mod/data/fields/picture/template.html',
+        link: function(scope) {
+            if (scope.mode == 'edit') {
+                scope.component = mmaModDataComponent;
+                scope.componentId = scope.database.coursemodule;
+                scope.maxSizeBytes = parseInt(scope.field.param3, 10);
+
+                scope.files = angular.copy((scope.value && scope.value.files) || []);
+                scope.alttext = (scope.value && scope.value.content1) || "";
+                $mmFileSession.setFiles(mmaModDataComponent, scope.database.id + '_' + scope.field.id, scope.files);
+            }
+        }
     };
 });

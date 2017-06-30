@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataHelper
  */
-.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate) {
+.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader) {
 
     var self = {
             searchOther: {
@@ -66,6 +66,40 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Return the form data.
+     *
+     * @param  {Object} form Form (DOM element).
+     * @return {Object}      Data retrieved from form.
+     */
+    function getFormData(form) {
+        var formData = {};
+
+        angular.forEach(form.elements, function(element) {
+            var name = element.name || '';
+            // Ignore submit inputs.
+            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                if (typeof formData[name] == "undefined") {
+                    formData[name] = {};
+                }
+                formData[name][element.value] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    formData[name] = element.value;
+                }
+            } else {
+                formData[name] = element.value;
+            }
+        });
+
+        return formData;
+    }
+
+    /**
      * Retrieve the entered data in search in a form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *
@@ -81,29 +115,7 @@ angular.module('mm.addons.mod_data')
             return {};
         }
 
-        var searchedData = {};
-
-        angular.forEach(form.elements, function(element) {
-            var name = element.name || '';
-            // Ignore submit inputs.
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
-            }
-
-            // Get the value.
-            if (element.type == 'checkbox') {
-                if (typeof searchedData[name] == "undefined") {
-                    searchedData[name] = {};
-                }
-                searchedData[name][element.value] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    searchedData[name] = element.value;
-                }
-            } else {
-                searchedData[name] = element.value;
-            }
-        });
+        var searchedData = getFormData(form);
 
         // Filter and translate fields to each field plugin.
         var advancedSearch = [];
@@ -111,11 +123,9 @@ angular.module('mm.addons.mod_data')
             var fieldData = $mmaModDataFieldsDelegate.getFieldSearchData(field, searchedData);
             if (fieldData) {
                 angular.forEach(fieldData, function(data) {
+                    data.value = JSON.stringify(data.value);
                     // WS wants values in Json format.
-                    advancedSearch.push({
-                        name: data.name,
-                        value: JSON.stringify(data.value)
-                    });
+                    advancedSearch.push(data);
                 });
             }
         });
@@ -132,6 +142,194 @@ angular.module('mm.addons.mod_data')
         });
 
         return advancedSearch;
+    };
+
+    /**
+     * Displays Edit Search Fields.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#displayEditFields
+     * @param {String} template   Template HMTL.
+     * @param {Array}  fields     Fields that defines every content in the entry.
+     * @param {Array}  [contents] Contents for the editing entry (if editing).
+     * @return {String}         Generated HTML.
+     */
+    self.displayEditFields = function(template, fields) {
+        var replace;
+
+        // Replace the fields found on template.
+        angular.forEach(fields, function(field) {
+            replace = "[[" + field.name + "]]";
+            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            replace = new RegExp(replace);
+
+            // Replace field by a generic directive.
+            var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entryContents['+ field.id + ']" database="data" error="errors['+ field.id + ']"></mma-mod-data-field>';
+            template = template.replace(replace, render);
+
+            // Replace the field id tag.
+            replace = "[[" + field.name + "#id]]";
+            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            replace = new RegExp(replace);
+
+            template = template.replace(replace, 'field_'+ field.id);
+        });
+
+        return template;
+    };
+
+    /**
+     * Retrieve the entered data in the edit form.
+     * We don't use ng-model because it doesn't detect changes done by JavaScript.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getEditDataFromForm
+     * @param  {Object}  form            Form (DOM element).
+     * @param  {Array}   fields          Fields that defines every content in the entry.
+     * @param  {Number}  [dataId]        Database Id. If set, files will be uploaded and itemId set.
+     * @param  {Object}   entryContents  Original entry contents indexed by field id.
+     * @return {Promise}                 That contains object with the answers.
+     */
+    self.getEditDataFromForm = function(form, fields, dataId, entryContents) {
+        if (!form || !form.elements) {
+            return $q.when({});
+        }
+
+        var formData = getFormData(form);
+
+        // Filter and translate fields to each field plugin.
+        var edit = [],
+            promises = [];
+        angular.forEach(fields, function(field) {
+            promises.push($q.when($mmaModDataFieldsDelegate.getFieldEditData(field, formData, entryContents[field.id]))
+                    .then(function (fieldData) {
+                if (fieldData) {
+                    var proms = [];
+
+                    angular.forEach(fieldData, function(data) {
+                        var dataProm;
+
+                        // Upload Files if asked.
+                        if (dataId && data.files) {
+                            dataProm = self.uploadOrStoreFiles(dataId, 0, undefined, data.files).then(function(itemId) {
+                                delete data.files;
+                                data.value = itemId;
+                            });
+                        } else {
+                            dataProm = $q.when();
+                        }
+
+                        proms.push(dataProm.then(function() {
+                            if (data.value) {
+                                data.value = JSON.stringify(data.value);
+                            }
+                            if (typeof data.subfield == "undefined") {
+                                data.subfield = "";
+                            }
+
+                            // WS wants values in Json format.
+                            edit.push(data);
+                        }));
+                    });
+
+                    return $q.all(proms);
+                }
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return edit;
+        });
+    };
+
+    /**
+     * Retrieve the temp files to be updated.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getEditTmpFiles
+     * @param  {Object}  form            Form (DOM element).
+     * @param  {Array}   fields          Fields that defines every content in the entry.
+     * @param  {Number}  [dataId]        Database Id. If set, fils will be uploaded and itemId set.
+     * @param  {Object}   entryContents  Original entry contents indexed by field id.
+     * @return {Promise}                 That contains object with the files.
+     */
+    self.getEditTmpFiles = function(form, fields, dataId, entryContents) {
+        if (!form || !form.elements) {
+            return $q.when([]);
+        }
+
+        var formData = getFormData(form);
+
+        // Filter and translate fields to each field plugin.
+        var promises = [];
+        angular.forEach(fields, function(field) {
+            promises.push(
+                $q.when($mmaModDataFieldsDelegate.getFieldEditFiles(field, formData, entryContents[field.id]))
+            );
+        });
+
+        return $q.all(promises).then(function(fieldsFiles) {
+            var files = [];
+
+            angular.forEach(fieldsFiles, function(fieldFiles) {
+                files = files.concat(fieldFiles);
+            });
+            return files;
+        });
+    };
+
+    /**
+     * Check if data has been changed by the user.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#hasEditDataChanged
+     * @param  {Object}  form           Form (DOM element).
+     * @param  {Array}   fields         Fields that defines every content in the entry.
+     * @param  {Number}  [dataId]       Database Id. If set, fils will be uploaded and itemId set.
+     * @param  {Object}   entryContents Original entry contents indexed by field id.
+     * @return {Promise}                True if changed, false if not.
+     */
+    self.hasEditDataChanged = function(form, fields, dataId, entryContents) {
+        var inputData = getFormData(form),
+            promises = [];
+
+        angular.forEach(fields, function(field) {
+            promises.push($mmaModDataFieldsDelegate.hasFieldDataChanged(field, inputData, entryContents[field.id]));
+        });
+        // Will reject on first change detected.
+        return $q.all(promises).then(function() {
+            // No changes.
+            return false;
+        }).catch(function() {
+            // Has changes.
+            return true;
+        });
+    };
+
+    /**
+     * Upload or store some files, depending if the user is offline or not.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#uploadOrStoreFiles
+     * @param  {Number}   dataId        Database ID.
+     * @param  {Number}   [itemId]      Draft ID to use. Undefined or 0 to create a new draft ID.
+     * @param  {Number}   [timecreated] The time the entry was created.
+     * @param  {Object[]} files         List of files.
+     * @param  {Boolean}  offline       True if files sould be stored for offline, false to upload them.
+     * @param  {String}   [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved if success.
+     */
+    self.uploadOrStoreFiles = function(dataId, itemId, timecreated, files, offline, siteId) {
+        if (offline) {
+            // @todo in future issues.
+            //return self.storeFiles(dataId, timecreated, files, siteId);
+        }
+        return $mmFileUploader.uploadOrReuploadFiles(files, mmaModDataComponent, itemId, siteId);
     };
 
     /**

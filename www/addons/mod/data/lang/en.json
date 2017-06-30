@@ -1,6 +1,7 @@
 {
     "addentries": "Add entries",
     "advancedsearch": "Advanced search",
+    "alttext": "Alternative text",
     "approved": "Approved",
     "authorfirstname": "Author first name",
     "authorlastname": "Author surname",
@@ -9,6 +10,7 @@
     "authorlastname": "Author surname",
     "confirmdeleterecord": "Are you sure you want to delete this entry?",
     "descending": "Descending",
+    "emptyaddform": "You did not fill out any fields!",
     "entrieslefttoadd": "You must add {{$a.entriesleft}} more entry/entries in order to complete this activity",
     "entrieslefttoaddtoview": "You must add {{$a.entrieslefttoview}} more entry/entries before you can view other participants' entries.",
     "errorapproving": "Error approving or unapproving entry.",

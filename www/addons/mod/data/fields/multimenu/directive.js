@@ -30,6 +30,17 @@ angular.module('mm.addons.mod_data')
             scope.options = scope.field.param1.split("\n").map(function(option) {
                 return {key: option, value: option};
             });
+
+            if (scope.mode == 'edit' && scope.value && scope.value.content) {
+                angular.forEach(scope.value.content.split("##"), function(value) {
+                    for (var x in scope.options) {
+                        if (value == scope.options[x].key) {
+                            scope.options[x].selected = true;
+                            break;
+                        }
+                    }
+                });
+            }
         }
     };
 });
