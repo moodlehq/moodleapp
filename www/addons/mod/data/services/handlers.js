@@ -244,7 +244,7 @@ angular.module('mm.addons.mod_data')
                     approve = parseInt(params.approve, 10) ? true : false;
 
                 // Approve/disapprove entry.
-                return $mmaModData.approveEntry(entryId, approve, siteId).catch(function(message) {
+                return $mmaModData.approveEntry(dataId, entryId, approve, courseId, siteId).catch(function(message) {
                     modal.dismiss();
                     $mmUtil.showErrorModal(message, 'mma.mod_data.errorapproving', true);
 
@@ -298,7 +298,7 @@ angular.module('mm.addons.mod_data')
                         entryId = parseInt(params.delete, 10);
 
                     // Delete entry.
-                    return $mmaModData.deleteEntry(entryId, siteId).catch(function(message) {
+                    return $mmaModData.deleteEntry(dataId, entryId, courseId, siteId, true).catch(function(message) {
                         modal.dismiss();
                         $mmUtil.showErrorModal(message, 'mma.mod_data.errordeleting', true);
 
