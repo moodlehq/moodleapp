@@ -83,10 +83,12 @@ describe('User can manage course glossary', function() {
         }).then(function () {
             return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
+            browser.sleep(10000);
             return $('[ng-click="pickMode($event)"]').click();
         }).then(function () {
             return MM.clickOn('Search');
         }).then(function () {
+            browser.sleep(10000);
             return $('[ng-model="data.value"]').sendKeys('Accessibility');
         }).then(function () {
             return MM.clickOn('Search');

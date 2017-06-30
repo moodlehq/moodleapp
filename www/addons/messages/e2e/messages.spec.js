@@ -60,7 +60,8 @@ describe('User can manage their messages', function() {
         }).then(function() {
             return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
         }).then(function() {
-            return MM.goToBottomAndClick('Block contact');
+            browser.sleep(7500); //wait to render
+            return $('a[title="Block contact"]').click();
         }).then(function() {          
            browser.sleep(5000); //wait to render
            return $('.button.ng-binding.button-positive').click();

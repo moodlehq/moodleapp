@@ -108,7 +108,8 @@ describe('User can see course final grade as a teacher', function() {
         }).then(function() {
             return MM.clickOn('Grades');
         }).then(function() {
-            return MM.goToBottomAndClick('Course total');
+            browser.sleep(7500); //wait for css to render
+            return $('[id="row_411_48"]').click();
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Grade');
             expect(MM.getView().getText()).toContain('Grade');

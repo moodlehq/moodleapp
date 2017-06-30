@@ -83,12 +83,13 @@ describe('User can change App settings', function() {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
             return MM.clickOn('Synchronization');
-            expect(MM.getView().getText()).toMatch('Synchronization settings');
         }).then(function () {
-            return $('[ng-click="synchronize(site)"]').click();
-            browser.wait($('some-element').isPresent);
+            expect(MM.getView().getText()).toMatch('Synchronization settings');
+            return $('[ng-click="synchronize(site.id)"]').click();
         }).then(function(){
+            browser.wait($('some-element').isPresent);
             return MM.clickOn("OK");
+        }).then(function() {
             done();
         });
     });
@@ -99,7 +100,7 @@ describe('User can change App settings', function() {
         }).then(function () {
             return MM.clickOn('About');
         }).then(function () {
-            expect(MM.getView().getText()).toMatch('Moodle Mobile 3.1.0');
+            expect(MM.getView().getText()).toMatch('Moodle Mobile 3.3.0');
             return MM.goBack();
         }).then(function(){
             done();
