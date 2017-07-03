@@ -585,17 +585,21 @@ angular.module('mm.core.emulator')
                 notificationClicked(notification);
             });
 
-            notifInstance.show()
+            notifInstance.show();
 
-            // Show it in Tile too.
-            var tileNotif = new winNotif.TileNotification({
-                tag: notification.id + '',
-                template: tileTemplate,
-                strings: [notification.title,  notification.text, notification.title,  notification.text, notification.title,  notification.text],
-                expirationTime: new Date(Date.now() + mmCoreSecondsHour * 1000) // Expire in 1 hour.
-            })
+            try {
+                // Show it in Tile too.
+                var tileNotif = new winNotif.TileNotification({
+                    tag: notification.id + '',
+                    template: tileTemplate,
+                    strings: [notification.title,  notification.text, notification.title,  notification.text, notification.title,  notification.text],
+                    expirationTime: new Date(Date.now() + mmCoreSecondsHour * 1000) // Expire in 1 hour.
+                })
 
-            tileNotif.show()
+                tileNotif.show()
+            } catch(ex) {
+                $log.warn('Error showing TileNotification. Please notice they only work with the app installed.', ex);
+            }
         } else {
             // Use Electron default notifications.
             var notifInstance = new Notification(notification.title, {
