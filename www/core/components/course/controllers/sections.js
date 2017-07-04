@@ -25,8 +25,8 @@ angular.module('mm.core.course')
             $mmSite, $mmCoursePrefetchDelegate, $mmCourses, $q, $ionicHistory, $ionicPlatform, mmCoreCourseAllSectionsId,
             mmCoreEventSectionStatusChanged, $state, $timeout, $mmCoursesDelegate, $controller) {
     var courseId = $stateParams.courseid,
-        sectionId = $stateParams.sid,
-        sectionNumber = $stateParams.sectionnumber,
+        sectionId = parseInt($stateParams.sid, 10),
+        sectionNumber = parseInt($stateParams.sectionnumber, 10),
         moduleId = $stateParams.moduleid,
         course = $stateParams.course ? angular.copy($stateParams.course) : false;
 
