@@ -190,7 +190,7 @@ angular.module('mm.addons.mod_lesson')
 
             $scope.pageData = data;
             $scope.title = data.page.title;
-            $scope.pageContent = data.page.contents;
+            $scope.pageContent = $mmaModLessonHelper.getPageContentsFromPageData(data);
             $scope.pageLoaded = true;
             $scope.currentPage = pageId;
             $scope.messages = $scope.messages.concat(data.messages);

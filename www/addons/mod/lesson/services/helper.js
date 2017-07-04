@@ -139,6 +139,31 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Given a page data (result of getPageData), get the page contents.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#getPageContentsFromPageData
+     * @param  {Object} data Page data.
+     * @return {String}      Page contents.
+     */
+    self.getPageContentsFromPageData = function(data) {
+        var contents,
+            rootElement = document.createElement('div');
+
+        // Search the page contents inside the whole page HTML. Use data.pagecontent because it's filtered.
+        rootElement.innerHTML = data.pagecontent;
+        contents = rootElement.querySelector('.contents');
+
+        if (contents) {
+            return contents.innerHTML.trim();
+        }
+
+        // Cannot find contents element, return the page.contents (some elements like videos might not work).
+        return data.page.contents;
+    };
+
+    /**
      * Given the HTML of an answer from a question page, extract the data to render the answer.
      *
      * @module mm.addons.mod_lesson
