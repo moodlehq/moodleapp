@@ -30,6 +30,12 @@ angular.module('mm.core.login', [])
         onEnter: function($ionicHistory) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
+        },
+        controller: function($scope) {
+            // Required for Electron app so the title doesn't change.
+            $scope.$on('$ionicView.afterEnter', function(ev) {
+                ev.stopPropagation();
+            });
         }
     })
 
@@ -357,6 +363,10 @@ angular.module('mm.core.login', [])
             // Authentication ongoing, probably duplicated request.
             return true;
         }
+        if ($mmApp.isDesktop()) {
+            // In desktop, make sure InAppBrowser is closed.
+            $mmUtil.closeInAppBrowser(true);
+        }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
         $mmApp.startSSOAuthentication();
@@ -365,10 +375,9 @@ angular.module('mm.core.login', [])
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
 
+        // Some platforms like Windows add a slash at the end. Remove it.
         // Some sites add a # at the end of the URL. If it's there, remove it.
-        if (url.slice(-1) == '#') {
-            url = url.substring(0, url.length - 1);
-        }
+        url = url.replace(/\/?#?\/?$/, '');
 
         // Decode from base64.
         try {

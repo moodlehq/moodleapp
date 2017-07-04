@@ -104,6 +104,30 @@ angular.module('mm.core')
             ssoAuthenticationDeferred;
 
         /**
+         * Check if the browser supports mediaDevices.getUserMedia.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canGetUserMedia
+         * @return {Boolean} Whether the function is supported.
+         */
+        self.canGetUserMedia = function() {
+            return !!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        };
+
+        /**
+         * Check if the browser supports MediaRecorder.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canRecordMedia
+         * @return {Boolean} Whether the function is supported.
+         */
+        self.canRecordMedia = function() {
+            return !!window.MediaRecorder;
+        };
+
+        /**
          * Create a new state in the UI-router.
          *
          * @module mm.core
@@ -184,6 +208,18 @@ angular.module('mm.core')
          */
         self.initProcess = function() {
             return $ionicPlatform.ready();
+        };
+
+        /**
+         * Checks if the app is running in a desktop environment (not browser).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isDesktop
+         * @return {Bool} Whether the app is running in a desktop environment (not browser).
+         */
+        self.isDesktop = function() {
+            return !!(window.process && window.process.versions && typeof window.process.versions.electron != 'undefined');
         };
 
         /**

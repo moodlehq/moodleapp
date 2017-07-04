@@ -67,6 +67,11 @@ angular.module('mm.core.sidemenu')
         }
     });
 
+    // Required for Electron app so the title doesn't change.
+    $scope.$on('$ionicView.afterEnter', function(ev) {
+        ev.stopPropagation();
+    });
+
     $scope.$on('$destroy', function() {
         if (langObserver && langObserver.off) {
             langObserver.off();

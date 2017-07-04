@@ -1,0 +1,39 @@
+<ion-modal-view class="mm-fullscreen-modal mm-capture-media-modal">
+    <ion-header-bar class="bar-header">
+        <button class="button button-clear" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
+        <h1 class="title">{{ title }}</h1>
+        <button class="button button-clear" ng-if="hasCaptured" ng-click="done()">{{ 'mm.core.done' | translate }}</button>
+    </ion-header-bar>
+
+    <ion-content class="mm-capture-media-modal-content" scroll="false">
+
+        <div class="mm-av-wrapper">
+            <!-- Video stream for image and video. -->
+            <video ng-if="!isAudio" ng-show="!hasCaptured" class="mm-webcam-stream" autoplay></video>
+
+            <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
+            <video ng-if="isVideo" ng-show="hasCaptured" class="mm-webcam-video-captured" controls></video>
+
+            <!-- Canvas to treat the image and an img to show the result. -->
+            <canvas ng-if="isImage" class="mm-webcam-image-canvas"></canvas>
+            <img ng-if="isImage" ng-show="hasCaptured" class="mm-webcam-image" alt="{{ 'mm.core.capturedimage' | translate }}" />
+
+            <!-- Canvas to show audio waves when recording audio and audio player to listen to the result. -->
+            <div ng-if="isAudio" class="mm-audio-record-container">
+                <canvas ng-show="!hasCaptured" class="mm-audio-canvas"></canvas>
+                <audio ng-show="hasCaptured" class="mm-audio-captured" controls></audio>
+            </div>
+        </div>
+    </ion-content>
+
+    <ion-footer-bar class="row">
+        <div class="col"></div>
+        <div class="col text-center">
+            <button ng-if="!hasCaptured" class="button button-clear button-icon" ng-class="{'ion-record': readyToCapture && !isCapturing && !isImage, 'ion-camera': readyToCapture && isImage, 'ion-stop': isCapturing}" ng-click="actionClicked()" aria-label="{{ title }}"></button>
+            <button ng-if="hasCaptured" class="button button-clear button-icon ion-trash-a" ng-click="discard()" aria-label="{{ 'mm.core.discard' | translate }}"></button>
+        </div>
+        <div class="col text-right">
+            <mm-chrono ng-if="!isImage" ng-show="!hasCaptured" end-time="chronoEndTime" on-end="stopCapturing()"></mm-chrono>
+        </div>
+    </ion-footer-bar>
+</ion-modal-view>

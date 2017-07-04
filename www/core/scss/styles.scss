@@ -1633,3 +1633,29 @@ h2.invert {
     opacity: 0;
   }
 }
+
+// Textarea to copy text in browser or desktop. Don't use display none because otherwise it can't be selected.
+.mm-browser-copy-area {
+  position: absolute;
+  left: -10000px;
+}
+
+// Full screen modal.
+.modal-wrapper .modal.mm-fullscreen-modal {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0
+}
+
+// Buttons in header in modals.
+.modal .bar-header .button {
+  border-color: transparent;
+  background: none;
+}
+
+::-webkit-calendar-picker-indicator, ::-webkit-inner-spin-button, ::-webkit-clear-button {
+  display: none;
+}

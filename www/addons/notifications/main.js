@@ -19,6 +19,7 @@ angular.module('mm.addons.notifications', [])
 .constant('mmaNotificationsPreferencesPriority', 500)
 .constant('mmaNotificationsReadChangedEvent', 'mma-notifications_read_changed')
 .constant('mmaNotificationsReadCronEvent', 'mma-notifications_read_cron')
+.constant('mmaNotificationsPushSimulationComponent', 'mmaNotificationsPushSimulation')
 
 .config(function($stateProvider, $mmSideMenuDelegateProvider, mmaNotificationsPriority, $mmSettingsDelegateProvider,
             mmaNotificationsPreferencesPriority) {
@@ -53,7 +54,8 @@ angular.module('mm.addons.notifications', [])
             '$mmaNotificationsHandlers.preferences', mmaNotificationsPreferencesPriority);
 })
 
-.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager, $mmCronDelegate, $mmSitesManager) {
+.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager, $mmCronDelegate, $mmSitesManager, $mmLocalNotifications,
+            $mmApp, mmaNotificationsPushSimulationComponent) {
     $log = $log.getInstance('mmaNotifications');
 
     // Register push notification clicks.
@@ -61,19 +63,7 @@ angular.module('mm.addons.notifications', [])
     if ($mmPushNotificationsDelegate) {
         $mmPushNotificationsDelegate.registerHandler('mmaNotifications', function(notification) {
             if ($mmUtil.isTrueOrOne(notification.notif)) {
-                $mmaNotifications.isPluginEnabledForSite(notification.site).then(function() {
-                    $mmSitesManager.isFeatureDisabled('$mmSideMenuDelegate_mmaNotifications', notification.site)
-                            .then(function(disabled) {
-                        if (disabled) {
-                            // Notifications are disabled, stop.
-                            return;
-                        }
-
-                        $mmaNotifications.invalidateNotificationsList().finally(function() {
-                            $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
-                        });
-                    });
-                });
+                notificationClicked(notification);
                 return true;
             }
         });
@@ -81,4 +71,26 @@ angular.module('mm.addons.notifications', [])
 
     // Register sync process.
     $mmCronDelegate.register('mmaNotificationsMenu', '$mmaNotificationsHandlers.sideMenuNav');
+
+    if ($mmApp.isDesktop()) {
+        // Listen for clicks in simulated push notifications.
+        $mmLocalNotifications.registerClick(mmaNotificationsPushSimulationComponent, notificationClicked);
+    }
+
+    // A push notification belonging to notifications was clicked.
+    function notificationClicked(notification) {
+        return $mmaNotifications.isPluginEnabledForSite(notification.site).then(function() {
+            $mmSitesManager.isFeatureDisabled('$mmSideMenuDelegate_mmaNotifications', notification.site)
+                    .then(function(disabled) {
+                if (disabled) {
+                    // Notifications are disabled, stop.
+                    return;
+                }
+
+                $mmaNotifications.invalidateNotificationsList().finally(function() {
+                    $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                });
+            });
+        });
+    }
 });

@@ -10,7 +10,7 @@
         </ion-refresher>
         <mm-loading hide-until="preferencesLoaded">
             <!-- If notification preferences aren't enabled, show only the notification sound setting. -->
-            <ion-toggle ng-if="!notifPrefsEnabled" ng-model="notificationSound" ng-change="notificationSoundChanged(notificationSound)">
+            <ion-toggle ng-if="canChangeSound && !notifPrefsEnabled" ng-model="notificationSound" ng-change="notificationSoundChanged(notificationSound)">
                 <p class="item-heading">{{ 'mma.notifications.playsound' | translate }}</p>
             </ion-toggle>
 
@@ -19,7 +19,7 @@
                     <ion-toggle ng-if="preferences" class="item item-text-wrap" ng-model="preferences.disableall" ng-change="disableAll(preferences.disableall)" >
                         {{ 'mm.settings.disableall' | translate }}
                     </ion-toggle>
-                    <ion-toggle ng-model="notificationSound" ng-change="notificationSoundChanged(notificationSound)">
+                    <ion-toggle ng-if="canChangeSound" ng-model="notificationSound" ng-change="notificationSoundChanged(notificationSound)">
                         <p class="item-heading">{{ 'mma.notifications.playsound' | translate }}</p>
                     </ion-toggle>
                 </div>
