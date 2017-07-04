@@ -88,7 +88,7 @@
 }
 
 .verdeprazuliu {
-  color: #a4ca3c !important;
+  color: #46bcc3 !important;
   font-weight: lighter;
 }
 
@@ -146,9 +146,17 @@
 
 .bar.bar-footer.bar-side-menu.vonkfooter {
     border-bottom: 0 none;
-    height: 8% !important;
+    height: 80px !important;
 }
-
+.tab-item.mma-competency-handler {
+    display: none;
+}
+li.mm-sidemenu-handler.mma-competency-handler,li.mm-sidemenu-handler.mma-calendar-handler,li.mm-sidemenu-handler.mma-files-handler{
+	display: none;
+}
+.menu-content ion-content {
+    margin-bottom: 80px;
+}
 .item-icon-left .icon, .item-icon-right .icon {
     font-size:21px;
 }
@@ -173,10 +181,15 @@
 .item {
     border-width: 0;
 }
-
-.messimage .vonkfootercontainer > img {
-    margin-left: 45%;
-    margin-top: -1%;
+.vonkfootercontainer {
+    width: 100%;
+    text-align: center;
+}
+.vonkfootercontainer img {
+    max-width: 300px;
+}
+menu-content ion-content.scroll-content {
+	margin-bottom: 85px!important;
 }
 
 .ion-ios-cloud-download-outline {

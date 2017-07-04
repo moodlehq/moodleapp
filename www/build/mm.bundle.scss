@@ -88,7 +88,7 @@
 }
 
 .verdeprazuliu {
-  color: #a4ca3c !important;
+  color: #46bcc3 !important;
   font-weight: lighter;
 }
 
@@ -146,9 +146,17 @@
 
 .bar.bar-footer.bar-side-menu.vonkfooter {
     border-bottom: 0 none;
-    height: 8% !important;
+    height: 80px !important;
 }
-
+.tab-item.mma-competency-handler {
+    display: none;
+}
+li.mm-sidemenu-handler.mma-competency-handler,li.mm-sidemenu-handler.mma-calendar-handler,li.mm-sidemenu-handler.mma-files-handler{
+	display: none;
+}
+.menu-content ion-content {
+    margin-bottom: 80px;
+}
 .item-icon-left .icon, .item-icon-right .icon {
     font-size:21px;
 }
@@ -173,10 +181,15 @@
 .item {
     border-width: 0;
 }
-
-.messimage .vonkfootercontainer > img {
-    margin-left: 45%;
-    margin-top: -1%;
+.vonkfootercontainer {
+    width: 100%;
+    text-align: center;
+}
+.vonkfootercontainer img {
+    max-width: 300px;
+}
+menu-content ion-content.scroll-content {
+	margin-bottom: 85px!important;
 }
 
 .ion-ios-cloud-download-outline {
@@ -953,16 +966,6 @@ mm-format-text {
 .item.item-button-right .badge.mm-course-download{
   right: $spinner-width + $item-padding;
 }
-input.mm-fileuploader-picker {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  opacity: 0;
-  outline: none;
-}
-
 
 .mm-mm_login_sites {
   .item-thumbnail-left .item-content {
@@ -984,6 +987,16 @@ input.mm-fileuploader-picker {
     margin: 15px 10px;
   }
 }
+input.mm-fileuploader-picker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none;
+}
+
 
 $mm-question-correct-color:         #468847 !default;
 $mm-question-incorrect-color:       #b94a48 !default;
@@ -1117,8 +1130,8 @@ $bar-side-menu-text-color: $bar-content-text !default;
 .bar-side-menu {
   @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
   height: $bar-side-menu-height !important; // MOBILE-959: Added !important to fix side menu header in iOS.
-  border-bottom: medium solid #a4ca3c;
-  border-color: transparent transparent #a4ca3c;
+  border-bottom: medium solid #46bcc3;
+  border-color: transparent transparent #46bcc3;
 
   .item {
     background: transparent;
@@ -1232,7 +1245,6 @@ $bar-side-menu-text-color: $bar-content-text !default;
   }
 }
 
-
 $mma-messages-date-badge: "stable" !default;
 
 // The date displayed in the list.
@@ -1318,6 +1330,7 @@ $mma-messages-date-badge: "stable" !default;
     left: initial;
   }
 }
+
 
 
 $mma-mod-assign-warning-color:      #c00 !default;

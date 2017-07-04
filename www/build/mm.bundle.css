@@ -8445,7 +8445,16 @@ a.button {
 
 .bar.bar-footer.bar-side-menu.vonkfooter {
   border-bottom: 0 none;
-  height: auto !important; }
+  height: 80px !important; }
+
+.tab-item.mma-competency-handler {
+  display: none; }
+
+li.mm-sidemenu-handler.mma-competency-handler, li.mm-sidemenu-handler.mma-calendar-handler, li.mm-sidemenu-handler.mma-files-handler {
+  display: none; }
+
+.menu-content ion-content {
+  margin-bottom: 80px; }
 
 .item-icon-left .icon, .item-icon-right .icon {
   font-size: 21px; }
@@ -8466,8 +8475,15 @@ a.button {
 .item {
   border-width: 0; }
 
-.messimage .vonkfootercontainer > img {
-  max-width: 100%; }
+.vonkfootercontainer {
+  width: 100%;
+  text-align: center; }
+
+.vonkfootercontainer img {
+  max-width: 300px; }
+
+menu-content ion-content.scroll-content {
+  margin-bottom: 85px !important; }
 
 .ion-ios-cloud-download-outline {
   display: none; }
@@ -9087,15 +9103,6 @@ mm-format-text audio, mm-format-text video, mm-format-text a, mm-format-text ifr
 .item.item-button-right .badge.mm-course-download, .item.item-button-right .mma-messages-date span.mm-course-download, .mma-messages-date .item.item-button-right span.mm-course-download, .item.item-button-right .mma-chat-notice span.mm-course-download, .mma-chat-notice .item.item-button-right span.mm-course-download {
   right: 44px; }
 
-input.mm-fileuploader-picker {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  opacity: 0;
-  outline: none; }
-
 .mm-mm_login_sites .item-thumbnail-left .item-content {
   padding-top: 16px; }
 .mm-mm_login_sites .avatar {
@@ -9109,6 +9116,15 @@ input.mm-fileuploader-picker {
   border: 1px solid #ddd; }
 .mm-mm_login_sites .card {
   margin: 15px 10px; }
+
+input.mm-fileuploader-picker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none; }
 
 .mm-question-textarea {
   width: 100%;
@@ -9977,11 +9993,3 @@ select.mma-mod_survey-select {
 .mma-qtype-multianswer-container input[type="radio"], .mma-qtype-multianswer-container input[type="checkbox"] {
   margin-top: -4px;
   margin-right: 7px; }
-
-.menu-content ion-content.scroll-content {
-    margin-bottom: 85px!important;
-}
-.vonkfootercontainer {
-    width: 100%;
-    text-align: center;
-}

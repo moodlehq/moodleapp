@@ -8,8 +8,8 @@ $bar-side-menu-text-color: $bar-content-text !default;
 .bar-side-menu {
   @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
   height: $bar-side-menu-height !important; // MOBILE-959: Added !important to fix side menu header in iOS.
-  border-bottom: medium solid #a4ca3c;
-  border-color: transparent transparent #a4ca3c;
+  border-bottom: medium solid #46bcc3;
+  border-color: transparent transparent #46bcc3;
 
   .item {
     background: transparent;
