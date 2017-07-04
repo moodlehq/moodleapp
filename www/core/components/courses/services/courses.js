@@ -265,6 +265,7 @@ angular.module('mm.core.courses')
                 if (typeof courses != 'object' && !angular.isArray(courses)) {
                     return $q.reject();
                 }
+                // console.log(courses);
                 return courses;
             });
         });
@@ -308,22 +309,60 @@ angular.module('mm.core.courses')
 
             return site.read('core_course_get_courses_by_field', data, preSets).then(function(courses) {
                 if (courses.courses) {
-                    // Courses will be sorted using sortorder if avalaible.
-                    return courses.courses.sort(function(a, b) {
-                        if (typeof a.sortorder == "undefined" && typeof b.sortorder == "undefined") {
-                            return b.id - a.id;
-                        }
+                     /* ADDED BY GYVER  */
+                    // console.log("#################### AVAIL COURSES FIND ME ####################");
+                    courses.courses.sort(function(a, b) {
+                      var nameA = a.fullname.toUpperCase().trim(); // ignore upper and lowercase
+                      var nameB = b.fullname.toUpperCase().trim(); // ignore upper and lowercase
+                      if (nameA < nameB) {
+                        return -1;
+                      }
+                      if (nameA > nameB) {
+                        return 1;
+                      }
 
-                        if (typeof a.sortorder == "undefined") {
-                            return 1;
-                        }
-
-                        if (typeof b.sortorder == "undefined") {
-                            return -1;
-                        }
-
-                        return a.sortorder - b.sortorder;
+                      // names must be equal
+                      return 0;
                     });
+                    // console.log(courses);
+                    
+                    var ecourses_cat = [1,5,6,10,11,93]; // category ids of  sub ecourses
+                    var public_cat = [14]; // category ids of  public courses
+                    var ecourses = [];
+                    var public_courses = [];
+                    var visible_courses = [];
+                    var hidden_courses = [];
+                    var x;
+                
+                    courses.courses.forEach( function (course){
+                        if(course.visible === 0){
+                            hidden_courses.push(course);
+                        }
+                        else{ //visible
+                            if(ecourses_cat.indexOf(course.categoryid) !== -1){
+                                ecourses.push(course);
+                            }
+                            else if (public_cat.indexOf(course.categoryid) !== -1){
+                                public_courses.push(course);
+                            }
+                            else{
+                                visible_courses.push(course);
+                            }
+                        }
+                        
+                    });
+                    // console.log("VISIBLE COURSES");
+                    // console.log(visible_courses);
+                    // console.log("E COURSES");
+                    // console.log(ecourses);
+                    // console.log("PUBLIC COURSES");
+                    // console.log(public_courses);   
+                    // console.log("HIDDEN COURSES:");
+                    // console.log(hidden_courses);   
+                    var combined_courses = visible_courses.concat( ecourses, hidden_courses );
+                    // console.log(courses);   
+                    return combined_courses;
+                    /* END OF ADDITION  */
                 }
                 return $q.reject();
             });
@@ -520,12 +559,66 @@ angular.module('mm.core.courses')
             }
 
             return site.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
+                // console.log(courses);
+                /* ADDED BY GYVER  */
+                // console.log("#################### MY COURSES FIND ME ####################");
+                courses.sort(function(a, b) {
+                  var nameA = a.fullname.toUpperCase().trim(); // ignore upper and lowercase
+                  var nameB = b.fullname.toUpperCase().trim(); // ignore upper and lowercase
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+
+                  // names must be equal
+                  return 0;
+                });
+                
+                
+                var ecourses_cat = [1,5,6,10,11,93]; // category ids of  sub ecourses
+                var public_cat = [14]; // category ids of  public courses
+                var ecourses = [];
+                var public_courses = [];
+                var visible_courses = [];
+                var hidden_courses = [];
+                var x;
+            
+                courses.forEach( function (course){
+                    if(course.visible === 0){
+                            hidden_courses.push(course);
+                        }
+                        else{ //visible
+                            if(ecourses_cat.indexOf(course.category) !== -1){
+                                ecourses.push(course);
+                            }
+                            else if (public_cat.indexOf(course.category) !== -1){
+                                public_courses.push(course);
+                            }
+                            else{
+                                visible_courses.push(course);
+                            }
+                        }
+                });
+                // console.log("VISIBLE COURSES");
+                // console.log(visible_courses);
+                // console.log("E COURSES");
+                // console.log(ecourses);
+                // console.log("PUBLIC COURSES");
+                // console.log(public_courses);   
+                // console.log("HIDDEN COURSES:");
+                // console.log(hidden_courses);   
+                var combined_courses = visible_courses.concat(  ecourses, hidden_courses );
+                // console.log(courses);   
+                /* END OF ADDITION  */
+                    
                 siteid = siteid || site.getId();
                 if (siteid === $mmSite.getId()) {
                     // Only store courses if we're getting current site courses. This function is deprecated and will be removed.
-                    storeCoursesInMemory(courses);
+                    storeCoursesInMemory(combined_courses);
                 }
-                return courses;
+                return combined_courses;
             });
         });
     };

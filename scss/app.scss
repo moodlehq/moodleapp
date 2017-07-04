@@ -7,17 +7,17 @@
 // Colors.
 $positive: #387ef5;
 $stable: #f5f5f5;
-
+$klearn: #00a5d2;
 $base-background-color: #fcfcfc;
 $item-default-bg: white;
 $item-divider-bg: #f1f1f1;
 
 // Setting the default button to button-outline.
 $button-default-bg: white;
-$button-default-text: $positive;
-$button-default-border: $positive;
-$button-default-active-bg: $positive;
-$button-default-active-border: $positive;
+$button-default-text: $klearn;
+$button-default-border: $klearn;
+$button-default-active-bg: $klearn;
+$button-default-active-border: $klearn;
 
 $tabs-off-opacity:                0.6;
 $tabs-striped-off-opacity:        $tabs-off-opacity;
@@ -30,10 +30,10 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
 
 // Tmp fix until Ionic adds !default to $button-default-border and $button-default-active-border.
 $button-default-bg: white;
-$button-default-text: $positive;
-$button-default-border: $positive;
-$button-default-active-bg: $positive;
-$button-default-active-border: $positive;
+$button-default-text: $klearn;
+$button-default-border: $klearn;
+$button-default-active-bg: $klearn;
+$button-default-active-border: $klearn;
 
 // Setting the default button to button-outline.
 .button.active, .button.activated {
@@ -72,11 +72,28 @@ $button-default-active-border: $positive;
   }
 }
 
+// Include all of Moodle Mobile.
+@import "www/build/mm.bundle.scss";
+
+
 .button.button-icon, .button-icon {
   border-color: transparent;
-  color: $button-default-text;
+  color: white;
   background-color: transparent;
 }
 
-// Include all of Moodle Mobile.
-@import "www/build/mm.bundle.scss";
+ .bar-side-menu {
+   background-color: $klearn;
+ }
+ 
+ .bar-content {
+   background-color: $klearn;
+ }
+ 
+ .button.button-positive {
+   border-color: blue;
+   background-color: $klearn;
+    color: #fff;
+ } 
+
+
