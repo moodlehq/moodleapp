@@ -11,10 +11,10 @@ exports.config = {
     },
     specs: [
         "../../../e2e/*.js",
-        //"../../../www/**/e2e/teacher_grades.spec.js",
-        //"../../../www/**/e2e/teacher_new_staff_induction_course.spec.js",
-        //"../../../www/**/e2e/teacher_course.spec.js",
-        //"../../../www/**/e2e/teacher_participants.spec.js",
+        "../../../www/**/e2e/teacher_grades.spec.js",
+        "../../../www/**/e2e/teacher_new_staff_induction_course.spec.js",
+        "../../../www/**/e2e/teacher_course.spec.js",
+        "../../../www/**/e2e/teacher_participants.spec.js",
         "../../../www/**/e2e/user_profile.spec.js"
     ],
     baseUrl: 'http://localhost:8100/',
