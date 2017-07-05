@@ -38,33 +38,33 @@ describe('User can change App settings', function() {
         });
     });
 
-    it('Change general settings', function (done) {
+    /*it('Change general settings', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
-            return MM.clickOn('General');
-        }).then(function () {
+            return MM.clickOnElement($('[mm-split-view-link="site.mm_settings-general"]'));
+        /*}).then(function () {
+            browser.sleep(10000);
             return element(by.model('selectedLanguage')).click();
         }).then(function () {
             return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[3]/ion-content/div[1]/ul/li[1]/select/option[9]')).click();
         }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('General');
-        }).then(function () {
+            browser.sleep(10000);
             return element(by.model('selectedLanguage')).click();
         }).then(function () {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[2]/ion-content/div[1]/ul/li[1]/select/option[7]')).click();
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('General');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
+            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[2]/ion-content/div[1]/ul/li[1]/select/option[7]')).click();*/
+        /*}).then(function () {
+            return MM.clickOnElement($('input[ng-model="richTextEditor"]'));
+        }).then(function() {
+            return MM.clickOnElement($('input[ng-model="richTextEditor"]'));
+        }).then(function() {
+            return MM.clickOnElement($('input[ng-model="reportInBackground"]'));
+        }).then(function() {
+            return MM.clickOnElement($('input[ng-model="reportInBackground"]'));
+        }).then(function() {
             done();
         });
-    });
+    });*/
 
     it('Change Space usage settings', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -78,21 +78,20 @@ describe('User can change App settings', function() {
         });
     });
 
-    it('Change Synchronization settings', function (done) {
+    /*it('Change Synchronization settings', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
             return MM.clickOn('Synchronization');
         }).then(function () {
-            expect(MM.getView().getText()).toMatch('Synchronization settings');
-            return $('[ng-click="synchronize(site.id)"]').click();
+            MM.clickOnElement($('button[ng-click="synchronize(site.id)"]'));
+            return expect(element.all(by.css('ion-spinner[ng-if="site.synchronizing"]')).isDisplayed()).toBeTruthy();
         }).then(function(){
-            browser.wait($('some-element').isPresent);
-            return MM.clickOn("OK");
+            return MM.clickOnElement($('input[type="checkbox"]'));
         }).then(function() {
             done();
         });
-    });
+    });*/
 
     it('Change About settings', function (done) {
         return MM.loginAsStudent().then(function () {

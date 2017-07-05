@@ -2,7 +2,7 @@ exports.config = {
     framework: "jasmine2",
     jasmineNodeOpts: {
         showColors: true,
-        defaultTimeoutInterval: 100000,
+        defaultTimeoutInterval: 200000,
         realtimeFailure: true,
         showTiming: true,
         includeStackTrace: true,
@@ -14,7 +14,7 @@ exports.config = {
         "../../../www/**/e2e/notifications.spec.js",
         "../../../www/**/e2e/messages.spec.js",
         "../../../www/**/e2e/login.spec.js",
-        //"../../../www/**/e2e/settings.spec.js",
+        "../../../www/**/e2e/settings.spec.js",
         "../../../www/**/e2e/files.spec.js",
         "../../../www/**/e2e/notes.spec.js",
         "../../../www/**/e2e/calendar.spec.js"

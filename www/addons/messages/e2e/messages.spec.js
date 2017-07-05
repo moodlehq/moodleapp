@@ -63,19 +63,11 @@ describe('User can manage their messages', function() {
             browser.sleep(7500); //wait to render
             return $('a[title="Block contact"]').click();
         }).then(function() {          
-           browser.sleep(5000); //wait to render
-           return $('.button.ng-binding.button-positive').click();
-        }).then(function() {
-            browser.sleep(7500); //wait for spinner
-            return MM.goBack();
-        }).then(function() {
-            return MM.goBack();
-        }).then(function() {
-            return MM.clickOn('Clear search');
+           browser.sleep(75000); //wait to render
+           return $('.popup-buttons button[class="button ng-binding button-positive"').click();
         }).then(function() {
             browser.sleep(5000); //wait to render
-            expect(MM.getView().getText()).toMatch('Blocked');
-            expect(MM.getView().getText()).toMatch('Anna Alexander');
+            expect(MM.getView().getText()).toMatch('Unblock contact');
             done();
         });
     });

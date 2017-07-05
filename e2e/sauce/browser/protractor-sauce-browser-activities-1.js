@@ -13,7 +13,7 @@ exports.config = {
         "../../../e2e/*.js",
         "../../../www/**/e2e/mod_wiki.spec.js",
         "../../../www/**/e2e/mod_chat.spec.js",
-        //"../../../www/**/e2e/mod_quiz.spec.js",
+        "../../../www/**/e2e/mod_quiz.spec.js",
         "../../../www/**/e2e/mod_choice.spec.js",
         "../../../www/**/e2e/mod_assign.spec.js"
     ],
