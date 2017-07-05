@@ -51,14 +51,14 @@ matrix:
    # - script:
     #  - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-1.js
 
-   # - script:
-   #   - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-2.js
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-2.js
 
    # - script:
     #  - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-config.js
 
-    - script:
-      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-course.js
+  #  - script:
+   #   - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-course.js
 
   #  - script:
   #    - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-resource.js
