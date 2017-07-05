@@ -23,10 +23,11 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments) {
+        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments, $mmaModDataOffline) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
+        siteId = $mmSite.getId(),
         data,
         entryChangedObserver,
         onlineObserver,
@@ -41,6 +42,7 @@ angular.module('mm.addons.mod_data')
     $scope.component = mmaModDataComponent;
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
+    $scope.entries = {};
 
     $scope.search = {
         sortBy: "0",
@@ -104,24 +106,23 @@ angular.module('mm.addons.mod_data')
                         $scope.selectedGroup = groupInfo.groups[0].id;
                     }
                 }
+                return fetchOfflineEntries();
+            });
+        }).then(function() {
+            return $mmaModData.getFields(data.id).then(function(fields) {
+                if (fields.length == 0) {
+                    $scope.canSearch = false;
+                    $scope.canAdd = false;
+                }
+                $scope.search.advanced = {};
 
-                var promises = [
-                    fetchEntriesData(),
-                    $mmaModData.getFields(data.id).then(function(fields) {
-                        if (fields.length == 0) {
-                            $scope.canSearch = false;
-                            $scope.canAdd = false;
-                        }
-                        $scope.search.advanced = {};
+                $scope.fields = {};
+                angular.forEach(fields, function(field) {
+                    $scope.fields[field.id] = field;
+                });
+                $scope.advancedSearch = $mmaModDataHelper.displayAdvancedSearchFields(data.asearchtemplate, $scope.fields);
 
-                        $scope.fields = {};
-                        angular.forEach(fields, function(field) {
-                            $scope.fields[field.id] = field;
-                        });
-                        $scope.advancedSearch = $mmaModDataHelper.displayAdvancedSearchFields(data.asearchtemplate, $scope.fields);
-                    })
-                ];
-                return $q.all(promises);
+                return fetchEntriesData();
             });
         }).then(function() {
             // All data obtained, now fill the context menu.
@@ -136,6 +137,33 @@ angular.module('mm.addons.mod_data')
             return $q.reject();
         }).finally(function(){
             $scope.databaseLoaded = true;
+        });
+    }
+
+    function fetchOfflineEntries() {
+        // Check if there are entries stored in offline.
+        return $mmaModDataOffline.getDatabaseEntries(data.id).then(function(offlineEntries) {
+            $scope.hasOffline = !!offlineEntries.length;
+
+            $scope.offlineEntries = {};
+
+            // Only show offline entries on first page.
+            if ($scope.search.page == 0 && $scope.hasOffline) {
+                angular.forEach(offlineEntries, function(entry) {
+                    if (typeof $scope.offlineEntries[entry.entryid] == "undefined") {
+                        $scope.offlineEntries[entry.entryid] = {
+                            actions: [],
+                            entry: false,
+                            id: entry.entryid,
+
+                        };
+                    }
+                    if (entry.action == 'add') {
+                        $scope.offlineEntries[entry.entryid].entry = entry.fields;
+                    }
+                    $scope.offlineEntries[entry.entryid].actions.push(entry);
+                });
+            }
         });
     }
 
@@ -157,32 +185,42 @@ angular.module('mm.addons.mod_data')
             }
         }).then(function(entries) {
             $scope.numEntries = entries && entries.totalcount;
-            $scope.isEmpty = $scope.numEntries <= 0;
+            $scope.isEmpty = $scope.numEntries <= 0 && $scope.offlineEntries.length <= 0;
             $scope.hasNextPage = (($scope.search.page + 1) * mmaModDataPerPage) < $scope.numEntries;
-            $scope.entries = "";
+            $scope.entriesRendered = "";
 
             if (!$scope.isEmpty) {
                 $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
 
-                // Are comments present on the template? Replace it with native ones.
-                if (data.comments) {
-                    var commentsNumber = data.listtemplate.match(/##comments##/g).length;
-                    if (commentsNumber > 0) {
-                        hasComments = true;
+                var entriesHTML = data.listtemplateheader;
 
-                        entries.listviewcontents = $mmaModDataHelper.replaceComments(entries.listviewcontents, entries.entries,
-                            commentsNumber);
+                $scope.entryContents = {};
+
+                angular.forEach(entries.entries, function(entry) {
+                    var contents = {};
+                    angular.forEach(entry.contents, function(field) {
+                        contents[field.fieldid] = field;
+                    });
+                    $scope.entryContents[entry.id] = contents;
+
+                    $scope.entries[entry.id] = entry;
+
+                    var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
+
+                    entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
+                    if (typeof $scope.offlineEntries[entry.id] != "undefined") {
+                        $scope.offlineEntries[entry.id].entry = entry;
                     }
-                }
-                $scope.entries = entries.listviewcontents;
-                // Solve picture field relative links problem.
-                $scope.entries = $scope.entries.replace("href\=\"view.php", "href\=\"/mod/data/view.php");
+                });
+
+                entriesHTML += data.listtemplatefooter;
+
+                $scope.entriesRendered = entriesHTML;
             } else if (!$scope.search.searching) {
                 $scope.canSearch = false;
             }
         });
     }
-
 
     // Set group to see the database.
     $scope.setGroup = function(groupId) {
@@ -305,6 +343,17 @@ angular.module('mm.addons.mod_data')
             group: $scope.selectedGroup
         };
         $state.go('site.mod_data-edit', stateParams);
+    };
+
+    $scope.gotoEntry = function(entryId) {
+        var stateParams = {
+            module: module,
+            moduleid: module.id,
+            courseid: courseId,
+            entryid: entryId,
+            group: $scope.selectedGroup
+        };
+        $state.go('site.mod_data-entry', stateParams);
     };
 
     // Refresh online status when changes.

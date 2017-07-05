@@ -142,7 +142,7 @@ angular.module('mm.addons.mod_data')
      */
     self.getDatabaseEntries = function(dataId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModDataEntriesStore, 'dataid', [dataId]);
+            return site.getDb().whereEqual(mmaModDataEntriesStore, 'dataid', dataId);
         });
     };
 
@@ -183,12 +183,11 @@ angular.module('mm.addons.mod_data')
     self.saveEntry = function(dataId, entryId, action, courseId, fields, timemodified, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             timemodified = timemodified || new Date().getTime();
-
             var entry = {
                     dataid: dataId,
                     courseid: courseId,
                     action: action,
-                    entryid: -(entryId || timemodified),
+                    entryid: entryId || -timemodified,
                     fields: fields,
                     timemodified: timemodified
                 };

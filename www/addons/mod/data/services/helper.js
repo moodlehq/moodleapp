@@ -31,6 +31,82 @@ angular.module('mm.addons.mod_data')
         };
 
     /**
+     * Displays fields for being shown.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#displayShowFields
+     * @param {String} template   Template HMTL.
+     * @param {Array}  fields     Fields that defines every content in the entry.
+     * @param {Number} entryId    Entry ID.
+     * @param {String} mode       Mode list or show.
+     * @param {Object} actions    Actions that can be performed to the record.
+     * @return {String}           Generated HTML.
+     */
+    self.displayShowFields = function(template, fields, entryId, mode, actions) {
+        var replace;
+
+        // Replace the fields found on template.
+        angular.forEach(fields, function(field) {
+            replace = "[[" + field.name + "]]";
+            replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            replace = new RegExp(replace, 'g');
+
+            // Replace field by a generic directive.
+            var render = '<mma-mod-data-field mode="'+mode+'" field="fields['+ field.id + ']" value="entryContents['+ entryId +']['+ field.id + ']" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
+            template = template.replace(replace, render);
+        });
+
+        angular.forEach(actions, function(enabled, action) {
+            replace = new RegExp("##" + action + "##", 'g');
+            if (enabled) {
+                var render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +']" database="data"></mma-mod-data-action>';
+                template = template.replace(replace, render);
+            } else {
+                template = template.replace(replace, "");
+            }
+        });
+
+        return template;
+    };
+
+    /**
+     * Returns an object with all the actions that the user can do over the record.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getActions
+     * @param {Object}  database     Database activity.
+     * @param {Object}  accessInfo   Access info to the activity.
+     * @param {Object}  record       Entry or record where the actions will be performed.
+     * @return {Object}              Keyed with the action names and boolean to evalute if it can or cannot be done.
+     */
+    self.getActions = function(database, accessInfo, record) {
+        var replacements = {};
+
+        replacements.more = true;
+        replacements.moreurl = true;
+        replacements.user = true;
+        replacements.userpicture = true;
+        replacements.timeadded = true;
+        replacements.timemodified = true;
+
+        replacements.edit = accessInfo.canmanageentries || (accessInfo.inreadonlyperiod && record.canmanageentry);
+        replacements.delete = replacements.edit;
+        replacements.approve = database.approval && accessInfo.canapprove && !record.approved;
+        replacements.disapprove = database.approval && accessInfo.canapprove && record.approved;
+
+        replacements.approvalstatus = database.approval;
+        replacements.comments = database.comments;
+
+        // Unsupported actions.
+        replacements.delcheck = false;
+        replacements.export = false;
+
+        return replacements;
+    };
+
+    /**
      * Displays Advanced Search Fields.
      *
      * @module mm.addons.mod_data
@@ -47,7 +123,7 @@ angular.module('mm.addons.mod_data')
         angular.forEach(fields, function(field) {
             replace = "[[" + field.name + "]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace);
+            replace = new RegExp(replace, 'g');
 
             // Replace field by a generic directive.
             var render = '<mma-mod-data-field mode="search" field="fields['+ field.id + ']"></mma-mod-data-field>';
@@ -56,7 +132,7 @@ angular.module('mm.addons.mod_data')
 
         // Not pluginable other search elements.
         angular.forEach(self.searchOther, function(field, name) {
-            replace = new RegExp("##" + field + "##");
+            replace = new RegExp("##" + field + "##", 'g');
 
             // Replace field by the text input.
             var render = '<input type="text" name="' + name + '" placeholder="{{ \'mma.mod_data.author' + field + '\' | translate }}">';
@@ -162,7 +238,7 @@ angular.module('mm.addons.mod_data')
         angular.forEach(fields, function(field) {
             replace = "[[" + field.name + "]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace);
+            replace = new RegExp(replace, 'g');
 
             // Replace field by a generic directive.
             var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entryContents['+ field.id + ']" database="data" error="errors['+ field.id + ']"></mma-mod-data-field>';
@@ -171,7 +247,7 @@ angular.module('mm.addons.mod_data')
             // Replace the field id tag.
             replace = "[[" + field.name + "#id]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace);
+            replace = new RegExp(replace, 'g');
 
             template = template.replace(replace, 'field_'+ field.id);
         });
@@ -353,48 +429,6 @@ angular.module('mm.addons.mod_data')
         regExp = /([^]*?)({[^]*?}|,)/g;
         return css.replace(regExp, prefix + " $1 $2");
     };
-
-    /**
-     * Replaces HTML comments by MM native comments.
-     *
-     * @module mm.addons.mod_data
-     * @ngdoc method
-     * @name $mmaModDataHelper#replaceComments
-     * @param {String} html             HTML to be replaced.
-     * @param {Array}  entries          Entries to be placed in the comments.
-     * @param {Number} commentsNumber   Number of times we have to add the comments to every entry.
-     * @return {String}                 HTML with native comments.
-     */
-    self.replaceComments = function(html, entries, commentsNumber) {
-        html = angular.element(html);
-
-        var links = html.find('a'),
-            entryIdx = 0,
-            timesAdded = 0;
-
-        // Replace current comment area by the native directive.
-        angular.forEach(links, function(link) {
-            link = angular.element(link);
-            if (link.hasClass('showcommentsnonjs')) {
-                var entryId = entries[entryIdx].id;
-                link.parent().replaceWith('<mm-comments context-level="module" instance-id="{{data.coursemodule}}" component="mod_data" item-id="' + entryId + '" area="database_entry"></mm-comments>');
-
-                // Only go forward the entries array if we've added the comments this number of times.
-                timesAdded++;
-                if (timesAdded >= commentsNumber) {
-                    entryIdx++;
-                    timesAdded = 0;
-                }
-            }
-        });
-
-        var content = "";
-        angular.forEach(html, function(entry) {
-            content += entry.outerHTML;
-        });
-        return content;
-    };
-
 
     /**
      * Get page info related to an entry.

@@ -243,12 +243,15 @@ angular.module('mm.addons.mod_data')
                     entryId = parseInt(params.approve, 10) || parseInt(params.disapprove, 10),
                     approve = parseInt(params.approve, 10) ? true : false;
 
-                // Approve/disapprove entry.
-                return $mmaModData.approveEntry(dataId, entryId, approve, courseId, siteId).catch(function(message) {
-                    modal.dismiss();
-                    $mmUtil.showErrorModal(message, 'mma.mod_data.errorapproving', true);
+                return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
 
-                    return $q.reject();
+                    // Approve/disapprove entry.
+                    return $mmaModData.approveEntry(dataId, entryId, approve, module.course, siteId).catch(function(message) {
+                        modal.dismiss();
+                        $mmUtil.showErrorModal(message, 'mma.mod_data.errorapproving', true);
+
+                        return $q.reject();
+                    });
                 }).then(function() {
                     var promises = [];
                     promises.push($mmaModData.invalidateEntryData(dataId, entryId, siteId));
@@ -297,12 +300,14 @@ angular.module('mm.addons.mod_data')
                         dataId = parseInt(params.d, 10),
                         entryId = parseInt(params.delete, 10);
 
-                    // Delete entry.
-                    return $mmaModData.deleteEntry(dataId, entryId, courseId, siteId, true).catch(function(message) {
-                        modal.dismiss();
-                        $mmUtil.showErrorModal(message, 'mma.mod_data.errordeleting', true);
+                    return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
+                        // Delete entry.
+                        return $mmaModData.deleteEntry(dataId, entryId, module.course, siteId, true).catch(function(message) {
+                            modal.dismiss();
+                            $mmUtil.showErrorModal(message, 'mma.mod_data.errordeleting', true);
 
-                        return $q.reject();
+                            return $q.reject();
+                        });
                     }).then(function() {
                         var promises = [];
                         promises.push($mmaModData.invalidateEntryData(dataId, entryId, siteId));

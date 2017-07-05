@@ -6,3 +6,6 @@
     <ion-label>{{ 'mma.mod_data.alttext' | translate }}</ion-label>
     <input type="text" name="f_{{field.id}}_alttext" placeholder="{{ 'mma.mod_data.alttext' | translate }}" ng-model="alttext">
 </ion-input>
+
+<span ng-if="mode == 'list' && imageUrl" ng-click="viewAction()"><img ng-src="{{imageUrl}}" alt="{{title}}" title="{{title}}" class="list_picture" mm-external-content/></span>
+<img ng-if="mode == 'show' && imageUrl" ng-src="{{imageUrl}}" alt="{{title}}" title="{{title}}" class="list_picture" width="{{width}}" height="{{height}}" mm-external-content/>

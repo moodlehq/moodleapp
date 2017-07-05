@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc controller
  * @name $mmaModData
  */
-.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage,
+.factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage, $mmApp, $mmUtil,
         $mmaModDataOffline) {
     var self = {};
 
@@ -414,10 +414,9 @@ angular.module('mm.addons.mod_data')
         // Get if the opposite action is not synced.
         var action = approve ? 'disapprove' : 'approve';
         return $mmaModDataOffline.getEntry(dataId, entryId, action, siteId).then(function(entry) {
-            if (entry) {
-                // Found. Just delete the action.
-                return $mmaModDataOffline.deleteEntry(dataId, entryId, action, siteId);
-            }
+            // Found. Just delete the action.
+            return $mmaModDataOffline.deleteEntry(dataId, entryId, action, siteId);
+        }).catch(function() {
 
             if (!$mmApp.isOnline()) {
                 // App is offline, store the action.
@@ -484,6 +483,7 @@ angular.module('mm.addons.mod_data')
      */
     self.deleteEntry = function(dataId, entryId, courseId, siteId) {
         siteId = siteId || $mmSite.getId();
+        var justAdded = false;
 
         // Get if the opposite action is not synced.
         return $mmaModDataOffline.getEntryActions(dataId, entryId, siteId).then(function(entries) {
@@ -491,19 +491,26 @@ angular.module('mm.addons.mod_data')
                 // Found. Delete other actions first.
                 var proms = [];
                 angular.forEach(entries, function(entry) {
+                    if (entry.action == 'add') {
+                        justAdded = true;
+                    }
                     proms.push($mmaModDataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
                 });
 
                 return $q.all(proms);
             }
         }).then(function(){
+            if (justAdded) {
+                // The field was added offline, delete and stop.
+                return;
+            }
+
             if (!$mmApp.isOnline()) {
                 // App is offline, store the action.
                 return storeOffline();
             }
 
             return self.deleteEntryOnline(entryId, siteId).catch(function(error) {
-                console.error(error);
                 if (error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();

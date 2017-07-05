@@ -83,6 +83,10 @@ angular.module('mm.addons.mod_data')
         var files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
             originalFiles = (originalFieldData && originalFieldData.files) || [];
 
+        if (originalFiles.length) {
+            originalFiles = [originalFiles[0]];
+        }
+
         return $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
     };
 

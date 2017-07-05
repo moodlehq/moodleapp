@@ -15,33 +15,30 @@
 angular.module('mm.addons.mod_data')
 
 /**
- * Directive to render data date field.
+ * Directive to render data action.
  *
  * @module mm.addons.mod_data
  * @ngdoc directive
- * @name mmaModDataFieldDate
+ * @name mmaModDataField
  */
-.directive('mmaModDataFieldDate', function() {
+.directive('mmaModDataAction', function($mmSite, $mmUser) {
     return {
-        restrict: 'A',
+        restrict: 'E',
         priority: 100,
-        templateUrl: 'addons/mod/data/fields/date/template.html',
+        scope: {
+            action: '@',
+            database: '=',
+            entry: '=?'
+        },
+        templateUrl: 'addons/mod/data/templates/action.html',
         link: function(scope) {
-            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
-            if (scope.mode == 'show') {
-                scope.text = scope.value ? scope.value.content * 1000 : "";
-                return;
-            }
+            scope.url = $mmSite.getURL();
 
-            if (scope.mode == 'edit' && scope.value) {
-                scope.enable = true;
-            } else {
-                scope.value = {
-                    content: Math.floor(Date.now() / 1000)
-                };
-                scope.enable = false;
+            if (scope.action == 'userpicture') {
+                $mmUser.getProfile(scope.entry.userid, scope.database.courseid).then(function(profile) {
+                    scope.userpicture = profile.profileimageurl;
+                });
             }
-            scope.val = new Date(scope.value.content * 1000).toISOString().substr(0, 10);
         }
     };
 });

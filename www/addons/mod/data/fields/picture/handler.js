@@ -97,6 +97,20 @@ angular.module('mm.addons.mod_data')
             files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
             originalFiles = (originalFieldData && originalFieldData.files) || [];
 
+            // Get image.
+            if (originalFiles.length > 0) {
+                var filenameSeek = (originalFieldData && originalFieldData.content) || "";
+                for (var x in originalFiles) {
+                    if (originalFiles[x].filename == filenameSeek) {
+                        originalFiles = angular.copy(originalFiles[x]);
+                        break;
+                    }
+                }
+                originalFiles = [originalFiles];
+            } else {
+                originalFiles = [];
+            }
+
         return altText != originalAltText || $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
     };
 

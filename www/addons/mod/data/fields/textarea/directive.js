@@ -21,12 +21,23 @@ angular.module('mm.addons.mod_data')
  * @ngdoc directive
  * @name mmaModDataFieldTextarea
  */
-.directive('mmaModDataFieldTextarea', function($mmUtil, $mmText) {
+.directive('mmaModDataFieldTextarea', function($mmUtil, $mmText, mmaModDataComponent) {
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/mod/data/fields/textarea/template.html',
         link: function(scope) {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
+            if (scope.mode == 'show') {
+                scope.component = mmaModDataComponent;
+                scope.componentId = scope.database.coursemodule;
+
+                var files = (scope.value && scope.value.files) || [];
+
+                scope.text = scope.value ? $mmText.replacePluginfileUrls(scope.value.content, files) : "";
+                return;
+            }
+
             // Check if rich text editor is enabled.
             if (scope.mode == 'edit') {
                 $mmUtil.isRichTextEditorEnabled().then(function(enabled) {

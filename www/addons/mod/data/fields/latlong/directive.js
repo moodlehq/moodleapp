@@ -27,9 +27,25 @@ angular.module('mm.addons.mod_data')
         priority: 100,
         templateUrl: 'addons/mod/data/fields/latlong/template.html',
         link: function(scope) {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
             if (scope.value) {
-                scope.north = scope.value && parseFloat(scope.value.content);
-                scope.east = scope.value && parseFloat(scope.value.content1);
+                scope.north = (scope.value && parseFloat(scope.value.content)) || "";
+                scope.east = (scope.value && parseFloat(scope.value.content1)) || "";
+
+                if (scope.mode == 'show') {
+                    if (scope.north != "" || scope.east != "") {
+                        scope.north = scope.north ? parseFloat(scope.north).toFixed(4) : '0.0000';
+                        scope.east = scope.east ? parseFloat(scope.east).toFixed(4) : '0.0000';
+                        scope.latitude = scope.north < 0 ? -scope.north + '°S' : scope.north + '°N';
+                        scope.longitude = scope.east < 0 ? -scope.east + '°W' : scope.east + '°E';
+
+                        if (ionic.Platform.isIOS()) {
+                            scope.link = "http://maps.apple.com/?ll=" + scope.north + "," + scope.east + "&near=" + scope.north + "," + scope.east;
+                        } else {
+                            scope.link = "geo:"+scope.north+","+scope.east;
+                        }
+                    }
+                }
             }
         }
     };

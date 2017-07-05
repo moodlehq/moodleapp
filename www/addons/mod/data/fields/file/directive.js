@@ -27,13 +27,22 @@ angular.module('mm.addons.mod_data')
         priority: 100,
         templateUrl: 'addons/mod/data/fields/file/template.html',
         link: function(scope) {
-            if (scope.mode == 'edit') {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
+            if (scope.mode == 'show' || scope.mode == 'edit') {
                 scope.component = mmaModDataComponent;
                 scope.componentId = scope.database.coursemodule;
-                scope.maxSizeBytes = parseInt(scope.field.param3, 10);
 
-                scope.files = angular.copy((scope.value && scope.value.files) || []);
-                $mmFileSession.setFiles(mmaModDataComponent, scope.database.id + '_' + scope.field.id, scope.files);
+                scope.files = angular.copy(scope.value && scope.value.files) || [];
+
+                // Reduce to first element.
+                if (scope.files.length > 0) {
+                    scope.files = [scope.files[0]];
+                }
+
+                if (scope.mode == 'edit') {
+                    scope.maxSizeBytes = parseInt(scope.field.param3, 10);
+                    $mmFileSession.setFiles(mmaModDataComponent, scope.database.id + '_' + scope.field.id, scope.files);
+                }
             }
         }
     };
