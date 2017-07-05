@@ -61,24 +61,29 @@ describe('User can manage feedback', function () {
        }).then(function () {
            return MM.clickOnElement($('[ng-click="gotoAnswerQuestions()"]'));
        }).then(function () {
-            MM.clickOn('Outstanding');
+            return MM.clickOn('Outstanding');
+        }).then(function () {
             $('input[name="textfield_58"]').sendKeys('Good');
-            MM.clickOn('Yes');
+        }).then(function () {
+            return MM.clickOn('Yes');
+        }).then(function () {
             return MM.clickOn('Next page');
        }).then(function() {
-            MM.clickOn('Satisfactory');
-            MM.clickOn('Definitely');
+           return MM.clickOnElement($('[ng-click="gotoPage(true)"]'));
+       }).then(function() {
+           return MM.clickOnElement($('[ng-click="gotoPage(false)"]'));
+       }).then(function() {
+            return MM.clickOn('Satisfactory');
+        }).then(function () {
+            return MM.clickOn('Definitely');
+        }).then(function () {
             $('textarea[name="textarea_62"]').sendKeys('Good');
-            return MM.clickOn('Next page');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="gotoPage(false)"]'));
        }).then(function() {
-           return MM.clickOn('Previous page');
+           return MM.clickOnElement($('button[ng-click="gotoPage(false)"]'));
        }).then(function() {
-           return MM.clickOn('Next page');
-       }).then(function() {
-           return MM.clickOn('Submit your answers');
-       }).then(function() {
-           return MM.clickOn('Continue');
-       }).then(function() {
+           expect(MM.getView().getText()).toContain('Thanks for giving us your views');
            done();
        });
    });
