@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc directive
  * @name mmaModDataField
  */
-.directive('mmaModDataAction', function($mmSite, $mmUser) {
+.directive('mmaModDataAction', function($mmSite, $mmUser, $mmaModDataOffline, $mmSite, $mmEvents, mmaModDataEventEntryChanged) {
     return {
         restrict: 'E',
         priority: 100,
@@ -39,6 +39,17 @@ angular.module('mm.addons.mod_data')
                     scope.userpicture = profile.profileimageurl;
                 });
             }
+
+            scope.undoDelete = function(entryId) {
+                var dataId = scope.database.id,
+                    entryId = scope.entry.id;
+                return $mmaModDataOffline.getEntry(dataId, entryId, 'delete').then(function(entry) {
+                    // Found. Just delete the action.
+                    return $mmaModDataOffline.deleteEntry(dataId, entryId, 'delete');
+                }).then(function() {
+                    $mmEvents.trigger(mmaModDataEventEntryChanged, {dataId: dataId, entryId: entryId, siteId: $mmSite.getId()});
+                });
+            };
         }
     };
 });

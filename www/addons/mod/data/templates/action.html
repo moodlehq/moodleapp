@@ -1,6 +1,7 @@
 <a ng-if="action == 'more'" class="button button-icon icon ion-ios-search-strong" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&rid={{entry.id}}" mm-link capture-link="true" title="{{ 'mma.mod_data.more' | translate }}"></a>
 <a ng-if="action == 'edit'" class="button button-icon icon ion-gear-b" ng-href="{{url}}/mod/data/edit.php?d={{entry.dataid}}&rid={{entry.id}}" mm-link capture-link="true" title="{{ 'mm.core.edit' | translate }}"></a>
-<a ng-if="action == 'delete'" class="button button-icon icon ion-trash-a" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&delete={{entry.id}}" mm-link capture-link="true" title="{{ 'mm.core.delete' | translate }}"></a>
+<a ng-if="action == 'delete' && !entry.deleted" class="button button-icon icon ion-trash-a" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&delete={{entry.id}}" mm-link capture-link="true" title="{{ 'mm.core.delete' | translate }}"></a>
+<a ng-if="action == 'delete' && entry.deleted" class="button button-icon icon ion-reply" ng-click="undoDelete(entry.id)" mm-link capture-link="true" title="{{ 'mma.mod_data.restore' | translate }}"></a>
 <a ng-if="action == 'approve'" class="button button-icon icon ion-thumbsup" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&approve={{entry.id}}" mm-link capture-link="true" title="{{ 'mma.mod_data.approve' | translate }}"></a>
 <a ng-if="action == 'disapprove'" class="button button-icon icon ion-minus-circled" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&disapprove={{entry.id}}" mm-link capture-link="true" title="{{ 'mma.mod_data.disapprove' | translate }}"></a>
 

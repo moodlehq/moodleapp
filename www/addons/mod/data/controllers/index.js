@@ -145,23 +145,15 @@ angular.module('mm.addons.mod_data')
         return $mmaModDataOffline.getDatabaseEntries(data.id).then(function(offlineEntries) {
             $scope.hasOffline = !!offlineEntries.length;
 
-            $scope.offlineEntries = {};
+            $scope.offlineActions = {};
 
             // Only show offline entries on first page.
             if ($scope.search.page == 0 && $scope.hasOffline) {
                 angular.forEach(offlineEntries, function(entry) {
-                    if (typeof $scope.offlineEntries[entry.entryid] == "undefined") {
-                        $scope.offlineEntries[entry.entryid] = {
-                            actions: [],
-                            entry: false,
-                            id: entry.entryid,
-
-                        };
+                    if (typeof $scope.offlineActions[entry.entryid] == "undefined") {
+                        $scope.offlineActions[entry.entryid] = [];
                     }
-                    if (entry.action == 'add') {
-                        $scope.offlineEntries[entry.entryid].entry = entry.fields;
-                    }
-                    $scope.offlineEntries[entry.entryid].actions.push(entry);
+                    $scope.offlineActions[entry.entryid].push(entry);
                 });
             }
         });
@@ -185,7 +177,7 @@ angular.module('mm.addons.mod_data')
             }
         }).then(function(entries) {
             $scope.numEntries = entries && entries.totalcount;
-            $scope.isEmpty = $scope.numEntries <= 0 && $scope.offlineEntries.length <= 0;
+            $scope.isEmpty = $scope.numEntries <= 0 && $scope.offlineActions.length <= 0;
             $scope.hasNextPage = (($scope.search.page + 1) * mmaModDataPerPage) < $scope.numEntries;
             $scope.entriesRendered = "";
 
@@ -194,23 +186,24 @@ angular.module('mm.addons.mod_data')
 
                 var entriesHTML = data.listtemplateheader;
 
-                $scope.entryContents = {};
-
                 angular.forEach(entries.entries, function(entry) {
+
+                    // Index contents by fieldid.
                     var contents = {};
                     angular.forEach(entry.contents, function(field) {
                         contents[field.fieldid] = field;
                     });
-                    $scope.entryContents[entry.id] = contents;
+                    entry.contents = contents;
+
+                    if (typeof $scope.offlineActions[entry.id] != "undefined") {
+                        entry = $mmaModDataHelper.applyOfflineActions(entry, $scope.offlineActions[entry.id]);
+                    }
 
                     $scope.entries[entry.id] = entry;
 
                     var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
 
                     entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
-                    if (typeof $scope.offlineEntries[entry.id] != "undefined") {
-                        $scope.offlineEntries[entry.id].entry = entry;
-                    }
                 });
 
                 entriesHTML += data.listtemplatefooter;
@@ -363,7 +356,7 @@ angular.module('mm.addons.mod_data')
 
     // Refresh entry on change.
     entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
-        if (data.id == eventData.dataId && $mmSite.getId() == eventData.siteId) {
+        if (data.id == eventData.dataId && siteId == eventData.siteId) {
             $scope.databaseLoaded = false;
             return fetchDatabaseData(true);
         }

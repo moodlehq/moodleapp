@@ -44,7 +44,7 @@ angular.module('mm.addons.mod_data')
      * @return {String}           Generated HTML.
      */
     self.displayShowFields = function(template, fields, entryId, mode, actions) {
-        var replace;
+        var replace, render;
 
         // Replace the fields found on template.
         angular.forEach(fields, function(field) {
@@ -53,14 +53,14 @@ angular.module('mm.addons.mod_data')
             replace = new RegExp(replace, 'g');
 
             // Replace field by a generic directive.
-            var render = '<mma-mod-data-field mode="'+mode+'" field="fields['+ field.id + ']" value="entryContents['+ entryId +']['+ field.id + ']" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
+            render = '<mma-mod-data-field mode="'+mode+'" field="fields['+ field.id + ']" value="entries['+ entryId +'].contents['+ field.id + ']" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
             template = template.replace(replace, render);
         });
 
         angular.forEach(actions, function(enabled, action) {
             replace = new RegExp("##" + action + "##", 'g');
             if (enabled) {
-                var render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +']" database="data"></mma-mod-data-action>';
+                render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +']" database="data"></mma-mod-data-action>';
                 template = template.replace(replace, render);
             } else {
                 template = template.replace(replace, "");
@@ -104,6 +104,35 @@ angular.module('mm.addons.mod_data')
         replacements.export = false;
 
         return replacements;
+    };
+
+    /**
+     * Returns the record with the offline actions applied.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#applyOfflineActions
+     * @param  {Object} record         Entry to modify.
+     * @param  {Object} offlineActions Offline data with the actions done.
+     * @return {Object}                Modified entry.
+     */
+    self.applyOfflineActions = function(record, offlineActions) {
+        console.error(record, offlineActions);
+
+        angular.forEach(offlineActions, function(action) {
+            switch (action.action) {
+                case 'approve':
+                    record.approved = true;
+                    break;
+                case 'disapprove':
+                    record.approved = false;
+                    break;
+                case 'delete':
+                    record.deleted = true;
+                    break;
+            }
+        });
+        return record;
     };
 
     /**
@@ -501,7 +530,7 @@ angular.module('mm.addons.mod_data')
      * @return {Promise}        Containing and array of EntryId.
      */
     self.getAllEntriesIds = function(dataId, groupId, siteId) {
-        return $mmaModData.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, undefined, true, undefined, siteId)
+        return $mmaModData.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, true, undefined, undefined, siteId)
                 .then(function(entries) {
             return entries.map(function(entry) {
                 return entry.id;
