@@ -1,5 +1,6 @@
 
-const {app, BrowserWindow, ipcMain, shell} = require('electron');
+// dialog isn't used, but not requiring it throws an error.
+const {app, BrowserWindow, ipcMain, shell, dialog} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
