@@ -413,7 +413,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFS#getFileSizeFromFileEntry
+     * @name $mmFS#getFileObjectFromFileEntry
      * @param  {String} path Relative path to the file.
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */

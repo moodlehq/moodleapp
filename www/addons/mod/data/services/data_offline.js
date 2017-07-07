@@ -224,12 +224,13 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModDataOffline#getEntryFolder
      * @param  {Number} dataId      Database ID.
      * @param  {Number} entryId     The ID of the entry.
+     * @param  {Number} fieldId     Field ID.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved with the path.
      */
-    self.getEntryFolder = function(dataId, entryId, siteId) {
+    self.getEntryFieldFolder = function(dataId, entryId, fieldId ,siteId) {
         return self.getDatabaseFolder(dataId, siteId).then(function(folderPath) {
-            return $mmFS.concatenatePaths(folderPath, 'entry_' + entryId);
+            return $mmFS.concatenatePaths(folderPath, 'entry_' + entryId + '_' + fieldId);
         });
     };
 

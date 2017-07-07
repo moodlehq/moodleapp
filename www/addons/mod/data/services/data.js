@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModData
  */
 .factory('$mmaModData', function($q, $mmSitesManager, mmaModDataComponent, $mmFilepool, $mmSite, mmaModDataPerPage, $mmApp, $mmUtil,
-        $mmaModDataOffline) {
+        $mmaModDataOffline, $mmaModDataFieldsDelegate) {
     var self = {};
 
     /**
@@ -413,7 +413,7 @@ angular.module('mm.addons.mod_data')
 
         // Get if the opposite action is not synced.
         var action = approve ? 'disapprove' : 'approve';
-        return $mmaModDataOffline.getEntry(dataId, entryId, action, siteId).then(function(entry) {
+        return $mmaModDataOffline.getEntry(dataId, entryId, action, siteId).then(function() {
             // Found. Just delete the action.
             return $mmaModDataOffline.deleteEntry(dataId, entryId, action, siteId);
         }).catch(function() {
@@ -446,7 +446,7 @@ angular.module('mm.addons.mod_data')
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModData#approveEntry
+     * @name $mmaModData#approveEntryOnline
      * @param   {Number}    entryId         Entry ID.
      * @param   {Boolean}   approve         Whether to approve (true) or unapprove the entry.
      * @return  {Promise}            Promise resolved when the action is done. Rejected with object containing
@@ -532,7 +532,7 @@ angular.module('mm.addons.mod_data')
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModData#deleteEntry
+     * @name $mmaModData#deleteEntryOnline
      * @param   {Number}    entryId  Entry ID.
      * @param   {String}    [siteId] Site ID. If not defined, current site.
      * @return  {Promise}            Promise resolved when the action is done. Rejected with object containing
@@ -586,19 +586,128 @@ angular.module('mm.addons.mod_data')
      * @module mm.addons.mod_data
      * @ngdoc method
      * @name $mmaModData#editEntry
+     * @param   {Number}    dataId          Database ID.
+     * @param   {Number}    entryId         Entry ID.
+     * @param   {Number}    courseId        Entry ID.
+     * @param   {Object}    fields          The fields that define the contents;
+     * @param   {Object}    contents        The contents data to be updated.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   forceOffline    Force editing entry in offline.
+     * @return  {Promise}                   Promise resolved when the action is done.
+     */
+    self.editEntry = function(dataId, entryId, courseId, contents, fields, siteId, forceOffline) {
+        siteId = siteId || $mmSite.getId();
+        var justAdded = false,
+            groupId;
+
+        if (!$mmApp.isOnline() || forceOffline) {
+            var notifications = checkFields(fields, contents);
+            if (notifications) {
+                return {
+                    fieldnotifications: notifications
+                };
+            }
+        }
+
+        // Get if the opposite action is not synced.
+        return $mmaModDataOffline.getEntryActions(dataId, entryId, siteId).then(function(entries) {
+            if (entries && entries.length) {
+                // Found. Delete add and edit actions first.
+                var proms = [];
+                angular.forEach(entries, function(entry) {
+                    if (entry.action == 'add') {
+                        justAdded = true;
+                        groupId = entry.groupid;
+                        proms.push($mmaModDataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
+                    } else if (entry.action == 'edit') {
+                        proms.push($mmaModDataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
+                    }
+                });
+
+                return $q.all(proms);
+            }
+        }).then(function(){
+            if (justAdded) {
+                // The field was added offline, add again and stop.
+                return self.addEntry(dataId, contents, groupId, siteId, forceOffline);
+            }
+
+            if (!$mmApp.isOnline() || forceOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.editEntryOnline(entryId, contents, siteId).catch(function(error) {
+                if (error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a data to be synchronized later.
+        function storeOffline() {
+            return $mmaModDataOffline.saveEntry(dataId, entryId, 'edit', courseId, contents, undefined, siteId).then(function() {
+                return {
+                    updated: true
+                };
+            });
+        }
+    };
+
+    function checkFields(fields, contents) {
+        var notifications = [],
+            notification,
+            contentsIndexed = {};
+
+        angular.forEach(contents, function(content) {
+            if (typeof contentsIndexed[content.fieldid] == "undefined") {
+                contentsIndexed[content.fieldid] = [];
+            }
+            contentsIndexed[content.fieldid].push(content);
+        });
+
+        // App is offline, check required fields.
+        angular.forEach(fields, function(field) {
+            notification = $mmaModDataFieldsDelegate.getFieldsNotifications(field, contentsIndexed[field.id]);
+            if (notification) {
+                notifications.push({
+                    fieldname: field.name,
+                    notification: notification
+                });
+            }
+        });
+
+        return notifications.length ? notifications : false;
+    }
+
+    /**
+     * Updates an existing entry. It does not cache calls. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#editEntryOnline
      * @param   {Number}    entryId         Entry ID.
      * @param   {Object}    data            The fields data to be updated.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the action is done.
      */
-    self.editEntry = function(entryId, data, siteId) {
+    self.editEntryOnline = function(entryId, data, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     entryid: entryId,
                     data: data
                 };
 
-            return site.write('mod_data_update_entry', params);
+            return site.write('mod_data_update_entry', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            });
         });
     };
 

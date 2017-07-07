@@ -23,20 +23,23 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataEditCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $q, $mmUtil, $mmaModDataHelper,
         $mmGroups, $ionicHistory, $mmEvents, mmaModDataEventEntryChanged, $mmSite, $translate, $mmFileUploaderHelper, $timeout,
-        $ionicScrollDelegate) {
+        $ionicScrollDelegate, $mmApp, $mmaModDataOffline) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         data,
         scrollView,
+        offlineActions,
         siteId = $mmSite.getId(),
-        entryId = $stateParams.entryid || false;
+        offline = !$mmApp.isOnline(),
+        entryId = $stateParams.entryid || false,
+        editing = entryId > 0,
+        entry;
 
     $scope.title = module.name;
     $scope.component = mmaModDataComponent;
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
-    $scope.entryContents = {};
 
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     $mmUtil.blockLeaveView($scope, cancel);
@@ -53,16 +56,8 @@ angular.module('mm.addons.mod_data')
         }).then(function(accessData) {
             $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
 
-            if (entryId) {
-                // Editing, group is set.
-                return $mmaModData.getEntry(data.id, entryId).then(function(entryData) {
-                    $scope.entryContents = {};
-                    angular.forEach(entryData.entry.contents, function(field) {
-                        $scope.entryContents[field.fieldid] = field;
-                    });
-                });
-            } else {
-                // Adding, get groups.
+            if (!editing) {
+                // Adding, get groups because it's not set.
                 return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
                     $scope.groupInfo = groupInfo;
 
@@ -82,14 +77,37 @@ angular.module('mm.addons.mod_data')
                 });
             }
         }).then(function() {
+            return $mmaModDataOffline.getEntryActions(data.id, entryId);
+        }).then(function(actions) {
+            offlineActions = actions;
+
             return $mmaModData.getFields(data.id);
-        }).then(function(fields) {
+        }).then(function(fieldsData) {
             $scope.fields = {};
-            angular.forEach(fields, function(field) {
+            angular.forEach(fieldsData, function(field) {
                 $scope.fields[field.id] = field;
             });
 
-            $scope.editForm = $mmaModDataHelper.displayEditFields(data.addtemplate, $scope.fields, $scope.entryContents);
+            if (editing) {
+                return $mmaModData.getEntry(data.id, entryId);
+            }
+        }).then(function(entryData) {
+            if (entryData) {
+                entry = entryData.entry;
+
+                // Index contents by fieldid.
+                var contents = {};
+                angular.forEach(entry.contents, function(field) {
+                    contents[field.fieldid] = field;
+                });
+                entry.contents = contents;
+            }
+
+            return $mmaModDataHelper.applyOfflineActions(entry, offlineActions, $scope.fields);
+        }).then(function(entryData) {
+            $scope.entry = entryData;
+
+            $scope.editForm = $mmaModDataHelper.displayEditFields(data.addtemplate, $scope.fields, entryData.contents);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -109,7 +127,7 @@ angular.module('mm.addons.mod_data')
     // Saves data.
     $scope.save = function() {
         return $mmaModDataHelper.hasEditDataChanged(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
-                $scope.entryContents).then(function(changed) {
+                $scope.entry.contents).then(function(changed) {
 
             if (!changed) {
                 if (entryId) {
@@ -122,14 +140,24 @@ angular.module('mm.addons.mod_data')
 
             var modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-            return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
-                    $scope.entryContents).then(function(editData) {
+            return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id, entryId,
+                    $scope.entry.contents, offline).catch(function(e) {
+                if (!offline) {
+                    // Cannot submit in online, prepare for offline usage.
+                    offline = true;
+
+                    return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
+                        entryId, $scope.entry.contents, offline);
+                }
+
+                return $q.reject(e);
+            }).then(function(editData) {
 
                 if (editData.length > 0) {
                     if (entryId) {
-                        return $mmaModData.editEntry(entryId, editData);
+                        return $mmaModData.editEntry(data.id, entryId, courseId, editData, $scope.fields, undefined, offline);
                     }
-                    return $mmaModData.addEntry(data.id, editData, $scope.selectedGroup);
+                    return $mmaModData.addEntry(data.id, editData, $scope.selectedGroup, undefined, offline);
                 }
              }).then(function(result) {
                 if (!result) {
@@ -186,7 +214,7 @@ angular.module('mm.addons.mod_data')
 
     function returnToEntryList() {
         return $mmaModDataHelper.getEditTmpFiles(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
-                $scope.entryContents).then(function(files) {
+                $scope.entry.contents).then(function(files) {
             $mmFileUploaderHelper.clearTmpFiles(files);
         }).finally(function() {
             // Go back to discussions list.
@@ -197,7 +225,7 @@ angular.module('mm.addons.mod_data')
     // Just ask to confirm the lost of data.
     function cancel() {
         return $mmaModDataHelper.hasEditDataChanged(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
-                $scope.entryContents).then(function(changed) {
+                $scope.entry.contents).then(function(changed) {
             if (!changed) {
                 return $q.when();
             }
@@ -206,7 +234,7 @@ angular.module('mm.addons.mod_data')
         }).then(function() {
             // Delete the local files from the tmp folder.
             return $mmaModDataHelper.getEditTmpFiles(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
-                    $scope.entryContents).then(function(files) {
+                    $scope.entry.contents).then(function(files) {
                 $mmFileUploaderHelper.clearTmpFiles(files);
             });
         });

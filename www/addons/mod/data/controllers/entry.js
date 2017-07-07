@@ -99,7 +99,10 @@ angular.module('mm.addons.mod_data')
             });
             entry.contents = contents;
 
-            $scope.entry = $mmaModDataHelper.applyOfflineActions(entry, offlineActions);
+            return $mmaModDataHelper.applyOfflineActions(entry, offlineActions, $scope.fields);
+        }).then(function(entryData) {
+            $scope.entry = entryData;
+
             $scope.entries[entryId] = $scope.entry;
 
             var actions = $mmaModDataHelper.getActions(data, access, $scope.entry);

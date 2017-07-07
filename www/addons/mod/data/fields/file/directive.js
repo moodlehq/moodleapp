@@ -32,7 +32,7 @@ angular.module('mm.addons.mod_data')
                 scope.component = mmaModDataComponent;
                 scope.componentId = scope.database.coursemodule;
 
-                scope.files = angular.copy(scope.value && scope.value.files) || [];
+                scope.files = (scope.value && scope.value.files) || [];
 
                 // Reduce to first element.
                 if (scope.files.length > 0) {

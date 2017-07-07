@@ -184,10 +184,9 @@ angular.module('mm.addons.mod_data')
             if (!$scope.isEmpty) {
                 $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
 
-                var entriesHTML = data.listtemplateheader;
+                var promises = [];
 
                 angular.forEach(entries.entries, function(entry) {
-
                     // Index contents by fieldid.
                     var contents = {};
                     angular.forEach(entry.contents, function(field) {
@@ -196,19 +195,26 @@ angular.module('mm.addons.mod_data')
                     entry.contents = contents;
 
                     if (typeof $scope.offlineActions[entry.id] != "undefined") {
-                        entry = $mmaModDataHelper.applyOfflineActions(entry, $scope.offlineActions[entry.id]);
+                        promises.push($mmaModDataHelper.applyOfflineActions(entry, $scope.offlineActions[entry.id], $scope.fields));
+                    } else {
+                        promises.push($q.when(entry));
                     }
-
-                    $scope.entries[entry.id] = entry;
-
-                    var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
-
-                    entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
                 });
 
-                entriesHTML += data.listtemplatefooter;
+                return $q.all(promises).then(function(entries) {
+                    var entriesHTML = data.listtemplateheader;
 
-                $scope.entriesRendered = entriesHTML;
+                    angular.forEach(entries, function(entry) {
+                        $scope.entries[entry.id] = entry;
+
+                        var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
+
+                        entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
+                    });
+                    entriesHTML += data.listtemplatefooter;
+
+                    $scope.entriesRendered = entriesHTML;
+                });
             } else if (!$scope.search.searching) {
                 $scope.canSearch = false;
             }

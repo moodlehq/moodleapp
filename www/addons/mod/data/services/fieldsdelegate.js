@@ -123,6 +123,20 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Check if field type manage files or not.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataFieldsDelegate#hasFiles
+     * @param  {Object} field  Defines the field to be checked.
+     * @return {Boolean}       If the field type manages files.
+     */
+    self.hasFiles = function(field) {
+        var handler = self.getPluginHandler(field.type);
+        return handler && handler.getFieldEditFiles;
+    };
+
+    /**
      * Check if the data has changed for a certain field.
      *
      * @module mm.addons.mod_data
@@ -141,6 +155,44 @@ angular.module('mm.addons.mod_data')
             });
         }
         return $q.when();
+    };
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataFieldsDelegate#getFieldsNotification
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        var handler = self.getPluginHandler(field.type);
+        if (handler && handler.getFieldsNotifications) {
+            return handler.getFieldsNotifications(field, inputData);
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataFieldsDelegate#overrideData
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @param  {Array}  offlineFiles        Array with all the offline files in the field.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(field, originalContent, offlineContent, offlineFiles) {
+        var handler = self.getPluginHandler(field.type);
+        if (handler && handler.overrideData) {
+            return handler.overrideData(originalContent, offlineContent, offlineFiles);
+        }
+        return originalContent;
     };
 
     /**
@@ -197,6 +249,11 @@ angular.module('mm.addons.mod_data')
      *                                                           Should return if field has been changed by the user.
      *                             - getFieldEditFiles(field, inputData, originalFieldData) Optional.
      *                                                           Should return an array of files stored in temp store.
+     *                             - getFieldsNotifications(field, inputData) Optional.
+     *                                                           Should return an array of notifications before sending data.
+     *                             - overrideData(originalContent, offlineContent, offlineFiles) Optional.
+     *                                                            Should return and object with the overriden content from offline
+     *                                                            submission.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

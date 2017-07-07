@@ -8,13 +8,18 @@
 .mm-data-contents {
   overflow: visible;
   white-space: normal;
-  word-break: break-all;
+  word-break: break-word;
   padding: $item-padding;
   background-color: white;
   border-top-width: $item-border-width;
   border-bottom-width: $item-border-width;
   border-style: solid;
   border-color: $item-default-border;
+
+  td {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
 }
 
 #mma-mod_data-advanced-search-form,

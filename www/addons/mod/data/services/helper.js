@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataHelper
  */
-.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader) {
+.factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader, $mmSite,
+        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper) {
 
     var self = {
             searchOther: {
@@ -44,6 +45,10 @@ angular.module('mm.addons.mod_data')
      * @return {String}           Generated HTML.
      */
     self.displayShowFields = function(template, fields, entryId, mode, actions) {
+        if (!template) {
+            return "";
+        }
+
         var replace, render;
 
         // Replace the fields found on template.
@@ -114,11 +119,11 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModDataHelper#applyOfflineActions
      * @param  {Object} record         Entry to modify.
      * @param  {Object} offlineActions Offline data with the actions done.
+     * @param  {Object} fields         Entry defined fields indexed by fieldid.
      * @return {Object}                Modified entry.
      */
-    self.applyOfflineActions = function(record, offlineActions) {
-        console.error(record, offlineActions);
-
+    self.applyOfflineActions = function(record, offlineActions, fields) {
+        var promises  = [];
         angular.forEach(offlineActions, function(action) {
             switch (action.action) {
                 case 'approve':
@@ -130,9 +135,38 @@ angular.module('mm.addons.mod_data')
                 case 'delete':
                     record.deleted = true;
                     break;
+                case 'edit':
+                    var offlineContents = {};
+                    angular.forEach(action.fields, function(offlineContent) {
+                        if (typeof offlineContents[offlineContent.fieldid] == "undefined") {
+                            offlineContents[offlineContent.fieldid] = {};
+                        }
+
+                        if (offlineContent.subfield) {
+                            offlineContents[offlineContent.fieldid][offlineContent.subfield] = JSON.parse(offlineContent.value);
+                        } else {
+                            offlineContents[offlineContent.fieldid][''] = JSON.parse(offlineContent.value);
+                        }
+                    });
+
+                    // Override field contents.
+                    angular.forEach(fields, function(field) {
+                        if ($mmaModDataFieldsDelegate.hasFiles(field)) {
+                            promises.push(self.getStoredFiles(record.dataid, record.id, field.id).then(function(offlineFiles) {
+                                record.contents[field.id] = $mmaModDataFieldsDelegate.overrideData(field, record.contents[field.id],
+                                        offlineContents[field.id], offlineFiles);
+                            }));
+                        } else {
+                            record.contents[field.id] = $mmaModDataFieldsDelegate.overrideData(field, record.contents[field.id],
+                                    offlineContents[field.id]);
+                        }
+                    });
+                    break;
             }
         });
-        return record;
+        return $q.all(promises).then(function() {
+            return record;
+        });
     };
 
     /**
@@ -146,6 +180,10 @@ angular.module('mm.addons.mod_data')
      * @return {String}         Generated HTML.
      */
     self.displayAdvancedSearchFields = function(template, fields) {
+        if (!template) {
+            return "";
+        }
+
         var replace;
 
         // Replace the fields found on template.
@@ -261,6 +299,10 @@ angular.module('mm.addons.mod_data')
      * @return {String}         Generated HTML.
      */
     self.displayEditFields = function(template, fields) {
+        if (!template) {
+            return "";
+        }
+
         var replace;
 
         // Replace the fields found on template.
@@ -270,7 +312,7 @@ angular.module('mm.addons.mod_data')
             replace = new RegExp(replace, 'g');
 
             // Replace field by a generic directive.
-            var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entryContents['+ field.id + ']" database="data" error="errors['+ field.id + ']"></mma-mod-data-field>';
+            var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entry.contents['+ field.id + ']" database="data" error="errors['+ field.id + ']"></mma-mod-data-field>';
             template = template.replace(replace, render);
 
             // Replace the field id tag.
@@ -294,13 +336,18 @@ angular.module('mm.addons.mod_data')
      * @param  {Object}  form            Form (DOM element).
      * @param  {Array}   fields          Fields that defines every content in the entry.
      * @param  {Number}  [dataId]        Database Id. If set, files will be uploaded and itemId set.
-     * @param  {Object}   entryContents  Original entry contents indexed by field id.
+     * @param  {Number}  entryId         Entry Id.
+     * @param  {Object}  entryContents   Original entry contents indexed by field id.
+     * @param  {Boolean} offline         True to prepare the data for an offline uploading, false otherwise.
+     * @param  {String}  [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                 That contains object with the answers.
      */
-    self.getEditDataFromForm = function(form, fields, dataId, entryContents) {
+    self.getEditDataFromForm = function(form, fields, dataId, entryId, entryContents, offline, siteId) {
         if (!form || !form.elements) {
             return $q.when({});
         }
+
+        siteId = siteId || $mmSite.getId();
 
         var formData = getFormData(form);
 
@@ -318,7 +365,7 @@ angular.module('mm.addons.mod_data')
 
                         // Upload Files if asked.
                         if (dataId && data.files) {
-                            dataProm = self.uploadOrStoreFiles(dataId, 0, undefined, data.files).then(function(itemId) {
+                            dataProm = self.uploadOrStoreFiles(dataId, 0, entryId, data.fieldid, data.files, offline, siteId).then(function(itemId) {
                                 delete data.files;
                                 data.value = itemId;
                             });
@@ -423,18 +470,78 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModDataHelper#uploadOrStoreFiles
      * @param  {Number}   dataId        Database ID.
      * @param  {Number}   [itemId]      Draft ID to use. Undefined or 0 to create a new draft ID.
-     * @param  {Number}   [timecreated] The time the entry was created.
+     * @param  {Number}   entryId       Entry ID or, if creating, timemodified.
+     * @param  {Number}   fieldId       Field ID.
      * @param  {Object[]} files         List of files.
      * @param  {Boolean}  offline       True if files sould be stored for offline, false to upload them.
      * @param  {String}   [siteId]      Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved if success.
      */
-    self.uploadOrStoreFiles = function(dataId, itemId, timecreated, files, offline, siteId) {
+    self.uploadOrStoreFiles = function(dataId, itemId, entryId, fieldId, files, offline, siteId) {
         if (offline) {
-            // @todo in future issues.
-            //return self.storeFiles(dataId, timecreated, files, siteId);
+            return self.storeFiles(dataId, entryId, fieldId, files, siteId);
         }
         return $mmFileUploader.uploadOrReuploadFiles(files, mmaModDataComponent, itemId, siteId);
+    };
+
+    /**
+     * Given a list of files (either online files or local files), store the local files in a local folder
+     * to be submitted later.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#storeFiles
+     * @param  {Number}   dataId     Database ID.
+     * @param  {Number}   entryId    Entry ID or, if creating, timemodified.
+     * @param  {Number}   fieldId    Field ID.
+     * @param  {Object[]} files      List of files.
+     * @param  {String}   [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved if success, rejected otherwise.
+     */
+    self.storeFiles = function(dataId, entryId, fieldId, files, siteId) {
+        // Get the folder where to store the files.
+        return $mmaModDataOffline.getEntryFieldFolder(dataId, entryId, fieldId, siteId).then(function(folderPath) {
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
+        });
+    };
+
+    /**
+     * Delete stored attachment files for an entry.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#deleteStoredFiles
+     * @param  {Number}   dataId     Database ID.
+     * @param  {Number}   entryId    Entry ID or, if creating, timemodified.
+     * @param  {Number}   fieldId    Field ID.
+     * @param  {String}   [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved when deleted.
+     */
+    self.deleteStoredFiles = function(dataId, entryId, fieldId, siteId) {
+        return $mmaModDataOffline.getEntryFieldFolder(dataId, entryId, fieldId, siteId).then(function(folderPath) {
+            return $mmFS.removeDir(folderPath);
+        });
+    };
+
+    /**
+     * Get a list of stored attachment files for a new entry. See $mmaModDataHelper#storeFiles.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getStoredFiles
+     * @param  {Number}   dataId     Database ID.
+     * @param  {Number}   entryId    Entry ID or, if creating, timemodified.
+     * @param  {Number}   fieldId    Field ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the files.
+     */
+    self.getStoredFiles = function(dataId, entryId, fieldId, siteId) {
+        return $mmaModDataOffline.getEntryFieldFolder(dataId, entryId, fieldId, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function(b) {
+                // Ignore not found files.
+                return [];
+            });
+        });
     };
 
     /**
