@@ -216,7 +216,7 @@ angular.module('mm.core.emulator')
                             }
                         }
 
-                        successCallback(entries);
+                        successCallback && successCallback(entries);
                     } catch(ex) {
                         errorCallback && errorCallback(ex);
                     }
@@ -259,7 +259,7 @@ angular.module('mm.core.emulator')
 
         $window.Entry.prototype.setMetadata = function(successCallback, errorCallback, metadataObject) {
             // Not supported.
-            errorCallback('Not supported');
+            errorCallback && errorCallback('Not supported');
         };
 
         $window.Entry.prototype.moveTo = function(parent, newName, successCallback, errorCallback) {
@@ -318,9 +318,9 @@ angular.module('mm.core.emulator')
             var removeFn = this.isDirectory ? fs.rmdir : fs.unlink;
             removeFn(this.fullPath, function(err) {
                 if (err < 0) {
-                    errorCallback(err);
+                    errorCallback && errorCallback(err);
                 } else {
-                    successCallback();
+                    successCallback && successCallback();
                 }
             });
         };
@@ -521,7 +521,7 @@ angular.module('mm.core.emulator')
         // Success, return the DirectoryEntry or FileEntry.
         function success() {
             var constructorFn = isDir ? DirectoryEntry : FileEntry;
-            successCallback(new constructorFn(filename, fileDirPath));
+            successCallback && successCallback(new constructorFn(filename, fileDirPath));
         }
 
         // Create the file/dir.
