@@ -153,7 +153,7 @@ angular.module('mm.addons.mod_data')
      * @return {Object}                     Data overriden
      */
     self.overrideData = function(originalContent, offlineContent, offlineFiles) {
-        if (offlineContent && offlineContent.file && offlineContent.file.offline > 0) {
+        if (offlineContent && offlineContent.file && offlineContent.file.offline > 0 && offlineFiles && offlineFiles.length > 0) {
             originalContent.content = offlineFiles[0].filename;
             originalContent.files = [offlineFiles[0]];
         } else if (offlineContent && offlineContent.file && offlineContent.file.online && offlineContent.file.online.length > 0) {

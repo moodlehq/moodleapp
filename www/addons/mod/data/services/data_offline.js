@@ -29,6 +29,9 @@ angular.module('mm.addons.mod_data')
                     name: 'courseid'
                 },
                 {
+                    name: 'groupid'
+                },
+                {
                     name: 'action'
                 },
                 {
@@ -175,23 +178,25 @@ angular.module('mm.addons.mod_data')
      * @param  {String} entryId         Database entry Id. If action is add entryId should be 0 and -timemodified will be used.
      * @param  {String} action          Action to be done to the entry: [add, edit, delete, approve, disapprove]
      * @param  {Number} courseId        Course ID of the database.
+     * @param  {Number} [groupId]       Group ID. ONly provided when adding.
      * @param  {Array}  [fields]        Array of field data of the entry if needed.
      * @param  {Number} [timemodified]  The time the entry was modified. If not defined, current time.
      * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved if stored, rejected if failure.
      */
-    self.saveEntry = function(dataId, entryId, action, courseId, fields, timemodified, siteId) {
+    self.saveEntry = function(dataId, entryId, action, courseId, groupId, fields, timemodified, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             timemodified = timemodified || new Date().getTime();
+            entryId = typeof entryId == "undefined" || entryId === false ? -timemodified : entryId;
             var entry = {
                     dataid: dataId,
                     courseid: courseId,
+                    groupid: groupId,
                     action: action,
-                    entryid: entryId || -timemodified,
+                    entryid: entryId,
                     fields: fields,
                     timemodified: timemodified
                 };
-
             return site.getDb().insert(mmaModDataEntriesStore, entry);
         });
     };

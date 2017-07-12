@@ -135,6 +135,7 @@ angular.module('mm.addons.mod_data')
                 case 'delete':
                     record.deleted = true;
                     break;
+                case 'add':
                 case 'edit':
                     var offlineContents = {};
                     angular.forEach(action.fields, function(offlineContent) {
@@ -365,9 +366,9 @@ angular.module('mm.addons.mod_data')
 
                         // Upload Files if asked.
                         if (dataId && data.files) {
-                            dataProm = self.uploadOrStoreFiles(dataId, 0, entryId, data.fieldid, data.files, offline, siteId).then(function(itemId) {
+                            dataProm = self.uploadOrStoreFiles(dataId, 0, entryId, data.fieldid, data.files, offline, siteId).then(function(filesResult) {
                                 delete data.files;
-                                data.value = itemId;
+                                data.value = filesResult;
                             });
                         } else {
                             dataProm = $q.when();
@@ -478,10 +479,13 @@ angular.module('mm.addons.mod_data')
      * @return {Promise}                Promise resolved if success.
      */
     self.uploadOrStoreFiles = function(dataId, itemId, entryId, fieldId, files, offline, siteId) {
-        if (offline) {
-            return self.storeFiles(dataId, entryId, fieldId, files, siteId);
+        if (files.length) {
+            if (offline) {
+                return self.storeFiles(dataId, entryId, fieldId, files, siteId);
+            }
+            return $mmFileUploader.uploadOrReuploadFiles(files, mmaModDataComponent, itemId, siteId);
         }
-        return $mmFileUploader.uploadOrReuploadFiles(files, mmaModDataComponent, itemId, siteId);
+        return $q.when(0);
     };
 
     /**
@@ -537,7 +541,7 @@ angular.module('mm.addons.mod_data')
      */
     self.getStoredFiles = function(dataId, entryId, fieldId, siteId) {
         return $mmaModDataOffline.getEntryFieldFolder(dataId, entryId, fieldId, siteId).then(function(folderPath) {
-            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function(b) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function() {
                 // Ignore not found files.
                 return [];
             });

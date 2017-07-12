@@ -146,14 +146,22 @@ angular.module('mm.addons.mod_data')
             $scope.hasOffline = !!offlineEntries.length;
 
             $scope.offlineActions = {};
+            $scope.offlineEntries = {};
 
             // Only show offline entries on first page.
             if ($scope.search.page == 0 && $scope.hasOffline) {
                 angular.forEach(offlineEntries, function(entry) {
-                    if (typeof $scope.offlineActions[entry.entryid] == "undefined") {
-                        $scope.offlineActions[entry.entryid] = [];
+                    if (entry.entryid > 0) {
+                        if (typeof $scope.offlineActions[entry.entryid] == "undefined") {
+                            $scope.offlineActions[entry.entryid] = [];
+                        }
+                        $scope.offlineActions[entry.entryid].push(entry);
+                    } else {
+                        if (typeof $scope.offlineActions[entry.entryid] == "undefined") {
+                            $scope.offlineEntries[entry.entryid] = [];
+                        }
+                        $scope.offlineEntries[entry.entryid].push(entry);
                     }
-                    $scope.offlineActions[entry.entryid].push(entry);
                 });
             }
         });
@@ -184,7 +192,38 @@ angular.module('mm.addons.mod_data')
             if (!$scope.isEmpty) {
                 $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
 
-                var promises = [];
+                var siteInfo = $mmSite.getInfo(),
+                    promises = [];
+
+                angular.forEach($scope.offlineEntries, function(offlineActions) {
+                    var entry;
+
+                    angular.forEach(offlineActions, function(offlineEntry) {
+                        if (offlineEntry.action == 'add') {
+                            entry = {
+                                id: offlineEntry.entryid,
+                                canmanageentry: true,
+                                approved: !data.approval || data.manageapproved,
+                                dataid: offlineEntry.dataid,
+                                groupid: offlineEntry.groupid,
+                                timecreated: -offlineEntry.entryid,
+                                timemodified: -offlineEntry.entryid,
+                                userid: siteInfo.userid,
+                                fullname: siteInfo.fullname,
+                                contents: {}
+                            };
+                        }
+                    });
+
+                    if (entry) {
+                        if (offlineActions.length > 0) {
+                            promises.push($mmaModDataHelper.applyOfflineActions(entry, offlineActions, $scope.fields));
+                        } else {
+                            promises.push($q.when(entry));
+                        }
+                    }
+
+                });
 
                 angular.forEach(entries.entries, function(entry) {
                     // Index contents by fieldid.

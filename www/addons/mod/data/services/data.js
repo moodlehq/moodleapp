@@ -437,7 +437,7 @@ angular.module('mm.addons.mod_data')
         // Convenience function to store a data to be synchronized later.
         function storeOffline() {
             var action = approve ? 'approve' : 'disapprove';
-            return $mmaModDataOffline.saveEntry(dataId, entryId, action, courseId, false, undefined, siteId);
+            return $mmaModDataOffline.saveEntry(dataId, entryId, action, courseId, undefined, false, undefined, siteId);
         }
     };
 
@@ -523,7 +523,7 @@ angular.module('mm.addons.mod_data')
 
         // Convenience function to store a data to be synchronized later.
         function storeOffline() {
-            return $mmaModDataOffline.saveEntry(dataId, entryId, 'delete', courseId, false, undefined, siteId);
+            return $mmaModDataOffline.saveEntry(dataId, entryId, 'delete', courseId, undefined, false, undefined, siteId);
         }
     };
 
@@ -560,12 +560,62 @@ angular.module('mm.addons.mod_data')
      * @ngdoc method
      * @name $mmaModData#addEntry
      * @param   {Number}    dataId          Data instance ID.
+     * @param   {Number}    entryId         Provisiona entry ID when offline.
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Object}    contents        The fields data to be created.
+     * @param   {Number}    [groupId]       Group id, 0 means that the function will determine the user group.
+     * @param   {Object}    fields          The fields that define the contents.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   forceOffline    Force editing entry in offline.
+     * @return  {Promise}                   Promise resolved when the action is done.
+     */
+    self.addEntry = function(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!$mmApp.isOnline() || forceOffline) {
+            var notifications = checkFields(fields, contents);
+            if (notifications) {
+                return {
+                    fieldnotifications: notifications
+                };
+            }
+        }
+
+        return self.addEntryOnline(dataId, contents, groupId, siteId).catch(function(error) {
+            if (error && !error.wserror) {
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            } else {
+                // The WebService has thrown an error or offline not supported, reject.
+                return $q.reject(error.error);
+            }
+            });
+
+        // Convenience function to store a data to be synchronized later.
+        function storeOffline() {
+            return $mmaModDataOffline.saveEntry(dataId, entryId, 'add', courseId, groupId, contents, undefined, siteId)
+                    .then(function(entry) {
+                return {
+                    // Return provissional entry Id.
+                    newentryid: entry[1]
+                };
+            });
+        }
+    };
+
+    /**
+     * Adds a new entry to a database. It does not cache calls. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModData#addEntry
+     * @param   {Number}    dataId          Data instance ID.
      * @param   {Object}    data            The fields data to be created.
      * @param   {Number}    [groupId]       Group id, 0 means that the function will determine the user group.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the action is done.
      */
-    self.addEntry = function(dataId, data, groupId, siteId) {
+    self.addEntryOnline = function(dataId, data, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     databaseid: dataId,
@@ -576,7 +626,12 @@ angular.module('mm.addons.mod_data')
                 params.groupid = groupId;
             }
 
-            return site.write('mod_data_add_entry', params);
+            return site.write('mod_data_add_entry', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            });
         });
     };
 
@@ -588,9 +643,9 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModData#editEntry
      * @param   {Number}    dataId          Database ID.
      * @param   {Number}    entryId         Entry ID.
-     * @param   {Number}    courseId        Entry ID.
-     * @param   {Object}    fields          The fields that define the contents;
+     * @param   {Number}    courseId        Course ID.
      * @param   {Object}    contents        The contents data to be updated.
+     * @param   {Object}    fields          The fields that define the contents.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @param   {Boolean}   forceOffline    Force editing entry in offline.
      * @return  {Promise}                   Promise resolved when the action is done.
@@ -609,7 +664,7 @@ angular.module('mm.addons.mod_data')
             }
         }
 
-        // Get if the opposite action is not synced.
+        // Get other not not synced actions.
         return $mmaModDataOffline.getEntryActions(dataId, entryId, siteId).then(function(entries) {
             if (entries && entries.length) {
                 // Found. Delete add and edit actions first.
@@ -629,7 +684,7 @@ angular.module('mm.addons.mod_data')
         }).then(function(){
             if (justAdded) {
                 // The field was added offline, add again and stop.
-                return self.addEntry(dataId, contents, groupId, siteId, forceOffline);
+                return self.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline);
             }
 
             if (!$mmApp.isOnline() || forceOffline) {
@@ -650,7 +705,8 @@ angular.module('mm.addons.mod_data')
 
         // Convenience function to store a data to be synchronized later.
         function storeOffline() {
-            return $mmaModDataOffline.saveEntry(dataId, entryId, 'edit', courseId, contents, undefined, siteId).then(function() {
+            return $mmaModDataOffline.saveEntry(dataId, entryId, 'edit', courseId, undefined, contents, undefined, siteId)
+                    .then(function() {
                 return {
                     updated: true
                 };

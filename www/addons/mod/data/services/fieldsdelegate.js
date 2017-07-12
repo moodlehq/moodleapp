@@ -189,8 +189,8 @@ angular.module('mm.addons.mod_data')
      */
     self.overrideData = function(field, originalContent, offlineContent, offlineFiles) {
         var handler = self.getPluginHandler(field.type);
-        if (handler && handler.overrideData) {
-            return handler.overrideData(originalContent, offlineContent, offlineFiles);
+        if (handler && handler.overrideData && offlineContent) {
+            return handler.overrideData(originalContent || {}, offlineContent, offlineFiles);
         }
         return originalContent;
     };

@@ -33,7 +33,6 @@ angular.module('mm.addons.mod_data')
         siteId = $mmSite.getId(),
         offline = !$mmApp.isOnline(),
         entryId = $stateParams.entryid || false,
-        editing = entryId > 0,
         entry;
 
     $scope.title = module.name;
@@ -56,7 +55,7 @@ angular.module('mm.addons.mod_data')
         }).then(function(accessData) {
             $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
 
-            if (!editing) {
+            if (entryId !== false) {
                 // Adding, get groups because it's not set.
                 return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
                     $scope.groupInfo = groupInfo;
@@ -88,8 +87,30 @@ angular.module('mm.addons.mod_data')
                 $scope.fields[field.id] = field;
             });
 
-            if (editing) {
+            if (entryId > 0) {
                 return $mmaModData.getEntry(data.id, entryId);
+            }
+
+            for (var x in offlineActions) {
+                if (offlineActions[x].action == 'add') {
+                    offlineEntry = offlineActions[x];
+
+                    var siteInfo = $mmSite.getInfo(),
+                        entryData = {
+                            id: offlineEntry.entryid,
+                            canmanageentry: true,
+                            approved: !data.approval || data.manageapproved,
+                            dataid: offlineEntry.dataid,
+                            groupid: offlineEntry.groupid,
+                            timecreated: -offlineEntry.entryid,
+                            timemodified: -offlineEntry.entryid,
+                            userid: siteInfo.userid,
+                            fullname: siteInfo.fullname,
+                            contents: {}
+                        };
+
+                    return $q.when({entry: entryData});
+                }
             }
         }).then(function(entryData) {
             if (entryData) {
@@ -101,13 +122,16 @@ angular.module('mm.addons.mod_data')
                     contents[field.fieldid] = field;
                 });
                 entry.contents = contents;
+            } else {
+                entry = {};
+                entry.contents = {};
             }
 
             return $mmaModDataHelper.applyOfflineActions(entry, offlineActions, $scope.fields);
         }).then(function(entryData) {
             $scope.entry = entryData;
 
-            $scope.editForm = $mmaModDataHelper.displayEditFields(data.addtemplate, $scope.fields, entryData.contents);
+            $scope.editForm = $mmaModDataHelper.displayEditFields(data.addtemplate, $scope.fields, entry.contents);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -140,24 +164,34 @@ angular.module('mm.addons.mod_data')
 
             var modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-            return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id, entryId,
-                    $scope.entry.contents, offline).catch(function(e) {
+            // Create an ID to assign files.
+            var entryTemp = entryId;
+            if ((typeof entryId == "undefined" || entryId === false) && offline) {
+                entryTemp = - (new Date().getTime());
+            }
+
+            return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
+                    entryTemp, $scope.entry.contents, offline).catch(function(e) {
                 if (!offline) {
                     // Cannot submit in online, prepare for offline usage.
                     offline = true;
+                    if (typeof entryTemp == "undefined") {
+                        entryTemp = - (new Date().getTime());
+                    }
 
                     return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
-                        entryId, $scope.entry.contents, offline);
+                        entryTemp, $scope.entry.contents, offline);
                 }
 
                 return $q.reject(e);
             }).then(function(editData) {
 
                 if (editData.length > 0) {
-                    if (entryId) {
+                    if (entryId !== false) {
                         return $mmaModData.editEntry(data.id, entryId, courseId, editData, $scope.fields, undefined, offline);
                     }
-                    return $mmaModData.addEntry(data.id, editData, $scope.selectedGroup, undefined, offline);
+                    return $mmaModData.addEntry(data.id, entryTemp, courseId, editData, $scope.selectedGroup, $scope.fields, undefined,
+                            offline);
                 }
              }).then(function(result) {
                 if (!result) {
@@ -166,7 +200,7 @@ angular.module('mm.addons.mod_data')
                 }
 
                 // This is done if entry is updated when editing or creating if not.
-                if ((entryId && result.updated) || (!entryId && result.newentryid)) {
+                if ((entryId !== false && result.updated) || (!entryId && result.newentryid)) {
                     var promises = [];
 
                     entryId = entryId || result.newentryid;

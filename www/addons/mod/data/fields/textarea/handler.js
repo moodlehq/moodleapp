@@ -150,7 +150,7 @@ angular.module('mm.addons.mod_data')
      */
     self.overrideData = function(originalContent, offlineContent) {
         originalContent.content = offlineContent[''] || "";
-        if (originalContent.content.length > 0 && originalContent.files.length > 0) {
+        if (originalContent.content.length > 0 && originalContent.files && originalContent.files.length > 0) {
             // Take the original files since we cannot edit them on the app.
             originalContent.content = $mmText.replacePluginfileUrls(originalContent.content, originalContent.files);
         }
