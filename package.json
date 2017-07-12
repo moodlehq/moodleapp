@@ -171,6 +171,14 @@
     "win": {
       "target": "appx",
       "icon": "resources/desktop/icon.ico"
+    },
+    "linux": {
+      "category": "Education",
+      "target": "snap"
+    },
+    "snap": {
+      "plugs": ["default", "camera"],
+      "confinement": "classic"
     }
   }
 }
