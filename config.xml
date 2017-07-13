@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.moodle.targetcampus" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Moodle Mobile</name>
-  <description>Target Campus</description>
+  <name>Target Campus</name>
+  <description>Aptitude Training Organization</description>
   <author href="http://moodle.com" email="kiran@targetcampus.com">Juan Leyva</author>
   <content src="index.html"/>
   <access origin="*"/>
