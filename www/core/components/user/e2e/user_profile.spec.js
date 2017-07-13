@@ -106,8 +106,6 @@ describe('User can view and manage their profile', function() {
         });
     });
 
-    
-
     it('View user badge page', function(done) {
         return MM.loginAsStudent().then(function() {
             return MM.openSideMenu();
