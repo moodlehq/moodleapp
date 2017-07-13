@@ -4,6 +4,7 @@ const {app, BrowserWindow, ipcMain, shell, dialog} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const os = require('os');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -125,7 +126,18 @@ function focusApp() {
 
 // Listen for events sent by the renderer processes (windows).
 ipcMain.on('openItem', (event, path) => {
-    shell.openItem(path);
+    // Add file:// protocol if it isn't there.
+    if (path.indexOf('file://') == -1) {
+        path = 'file://' + path;
+    }
+
+    if (os.platform().indexOf('darwin') > -1) {
+        // Use openExternal in MacOS because openItem doesn't work in sandboxed apps.
+        // https://github.com/electron/electron/issues/9005
+        shell.openExternal(path);
+    } else {
+        shell.openItem(path);
+    }
 });
 
 ipcMain.on('closeSecondaryWindows', () => {
