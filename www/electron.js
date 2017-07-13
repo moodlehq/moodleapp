@@ -126,6 +126,8 @@ function focusApp() {
 
 // Listen for events sent by the renderer processes (windows).
 ipcMain.on('openItem', (event, path) => {
+    var result;
+
     // Add file:// protocol if it isn't there.
     if (path.indexOf('file://') == -1) {
         path = 'file://' + path;
@@ -134,10 +136,17 @@ ipcMain.on('openItem', (event, path) => {
     if (os.platform().indexOf('darwin') > -1) {
         // Use openExternal in MacOS because openItem doesn't work in sandboxed apps.
         // https://github.com/electron/electron/issues/9005
-        shell.openExternal(path);
+        result = shell.openExternal(path);
     } else {
-        shell.openItem(path);
+        result = shell.openItem(path);
     }
+
+    if (!result) {
+        // Cannot open file, probably no app to handle it. Open the folder.
+        result = shell.showItemInFolder(path.replace('file://', ''));
+    }
+
+    event.returnValue = result;
 });
 
 ipcMain.on('closeSecondaryWindows', () => {
