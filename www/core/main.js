@@ -277,6 +277,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 }
             }
         });
+
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
 
@@ -285,6 +286,16 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 ionic.trigger('resize');
             }
         });
+
+        if (!$mmApp.isDevice()) {
+            // Re-define getParentOrSelfWithClass to change the default value of the depth param.
+            // This is to allow scrolling with trackpad when hovering deep elements.
+            var originalFunction = ionic.DomUtil.getParentOrSelfWithClass;
+            ionic.DomUtil.getParentOrSelfWithClass = function(e, className, depth) {
+                depth = depth || 20;
+                return originalFunction(e, className, depth);
+            };
+        }
     });
 
     // Send event when device goes online.
