@@ -11,12 +11,7 @@ exports.config = {
     },
     specs: [
         "../../../e2e/*.js",
-        "../../../www/**/e2e/mod_book.spec.js",
-        "../../../www/**/e2e/mod_label.spec.js",
-        "../../../www/**/e2e/mod_resource.spec.js",
-        "../../../www/**/e2e/mod_folder.spec.js",
-        "../../../www/**/e2e/mod_page.spec.js",
-        "../../../www/**/e2e/mod_url.spec.js"
+        "../../../www/**/e2e/mod_data.spec.js"
     ],
     baseUrl: 'http://localhost:8100/',
     seleniumAddress: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub",

@@ -16,7 +16,7 @@ describe('User can filter courses correctly', function() {
     it('Filter course names by one letter', function (done) {
         return MM.loginAsStudent().then(function () {
             browser.sleep(5000); //wait to render and become clickable
-            return $('[ng-click="switchFilter()"]').click();
+            return MM.clickOnElement($('a[ng-click="switchFilter()"]'));
         }).then(function () {
             return $('[ng-model="courses.filter"]').sendKeys('a');
         }).then(function() {
@@ -30,7 +30,7 @@ describe('User can filter courses correctly', function() {
     it('Filter course names if it is single word or part of the word', function (done) {
         return MM.loginAsStudent().then(function () {
             browser.sleep(5000); //wait to render and become clickable
-            return $('[ng-click="switchFilter()"]').click();
+            return MM.clickOnElement($('a[ng-click="switchFilter()"]'));
         }).then(function () {
             browser.sleep(5000); //wait to render
             return $('[ng-model="courses.filter"]').sendKeys('the');
@@ -45,7 +45,7 @@ describe('User can filter courses correctly', function() {
     it('Can delete some Filtered words and again check the current filter course names', function (done) {
         return MM.loginAsStudent().then(function () {
             browser.sleep(5000); //wait to render and become clickable
-            return $('[ng-click="switchFilter()"]').click();
+            return MM.clickOnElement($('a[ng-click="switchFilter()"]'));
         }).then(function () {
             browser.sleep(5000); //wait to render
             return $('[ng-model="courses.filter"]').sendKeys('the ');

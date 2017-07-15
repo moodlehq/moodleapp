@@ -66,6 +66,9 @@ matrix:
     - script:
       - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-user.js
 
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-other.js
+
 #script:
 #- ./node_modules/protractor/bin/protractor e2e/build/protractor.conf.js
 #- ./node_modules/protractor/bin/protractor e2e/sauce/protractor-sauce-android.js

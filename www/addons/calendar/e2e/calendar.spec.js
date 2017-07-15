@@ -24,12 +24,25 @@ describe('User can manage course calendar event', function() {
         });
     });
 
-    it('User can land the calendar event page', function (done) {
+    it('User can view list of calendar events', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Calendar events');
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Calendar events');
-            expect(MM.getView().getText()).toMatch('There are no events');
+            expect(MM.getView().getText()).toContain('Breakfast club');
+        }).then(function() {
+            done();
+        });
+    });
+
+    it('View a calender event', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('Calendar events');
+        }).then(function() {
+            return MM.clickOn('Breakfast club');
+        }).then(function() {
+            expect(MM.getNavBar().getText()).toMatch('Breakfast club');
+            expect(MM.getView().getText()).toContain('A chance to get together on Saturdays and discuss life');
         }).then(function() {
             done();
         });

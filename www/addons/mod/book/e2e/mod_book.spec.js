@@ -58,17 +58,17 @@ describe('User can manage course book', function() {
         }).then(function() {
             expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
         }).then(function () {
-            return $('[ng-click="action(next)"]').click();
+            return MM.clickOnElement($('[ng-click="action(next)"]'));
         }).then(function() {
             expect(MM.getView().getText()).toMatch('2. Youtube video');
         }).then(function () {
-            return $('[ng-click="action(next)"]').click();
+            return MM.clickOnElement($('[ng-click="action(next)"]'));
         }).then(function() {
             expect(MM.getView().getText()).toMatch('3. Cultural');
         }).then(function() {
-            return $('[ng-click="action(previous)"]').click();
+            return MM.clickOnElement($('[ng-click="action(previous)"]'));
         }).then(function() {
-            return $('[ng-click="action(previous)"]').click();
+            return MM.clickOnElement($('[ng-click="action(previous)"]'));
         }).then(function() {
             expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
         }).then(function() {
