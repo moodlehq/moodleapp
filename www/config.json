@@ -1,7 +1,7 @@
 ﻿{
     "app_id" : "com.moodle.targetcampus",
     "appname": "Target Campus",
-    "versioncode" : "2018",
+    "versioncode" : "1",
     "versionname" : "1.0",
     "cache_expiration_time" : 300000,
     "default_lang" : "en",
