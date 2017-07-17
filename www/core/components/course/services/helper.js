@@ -530,9 +530,10 @@ angular.module('mm.core.course')
                     return $q.reject();
                 }
 
-                return promise.catch(function() {
+                return promise.catch(function(error) {
                     if (!scope.$$destroyed) {
-                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                        return $q.reject();
                     }
                 });
             });
@@ -613,10 +614,7 @@ angular.module('mm.core.course')
 
         // We prefetch all the modules to prevent incoeherences in the download count
         // and also to download stale data that might not be marked as outdated.
-        return $mmCoursePrefetchDelegate.prefetchAll(downloadid, modules, courseid).then(function() {}, function() {
-            // Return a rejected promise so errors are handled outside of this function.
-            return $q.reject();
-        }, function(id) {
+        return $mmCoursePrefetchDelegate.prefetchAll(downloadid, modules, courseid).then(undefined, undefined, function(id) {
             // Progress. Check that the module downloaded is one of the expected ones.
             var index = section.dwnModuleIds.indexOf(id);
             if (index > -1) {
@@ -677,8 +675,8 @@ angular.module('mm.core.course')
         // We need to call getDownloadSize, the package might have been updated.
         return $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
             return $mmUtil.confirmDownloadSize(size).then(function() {
-                return $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
-                    return failPrefetch(!scope.$$destroyed);
+                return $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function(error) {
+                    return failPrefetch(!scope.$$destroyed, error);
                 });
             }, function() {
                 // User hasn't confirmed, stop spinner.

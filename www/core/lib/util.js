@@ -751,7 +751,8 @@ angular.module('mm.core')
         };
 
         function getErrorTitle(message) {
-            if (message == $translate.instant('mm.core.networkerrormsg')) {
+            if (message == $translate.instant('mm.core.networkerrormsg') ||
+                    message == $translate.instant('mm.fileuploader.errormustbeonlinetoupload')) {
                 return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
                     <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
             }

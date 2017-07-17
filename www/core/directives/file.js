@@ -265,8 +265,8 @@ angular.module('mm.core')
                         $mmFilepool.invalidateFileByUrl(siteId, fileUrl).finally(function() {
                             scope.isDownloading = true;
                             $mmFilepool.addToQueueByUrl(siteId, fileUrl, component, componentId, timeModified,
-                                    undefined, 0, scope.file).catch(function() {
-                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    undefined, 0, scope.file).catch(function(error) {
+                                $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                             });
                         });
                     });

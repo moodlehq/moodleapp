@@ -81,6 +81,7 @@ angular.module('mm.core.login')
             if (settings.country && !$scope.data.country) {
                 $scope.data.country = settings.country;
             }
+            $scope.data.recaptcharesponse = ''; // Reset captcha.
 
             $scope.namefieldsErrors = {};
             angular.forEach(settings.namefields, function(field) {
@@ -123,10 +124,14 @@ angular.module('mm.core.login')
     };
 
     // Request another captcha.
-    $scope.requestCaptcha = function() {
+    $scope.requestCaptcha = function(ignoreError) {
         var modal = $mmUtil.showModalLoading();
-        $scope.data.recaptcharesponse = '';
-        getSignupSettings().finally(function() {
+        getSignupSettings().catch(function(err) {
+            if (!ignoreError && err) {
+                $mmUtil.showErrorModal(err);
+            }
+            return $q.reject();
+        }).finally(function() {
             modal.dismiss();
         });
     };
@@ -181,17 +186,14 @@ angular.module('mm.core.login')
                         }
 
                         // Error sending, request another capctha since the current one is probably invalid now.
-                        $scope.requestCaptcha();
+                        $scope.requestCaptcha(true);
                     }
                 });
             }).catch(function(error) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
-                }
+                $mmUtil.showErrorModalDefault(error && error.error, 'mm.login.usernotaddederror', true);
+
                 // Error sending, request another capctha since the current one is probably invalid now.
-                $scope.requestCaptcha();
+                $scope.requestCaptcha(true);
             }).finally(function() {
                 modal.dismiss();
             });

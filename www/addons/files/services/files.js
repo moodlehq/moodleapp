@@ -71,20 +71,18 @@ angular.module('mm.addons.files')
      *                          - linkId: A hash of the file parameters.
      */
     self.getFiles = function(params) {
-        var deferred = $q.defer(),
-            options = {};
+        var options = {};
 
         options.cacheKey = getFilesListCacheKey(params);
 
-        $mmSite.read('core_files_get_files', params, options).then(function(result) {
+        return $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
                 entries: [],
                 count: 0
             };
 
             if (typeof result.files == 'undefined') {
-                deferred.reject();
-                return;
+                return $q.reject();
             }
 
             angular.forEach(result.files, function(entry) {
@@ -109,27 +107,13 @@ angular.module('mm.addons.files')
 
                 entry.link = JSON.stringify(entry.link);
                 entry.linkId = md5.createHash(entry.link);
-                // entry.localpath = "";
-
-                // if (!entry.isdir && entry.url) {
-                //     // TODO Check $mmSite.
-                //     var uniqueId = $mmSite.id + "-" + md5.createHash(entry.url);
-                //     var path = MM.db.get("files", uniqueId);
-                //     if (path) {
-                //         entry.localpath = path.get("localpath");
-                //     }
-                // }
 
                 data.count += 1;
                 data.entries.push(entry);
             });
 
-            deferred.resolve(data);
-        }, function() {
-            deferred.reject();
+            return data;
         });
-
-        return deferred.promise;
     };
 
     /**

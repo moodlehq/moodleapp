@@ -352,13 +352,12 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormHelper#showDownloadError
-     * @param {Object} scorm SCORM downloaded.
+     * @param {Object} scorm   SCORM downloaded.
+     * @param {String} [error] Error returned by the download.
      * @return {Void}
      */
-    self.showDownloadError = function(scorm) {
-        $translate('mma.mod_scorm.errordownloadscorm', {name: scorm.name}).then(function(message) {
-            $mmUtil.showErrorModal(message);
-        });
+    self.showDownloadError = function(scorm, error) {
+        $mmUtil.showErrorModalDefault(error, $translate.instant('mma.mod_scorm.errordownloadscorm', {name: scorm.name}));
     };
 
     return self;

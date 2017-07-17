@@ -102,9 +102,10 @@ angular.module('mm.addons.mod_data')
                     // We need to call getDownloadSize, the package might have been updated.
                     $mmaModDataPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModDataPrefetchHandler.prefetch(module, courseId).catch(function(error) {
+                            return $mmaModDataPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
                                     $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {

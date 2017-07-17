@@ -419,9 +419,9 @@ angular.module('mm.addons.mod_scorm')
                         if (!$scope.$$destroyed) {
                             openScorm(scoId);
                         }
-                    }).catch(function() {
+                    }).catch(function(error) {
                         if (!$scope.$$destroyed) {
-                            $mmaModScormHelper.showDownloadError(scorm);
+                            $mmaModScormHelper.showDownloadError(scorm, error);
                         }
                     });
                 });

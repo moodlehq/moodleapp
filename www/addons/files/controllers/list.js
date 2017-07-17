@@ -49,8 +49,9 @@ angular.module('mm.addons.files')
         return promise.then(function(files) {
             $scope.files = files.entries;
             $scope.count = files.count;
-        }).catch(function() {
-            $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.files.couldnotloadfiles', true);
+            return $q.reject();
         });
     }
 
