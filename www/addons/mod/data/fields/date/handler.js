@@ -135,16 +135,13 @@ angular.module('mm.addons.mod_data')
     /**
      * Override field content data with offline submission.
      *
-     * @module mm.addons.mod_data
-     * @ngdoc method
-     * @name $mmaModDataFieldsDelegate#overrideData
      * @param  {Object} originalContent     Original data to be overriden.
      * @param  {Array}  offlineContent      Array with all the offline data to override.
      * @return {Object}                     Data overriden
      */
     self.overrideData = function(originalContent, offlineContent) {
-        var date = Date.UTC(offlineContent['year'] || "", offlineContent['month'] ? offlineContent['month'] - 1 : "",
-            offlineContent['day'] || "");
+        var date = Date.UTC(offlineContent.year || "", offlineContent.month ? offlineContent.month - 1 : "",
+            offlineContent.day || "");
         date = Math.floor(date / 1000);
 
         originalContent.content = date || "";

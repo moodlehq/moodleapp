@@ -99,19 +99,19 @@ angular.module('mm.addons.mod_data')
      * @return {String}                     String with the notification or false.
      */
     self.getFieldsNotifications = function(field, inputData) {
-        var valuecount = 0;
+        var valueCount = 0;
 
         // The lat long class has two values that need to be checked.
         angular.forEach(inputData, function(value) {
             if (typeof value.value != "undefined" && value.value != "") {
-                valuecount++;
+                valueCount++;
             }
         });
 
         // If we get here then only one field has been filled in.
-        if (valuecount == 1) {
+        if (valueCount == 1) {
             return $translate.instant('mma.mod_data.latlongboth');
-        } else if (field.required && valuecount == 0) {
+        } else if (field.required && valueCount == 0) {
             return $translate.instant('mma.mod_data.errormustsupplyvalue');
         }
         return false;
@@ -120,9 +120,6 @@ angular.module('mm.addons.mod_data')
     /**
      * Override field content data with offline submission.
      *
-     * @module mm.addons.mod_data
-     * @ngdoc method
-     * @name $mmaModDataFieldsDelegate#overrideData
      * @param  {Object} originalContent     Original data to be overriden.
      * @param  {Array}  offlineContent      Array with all the offline data to override.
      * @return {Object}                     Data overriden

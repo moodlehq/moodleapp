@@ -178,9 +178,6 @@ angular.module('mm.addons.mod_data')
     /**
      * Override field content data with offline submission.
      *
-     * @module mm.addons.mod_data
-     * @ngdoc method
-     * @name $mmaModDataFieldsDelegate#overrideData
      * @param  {Object} field               Defines the field to be rendered.
      * @param  {Object} originalContent     Original data to be overriden.
      * @param  {Array}  offlineContent      Array with all the offline data to override.
@@ -196,7 +193,7 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
-     * Get the directive to use for a certain feedback plugin.
+     * Get the directive to use for a certain database plugin.
      *
      * @module mm.addons.mod_data
      * @ngdoc method
@@ -252,7 +249,7 @@ angular.module('mm.addons.mod_data')
      *                             - getFieldsNotifications(field, inputData) Optional.
      *                                                           Should return an array of notifications before sending data.
      *                             - overrideData(originalContent, offlineContent, offlineFiles) Optional.
-     *                                                            Should return and object with the overriden content from offline
+     *                                                            Should return an object with the overriden content from offline
      *                                                            submission.
      */
     self.registerHandler = function(addon, pluginType, handler) {

@@ -109,7 +109,7 @@ angular.module('mm.addons.mod_data')
                             contents: {}
                         };
 
-                    return $q.when({entry: entryData});
+                    return {entry: entryData};
                 }
             }
         }).then(function(entryData) {
@@ -166,7 +166,7 @@ angular.module('mm.addons.mod_data')
 
             // Create an ID to assign files.
             var entryTemp = entryId;
-            if ((typeof entryId == "undefined" || entryId === false) && offline) {
+            if (typeof entryId == "undefined" || entryId === false) {
                 entryTemp = - (new Date().getTime());
             }
 
@@ -175,9 +175,6 @@ angular.module('mm.addons.mod_data')
                 if (!offline) {
                     // Cannot submit in online, prepare for offline usage.
                     offline = true;
-                    if (typeof entryTemp == "undefined") {
-                        entryTemp = - (new Date().getTime());
-                    }
 
                     return $mmaModDataHelper.getEditDataFromForm(document.forms['mma-mod_data-edit-form'], $scope.fields, data.id,
                         entryTemp, $scope.entry.contents, offline);

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataEntryCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $q, $mmEvents,
         $mmText, $translate, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups, $ionicScrollDelegate, mmaModDataEventEntryChanged,
-        $ionicHistory, $mmaModDataOffline) {
+        $ionicHistory, $mmaModDataOffline, mmaModDataEventAutomSynced) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -31,6 +31,7 @@ angular.module('mm.addons.mod_data')
         page = $stateParams.page || false,
         data,
         entryChangedObserver,
+        syncObserver,
         scrollView,
         access,
         offlineActions = [];
@@ -211,7 +212,21 @@ angular.module('mm.addons.mod_data')
         }
     });
 
+    // Refresh entry on sync.
+    syncObserver = $mmEvents.on(mmaModDataEventAutomSynced, function(eventData) {
+        if (eventData.entryid == entryId && data.id == eventData.dataid && $mmSite.getId() == eventData.siteid) {
+            if (eventData.deleted) {
+                // If deleted, go back.
+                $ionicHistory.goBack();
+            } else {
+                $scope.databaseLoaded = false;
+                return fetchEntryData(true);
+            }
+        }
+    });
+
     $scope.$on('$destroy', function() {
         entryChangedObserver && entryChangedObserver.off && entryChangedObserver.off();
+        syncObserver && syncObserver.off && syncObserver.off();
     });
 });

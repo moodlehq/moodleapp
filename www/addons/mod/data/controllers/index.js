@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments, $mmaModDataOffline) {
+        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments, $mmaModDataOffline, $mmaModDataSync,
+        mmaModDataEventAutomSynced) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -31,6 +32,7 @@ angular.module('mm.addons.mod_data')
         data,
         entryChangedObserver,
         onlineObserver,
+        syncObserver,
         hasComments = false;
 
     $scope.title = module.name;
@@ -65,9 +67,14 @@ angular.module('mm.addons.mod_data')
             $scope.data = databaseData;
 
             $scope.database = data;
-
+            if (sync) {
+                // Try to synchronize the database.
+                return syncDatabase(showErrors).catch(function() {
+                    // Ignore errors.
+                });
+            }
+        }).then(function() {
             return $mmaModData.getDatabaseAccessInformation(data.id);
-
         }).then(function(accessData) {
             $scope.access = accessData;
 
@@ -135,7 +142,7 @@ angular.module('mm.addons.mod_data')
 
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
-        }).finally(function(){
+        }).finally(function() {
             $scope.databaseLoaded = true;
         });
     }
@@ -288,6 +295,22 @@ angular.module('mm.addons.mod_data')
         });
     }
 
+    // Tries to synchronize the database.
+    function syncDatabase(showErrors) {
+        return $mmaModDataSync.syncDatabase(data.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
+            }
+            return $q.reject();
+        });
+    }
+
     fetchDatabaseData(false, true).then(function() {
         $mmaModData.logView(data.id).then(function() {
             $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
@@ -356,7 +379,7 @@ angular.module('mm.addons.mod_data')
         return fetchEntriesData().catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
-        }).finally(function(){
+        }).finally(function() {
             $scope.databaseLoaded = true;
         });
     };
@@ -399,9 +422,18 @@ angular.module('mm.addons.mod_data')
         $scope.isOnline = online;
     });
 
-    // Refresh entry on change.
+    // Refresh entries on change.
     entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
         if (data.id == eventData.dataId && siteId == eventData.siteId) {
+            $scope.databaseLoaded = false;
+            return fetchDatabaseData(true);
+        }
+    });
+
+    // Refresh entries on sync.
+    syncObserver = $mmEvents.on(mmaModDataEventAutomSynced, function(eventData) {
+        // Update just when all database is synced.
+        if (data.id == eventData.dataid && siteId == eventData.siteid && typeof eventData.entryid == "undefined") {
             $scope.databaseLoaded = false;
             return fetchDatabaseData(true);
         }
@@ -410,5 +442,6 @@ angular.module('mm.addons.mod_data')
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
         entryChangedObserver && entryChangedObserver.off && entryChangedObserver.off();
+        syncObserver && syncObserver.off && syncObserver.off();
     });
 });

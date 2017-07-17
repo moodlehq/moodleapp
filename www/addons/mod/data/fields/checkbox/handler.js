@@ -126,9 +126,6 @@ angular.module('mm.addons.mod_data')
     /**
      * Override field content data with offline submission.
      *
-     * @module mm.addons.mod_data
-     * @ngdoc method
-     * @name $mmaModDataFieldsDelegate#overrideData
      * @param  {Object} originalContent     Original data to be overriden.
      * @param  {Array}  offlineContent      Array with all the offline data to override.
      * @return {Object}                     Data overriden

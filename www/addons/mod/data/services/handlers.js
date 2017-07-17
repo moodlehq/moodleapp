@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_data')
  */
 .factory('$mmaModDataHandlers', function($mmCourse, $mmaModData, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite, $q,
         mmaModDataComponent, $mmaModDataPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, $mmContentLinkHandlerFactory,
-        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, mmaModDataEventEntryChanged, $translate) {
+        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, mmaModDataEventEntryChanged, $translate,
+        $mmaModDataSync) {
     var self = {};
 
     /**
@@ -216,6 +217,23 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
+     * Convenience function to help get courseId.
+     * @param {Number} dataId   Database Id.
+     * @param {Number} siteId   Site Id, if not set, current site will be used.
+     * @param {Number} courseId Course Id if already set.
+     * @return {Promise}        Resolved with course Id when done.
+     */
+    function getActivityCourseIdIfNotSet(dataId, siteId, courseId) {
+        if (courseId) {
+            return $q.when(courseId);
+        }
+
+        return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
+            return module.course;
+        });
+    }
+
+    /**
      * Content links handler for database approve/disapprove entry.
      * Match mod/data/view.php?d=6&approve=5 with a valid data id and entryid.
      *
@@ -243,12 +261,13 @@ angular.module('mm.addons.mod_data')
                     entryId = parseInt(params.approve, 10) || parseInt(params.disapprove, 10),
                     approve = parseInt(params.approve, 10) ? true : false;
 
-                return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
+                return getActivityCourseIdIfNotSet(dataId, siteId, courseId).then(function(cId) {
+                    courseId = cId;
 
                     // Approve/disapprove entry.
-                    return $mmaModData.approveEntry(dataId, entryId, approve, module.course, siteId).catch(function(message) {
+                    return $mmaModData.approveEntry(dataId, entryId, approve, courseId, siteId).catch(function(message) {
                         modal.dismiss();
-                        $mmUtil.showErrorModal(message, 'mma.mod_data.errorapproving', true);
+                        $mmUtil.showErrorModalDefault(message, 'mma.mod_data.errorapproving', true);
 
                         return $q.reject();
                     });
@@ -300,11 +319,13 @@ angular.module('mm.addons.mod_data')
                         dataId = parseInt(params.d, 10),
                         entryId = parseInt(params.delete, 10);
 
-                    return $mmCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId).then(function(module) {
+                    return getActivityCourseIdIfNotSet(dataId, siteId, courseId).then(function(cId) {
+                        courseId = cId;
+
                         // Delete entry.
-                        return $mmaModData.deleteEntry(dataId, entryId, module.course, siteId, true).catch(function(message) {
+                        return $mmaModData.deleteEntry(dataId, entryId, courseId, siteId, true).catch(function(message) {
                             modal.dismiss();
-                            $mmUtil.showErrorModal(message, 'mma.mod_data.errordeleting', true);
+                            $mmUtil.showErrorModalDefault(message, 'mma.mod_data.errordeleting', true);
 
                             return $q.reject();
                         });
@@ -373,6 +394,58 @@ angular.module('mm.addons.mod_data')
                 });
             }
         }];
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaModDataSync.syncAllDatabases(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
+        };
+
+        return self;
     };
 
     return self;

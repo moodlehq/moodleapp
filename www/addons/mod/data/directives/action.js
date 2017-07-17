@@ -19,9 +19,9 @@ angular.module('mm.addons.mod_data')
  *
  * @module mm.addons.mod_data
  * @ngdoc directive
- * @name mmaModDataField
+ * @name mmaModDataAction
  */
-.directive('mmaModDataAction', function($mmSite, $mmUser, $mmaModDataOffline, $mmSite, $mmEvents, mmaModDataEventEntryChanged) {
+.directive('mmaModDataAction', function($mmSite, $mmUser, $mmaModDataOffline, $mmEvents, mmaModDataEventEntryChanged) {
     return {
         restrict: 'E',
         priority: 100,
@@ -40,10 +40,10 @@ angular.module('mm.addons.mod_data')
                 });
             }
 
-            scope.undoDelete = function(entryId) {
-                var dataId = scope.database.id,
+            scope.undoDelete = function() {
+                var dataId = scope.database.id;
                     entryId = scope.entry.id;
-                return $mmaModDataOffline.getEntry(dataId, entryId, 'delete').then(function(entry) {
+                return $mmaModDataOffline.getEntry(dataId, entryId, 'delete').then(function() {
                     // Found. Just delete the action.
                     return $mmaModDataOffline.deleteEntry(dataId, entryId, 'delete');
                 }).then(function() {

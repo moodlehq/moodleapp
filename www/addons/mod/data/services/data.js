@@ -404,7 +404,7 @@ angular.module('mm.addons.mod_data')
      * @param   {Number}    dataId      Database ID.
      * @param   {Number}    entryId     Entry ID.
      * @param   {Boolean}   approve     Whether to approve (true) or unapprove the entry.
-     * @param   {Number}    courseId    Entry ID.
+     * @param   {Number}    courseId    Course ID.
      * @param   {String}    [siteId]    Site ID. If not defined, current site.
      * @return  {Promise}               Promise resolved when the action is done.
      */
@@ -447,10 +447,11 @@ angular.module('mm.addons.mod_data')
      * @module mm.addons.mod_data
      * @ngdoc method
      * @name $mmaModData#approveEntryOnline
-     * @param   {Number}    entryId         Entry ID.
-     * @param   {Boolean}   approve         Whether to approve (true) or unapprove the entry.
-     * @return  {Promise}            Promise resolved when the action is done. Rejected with object containing
-     *                                   the error message (if any) and a boolean indicating if the error was returned by WS.
+     * @param   {Number}    entryId     Entry ID.
+     * @param   {Boolean}   approve     Whether to approve (true) or unapprove the entry.
+     * @param   {String}    [siteId]    Site ID. If not defined, current site.
+     * @return  {Promise}               Promise resolved when the action is done. Rejected with object containing the error message
+     *                                  (if any) and a boolean indicating if the error was returned by WS.
      */
     self.approveEntryOnline = function(entryId, approve, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -477,7 +478,7 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModData#deleteEntry
      * @param   {Number}    dataId      Database ID.
      * @param   {Number}    entryId     Entry ID.
-     * @param   {Number}    courseId    Entry ID.
+     * @param   {Number}    courseId    Course ID.
      * @param   {String}    [siteId]    Site ID. If not defined, current site.
      * @return  {Promise}               Promise resolved when the action is done.
      */
@@ -485,7 +486,7 @@ angular.module('mm.addons.mod_data')
         siteId = siteId || $mmSite.getId();
         var justAdded = false;
 
-        // Get if the opposite action is not synced.
+        // Check if the opposite action is not synced and just delete it.
         return $mmaModDataOffline.getEntryActions(dataId, entryId, siteId).then(function(entries) {
             if (entries && entries.length) {
                 // Found. Delete other actions first.
@@ -499,7 +500,7 @@ angular.module('mm.addons.mod_data')
 
                 return $q.all(proms);
             }
-        }).then(function(){
+        }).then(function() {
             if (justAdded) {
                 // The field was added offline, delete and stop.
                 return;
@@ -560,7 +561,7 @@ angular.module('mm.addons.mod_data')
      * @ngdoc method
      * @name $mmaModData#addEntry
      * @param   {Number}    dataId          Data instance ID.
-     * @param   {Number}    entryId         Provisiona entry ID when offline.
+     * @param   {Number}    entryId         EntryId or provisional entry ID when offline.
      * @param   {Number}    courseId        Course ID.
      * @param   {Object}    contents        The fields data to be created.
      * @param   {Number}    [groupId]       Group id, 0 means that the function will determine the user group.
@@ -608,8 +609,8 @@ angular.module('mm.addons.mod_data')
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModData#addEntry
-     * @param   {Number}    dataId          Data instance ID.
+     * @name $mmaModData#addEntryOnline
+     * @param   {Number}    dataId          Database ID.
      * @param   {Object}    data            The fields data to be created.
      * @param   {Number}    [groupId]       Group id, 0 means that the function will determine the user group.
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
@@ -626,7 +627,12 @@ angular.module('mm.addons.mod_data')
                 params.groupid = groupId;
             }
 
-            return site.write('mod_data_add_entry', params).catch(function(error) {
+            return site.write('mod_data_add_entry', params).then(function(result) {
+                if (result.newentryid) {
+                    return result;
+                }
+                return $q.reject();
+            }).catch(function(error) {
                 return $q.reject({
                     error: error,
                     wserror: $mmUtil.isWebServiceError(error)
@@ -681,7 +687,7 @@ angular.module('mm.addons.mod_data')
 
                 return $q.all(proms);
             }
-        }).then(function(){
+        }).then(function() {
             if (justAdded) {
                 // The field was added offline, add again and stop.
                 return self.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline);
@@ -714,6 +720,13 @@ angular.module('mm.addons.mod_data')
         }
     };
 
+    /**
+     * Convenience function to check fields requeriments here named "notifications"
+     *
+     * @param   {Object}    fields          The fields that define the contents.
+     * @param   {Object}    contents        The contents data of the fields.
+     * @return  {Array}                     Array of notifications if any or false.
+     */
     function checkFields(fields, contents) {
         var notifications = [],
             notification,
@@ -758,7 +771,12 @@ angular.module('mm.addons.mod_data')
                     data: data
                 };
 
-            return site.write('mod_data_update_entry', params).catch(function(error) {
+            return site.write('mod_data_update_entry', params).then(function(result) {
+                if (result.updated) {
+                    return result;
+                }
+                return $q.reject();
+            }).catch(function(error) {
                 return $q.reject({
                     error: error,
                     wserror: $mmUtil.isWebServiceError(error)

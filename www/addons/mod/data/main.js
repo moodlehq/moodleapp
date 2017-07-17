@@ -17,6 +17,8 @@ angular.module('mm.addons.mod_data', ['mm.core'])
 .constant('mmaModDataComponent', 'mmaModData')
 .constant('mmaModDataEventEntryChanged', 'mma-mod_data_entry_changed')
 .constant('mmaModDataPerPage', 25)
+.constant('mmaModDataEventAutomSynced', 'mma_mod_data_autom_synced')
+.constant('mmaModDataSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -81,4 +83,9 @@ angular.module('mm.addons.mod_data', ['mm.core'])
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:approve', '$mmaModDataHandlers.approveEntryLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:delete', '$mmaModDataHandlers.deleteEntryLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModData:edit', '$mmaModDataHandlers.editEntryLinksHandler');
+})
+
+.run(function($mmCronDelegate) {
+    // Register sync handler.
+    $mmCronDelegate.register('mmaModData', '$mmaModDataHandlers.syncHandler');
 });

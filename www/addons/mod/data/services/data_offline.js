@@ -226,7 +226,7 @@ angular.module('mm.addons.mod_data')
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModDataOffline#getEntryFolder
+     * @name $mmaModDataOffline#getEntryFieldFolder
      * @param  {Number} dataId      Database ID.
      * @param  {Number} entryId     The ID of the entry.
      * @param  {Number} fieldId     Field ID.
@@ -235,7 +235,7 @@ angular.module('mm.addons.mod_data')
      */
     self.getEntryFieldFolder = function(dataId, entryId, fieldId ,siteId) {
         return self.getDatabaseFolder(dataId, siteId).then(function(folderPath) {
-            return $mmFS.concatenatePaths(folderPath, 'entry_' + entryId + '_' + fieldId);
+            return $mmFS.concatenatePaths(folderPath, entryId + '_' + fieldId);
         });
     };
 
