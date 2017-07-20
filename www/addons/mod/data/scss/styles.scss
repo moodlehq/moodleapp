@@ -19,6 +19,7 @@
   td {
     padding-left: 2px;
     padding-right: 2px;
+    vertical-align: top;
   }
 }
 
@@ -26,6 +27,9 @@
 #mma-mod_data-edit-form  {
   table {
     width: 100%;
+  }
+  td {
+    vertical-align: top;
   }
 
   textarea,
@@ -66,6 +70,22 @@
     padding: 16px 0 16px 16px;
   }
 
+  mm-attachments + .item-stacked-label {
+    border-top: 0px;
+    padding: 0;
+    margin-right: 1px;
+
+    ion-label {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    input {
+      border: 0;
+      margin: 0;
+    }
+  }
+
   mm-attachments .item {
     width: 100%;
     margin: -1px;
@@ -76,10 +96,14 @@
     margin-right: 1px;
   }
 
-  .item-select select {
+  .item-input.item-select {
+    margin-bottom: -6px;
+
+    select {
       width: 100%;
       left: 0;
       max-width: none;
+    }
   }
 
   .item-input.mm-latlong {
@@ -92,5 +116,9 @@
     input {
       border: 0;
     }
+  }
+
+  .mm-item-has-rich-text-editor {
+    margin-right: 1px;
   }
 }

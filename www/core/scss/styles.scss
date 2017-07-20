@@ -979,6 +979,23 @@ mm-timer {
   background: transparent;
 }
 
+mm-multiple-select {
+  cursor: pointer;
+
+  .item-stacked-label {
+    ion-label.input-label, p {
+      padding-right: 30px;
+      white-space: normal;
+    }
+  }
+  .icon.ion-android-arrow-dropdown {
+    font-size: 21px;
+    color: #999999;
+    right: 5px;
+  }
+
+}
+
 .button.mm-button-icon-small {
   padding: 0 3px;
   min-height: $mm-button-icon-small-height;

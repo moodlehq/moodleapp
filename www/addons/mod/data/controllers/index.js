@@ -395,6 +395,11 @@ angular.module('mm.addons.mod_data')
         $scope.searchEntries(0);
     };
 
+    // Switches between advanced to normal search
+    $scope.switchAdvanced = function(enable) {
+        $scope.search.searchingAdvanced = enable;
+    };
+
     // Opens add entries form
     $scope.gotoAddEntries = function() {
         var stateParams = {
