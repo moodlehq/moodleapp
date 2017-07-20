@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldTextareaHandler
  */
-.factory('$mmaModDataFieldTextareaHandler', function($mmText, $mmUtil) {
+.factory('$mmaModDataFieldTextareaHandler', function($mmText, $mmUtil, $translate) {
 
     var self = {};
 
@@ -105,10 +105,54 @@ angular.module('mm.addons.mod_data')
      */
     self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
         var fieldName = 'f_' + field.id,
-            input = inputData[fieldName] || "",
-            originalFieldData = (originalFieldData && originalFieldData.content) || "";
+            input = inputData[fieldName] || "";
+        originalFieldData = (originalFieldData && originalFieldData.content) || "";
 
         return input != originalFieldData;
+    };
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required) {
+            if (!inputData || !inputData.length) {
+                return $translate.instant('mma.mod_data.errormustsupplyvalue');
+            }
+            var found = false;
+            for (var x in inputData) {
+                if (!inputData[x].subfield) {
+                    found = inputData[x].value;
+                    break;
+                }
+            }
+
+            if (!found) {
+                return $translate.instant('mma.mod_data.errormustsupplyvalue');
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(originalContent, offlineContent) {
+        originalContent.content = offlineContent[''] || "";
+        if (originalContent.content.length > 0 && originalContent.files && originalContent.files.length > 0) {
+            // Take the original files since we cannot edit them on the app.
+            originalContent.content = $mmText.replacePluginfileUrls(originalContent.content, originalContent.files);
+        }
+
+        return originalContent;
     };
 
     return self;

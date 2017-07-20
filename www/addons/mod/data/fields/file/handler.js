@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldFileHandler
  */
-.factory('$mmaModDataFieldFileHandler', function($mmFileSession, mmaModDataComponent, $mmFileUploaderHelper) {
+.factory('$mmaModDataFieldFileHandler', function($mmFileSession, mmaModDataComponent, $mmFileUploaderHelper, $translate) {
 
     var self = {};
 
@@ -83,7 +83,45 @@ angular.module('mm.addons.mod_data')
         var files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
             originalFiles = (originalFieldData && originalFieldData.files) || [];
 
+        if (originalFiles.length) {
+            originalFiles = [originalFiles[0]];
+        }
+
         return $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
+    };
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
+            return $translate.instant('mma.mod_data.errormustsupplyvalue');
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @param  {Array}  offlineFiles        Array with all the offline files in the field.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(originalContent, offlineContent, offlineFiles) {
+        if (offlineContent && offlineContent.file && offlineContent.file.offline > 0 && offlineFiles && offlineFiles.length > 0) {
+            originalContent.content = offlineFiles[0].filename;
+            originalContent.files = [offlineFiles[0]];
+        } else if (offlineContent && offlineContent.file && offlineContent.file.online && offlineContent.file.online.length > 0) {
+            originalContent.content = offlineContent.file.online[0].filename;
+            originalContent.files = [offlineContent.file.online[0]];
+        }
+
+        return originalContent;
     };
 
     return self;

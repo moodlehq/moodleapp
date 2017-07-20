@@ -69,7 +69,8 @@ angular.module('mm.core.fileuploader')
         // Delete the local files from the tmp folder.
         files.forEach(function(file) {
             if (!file.offline && file.remove) {
-                file.remove();
+                // Pass an empty function to prevent missing parameter error.
+                file.remove(function() {});
             }
         });
     };

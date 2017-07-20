@@ -98,6 +98,7 @@ angular.module('mm.core')
      * @param  {String}         component    Component Name.
      * @param  {String|Number}  id           File area identifier.
      * @param  {String}         [siteId]     Site ID. If not defined, current site.
+     * @return {Array}          Array of files in session.
      */
     self.getFiles = function(component, id, siteId) {
         siteId = siteId || $mmSite.getId();

@@ -67,7 +67,7 @@ angular.module('mm.core')
                 }
             } else {
                 // Check if URL does not have any protocol, so it's a relative URL.
-                if (!$mmUtil.isAbsoluteURL(url)) {
+                if (!$mmUtil.isAbsoluteURL(href)) {
                     // Add the site URL at the begining.
                     if (href.charAt(0) == '/') {
                         href = $mmSite.getURL() + href;

@@ -413,7 +413,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFS#getFileSizeFromFileEntry
+     * @name $mmFS#getFileObjectFromFileEntry
      * @param  {String} path Relative path to the file.
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */
@@ -765,41 +765,23 @@ angular.module('mm.core')
         from = self.removeStartingSlash(from.replace(basePath, ''));
         to = self.removeStartingSlash(to.replace(basePath, ''));
 
+        var fromFileAndDir = self.getFileAndDirectoryFromPath(from),
+            toFileAndDir = self.getFileAndDirectoryFromPath(to);
+
         return self.init().then(function() {
+            if (toFileAndDir.directory) {
+                // Create the target directory if it doesn't exist.
+                return self.createDir(toFileAndDir.directory);
+            }
+        }).then(function() {
             if (isHTMLAPI) {
-                // In Cordova API we need to calculate the longest matching path to make it work.
-                // $cordovaFile.copyFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
-                // cordovaFile.copyFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
-                var commonPath = basePath,
-                    dirsA = from.split('/'),
-                    dirsB = to.split('/');
+                // In HTML API, the file name cannot include a directory, otherwise it fails.
+                var fromDir = self.concatenatePaths(basePath, fromFileAndDir.directory),
+                    toDir = self.concatenatePaths(basePath, toFileAndDir.directory);
 
-                for (var i = 0; i < dirsA.length; i++) {
-                    var dir = dirsA[i];
-                    if (dirsB[i] === dir) {
-                        // Found a common folder, add it to common path and remove it from each specific path.
-                        dir = dir + '/';
-                        commonPath = self.concatenatePaths(commonPath, dir);
-                        from = from.replace(dir, '');
-                        to = to.replace(dir, '');
-                    } else {
-                        // Folder doesn't match, stop searching.
-                        break;
-                    }
-                }
-
-                return $cordovaFile.copyFile(commonPath, from, commonPath, to);
+                return $cordovaFile.copyFile(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
             } else {
-                // Check if to contains a directory.
-                var toFile = self.getFileAndDirectoryFromPath(to);
-                if (toFile.directory == '') {
-                    return $cordovaFile.copyFile(basePath, from, basePath, to);
-                } else {
-                    // Ensure directory is created.
-                    return self.createDir(toFile.directory).then(function() {
-                        return $cordovaFile.copyFile(basePath, from, basePath, to);
-                    });
-                }
+                return $cordovaFile.copyFile(basePath, from, basePath, to);
             }
         });
     };

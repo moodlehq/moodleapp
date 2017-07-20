@@ -21,6 +21,11 @@
                 </div>
             </div>
 
+            <!-- Database entries found to be synchronized -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
             <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
                 <ion-label id="mma-data-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
                 <ion-label id="mma-data-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
@@ -54,7 +59,7 @@
                 </style>
 
                 <mm-format-text component="{{component}}" component-id="{{data.cmid}}" watch="true">
-                    {{ entries }}
+                    {{ entriesRendered }}
                 </mm-format-text>
             </div>
 

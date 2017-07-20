@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldLatlongHandler
  */
-.factory('$mmaModDataFieldLatlongHandler', function() {
+.factory('$mmaModDataFieldLatlongHandler', function($translate) {
 
     var self = {};
 
@@ -88,6 +88,46 @@ angular.module('mm.addons.mod_data')
             originalLong = (originalFieldData && originalFieldData.content1) || "";
 
         return lat != originalLat || long != originalLong;
+    };
+
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        var valueCount = 0;
+
+        // The lat long class has two values that need to be checked.
+        angular.forEach(inputData, function(value) {
+            if (typeof value.value != "undefined" && value.value != "") {
+                valueCount++;
+            }
+        });
+
+        // If we get here then only one field has been filled in.
+        if (valueCount == 1) {
+            return $translate.instant('mma.mod_data.latlongboth');
+        } else if (field.required && valueCount == 0) {
+            return $translate.instant('mma.mod_data.errormustsupplyvalue');
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(originalContent, offlineContent) {
+        originalContent.content = offlineContent[0] || "";
+        originalContent.content1 = offlineContent[1] || "";
+        return originalContent;
     };
 
     return self;

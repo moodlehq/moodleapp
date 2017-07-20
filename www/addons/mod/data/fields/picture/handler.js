@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldPictureHandler
  */
-.factory('$mmaModDataFieldPictureHandler', function($mmFileSession, mmaModDataComponent, $mmFileUploaderHelper) {
+.factory('$mmaModDataFieldPictureHandler', function($mmFileSession, mmaModDataComponent, $mmFileUploaderHelper, $translate) {
 
     var self = {};
 
@@ -97,7 +97,69 @@ angular.module('mm.addons.mod_data')
             files = $mmFileSession.getFiles(mmaModDataComponent,  field.dataid + '_' + field.id) || [],
             originalFiles = (originalFieldData && originalFieldData.files) || [];
 
+            // Get image.
+            if (originalFiles.length > 0) {
+                var filenameSeek = (originalFieldData && originalFieldData.content) || "";
+                for (var x in originalFiles) {
+                    if (originalFiles[x].filename == filenameSeek) {
+                        originalFiles = originalFiles[x];
+                        break;
+                    }
+                }
+                originalFiles = [originalFiles];
+            } else {
+                originalFiles = [];
+            }
+
         return altText != originalAltText || $mmFileUploaderHelper.areFileListDifferent(files, originalFiles);
+    };
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required) {
+            if (!inputData || !inputData.length) {
+                return $translate.instant('mma.mod_data.errormustsupplyvalue');
+            }
+            var found = false;
+            for (var x in inputData) {
+                if (typeof inputData[x].subfield !="undefined" && inputData[x].subfield == 'file') {
+                    found = !!inputData[x].value;
+                    break;
+                }
+            }
+
+            if (!found) {
+                return $translate.instant('mma.mod_data.errormustsupplyvalue');
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @param  {Array}  offlineFiles        Array with all the offline files in the field.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(originalContent, offlineContent, offlineFiles) {
+        if (offlineContent && offlineContent.file && offlineContent.file.offline > 0 && offlineFiles && offlineFiles.length > 0) {
+            originalContent.content = offlineFiles[0].filename;
+            originalContent.files = [offlineFiles[0]];
+        } else if (offlineContent && offlineContent.file && offlineContent.file.online && offlineContent.file.online.length > 0) {
+            originalContent.content = offlineContent.file.online[0].filename;
+            originalContent.files = [offlineContent.file.online[0]];
+        }
+
+        originalContent.content1 = offlineContent.alttext || "";
+        return originalContent;
     };
 
     return self;

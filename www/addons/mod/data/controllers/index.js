@@ -23,13 +23,16 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataIndexCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $mmCourseHelper, $q,
         $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups,
-        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments) {
+        mmaModDataEventEntryChanged, $ionicModal, mmaModDataPerPage, $state, $mmComments, $mmaModDataOffline, $mmaModDataSync,
+        mmaModDataEventAutomSynced) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
+        siteId = $mmSite.getId(),
         data,
         entryChangedObserver,
         onlineObserver,
+        syncObserver,
         hasComments = false;
 
     $scope.title = module.name;
@@ -41,6 +44,7 @@ angular.module('mm.addons.mod_data')
     $scope.component = mmaModDataComponent;
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
+    $scope.entries = {};
 
     $scope.search = {
         sortBy: "0",
@@ -63,9 +67,14 @@ angular.module('mm.addons.mod_data')
             $scope.data = databaseData;
 
             $scope.database = data;
-
+            if (sync) {
+                // Try to synchronize the database.
+                return syncDatabase(showErrors).catch(function() {
+                    // Ignore errors.
+                });
+            }
+        }).then(function() {
             return $mmaModData.getDatabaseAccessInformation(data.id);
-
         }).then(function(accessData) {
             $scope.access = accessData;
 
@@ -104,24 +113,23 @@ angular.module('mm.addons.mod_data')
                         $scope.selectedGroup = groupInfo.groups[0].id;
                     }
                 }
+                return fetchOfflineEntries();
+            });
+        }).then(function() {
+            return $mmaModData.getFields(data.id).then(function(fields) {
+                if (fields.length == 0) {
+                    $scope.canSearch = false;
+                    $scope.canAdd = false;
+                }
+                $scope.search.advanced = {};
 
-                var promises = [
-                    fetchEntriesData(),
-                    $mmaModData.getFields(data.id).then(function(fields) {
-                        if (fields.length == 0) {
-                            $scope.canSearch = false;
-                            $scope.canAdd = false;
-                        }
-                        $scope.search.advanced = {};
+                $scope.fields = {};
+                angular.forEach(fields, function(field) {
+                    $scope.fields[field.id] = field;
+                });
+                $scope.advancedSearch = $mmaModDataHelper.displayAdvancedSearchFields(data.asearchtemplate, $scope.fields);
 
-                        $scope.fields = {};
-                        angular.forEach(fields, function(field) {
-                            $scope.fields[field.id] = field;
-                        });
-                        $scope.advancedSearch = $mmaModDataHelper.displayAdvancedSearchFields(data.asearchtemplate, $scope.fields);
-                    })
-                ];
-                return $q.all(promises);
+                return fetchEntriesData();
             });
         }).then(function() {
             // All data obtained, now fill the context menu.
@@ -134,8 +142,35 @@ angular.module('mm.addons.mod_data')
 
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
-        }).finally(function(){
+        }).finally(function() {
             $scope.databaseLoaded = true;
+        });
+    }
+
+    function fetchOfflineEntries() {
+        // Check if there are entries stored in offline.
+        return $mmaModDataOffline.getDatabaseEntries(data.id).then(function(offlineEntries) {
+            $scope.hasOffline = !!offlineEntries.length;
+
+            $scope.offlineActions = {};
+            $scope.offlineEntries = {};
+
+            // Only show offline entries on first page.
+            if ($scope.search.page == 0 && $scope.hasOffline) {
+                angular.forEach(offlineEntries, function(entry) {
+                    if (entry.entryid > 0) {
+                        if (typeof $scope.offlineActions[entry.entryid] == "undefined") {
+                            $scope.offlineActions[entry.entryid] = [];
+                        }
+                        $scope.offlineActions[entry.entryid].push(entry);
+                    } else {
+                        if (typeof $scope.offlineActions[entry.entryid] == "undefined") {
+                            $scope.offlineEntries[entry.entryid] = [];
+                        }
+                        $scope.offlineEntries[entry.entryid].push(entry);
+                    }
+                });
+            }
         });
     }
 
@@ -157,32 +192,80 @@ angular.module('mm.addons.mod_data')
             }
         }).then(function(entries) {
             $scope.numEntries = entries && entries.totalcount;
-            $scope.isEmpty = $scope.numEntries <= 0;
+            $scope.isEmpty = $scope.numEntries <= 0 && $scope.offlineActions.length <= 0;
             $scope.hasNextPage = (($scope.search.page + 1) * mmaModDataPerPage) < $scope.numEntries;
-            $scope.entries = "";
+            $scope.entriesRendered = "";
 
             if (!$scope.isEmpty) {
                 $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
 
-                // Are comments present on the template? Replace it with native ones.
-                if (data.comments) {
-                    var commentsNumber = data.listtemplate.match(/##comments##/g).length;
-                    if (commentsNumber > 0) {
-                        hasComments = true;
+                var siteInfo = $mmSite.getInfo(),
+                    promises = [];
 
-                        entries.listviewcontents = $mmaModDataHelper.replaceComments(entries.listviewcontents, entries.entries,
-                            commentsNumber);
+                angular.forEach($scope.offlineEntries, function(offlineActions) {
+                    var entry;
+
+                    angular.forEach(offlineActions, function(offlineEntry) {
+                        if (offlineEntry.action == 'add') {
+                            entry = {
+                                id: offlineEntry.entryid,
+                                canmanageentry: true,
+                                approved: !data.approval || data.manageapproved,
+                                dataid: offlineEntry.dataid,
+                                groupid: offlineEntry.groupid,
+                                timecreated: -offlineEntry.entryid,
+                                timemodified: -offlineEntry.entryid,
+                                userid: siteInfo.userid,
+                                fullname: siteInfo.fullname,
+                                contents: {}
+                            };
+                        }
+                    });
+
+                    if (entry) {
+                        if (offlineActions.length > 0) {
+                            promises.push($mmaModDataHelper.applyOfflineActions(entry, offlineActions, $scope.fields));
+                        } else {
+                            promises.push($q.when(entry));
+                        }
                     }
-                }
-                $scope.entries = entries.listviewcontents;
-                // Solve picture field relative links problem.
-                $scope.entries = $scope.entries.replace("href\=\"view.php", "href\=\"/mod/data/view.php");
+
+                });
+
+                angular.forEach(entries.entries, function(entry) {
+                    // Index contents by fieldid.
+                    var contents = {};
+                    angular.forEach(entry.contents, function(field) {
+                        contents[field.fieldid] = field;
+                    });
+                    entry.contents = contents;
+
+                    if (typeof $scope.offlineActions[entry.id] != "undefined") {
+                        promises.push($mmaModDataHelper.applyOfflineActions(entry, $scope.offlineActions[entry.id], $scope.fields));
+                    } else {
+                        promises.push($q.when(entry));
+                    }
+                });
+
+                return $q.all(promises).then(function(entries) {
+                    var entriesHTML = data.listtemplateheader;
+
+                    angular.forEach(entries, function(entry) {
+                        $scope.entries[entry.id] = entry;
+
+                        var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
+
+                        entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
+                    });
+                    entriesHTML += data.listtemplatefooter;
+
+                    $scope.entriesRendered = entriesHTML;
+                });
             } else if (!$scope.search.searching) {
                 $scope.canSearch = false;
             }
         });
     }
-
 
     // Set group to see the database.
     $scope.setGroup = function(groupId) {
@@ -209,6 +292,22 @@ angular.module('mm.addons.mod_data')
 
         return $q.all(promises).finally(function() {
             return fetchDatabaseData(true, sync, showErrors);
+        });
+    }
+
+    // Tries to synchronize the database.
+    function syncDatabase(showErrors) {
+        return $mmaModDataSync.syncDatabase(data.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
+            }
+            return $q.reject();
         });
     }
 
@@ -280,7 +379,7 @@ angular.module('mm.addons.mod_data')
         return fetchEntriesData().catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
-        }).finally(function(){
+        }).finally(function() {
             $scope.databaseLoaded = true;
         });
     };
@@ -307,14 +406,34 @@ angular.module('mm.addons.mod_data')
         $state.go('site.mod_data-edit', stateParams);
     };
 
+    $scope.gotoEntry = function(entryId) {
+        var stateParams = {
+            module: module,
+            moduleid: module.id,
+            courseid: courseId,
+            entryid: entryId,
+            group: $scope.selectedGroup
+        };
+        $state.go('site.mod_data-entry', stateParams);
+    };
+
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
         $scope.isOnline = online;
     });
 
-    // Refresh entry on change.
+    // Refresh entries on change.
     entryChangedObserver = $mmEvents.on(mmaModDataEventEntryChanged, function(eventData) {
-        if (data.id == eventData.dataId && $mmSite.getId() == eventData.siteId) {
+        if (data.id == eventData.dataId && siteId == eventData.siteId) {
+            $scope.databaseLoaded = false;
+            return fetchDatabaseData(true);
+        }
+    });
+
+    // Refresh entries on sync.
+    syncObserver = $mmEvents.on(mmaModDataEventAutomSynced, function(eventData) {
+        // Update just when all database is synced.
+        if (data.id == eventData.dataid && siteId == eventData.siteid && typeof eventData.entryid == "undefined") {
             $scope.databaseLoaded = false;
             return fetchDatabaseData(true);
         }
@@ -323,5 +442,6 @@ angular.module('mm.addons.mod_data')
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
         entryChangedObserver && entryChangedObserver.off && entryChangedObserver.off();
+        syncObserver && syncObserver.off && syncObserver.off();
     });
 });

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldDateHandler
  */
-.factory('$mmaModDataFieldDateHandler', function() {
+.factory('$mmaModDataFieldDateHandler', function($translate) {
 
     var self = {};
 
@@ -109,11 +109,43 @@ angular.module('mm.addons.mod_data')
      */
     self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
         var fieldName = 'f_' + field.id,
-            input = inputData[fieldName] || "",
-            originalFieldData = (originalFieldData && originalFieldData.content &&
+            input = inputData[fieldName] || "";
+
+        originalFieldData = (originalFieldData && originalFieldData.content &&
                 new Date(originalFieldData.content * 1000).toISOString().substr(0, 10)) || "";
 
         return input != originalFieldData;
+    };
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required &&
+                (!inputData || inputData.length < 2 || !inputData[0].value || !inputData[1].value || !inputData[2].value)) {
+            return $translate.instant('mma.mod_data.errormustsupplyvalue');
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(originalContent, offlineContent) {
+        var date = Date.UTC(offlineContent.year || "", offlineContent.month ? offlineContent.month - 1 : "",
+            offlineContent.day || "");
+        date = Math.floor(date / 1000);
+
+        originalContent.content = date || "";
+        return originalContent;
     };
 
     return self;

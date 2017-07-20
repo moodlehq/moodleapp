@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_data')
  */
 .controller('mmaModDataEntryCtrl', function($scope, $stateParams, $mmaModData, mmaModDataComponent, $mmCourse, $q, $mmEvents,
         $mmText, $translate, $mmUtil, $mmSite, $mmaModDataHelper, $mmGroups, $ionicScrollDelegate, mmaModDataEventEntryChanged,
-        $ionicHistory) {
+        $ionicHistory, $mmaModDataOffline, mmaModDataEventAutomSynced) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -31,7 +31,10 @@ angular.module('mm.addons.mod_data')
         page = $stateParams.page || false,
         data,
         entryChangedObserver,
-        scrollView;
+        syncObserver,
+        scrollView,
+        access,
+        offlineActions = [];
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -40,6 +43,7 @@ angular.module('mm.addons.mod_data')
     $scope.component = mmaModDataComponent;
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
+    $scope.entries = {};
 
     function fetchEntryData(refresh) {
         return $mmaModData.getDatabase(courseId, module.id).then(function(databaseData) {
@@ -49,12 +53,11 @@ angular.module('mm.addons.mod_data')
             $scope.description = data.intro || $scope.description;
             $scope.data = databaseData;
 
-            $scope.database = data;
-
             return setEntryIdFromPage(data.id, page, $scope.selectedGroup).then(function() {
                 return $mmaModData.getDatabaseAccessInformation(data.id);
             });
         }).then(function(accessData) {
+            access = accessData;
             return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
 
@@ -72,11 +75,40 @@ angular.module('mm.addons.mod_data')
                     }
                 }
 
+                return $mmaModDataOffline.getEntryActions(data.id, entryId);
+            });
+        }).then(function(actions) {
+            offlineActions = actions;
+            $scope.hasOffline = !!offlineActions.length;
+
+            return $mmaModData.getFields(data.id).then(function(fieldsData) {
+                $scope.fields = {};
+                angular.forEach(fieldsData, function(field) {
+                    $scope.fields[field.id] = field;
+                });
+
                 return $mmaModData.getEntry(data.id, entryId);
             });
         }).then(function(entry) {
+            entry = entry.entry;
             $scope.cssTemplate = $mmaModDataHelper.prefixCSS(data.csstemplate, '.mma-data-entries-' + data.id);
-            $scope.entryContents = entry.entryviewcontents;
+
+            // Index contents by fieldid.
+            var contents = {};
+            angular.forEach(entry.contents, function(field) {
+                contents[field.fieldid] = field;
+            });
+            entry.contents = contents;
+
+            return $mmaModDataHelper.applyOfflineActions(entry, offlineActions, $scope.fields);
+        }).then(function(entryData) {
+            $scope.entry = entryData;
+
+            $scope.entries[entryId] = $scope.entry;
+
+            var actions = $mmaModDataHelper.getActions(data, access, $scope.entry);
+
+            $scope.entryRendered = $mmaModDataHelper.displayShowFields(data.singletemplate, $scope.fields, entryId, 'show', actions);
 
             return $mmaModDataHelper.getPageInfoByEntry(data.id, entryId, $scope.selectedGroup).then(function(result) {
                 $scope.previousId = result.previousId;
@@ -180,7 +212,21 @@ angular.module('mm.addons.mod_data')
         }
     });
 
+    // Refresh entry on sync.
+    syncObserver = $mmEvents.on(mmaModDataEventAutomSynced, function(eventData) {
+        if (eventData.entryid == entryId && data.id == eventData.dataid && $mmSite.getId() == eventData.siteid) {
+            if (eventData.deleted) {
+                // If deleted, go back.
+                $ionicHistory.goBack();
+            } else {
+                $scope.databaseLoaded = false;
+                return fetchEntryData(true);
+            }
+        }
+    });
+
     $scope.$on('$destroy', function() {
         entryChangedObserver && entryChangedObserver.off && entryChangedObserver.off();
+        syncObserver && syncObserver.off && syncObserver.off();
     });
 });

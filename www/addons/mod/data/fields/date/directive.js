@@ -27,6 +27,12 @@ angular.module('mm.addons.mod_data')
         priority: 100,
         templateUrl: 'addons/mod/data/fields/date/template.html',
         link: function(scope) {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
+            if (scope.mode == 'show') {
+                scope.text = scope.value ? scope.value.content * 1000 : "";
+                return;
+            }
+
             if (scope.mode == 'edit' && scope.value) {
                 scope.enable = true;
             } else {

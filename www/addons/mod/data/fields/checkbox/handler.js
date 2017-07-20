@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc service
  * @name $mmaModDataFieldCheckboxHandler
  */
-.factory('$mmaModDataFieldCheckboxHandler', function() {
+.factory('$mmaModDataFieldCheckboxHandler', function($translate) {
 
     var self = {};
 
@@ -107,6 +107,32 @@ angular.module('mm.addons.mod_data')
 
         originalFieldData = (originalFieldData && originalFieldData.content) || "";
         return checkboxes.join("##") != originalFieldData;
+    };
+
+    /**
+     * Check and get field requeriments.
+     *
+     * @param  {Object} field               Defines the field to be rendered.
+     * @param  {Object} inputData           Data entered in the edit form.
+     * @return {String}                     String with the notification or false.
+     */
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
+            return $translate.instant('mma.mod_data.errormustsupplyvalue');
+        }
+        return false;
+    };
+
+    /**
+     * Override field content data with offline submission.
+     *
+     * @param  {Object} originalContent     Original data to be overriden.
+     * @param  {Array}  offlineContent      Array with all the offline data to override.
+     * @return {Object}                     Data overriden
+     */
+    self.overrideData = function(originalContent, offlineContent) {
+        originalContent.content = (offlineContent[''] && offlineContent[''].join("##")) || "";
+        return originalContent;
     };
 
     return self;

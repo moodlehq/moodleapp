@@ -1,2 +1,3 @@
 <span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
-<input type="text" placeholder="{{field.name}}" name="f_{{field.id}}" ng-model="val">
+<input ng-if="mode != 'show'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}" ng-model="val">
+<mm-format-text ng-if="mode == 'show'" watch="true"><a ng-href="text">{{text}}</a></mm-format-text>

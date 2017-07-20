@@ -27,6 +27,12 @@ angular.module('mm.addons.mod_data')
         priority: 100,
         templateUrl: 'addons/mod/data/fields/number/template.html',
         link: function(scope) {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
+            if (scope.mode == 'show') {
+                scope.text = scope.value ? scope.value.content : "";
+                return;
+            }
+
             if (scope.mode == 'edit' && scope.value) {
                 scope.val = scope.value && parseFloat(scope.value.content);
             }
