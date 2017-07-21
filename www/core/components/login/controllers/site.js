@@ -35,6 +35,11 @@ angular.module('mm.core.login')
             return;
         }
 
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mm.core.networkerrormsg', true);
+            return;
+        }
+
         var modal = $mmUtil.showModalLoading(),
             sitedata = $mmSitesManager.getDemoSiteData(url);
 

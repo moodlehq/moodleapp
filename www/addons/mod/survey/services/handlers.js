@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_survey')
  * @name $mmaModSurveyHandlers
  */
 .factory('$mmaModSurveyHandlers', function($mmCourse, $mmaModSurvey, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite,
-            $mmaModSurveyPrefetchHandler, $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            $mmaModSurveyPrefetchHandler, $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, $q,
             mmaModSurveyComponent, mmCoreEventPackageStatusChanged, $mmaModSurveySync) {
     var self = {};
 
@@ -103,9 +103,10 @@ angular.module('mm.addons.mod_survey')
                     // Get download size to ask for confirm if it's high.
                     $mmaModSurveyPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModSurveyPrefetchHandler.prefetch(module, courseId).catch(function() {
+                            return $mmaModSurveyPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {

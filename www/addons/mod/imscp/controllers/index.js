@@ -101,8 +101,8 @@ angular.module('mm.addons.mod_imscp')
                     // We could load the main file but the download failed. Show error message.
                     $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
                 }
-            }).catch(function() {
-                $mmUtil.showErrorModal('mma.mod_imscp.deploymenterror', true);
+            }).catch(function(error) {
+                $mmUtil.showErrorModalDefault(error, 'mma.mod_imscp.deploymenterror', true);
                 return $q.reject();
             });
         }).finally(function() {

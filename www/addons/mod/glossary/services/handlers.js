@@ -105,9 +105,10 @@ angular.module('mm.addons.mod_glossary')
                     // Get download size to ask for confirm if it's high.
                     $mmaModGlossaryPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModGlossaryPrefetchHandler.prefetch(module, courseId).catch(function() {
+                            return $mmaModGlossaryPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {

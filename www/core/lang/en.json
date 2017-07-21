@@ -133,7 +133,7 @@
     "mygroups": "My groups",
     "name": "Name",
     "nograde": "No grade",
-    "networkerrormsg": "Network not enabled or not working.",
+    "networkerrormsg": "There was a problem connecting to the site. Please check your connection and try again.",
     "never": "Never",
     "next": "Next",
     "no": "No",

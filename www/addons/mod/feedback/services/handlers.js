@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_feedback')
  * @name $mmaModFeedbackHandlers
  */
 .factory('$mmaModFeedbackHandlers', function($mmCourse, $mmaModFeedback, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite,
-        mmaModFeedbackComponent, $mmaModFeedbackPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, $mmaModFeedbackSync,
+        mmaModFeedbackComponent, $mmaModFeedbackPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, $mmaModFeedbackSync, $q,
         mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, $mmContentLinkHandlerFactory) {
     var self = {};
 
@@ -102,9 +102,10 @@ angular.module('mm.addons.mod_feedback')
                     // We need to call getDownloadSize, the package might have been updated.
                     $mmaModFeedbackPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModFeedbackPrefetchHandler.prefetch(module, courseId).catch(function() {
+                            return $mmaModFeedbackPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {

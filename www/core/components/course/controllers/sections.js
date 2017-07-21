@@ -131,9 +131,9 @@ angular.module('mm.core.course')
         }).then(function(downloadpromises) {
             // If we restored any download we'll recalculate the status once all of them have finished.
             if (downloadpromises && downloadpromises.length) {
-                $mmUtil.allPromises(downloadpromises).catch(function() {
+                $mmUtil.allPromises(downloadpromises).catch(function(error) {
                     if (!$scope.$$destroyed) {
-                        $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
+                        $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingsection', true);
                     }
                 }).finally(function() {
                     if (!$scope.$$destroyed) {
@@ -148,7 +148,7 @@ angular.module('mm.core.course')
     // Prefetch a section. The second parameter indicates if the prefetch was started manually (true)
     // or it was automatically started because all modules are being downloaded (false).
     function prefetch(section, manual) {
-        $mmCourseHelper.prefetch(section, courseId, $scope.sections).catch(function() {
+        $mmCourseHelper.prefetch(section, courseId, $scope.sections).catch(function(error) {
             // Don't show error message if scope is destroyed or it's an automatic download but we aren't in this state.
             if ($scope.$$destroyed) {
                 return;
@@ -161,7 +161,7 @@ angular.module('mm.core.course')
                 return;
             }
 
-            $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
+            $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingsection', true);
         }).finally(function() {
             if (!$scope.$$destroyed) {
                 // Recalculate the status.

@@ -56,7 +56,7 @@ angular.module('mm.core.login')
                 $scope.policyLoaded = true;
             });
         }).catch(function(error) {
-            $mmUtil.showErrorModalDefault(error, 'Error getting site policy.');
+            $mmUtil.showErrorModalDefault(error && error.error, 'Error getting site policy.');
             cancel();
         });
     }

@@ -326,6 +326,10 @@ angular.module('mm.core')
     self.downloadFile = function(url, path, addExtension) {
         $log.debug('Downloading file', url, path, addExtension);
 
+        if (!$mmApp.isOnline()) {
+            return $mmLang.translateAndReject('mm.core.networkerrormsg');
+        }
+
         // Use a tmp path to download the file and then move it to final location.This is because if the download fails,
         // the local file is deleted.
         var tmpPath = path + '.tmp';
@@ -397,6 +401,10 @@ angular.module('mm.core')
 
         if (!uri || !options || !preSets) {
             return $q.reject();
+        }
+
+        if (!$mmApp.isOnline()) {
+            return $mmLang.translateAndReject('mm.core.networkerrormsg');
         }
 
         var ftOptions = {},
