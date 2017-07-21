@@ -65,7 +65,12 @@ angular.module('mm.addons.mod_data')
         angular.forEach(actions, function(enabled, action) {
             replace = new RegExp("##" + action + "##", 'g');
             if (enabled) {
-                render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +']" database="data"></mma-mod-data-action>';
+                if (action == "moreurl") {
+                    // Render more url directly because it can be part of an HTML attribute.
+                    render = $mmSite.getURL() + '/mod/data/view.php?d={{data.id}}&rid=' + entryId;
+                } else {
+                    render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +']" database="data"></mma-mod-data-action>';
+                }
                 template = template.replace(replace, render);
             } else {
                 template = template.replace(replace, "");
