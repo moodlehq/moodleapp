@@ -40,7 +40,7 @@
                         </a>
                     </li>
                     <li ng-repeat="item in customItems" class="mm-sidemenu-customitem">
-                        <a ng-if="item.type != 'embedded'" menu-close class="item item-icon-left" ng-href="{{item.url}}" mm-link in-app="{{item.type == 'inappbrowser'}}" title="{{item.label}}">
+                        <a ng-if="item.type != 'embedded'" menu-close class="item item-icon-left" ng-href="{{item.url}}" mm-link in-app="{{item.type == 'inappbrowser'}}" capture-link="{{item.type == 'app'}}" title="{{item.label}}">
                             <i class="icon {{item.icon}}"></i>{{item.label}}
                         </a>
                         <a ng-if="item.type == 'embedded'" menu-close class="item item-icon-left" ui-sref="site.iframe-view({title: item.label, url: item.url})" title="{{item.label}}">
