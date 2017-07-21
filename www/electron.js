@@ -59,7 +59,7 @@ app.on('ready', function() {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-    app.quit();
+    app.exit();
 });
 
 app.on('activate', () => {
@@ -87,19 +87,23 @@ var shouldQuit = app.makeSingleInstance((argv, workingDirectory) => {
     // Another instance was launched. If it was launched with a URL, it should be in the second param.
     if (argv && argv[1]) {
         appLaunched(argv[1]);
+    } else {
+        focusApp();
     }
 });
 
-if (shouldQuit) {
+// For some reason, shouldQuit is always true in signed Mac apps so we should ingore it.
+if (shouldQuit && os.platform().indexOf('darwin') == -1) {
     // It's not the main instance of the app, kill it.
-    app.quit();
-} else {
-    // Listen for open-url events (Mac OS only).
-    app.on('open-url', (event, url) => {
-        event.preventDefault();
-        appLaunched(url);
-    });
+    app.exit();
+    return;
 }
+
+// Listen for open-url events (Mac OS only).
+app.on('open-url', (event, url) => {
+    event.preventDefault();
+    appLaunched(url);
+});
 
 function appLaunched(url) {
     // App was launched again with a URL. Focus the main window and send an event to treat the URL.
