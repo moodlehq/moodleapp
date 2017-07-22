@@ -8453,9 +8453,6 @@ a.button {
 li.mm-sidemenu-handler.mma-competency-handler, li.mm-sidemenu-handler.mma-calendar-handler, li.mm-sidemenu-handler.mma-files-handler {
   display: none; }
 
-.menu-content ion-content {
-  margin-bottom: 80px; }
-
 .item-icon-left .icon, .item-icon-right .icon {
   font-size: 21px; }
 
@@ -8796,19 +8793,19 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   background-color: #D9D9D9; }
 
 .item.item-text-wrap.item-completion {
-  padding-right: 103px; }
+  padding-right: 40px; }
 
 .mm-completion-container {
   position: absolute;
   top: 50%;
   right: 8px;
-  margin-right: 66px;
-  margin-top: -10.5px; }
+  margin-top: -14.5px; }
   .mm-completion-container img {
     float: right;
     width: 21px; }
 
 .mm-media-adapt-width {
+	position: inherit!important;
   max-width: 100%; }
 
 img.mm-media-adapt-width {
@@ -9103,6 +9100,15 @@ mm-format-text audio, mm-format-text video, mm-format-text a, mm-format-text ifr
 .item.item-button-right .badge.mm-course-download, .item.item-button-right .mma-messages-date span.mm-course-download, .mma-messages-date .item.item-button-right span.mm-course-download, .item.item-button-right .mma-chat-notice span.mm-course-download, .mma-chat-notice .item.item-button-right span.mm-course-download {
   right: 44px; }
 
+input.mm-fileuploader-picker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none; }
+
 .mm-mm_login_sites .item-thumbnail-left .item-content {
   padding-top: 16px; }
 .mm-mm_login_sites .avatar {
@@ -9116,15 +9122,6 @@ mm-format-text audio, mm-format-text video, mm-format-text a, mm-format-text ifr
   border: 1px solid #ddd; }
 .mm-mm_login_sites .card {
   margin: 15px 10px; }
-
-input.mm-fileuploader-picker {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  opacity: 0;
-  outline: none; }
 
 .mm-question-textarea {
   width: 100%;

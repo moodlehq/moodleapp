@@ -154,9 +154,6 @@
 li.mm-sidemenu-handler.mma-competency-handler,li.mm-sidemenu-handler.mma-calendar-handler,li.mm-sidemenu-handler.mma-files-handler{
 	display: none;
 }
-.menu-content ion-content {
-    margin-bottom: 80px;
-}
 .item-icon-left .icon, .item-icon-right .icon {
     font-size:21px;
 }
@@ -583,7 +580,6 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   position: absolute;
   top: 50%;
   right: $item-padding / 2;
-  margin-right: $item-icon-font-size + ($button-border-width * 2) + ($item-padding * 2);
   margin-top: ($completion-img-width / 2) * -1;
 
   img {
@@ -593,6 +589,7 @@ mm-loading.mm-loading-noheight .mm-loading-content {
 }
 
 .mm-media-adapt-width {
+position: inherit!important;
   max-width: 100%;
 }
 img.mm-media-adapt-width {
@@ -966,6 +963,16 @@ mm-format-text {
 .item.item-button-right .badge.mm-course-download{
   right: $spinner-width + $item-padding;
 }
+input.mm-fileuploader-picker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none;
+}
+
 
 .mm-mm_login_sites {
   .item-thumbnail-left .item-content {
@@ -987,16 +994,6 @@ mm-format-text {
     margin: 15px 10px;
   }
 }
-input.mm-fileuploader-picker {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  opacity: 0;
-  outline: none;
-}
-
 
 $mm-question-correct-color:         #468847 !default;
 $mm-question-incorrect-color:       #b94a48 !default;
@@ -1149,6 +1146,7 @@ $bar-side-menu-text-color: $bar-content-text !default;
 .has-side-menu-header {
   top: $bar-side-menu-height;
 }
+
 
 /* - User grades table (most of it extracted from MM1)
 -------------------------------------------------------------------------- */
@@ -1330,7 +1328,6 @@ $mma-messages-date-badge: "stable" !default;
     left: initial;
   }
 }
-
 
 
 $mma-mod-assign-warning-color:      #c00 !default;

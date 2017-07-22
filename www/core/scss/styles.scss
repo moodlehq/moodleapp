@@ -154,9 +154,6 @@
 li.mm-sidemenu-handler.mma-competency-handler,li.mm-sidemenu-handler.mma-calendar-handler,li.mm-sidemenu-handler.mma-files-handler{
 	display: none;
 }
-.menu-content ion-content {
-    margin-bottom: 80px;
-}
 .item-icon-left .icon, .item-icon-right .icon {
     font-size:21px;
 }
@@ -583,7 +580,6 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   position: absolute;
   top: 50%;
   right: $item-padding / 2;
-  margin-right: $item-icon-font-size + ($button-border-width * 2) + ($item-padding * 2);
   margin-top: ($completion-img-width / 2) * -1;
 
   img {
@@ -593,6 +589,7 @@ mm-loading.mm-loading-noheight .mm-loading-content {
 }
 
 .mm-media-adapt-width {
+position: inherit!important;
   max-width: 100%;
 }
 img.mm-media-adapt-width {
