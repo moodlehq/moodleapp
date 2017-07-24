@@ -73,10 +73,6 @@ angular.module('mm.core')
                 scope.unlimitedFiles = true;
             }
 
-            if (typeof scope.files == 'undefined') {
-                scope.files = [];
-            }
-
             scope.add = function() {
                 if (!allowOffline && !$mmApp.isOnline()) {
                     $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
