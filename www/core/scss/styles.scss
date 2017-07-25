@@ -1683,3 +1683,7 @@ h2.invert {
 ::-webkit-calendar-picker-indicator, ::-webkit-inner-spin-button, ::-webkit-clear-button {
   display: none;
 }
+
+*[ng-click] {
+  cursor: pointer;
+}

@@ -190,9 +190,9 @@ angular.module('mm.addons.mod_data')
                     $scope.search.page);
             }
         }).then(function(entries) {
-            $scope.numEntries = entries && entries.totalcount;
-            $scope.isEmpty = $scope.numEntries <= 0 && $scope.offlineActions.length <= 0;
-            $scope.hasNextPage = (($scope.search.page + 1) * mmaModDataPerPage) < $scope.numEntries;
+            var numEntries = (entries && entries.entries && entries.entries.length) || 0;
+            $scope.isEmpty = !numEntries && Object.keys($scope.offlineActions).length <= 0;
+            $scope.hasNextPage = numEntries >= mmaModDataPerPage && (($scope.search.page + 1) * mmaModDataPerPage) < entries.totalcount;
             $scope.entriesRendered = "";
 
             if (!$scope.isEmpty) {
