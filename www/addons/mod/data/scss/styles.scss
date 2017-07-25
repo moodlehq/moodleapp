@@ -16,10 +16,17 @@
   border-style: solid;
   border-color: $item-default-border;
 
+  table, tbody {
+    display: block;
+  }
+
+  tr {
+    @extend .row;
+    padding: 0;
+  }
+
   td {
-    padding-left: 2px;
-    padding-right: 2px;
-    vertical-align: top;
+    @extend .col;
   }
 }
 
