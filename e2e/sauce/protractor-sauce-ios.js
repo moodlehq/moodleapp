@@ -2,7 +2,7 @@ exports.config = {
     framework: "jasmine2",
     jasmineNodeOpts: {
         showColors: true,
-        defaultTimeoutInterval: 100000,
+        defaultTimeoutInterval: 2500000,
         realtimeFailure: true,
         showTiming: true,
         includeStackTrace: true,
@@ -11,21 +11,45 @@ exports.config = {
     },
     specs: [
         "../../e2e/*.js",
-        //"../../www/**/e2e/mod_assign.spec.js",
-        //"../../www/**/e2e/mod_book.spec.js",
-        //"../../www/**/e2e/mod_chat.spec.js",
-        //"../../www/**/e2e/mod_choice.spec.js",
-        //"../../www/**/e2e/mod_folder.spec.js",
-        // "../../www/**/e2e/mod_forum.spec.js",
-        //"../../www/**/e2e/mod_glossary.spec.js",
-        //"../../www/**/e2e/mod_label.spec.js",
-        //"../../www/**/e2e/mod_resource.spec.js",
-        //"../../www/**/e2e/mod_survey.spec.js",
-        //"../../www/**/e2e/mod_wiki.spec.js"
-        "../../www/**/e2e/mod_*.spec.js"
+        "../../../www/**/e2e/mod_wiki.spec.js",
+        "../../../www/**/e2e/mod_chat.spec.js",
+        "../../../www/**/e2e/mod_quiz.spec.js",
+        "../../../www/**/e2e/mod_choice.spec.js",
+        "../../../www/**/e2e/mod_assign.spec.js",
+        "../../../www/**/e2e/mod_glossary.spec.js",
+        "../../../www/**/e2e/mod_survey.spec.js",
+        "../../../www/**/e2e/mod_forum.spec.js",
+        "../../../www/**/e2e/mod_feedback.spec.js",
+        "../../../www/**/e2e/mod_lesson.spec.js",
+        "../../../www/**/e2e/mod_book.spec.js",
+        "../../../www/**/e2e/mod_label.spec.js",
+        "../../../www/**/e2e/mod_resource.spec.js",
+        "../../../www/**/e2e/mod_folder.spec.js",
+        "../../../www/**/e2e/mod_page.spec.js",
+        "../../../www/**/e2e/mod_url.spec.js",
+        "../../../www/**/e2e/mod_data.spec.js",
+        "../../../www/**/e2e/notifications.spec.js",
+        "../../../www/**/e2e/messages.spec.js",
+        "../../../www/**/e2e/login.spec.js",
+        "../../../www/**/e2e/settings.spec.js",
+        "../../../www/**/e2e/files.spec.js",
+        "../../../www/**/e2e/notes.spec.js",
+        "../../../www/**/e2e/calendar.spec.js",
+        "../../../www/**/e2e/courses.spec.js",
+        "../../../www/**/e2e/course_filtering.spec.js",
+        "../../../www/**/e2e/grades.spec.js",
+        "../../../www/**/e2e/participants.spec.js",
+        "../../../www/**/e2e/coursecompletion.spec.js",
+        "../../../www/**/e2e/course_contents.spec.js",
+        "../../../www/**/e2e/overview.spec.js",
+        "../../../www/**/e2e/teacher_grades.spec.js",
+        "../../../www/**/e2e/teacher_new_staff_induction_course.spec.js",
+        "../../../www/**/e2e/teacher_course.spec.js",
+        "../../../www/**/e2e/teacher_participants.spec.js",
+        "../../../www/**/e2e/user_profile.spec.js"
     ],
     baseUrl: '',
-    seleniumAddress: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub",
+    seleniumAddress: "http://<username>:<accesskey>@ondemand.saucelabs.com:80/wd/hub",
     multiCapabilities: [{
         "deviceName": "iPhone 6 Simulator",
         "name": "ios",
@@ -37,8 +61,8 @@ exports.config = {
         "browserName": "",
         "deviceOrientation": "portrait",
         "autoWebviewTimeout": 120000,
-        "username": process.env.SAUCE_USERNAME,
-        "accessKey": process.env.SAUCE_ACCESS_KEY
+        "username": "<username>",
+        "accessKey": "<accesskey>"
     }],
     restartBrowserBetweenTests: true,
     onPrepare: function () {
@@ -74,7 +98,7 @@ exports.config = {
             }
         };
     },
-    getPageTimeout: 15000,
+    getPageTimeout: 200000,
     plugins: [{
         "path": "../../e2e/plugins/wait_for_transitions.js"
     }]
