@@ -66,7 +66,6 @@ angular.module('mm.addons.mod_data')
             $scope.description = data.intro || $scope.description;
             $scope.data = databaseData;
 
-            $scope.database = data;
             if (sync) {
                 // Try to synchronize the database.
                 return syncDatabase(showErrors).catch(function() {

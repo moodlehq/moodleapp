@@ -278,7 +278,7 @@ angular.module('mm.core.course')
                 }
 
                 if (module.description) {
-                    return $q.when($mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description));
+                    return $mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
                 }
 
                 return [];
