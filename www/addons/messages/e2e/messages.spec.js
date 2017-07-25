@@ -14,60 +14,50 @@
 
 describe('User can manage their messages', function() {
 
-    it('Adding a new contact', function(done) {
+    it('View user profile via chat box', function(done) {
         return MM.loginAsStudent().then(function() {
             return MM.clickOnInSideMenu('Messages');
         }).then(function() {
-            return MM.clickOn('Contacts');
-        }).then(function() {
-            browser.sleep(7500); //wait to render
-            $('input[placeholder="Contact name"]').sendKeys('Heather');
-            return element.all(by.css('button[type="submit"]')).get(2).click();
-            //return element.all(by.css('[type="submit"]')).get(1).click();
-        }).then(function() {
-            return MM.clickOn('Heather Reyes');
+            return MM.clickOn('Amanda Hamilton');
         }).then(function() {
             return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
         }).then(function() {
-            return MM.clickOn('Add contact');
-        }).then(function() {
-            browser.sleep(7500); //wait for spinner
-            return MM.goBack();
-        }).then(function() {
-            return MM.goBack();
-        }).then(function() {
-            return MM.clickOn('Clear search');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Heather Reyes');
+            expect(MM.getNavBar().getText()).toMatch('Amanda Hamilton');
             done();
         });
     });
 
-    it('Blocking a contact', function(done) {
+    it('Sending a message', function(done) {
         return MM.loginAsStudent().then(function() {
             return MM.clickOnInSideMenu('Messages');
         }).then(function() {
-            return MM.clickOn('Contacts');
+            return MM.clickOn('Amanda Hamilton');
+        }).then(function () {
+            browser.sleep(5000); //wait for everything to render
+            $('textarea[ng-model="newMessage"]').sendKeys('Hello World');
+            browser.sleep(5000); //wait for everything to render
+            //return MM.clickOnElement('button[id="mma-messages-send-message-button"]');
+            return MM.clickOn('Send');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('Hello World');
+            done();
+        });
+    });
+
+    it('Searching a message', function(done) {
+        return MM.loginAsStudent().then(function() {
+            return MM.clickOnInSideMenu('Messages');
         }).then(function() {
             browser.sleep(7500); //wait to render
-            expect(MM.getView().getText()).not.toMatch('Blocked');
-            expect(MM.getView().getText()).not.toMatch('Anna Alexander');
-            $('input[placeholder="Contact name"]').sendKeys('Anna Alexander');
-            return element.all(by.css('button[type="submit"]')).get(2).click();
-            //return element.all(by.css('[type="submit"]')).get(1).click();
+            $('input[placeholder="Message"]').sendKeys('facebook');
+            return MM.clickOnElement(element.all(by.css('button[type="submit"]')).get(1));
         }).then(function() {
-            return MM.clickOn('Anna Alexander');
-        }).then(function() {
-            return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
+            return MM.clickOn('Brian Franklin');
         }).then(function() {
             browser.sleep(7500); //wait to render
-            return $('a[title="Block contact"]').click();
-        }).then(function() {          
-           browser.sleep(75000); //wait to render
-           return $('.popup-buttons button[class="button ng-binding button-positive"').click();
+            expect(MM.getView().getText()).toMatch('facebook');
+            return MM.goBack();
         }).then(function() {
-            browser.sleep(5000); //wait to render
-            expect(MM.getView().getText()).toMatch('Unblock contact');
             done();
         });
     });
