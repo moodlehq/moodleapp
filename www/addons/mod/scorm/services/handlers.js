@@ -153,6 +153,9 @@ angular.module('mm.addons.mod_scorm')
                     $scope.$on('$destroy', function() {
                         statusObserver && statusObserver.off && statusObserver.off();
                     });
+                }).catch(function() {
+                    // Error getting SCORM, hide the spinner.
+                    $scope.spinner = false;
                 });
             };
         };
