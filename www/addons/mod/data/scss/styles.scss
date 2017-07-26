@@ -63,6 +63,12 @@
     height: 56px;
   }
 
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"] {
+    -webkit-appearance: none;
+  }
+
   mm-attachments .item-media {
     width: 100%;
     margin: -1px;

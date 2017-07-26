@@ -41,7 +41,7 @@ angular.module('mm.addons.mod_data')
                 };
                 scope.enable = false;
             }
-            scope.val = new Date(scope.value.content * 1000).toISOString().substr(0, 10);
+            scope.val = new Date(scope.value.content * 1000);
         }
     };
 });
