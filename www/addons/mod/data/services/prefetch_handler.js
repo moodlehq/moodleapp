@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModDataPrefetchHandler
  */
 .factory('$mmaModDataPrefetchHandler', function($mmaModData, mmaModDataComponent, $mmFilepool, $q, $mmUtil, $mmPrefetchFactory,
-        $mmSite, $mmGroups, $mmCourse) {
+        $mmSite, $mmGroups, $mmCourse, $mmComments) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModDataComponent);
 
@@ -130,7 +130,7 @@ angular.module('mm.addons.mod_data')
         var promises = [];
 
         angular.forEach(groups, function(group) {
-            promises.push($mmaModData.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, undefined, forceCache,
+            promises.push($mmaModData.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, forceCache,
                 ignoreCache, siteId));
         });
 
@@ -319,7 +319,7 @@ angular.module('mm.addons.mod_data')
         siteId = siteId || $mmSite.getId();
 
         // Prefetch the database data.
-        return getDatabaseInfoHelper(module, courseId, false, true, siteId).then(function(info) {
+        return getDatabaseInfoHelper(module, courseId, false, false, true, siteId).then(function(info) {
             var database = info.database,
                 promises = [];
 

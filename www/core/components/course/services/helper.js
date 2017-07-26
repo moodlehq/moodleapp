@@ -23,7 +23,8 @@ angular.module('mm.core.course')
  */
 .factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state, $mmText,
             mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmSitesManager, $mmAddonManager,
-            $controller, $mmCourseDelegate, $translate, $mmEvents, mmCoreEventPackageStatusChanged, mmCoreNotDownloadable) {
+            $controller, $mmCourseDelegate, $translate, $mmEvents, mmCoreEventPackageStatusChanged, mmCoreNotDownloadable,
+            mmCoreDownloaded) {
 
     var self = {},
         calculateSectionStatus = false;
@@ -243,9 +244,10 @@ angular.module('mm.core.course')
      * @param {Object} module                   Module to get the info from.
      * @param {Number} courseid                 Course ID the section belongs to.
      * @param {Number} [invalidateCache=false]  Invalidates the cache first.
+     * @param  {String} [component]             Component of the module.
      * @return {Promise}                        Promise resolved with the download size, timemodified and module status.
      */
-    self.getModulePrefetchInfo = function(module, courseId, invalidateCache) {
+    self.getModulePrefetchInfo = function(module, courseId, invalidateCache, component) {
 
         var moduleInfo = {
                 size: false,
@@ -255,6 +257,7 @@ angular.module('mm.core.course')
                 status: false,
                 statusIcon: false
             },
+            siteId = $mmSite.getId(),
             promises = [];
 
         if (typeof invalidateCache != "undefined" && invalidateCache) {
@@ -296,6 +299,22 @@ angular.module('mm.core.course')
                     moduleInfo.statusIcon = "";
                     break;
             }
+        }));
+
+        // Get the time it was downloaded (if it was downloaded).
+        promises.push($mmFilepool.getPackageData(siteId, component, module.id).then(function(data) {
+            if (data && data.downloadtime && (data.status == mmCoreOutdated || data.status == mmCoreDownloaded)) {
+                moduleInfo.downloadtime = data.downloadtime;
+                var now = $mmUtil.timestamp();
+                if (now - data.downloadtime < 7 * 86400) {
+                    moduleInfo.downloadtimeReadable = moment(data.downloadtime * 1000).fromNow();
+                } else {
+                    moduleInfo.downloadtimeReadable = moment(data.downloadtime * 1000).calendar();
+                }
+            }
+        }).catch(function() {
+            // Not downloaded.
+            moduleInfo.downloadtime = 0;
         }));
 
         return $q.all(promises).then(function () {
@@ -711,7 +730,7 @@ angular.module('mm.core.course')
      * @return {Promise}                        Promise resolved when done.
      */
     self.fillContextMenu = function(scope, module, courseId, invalidateCache, component) {
-        return self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+        return self.getModulePrefetchInfo(module, courseId, invalidateCache, component).then(function(moduleInfo) {
             scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             scope.prefetchStatusIcon = moduleInfo.statusIcon;
 
@@ -719,6 +738,8 @@ angular.module('mm.core.course')
                 // Module is downloadable, calculate timemodified.
                 if (moduleInfo.timemodified > 0) {
                     scope.timemodified = $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable;
+                } else if (moduleInfo.downloadtime > 0) {
+                    scope.timemodified = $translate.instant('mm.core.lastdownloaded') + ': ' + moduleInfo.downloadtimeReadable;
                 } else {
                     // Cannot calculate time modified, show a default text.
                     scope.timemodified = $translate.instant('mm.core.download');

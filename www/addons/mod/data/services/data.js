@@ -307,24 +307,19 @@ angular.module('mm.addons.mod_data')
      */
     self.getEntries = function(dataId, groupId, sort, order, page, perPage, forceCache, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Always use sort and order params to improve cache usage (entries are identified by params).
             var params = {
                     databaseid: dataId,
                     returncontents: 1,
                     page: page || 0,
                     perpage: perPage || mmaModDataPerPage,
-                    groupid: groupId || 0
+                    groupid: groupId || 0,
+                    sort: sort || "0",
+                    order: order || "ASC"
                 },
                 preSets = {
                     cacheKey: getEntriesCacheKey(dataId, groupId)
                 };
-
-            if (typeof sort != "undefined") {
-                params.sort = sort;
-            }
-
-            if (typeof order !== "undefined") {
-                params.order = order;
-            }
 
             if (forceCache) {
                 preSets.omitExpires = true;
