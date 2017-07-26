@@ -584,11 +584,13 @@ angular.module('mm.addons.mod_data')
      * @param  {Number}    dataId          Data ID.
      * @param  {Number}    entryId         Entry ID.
      * @param  {Number}    groupId         Group ID.
-     * @param  {String}    siteId          Site ID. Current if not defined.
-     * @return {Promise}        Containing page number, if has next and have following page.
+     * @param  {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}    [siteId]        Site ID. Current if not defined.
+     * @return {Promise}                   Containing page number, if has next and have following page.
      */
-    self.getPageInfoByEntry = function(dataId, entryId, groupId, siteId) {
-        return self.getAllEntriesIds(dataId, groupId, siteId).then(function(entries) {
+    self.getPageInfoByEntry = function(dataId, entryId, groupId, forceCache, ignoreCache, siteId) {
+        return self.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then(function(entries) {
             for (var index in entries) {
                 if (entries[index] == entryId) {
                     index = parseInt(index, 10);
@@ -614,11 +616,13 @@ angular.module('mm.addons.mod_data')
      * @param  {Number}    dataId          Data ID.
      * @param  {Number}    page            Page number.
      * @param  {Number}    groupId         Group ID.
-     * @param  {String}    siteId          Site ID. Current if not defined.
-     * @return {Promise}        Containing page number, if has next and have following page.
+     * @param  {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}    [siteId]        Site ID. Current if not defined.
+     * @return {Promise}                   Containing page number, if has next and have following page.
      */
-    self.getPageInfoByPage = function(dataId, page, groupId, siteId) {
-        return self.getAllEntriesIds(dataId, groupId, siteId).then(function(entries) {
+    self.getPageInfoByPage = function(dataId, page, groupId, forceCache, ignoreCache, siteId) {
+        return self.getAllEntriesIds(dataId, groupId, forceCache, ignoreCache, siteId).then(function(entries) {
             var index = parseInt(page, 10) - 1,
                 entryId = entries[index];
             if (entryId) {
@@ -642,11 +646,13 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModDataHelper#getAllEntriesIds
      * @param  {Number}    dataId          Data ID.
      * @param  {Number}    groupId         Group ID.
-     * @param  {String}    siteId          Site ID. Current if not defined.
-     * @return {Promise}        Containing and array of EntryId.
+     * @param  {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean}   [ignoreCache]   True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}    [siteId]        Site ID. Current if not defined.
+     * @return {Promise}                   Resolved with an array of entry ID.
      */
-    self.getAllEntriesIds = function(dataId, groupId, siteId) {
-        return $mmaModData.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, true, undefined, undefined, siteId)
+    self.getAllEntriesIds = function(dataId, groupId, forceCache, ignoreCache, siteId) {
+        return $mmaModData.fetchAllEntries(dataId, groupId, undefined, undefined, undefined, forceCache, ignoreCache, siteId)
                 .then(function(entries) {
             return entries.map(function(entry) {
                 return entry.id;
