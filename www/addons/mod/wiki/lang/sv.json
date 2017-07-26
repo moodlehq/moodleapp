@@ -10,7 +10,7 @@
     "newpagetitle": "Ny titel på sida",
     "nocontent": "Det finns inget innehåll för den här sidan",
     "notingroup": "Inte i grupp",
-    "page": "Sida",
+    "page": "Sida:  {{$a}}",
     "pageexists": "Den här sidan finns redan, länkning dit pågår",
     "pagename": "Namn på sida",
     "subwiki": "Subwiki",

@@ -9,5 +9,5 @@
     "publishstate": "Контекст",
     "sitenotes": "Записки сайту",
     "userwithid": "Користувач з Id {{id}}",
-    "warningnotenotsent": "Неможливо додати записку до курсу{{course}}. {{error}}"
+    "warningnotenotsent": "Неможливо додати записку до курсу {{course}}. {{error}}"
 }

@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "Ne možete da uređujete ovu stranicu.",
+    "createpage": "Kreiraj stranicu",
+    "editingpage": "Uređivanje ove stranice '{{$a}}'",
+    "errorloadingpage": "Došlo je do greške prilikom učitavanja stranice.",
+    "errornowikiavailable": "Ovaj viki još uvek nema sadržaj.",
+    "gowikihome": "Idi na početnu stranicu vikija",
+    "map": "Mapa",
+    "newpagehdr": "Nova stranica",
+    "newpagetitle": "Naslov nove stranice",
+    "nocontent": "Na ovoj stranici nema sadržaja",
+    "notingroup": "Nije u grupi",
+    "page": "Stranica",
+    "pageexists": "Ova stranica već postoji.",
+    "pagename": "Naziv stranice",
+    "subwiki": "Podviki",
+    "titleshouldnotbeempty": "Naslov ne bi trebalo da bude prazan",
+    "viewpage": "Pogledaj stranicu",
+    "wikipage": "Viki stranica",
+    "wrongversionlock": "Drugi korisnik je uređivao ovu stranicu u isto vreme kada i vi. Vaš sadržaj je zastareo."
+}

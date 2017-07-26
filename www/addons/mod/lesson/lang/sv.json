@@ -1,5 +1,6 @@
 {
     "answer": "Svar",
+    "attempt": "Försök: {{$a}}",
     "attemptsremaining": "Du har {{$a}} återstående försök",
     "averagescore": "Genomsnittsligt resultat",
     "averagetime": "Genomsnittslig tid",

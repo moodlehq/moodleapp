@@ -1,5 +1,6 @@
 {
     "answer": "Antwoord",
+    "attempt": "Poging: {{$a}}",
     "attemptheader": "Poging",
     "attemptsremaining": "Je kan nog {{$a}} poging(en) doen",
     "averagescore": "Gemiddelde score",

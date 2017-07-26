@@ -1,5 +1,6 @@
 {
     "answer": "Antwort",
+    "attempt": "Versuch: {{$a}}",
     "attemptheader": "Versuch",
     "attemptsremaining": "Verbleibende Versuche: {{$a}}",
     "averagescore": "Durchschnittliche Bewertung",

@@ -3,5 +3,5 @@
     "contents": "コンテンツ",
     "hiddenfromstudents": "学生から非表示",
     "overriddennotice": "この活動に関するあなたの評点は手動で調整されました。",
-    "showall": "すべての {{$a}} を表示する"
+    "showall": "すべて表示"
 }

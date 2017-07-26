@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "No s'ha pogut obrir un debat nou",
     "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
     "discussion": "Debat",
+    "discussionlocked": "Aquest fil de debat ha finalitzat, així que no admet respostes.",
     "discussionpinned": "Fixat",
     "discussionsubscription": "Subscripció als debats",
     "edit": "Edita",

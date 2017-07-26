@@ -1,7 +1,7 @@
 {
     "allowguests": "ورود کاربران مهمان به این درس مجاز است",
     "availablecourses": "درس‌های موجود",
-    "categories": "طبقه‌های درسی",
+    "categories": "دسته‌ها",
     "confirmselfenrol": "آیا مطمئنید که می‌خواهید خود را در این درس ثبت‌نام کنید؟",
     "courses": "درس‌ها",
     "enrolme": "ثبت‌نام من",
@@ -9,11 +9,11 @@
     "filtermycourses": "پالایش درس‌های من",
     "frontpage": "صفحهٔ اول",
     "mycourses": "درس‌های من",
-    "nocourses": "هیچ درسی برای نمایش وجود ندارد",
+    "nocourses": "هیچ درسی",
     "nocoursesyet": "درسی در این طبقه وجود ندارد",
-    "nosearchresults": "نتایجی برای جستجوی شما وجود نداشت.",
+    "nosearchresults": "بدون نتیجه",
     "notenroled": "شما در این درس ثبت‌نام نیستید",
-    "password": "رمز ورود",
-    "search": "جستجو",
-    "searchcourses": "جستجو بین درس‌ها"
+    "password": "کلمهٔ رمز",
+    "search": "جستجو...",
+    "searchcourses": "جستجوی درس‌ها"
 }

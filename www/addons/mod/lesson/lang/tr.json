@@ -1,5 +1,6 @@
 {
     "answer": "Cevap",
+    "attempt": "Uygulama: {{$a}}",
     "attemptheader": "Deneme(Teşebbüs)",
     "attemptsremaining": "{{$a}} uygulama hakkınız kaldı",
     "averagescore": "Ortalama not",

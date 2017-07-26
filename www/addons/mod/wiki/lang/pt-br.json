@@ -10,7 +10,7 @@
     "newpagetitle": "Novo título da página",
     "nocontent": "Não existe conteúdo para esta página",
     "notingroup": "Não existe no grupo",
-    "page": "Página",
+    "page": "Página: {{$a}}",
     "pageexists": "Esta página já existe. Redirecionado para ela.",
     "pagename": "Nome da página",
     "subwiki": "Subwiki",

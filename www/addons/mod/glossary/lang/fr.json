@@ -1,5 +1,5 @@
 {
-    "attachment": "Joindre le badge à un courriel",
+    "attachment": "Annexe",
     "browsemode": "Parcourir les articles",
     "byalphabet": "Alphabétiquement",
     "byauthor": "Grouper par auteur",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Modifiés récemment",
     "bysearch": "Rechercher",
     "cannoteditentry": "Impossible de modifier l'article",
-    "casesensitive": "Utiliser les expressions régulières",
-    "categories": "Catégories de cours",
+    "casesensitive": "Casse des caractères",
+    "categories": "Catégories",
     "entriestobesynced": "Articles à synchroniser",
     "entrypendingapproval": "Cet article est en attente d'approbation",
     "errorloadingentries": "Une erreur est survenue lors du chargement des articles.",

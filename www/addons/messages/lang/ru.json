@@ -11,7 +11,7 @@
     "errorwhileretrievingdiscussions": "Ошибка при получении обсуждения с сервера.",
     "errorwhileretrievingmessages": "Ошибка при получении сообщения с сервера",
     "loadpreviousmessages": "Загрузить предыдущее сообщение",
-    "message": "Текст сообщения",
+    "message": "Сообщение",
     "messagenotsent": "Сообщение не было отправлено. Повторите попытку позже.",
     "messagepreferences": "Настройки сообщений",
     "messages": "Сообщения",

@@ -9,8 +9,8 @@
     "continue_the_form": "Jarraitu formularioarekin",
     "feedback_is_not_open": "Inkesta ez dago zabalik",
     "feedback_submitted_offline": "Feedback hau beranduago bidaltzeko gorde da.",
-    "feedbackclose": "Noiz itxi inkesta",
-    "feedbackopen": "Noiz zabaldu inkesta",
+    "feedbackclose": "Noiz arte baimendu erantzunak",
+    "feedbackopen": "Noiztik baimendu erantzunak",
     "mapcourses": "Esleitu feedback-a ikastaroetarako",
     "mode": "Modua",
     "next_page": "Hurrengo orria",
@@ -18,7 +18,7 @@
     "non_anonymous_entries": "Sarrera anonimorik ez ({{$a}})",
     "non_respondents_students": "Erantzun ez duten ikasleak ({{$a}})",
     "not_selected": "Aukeratu gabea",
-    "not_started": "hasi gabea",
+    "not_started": "Hasi gabea",
     "numberoutofrange": "Tartetik kanpoko zenbakia",
     "overview": "Ikuspegi orokorra",
     "page_after_submit": "Osaketa-mezua",
@@ -30,6 +30,6 @@
     "save_entries": "Bidali zure erantzunak",
     "show_entries": "Erakutsi erantzunak",
     "show_nonrespondents": "Erakutsi erantzun gabeak",
-    "started": "hasita",
+    "started": "Hasita",
     "this_feedback_is_already_submitted": "Dagoeneko egina duzu jarduera hau."
 }

@@ -1,5 +1,6 @@
 {
     "answer": "جواب",
+    "attempt": "تلاش: {{$a}}",
     "attemptsremaining": "می‌توانید {{$a}} بار دیگر تلاش کنید",
     "averagescore": "نمرهٔ میانگین",
     "averagetime": "زمان میانگین",

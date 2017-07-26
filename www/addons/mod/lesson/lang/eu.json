@@ -1,5 +1,6 @@
 {
     "answer": "Erantzuna",
+    "attempt": "Saiakera: {{$a}}",
     "attemptheader": "Saiakera",
     "attemptsremaining": "{{$a}} saiakera pendiente daukazu",
     "averagescore": "Batez besteko puntuazioa",
@@ -24,7 +25,7 @@
     "errorreviewretakenotlast": "Saiakera hau ezin da berrikusi dagoeneko beste saiakera bat amaitu duzulako.",
     "finish": "Amaitu",
     "finishretakeoffline": "Saiakera lineaz kanpo bukatu da.",
-    "firstwrong": "Sentitzen dugu. Ez duzu puntua lortu zure erantzuna zuzena izan ez delako. Berriz saiatu nahi al duzu? (ikasteko bakarrik, ez puntua lortzeko).",
+    "firstwrong": "Zure erantzuna ez da zuzena izan. Berriz saiatu nahi al duzu? (Oraingoan ondo erantzunez gero ez da zure azken emaitzan zenbatuko).",
     "gotoendoflesson": "Joan ikasgaiaren amaierara",
     "grade": "Kalifikazioa",
     "highscore": "Puntuazio altua",

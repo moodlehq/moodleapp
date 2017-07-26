@@ -1,5 +1,6 @@
 {
     "answer": "Atsakyti",
+    "attempt": "Bandymas: {{$a}}",
     "attemptheader": "Bandymas",
     "attemptsremaining": "Turite likusių bandymų: {{$a}}",
     "averagescore": "Vidutinis balas",

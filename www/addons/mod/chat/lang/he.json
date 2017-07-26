@@ -10,6 +10,6 @@
     "mustbeonlinetosendmessages": "עליך להיות מחובר בכדי לשלוח הודעות.",
     "nomessages": "אין הודעות עדיין",
     "send": "שליחה",
-    "sessionstart": "מפגש הרב-שיח הבא יתחיל ב: {{$a}}",
+    "sessionstart": "מפגש הרב-שיח הבא יתחיל ב: {{$a.date}}, ({{$a.fromnow}} מעכשיו)",
     "talk": "דברו"
 }
