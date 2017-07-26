@@ -1,7 +1,7 @@
 {
     "allsections": "Tüm Bölümler",
-    "contents": "İçerik(ler)",
+    "contents": "İçerik",
     "hiddenfromstudents": "Öğrencilerden gizli",
     "overriddennotice": "Bu etkinlikteki final notunuz, elle ayarlandı.",
-    "showall": "Tümünü göster"
+    "showall": "Tümünü göster: {{$a}}"
 }

@@ -9,14 +9,14 @@
     "confirmdownload": "Está a punto de descargar {{size}}. ¿Está seguro de que desea continuar?",
     "confirmdownloadunknownsize": "No se puede calcular el tamaño de la descarga. ¿Está seguro que quiere descargarlo?",
     "confirmpartialdownloadsize": "Está a punto de descargar <strong>al menos</strong> {{size}}. ¿Está seguro de querer continuar?",
-    "contents": "Contenidos",
+    "contents": "Contenido",
     "couldnotloadsectioncontent": "No se ha podido cargar el contenido de la sección, por favor inténtelo más tarde.",
     "couldnotloadsections": "No se ha podido cargar las secciones, por favor inténtelo más tarde.",
     "errordownloadingsection": "Error durante la descarga de la sección.",
     "errorgetmodule": "Se ha producido un error recuperando los datos del módulo.",
-    "hiddenfromstudents": "Oculto de estudiantes",
+    "hiddenfromstudents": "No mostrado a los estudiantes",
     "nocontentavailable": "No hay contenido disponible en este momento.",
     "overriddennotice": "La calificación final de esta actividad ha sido ajustada manualmente.",
-    "showall": "Mostrar todo",
+    "showall": "Mostrar {{$a}}",
     "useactivityonbrowser": "Puede acceder a esta actividad mediante el navegador de su dispositivo."
 }

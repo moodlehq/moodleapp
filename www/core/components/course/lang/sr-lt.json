@@ -9,12 +9,14 @@
     "confirmdownload": "Nameravate da preuzmete {{size}}. Da li ste sigurni da želite da nastavite?",
     "confirmdownloadunknownsize": "Nismo mogli da izračunamo veličinu preuzimanje. Da li ste sigurni da želite da preuzmete?",
     "confirmpartialdownloadsize": "Nameravate da preuzmete <strong>najmanje</strong> {{size}}. Da li ste sigurni da želite da nastavite?",
-    "contents": "Sadržaji",
+    "contents": "Sadržaj",
     "couldnotloadsectioncontent": "Nije moguće učitati sadržaj sekcije, pokušajte ponovo kasnije.",
     "couldnotloadsections": "Nije moguće učitati sekcije, pokušajte ponovo kasnije.",
     "errordownloadingsection": "Greška prilikom preuzimanja sekcije.",
     "errorgetmodule": "Greška prilikom preuzimanja podataka modula.",
+    "hiddenfromstudents": "Sakriveno od polaznika",
     "nocontentavailable": "Nikakav sadržaj nije dostupan u ovom trenutku.",
-    "showall": "Prikaži sve",
+    "overriddennotice": "Vaša završna ocena za ovu aktivnost je ručno podešena",
+    "showall": "Prikaži svih {{$a}}",
     "useactivityonbrowser": "Još uvek možete da ga koristite pomoću veb čitača vašeg uređaja."
 }

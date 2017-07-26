@@ -8,13 +8,13 @@
     "errorgettingimagealbum": "Fel att få bild från album.",
     "errormustbeonlinetoupload": "Du måste vara online för att ladda upp filer.",
     "errornoapp": "Du behöver att ha en app installerat för att utföra den här åtgärden.",
-    "errorreadingfile": "Fel vid läsning av fil.",
+    "errorreadingfile": "Fel i samband med läsningen av filen  \"{{$a}}\"",
     "errorwhileuploading": "Ett fel uppstod under filöverföringen.",
-    "file": "Fil",
+    "file": "Filinlämningar",
     "fileuploaded": "Fil laddades upp",
     "photoalbums": "Fotoalbum",
     "readingfile": "Läsa fil",
     "uploadafile": "Ladda upp en fil",
-    "uploading": "Laddar upp",
+    "uploading": "Laddar upp...",
     "video": "Video"
 }

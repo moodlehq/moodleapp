@@ -1,5 +1,6 @@
 {
     "answer": "Réponse",
+    "attempt": "Tentative : {{$a}}",
     "attemptheader": "Tentative",
     "attemptsremaining": "Il vous reste {{$a}} tentative(s)",
     "averagescore": "Note moyenne",
@@ -66,7 +67,7 @@
     "reviewquestioncontinue": "Non, je veux passer à la question suivante",
     "secondpluswrong": "Pas tout à fait. Voulez-vous essayer à nouveau ?",
     "submit": "Envoyer",
-    "teacherjumpwarning": "Un lien {{$a.cluster}} ou un lien {{$a.unseen}} est utilisé dans cette leçon. Un lien « Page suivante » sera utilisé à sa place. Veuillez vous connecter en tant que participant pour tester ces liens.",
+    "teacherjumpwarning": "Un lien {{$a.cluster}} ou un lien {{$a.unseen}} est utilisé dans cette leçon. Un lien « Page suivante » sera utilisé à sa place. Veuillez vous connecter en tant qu'étudiant pour tester ces liens.",
     "teacherongoingwarning": "Le score actuel n'est affiché que pour les étudiants. Veuillez vous connecter en tant qu'étudiant pour tester le score actuel.",
     "teachertimerwarning": "Le chronomètre ne fonctionne que pour les étudiants. Veuillez vous connecter en tant qu'étudiant pour tester le chronomètre.",
     "thatsthecorrectanswer": "C'est une réponse correcte",

@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Podrazumevano vreme za slanje obaveštenja",
     "errorloadevent": "Greška prilikom učitavanja događaja.",
     "errorloadevents": "Greška prilikom učitavanja događaja.",
-    "noevents": "Nema događaja",
-    "notifications": "Nema događaja"
+    "noevents": "Nema aktivnosti koje se uskoro završavaju",
+    "notifications": "Obaveštenja"
 }

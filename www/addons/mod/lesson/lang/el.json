@@ -1,5 +1,6 @@
 {
     "answer": "Απάντηση",
+    "attempt": "Προσπάθεια: {{$a}}",
     "attemptsremaining": "Σας απομένουν {{$a}} προσπάθειες",
     "averagescore": "Μέσος βαθμός",
     "averagetime": "Μέσος χρόνος",

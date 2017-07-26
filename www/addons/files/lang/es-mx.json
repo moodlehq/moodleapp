@@ -2,12 +2,12 @@
     "admindisableddownload": "Por favor tome nota de que su administrador de Moodle deshabilitó las descargas de archivos; Usted puede ver los archivos pero no puede descargarlos.",
     "clicktoupload": "Haga click en el botón inferior para subir archivos a sus archivos privados.",
     "couldnotloadfiles": "La lista de archivos no pudo cargarse.",
-    "emptyfilelist": "No hay archivos para mostrar.",
+    "emptyfilelist": "No hay archivos que mostrar",
     "erroruploadnotworking": "Desafortunadamente ahorita no es posible subir archivos a su sitio.",
     "files": "Archivos",
     "myprivatefilesdesc": "Los archivos que están disponibles en su área privada en este sitio Moodle.",
     "privatefiles": "Archivos privados",
     "sitefiles": "Archivos del sitio",
     "sitefilesdesc": "Los otros archivos que están disponibles  para Usted en este sitio Moodle.",
-    "uploadfiles": "Subir archivos"
+    "uploadfiles": "Mandar archivos de retroalimentación"
 }

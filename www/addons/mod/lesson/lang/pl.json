@@ -1,5 +1,6 @@
 {
     "answer": "Odpowiedź",
+    "attempt": "Podejście: {{$a}}",
     "attemptheader": "Próba",
     "attemptsremaining": "Pozostało Ci {{$a}} podejść",
     "averagescore": "Średnia liczba punktów",

@@ -1,10 +1,11 @@
 {
+    "addfiletext": "اضافه‌کردن فایل",
     "confirmuploadfile": "شما در آستانهٔ ارسال {{size}} هستید. آیا مطمئنید که می‌خواهید ادامه دهید؟",
     "confirmuploadunknownsize": "ما نتوانستیم حجم ارسال را محاسبه کنیم. آیا مطمئنید که می‌خواهید ادامه دهید؟",
     "errorcapturingaudio": "خطا در ضبط صدا",
     "errorcapturingvideo": "خطا در ضبط ویدئو",
     "errorreadingfile": "خطا در خواندن فایل «{{$a}}»",
-    "file": "فایل",
+    "file": "تحویل فایل",
     "fileuploaded": "فایل آپلود شده",
     "maxbytesfile": "فایل {{$a.file}} بسیار بزرگ است. بیشترین اندازه‌ای که می‌توانید ارسال کنید {{$a.size}} است.",
     "uploadafile": "قرار دادن یک فایل در سایت",

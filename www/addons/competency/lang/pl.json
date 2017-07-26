@@ -1,7 +1,7 @@
 {
     "activities": "Aktywności",
     "coursecompetencies": "Kompetencje kursu",
-    "duedate": "Termin oddania",
+    "duedate": "Termin",
     "evidence": "Dowód",
     "learningplancompetencies": "Kompetencje planu nauczania",
     "learningplans": "Plany nauczania",
@@ -10,10 +10,10 @@
     "nocompetencies": "Nie utworzono żadnych kompetencji w tych ramach kwalifikacji.",
     "noevidence": "Brak dowodów",
     "noplanswerecreated": "Nie utworzono planów uczenia się.",
-    "path": "Ścieżka",
-    "progress": "Postępy studenta w nauce",
+    "path": "Ścieżka:",
+    "progress": "Postęp",
     "rating": "Ocena",
     "reviewstatus": "Status przeglądu",
-    "status": "Status",
-    "template": "Szablon"
+    "status": "Status odznak",
+    "template": "Szablon planu uczenia się."
 }

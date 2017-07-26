@@ -1,5 +1,6 @@
 {
-    "browsemode": "Прегледај појмове",
+    "attachment": "Прилог",
+    "browsemode": "Режим прегледа",
     "byalphabet": "Азбучним редом",
     "byauthor": "Групиши по аутору",
     "bycategory": "Групиши по категорији",
@@ -7,6 +8,8 @@
     "byrecentlyupdated": "Недавно ажурирани",
     "bysearch": "Претражи",
     "cannoteditentry": "Не можете да уређујете појам",
+    "casesensitive": "Користи регуларне изразе",
+    "categories": "Категорије курсева",
     "entriestobesynced": "Појмови за синхронизацију",
     "entrypendingapproval": "Овај појам чека одобрење.",
     "errorloadingentries": "Дошло је до грешке приликом учитавања појмова.",

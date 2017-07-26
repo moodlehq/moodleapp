@@ -1,5 +1,6 @@
 {
     "answer": "Отговор",
+    "attempt": "{{$a}} опит",
     "attemptsremaining": "Имате оставащ(и) {{$a}} опит(a)",
     "averagescore": "Среден резултат",
     "averagetime": "Средно време",

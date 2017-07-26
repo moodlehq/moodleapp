@@ -1,5 +1,6 @@
 {
     "answer": "Resposta",
+    "attempt": "Intent: {{$a}}",
     "attemptheader": "Intent",
     "attemptsremaining": "Us resten {{$a}} intents",
     "averagescore": "Puntuació mitjana",

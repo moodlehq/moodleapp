@@ -1,7 +1,7 @@
 {
     "analysis": "ניתוח",
     "anonymous": "אנונימי",
-    "anonymous_entries": "משובים אנונימיים",
+    "anonymous_entries": "משובים אנונימיים ({{$a}})",
     "average": "ממוצע",
     "complete_the_form": "מענה על השאלות...",
     "completed_feedbacks": "תשובות אשר הוגשו",

@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Время уведомлений по умолчанию",
     "errorloadevent": "Ошибка при загрузке события",
     "errorloadevents": "Ошибка при загрузке событий",
-    "noevents": "Нет событий",
+    "noevents": "Нет предстоящих заданий",
     "notifications": "Уведомления"
 }

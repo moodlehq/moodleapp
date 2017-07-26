@@ -1,5 +1,6 @@
 {
     "answer": "Ответ",
+    "attempt": "Попытка: {{$a}}",
     "attemptheader": "Попытка",
     "attemptsremaining": "У вас осталось {{$a}} попыток",
     "averagescore": "Средний балл",

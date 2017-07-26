@@ -17,6 +17,6 @@
     "hiddenfromstudents": "Skryté před studenty",
     "nocontentavailable": "V tuto chvíli není k dispozici žádný obsah.",
     "overriddennotice": "Vaše výsledná známka za tuto činnost byla ručně upravena.",
-    "showall": "Zobrazit vše",
+    "showall": "Ukázat všechny {{$a}}",
     "useactivityonbrowser": "Můžete i nadále používat jej pomocí prohlížeče zařízení."
 }

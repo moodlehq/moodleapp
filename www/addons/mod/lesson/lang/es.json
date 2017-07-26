@@ -1,5 +1,6 @@
 {
     "answer": "Respuesta",
+    "attempt": "Intento: {{$a}}",
     "attemptheader": "Intento",
     "attemptsremaining": "Tiene {{$a}} intento(s) pendiente(s)",
     "averagescore": "Puntuación promedio",

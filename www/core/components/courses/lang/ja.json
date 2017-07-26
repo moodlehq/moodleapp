@@ -1,16 +1,16 @@
 {
     "allowguests": "このコースにはゲストユーザも入ることができます。",
     "availablecourses": "コース一覧",
-    "categories": "コースカテゴリ",
+    "categories": "カテゴリ",
     "courses": "コース",
     "enrolme": "私を登録する",
     "frontpage": "フロントページ",
     "mycourses": "マイコース",
-    "nocourses": "表示するコース情報はありません。",
+    "nocourses": "コースなし",
     "nocoursesyet": "このカテゴリにコースはありません。",
-    "nosearchresults": "あなたの検索の該当データは見つかりませんでした。",
+    "nosearchresults": "該当なし",
     "notenroled": "あなたはこのコースに登録されていません。",
-    "password": "共有秘密鍵",
-    "search": "検索",
+    "password": "パスワード",
+    "search": "検索 ...",
     "searchcourses": "コースを検索する"
 }

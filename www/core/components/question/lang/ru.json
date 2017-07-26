@@ -1,15 +1,15 @@
 {
     "answer": "Ответ",
     "answersaved": "Ответ сохранен",
-    "complete": "Завершено",
+    "complete": "Выполнен",
     "correct": "Верно",
     "feedback": "Отзыв",
     "incorrect": "Неверно",
     "information": "Информация",
     "invalidanswer": "Неполный ответ",
-    "notanswered": "Еще не ответили",
+    "notanswered": "Нет ответа",
     "notyetanswered": "Пока нет ответа",
-    "partiallycorrect": "Частично верно",
+    "partiallycorrect": "Частично правильный",
     "questionno": "Вопрос {{$a}}",
     "requiresgrading": "Требуется оценивание",
     "unknown": "неизвестно"
