@@ -29,5 +29,5 @@
     "type_search": "Результати пошуку",
     "type_strangers": "Інші",
     "unblockcontact": "Розблокувати контакт",
-    "warningmessagenotsent": "Неможливо відправити повідомлення до  {{user}}. {{error}}"
+    "warningmessagenotsent": "Неможливо відправити повідомлення до {{user}}. {{error}}"
 }

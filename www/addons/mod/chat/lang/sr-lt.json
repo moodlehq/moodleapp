@@ -1,0 +1,8 @@
+{
+    "errorwhileconnecting": "Greška prilikom povezivanja sa pričaonicom.",
+    "errorwhilegettingchatdata": "Greška prilikom preuzimanja podataka za 'Pričaonicu'.",
+    "errorwhilegettingchatusers": "Greška prilikom preuzimanja korisnika pričaonice.",
+    "errorwhileretrievingmessages": "Greška prilikom preuzimanja poruka sa servera.",
+    "errorwhilesendingmessage": "Greška prilikom slanja poruke.",
+    "mustbeonlinetosendmessages": "Morate biti onlajn kako biste slali poruke."
+}

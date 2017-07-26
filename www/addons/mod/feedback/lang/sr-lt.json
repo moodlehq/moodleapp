@@ -1,0 +1,4 @@
+{
+    "captchaofflinewarning": "Upitnik sa Captcha elementom ne može da bude završen ako nije konfigurisan, ako ste u oflajn režimu ili ako je server isključen.",
+    "feedback_submitted_offline": "Ovaj upitnik je sačuvan kako bi kasnije bio predat."
+}

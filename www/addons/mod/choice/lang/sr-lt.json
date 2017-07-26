@@ -1,0 +1,7 @@
+{
+    "errorgetchoice": "Greška prilikom preuzimanja podataka za 'Izbor'",
+    "numberofuser": "Broj učesnika",
+    "numberofuserinpercentage": "Procenat učesnika",
+    "responsesresultgraphdescription": "{{number}}% korisnika je izabralo opciju: {{text}}.",
+    "resultsnotsynced": "Rezultati ne uključuje vaš poslednji odgovor. Pokrenite sinhronizaciju kako biste ih ažurirali."
+}

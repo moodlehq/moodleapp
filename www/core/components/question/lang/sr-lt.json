@@ -1,0 +1,8 @@
+{
+    "errorattachmentsnotsupported": "Aplikacija još uvek ne podržava mogućnost da se datoteke pridruže uz odgovore.",
+    "errorinlinefilesnotsupported": "Aplikacija još uvek ne podržava uređivanje unutar datoteka.",
+    "errorquestionnotsupported": "Aplikacija ne podržava ovaj tip pitanja: {{$a}}.",
+    "howtodraganddrop": "Dodirnite za izbor, zatim još jednom za spuštanje.",
+    "questionmessage": "Pitanje {{$a}}: {{$b}}",
+    "unknown": "Nije moguće utvrditi status"
+}

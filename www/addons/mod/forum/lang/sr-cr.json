@@ -1,0 +1,11 @@
+{
+    "erroremptysubject": "Тема поруке не може бити празна",
+    "errorgetforum": "Грешка приликом преузимања података за 'Форум'",
+    "errorgetgroups": "Грешка приликом преузимања подешавања група.",
+    "forumnodiscussionsyet": "Још нема тема за дискусију на овом форуму.",
+    "group": "Група",
+    "numdiscussions": "{{numdiscussions}} дискусије/а",
+    "numreplies": "{{numreplies}} одговора",
+    "refreshdiscussions": "Освежи дискусије",
+    "refreshposts": "Освежи постове"
+}

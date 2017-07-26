@@ -10,7 +10,7 @@
     "criteriarequiredall": "Όλα τα παρακάτω κριτήρια είναι υποχρεωτικά",
     "criteriarequiredany": "Οποιοδήποτε από τα παρακάτω κριτήρια είναι υποχρεωτικά",
     "inprogress": "Σε εξέλιξη",
-    "manualselfcompletion": "Χειροκίνητη αυτό-ολοκλήρωση",
+    "manualselfcompletion": "Μη αυτόματη ολοκλήρωση",
     "notyetstarted": "Δεν έχει ξεκινήσει ακόμα",
     "pending": "Εκκρεμής",
     "required": "Απαιτείται",

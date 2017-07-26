@@ -1,0 +1,23 @@
+{
+    "blockcontactconfirm": "Nećete više dobijati poruke od ove osobe.",
+    "contactlistempty": "Lista kontakata je prazna",
+    "contactname": "Ime osobe",
+    "errordeletemessage": "Greška prilikom brisanja poruke.",
+    "errorwhileretrievingcontacts": "Greška prilikom preuzimanja kontakata sa servera.",
+    "errorwhileretrievingdiscussions": "Greška prilikom preuzimanja diskusija sa servera.",
+    "errorwhileretrievingmessages": "Greška prilikom preuzimanja poruka sa servera.",
+    "loadpreviousmessages": "Učitaj prethodne poruke",
+    "messagenotsent": "Poruka nije poslata. Molimo, pokušajte ponovo kasnije.",
+    "mustbeonlinetosendmessages": "Morate biti onlajn kako biste slali poruke",
+    "newmessage": "Nove poruke...",
+    "newmessages": "Nove poruke",
+    "nomessages": "Nema poruka.",
+    "nousersfound": "Nije pronađen nijedan korisnik",
+    "removecontactconfirm": "Osoba će biti uklonjena sa vaše liste kontakata.",
+    "type_blocked": "Blokiran",
+    "type_offline": "Oflajn",
+    "type_online": "Onlajn",
+    "type_search": "Rezultati pretrage",
+    "type_strangers": "Drugi",
+    "warningmessagenotsent": "Nije moguće poslati poruku/e korisniku {{user}}. {{error}}"
+}

@@ -1,0 +1,19 @@
+{
+    "cannotretrievemorecategories": "Kategorije koje su ispod nivoa {{$a}} ne mogu se preuzeti.",
+    "confirmselfenrol": "Da li ste sigurni da želite da se upišete na ovaj kurs?",
+    "enrolme": "Upiši me",
+    "errorloadcategories": "Došlo je do greške prilikom učitavanja kategorija.",
+    "errorloadcourses": "Došlo je do greške prilikom učitavanja kurseva.",
+    "errorsearching": "Došlo je do greške prilikom pretraživanja.",
+    "errorselfenrol": "Došlo je do greške prilikom pokušaja samostalnog upisa.",
+    "filtermycourses": "Filtriraj moje kurseve",
+    "frontpage": "Naslovna stranica",
+    "nocourses": "Nema informacija o kursevima za prikaz.",
+    "nosearchresults": "Nije bilo rezultata vaše pretrage",
+    "notenroled": "Niste upisani na ovaj kurs",
+    "notenrollable": "Ne možete sami da se upišete na ovaj kurs.",
+    "password": "Pristupna lozinka kursa",
+    "searchcoursesadvice": "Možete koristiti dugme za pretragu kurseva kako biste im pristupili kao gost ili se upisali na kurseve koji to dopuštaju.",
+    "selfenrolment": "Samostalni upis",
+    "totalcoursesearchresults": "Ukupno kurseva: {{$a}}"
+}

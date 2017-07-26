@@ -1,0 +1,11 @@
+{
+    "erroremptysubject": "Tema poruke ne može biti prazna",
+    "errorgetforum": "Greška prilikom preuzimanja podataka za 'Forum'",
+    "errorgetgroups": "Greška prilikom preuzimanja podešavanja grupa.",
+    "forumnodiscussionsyet": "Greška prilikom preuzimanja podešavanja grupa.",
+    "group": "Grupa",
+    "numdiscussions": "{{numdiscussions}} diskusije/a",
+    "numreplies": "{{numreplies}} odgovora",
+    "refreshdiscussions": "Osveži diskusije",
+    "refreshposts": "Osveži postove"
+}

@@ -1,4 +1,5 @@
 {
+    "activitydisabled": "Ο οργανισμός σας απενεργοποίησε αυτήν την δραστηριότητα στην εφαρμογή για κινητά.",
     "activitynotyetviewableinapp": "Εργαζόμαστε για την υποστήριξη της δραστηριότητας {{$a}} .",
     "activitynotyetviewableremoteaddon": "Ο οργανισμός σας εγκατέστησε ένα plugin που δεν υποστηρίζεται ακόμη.",
     "activitynotyetviewablesiteupgradeneeded": "Η πλατφόρμα Moodle του οργανισμού σας πρέπει να αναβαθμιστεί.",

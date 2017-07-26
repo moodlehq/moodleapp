@@ -1,0 +1,15 @@
+{
+    "acceptsubmissionstatement": "Molimo vas da prihvatite izjavu o predaji rada.",
+    "cannoteditduetostatementsubmission": "Ne možete da dodate ili menjate rad u aplikaciji jer nismo mogli da preuzmemo sa sajta izjavu o predaji rada.",
+    "cannotgradefromapp": "Aplikacije ne podržava neke metode ocenjivanja i one ne mogu da se menjaju.",
+    "cannotsubmitduetostatementsubmission": "Ne možete da predate rad na ocenjivanje u aplikaciji jer nismo mogli da preuzmemo sa sajta izjavu o predaji rada.",
+    "erroreditpluginsnotsupported": "Ne možete da dodate ili menjate rad u aplikaciji jer neki dodaci nemaju podršku za uređivanje:",
+    "errorshowinginformation": "Ne možemo da prikažemo informacije o predatom radu",
+    "feedbacknotsupported": "Apllikacija ne podržava ovu povratnu informaciju. Moguće je da ona ne sadrži sve informacije.",
+    "gradenotsynced": "Ocena nije sinhronizovana",
+    "notallparticipantsareshown": "Učesnici koji nisu predali rad se ne prikazuju",
+    "submissionnotsupported": "Aplikacija ne podržava ovaj predati rad. Moguće je da rad ne sadrži sve informacije.",
+    "userwithid": "Korisnik sa ID oznakom  {{id}}",
+    "warningsubmissiongrademodified": "Ocena predatog rada je izmenjena na sajtu.",
+    "warningsubmissionmodified": "Predati rad korisnika je izmenjen na sajtu."
+}

@@ -17,6 +17,7 @@
     "invalidsite": "サイトURLが正しくありません。",
     "invalidurl": "無効なURLです。",
     "login": "ログイン",
+    "loginbutton": "ログイン",
     "logininsiterequired": "ブラウザウインドウからサイトにログインする必要があります。",
     "loginsteps": "このサイトにフルアクセスするため、あなたは最初にアカウントを作成する必要があります。",
     "missingemail": "メールアドレスが入力されていません。",

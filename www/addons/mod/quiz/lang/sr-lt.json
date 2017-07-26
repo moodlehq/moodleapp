@@ -1,0 +1,22 @@
+{
+    "cannotsubmitquizdueto": "Ovaj pokušaj rešavanja testa ne može da bude predat zbog sledećih razloga:",
+    "confirmcontinueoffline": "Ovaj pokušaj nije sinhronizovan od {{$a}}. Ako ste u međuvremenu ovaj pokušaj nastavili  na nekom drugom uređaju, postoji mogućnost da ste izgubili podatke.",
+    "confirmleavequizonerror": "Došlo je do greške prilikom pokušaja da se sačuvaju odgovori. Da li ste sigurni da želite da napustite test?",
+    "errorbehaviournotsupported": "Ovaj test ne možete rešavati u aplikaciji zato što ona ne podržava ponašanje pitanja:",
+    "errordownloading": "Greška prilikom preuzimanja neophodnih podataka.",
+    "errorgetattempt": "Greška prilikom preuzimanja podataka o pokušaju rešavanja testa.",
+    "errorgetquestions": "Greška prilikom preuzimanja pitanja.",
+    "errorgetquiz": "Greška prilikom preuzimanja podataka o testu.",
+    "errorparsequestions": "Došlo je do greške prilikom učitavanja pitanja. Molimo, pokušajte da rešite ovaj test u veb čitaču.",
+    "errorquestionsnotsupported": "Ovaj test se ne može rešavati u aplikaciji zato što sadrži pitanja koje aplikacija ne podržava:",
+    "errorrulesnotsupported": "Ovaj test se ne može rešavati u aplikaciji zato što sadrži pravila za pristup koje aplikacija ne podržava:",
+    "errorsaveattempt": "Došlo je do greške prilikom snimanja podataka o pokušaju rešavanja testa.",
+    "errorsyncquiz": "Došlo je do greške prilikom sinhronizacije. Molimo, pokušajte ponovo.",
+    "errorsyncquizblocked": "Ovaj test sada ne može biti sinhronizovan zbog drugog procesa koji je trenutno u toku. Molimo, pokušajte ponovo kasnije. Ako i dalje budete imali problema, pokušajte da  pokrenete aplikaciju ispočetka.",
+    "finishnotsynced": "Test je završen, ali nije sinhronizovan",
+    "hasdatatosync": "Ovaj test ima oflajn podatke koje treba sinhronizovati.",
+    "opentoc": "Otvori navigacioni meni.",
+    "warningattemptfinished": "Oflajn pokušaj je odbačen zato što je ili završen na sajtu ili nije pronađen.",
+    "warningdatadiscarded": "Neki oflajn odgovori su odbačeni zato što su pitanja izmenjena onlajn.",
+    "warningdatadiscardedfromfinished": "Pokušaj rešavanja testa je nije završen zato što su neki oflajn odgovori odbačeni. Pregledajte svoje odgovore, a zatim ponovo pošaljite svoj pokušaj."
+}

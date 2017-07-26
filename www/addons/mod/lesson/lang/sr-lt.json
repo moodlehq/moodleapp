@@ -1,0 +1,8 @@
+{
+    "errorreviewretakenotlast": "Ova pokušaj ne može više biti pregledan zato što je završen drugi pokušaj.",
+    "finishretakeoffline": "Ovaj pokušaj je završen u oflajn režimu.",
+    "retakefinishedinsync": "Oflajn pokušaj je sinhronizovan. Da li želite da ga pregledate?",
+    "retakelabelfull": "{{retake}}: {{grade}} {{timestart}} ({{duration}})",
+    "retakelabelshort": "{{retake}}: {{grade}} {{timestart}}",
+    "warningretakefinished": "Pokušaj je završen na sajtu."
+}
