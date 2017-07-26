@@ -622,12 +622,7 @@ angular.module('mm.addons.mod_data')
                 params.groupid = groupId;
             }
 
-            return site.write('mod_data_add_entry', params).then(function(result) {
-                if (result.newentryid) {
-                    return result;
-                }
-                return $q.reject();
-            }).catch(function(error) {
+            return site.write('mod_data_add_entry', params).catch(function(error) {
                 return $q.reject({
                     error: error,
                     wserror: $mmUtil.isWebServiceError(error)
@@ -766,12 +761,7 @@ angular.module('mm.addons.mod_data')
                     data: data
                 };
 
-            return site.write('mod_data_update_entry', params).then(function(result) {
-                if (result.updated) {
-                    return result;
-                }
-                return $q.reject();
-            }).catch(function(error) {
+            return site.write('mod_data_update_entry', params).catch(function(error) {
                 return $q.reject({
                     error: error,
                     wserror: $mmUtil.isWebServiceError(error)
