@@ -9,7 +9,7 @@
     "discussionsubscription": "Abonnement på tråd",
     "edit": "Rediger",
     "erroremptymessage": "Indlægget kan ikke være tomt.",
-    "erroremptysubject": "Indlæggets emne kan ikke være tomt.",
+    "erroremptysubject": "Emnefeltet kan ikke være tomt",
     "errorgetforum": "Fejl ved hentning af forumdata.",
     "errorgetgroups": "Fejl ved hentning af gruppeindstillinger.",
     "forumnodiscussionsyet": "Der er endnu ingen indlæg i dette forum.",

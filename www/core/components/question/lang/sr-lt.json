@@ -17,5 +17,5 @@
     "questionmessage": "Pitanje {{$a}}: {{$b}}",
     "questionno": "Pitanje {{$a}}",
     "requiresgrading": "Zahteva ocenjivanje",
-    "unknown": "Nepoznato"
+    "unknown": "Nije moguće utvrditi status"
 }
