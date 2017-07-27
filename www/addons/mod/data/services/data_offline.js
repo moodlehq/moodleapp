@@ -38,9 +38,6 @@ angular.module('mm.addons.mod_data')
                     name: 'entryid'
                 },
                 {
-                    name: 'fields'
-                },
-                {
                     name: 'timemodified'
                 },
                 {
