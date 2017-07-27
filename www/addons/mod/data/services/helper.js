@@ -101,7 +101,7 @@ angular.module('mm.addons.mod_data')
         replacements.timeadded = true;
         replacements.timemodified = true;
 
-        replacements.edit = accessInfo.canmanageentries || (accessInfo.inreadonlyperiod && record.canmanageentry);
+        replacements.edit = record.canmanageentry; // This already checks capabilities and readonly period.
         replacements.delete = replacements.edit;
         replacements.approve = database.approval && accessInfo.canapprove && !record.approved;
         replacements.disapprove = database.approval && accessInfo.canapprove && record.approved;
