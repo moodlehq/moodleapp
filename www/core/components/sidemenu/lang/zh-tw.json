@@ -1,8 +1,8 @@
 {
     "appsettings": "應用程式設定",
     "changesite": "更換網站",
-    "help": "輔助說明",
-    "logout": "登出",
+    "help": "協助",
+    "logout": "更換網站",
     "mycourses": "我的課程",
     "togglemenu": "切換功能選單",
     "website": "網站"

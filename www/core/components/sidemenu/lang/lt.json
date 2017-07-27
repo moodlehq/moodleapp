@@ -1,9 +1,9 @@
 {
     "appsettings": "Programėlės nustatymai",
     "changesite": "Pakeisti svetainę",
-    "help": "Žinynas",
-    "logout": "Atsijungti",
-    "mycourses": "Mano kursai",
+    "help": "Pagalba",
+    "logout": "Pakeisti svetainę",
+    "mycourses": "Mano mokymo programos",
     "togglemenu": "Perjungti",
     "website": "Interneto svetainė"
 }

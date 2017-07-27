@@ -33,7 +33,7 @@
     "invalidvaluemin": "Minimální hodnota je {{$a}}",
     "localmobileunexpectedresponse": "Kontrola rozšířených vlastností Moodle Mobile vrátil neočekávanou odezvu, budete ověřen pomocí standardních služeb mobilu .",
     "loggedoutssodescription": "Musíte se znovu autentizovat. Musíte se přihlásit na stránky v okně prohlížeče.",
-    "login": "Přihlásit ke svému účtu",
+    "login": "Přihlásit se",
     "loginbutton": "Přihlásit se",
     "logininsiterequired": "Váš Moodlu vás nutí k přihlášení pomocí prohlížeče. Nová instance prohlížeče otevře přesměrování na vaše stránky Moodle.",
     "loginsteps": "K plnému přístupu na tyto stránky, musíte nejprve vytvořit účet.",

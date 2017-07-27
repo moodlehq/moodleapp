@@ -8,7 +8,7 @@
     "confirmdownload": "您即將下載{{size}}. 您確定您要繼續嗎?",
     "confirmdownloadunknownsize": "我們無法計算下載的容量. 您確定要下載嗎?",
     "confirmpartialdownloadsize": "您即將下載<strong>至少</ strong> {{size}}. 您確定您要繼續嗎?",
-    "contents": "目錄",
+    "contents": "內容",
     "couldnotloadsectioncontent": "無法載入區塊內容, 請稍後再試.",
     "couldnotloadsections": "無法載入區塊, 請稍後再試.",
     "errordownloadingsection": "載入區塊時發生錯誤",
@@ -16,6 +16,6 @@
     "hiddenfromstudents": "對學生隱藏",
     "nocontentavailable": "目前無內容可使用",
     "overriddennotice": "您在這活動的最後成績是手動調整的。",
-    "showall": "顯示全部{{$a}}",
+    "showall": "顯示全部",
     "useactivityonbrowser": "你可以以瀏覽器一直使用"
 }
