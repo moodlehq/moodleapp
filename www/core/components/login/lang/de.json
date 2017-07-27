@@ -2,7 +2,7 @@
     "auth_email": "E-Mail-Registrierung",
     "authenticating": "Authentifizieren ...",
     "cancel": "Abbrechen",
-    "checksiteversion": "Prüfen Sie, ob Ihre Website mindestens Moodle 2.4 verwendet.",
+    "checksiteversion": "Prüfen Sie, ob die Website mindestens Moodle 2.4 verwendet.",
     "confirmdeletesite": "Möchten Sie '{{sitename}}' wirklich aus der Liste löschen?",
     "connect": "Verbinden",
     "connecttomoodle": "Website verbinden",
