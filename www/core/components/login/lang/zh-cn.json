@@ -16,7 +16,7 @@
     "invalidmoodleversion": "无效的Moodle版本。最低版本要求是：",
     "invalidsite": "网站URL是无效的。",
     "invalidurl": "您刚刚输入的 URL 不合法",
-    "login": "登录您的账号",
+    "login": "登录",
     "logininsiterequired": "您需要在浏览器窗口中登录该站点。",
     "loginsteps": "为了能完全访问此网站，您首先需要创建一个帐户。",
     "missingemail": "Email地址没填",

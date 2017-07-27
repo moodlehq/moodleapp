@@ -33,7 +33,7 @@
     "invalidvaluemin": "O valor minimo é{{$a}}",
     "localmobileunexpectedresponse": "Verificação do Moodle Mobile Additional Features retornou uma resposta inesperada, você ira se autenticar usando o serviço Mobile padrão",
     "loggedoutssodescription": "Você tem que autenticar novamente. Você precisa fazer login no site em uma janela do navegador.",
-    "login": "Login em sua conta",
+    "login": "Acessar",
     "loginbutton": "Entrar",
     "logininsiterequired": "É preciso logar no site num navegador.",
     "loginsteps": "Para ter acesso completo a este site, você primeiro precisa criar uma conta.",

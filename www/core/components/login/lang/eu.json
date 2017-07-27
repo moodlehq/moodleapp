@@ -33,7 +33,7 @@
     "invalidvaluemin": "Gutxieneko balioa {{$a}} da.",
     "localmobileunexpectedresponse": "Moodle Mobile-ko Funtzio Aurreratuen kontrolak ezusteko erantzuna eman du, Mobile zerbitzu estandarra erabilita autentifikatuko zaitugu.",
     "loggedoutssodescription": "Berriz autentifikatu behar duzua. Gunean nabigatzaile leiho baten bitartez hasi behar duzu saioa.",
-    "login": "Sartu zure kontuan",
+    "login": "Sartu",
     "loginbutton": "Hasi saioa",
     "logininsiterequired": "Gunean web-nabigatzaile baten bidez sartu behar zara.",
     "loginsteps": "Gune honetara sarbide osoa izateko, lehenik eta behin kontua sortu behar duzu. in ikastarotara sartzeko web-gune honetako erabiltzaile izan behar duzu\neta horretarako kontu bat sortu behar duzu.\n\nNola sortu kontu berria:\n<ol>\n<li>Sakatu lotura honetan <a href=\"{{$a}}\">KONTU BERRIA</a> eta formularioa bete zure datuekin.</li>\n<li>E-posta mezu bat bidaliko dugu berehala zure e-posta helbidera.</li>\n<li>Mezua irakurri eta agertzen den loturan klik egin.</li>\n<li>Zure kontua berretsi eta barruan izango zara.</li>\n<li>Orduan, nahi duzun ikastaroa aukeratu.</li>\n<li>\"Partaide-giltza\" bat eskatzen badizu, erabili matrikulatutakoan eman zizutena</li>\n<li>Kontu berria sortutakoan, eta zenbait kasutan matrikula egindakoan, ikastarorako sarbidea izango duzu.</li>\n<li>Hemendik aurrera zure erabiltzaile-izena eta pasahitza besterik ez dituzu sartu beharko hasiera orrian zeure ikastaroan parte hartzeko.</li>\n</ol>",

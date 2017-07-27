@@ -33,7 +33,7 @@
     "invalidvaluemin": "La valeur minimale est {{$a}}",
     "localmobileunexpectedresponse": "La vérification des fonctionnalités additionnelles de Moodle Mobile a envoyé une réponse inattendue. Vous allez être connecté au moyen du service mobile standard.",
     "loggedoutssodescription": "Veuillez vous ré-authentifier en vous connectant au site au moyen d'un navigateur web.",
-    "login": "Connexion à votre compte",
+    "login": "Connexion",
     "loginbutton": "Se connecter",
     "logininsiterequired": "Vous devez vous connecter au moyen d'un navigateur.",
     "loginsteps": "Pour un accès complet à ce site, veuillez créer un compte utilisateur.",

@@ -33,7 +33,7 @@
     "invalidvaluemin": "De minimum waard eis {{$a}}",
     "localmobileunexpectedresponse": "Moodle Mobile Additional Features Check gaf een onverwacht antwoord. Je zult aanmelden via de standaard Mobile service.",
     "loggedoutssodescription": "Je moet opnieuw aanmelden. Je moet aanmelden met een browservenster.",
-    "login": "Login met je account",
+    "login": "Login",
     "loginbutton": "Inloggen",
     "logininsiterequired": "Je dient via een browser in te loggen op je Moodle site",
     "loginsteps": "Om volledige toegang tot deze site te krijgen, moet je een account maken.",
