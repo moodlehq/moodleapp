@@ -622,12 +622,7 @@ angular.module('mm.addons.mod_data')
                 params.groupid = groupId;
             }
 
-            return site.write('mod_data_add_entry', params).then(function(result) {
-                if (result.newentryid) {
-                    return result;
-                }
-                return $q.reject();
-            }).catch(function(error) {
+            return site.write('mod_data_add_entry', params).catch(function(error) {
                 return $q.reject({
                     error: error,
                     wserror: $mmUtil.isWebServiceError(error)
@@ -766,12 +761,7 @@ angular.module('mm.addons.mod_data')
                     data: data
                 };
 
-            return site.write('mod_data_update_entry', params).then(function(result) {
-                if (result.updated) {
-                    return result;
-                }
-                return $q.reject();
-            }).catch(function(error) {
+            return site.write('mod_data_update_entry', params).catch(function(error) {
                 return $q.reject({
                     error: error,
                     wserror: $mmUtil.isWebServiceError(error)
@@ -808,8 +798,8 @@ angular.module('mm.addons.mod_data')
                     perpage: perPage || mmaModDataPerPage
                 },
                 preSets = {
-                    getCache: 0,
-                    saveCache: 1,
+                    getFromCache: 0,
+                    saveToCache: 1,
                     emergencyCache: 1
                 };
 
@@ -839,11 +829,13 @@ angular.module('mm.addons.mod_data')
      * @module mm.addons.mod_data
      * @ngdoc method
      * @name $mmaModData#getFields
-     * @param   {Number}    dataId          Data ID.
-     * @param   {String}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise}                   Promise resolved when the database is retrieved.
+     * @param  {Number} dataId         Data ID.
+     * @param  {Boolean} [forceCache]  True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when the fields are retrieved.
      */
-    self.getFields = function(dataId, siteId) {
+    self.getFields = function(dataId, forceCache, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     databaseid: dataId
@@ -851,6 +843,13 @@ angular.module('mm.addons.mod_data')
                 preSets = {
                     cacheKey: getFieldsCacheKey(dataId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_data_get_fields', params, preSets).then(function(response) {
                 if (response && response.fields) {

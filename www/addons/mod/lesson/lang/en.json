@@ -22,7 +22,7 @@
     "emptypassword": "Password cannot be empty",
     "enterpassword": "Please enter the password:",
     "eolstudentoutoftimenoanswers": "You did not answer any questions.  You have received a 0 for this lesson.",
-    "errorprefetchrandombranch": "This lesson contains a jump to a random content page, it cannot be attempted in the app until it has been started in web.",
+    "errorprefetchrandombranch": "This lesson contains a jump to a random content page. It can't be attempted in the app until it has been started in a web browser.",
     "errorreviewretakenotlast": "This attempt can no longer be reviewed because another attempt has been finished.",
     "finish": "Finish",
     "finishretakeoffline": "This attempt was finished offline.",

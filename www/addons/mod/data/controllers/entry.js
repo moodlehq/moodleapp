@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_data')
                     $scope.fields[field.id] = field;
                 });
 
-                return $mmaModData.getEntry(data.id, entryId);
+                return $mmaModDataHelper.getEntry(data, entryId, offlineActions);
             });
         }).then(function(entry) {
             entry = entry.entry;

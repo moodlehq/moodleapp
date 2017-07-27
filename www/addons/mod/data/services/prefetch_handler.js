@@ -323,6 +323,8 @@ angular.module('mm.addons.mod_data')
             var database = info.database,
                 promises = [];
 
+            promises.push($mmaModData.getFields(database.id, false, true, siteId));
+
             promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
 
             angular.forEach(info.groups, function(group) {
