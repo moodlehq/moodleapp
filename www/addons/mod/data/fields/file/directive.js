@@ -22,6 +22,24 @@ angular.module('mm.addons.mod_data')
  * @name mmaModDataFieldFile
  */
 .directive('mmaModDataFieldFile', function($mmFileSession, mmaModDataComponent) {
+
+    /**
+     * Get the files from the input value.
+     *
+     * @param  {Object} value Input value.
+     * @return {Object[]}     List of files.
+     */
+    function getFiles(value) {
+        var files = (value && value.files) || [];
+
+        // Reduce to first element.
+        if (files.length > 0) {
+            files = [files[0]];
+        }
+
+        return files;
+    }
+
     return {
         restrict: 'A',
         priority: 100,
@@ -32,14 +50,15 @@ angular.module('mm.addons.mod_data')
                 scope.component = mmaModDataComponent;
                 scope.componentId = scope.database.coursemodule;
 
-                scope.files = (scope.value && scope.value.files) || [];
+                if (scope.mode == 'show') {
+                    // Displaying the list of files, watch the value to update the list if it changes.
+                    scope.$watch('value', function(newValue) {
+                        scope.files = getFiles(newValue);
+                    });
+                } else {
+                    // Edit mode, the list shouldn't change so there is no need to watch it.
+                    scope.files = getFiles(scope.value);
 
-                // Reduce to first element.
-                if (scope.files.length > 0) {
-                    scope.files = [scope.files[0]];
-                }
-
-                if (scope.mode == 'edit') {
                     scope.maxSizeBytes = parseInt(scope.field.param3, 10);
                     $mmFileSession.setFiles(mmaModDataComponent, scope.database.id + '_' + scope.field.id, scope.files);
                 }

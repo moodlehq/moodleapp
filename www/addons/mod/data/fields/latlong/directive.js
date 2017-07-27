@@ -14,6 +14,25 @@
 
 angular.module('mm.addons.mod_data')
 
+.filter('mmaModDataFieldLatLongFormat', function() {
+    return function(value) {
+        var north = (value && parseFloat(value.content)) || "",
+            east = (value && parseFloat(value.content1)) || "";
+
+        if (north !== '' || east !== '') {
+            north = north ? north.toFixed(4) : '0.0000';
+            east = east ? east.toFixed(4) : '0.0000';
+
+            var latitude = north < 0 ? -north + '°S' : north + '°N',
+                longitude = east < 0 ? -east + '°W' : east + '°E',
+                link = ionic.Platform.isAndroid() ? 'geo:' + north + ',' + east :
+                            'http://maps.apple.com/?ll=' + north + ',' + east + '&near=' + north + ',' + east;
+
+            return '<a href="' + link + '">' + latitude + ' ' + longitude + '</a>';
+        }
+    };
+})
+
 /**
  * Directive to render data latlong field.
  *
@@ -29,22 +48,9 @@ angular.module('mm.addons.mod_data')
         link: function(scope) {
             scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
             if (scope.value) {
-                scope.north = (scope.value && parseFloat(scope.value.content)) || "";
-                scope.east = (scope.value && parseFloat(scope.value.content1)) || "";
-
-                if (scope.mode == 'show') {
-                    if (scope.north != "" || scope.east != "") {
-                        scope.north = scope.north ? parseFloat(scope.north).toFixed(4) : '0.0000';
-                        scope.east = scope.east ? parseFloat(scope.east).toFixed(4) : '0.0000';
-                        scope.latitude = scope.north < 0 ? -scope.north + '°S' : scope.north + '°N';
-                        scope.longitude = scope.east < 0 ? -scope.east + '°W' : scope.east + '°E';
-
-                        if (ionic.Platform.isIOS()) {
-                            scope.link = "http://maps.apple.com/?ll=" + scope.north + "," + scope.east + "&near=" + scope.north + "," + scope.east;
-                        } else {
-                            scope.link = "geo:"+scope.north+","+scope.east;
-                        }
-                    }
+                if (scope.mode == 'edit') {
+                    scope.north = (scope.value && parseFloat(scope.value.content)) || "";
+                    scope.east = (scope.value && parseFloat(scope.value.content1)) || "";
                 }
             }
         }

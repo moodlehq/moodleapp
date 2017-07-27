@@ -10,6 +10,4 @@
     <span class="placeholder-icon">°E</span>
 </label>
 
-<a ng-href="{{link}}" ng-if="mode == 'show' && latitude">
-    {{latitude}} {{longitude}}
-</label>
+<span ng-if="mode == 'show' && value" ng-bind-html="value | mmaModDataFieldLatLongFormat"></span>

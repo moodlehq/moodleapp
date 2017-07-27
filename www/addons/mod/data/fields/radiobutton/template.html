@@ -6,4 +6,4 @@
         <option ng-repeat="option in options" value="{{option}}">{{ option }}</option>
     </select>
 </div>
-<mm-format-text ng-if="mode == 'show'" watch="true">{{ text }}</mm-format-text>
+<mm-format-text ng-if="mode == 'show' && value && value.content" watch="true">{{ value.content }}</mm-format-text>

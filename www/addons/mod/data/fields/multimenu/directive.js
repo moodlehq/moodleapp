@@ -14,6 +14,12 @@
 
 angular.module('mm.addons.mod_data')
 
+.filter('mmaModDataFieldMultimenuFormat', function() {
+    return function(text) {
+        return text.split("##").join("<br>");
+    };
+})
+
 /**
  * Directive to render data multimenu field.
  *
@@ -29,7 +35,6 @@ angular.module('mm.addons.mod_data')
         link: function(scope) {
             scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
             if (scope.mode == 'show') {
-                scope.text = scope.value && scope.value.content ? scope.value.content.split("##").join("<br>") : "";
                 return;
             }
 
