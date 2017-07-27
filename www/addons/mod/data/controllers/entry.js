@@ -214,13 +214,15 @@ angular.module('mm.addons.mod_data')
 
     // Refresh entry on sync.
     syncObserver = $mmEvents.on(mmaModDataEventAutomSynced, function(eventData) {
-        if (eventData.entryid == entryId && data.id == eventData.dataid && $mmSite.getId() == eventData.siteid) {
+        if ((eventData.entryid == entryId || eventData.offlineentryid == entryId) && data.id == eventData.dataid &&
+                $mmSite.getId() == eventData.siteid) {
             if (eventData.deleted) {
                 // If deleted, go back.
                 $ionicHistory.goBack();
             } else {
+                entryId = eventData.entryid;
                 $scope.databaseLoaded = false;
-                return fetchEntryData(true);
+                fetchEntryData(true);
             }
         }
     });

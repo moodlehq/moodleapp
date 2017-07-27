@@ -439,7 +439,7 @@ angular.module('mm.addons.mod_data')
         // Update just when all database is synced.
         if (data.id == eventData.dataid && siteId == eventData.siteid && typeof eventData.entryid == "undefined") {
             $scope.databaseLoaded = false;
-            return fetchDatabaseData(true);
+            fetchDatabaseData(true);
         }
     });
 

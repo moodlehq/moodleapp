@@ -63,6 +63,27 @@ angular.module('mm.addons.mod_data')
     var self = {};
 
     /**
+     * Delete all the actions of an entry.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataOffline#deleteAllEntryActions
+     * @param  {Number} dataId   Database ID.
+     * @param  {Number} entryId  Database entry ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if deleted, rejected if failure.
+     */
+    self.deleteAllEntryActions = function(dataId, entryId, siteId) {
+        return self.getEntryActions(dataId, entryId, siteId).then(function(actions) {
+            var promises = [];
+            angular.forEach(actions, function(action) {
+                promises.push(self.deleteEntry(dataId, entryId, action.action, siteId));
+            });
+            return $q.all(promises);
+        });
+    };
+
+    /**
      * Delete an stored entry.
      *
      * @module mm.addons.mod_data
@@ -122,7 +143,7 @@ angular.module('mm.addons.mod_data')
      * @param  {Number} dataId      Database ID.
      * @param  {String} entryId     Database entry Id.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved with entry.
+     * @return {Promise}            Promise resolved with entry actions.
      */
     self.getEntryActions = function(dataId, entryId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
