@@ -87,31 +87,7 @@ angular.module('mm.addons.mod_data')
                 $scope.fields[field.id] = field;
             });
 
-            if (entryId > 0) {
-                return $mmaModData.getEntry(data.id, entryId);
-            }
-
-            for (var x in offlineActions) {
-                if (offlineActions[x].action == 'add') {
-                    offlineEntry = offlineActions[x];
-
-                    var siteInfo = $mmSite.getInfo(),
-                        entryData = {
-                            id: offlineEntry.entryid,
-                            canmanageentry: true,
-                            approved: !data.approval || data.manageapproved,
-                            dataid: offlineEntry.dataid,
-                            groupid: offlineEntry.groupid,
-                            timecreated: -offlineEntry.entryid,
-                            timemodified: -offlineEntry.entryid,
-                            userid: siteInfo.userid,
-                            fullname: siteInfo.fullname,
-                            contents: {}
-                        };
-
-                    return {entry: entryData};
-                }
-            }
+            return $mmaModDataHelper.getEntry(data, entryId, offlineActions);
         }).then(function(entryData) {
             if (entryData) {
                 entry = entryData.entry;

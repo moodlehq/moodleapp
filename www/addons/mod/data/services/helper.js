@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModDataHelper
  */
 .factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader, $mmSite,
-        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper) {
+        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager) {
 
     var self = {
             searchOther: {
@@ -660,6 +660,48 @@ angular.module('mm.addons.mod_data')
         });
     };
 
+    /**
+     * Get an online or offline entry.
+     *
+     * @module mm.addons.mod_data
+     * @ngdoc method
+     * @name $mmaModDataHelper#getEntry
+     * @param  {Object} data             Database.
+     * @param  {Number} entryId          Entry ID.
+     * @param  {Object} [offlineActions] Offline data with the actions done. Required for offline entries.
+     * @param  {String} [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                 Promise resolved with the entry.
+     */
+    self.getEntry = function(data, entryId, offlineActions, siteId) {
+        if (entryId > 0) {
+            // It's an online entry, get it from WS.
+            return $mmaModData.getEntry(data.id, entryId, siteId);
+        }
+
+        // It's an offline entry, search it in the offline actions.
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            for (var x in offlineActions) {
+                if (offlineActions[x].action == 'add') {
+                    var offlineEntry = offlineActions[x],
+                        siteInfo = site.getInfo(),
+                        entryData = {
+                            id: offlineEntry.entryid,
+                            canmanageentry: true,
+                            approved: !data.approval || data.manageapproved,
+                            dataid: offlineEntry.dataid,
+                            groupid: offlineEntry.groupid,
+                            timecreated: -offlineEntry.entryid,
+                            timemodified: -offlineEntry.entryid,
+                            userid: siteInfo.userid,
+                            fullname: siteInfo.fullname,
+                            contents: {}
+                        };
+
+                    return {entry: entryData};
+                }
+            }
+        });
+    };
 
     return self;
 });
