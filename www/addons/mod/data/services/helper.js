@@ -55,7 +55,7 @@ angular.module('mm.addons.mod_data')
         angular.forEach(fields, function(field) {
             replace = "[[" + field.name + "]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace, 'g');
+            replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
             render = '<mma-mod-data-field mode="'+mode+'" field="fields['+ field.id + ']" value="entries['+ entryId +'].contents['+ field.id + ']" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
@@ -63,7 +63,7 @@ angular.module('mm.addons.mod_data')
         });
 
         angular.forEach(actions, function(enabled, action) {
-            replace = new RegExp("##" + action + "##", 'g');
+            replace = new RegExp("##" + action + "##", 'gi');
             if (enabled) {
                 if (action == "moreurl") {
                     // Render more url directly because it can be part of an HTML attribute.
@@ -196,7 +196,7 @@ angular.module('mm.addons.mod_data')
         angular.forEach(fields, function(field) {
             replace = "[[" + field.name + "]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace, 'g');
+            replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
             var render = '<mma-mod-data-field mode="search" field="fields['+ field.id + ']"></mma-mod-data-field>';
@@ -205,7 +205,7 @@ angular.module('mm.addons.mod_data')
 
         // Not pluginable other search elements.
         angular.forEach(self.searchOther, function(field, name) {
-            replace = new RegExp("##" + field + "##", 'g');
+            replace = new RegExp("##" + field + "##", 'gi');
 
             // Replace field by the text input.
             var render = '<input type="text" name="' + name + '" placeholder="{{ \'mma.mod_data.author' + field + '\' | translate }}">';
@@ -315,7 +315,7 @@ angular.module('mm.addons.mod_data')
         angular.forEach(fields, function(field) {
             replace = "[[" + field.name + "]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace, 'g');
+            replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
             var render = '<mma-mod-data-field mode="edit" field="fields['+ field.id + ']" value="entry.contents['+ field.id + ']" database="data" error="errors['+ field.id + ']"></mma-mod-data-field>';
@@ -324,7 +324,7 @@ angular.module('mm.addons.mod_data')
             // Replace the field id tag.
             replace = "[[" + field.name + "#id]]";
             replace = replace.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            replace = new RegExp(replace, 'g');
+            replace = new RegExp(replace, 'gi');
 
             template = template.replace(replace, 'field_'+ field.id);
         });
