@@ -798,8 +798,8 @@ angular.module('mm.addons.mod_data')
                     perpage: perPage || mmaModDataPerPage
                 },
                 preSets = {
-                    getCache: 0,
-                    saveCache: 1,
+                    getFromCache: 0,
+                    saveToCache: 1,
                     emergencyCache: 1
                 };
 
