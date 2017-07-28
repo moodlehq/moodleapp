@@ -287,11 +287,12 @@ angular.module('mm.core', ['pascalprecht.translate'])
             }
         });
 
-        if (!$mmApp.isDevice()) {
-            // Re-define getParentOrSelfWithClass to change the default value of the depth param.
-            // This is to allow scrolling with trackpad when hovering deep elements.
-            var originalFunction = ionic.DomUtil.getParentOrSelfWithClass;
-            ionic.DomUtil.getParentOrSelfWithClass = function(e, className, depth) {
+        // In desktop, re-define getParentOrSelfWithClass to allow scrolling with trackpad when hovering deep elements.
+        // In iOS, re-define getParentWithClass to prevent the keyboard to hide deep input elements.
+        var fnName = !$mmApp.isDevice() ? 'getParentOrSelfWithClass' : (ionic.Platform.isIOS() ? 'getParentWithClass' : '');
+        if (fnName) {
+            var originalFunction = ionic.DomUtil[fnName];
+            ionic.DomUtil[fnName] = function(e, className, depth) {
                 depth = depth || 20;
                 return originalFunction(e, className, depth);
             };
