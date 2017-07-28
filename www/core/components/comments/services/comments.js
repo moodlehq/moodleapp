@@ -75,9 +75,9 @@ angular.module('mm.core.comments')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 "contextlevel": contextLevel,
-                "instanceid": instanceId,
+                "instanceid": parseInt(instanceId, 10),
                 "component": component,
-                "itemid": itemId
+                "itemid": parseInt(itemId, 10)
             },
             preSets = {};
 

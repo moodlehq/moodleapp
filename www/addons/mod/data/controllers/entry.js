@@ -109,6 +109,7 @@ angular.module('mm.addons.mod_data')
             var actions = $mmaModDataHelper.getActions(data, access, $scope.entry);
 
             $scope.entryRendered = $mmaModDataHelper.displayShowFields(data.singletemplate, $scope.fields, entryId, 'show', actions);
+            $scope.showComments = actions.comments;
 
             return $mmaModDataHelper.getPageInfoByEntry(data.id, entryId, $scope.selectedGroup).then(function(result) {
                 $scope.previousId = result.previousId;

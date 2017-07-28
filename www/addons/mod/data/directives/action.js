@@ -28,7 +28,8 @@ angular.module('mm.addons.mod_data')
         scope: {
             action: '@',
             database: '=',
-            entry: '=?'
+            entry: '=?',
+            mode: '@'
         },
         templateUrl: 'addons/mod/data/templates/action.html',
         link: function(scope) {

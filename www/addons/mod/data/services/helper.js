@@ -58,7 +58,8 @@ angular.module('mm.addons.mod_data')
             replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            render = '<mma-mod-data-field mode="'+mode+'" field="fields['+ field.id + ']" value="entries['+ entryId +'].contents['+ field.id + ']" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
+            render = '<mma-mod-data-field field="fields['+ field.id + ']" value="entries['+ entryId +'].contents['+ field.id +
+                        ']" mode="'+mode+'" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
             template = template.replace(replace, render);
         });
 
@@ -69,7 +70,8 @@ angular.module('mm.addons.mod_data')
                     // Render more url directly because it can be part of an HTML attribute.
                     render = $mmSite.getURL() + '/mod/data/view.php?d={{data.id}}&rid=' + entryId;
                 } else {
-                    render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +']" database="data"></mma-mod-data-action>';
+                    render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +
+                                ']" mode="'+mode+'" database="data"></mma-mod-data-action>';
                 }
                 template = template.replace(replace, render);
             } else {
