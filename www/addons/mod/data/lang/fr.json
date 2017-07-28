@@ -13,6 +13,8 @@
     "emptyaddform": "Vous n'avez rempli aucun champ !",
     "entrieslefttoadd": "Vous devez ajouter encore {{$a.entriesleft}} fiches pour terminer cette activité",
     "entrieslefttoaddtoview": "Vous devez ajouter encore {{$a.entrieslefttoview}} fiches avant de pouvoir consulter les fiches des autres participants.",
+    "errorapproving": "Erreur lors de l'approbation ou de la désapprobation de la fiche.",
+    "errordeleting": "Erreur lors de suppression de la fiche.",
     "errormustsupplyvalue": "Veuillez renseigner une valeur.",
     "expired": "Cette activité est fermée depuis {{$a}} et n'est plus disponible",
     "fields": "Champs",
