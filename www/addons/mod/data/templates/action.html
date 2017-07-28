@@ -7,14 +7,8 @@
 
 <mm-comments ng-if="action == 'comments' && mode == 'list'" context-level="module" instance-id="{{database.coursemodule}}" component="mod_data" item-id="{{entry.id}}" area="database_entry"></mm-comments>
 
-<span ng-if="action == 'moreurl'">{{url}}/mod/data/view.php?d={{entry.dataid}}&amp;rid={{entry.id}}</span>
 <span ng-if="action == 'timeadded'">{{ entry.timecreated * 1000 |  mmFormatDate:"dffulldate" }}</span>
 <span ng-if="action == 'timemodified'">{{ entry.timemodified * 1000 |  mmFormatDate:"dffulldate" }}</span>
-
-<span ng-if="action == 'approvalstatus'">
-    <span ng-if="entry.approved">{{ 'mma.mod_data.approved' | translate }}</span>
-    <span ng-if="!entry.approved">{{ 'mma.mod_data.notapproved' | translate }}</span>
-</span>
 
 <a ng-if="action == 'userpicture'" mm-user-link courseid="{{database.courseid}}" userid="{{entry.userid}}" title="{{entry.fullname}}">
     <img ng-if="userpicture" ng-src="{{userpicture}}" class="avatar-round" alt="{{ 'mm.core.pictureof' | translate:{$a: entry.fullname} }}" role="presentation" mm-external-content>

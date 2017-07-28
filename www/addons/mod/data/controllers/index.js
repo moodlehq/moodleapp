@@ -254,7 +254,7 @@ angular.module('mm.addons.mod_data')
 
                         var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
 
-                        entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
+                        entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry, 'list', actions);
                     });
                     entriesHTML += data.listtemplatefooter;
 
