@@ -6,7 +6,7 @@
     "attemptstate": "Tillstånd",
     "comment": "Kommentar",
     "completedon": "Fullgjord den",
-    "confirmclose": "Du håller på att avsluta det här försöket. När Du väl har avslutat försöket kommer Du inte längre att kunna ändra Dina svar.",
+    "confirmclose": "dDu håller på att avsluta det här försöket. När du väl har avslutat försöket kommer du inte längre att kunna ändra dina svar.",
     "connectionerror": "Nätverksanslutning förlorade (autospara misslyckades).\n\nAnteckna alla svar som angavs på webbplatsen de sista minuterna på papper, försöka sedan att återansluta.\n\nNär anslutningen har återupprättats, bör dina svar sparas och detta meddelande kommer att försvinna.",
     "continueattemptquiz": "Fortsätt med det senaste försöket",
     "continuepreview": "Fortsätt med den senaste förhandsgranskningen",

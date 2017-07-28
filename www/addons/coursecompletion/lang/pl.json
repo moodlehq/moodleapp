@@ -1,17 +1,17 @@
 {
-    "complete": "Pełna wersja",
-    "completed": "Ukończony",
-    "coursecompletion": "Ukończenie kursu",
+    "complete": "Zakończone",
+    "completed": "zakończony",
+    "coursecompletion": "Użytkownicy muszą ukończyć ten kurs.",
     "criteria": "Kryteria",
     "criteriagroup": "Grupa kryteriów",
     "criteriarequiredall": "Wszystkie poniższe kryteria są wymagane",
     "criteriarequiredany": "Wszystkie poniższe kryteria są wymagane",
-    "inprogress": "W toku",
+    "inprogress": "Aktualne",
     "manualselfcompletion": "Samodzielne oznaczenie ukończenia",
     "notyetstarted": "Jeszcze nie rozpoczęto",
-    "pending": "Oczekujący",
+    "pending": "Oczekujące",
     "required": "Wymagane",
     "requiredcriteria": "Wymagane kryteria",
-    "status": "Status",
+    "status": "Status odznak",
     "viewcoursereport": "Zobacz raport kursu"
 }

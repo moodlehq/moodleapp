@@ -1,5 +1,6 @@
 {
     "answer": "Odpověď",
+    "attempt": "Pokus: {{$a}}",
     "attemptheader": "Pokus",
     "attemptsremaining": "Zbývající počet pokusů: {{$a}}",
     "averagescore": "Průměrná známka",

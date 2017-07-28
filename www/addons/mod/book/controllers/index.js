@@ -56,8 +56,8 @@ angular.module('mm.addons.mod_book')
                     $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
                 }
             });
-        }).catch(function() {
-            $mmUtil.showErrorModal('mma.mod_book.errorchapter', true);
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_book.errorchapter', true);
             return $q.reject();
         }).finally(function() {
             $scope.loaded = true;

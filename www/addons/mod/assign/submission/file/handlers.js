@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionFileHandler
  */
-.factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmSite, $q,
+.factory('$mmaModAssignSubmissionFileHandler', function($mmFileSession, mmaModAssignComponent, $mmaModAssign, $mmSite, $q,
             $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool, $mmUtil, $mmaModAssignOffline, mmaModAssignSubmissionFileName,
             $mmFileUploaderHelper) {
 
@@ -60,10 +60,10 @@ angular.module('mm.addons.mod_assign')
      * @return {Void}
      */
     self.clearTmpData = function(assign, submission, plugin, inputData) {
-        var files = $mmaModAssignSubmissionFileSession.getFiles(assign.id);
+        var files = $mmFileSession.getFiles(mmaModAssignComponent, assign.id);
 
         // Clear the files in session for this assign.
-        $mmaModAssignSubmissionFileSession.clearFiles(assign.id);
+        $mmFileSession.clearFiles(mmaModAssignComponent, assign.id);
         // Now delete the local files from the tmp folder.
         $mmFileUploaderHelper.clearTmpFiles(files);
     };
@@ -156,7 +156,7 @@ angular.module('mm.addons.mod_assign')
 
         // Check if there's any change.
         if (self.hasDataChanged(assign, submission, plugin, inputData)) {
-            var files = $mmaModAssignSubmissionFileSession.getFiles(assign.id),
+            var files = $mmFileSession.getFiles(mmaModAssignComponent, assign.id),
                 totalSize = 0,
                 promises = [];
 
@@ -278,7 +278,7 @@ angular.module('mm.addons.mod_assign')
             var pluginFiles = $mmaModAssign.getSubmissionPluginAttachments(plugin);
             return pluginFiles && pluginFiles.length;
         }).then(function(numFiles) {
-            var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id);
+            var currentFiles = $mmFileSession.getFiles(mmaModAssignComponent, assign.id);
 
             if (currentFiles.length != numFiles) {
                 // Number of files has changed.
@@ -320,7 +320,7 @@ angular.module('mm.addons.mod_assign')
 
         if (self.hasDataChanged(assign, submission, plugin, inputData)) {
             // Data has changed, we need to upload new files and re-upload all the existing files.
-            var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id),
+            var currentFiles = $mmFileSession.getFiles(mmaModAssignComponent, assign.id),
                 error = $mmUtil.hasRepeatedFilenames(currentFiles);
 
             if (error) {

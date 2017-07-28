@@ -36,6 +36,7 @@
     "graded": "Calificado",
     "gradedby": "Calificado por",
     "gradedon": "Calificado sobre",
+    "gradenotsynced": "Calificación no sincronizada",
     "gradeoutof": "Calificación sobre {{$a}}",
     "gradingstatus": "Estado de la calificación",
     "groupsubmissionsettings": "Configuración de entrega por grupo",

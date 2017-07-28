@@ -342,7 +342,7 @@ angular.module('mm.core')
             return;
         }
 
-        var data = JSON.parse(el.getAttribute('data-setup') || '{}'),
+        var data = JSON.parse(el.getAttribute('data-setup') || el.getAttribute('data-setup-lazy') || '{}'),
             youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
                 data.sources[0].src && youtubeGetId(data.sources[0].src);
 

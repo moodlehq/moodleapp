@@ -1,8 +1,9 @@
 {
-    "activities": "Veikla",
+    "activities": "Veiklos",
     "coursecompetencies": "Kurso kompetencijos",
     "coursecompetencyratingsarenotpushedtouserplans": "Kompetencijų reitingai šiame kurse neturi įtakos mokymosi planams.",
-    "duedate": "Data pristatymui",
+    "crossreferencedcompetencies": "Kryžminės kompetencijos",
+    "duedate": "Terminas",
     "errornocompetenciesfound": "Kompetencijų nerasta",
     "evidence": "Įrodymas",
     "learningplancompetencies": "Mokymosi plano kompetencijos",
@@ -10,10 +11,15 @@
     "myplans": "Mano mokymosi planai",
     "noactivities": "Nėra veiklų",
     "nocompetencies": "Nėra kompetencijų",
+    "nocrossreferencedcompetencies": "Jokios kitos kompetencijos nebuvo susietos kryžmine nuoroda su šia kompetencija.",
+    "noevidence": "Nėra įrodymų",
     "noplanswerecreated": "Nebuvo sukurta mokymosi planų.",
     "path": "Kelias",
-    "progress": "Besimokančiojo pažanga",
-    "rating": "Vertinimas",
-    "status": "Būsena",
-    "template": "Šablonas"
+    "proficient": "Įgūdis",
+    "progress": "Progresas",
+    "rating": "Reitingas",
+    "reviewstatus": "Peržiūros būsena",
+    "status": "Pasiekimo būsena",
+    "template": "Mokymosi plano šablonas",
+    "xcompetenciesproficientoutofyincourse": "Įgijote {{$a.x}} iš {{$a.y}} kompetenciją šiame kurse."
 }

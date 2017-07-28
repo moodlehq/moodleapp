@@ -98,9 +98,10 @@ angular.module('mm.addons.mod_lesson')
 
                     $mmaModLessonPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModLessonPrefetchHandler.prefetch(module, courseId).catch(function(error) {
+                            return $mmaModLessonPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
                                     $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {
@@ -357,6 +358,61 @@ angular.module('mm.addons.mod_lesson')
             $mmContentLinksHelper.goInSite('site.mod_lesson-userretake', stateParams, siteId);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'Error processing link.');
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Content links handler for lesson grade link.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHandlers#gradeLinksHandler
+     */
+    self.gradeLinksHandler = $mmContentLinksHelper.createModuleGradeLinkHandler('mmaModLesson', 'lesson', $mmaModLesson, viewGrade);
+
+    /**
+     * Treat a grade link to a user different than current one.
+     *
+     * @param  {String} url        URL to treat.
+     * @param  {Object} params     Params of the URL.
+     * @param  {Number} [courseId] Course ID related to the URL.
+     * @param  {String} siteId     Site ID.
+     * @return {[type]}          [description]
+     */
+    function viewGrade(url, params, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var moduleId = parseInt(params.id, 10),
+            modal = $mmUtil.showModalLoading(),
+            module;
+
+        return $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(mod) {
+            module = mod;
+            courseId = module.course || courseId || params.courseid || params.cid;
+
+            // Check if the user can see the user reports in the lesson.
+            return $mmaModLesson.getAccessInformation(module.instance);
+        }).then(function(info) {
+            if (info.canviewreports) {
+                // User can view reports, go to view the report.
+                return $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.mod_lesson-userretake',
+                    params: {
+                        courseid: courseId,
+                        lessonid: module.instance,
+                        userid: parseInt(params.userid, 10)
+                    }
+                });
+            } else {
+                // User cannot view the report, go to lesson index.
+                return $mmCourseHelper.navigateToModule(moduleId, siteId, courseId, module.section);
+            }
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
             return $q.reject();
         }).finally(function() {
             modal.dismiss();

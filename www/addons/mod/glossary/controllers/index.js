@@ -168,8 +168,10 @@ angular.module('mm.addons.mod_glossary')
         var promises = [];
         // Ignore search mode that is not set yet.
         if (fetchMode != 'search' || $scope.searchQuery) {
-            var args = angular.extend([], fetchArguments);
-            promises.push(fetchInvalidate.apply(this, args));
+            if (fetchInvalidate) {
+                var args = angular.extend([], fetchArguments);
+                promises.push(fetchInvalidate.apply(this, args));
+            }
             promises.push($mmaModGlossary.invalidateCourseGlossaries(courseId));
         }
         if (glossary && glossary.id) {
@@ -356,9 +358,9 @@ angular.module('mm.addons.mod_glossary')
             $scope.canLoadMore = (limitFrom + limitNum) < result.count;
 
             $scope.showNoEntries = ($scope.entries.length + $scope.offlineEntries.length) <= 0;
-        }).catch(function() {
+        }).catch(function(error) {
             if (append) {
-                $mmUtil.showErrorModal('mma.mod_glossary.errorloadingentries', true);
+                $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.errorloadingentries', true);
             }
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
             return $q.reject();

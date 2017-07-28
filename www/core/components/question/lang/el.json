@@ -3,12 +3,17 @@
     "answersaved": "Η απάντηση αποθηκεύτηκε",
     "complete": "Ολοκλήρωση",
     "correct": "Σωστό",
-    "feedback": "Ανάδραση",
+    "errorattachmentsnotsupported": "Η εφαρμογή δεν υποστηρίζει ακόμα την προσάρτηση αρχείων σε απαντήσεις.",
+    "errorinlinefilesnotsupported": "Η εφαρμογή δεν υποστηρίζει ακόμα την επεξεργασία αρχείων.",
+    "errorquestionnotsupported": "Αυτός ο τύπος ερωτήματος δεν υποστηρίζεται από την εφαρμογή: {{$a}}.",
+    "feedback": "Επανατροφοδότηση",
+    "howtodraganddrop": "Πατήστε για να επιλέξετε και στη συνέχεια, πατήστε για να αφήσετε.",
     "incorrect": "Λάθος",
     "invalidanswer": "Ημιτελής απάντηση",
-    "notanswered": "Δεν απαντήθηκε ακόμα",
+    "notanswered": "Δεν απαντήθηκε",
     "notyetanswered": "Δεν έχει απαντηθεί ακόμα",
     "partiallycorrect": "Μερικώς σωστή",
+    "questionmessage": "Ερώτηση {{$a}}: {{$b}}",
     "questionno": "Ερώτηση {{$a}}",
-    "unknown": "Άγνωστο"
+    "unknown": "Δεν είναι δυνατός ο προσδιορισμός της κατάστασης"
 }

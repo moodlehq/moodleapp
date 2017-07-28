@@ -3,9 +3,9 @@
     "errorcapturingaudio": "Ses kayıt hatası",
     "errorcapturingvideo": "Video kayıt hatası",
     "errorreadingfile": "\"{{$a}}\" dosyasını okurken hata oluştu",
-    "file": "Dosya",
+    "file": "Dosya gönderimleri",
     "fileuploaded": "Dosya başarıyla yüklendi",
-    "maxbytesfile": "Dosya {{$a.file}} çok büyük. Yüklediğiniz maksimum boyutu {{$a.size}} olduğunu.",
+    "maxbytesfile": "{{$a.file}} dosyasının boyutu çok büyük. En fazla {{$a.size}} MB büyüklüğünde dosya yükleyebilirsiniz.",
     "uploadafile": "Bir dosya yükle",
     "uploading": "Yükleniyor",
     "video": "Video"

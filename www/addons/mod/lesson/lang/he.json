@@ -1,5 +1,6 @@
 {
     "answer": "תשובה",
+    "attempt": "ניסיון: {{$a}}",
     "attemptheader": "ניסיון",
     "attemptsremaining": "נשארו לך עוד {{$a}} ניסיונות",
     "averagescore": "תוצאה ממוצעת",

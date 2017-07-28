@@ -191,7 +191,7 @@ angular.module('mm.core.contentlinks')
                 }
 
                 if (handler.instance && handler.instance.handles) {
-                    var siteUrl = handler.instance.handles(url);
+                    var siteUrl = handler.instance.getHandlerUrl(url);
                     if (siteUrl) {
                         return siteUrl;
                     }

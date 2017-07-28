@@ -11,7 +11,7 @@
     "errorwhileretrievingdiscussions": "Помилка при отриманні обговорення з сервера.",
     "errorwhileretrievingmessages": "Помилка при отриманні повідомлень від сервера.",
     "loadpreviousmessages": "Завантаження попередніх повідомлень",
-    "message": "Текст повідомлення",
+    "message": "Повідомлення",
     "messagenotsent": "Повідомлення не було відправлено, будь ласка, спробуйте ще раз пізніше.",
     "messages": "Повідомлення",
     "mustbeonlinetosendmessages": "Ви повинні бути онлайн, щоб відправляти повідомлення",
@@ -21,7 +21,7 @@
     "nousersfound": "Користувачів не знайдено",
     "removecontact": "Видалити контакт",
     "removecontactconfirm": "Контакт буде видалено зі списку контактів.",
-    "send": "Відіслати",
+    "send": "надіслати",
     "sendmessage": "Надіслати повідомлення",
     "type_blocked": "Заблоковано",
     "type_offline": "Офлайн",
@@ -29,5 +29,5 @@
     "type_search": "Результати пошуку",
     "type_strangers": "Інші",
     "unblockcontact": "Розблокувати контакт",
-    "warningmessagenotsent": "Неможливо відправити повідомлення до  {{user}}. {{error}}"
+    "warningmessagenotsent": "Неможливо відправити повідомлення до {{user}}. {{error}}"
 }

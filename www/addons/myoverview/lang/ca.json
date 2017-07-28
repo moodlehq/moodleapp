@@ -1,5 +1,18 @@
 {
-    "inprogress": "En curs",
-    "nocourses": "No hi ha informació de cursos per mostrar.",
-    "pluginname": "Nom del connector de repositori"
+    "future": "Futurs",
+    "inprogress": "En progrés",
+    "morecourses": "Més cursos",
+    "next30days": "Propers 30 dies",
+    "next7days": "Propers 7 dies",
+    "nocourses": "Cap curs",
+    "nocoursesfuture": "Cap curs futur",
+    "nocoursesinprogress": "Cap curs en progrés",
+    "nocoursespast": "Cap curs passat",
+    "noevents": "Cap activitat venç properament",
+    "past": "Passats",
+    "pluginname": "Resum del curs",
+    "recentlyoverdue": "Vençuda recentment",
+    "sortbycourses": "Ordena per cursos",
+    "sortbydates": "Ordena per dates",
+    "timeline": "Línia de temps"
 }

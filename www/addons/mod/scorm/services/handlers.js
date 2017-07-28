@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .factory('$mmaModScormHandlers', function($mmCourse, $mmaModScorm, $mmEvents, $state, $mmSite, $mmaModScormHelper,
         $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-        mmaModScormComponent, $q, $mmContentLinksHelper, $mmUtil, $mmaModScormSync, $mmaModScormPrefetchHandler) {
+        mmaModScormComponent, $q, $mmContentLinksHelper, $mmaModScormSync, $mmaModScormPrefetchHandler) {
     var self = {};
 
     /**
@@ -95,9 +95,10 @@ angular.module('mm.addons.mod_scorm')
                         $scope.spinner = true; // Show spinner since this operation might take a while.
                         $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
                             $mmaModScormHelper.confirmDownload(scorm, isOutdated).then(function() {
-                                $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function() {
+                                return $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function(error) {
                                     if (!$scope.$$destroyed) {
-                                        $mmaModScormHelper.showDownloadError(scorm);
+                                        $mmaModScormHelper.showDownloadError(scorm, error);
+                                        return $q.reject();
                                     }
                                 });
                             }).catch(function() {
@@ -106,11 +107,7 @@ angular.module('mm.addons.mod_scorm')
                             });
                         }).catch(function(error) {
                             $scope.spinner = false;
-                            if (error) {
-                                $mmUtil.showErrorModal(error);
-                            } else {
-                                $mmaModScormHelper.showDownloadError(scorm);
-                            }
+                            $mmaModScormHelper.showDownloadError(scorm, error);
                         });
                     }
 
@@ -156,6 +153,9 @@ angular.module('mm.addons.mod_scorm')
                     $scope.$on('$destroy', function() {
                         statusObserver && statusObserver.off && statusObserver.off();
                     });
+                }).catch(function() {
+                    // Error getting SCORM, hide the spinner.
+                    $scope.spinner = false;
                 });
             };
         };

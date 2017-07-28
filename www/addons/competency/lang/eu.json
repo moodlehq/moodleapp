@@ -12,11 +12,11 @@
     "nocompetencies": "Gaitasunik ez",
     "noevidence": "Ez dago ebidentziarik",
     "noplanswerecreated": "Ez da ikasketa-planik sortu.",
-    "path": "Bidea",
+    "path": "Bidea:",
     "proficient": "Gai",
-    "progress": "Ikaslearen aurrerapena",
+    "progress": "Aurrerapena",
     "rating": "Puntuazioa",
     "reviewstatus": "Berrikusi egora",
-    "status": "Egoera",
-    "template": "Txantiloia"
+    "status": "Dominen egoera",
+    "template": "Ikasketa-planerako txantiloia"
 }

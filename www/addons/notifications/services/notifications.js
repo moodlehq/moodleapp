@@ -21,13 +21,19 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotifications
  */
-.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, $mmUser, $mmUtil, mmaNotificationsListLimit) {
+.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, $mmUser, $mmUtil, $mmApp, mmaNotificationsListLimit,
+            mmaNotificationsPushSimulationComponent, $mmEmulatorHelper) {
 
     $log = $log.getInstance('$mmaNotifications');
 
     var self = {};
 
-    // Function to format notification data.
+    /**
+     * Function to format notification data.
+     *
+     * @param  {Object[]} notifications List of notifications.
+     * @return {Void}
+     */
     function formatNotificationsData(notifications) {
         angular.forEach(notifications, function(notification) {
             // Set message to show.
@@ -97,39 +103,60 @@ angular.module('mm.addons.notifications')
      * @module mm.addons.notifications
      * @ngdoc method
      * @name $mmaNotifications#getNotifications
-     * @param {Boolean} read       True if should get read notifications, false otherwise.
-     * @param {Number} limitFrom   Position of the first notification to get.
-     * @param {Number} limitNumber Number of notifications to get.
-     * @return {Promise}           Promise resolved with notifications.
+     * @param  {Boolean} read             True if should get read notifications, false otherwise.
+     * @param  {Number} limitFrom         Position of the first notification to get.
+     * @param  {Number} limitNumber       Number of notifications to get.
+     * @param  {Boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
+     * @param  {Boolean} [forceCache]     True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache]    True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]          Site ID. If not defined, use current site.
+     * @return {Promise}                  Promise resolved with notifications.
      */
-    self.getNotifications = function(read, limitFrom, limitNumber) {
+    self.getNotifications = function(read, limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId) {
+        toDisplay = typeof toDisplay == 'undefined' ? true : toDisplay;
         limitFrom = limitFrom || 0;
         limitNumber = limitNumber || mmaNotificationsListLimit;
+        siteId = siteId || $mmSite.getId();
 
         $log.debug('Get ' + (read ? 'read' : 'unread') + ' notifications from ' + limitFrom + '. Limit: ' + limitNumber);
 
-        var data = {
-            useridto: $mmSite.getUserId(),
-            useridfrom: 0,
-            type: 'notifications',
-            read: read ? 1 : 0,
-            newestfirst: 1,
-            limitfrom: limitFrom,
-            limitnum: limitNumber
-        };
-        var preSets = {
-            cacheKey: getNotificationsCacheKey()
-        };
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var data = {
+                    useridto: site.getUserId(),
+                    useridfrom: 0,
+                    type: 'notifications',
+                    read: read ? 1 : 0,
+                    newestfirst: 1,
+                    limitfrom: limitFrom,
+                    limitnum: limitNumber
+                }, preSets = {
+                    cacheKey: getNotificationsCacheKey()
+                };
 
-        // Get unread notifications.
-        return $mmSite.read('core_message_get_messages', data, preSets).then(function(response) {
-            if (response.messages) {
-                var notifications = response.messages;
-                formatNotificationsData(notifications);
-                return notifications;
-            } else {
-                return $q.reject();
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
             }
+
+            // Get unread notifications.
+            return site.read('core_message_get_messages', data, preSets).then(function(response) {
+                if (response.messages) {
+                    var notifications = response.messages;
+                    formatNotificationsData(notifications);
+
+                    if ($mmApp.isDesktop() && toDisplay && !read && limitFrom === 0) {
+                        // Store the last received notification. Don't block the user for this.
+                        $mmEmulatorHelper.storeLastReceivedNotification(
+                                mmaNotificationsPushSimulationComponent, notifications[0], siteId);
+                    }
+
+                    return notifications;
+                } else {
+                    return $q.reject();
+                }
+            });
         });
     };
 
@@ -139,12 +166,16 @@ angular.module('mm.addons.notifications')
      * @module mm.addons.notifications
      * @ngdoc method
      * @name $mmaNotifications#getReadNotifications
-     * @param {Number} limitFrom   Position of the first notification to get.
-     * @param {Number} limitNumber Number of notifications to get.
-     * @return {Promise}           Promise resolved with notifications.
+     * @param  {Number} limitFrom         Position of the first notification to get.
+     * @param  {Number} limitNumber       Number of notifications to get.
+     * @param  {Boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
+     * @param  {Boolean} [forceCache]     True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache]    True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]          Site ID. If not defined, use current site.
+     * @return {Promise}                  Promise resolved with notifications.
      */
-    self.getReadNotifications = function(limitFrom, limitNumber) {
-        return self.getNotifications(true, limitFrom, limitNumber);
+    self.getReadNotifications = function(limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId) {
+        return self.getNotifications(true, limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId);
     };
 
     /**
@@ -153,12 +184,16 @@ angular.module('mm.addons.notifications')
      * @module mm.addons.notifications
      * @ngdoc method
      * @name $mmaNotifications#getUnreadNotifications
-     * @param {Number} limitFrom   Position of the first notification to get.
-     * @param {Number} limitNumber Number of notifications to get.
-     * @return {Promise}           Promise resolved with notifications.
+     * @param  {Number} limitFrom         Position of the first notification to get.
+     * @param  {Number} limitNumber       Number of notifications to get.
+     * @param  {Boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
+     * @param  {Boolean} [forceCache]     True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache]    True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]          Site ID. If not defined, use current site.
+     * @return {Promise}                  Promise resolved with notifications.
      */
-    self.getUnreadNotifications = function(limitFrom, limitNumber) {
-        return self.getNotifications(false, limitFrom, limitNumber);
+    self.getUnreadNotifications = function(limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId) {
+        return self.getNotifications(false, limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId);
     };
 
     /**
@@ -193,7 +228,8 @@ angular.module('mm.addons.notifications')
             }
 
             // Fallback call.
-            return self.getNotifications(false, 0, mmaNotificationsListLimit + 1).then(function(unread) {
+            var limit = mmaNotificationsListLimit + 1;
+            return self.getUnreadNotifications(0, limit, false, false, false, siteId).then(function(unread) {
                 // Add + sign if there are more than the limit reachable.
                 return (unread.length > mmaNotificationsListLimit) ? unread.length + "+" : unread.length;
             }).catch(function() {

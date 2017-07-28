@@ -1,0 +1,4 @@
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
+<input ng-if="mode != 'show'" type="number" placeholder="{{field.name}}" name="f_{{field.id}}" ng-model="val">
+<mm-format-text ng-if="mode == 'show' && value && value.content" watch="true">{{ value.content }}</mm-format-text>

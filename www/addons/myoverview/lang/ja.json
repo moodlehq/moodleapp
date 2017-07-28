@@ -1,11 +1,11 @@
 {
-    "future": "今後",
+    "future": "未来",
     "inprogress": "進行中",
     "morecourses": "コースをさらに",
     "next30days": "次の30日",
     "next7days": "次の7日",
     "nocourses": "コースなし",
-    "nocoursesfuture": "今後のコースはありません。",
+    "nocoursesfuture": "未来のコースはありません。",
     "nocoursesinprogress": "進行中のコースはありません。",
     "nocoursespast": "過去のコースはありません。",
     "noevents": "到来する活動期限はありません。",

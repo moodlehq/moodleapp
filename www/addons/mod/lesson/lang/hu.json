@@ -1,5 +1,6 @@
 {
     "answer": "Válasz",
+    "attempt": "Próbálkozás: {{$a}}",
     "attemptheader": "Próbálkozás",
     "attemptsremaining": "{{$a}} próbálkozása maradt",
     "averagescore": "Átlagpontszám",

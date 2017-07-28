@@ -46,6 +46,7 @@
     "outofshort": "{{$a.grade}}/{{$a.maxgrade}}",
     "overallfeedback": "Bendras atsiliepimas",
     "overdue": "Uždelstas",
+    "overduemustbesubmittedby": "Šis bandymas jau pavėluotas. Jis jau turėjo būti pateiktas. Jei norite, kad šis testas būtų įvertintas, turite jį patvirtinti {{$a}}. Jei nepateiksite, tada balas šiam bandymui nebus skaičiuojamas.",
     "preview": "Peržiūra",
     "previewquiznow": "Peržiūrėti testą dabar",
     "question": "Klausimas",

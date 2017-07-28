@@ -69,7 +69,8 @@ angular.module('mm.core.fileuploader')
         // Delete the local files from the tmp folder.
         files.forEach(function(file) {
             if (!file.offline && file.remove) {
-                file.remove();
+                // Pass an empty function to prevent missing parameter error.
+                file.remove(function() {});
             }
         });
     };
@@ -431,7 +432,8 @@ angular.module('mm.core.fileuploader')
         return fn({limit: 1}).then(function(medias) {
             // We used limit 1, we only want 1 media.
             var media = medias[0],
-                path = media.localURL;
+                path = media.localURL || media.toURL();
+
             if (upload) {
                 return uploadFile(true, path, maxSize, true, $mmFileUploader.uploadMedia, media);
             } else {
@@ -756,9 +758,7 @@ angular.module('mm.core.fileuploader')
             }, function() {
                 // User cancelled. Delete the file if needed.
                 if (deleteAfterUpload) {
-                    angular.forEach(paths, function(path) {
-                        $mmFS.removeExternalFile(path);
-                    });
+                    $mmFS.removeExternalFile(path);
                 }
                 return $q.reject();
             });

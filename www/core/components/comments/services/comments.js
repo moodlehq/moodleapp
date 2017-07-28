@@ -72,14 +72,12 @@ angular.module('mm.core.comments')
      * @return {Promise}                Promise resolved with the comments.
      */
     self.getComments = function(contextLevel, instanceId, component, itemId, area, page, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 "contextlevel": contextLevel,
-                "instanceid": instanceId,
+                "instanceid": parseInt(instanceId, 10),
                 "component": component,
-                "itemid": itemId
+                "itemid": parseInt(itemId, 10)
             },
             preSets = {};
 
@@ -118,7 +116,6 @@ angular.module('mm.core.comments')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateCommentsData = function(contextLevel, instanceId, component, itemId, area, page, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getCommentsCacheKey(contextLevel, instanceId, component, itemId, area, page));
         });
@@ -135,7 +132,6 @@ angular.module('mm.core.comments')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateCommentsByInstance = function(contextLevel, instanceId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getCommentsPrefixCacheKey(contextLevel, instanceId));
         });
@@ -151,8 +147,6 @@ angular.module('mm.core.comments')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return  site.wsAvailable('core_comment_get_comments');
         });

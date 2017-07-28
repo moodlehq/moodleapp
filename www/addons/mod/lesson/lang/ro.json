@@ -1,5 +1,6 @@
 {
     "answer": "Răspuns",
+    "attempt": "Încercarea cu numărul: {{$a}}",
     "attemptheader": "Încercare",
     "attemptsremaining": "Mai aveţi {{$a}} încercări disponibile",
     "averagescore": "Punctaj mediu obţinut",

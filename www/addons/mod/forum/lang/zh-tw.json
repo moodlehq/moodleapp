@@ -10,7 +10,7 @@
     "discussionsubscription": "議題訂閱",
     "edit": "編輯",
     "erroremptymessage": "貼文的訊息不能是空白",
-    "erroremptysubject": "貼文的標題不可以是空的",
+    "erroremptysubject": "貼文的主旨不能是空白",
     "errorgetforum": "讀取討論區資料發生錯誤",
     "errorgetgroups": "讀取群組設定發生錯誤",
     "forumnodiscussionsyet": "這個討論區還沒有討論主題",

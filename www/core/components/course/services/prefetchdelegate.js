@@ -1318,9 +1318,9 @@ angular.module('mm.core')
             $q.all(promises).then(function() {
                 delete deferreds[siteid][id]; // Remove from array before resolving.
                 deferred.resolve();
-            }, function() {
+            }, function(error) {
                 delete deferreds[siteid][id]; // Remove from array before rejecting.
-                deferred.reject();
+                deferred.reject(error);
             });
 
             return deferred.promise;

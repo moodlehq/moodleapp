@@ -277,6 +277,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 }
             }
         });
+
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
 
@@ -285,6 +286,17 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 ionic.trigger('resize');
             }
         });
+
+        // In desktop, re-define getParentOrSelfWithClass to allow scrolling with trackpad when hovering deep elements.
+        // In iOS, re-define getParentWithClass to prevent the keyboard to hide deep input elements.
+        var fnName = !$mmApp.isDevice() ? 'getParentOrSelfWithClass' : (ionic.Platform.isIOS() ? 'getParentWithClass' : '');
+        if (fnName) {
+            var originalFunction = ionic.DomUtil[fnName];
+            ionic.DomUtil[fnName] = function(e, className, depth) {
+                depth = depth || 20;
+                return originalFunction(e, className, depth);
+            };
+        }
     });
 
     // Send event when device goes online.

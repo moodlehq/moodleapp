@@ -1,0 +1,48 @@
+/** This file is intended to translate fontawesome to ionicons while the font is not supported */
+
+.fa.icon {
+    @extend .ion;
+}
+
+.fa {
+    font-size: $button-icon-size;
+    width: $button-icon-size;
+    height: $button-icon-size;
+}
+
+/** Fixed width */
+.fa-fw {
+  width: (18em / 14);
+  text-align: center;
+}
+
+/** Uncomment for dev purposes, it will show an asterisk in red where a missing icon is */
+/*.fa:before {
+    color: red !important;
+    content: $ionicon-var-asterisk;
+}*/
+
+/** Icons translation */
+.fa-search-plus:before {
+    content: $ionicon-var-ios-search-strong;
+}
+
+.fa-cog:before {
+    content: $ionicon-var-gear-b;
+}
+
+.fa-trash:before {
+    content: $ionicon-var-trash-a;
+}
+
+.fa-thumbs-up:before {
+    content: $ionicon-var-thumbsup;
+}
+
+.fa-thumbs-down:before {
+    content: $ionicon-var-thumbsdown;
+}
+
+.fa-ban:before {
+    content: $ionicon-var-minus-circled;
+}

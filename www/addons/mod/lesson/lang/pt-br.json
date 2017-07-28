@@ -1,5 +1,6 @@
 {
     "answer": "Resposta",
+    "attempt": "Tentativa: {{$a}}",
     "attemptheader": "Tentativa",
     "attemptsremaining": "Você tem ainda {{$a}} tentativas",
     "averagescore": "Pontuação média",

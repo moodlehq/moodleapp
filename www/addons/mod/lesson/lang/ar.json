@@ -1,5 +1,6 @@
 {
     "answer": "أجب",
+    "attempt": "محاولة:  {{$a}}",
     "averagescore": "متوسط الدرجة",
     "averagetime": "متوسط الوقت",
     "branchtable": "محتوى",
@@ -36,7 +37,7 @@
     "review": "مراجعة",
     "reviewlesson": "مراجعة الدرس",
     "reviewquestionback": "نعم، أرغب في المحاولة ثانياً",
-    "submit": "سلم",
+    "submit": "سلم/قدم",
     "thatsthecorrectanswer": "هذه إجابة صحيحة",
     "thatsthewronganswer": "هذه إجابة خاطئة",
     "timeremaining": "الزمن المتبقى",

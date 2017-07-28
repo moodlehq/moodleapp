@@ -25,7 +25,8 @@ angular.module('mm.core.course')
             $mmSite, $mmCoursePrefetchDelegate, $mmCourses, $q, $ionicHistory, $ionicPlatform, mmCoreCourseAllSectionsId,
             mmCoreEventSectionStatusChanged, $state, $timeout, $mmCoursesDelegate, $controller) {
     var courseId = $stateParams.courseid,
-        sectionId = $stateParams.sid,
+        sectionId = parseInt($stateParams.sid, 10),
+        sectionNumber = parseInt($stateParams.sectionnumber, 10),
         moduleId = $stateParams.moduleid,
         course = $stateParams.course ? angular.copy($stateParams.course) : false;
 
@@ -130,9 +131,9 @@ angular.module('mm.core.course')
         }).then(function(downloadpromises) {
             // If we restored any download we'll recalculate the status once all of them have finished.
             if (downloadpromises && downloadpromises.length) {
-                $mmUtil.allPromises(downloadpromises).catch(function() {
+                $mmUtil.allPromises(downloadpromises).catch(function(error) {
                     if (!$scope.$$destroyed) {
-                        $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
+                        $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingsection', true);
                     }
                 }).finally(function() {
                     if (!$scope.$$destroyed) {
@@ -147,7 +148,7 @@ angular.module('mm.core.course')
     // Prefetch a section. The second parameter indicates if the prefetch was started manually (true)
     // or it was automatically started because all modules are being downloaded (false).
     function prefetch(section, manual) {
-        $mmCourseHelper.prefetch(section, courseId, $scope.sections).catch(function() {
+        $mmCourseHelper.prefetch(section, courseId, $scope.sections).catch(function(error) {
             // Don't show error message if scope is destroyed or it's an automatic download but we aren't in this state.
             if ($scope.$$destroyed) {
                 return;
@@ -160,7 +161,7 @@ angular.module('mm.core.course')
                 return;
             }
 
-            $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
+            $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingsection', true);
         }).finally(function() {
             if (!$scope.$$destroyed) {
                 // Recalculate the status.
@@ -171,14 +172,17 @@ angular.module('mm.core.course')
 
     // Convenience function to autoload a section if sectionId param is set.
     function autoloadSection() {
-        if (sectionId) {
+        if (sectionId || sectionNumber >= 0) {
             if ($ionicPlatform.isTablet()) {
                 // Search the position of the section to load.
-                angular.forEach($scope.sections, function(section, index) {
-                    if (section.id == sectionId) {
-                        $scope.sectionToLoad = index + 1;
+                for (var index in $scope.sections) {
+                    var section = $scope.sections[index];
+                    if (section.id == sectionId || (sectionNumber >= 0 && section.section === sectionNumber)) {
+                        $scope.sectionToLoad = parseInt(index, 10) + 1;
+                        break;
                     }
-                });
+                }
+
                 // Set moduleId to pass it to the new state when the section is autoloaded. We unset it after this
                 // to prevent autoloading the module when the user manually loads a section.
                 $scope.moduleId = moduleId;
@@ -186,11 +190,24 @@ angular.module('mm.core.course')
                     $scope.moduleId = null; // Unset moduleId when
                 }, 500);
             } else {
-                $state.go('site.mm_course-section', {
-                    sectionid: sectionId,
-                    cid: courseId,
-                    mid: moduleId
-                });
+                if (!sectionId) {
+                    // Search the section ID by section number.
+                    for (var index in $scope.sections) {
+                        var section = $scope.sections[index];
+                        if (section.section == sectionNumber) {
+                            sectionId = section.id
+                            break;
+                        }
+                    }
+                }
+
+                if (sectionId) {
+                    $state.go('site.mm_course-section', {
+                        sectionid: sectionId,
+                        cid: courseId,
+                        mid: moduleId
+                    });
+                }
             }
         }
     }

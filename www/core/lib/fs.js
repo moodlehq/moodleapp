@@ -24,7 +24,8 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder,
+        $mmApp) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -412,7 +413,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFS#getFileSizeFromFileEntry
+     * @name $mmFS#getFileObjectFromFileEntry
      * @param  {String} path Relative path to the file.
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */
@@ -591,7 +592,7 @@ angular.module('mm.core')
         return self.init().then(function() {
             // Create file (and parent folders) to prevent errors.
             return self.createFile(path).then(function(fileEntry) {
-                if (isHTMLAPI && typeof data == 'string') {
+                if (isHTMLAPI && !$mmApp.isDesktop() && (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
                     // We need to write Blobs.
                     var type = self.getMimeType(self.getFileExtension(path));
                     data = new Blob([data], {type: type || 'text/plain'});
@@ -675,6 +676,24 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the base path where the application files are stored. Returns the value instantly, without waiting for it to be ready.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getBasePathInstant
+     * @return {String} Base path. If the service hasn't been initialized it will return an invalid value.
+     */
+    self.getBasePathInstant = function() {
+        if (!basePath) {
+            return basePath;
+        } else if (basePath.slice(-1) == '/') {
+            return basePath;
+        } else {
+            return basePath + '/';
+        }
+    };
+
+    /**
      * Get temporary directory path.
      *
      * @module mm.core
@@ -746,41 +765,23 @@ angular.module('mm.core')
         from = self.removeStartingSlash(from.replace(basePath, ''));
         to = self.removeStartingSlash(to.replace(basePath, ''));
 
+        var fromFileAndDir = self.getFileAndDirectoryFromPath(from),
+            toFileAndDir = self.getFileAndDirectoryFromPath(to);
+
         return self.init().then(function() {
+            if (toFileAndDir.directory) {
+                // Create the target directory if it doesn't exist.
+                return self.createDir(toFileAndDir.directory);
+            }
+        }).then(function() {
             if (isHTMLAPI) {
-                // In Cordova API we need to calculate the longest matching path to make it work.
-                // $cordovaFile.copyFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
-                // cordovaFile.copyFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
-                var commonPath = basePath,
-                    dirsA = from.split('/'),
-                    dirsB = to.split('/');
+                // In HTML API, the file name cannot include a directory, otherwise it fails.
+                var fromDir = self.concatenatePaths(basePath, fromFileAndDir.directory),
+                    toDir = self.concatenatePaths(basePath, toFileAndDir.directory);
 
-                for (var i = 0; i < dirsA.length; i++) {
-                    var dir = dirsA[i];
-                    if (dirsB[i] === dir) {
-                        // Found a common folder, add it to common path and remove it from each specific path.
-                        dir = dir + '/';
-                        commonPath = self.concatenatePaths(commonPath, dir);
-                        from = from.replace(dir, '');
-                        to = to.replace(dir, '');
-                    } else {
-                        // Folder doesn't match, stop searching.
-                        break;
-                    }
-                }
-
-                return $cordovaFile.copyFile(commonPath, from, commonPath, to);
+                return $cordovaFile.copyFile(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
             } else {
-                // Check if to contains a directory.
-                var toFile = self.getFileAndDirectoryFromPath(to);
-                if (toFile.directory == '') {
-                    return $cordovaFile.copyFile(basePath, from, basePath, to);
-                } else {
-                    // Ensure directory is created.
-                    return self.createDir(toFile.directory).then(function() {
-                        return $cordovaFile.copyFile(basePath, from, basePath, to);
-                    });
-                }
+                return $cordovaFile.copyFile(basePath, from, basePath, to);
             }
         });
     };
@@ -851,8 +852,8 @@ angular.module('mm.core')
      * @return {String}           Internal URL.
      */
     self.getInternalURL = function(fileEntry) {
-        if (isHTMLAPI) {
-            // HTML API doesn't implement toInternalURL.
+        if (!fileEntry.toInternalURL) {
+            // File doesn't implement toInternalURL, use toURL.
             return fileEntry.toURL();
         }
         return fileEntry.toInternalURL();

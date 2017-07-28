@@ -1,0 +1,19 @@
+{
+    "beep": "Звучни сигнал",
+    "currentusers": "Тренутни корисници",
+    "enterchat": "Кликните овде за улазак у причаоницу",
+    "entermessage": "Унесите вашу поруку",
+    "errorwhileconnecting": "Грешка приликом повезивања са причаоницом.",
+    "errorwhilegettingchatdata": "Грешка приликом преузимања података за 'Причаоницу'.",
+    "errorwhilegettingchatusers": "Грешка приликом преузимања корисника причаонице.",
+    "errorwhileretrievingmessages": "Грешка приликом преузимања порука са сервера.",
+    "errorwhilesendingmessage": "Грешка приликом слања поруке.",
+    "messagebeepsyou": "{{$a}} вас је управо поздравио/ла звучним сигналом!",
+    "messageenter": "Учесник {{$a}} управо улази у причаоницу",
+    "messageexit": "Учесник {{$a}} управо напушта причаоницу",
+    "mustbeonlinetosendmessages": "Морате бити онлајн како бисте слали поруке.",
+    "nomessages": "Још нема порука",
+    "send": "Пошаљи",
+    "sessionstart": "Следећа сесија ће почети дана {{$a.date}}, ({{$a.fromnow}} од сада)",
+    "talk": "Причај"
+}

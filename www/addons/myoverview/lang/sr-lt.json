@@ -1,0 +1,18 @@
+{
+    "future": "Budući",
+    "inprogress": "U toku",
+    "morecourses": "Više kurseva",
+    "next30days": "Sledećih 30 dana",
+    "next7days": "Sledećih 7 dana",
+    "nocourses": "Nema kurseva",
+    "nocoursesfuture": "Nema budućih kurseva",
+    "nocoursesinprogress": "Nema kurseva koji su toku",
+    "nocoursespast": "Nema prošlih kurseva",
+    "noevents": "Nema aktivnosti koje se uskoro završavaju",
+    "past": "Prošli",
+    "pluginname": "Pregled kurseva",
+    "recentlyoverdue": "Nedavno završene aktivnosti",
+    "sortbycourses": "Sortiraj po kursevima",
+    "sortbydates": "Sortiraju po datumima",
+    "timeline": "Vremenski raspored"
+}

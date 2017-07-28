@@ -52,9 +52,9 @@ $item-input-padding: 16px !default;
  * App Branding
  */
 .mm-bglogo {
-  background-color: #ff5c00; /* Change this to add a bg image or change color */
-  background: -webkit-radial-gradient(#ff7600, #ff5c00);
-  background: radial-gradient(#ff7600, #ff5c00);
+  background-color: $mm-color-init-screen; /* Change this to add a bg image or change color */
+  background: -webkit-radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
+  background: radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
   background-repeat: no-repeat;
   background-position: center center;
   position: absolute;
@@ -73,17 +73,17 @@ $item-input-padding: 16px !default;
   }
 
   img {
-    width: 60%;
-    max-width: 300px;
+    width: $mm-init-screen-logo-width;
+    max-width: $mm-init-screen-logo-max-width;
     display: block;
     margin: 0 auto;
     margin-bottom: 30px;
   }
 
   .spinner {
-    color: white;
-    stroke: white;
-    fill: white;
+    color: $mm-init-screen-spinner-color;
+    stroke: $mm-init-screen-spinner-color;
+    fill: $mm-init-screen-spinner-color;
   }
 }
 
@@ -352,6 +352,13 @@ p.item-text-wrap {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+}
+.avatar-round {
+  max-width: 40px;
+  max-height: 40px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 // Split pane.
@@ -970,6 +977,23 @@ mm-timer {
 .item-input .item-input-wrapper input {
   width: 100%;
   background: transparent;
+}
+
+mm-multiple-select {
+  cursor: pointer;
+
+  .item-stacked-label {
+    ion-label.input-label, p {
+      padding-right: 30px;
+      white-space: normal;
+    }
+  }
+  .icon.ion-android-arrow-dropdown {
+    font-size: 21px;
+    color: #999999;
+    right: 5px;
+  }
+
 }
 
 .button.mm-button-icon-small {
@@ -1632,4 +1656,34 @@ h2.invert {
   &.ng-leave.ng-leave-active {
     opacity: 0;
   }
+}
+
+// Textarea to copy text in browser or desktop. Don't use display none because otherwise it can't be selected.
+.mm-browser-copy-area {
+  position: absolute;
+  left: -10000px;
+}
+
+// Full screen modal.
+.modal-wrapper .modal.mm-fullscreen-modal {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0
+}
+
+// Buttons in header in modals.
+.modal .bar-header .button {
+  border-color: transparent;
+  background: none;
+}
+
+::-webkit-calendar-picker-indicator, ::-webkit-inner-spin-button, ::-webkit-clear-button {
+  display: none;
+}
+
+*[ng-click] {
+  cursor: pointer;
 }

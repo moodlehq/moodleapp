@@ -1,7 +1,7 @@
 {
     "allowguests": "Questo corso consente l'accesso ad utenti ospiti",
     "availablecourses": "Corsi disponibili",
-    "categories": "Categorie di corso",
+    "categories": "Categorie",
     "confirmselfenrol": "Desideri iscriverti al corso?",
     "courses": "Corsi",
     "enrolme": "Iscrivimi",
@@ -17,7 +17,7 @@
     "notenroled": "Non sei iscritto in questo corso",
     "notenrollable": "Non puoi iscriverti al corso.",
     "password": "Chiave di iscrizione",
-    "search": "Cerca",
+    "search": "Ricerca",
     "searchcourses": "Cerca corsi",
     "searchcoursesadvice": "Puoi utilizzare la ricerca corsi per accedere come ospite oppure iscriverti nei corsi che lo consentono.",
     "selfenrolment": "Iscrizione spontanea",

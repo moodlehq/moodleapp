@@ -14,6 +14,6 @@
     "mustbeonlinetosendmessages": "Norėdamas išsiųsti žinutę, turite būti prisijungęs.",
     "nomessages": "Žinučių dar nėra",
     "send": "Siųsti",
-    "sessionstart": "Pokalbio seansas bus pradėtas po: {{$a}}",
+    "sessionstart": "Kitas pokalbio seansas prasidės {{$a.date}},  ({{$a.fromnow}} nuo dabar)",
     "talk": "Kalbėti"
 }

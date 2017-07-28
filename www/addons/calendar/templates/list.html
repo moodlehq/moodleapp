@@ -5,7 +5,7 @@
             <mm-context-menu-item priority="600" ng-show="notificationsEnabled" ui-sref="site.calendar-settings" content="'mm.settings.settings' | translate" action="openSettings()" icon-action="'ion-gear-b'"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
-    <mm-split-view load-when="eventsLoaded" component="mmaCalendarEventsList" menu-state="site.calendar">
+    <mm-split-view load-when="eventsLoaded" load="{{eventToLoad}}" component="mmaCalendarEventsList" menu-state="site.calendar">
         <ion-content mm-state-class delegate-handle="mmaCalendarEventsListScroll">
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="eventsLoaded" on-refresh="refreshEvents()">
             </ion-refresher>

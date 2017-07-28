@@ -323,6 +323,7 @@ angular.module('mm.addons.mod_scorm')
                 }
             } else if (progress.message) { // Show a message.
                 $scope.progressMessage = progress.message;
+                $scope.percentage = undefined;
             } else if (progress.loaded && progress.total) { // Unzipping package.
                 $scope.percentage = (parseFloat(progress.loaded / progress.total) * 100).toFixed(1);
             } else {
@@ -418,9 +419,9 @@ angular.module('mm.addons.mod_scorm')
                         if (!$scope.$$destroyed) {
                             openScorm(scoId);
                         }
-                    }).catch(function() {
+                    }).catch(function(error) {
                         if (!$scope.$$destroyed) {
-                            $mmaModScormHelper.showDownloadError(scorm);
+                            $mmaModScormHelper.showDownloadError(scorm, error);
                         }
                     });
                 });

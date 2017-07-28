@@ -32,6 +32,7 @@ angular.module('mm.core')
  * @param {String} title                            Title and label of the selector.
  * @param {Array}  options                          Options to be used in the selector. Each option must have a key and a value
  *                                                      property. Additionally selected property can be defined.
+ * @param {String} [name]                           Name for the input field if needed.
  * @param {String} [keyProperty="key"]              Name of the key property of the option to be sent to the server.
  * @param {String} [valueProperty="value"]          Name of the value property of the option to be shown, human readable.
  * @param {String} [selectedProperty="selected"]    Name of the selected property that indicates if the option is selected.
@@ -42,7 +43,8 @@ angular.module('mm.core')
         priority: 100,
         scope: {
             title: '@',
-            options: '='
+            options: '=',
+            name: '@?'
         },
         templateUrl: 'core/templates/multipleselect.html',
         link: function(scope, element, attrs) {
@@ -54,6 +56,9 @@ angular.module('mm.core')
 
             scope.optionsRender = [];
             scope.selectedOptions = getSelectedOptionsText();
+            if (scope.name) {
+                scope.selectedValues = getSelectedOptionsValues();
+            }
 
             element.on('click', function(e) {
                 e.preventDefault();
@@ -91,6 +96,9 @@ angular.module('mm.core')
                     }
                 });
                 scope.selectedOptions = getSelectedOptionsText();
+                if (scope.name) {
+                    scope.selectedValues = getSelectedOptionsValues();
+                }
 
                 scope.closeModal();
             };
@@ -104,6 +112,17 @@ angular.module('mm.core')
                 });
 
                 return selected.join(strSeparator);
+            }
+
+            // Get string for selected options to be sent.
+            function getSelectedOptionsValues() {
+                var selected = scope.options.filter(function(option) {
+                    return !!option[selectedProperty];
+                }).map(function(option) {
+                    return option[keyProperty];
+                });
+
+                return selected.join('###');
             }
 
             scope.closeModal = function(){

@@ -42,7 +42,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice();
         };
 
         /**
@@ -87,7 +87,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice() || $mmApp.canGetUserMedia();
         };
 
         /**
@@ -132,7 +132,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice() || ($mmApp.canGetUserMedia() && $mmApp.canRecordMedia());
         };
 
         /**
@@ -177,7 +177,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return true;
+            return $mmApp.isDevice() || ($mmApp.canGetUserMedia() && $mmApp.canRecordMedia());
         };
 
         /**
@@ -223,7 +223,7 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return ionic.Platform.isAndroid();
+            return ionic.Platform.isAndroid() || !$mmApp.isDevice();
         };
 
         /**
@@ -247,25 +247,25 @@ angular.module('mm.core.fileuploader')
                         if (!uploadFileScope) {
                             // Create a scope for the on change directive.
                             uploadFileScope = $rootScope.$new();
-
-                            uploadFileScope.filePicked = function(evt) {
-                                var input = evt.srcElement;
-                                var file = input.files[0];
-                                input.value = ''; // Unset input.
-                                if (!file) {
-                                    return;
-                                }
-
-                                // Upload the picked file.
-                                $mmFileUploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
-                                    $mmFileUploaderHelper.fileUploaded(result);
-                                }).catch(function(error) {
-                                    if (error) {
-                                        $mmUtil.showErrorModal(error);
-                                    }
-                                });
-                            };
                         }
+
+                        uploadFileScope.filePicked = function(evt) {
+                            var input = evt.srcElement;
+                            var file = input.files[0];
+                            input.value = ''; // Unset input.
+                            if (!file) {
+                                return;
+                            }
+
+                            // Upload the picked file.
+                            $mmFileUploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
+                                $mmFileUploaderHelper.fileUploaded(result);
+                            }).catch(function(error) {
+                                if (error) {
+                                    $mmUtil.showErrorModal(error);
+                                }
+                            });
+                        };
 
                         $compile(input)(uploadFileScope);
 

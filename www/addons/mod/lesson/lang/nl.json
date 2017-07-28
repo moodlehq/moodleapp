@@ -1,5 +1,6 @@
 {
     "answer": "Antwoord",
+    "attempt": "Poging: {{$a}}",
     "attemptheader": "Poging",
     "attemptsremaining": "Je kan nog {{$a}} poging(en) doen",
     "averagescore": "Gemiddelde score",
@@ -21,9 +22,10 @@
     "emptypassword": "Wachtwoord kan niet leeg zijn",
     "enterpassword": "Geef het wachtwoord:",
     "eolstudentoutoftimenoanswers": "Je hebt geen enkele vraag beantwoord. Je hebt een 0 voor deze les",
+    "errorprefetchrandombranch": "Deze les bevat een sprong naar een willekeurige inhoudspagina. De les kan niet gestart worden in de app zonder dat die gestart is op het web.",
     "errorreviewretakenotlast": "Deze poging kan niet meer nagekeken worden omdat er al een andere poging voltooid is.",
     "finish": "Einde",
-    "finishretakeoffline": "Deze poging is voltooid in offline modus",
+    "finishretakeoffline": "Deze poging is voltooid in offline modus.",
     "firstwrong": "Je antwoord is fout.  Wil je de vraag opnieuw proberen te beantwoorden? Als je het antwoord weet, zul je er geen punten meer mee verdienen.",
     "gotoendoflesson": "Ga naar het einde van de les",
     "grade": "Cijfer",

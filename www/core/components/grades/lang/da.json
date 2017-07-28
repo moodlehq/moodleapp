@@ -2,7 +2,7 @@
     "average": "Gennemsnit",
     "badgrade": "Karakteren er ugyldig",
     "contributiontocoursetotal": "Bidrag til kursets total",
-    "feedback": "Tilbagemelding",
+    "feedback": "Feedback",
     "grade": "Karakter",
     "grades": "Karakterer",
     "itemname": "Elementnavn",
@@ -10,6 +10,6 @@
     "nooutcome": "Intet slutresultat",
     "percentage": "Procentdel",
     "range": "Opstilling",
-    "rank": "Rank",
+    "rank": "Opstil",
     "weight": "Vægt"
 }

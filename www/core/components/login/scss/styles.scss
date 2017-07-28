@@ -61,4 +61,9 @@
     background: $white;
     border: 1px solid $item-default-border;
   }
+
+  .mm-sitename, .mm-siteurl {
+    @if $mm-fixed-url { display: none; }
+  }
 }
+

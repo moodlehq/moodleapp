@@ -1,0 +1,7 @@
+<ion-list ng-if="mode != 'show'">
+    <span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+    <span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
+    <ion-checkbox ng-repeat="option in options" name="f_{{field.id}}" ng-value="option" ng-model="values[option]">{{ option }}</ion-checkbox>
+    <ion-checkbox ng-if="mode == 'search'" name="f_{{field.id}}_allreq" ng-value="1">{{ 'mma.mod_data.selectedrequired' | translate }}</ion-checkbox>
+</ion-list>
+<mm-format-text ng-if="mode == 'show' && value && value.content" watch="true">{{ value.content | mmaModDataFieldCheckboxFormat }}</mm-format-text>

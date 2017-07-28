@@ -1,10 +1,13 @@
 {
-    "addnewnote": "新しいノートを追加する",
+    "addnewnote": "新しいノートを追加",
     "coursenotes": "コースノート",
-    "eventnotecreated": "ノートが作成されました。",
+    "eventnotecreated": "作成したノート",
+    "nonotes": "このタイプのノートはまだ存在しません",
     "note": "ノート",
-    "notes": "あなたの個人分析およびノート",
+    "notes": "ノート",
     "personalnotes": "パーソナルノート",
-    "publishstate": "コンテクスト",
-    "sitenotes": "サイトノート"
+    "publishstate": "コンテキスト",
+    "sitenotes": "サイトノート",
+    "userwithid": "ID {{id}} のユーザ",
+    "warningnotenotsent": "コース {{course}} にノートを追加することができません。 {{error}}"
 }

@@ -70,7 +70,7 @@
                                     <label id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</label>
                                 </div>
                                 <div class="col col-40 item-select">
-                                    <select class="mma-mod_survey-select" ng-if="question.type > 0" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
+                                    <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
                                     </select>
                                 </div>
                             </div>

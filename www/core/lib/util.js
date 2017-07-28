@@ -200,6 +200,19 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns if a URL has any protocol, if not is a relative URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isAbsoluteURL
+         * @param {String} url The url to test against the pattern
+         * @return {Boolean}   TRUE if the url is absolute. FALSE if it is relative.
+         */
+        self.isAbsoluteURL = function(url) {
+            return /^[^:]{2,10}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
+        };
+
+        /**
          * Returns if a URL is a theme image URL.
          *
          * @module mm.core
@@ -292,7 +305,12 @@ angular.module('mm.core')
         self.openFile = function(path) {
             var deferred = $q.defer();
 
-            if (window.plugins) {
+            if ($mmApp.isDesktop()) {
+                // It's a desktop app, send an event so the file is opened. It has to be done with an event
+                // because opening the file from here (renderer process) doesn't focus the opened app.
+                require('electron').ipcRenderer.send('openItem', path);
+                deferred.resolve();
+            } else if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
 
@@ -378,7 +396,16 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.openInBrowser = function(url) {
-            window.open(url, '_system');
+            if ($mmApp.isDesktop()) {
+                // It's a desktop app, use Electron shell library to open the browser.
+                var shell = require('electron').shell;
+                if (!shell.openExternal(url)) {
+                    // Open browser failed, open a new window in the app.
+                    window.open(url, '_system');
+                }
+            } else {
+                window.open(url, '_system');
+            }
         };
 
         /**
@@ -419,10 +446,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#closeInAppBrowser
+         * @param  {Boolean} [closeAll] Desktop only. True to close all secondary windows, false to close only the "current" one.
          * @return {Void}
          */
-        self.closeInAppBrowser = function() {
-            $cordovaInAppBrowser.close();
+        self.closeInAppBrowser = function(closeAll) {
+            // Use try/catch because it will fail if there is no opened InAppBrowser.
+            try {
+                $cordovaInAppBrowser.close();
+                if (closeAll && $mmApp.isDesktop()) {
+                    require('electron').ipcRenderer.send('closeSecondaryWindows');
+                }
+            } catch(ex) {}
         };
 
         /**
@@ -717,7 +751,8 @@ angular.module('mm.core')
         };
 
         function getErrorTitle(message) {
-            if (message == $translate.instant('mm.core.networkerrormsg')) {
+            if (message == $translate.instant('mm.core.networkerrormsg') ||
+                    message == $translate.instant('mm.fileuploader.errormustbeonlinetoupload')) {
                 return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
                     <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
             }

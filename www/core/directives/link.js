@@ -56,6 +56,7 @@ angular.module('mm.core')
                 $mmUtil.scrollToElement(document, "#" + href + ", [name='" + href + "']");
             }
         } else {
+
             // It's an external link, we will open with browser. Check if we need to auto-login.
             if (!$mmSite.isLoggedIn()) {
                 // Not logged in, cannot auto-login.
@@ -64,23 +65,35 @@ angular.module('mm.core')
                 } else {
                     $mmUtil.openInBrowser(href);
                 }
-            } else if (autoLogin == 'yes') {
-                if (inApp) {
-                    $mmSite.openInAppWithAutoLogin(href);
-                } else {
-                    $mmSite.openInBrowserWithAutoLogin(href);
-                }
-            } else if (autoLogin == 'no') {
-                if (inApp) {
-                    $mmUtil.openInApp(href);
-                } else {
-                    $mmUtil.openInBrowser(href);
-                }
             } else {
-                if (inApp) {
-                    $mmSite.openInAppWithAutoLoginIfSameSite(href);
+                // Check if URL does not have any protocol, so it's a relative URL.
+                if (!$mmUtil.isAbsoluteURL(href)) {
+                    // Add the site URL at the begining.
+                    if (href.charAt(0) == '/') {
+                        href = $mmSite.getURL() + href;
+                    } else {
+                        href = $mmSite.getURL() + '/' + href;
+                    }
+                }
+
+                if (autoLogin == 'yes') {
+                    if (inApp) {
+                        $mmSite.openInAppWithAutoLogin(href);
+                    } else {
+                        $mmSite.openInBrowserWithAutoLogin(href);
+                    }
+                } else if (autoLogin == 'no') {
+                    if (inApp) {
+                        $mmUtil.openInApp(href);
+                    } else {
+                        $mmUtil.openInBrowser(href);
+                    }
                 } else {
-                    $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                    if (inApp) {
+                        $mmSite.openInAppWithAutoLoginIfSameSite(href);
+                    } else {
+                        $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                    }
                 }
             }
         }

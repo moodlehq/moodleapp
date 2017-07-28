@@ -1,5 +1,6 @@
 {
     "answer": "答案",
+    "attempt": "尝试：{{$a}}",
     "attemptsremaining": "您还有{{$a}}次机会",
     "averagescore": "平均分",
     "averagetime": "平均耗时",

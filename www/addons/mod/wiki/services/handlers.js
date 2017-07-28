@@ -102,9 +102,10 @@ angular.module('mm.addons.mod_wiki')
                     // We need to call getDownloadSize, the package might have been updated.
                     $mmaModWikiPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModWikiPrefetchHandler.prefetch(module, courseId).catch(function() {
+                            return $mmaModWikiPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {

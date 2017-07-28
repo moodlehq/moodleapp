@@ -22,7 +22,8 @@ angular.module('mm.addons.messages')
  * @name $mmaMessages
  */
 .factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp, $mmUtil,
-            mmaMessagesNewMessageEvent, mmaMessagesLimitMessages, mmaMessagesLimitSearchMessages) {
+            mmaMessagesNewMessageEvent, mmaMessagesLimitMessages, mmaMessagesLimitSearchMessages, $mmEmulatorHelper,
+            mmaMessagesPushSimulationComponent) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -286,9 +287,12 @@ angular.module('mm.addons.messages')
      * @param  {Number} [lfReceivedRead=0]   Number of read received messages already fetched, so fetch will be done from this.
      * @param  {Number} [lfSentUnread=0]     Number of unread sent messages already fetched, so fetch will be done from this.
      * @param  {Number} [lfSentRead=0]       Number of read sent messages already fetched, so fetch will be done from this.
+     * @param  {Boolean} [toDisplay=true]    True if messages will be displayed to the user, either in view or in a notification.
+     * @param  {String} [siteId]             Site ID. If not defined, use current site.
      * @return {Promise}                     Promise resolved with messages and a boolean telling if can load more messages.
      */
-    self.getDiscussion = function(userId, excludePending, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead) {
+    self.getDiscussion = function(userId, excludePending, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead, toDisplay,
+                siteId) {
         lfReceivedUnread = lfReceivedUnread || 0;
         lfReceivedRead = lfReceivedRead || 0;
         lfSentUnread = lfSentUnread || 0;
@@ -315,14 +319,15 @@ angular.module('mm.addons.messages')
         }
 
         // Get message received by current user.
-        return self._getRecentMessages(params, presets, lfReceivedUnread, lfReceivedRead).then(function(response) {
+        return self._getRecentMessages(params, presets, lfReceivedUnread, lfReceivedRead, toDisplay, siteId)
+                .then(function(response) {
             result.messages = response;
             params.useridto = userId;
             params.useridfrom = $mmSite.getUserId();
             hasReceived = response.length > 0;
 
             // Get message sent by current user.
-            return self._getRecentMessages(params, presets, lfSentUnread, lfSentRead);
+            return self._getRecentMessages(params, presets, lfSentUnread, lfSentRead, toDisplay, siteId);
         }).then(function(response) {
             result.messages = result.messages.concat(response);
             hasSent = response.length > 0;
@@ -524,25 +529,40 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#_getMessages
-     * @param {Object} params Parameters to pass to the WS.
-     * @param {Object} presets Set of presets for the WS.
+     * @param  {Object} params            Parameters to pass to the WS.
+     * @param  {Object} preSets           Set of presets for the WS.
+     * @param  {Boolean} [toDisplay=true] True if messages will be displayed to the user, either in view or in a notification.
+     * @param  {String} [siteId]          Site ID. If not defined, use current site.
      * @return {Promise}
      * @protected
      */
-    self._getMessages = function(params, presets) {
+    self._getMessages = function(params, preSets, toDisplay, siteId) {
+        toDisplay = typeof toDisplay == 'undefined' ? true : toDisplay;
+        siteId = siteId || $mmSite.getId();
+
         params = angular.extend(params, {
             type: 'conversations',
             newestfirst: 1,
         });
 
-        return $mmSite.read('core_message_get_messages', params, presets).then(function(response) {
-            angular.forEach(response.messages, function(message) {
-                message.read = params.read == 0 ? 0 : 1;
-                // Convert times to milliseconds.
-                message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
-                message.timeread = message.timeread ? message.timeread * 1000 : 0;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var userId = site.getUserId();
+
+            return site.read('core_message_get_messages', params, preSets).then(function(response) {
+                angular.forEach(response.messages, function(message) {
+                    message.read = params.read == 0 ? 0 : 1;
+                    // Convert times to milliseconds.
+                    message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
+                    message.timeread = message.timeread ? message.timeread * 1000 : 0;
+                });
+
+                if ($mmApp.isDesktop() && toDisplay && !params.read && params.useridto == userId && params.limitfrom === 0) {
+                    // Store the last unread received messages. Don't block the user for this.
+                    storeLastReceivedMessageIfNeeded(params.useridfrom, response.messages[0], siteId);
+                }
+
+                return response;
             });
-            return response;
         });
     };
 
@@ -556,10 +576,12 @@ angular.module('mm.addons.messages')
      * @param  {Object} preSets             Set of presets for the WS.
      * @param  {Number} [limitFromUnread=0] Number of read messages already fetched, so fetch will be done from this number.
      * @param  {Number} [limitFromRead=0]   Number of unread messages already fetched, so fetch will be done from this number.
+     * @param  {Boolean} [toDisplay=true]   True if messages will be displayed to the user, either in view or in a notification.
+     * @param  {String} [siteId]            Site ID. If not defined, use current site.
      * @return {Promise}
      * @protected
      */
-    self._getRecentMessages = function(params, preSets, limitFromUnread, limitFromRead) {
+    self._getRecentMessages = function(params, preSets, limitFromUnread, limitFromRead, toDisplay, siteId) {
         limitFromUnread = limitFromUnread || 0;
         limitFromRead = limitFromRead || 0;
 
@@ -568,7 +590,7 @@ angular.module('mm.addons.messages')
             limitfrom: limitFromUnread
         });
 
-        return self._getMessages(params, preSets).then(function(response) {
+        return self._getMessages(params, preSets, toDisplay, siteId).then(function(response) {
             var messages = response.messages;
             if (messages) {
                 if (messages.length >= params.limitnum) {
@@ -580,7 +602,7 @@ angular.module('mm.addons.messages')
                 params.read = 1;
                 params.limitfrom = limitFromRead;
 
-                return self._getMessages(params, preSets).then(function(response) {
+                return self._getMessages(params, preSets, toDisplay, siteId).then(function(response) {
                     if (response.messages) {
                         messages = messages.concat(response.messages);
                     }
@@ -642,11 +664,13 @@ angular.module('mm.addons.messages')
      * @return {Promise}         Promise resolved with the message unread count.
      */
     self.getUnreadConversationsCount = function(userId, siteId) {
+        var params;
+
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
             if (site.wsAvailable('core_message_get_unread_conversations_count')) {
-                var params = {
+                params = {
                         useridto: userId
                     },
                     preSets = {
@@ -663,14 +687,14 @@ angular.module('mm.addons.messages')
             }
 
             // Fallback call.
-            var params = {
+            params = {
                 read: 0,
                 limitfrom: 0,
                 limitnum: mmaMessagesLimitMessages + 1,
                 useridto: userId,
                 useridfrom: 0,
             };
-            return self._getMessages(params).then(function(response) {
+            return self._getMessages(params, undefined, false, siteId).then(function(response) {
                 // Count the discussions by filtering same senders.
                 var discussions = {},
                     count;
@@ -685,6 +709,40 @@ angular.module('mm.addons.messages')
                 // Return no messages if the call fails.
                 return 0;
             });
+        });
+    };
+
+    /**
+     * Get the latest unread received messages.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#getUnreadReceivedMessages
+     * @param  {Boolean} [toDisplay=true] True if messages will be displayed to the user, either in view or in a notification.
+     * @param  {Boolean} [forceCache]     True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} [ignoreCache]    True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]          Site ID. If not defined, use current site.
+     * @return {Promise}                  Promise resolved with the message unread count.
+     */
+    self.getUnreadReceivedMessages = function(toDisplay, forceCache, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    read: 0,
+                    limitfrom: 0,
+                    limitnum: mmaMessagesLimitMessages,
+                    useridto: site.getUserId(),
+                    useridfrom: 0
+                },
+                preSets = {};
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return self._getMessages(params, preSets, toDisplay, siteId);
         });
     };
 
@@ -1271,6 +1329,33 @@ angular.module('mm.addons.messages')
             if (typeof userid != 'undefined' && !isNaN(parseInt(userid))) {
                 $mmUser.storeUser(userid, discussion.fullname, discussion.profileimageurl);
             }
+        });
+    }
+
+    /**
+     * Store the last received message if it's newer than the last stored.
+     *
+     * @param  {Number} userIdFrom ID of the useridfrom retrieved, 0 for all users.
+     * @param  {Object} message    Last message received.
+     * @param  {String} siteId     Site ID.
+     * @return {Promise}           Promise resolved when done.
+     */
+    function storeLastReceivedMessageIfNeeded(userIdFrom, message, siteId) {
+        var component = mmaMessagesPushSimulationComponent;
+
+        // Get the last received message.
+        return $mmEmulatorHelper.getLastReceivedNotification(component, siteId).then(function(lastMessage) {
+            if (userIdFrom > 0 && (!message || !lastMessage)) {
+                // Seeing a single discussion. No received message or cannot know if it really is the last received message. Stop.
+                return;
+            }
+
+            if (message && lastMessage && message.timecreated <= lastMessage.timecreated) {
+                // The message isn't newer than the stored message, don't store it.
+                return;
+            }
+
+            return $mmEmulatorHelper.storeLastReceivedNotification(component, message, siteId);
         });
     }
 
