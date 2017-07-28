@@ -191,7 +191,7 @@ angular.module('mm.addons.mod_data')
             }
         }).then(function(entries) {
             var numEntries = (entries && entries.entries && entries.entries.length) || 0;
-            $scope.isEmpty = !numEntries && Object.keys($scope.offlineActions).length <= 0;
+            $scope.isEmpty = !numEntries && !Object.keys($scope.offlineActions).length && !Object.keys($scope.offlineEntries).length;
             $scope.hasNextPage = numEntries >= mmaModDataPerPage && (($scope.search.page + 1) * mmaModDataPerPage) < entries.totalcount;
             $scope.entriesRendered = "";
 
