@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModDataHelper
  */
 .factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader, $mmSite,
-        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager) {
+        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager, $translate) {
 
     var self = {
             searchOther: {
@@ -39,12 +39,12 @@ angular.module('mm.addons.mod_data')
      * @name $mmaModDataHelper#displayShowFields
      * @param {String} template   Template HMTL.
      * @param {Array}  fields     Fields that defines every content in the entry.
-     * @param {Number} entryId    Entry ID.
+     * @param {Object} entry      Entry.
      * @param {String} mode       Mode list or show.
      * @param {Object} actions    Actions that can be performed to the record.
      * @return {String}           Generated HTML.
      */
-    self.displayShowFields = function(template, fields, entryId, mode, actions) {
+    self.displayShowFields = function(template, fields, entry, mode, actions) {
         if (!template) {
             return "";
         }
@@ -58,19 +58,21 @@ angular.module('mm.addons.mod_data')
             replace = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            render = '<mma-mod-data-field field="fields['+ field.id + ']" value="entries['+ entryId +'].contents['+ field.id +
-                        ']" mode="'+mode+'" database="data" view-action="gotoEntry('+ entryId +')"></mma-mod-data-field>';
+            render = '<mma-mod-data-field field="fields['+ field.id + ']" value="entries['+ entry.id +'].contents['+ field.id +
+                        ']" mode="'+mode+'" database="data" view-action="gotoEntry('+ entry.id +')"></mma-mod-data-field>';
             template = template.replace(replace, render);
         });
 
         angular.forEach(actions, function(enabled, action) {
             replace = new RegExp("##" + action + "##", 'gi');
             if (enabled) {
-                if (action == "moreurl") {
+                if (action == 'moreurl') {
                     // Render more url directly because it can be part of an HTML attribute.
-                    render = $mmSite.getURL() + '/mod/data/view.php?d={{data.id}}&rid=' + entryId;
+                    render = $mmSite.getURL() + '/mod/data/view.php?d={{data.id}}&rid=' + entry.id;
+                } else if (action == 'approvalstatus') {
+                    render = $translate.instant('mma.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
-                    render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entryId +
+                    render = '<mma-mod-data-action action="' + action + '" entry="entries['+ entry.id +
                                 ']" mode="'+mode+'" database="data"></mma-mod-data-action>';
                 }
                 template = template.replace(replace, render);

@@ -81,7 +81,7 @@ angular.module('mm.addons.mod_data')
             files = [];
 
         return $mmaModData.getDatabase(courseId, module.id, siteId, forceCache).then(function(data) {
-            files = self.getIntroFilesFromInstance(module, database);
+            files = self.getIntroFilesFromInstance(module, data);
 
             database = data;
             return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {

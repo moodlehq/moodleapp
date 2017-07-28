@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_data')
 
     $scope.search = {
         sortBy: "0",
-        sortDirection: "ASC",
+        sortDirection: "DESC",
         page: 0,
         text: "",
         searching: false,
@@ -254,7 +254,7 @@ angular.module('mm.addons.mod_data')
 
                         var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
 
-                        entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry.id, 'list', actions);
+                        entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry, 'list', actions);
                     });
                     entriesHTML += data.listtemplatefooter;
 
@@ -386,7 +386,7 @@ angular.module('mm.addons.mod_data')
     // Reset all search filters and closes the modal.
     $scope.searchReset = function() {
         $scope.search.sortBy = "0";
-        $scope.search.sortDirection = "ASC";
+        $scope.search.sortDirection = "DESC";
         $scope.search.text = "";
         $scope.search.advanced = {};
         $scope.search.searchingAdvanced = false;
