@@ -315,7 +315,7 @@ angular.module('mm.addons.mod_data')
                     perpage: perPage || mmaModDataPerPage,
                     groupid: groupId || 0,
                     sort: sort || "0",
-                    order: order || "ASC"
+                    order: order || "DESC"
                 },
                 preSets = {
                     cacheKey: getEntriesCacheKey(dataId, groupId)

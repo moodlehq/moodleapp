@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_data')
 
     $scope.search = {
         sortBy: "0",
-        sortDirection: "ASC",
+        sortDirection: "DESC",
         page: 0,
         text: "",
         searching: false,
@@ -386,7 +386,7 @@ angular.module('mm.addons.mod_data')
     // Reset all search filters and closes the modal.
     $scope.searchReset = function() {
         $scope.search.sortBy = "0";
-        $scope.search.sortDirection = "ASC";
+        $scope.search.sortDirection = "DESC";
         $scope.search.text = "";
         $scope.search.advanced = {};
         $scope.search.searchingAdvanced = false;
