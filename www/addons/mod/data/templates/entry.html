@@ -30,6 +30,7 @@
                     {{ entryRendered }}
                 </mm-format-text>
             </div>
+            <mm-comments class="item" ng-if="showComments" context-level="module" instance-id="{{data.coursemodule}}" component="mod_data" item-id="{{entry.id}}" area="database_entry"></mm-comments>
             <div ng-if="previousId || nextId" class="item item-text-wrap row-buttons responsive-sm">
                 <button ng-if="previousId" class="button button-block icon-left ion-chevron-left" ng-click="gotoEntry(previousId)">
                     {{ 'mm.core.previous' | translate }}
