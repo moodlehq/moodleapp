@@ -14,6 +14,13 @@
 
 angular.module('mm.addons.mod_data')
 
+.filter('mmaModDataFieldTextareaFormat', function($mmText) {
+    return function(value) {
+        var files = (value && value.files) || [];
+        return value ? $mmText.replacePluginfileUrls(value.content, files) : '';
+    };
+})
+
 /**
  * Directive to render data textarea field.
  *
@@ -21,7 +28,7 @@ angular.module('mm.addons.mod_data')
  * @ngdoc directive
  * @name mmaModDataFieldTextarea
  */
-.directive('mmaModDataFieldTextarea', function($mmUtil, $mmText, mmaModDataComponent) {
+.directive('mmaModDataFieldTextarea', function($mmText, mmaModDataComponent) {
     return {
         restrict: 'A',
         priority: 100,
@@ -31,24 +38,18 @@ angular.module('mm.addons.mod_data')
             if (scope.mode == 'show') {
                 scope.component = mmaModDataComponent;
                 scope.componentId = scope.database.coursemodule;
-
-                var files = (scope.value && scope.value.files) || [];
-
-                scope.text = scope.value ? $mmText.replacePluginfileUrls(scope.value.content, files) : "";
                 return;
             }
 
             // Check if rich text editor is enabled.
             if (scope.mode == 'edit') {
-                $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
-                    var files = (scope.value && scope.value.files) || [],
-                        text = scope.value ? $mmText.replacePluginfileUrls(scope.value.content, files) : "";
+                var files = (scope.value && scope.value.files) || [],
+                    text = scope.value ? $mmText.replacePluginfileUrls(scope.value.content, files) : "";
 
-                    // Get the text.
-                    scope.model = {
-                        text: text
-                    };
-                });
+                // Get the text.
+                scope.model = {
+                    text: text
+                };
 
                 scope.firstRender = function() {
                     if (!scope.value) {

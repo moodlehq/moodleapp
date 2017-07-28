@@ -14,6 +14,12 @@
 
 angular.module('mm.addons.mod_data')
 
+.filter('mmaModDataFieldDateFormat', function() {
+    return function(text) {
+        return text * 1000;
+    };
+})
+
 /**
  * Directive to render data date field.
  *
@@ -29,7 +35,6 @@ angular.module('mm.addons.mod_data')
         link: function(scope) {
             scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
             if (scope.mode == 'show') {
-                scope.text = scope.value ? scope.value.content * 1000 : "";
                 return;
             }
 

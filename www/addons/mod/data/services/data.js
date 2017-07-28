@@ -680,7 +680,11 @@ angular.module('mm.addons.mod_data')
         }).then(function() {
             if (justAdded) {
                 // The field was added offline, add again and stop.
-                return self.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline);
+                return self.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline)
+                        .then(function(result) {
+                    result.updated = true;
+                    return result;
+                });
             }
 
             if (!$mmApp.isOnline() || forceOffline) {

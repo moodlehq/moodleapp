@@ -4,4 +4,4 @@
 <div ng-if="mode == 'edit'" class="item item-text-wrap mm-item-has-rich-text-editor">
     <mm-rich-text-editor model="model" placeholder="{{ field.name }}" name="f_{{field.id}}" component="{{component}}" component-id="{{componentId}}" first-render="firstRender()"></mm-rich-text-editor>
 </div>
-<mm-format-text ng-if="mode == 'show'" watch="true" component="{{component}}" component-id="{{componentId}}">{{ text }}</mm-format-text>
+<mm-format-text ng-if="mode == 'show' && value" watch="true" component="{{component}}" component-id="{{componentId}}">{{ value | mmaModDataFieldTextareaFormat }}</mm-format-text>

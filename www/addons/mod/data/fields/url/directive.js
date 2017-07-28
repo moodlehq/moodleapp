@@ -28,10 +28,6 @@ angular.module('mm.addons.mod_data')
         templateUrl: 'addons/mod/data/fields/url/template.html',
         link: function(scope) {
             scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
-            if (scope.mode == 'show') {
-                scope.text = scope.value ? scope.value.content : "";
-                return;
-            }
 
             if (scope.mode == 'edit' && scope.value) {
                 scope.val = scope.value.content;

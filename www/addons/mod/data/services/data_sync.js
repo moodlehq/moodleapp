@@ -188,7 +188,7 @@ angular.module('mm.addons.mod_data')
                 });
 
                 angular.forEach(offlineEntries, function(entryActions) {
-                    promises.push(syncEntry(data, entryActions, result.warnings, siteId));
+                    promises.push(syncEntry(data, entryActions, result, siteId));
                 });
 
                 return $q.all(promises);
@@ -216,16 +216,17 @@ angular.module('mm.addons.mod_data')
     /**
      * Synchronize an entry.
      *
-     * @param  {Object}   data          Database.
-     * @param  {Object}   entryActions  Entry actions.
-     * @param  {Object[]} warnings      List of warnings.
-     * @param  {String}   [siteId]      Site ID. If not defined, current site.
-     * @return {Promise}                Promise resolved if success, rejected otherwise.
+     * @param  {Object} data          Database.
+     * @param  {Object} entryActions  Entry actions.
+     * @param  {Object} result        Object with the result of the sync.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved if success, rejected otherwise.
      */
-    function syncEntry(data, entryActions, warnings, siteId) {
+    function syncEntry(data, entryActions, result, siteId) {
         var discardError,
             timePromise,
             entryId = 0,
+            offlineId,
             deleted = false,
             promises = [];
 
@@ -237,20 +238,22 @@ angular.module('mm.addons.mod_data')
         entryId = entryActions[0].entryid;
 
         if (entryId > 0) {
-            timePromise = $mmaModData.getEntry(data.id, entryActions[0].entryid, siteId).then(function(entry) {
+            timePromise = $mmaModData.getEntry(data.id, entryId, siteId).then(function(entry) {
                 return entry.entry.timemodified;
             }).catch(function() {
                 return -1;
             });
         } else {
+            offlineId = entryId;
             timePromise = $q.when(0);
         }
 
         return timePromise.then(function(timemodified) {
             if (timemodified < 0 || timemodified >= entryActions[0].timemodified) {
                 // The entry was not found in Moodle or the entry has been modified, discard the action.
+                result.updated = true;
                 discardError = $translate.instant('mma.mod_data.warningsubmissionmodified');
-                return;
+                return $mmaModDataOffline.deleteAllEntryActions(data.id, entryId, siteId);
             }
 
             angular.forEach(entryActions, function(action) {
@@ -310,6 +313,7 @@ angular.module('mm.addons.mod_data')
                     }
                 }).then(function() {
                     // Delete the offline data.
+                    result.updated = true;
                     return $mmaModDataOffline.deleteEntry(action.dataid, action.entryid, action.action, siteId);
                 }));
             });
@@ -323,17 +327,18 @@ angular.module('mm.addons.mod_data')
                     error: discardError
                 });
 
-                if (warnings.indexOf(message) == -1) {
-                    warnings.push(message);
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
                 }
             }
 
             // Sync done. Send event.
             $mmEvents.trigger(mmaModDataEventAutomSynced, {
                 siteid: siteId,
-                dataid: action.dataid,
-                entryid: action.entryid,
-                warnings: warnings,
+                dataid: data.id,
+                entryid: entryId,
+                offlineentryid: offlineId,
+                warnings: result.warnings,
                 deleted: deleted
             });
         });

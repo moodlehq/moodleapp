@@ -29,7 +29,6 @@ angular.module('mm.addons.mod_data')
         link: function(scope) {
             scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
             if (scope.mode == 'show') {
-                scope.text = scope.value ? scope.value.content : "";
                 return;
             }
 
