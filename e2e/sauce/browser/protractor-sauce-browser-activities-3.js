@@ -11,6 +11,9 @@ exports.config = {
     },
     specs: [
         "../../../e2e/*.js",
+        //"../../../www/**/e2e/mod_survey.spec.js",
+        //"../../../www/**/e2e/mod_glossary.spec.js",
+        //"../../../www/**/e2e/mod_wiki.spec.js",
         "../../../www/**/e2e/mod_data.spec.js"
     ],
     baseUrl: 'http://localhost:8100/',

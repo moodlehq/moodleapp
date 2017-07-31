@@ -11,11 +11,11 @@ exports.config = {
     },
     specs: [
         "../../../e2e/*.js",
-        "../../../www/**/e2e/mod_glossary.spec.js",
-        "../../../www/**/e2e/mod_survey.spec.js",
-        "../../../www/**/e2e/mod_forum.spec.js",
+        //"../../../www/**/e2e/mod_forum.spec.js",
+        //"../../../www/**/e2e/mod_forum_teacher.spec.js",
         "../../../www/**/e2e/mod_feedback.spec.js",
-        "../../../www/**/e2e/mod_lesson.spec.js"
+        //"../../../www/**/e2e/mod_lesson.spec.js",
+        "../../../www/**/e2e/mod_feedback_teacher.spec.js"
     ],
     baseUrl: 'http://localhost:8100/',
     seleniumAddress: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub",
