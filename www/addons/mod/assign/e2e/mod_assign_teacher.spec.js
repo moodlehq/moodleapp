@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-describe('User can manage course assign', function () {
+describe('User can manage course assign as Teacher', function () {
  
-   it('View course assign windows', function (done) {
-       return MM.loginAsStudent().then(function () {
+   it('View assignment as teacher', function (done) {
+       return MM.loginAsTeacher().then(function () {
            return MM.clickOnInSideMenu('Course overview');
        }).then(function () {
            return MM.clickOn('Digital Literacy');
@@ -24,34 +24,16 @@ describe('User can manage course assign', function () {
        }).then(function () {
            return MM.clickOn('Assignment 1 (Text)');
        }).then(function () {
-           expect(MM.getView().getText()).toMatch('Keep it short!');
-       }).then(function () {
-           done();
-       });
-   });
- 
-   it('Click description tab', function (done) {
-       return MM.loginAsStudent().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Group work and assessment');
-       }).then(function () {
-           return MM.clickOn('Assignment 1 (Text)');
-       }).then(function () {
-           return MM.clickOn('Keep it short!');
-       }).then(function () {
-           expect(MM.getView().getText()).toMatch('Keep it short!');
-       }).then(function () {
-           return MM.goBack();
+           expect(MM.getView().getText()).toContain('Participants');
+           expect(MM.getView().getText()).toContain('Submitted');
+           expect(MM.getView().getText()).toContain('Needs grading');
        }).then(function () {
            done();
        });
    });
 
-   it('Add text submission', function (done) {
-       return MM.loginAsStudent().then(function () {
+   it('View submission list', function (done) {
+       return MM.loginAsTeacher().then(function () {
            return MM.clickOnInSideMenu('Course overview');
        }).then(function () {
            return MM.clickOn('Digital Literacy');
@@ -60,53 +42,58 @@ describe('User can manage course assign', function () {
        }).then(function () {
            return MM.clickOn('Assignment 1 (Text)');
        }).then(function () {
-           return MM.clickOn('Add submission');
+           return MM.clickOnElement($('[ng-click="gotoSubmissionList()"]'));
        }).then(function () {
+           expect(MM.getView().getText()).toContain('Brian Franklin');
+           done();
+       });
+   });
+
+   it('View assignments that needs to be graded', function (done) {
+       return MM.loginAsTeacher().then(function () {
+           return MM.clickOnInSideMenu('Course overview');
+       }).then(function () {
+           return MM.clickOn('Digital Literacy');
+       }).then(function () {
+           return MM.clickOn('Group work and assessment');
+       }).then(function () {
+           return MM.clickOn('Assignment 1 (Text)');
+       }).then(function () {
+            return MM.clickOnElement($('[ng-click="gotoSubmissionList(mmaModAssignNeedGrading, needsGradingAvalaible)"]'));
+       }).then(function () {
+           done();
+       });
+   });
+ 
+   it('Grade a submission', function (done) {
+       return MM.loginAsTeacher().then(function () {
+           return MM.clickOnInSideMenu('Course overview');
+       }).then(function () {
+           return MM.clickOn('Digital Literacy');
+       }).then(function () {
+           return MM.clickOn('Group work and assessment');
+       }).then(function () {
+           return MM.clickOn('Assignment 1 (Text)');
+       }).then(function () {
+           return MM.clickOnElement($('[ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusSubmitted, summary.submissionssubmittedcount)"]'));
+       }).then(function () {
+           return MM.clickOn('Brian Franklin');
+       }).then(function () {
+           return MM.clickOnElement($('a[ng-click="changeShowSubmission(false)"]'));
+       }).then(function () {
+           $('input[ng-model="grade.grade"]').sendKeys(20);
+       }).then(function () {
+           return MM.clickOnElement($('[ng-click="goToEdit()"]'));
+       }).then(function() {
            browser.sleep(10000);
-           browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('Hello'));
-       }).then(function () {
-           return MM.clickOnElement($('a[ng-click="save()"]'));
-       }).then(function () {
+           browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('Good'));
+       }).then(function() {
+           return MM.clickOnElement($('[ng-click="done()"]'));
+       }).then(function() {
+           return MM.clickOnElement($('[ng-click="submitGrade()"]'));
+       }).then(function() {
            done();
        });
    });
-   
-   it('Click Add file submission button', function (done) {
-       return MM.loginAsStudent().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Group work and assessment');
-       }).then(function () {
-           return MM.clickOn('Assignment 2 (Upload)');
-       }).then(function () {
-           return MM.clickOn('Add submission');
-       }).then(function () {
-           return MM.clickOn('Add file');
-       }).then(function () {
-           done();
-       });
-   });
- 
-   it('Click secondary button', function (done) {
-       return MM.loginAsStudent().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Group work and assessment');
-       }).then(function () {
-           return MM.clickOn('Assignment 1 (Text)');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-       }).then(function () {
-           browser.sleep(5000); //wait for button css to render
-           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
-       }).then(function () {
-           done();
-       });
-   });
- 
+
 });
