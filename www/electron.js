@@ -1,12 +1,17 @@
 
-const {app, BrowserWindow, ipcMain, shell} = require('electron');
+// dialog isn't used, but not requiring it throws an error.
+const {app, BrowserWindow, ipcMain, shell, dialog, Menu} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const os = require('os');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow,
+    appName = 'Moodle Desktop', // Default value.
+    isReady = false,
+    configRead = false;
 
 function createWindow() {
     // Create the browser window.
@@ -54,7 +59,13 @@ function createWindow() {
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
+    isReady = true;
+
     createWindow();
+
+    if (configRead) {
+        setAppMenu();
+    }
 });
 
 // Quit when all windows are closed.
@@ -69,17 +80,26 @@ app.on('activate', () => {
     }
 });
 
-// Read the config.json file to set app's protocol (custom URL scheme).
+// Read the config.json file.
 fs.readFile(path.join(__dirname, 'config.json'), 'utf8', (err, data) => {
+    configRead = true;
+
     var ssoScheme = 'moodlemobile'; // Default value.
+
     if (!err) {
         try {
             data = JSON.parse(data);
             ssoScheme = data.customurlscheme;
+            appName = data.desktopappname;
         } catch(ex) {}
     }
 
+    // Set default protocol (custom URL scheme).
     app.setAsDefaultProtocolClient(ssoScheme);
+
+    if (isReady) {
+        setAppMenu();
+    }
 });
 
 // Make sure that only a single instance of the app is running.
@@ -124,7 +144,27 @@ function focusApp() {
 
 // Listen for events sent by the renderer processes (windows).
 ipcMain.on('openItem', (event, path) => {
-    shell.openItem(path);
+    var result;
+
+    // Add file:// protocol if it isn't there.
+    if (path.indexOf('file://') == -1) {
+        path = 'file://' + path;
+    }
+
+    if (os.platform().indexOf('darwin') > -1) {
+        // Use openExternal in MacOS because openItem doesn't work in sandboxed apps.
+        // https://github.com/electron/electron/issues/9005
+        result = shell.openExternal(path);
+    } else {
+        result = shell.openItem(path);
+    }
+
+    if (!result) {
+        // Cannot open file, probably no app to handle it. Open the folder.
+        result = shell.showItemInFolder(path.replace('file://', ''));
+    }
+
+    event.returnValue = result;
 });
 
 ipcMain.on('closeSecondaryWindows', () => {
@@ -137,3 +177,60 @@ ipcMain.on('closeSecondaryWindows', () => {
 });
 
 ipcMain.on('focusApp', focusApp);
+
+// Configure the app's menu.
+function setAppMenu() {
+    let menuTemplate = [
+        {
+            label: appName,
+            role: 'window',
+            submenu: [
+                {
+                    label: 'Quit',
+                    accelerator: 'CmdorCtrl+Q',
+                    role: 'close'
+                }
+            ]
+        },
+        {
+            label: 'Edit',
+            submenu: [
+                {
+                    label: 'Cut',
+                    accelerator: 'CmdOrCtrl+X',
+                    role: 'cut'
+                },
+                {
+                    label: 'Copy',
+                    accelerator: 'CmdOrCtrl+C',
+                    role: 'copy'
+                },
+                {
+                    label: 'Paste',
+                    accelerator: 'CmdOrCtrl+V',
+                    role: 'paste'
+                },
+                {
+                    label: 'Select All',
+                    accelerator: 'CmdOrCtrl+A',
+                    role: 'selectall'
+                }
+            ]
+        },
+        {
+            label: 'Help',
+            role: 'help',
+            submenu: [
+                {
+                    label: 'Docs',
+                    accelerator: 'CmdOrCtrl+H',
+                    click() {
+                        shell.openExternal('https://docs.moodle.org/en/Moodle_Mobile');
+                    }
+                }
+            ]
+        }
+    ];
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+}

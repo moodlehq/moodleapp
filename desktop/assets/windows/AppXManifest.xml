@@ -23,7 +23,7 @@
     <rescap:Capability Name="runFullTrust"/>
   </Capabilities>
   <Applications>
-    <Application Id="com.moodle.moodlemobile" Executable="app\MoodleDesktop.exe" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="com.moodle.moodlemobile" Executable="app\Moodle Desktop.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
        BackgroundColor="#464646"
        DisplayName="Moodle Desktop"

@@ -1,5 +1,5 @@
 {
-  "name": "com.moodle.moodlemobile",
+  "name": "moodlemobile",
   "version": "3.3.0",
   "description": "The official app for Moodle.",
   "author": {
@@ -131,12 +131,12 @@
     "e2e": "protractor e2e/build/protractor.conf.js",
     "desktop.pack": "build --dir",
     "desktop.dist": "build",
-    "windows.store": "electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store --flatten true -a .\\resources\\desktop -m .\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
+    "windows.store": "electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store --flatten true -a .\\resources\\desktop -m .\\desktop\\assets\\windows\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
   },
   "main": "www/electron.js",
   "build": {
-    "appId": "com.moodle.moodlemobile",
-    "productName": "MoodleDesktop",
+    "appId": "com.moodle.moodledesktop",
+    "productName": "Moodle Desktop",
     "files": [
       "!desktop",
       "!**/e2e",
@@ -162,11 +162,23 @@
     "electronVersion": "1.6.11",
     "mac": {
       "category": "public.app-category.education",
-      "icon": "resources/desktop/icon.icns"
+      "icon": "resources/desktop/icon.icns",
+      "target": "mas",
+      "extendInfo": {
+        "ElectronTeamID": "2NU57U5PAW"
+      }
     },
     "win": {
       "target": "appx",
       "icon": "resources/desktop/icon.ico"
+    },
+    "linux": {
+      "category": "Education",
+      "target": "snap"
+    },
+    "snap": {
+      "plugs": ["default", "camera"],
+      "confinement": "classic"
     }
   }
 }

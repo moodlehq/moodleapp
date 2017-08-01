@@ -308,8 +308,12 @@ angular.module('mm.core')
             if ($mmApp.isDesktop()) {
                 // It's a desktop app, send an event so the file is opened. It has to be done with an event
                 // because opening the file from here (renderer process) doesn't focus the opened app.
-                require('electron').ipcRenderer.send('openItem', path);
-                deferred.resolve();
+                // Use sendSync so we can receive the result.
+                if (require('electron').ipcRenderer.sendSync('openItem', path)) {
+                    deferred.resolve();
+                } else {
+                    $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+                }
             } else if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
