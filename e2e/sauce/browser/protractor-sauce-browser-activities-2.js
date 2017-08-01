@@ -13,7 +13,7 @@ exports.config = {
         "../../../e2e/*.js",
         "../../../www/**/e2e/mod_forum.spec.js",
         "../../../www/**/e2e/mod_survey.spec.js",
-        //"../../../www/**/e2e/mod_forum_teacher.spec.js",
+        "../../../www/**/e2e/mod_forum_teacher.spec.js",
         "../../../www/**/e2e/mod_feedback.spec.js",
         "../../../www/**/e2e/mod_lesson.spec.js",
         "../../../www/**/e2e/mod_feedback_teacher.spec.js"
