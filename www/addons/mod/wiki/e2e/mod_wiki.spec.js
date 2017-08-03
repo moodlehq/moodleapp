@@ -76,4 +76,61 @@ describe('User can manage course wiki', function() {
         });
     });
 
+    it('Add a new wiki item', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('Course overview')
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Group work and assessment');
+        }).then(function () {
+            return MM.clickOn("Share examples of digital literacy");
+        }).then(function () {
+           browser.sleep(7500); //wait for button css to render
+           return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
+       }).then(function () {
+           return MM.clickOn('Create page');
+        }).then(function() {
+            $('input[ng-model="page.title"]').sendKeys('ABCSampleEdit');
+           browser.sleep(10000);
+           browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('Hello'));
+        }).then(function() {
+            return MM.clickOnElement($('a[ng-click="save()"]'));
+        }).then(function () {
+            return MM.clickOnElement($('a[ng-click="goHomeWiki()"]'));
+        }).then(function () {
+            done();
+        });
+    });
+
+    it('Edit a wiki item', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('Course overview')
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Group work and assessment');
+        }).then(function () {
+            return MM.clickOn("Share examples of digital literacy");
+        }).then(function () {
+           return MM.clickOn('Map');
+        }).then(function () {
+           browser.sleep(7500); //wait for button css to render
+           return MM.clickOn('ABCSampleEdit');
+        }).then(function () {
+           browser.sleep(7500); //wait for button css to render
+           return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
+       }).then(function () {
+           return MM.clickOn('Edit');
+        }).then(function() {
+            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('World'));
+        }).then(function() {
+            return MM.clickOnElement($('a[ng-click="save()"]'));
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('HelloWorld');
+        }).then(function () {
+            done();
+        });
+    });
+
 });
