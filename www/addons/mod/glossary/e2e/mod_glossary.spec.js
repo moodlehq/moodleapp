@@ -121,4 +121,42 @@ describe('User can manage course glossary', function() {
         });
     });
 
+    it('Add a new glossary entry', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('Course overview')
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Background reading');
+        }).then(function () {
+            return MM.clickOn('Common terms used in digital literacy');
+        }).then(function () {
+            browser.sleep(5000); //wait for button css to render
+            return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
+        }).then(function() {
+           return MM.clickOn('Add a new entry');
+        }).then(function () {
+           return MM.clickOnElement($('input[ng-model="entry.concept"]'));
+        }).then(function () {
+            browser.sleep(5000);
+            $('input[ng-model="entry.concept"]').sendKeys('ASampleEntry');
+            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('ASampleDescription'));
+        }).then(function () {
+            return MM.clickOn('Categories');
+        }).then(function () {
+            return MM.clickOn('21st century terminology');
+        }).then(function () {
+            return MM.clickOnElement($('button[ng-click="saveOptions();"]'));
+        }).then(function () {
+            $('textarea[ng-model="options.aliases"]').sendKeys('sample');
+        }).then(function () {
+            return MM.clickOnElement($('a[ng-click="save()"]'));
+        }).then(function () {
+            return MM.clickOn('ASampleEntry');
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('ASampleDescription');
+            done();
+        });
+    });
+
 });
