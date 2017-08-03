@@ -1614,6 +1614,20 @@ angular.module('mm.core')
         };
 
         /**
+         * Remove the parameters from a URL, returning the URL without them.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#removeUrlParams
+         * @param  {String} url URL to treat.
+         * @return {String}     URL without params.
+         */
+        self.removeUrlParams = function(url) {
+            var matches = url.match(/^[^\?]+/);
+            return matches && matches[0];
+        };
+
+        /**
          * Given an HTML, searched all links and media and tries to restore original sources using the paths object.
          *
          * @module mm.core
