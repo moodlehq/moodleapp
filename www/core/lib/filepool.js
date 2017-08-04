@@ -2839,6 +2839,11 @@ angular.module('mm.core')
             return $q.when();
         }
 
+        if ($mmApp.isDesktop()) {
+            // In desktop always download first.
+            return $q.when();
+        }
+
         return $mmUtil.getMimeTypeFromUrl(url).then(function(mimetype) {
             // If the file is streaming (audio or video) we reject.
             if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
