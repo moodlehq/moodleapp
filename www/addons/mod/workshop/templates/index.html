@@ -28,13 +28,23 @@
 
             <div class="card">
                 <div class="item item-input item-stacked-label item-icon-right" ng-click="selectPhase()">
-                    <ion-label class="item-text-wrap" ng-if="selectedPhase == phases.PHASE_SETUP">{{ 'mma.mod_workshop.phasesetup' | translate }}</ion-label>
-                    <ion-label class="item-text-wrap" ng-if="selectedPhase == phases.PHASE_SUBMISSION">{{ 'mma.mod_workshop.phasesubmission' | translate }}</ion-label>
-                    <ion-label class="item-text-wrap" ng-if="selectedPhase == phases.PHASE_ASSESSMENT">{{ 'mma.mod_workshop.phaseassessment' | translate }}</ion-label>
-                    <ion-label class="item-text-wrap" ng-if="selectedPhase == phases.PHASE_EVALUATION">{{ 'mma.mod_workshop.phaseevaluation' | translate }}</ion-label>
-                    <ion-label class="item-text-wrap" ng-if="selectedPhase == phases.PHASE_CLOSED">{{ 'mma.mod_workshop.phaseclosed' | translate }}</ion-label>
-                    <p class="item-text-wrap" ng-if="selectedPhase == workshop.phase">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+                    <ion-label class="item-text-wrap">{{ phases[selectedPhase].title }}</ion-label>
+                    <p class="item-text-wrap" ng-if="phases[selectedPhase].code == workshop.phase">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
                     <i class="icon ion-android-arrow-dropdown"></i>
+                </div>
+                <a ng-if="phases[selectedPhase].switchUrl"  class="item item-text-wrap item-icon-left item-icon-right item-icon-top" ng-href="{{phases[selectedPhase].switchUrl}}">
+                    <i class="icon ion-arrow-swap"></i>
+                    {{ 'mma.mod_workshop.switchphase' + selectedPhase | translate }}
+                    <i class="icon ion-share"></i>
+                </a>
+            </div>
+
+            <div class="card" ng-if="phases[selectedPhase] && phases[selectedPhase].tasks.length">
+                <div ng-repeat="task in phases[selectedPhase].tasks"  class="item item-text-wrap item-icon-left item-icon-top" ng-class="{'item-icon-right': task.link && !task.support}" ng-click="runTask(task)">
+                    <i class="icon" ng-class="{'ion-ios-circle-outline': task.completed == null, 'ion-close-circled assertive': task.completed == '', 'ion-information-circled positive': task.completed == 'info', 'ion-checkmark-circled balanced': task.completed === '1'}"></i>
+                    <h2>{{task.title}}</h2>
+                    <p ng-if="task.details"><mm-format-text>{{task.details}}</mm-format-text></p>
+                    <i ng-if="task.link && !task.support" class="icon ion-share"></i>
                 </div>
             </div>
         </mm-loading>

@@ -1,9 +1,9 @@
 {
-    "phaseassessment": "Assessment phase",
-    "phaseclosed": "Closed",
-    "phaseevaluation": "Grading evaluation phase",
-    "phasesetup": "Setup phase",
-    "phasesubmission": "Submission phase",
     "selectphase": "Select phase",
+    "switchphase10": "Switch to the setup phase",
+    "switchphase20": "Switch to the submission phase",
+    "switchphase30": "Switch to the assessment phase",
+    "switchphase40": "Switch to the evaluation phase",
+    "switchphase50": "Close workshop",
     "userplancurrentphase": "Current phase"
 }

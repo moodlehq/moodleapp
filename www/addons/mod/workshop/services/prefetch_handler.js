@@ -256,6 +256,7 @@ angular.module('mm.addons.mod_workshop')
 
             promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
             promises.push($mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId));
+            promises.push($mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId));
 
             // Add Basic Info to manage links.
             promises.push($mmCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
