@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Su  organización ha deshabilitado esta actividad en la aplicación móvil.",
-    "activitynotyetviewableinapp": "Estamos trabajando para soportar la actividad de {{$a}}.",
     "activitynotyetviewableremoteaddon": "Esta actividad es un complemento de terceros que todavía no está soportada por la aplicación.",
     "activitynotyetviewablesiteupgradeneeded": "El sitio no está usando la versión más reciente de Moodle. Por favor, contacte al administrador del sitio.",
     "allsections": "Todas las secciones",

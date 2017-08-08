@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Vaša institucija je onemogućila ovu aktivnost u mobilnoj aplikaciji.",
-    "activitynotyetviewableinapp": "Radimo na podršci za aktivnost {{$a}}.",
     "activitynotyetviewableremoteaddon": "Vaša institucija je instalirala dodatak koji još uvek nije podržan.",
     "activitynotyetviewablesiteupgradeneeded": "Potrebno je da se ažurira Moodle instalacija vaše institucije.",
     "allsections": "Sve sekcije",

@@ -8,15 +8,13 @@
     </ion-nav-buttons>
     <ion-content padding="true" mm-state-class>
         <mm-course-mod-description description="description"></mm-course-mod-description>
-        <h2 ng-if="!isDisabledInSite && isSupportedByTheApp && !isContributedPlugin">{{ 'mm.core.whoops' | translate }}</h2>
-        <h2 ng-if="!isDisabledInSite && !isSupportedByTheApp && !isContributedPlugin">{{ 'mm.core.sorry' | translate }}</h2>
-        <h2 ng-if="isDisabledInSite || (!isSupportedByTheApp && isContributedPlugin)">{{ 'mm.core.uhoh' | translate }}</h2>
+        <h2 ng-if="!isDisabledInSite && isSupportedByTheApp">{{ 'mm.core.whoops' | translate }}</h2>
+        <h2 ng-if="isDisabledInSite || !isSupportedByTheApp">{{ 'mm.core.uhoh' | translate }}</h2>
 
         <p class="mm-big" ng-if="isDisabledInSite">{{ 'mm.course.activitydisabled' | translate }}</p>
-        <p class="mm-big" ng-if="!isDisabledInSite && !isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewableinapp' | translate:{$a: moduleName} }}</p>
-        <p class="mm-big" ng-if="!isDisabledInSite && isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
-        <p class="mm-big" ng-if="!isDisabledInSite && !isSupportedByTheApp && isContributedPlugin">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
-        <p ng-if="isDisabledInSite || (!isSupportedByTheApp && isContributedPlugin)"><strong>{{ 'mm.course.askadmintosupport' | translate }}</strong></p>
+        <p class="mm-big" ng-if="!isDisabledInSite && isSupportedByTheApp">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
+        <p class="mm-big" ng-if="!isDisabledInSite && !isSupportedByTheApp">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
+        <p ng-if="isDisabledInSite || !isSupportedByTheApp"><strong>{{ 'mm.course.askadmintosupport' | translate }}</strong></p>
 
         <div ng-if="url">
             <p><strong>{{ 'mm.course.useactivityonbrowser' | translate }}</strong></p>
