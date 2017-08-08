@@ -61,6 +61,22 @@ MM.clickOnElement = function (el) {
 };
 
 /**
+ * Click on a element after it is loaded.
+ *
+ * This will scroll the view if required. This is buggy, not scrolling after entire page is rendered
+ *
+ * @param  {Element} el
+ * @return {Promise}
+ */
+MM.clickOnElementAfterPresent = function (el) {
+    waitForCondition();
+    browser.sleep(2000);
+    browser.wait(EC.presenceOf(el), 50000);
+    browser.executeScript('arguments[0].scrollIntoView(true)', el.getWebElement());
+    return el.click();
+};
+
+/**
  * Go to bottom of page and Click on a element.
  *
  * This will scroll the view if required.

@@ -96,10 +96,6 @@ describe('User can manage course database', function () {
        }).then(function () {
             browser.sleep(5000); //wait for css to render
             return browser.switchTo().frame($('#cke_1_contents iframe').click().sendKeys('Sample description'));
-       /*}).then(function() {
-           return $('input[name="f_166_alttext"]').sendKeys("image");
-       }).then(function() {
-            return $('input[name="f_167"]').sendKeys("https://www.google.com");*/
        }).then(function() {
            return MM.clickOnElement($('a[ng-click="save()"]'));
        }).then(function() {
@@ -117,7 +113,7 @@ describe('User can manage course database', function () {
        }).then(function () {
            return MM.clickOn('Learner database');
        }).then(function () {
-           return MM.clickOnElement($('button[ng-click="showSearch($event)"]'));
+           return $('.secondary-buttons').$('button[ng-click="showSearch($event)"]').click();
        }).then(function () {
            return $('input[ng-model="search.text"]').sendKeys('sample');
        }).then(function() {
@@ -140,23 +136,26 @@ describe('User can manage course database', function () {
            return MM.clickOn('About this course');
        }).then(function () {
            return MM.clickOn('Learner database');
+       /*}).then(function () {
+           return MM.clickOn('sampleEntry');*/
        }).then(function () {
-           return MM.clickOn('sampleEntry');
+           return MM.clickOnElement($('a[title="Edit"]'));
+           //return MM.clickOnElementAfterPresent($('mma-mod-data-action[action="edit"]').$('a[title="Edit"]'));
        }).then(function () {
-           expect(MM.getView().getText()).toContain('sampleEntry');
-       }).then(function () {
-           return MM.clickOnElement(element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[5]/ion-content/div[1]/mm-loading/div/div[1]/mm-format-text/div/div[6]/a[2]')));
-       }).then(function () {
-           $('input[name="f_164"]').sendKeys("edited");
            browser.sleep(5000); //wait for css to render
+           $('input[name="f_164"]').sendKeys("edited");
        }).then(function () {
-            browser.switchTo().frame($('#cke_1_contents iframe').click().sendKeys('Edited description'));
+            browser.switchTo().frame($('#cke_1_contents iframe').click().sendKeys('Edited'));
        /*}).then(function() {
            $('input[name="f_166_alttext"]').sendKeys("edited-image");*/
        }).then(function() {
            return MM.clickOnElement($('a[ng-click="save()"]'));
        }).then(function() {
-            expect(MM.getView().getText()).toContain('edited');
+            return MM.goBack();
+       }).then(function () {
+           return MM.clickOn('Learner database');
+       }).then(function() {
+            return MM.clickOn('sampleEntryedited');
        }).then(function() {
            done();
        });
@@ -171,12 +170,14 @@ describe('User can manage course database', function () {
            return MM.clickOn('About this course');
        }).then(function () {
            return MM.clickOn('Learner database');
+       /*}).then(function () {
+           return MM.clickOn('sample');*/
        }).then(function () {
-           return MM.clickOn('sampleEntryedited');
+           return MM.clickOnElement($('a[title="Delete"]'));
+           //return MM.clickOnElementAfterPresent($('mma-mod-data-action[action="delete"]').$('a[title="Delete"]'));
+           //return MM.clickOn('Delete');
        }).then(function () {
-           return MM.clickOnElement(element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[5]/ion-content/div[1]/mm-loading/div/div[1]/mm-format-text/div/div[6]/a[3]')));
-       }).then(function () {
-           return MM.clickOnElement(element(by.xpath('/html/body/div[4]/div/div[3]/button[2]')));
+           return MM.clickOn("OK");
        }).then(function() {
            expect(MM.getView().getText()).not.toContain('edited');
        }).then(function() {
@@ -194,7 +195,8 @@ describe('User can manage course database', function () {
        }).then(function () {
            return MM.clickOn('Learner database');
        }).then(function () {
-          return MM.clickOnElement($('a[href="http://school.demo.moodle.net/user/view.php?id=47&course=66"]'));
+          //return MM.clickOnElementAfterPresent($('a[title="Brian Franklin"]'));
+          return MM.clickOnElement($('a[title="Brian Franklin"]'));
        }).then(function () {
            browser.sleep(20000);
            expect(MM.getNavBar().getText()).toMatch('Brian Franklin');
