@@ -23,11 +23,6 @@
                 </div>
 
                 <mm-course-module ng-if="module.visibleoncoursepage !== 0" class="item item-complex" ng-repeat="module in section.modules" module="module" completion-changed="completionChanged"></mm-course-module>
-
-                <!-- When there is nothing in the section. -->
-                <div class="item item-text-wrap" ng-if="section.modules.length < 1 && sections.length == 1">
-                    {{ 'mm.course.nocontentavailable' | translate }}
-                </div>
             </section>
             <mm-empty-box ng-if="!hasContent" icon="ion-qr-scanner" message="{{ 'mm.course.nocontentavailable' | translate }}"></mm-empty-box>
         </mm-loading>
