@@ -177,7 +177,6 @@
       "target": "snap"
     },
     "snap": {
-      "plugs": ["default", "camera"],
       "confinement": "classic"
     }
   }

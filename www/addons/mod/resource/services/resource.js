@@ -551,7 +551,7 @@ angular.module('mm.addons.mod_resource')
                 if (status === mmCoreDownloaded) {
                     // Get the local file URL.
                     return $mmFilepool.getInternalUrlByUrl(siteId, url);
-                } else if (status === mmCoreDownloading) {
+                } else if (status === mmCoreDownloading && !$mmApp.isDesktop()) {
                     // Return the online URL.
                     return fixedUrl;
                 } else {

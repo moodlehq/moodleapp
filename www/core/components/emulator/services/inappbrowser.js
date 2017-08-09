@@ -21,11 +21,45 @@ angular.module('mm.core.emulator')
  * @name $mmEmulatorInAppBrowser
  * @module mm.core.emulator
  */
-.factory('$mmEmulatorInAppBrowser', function($log, $q, $mmFS, $window, $mmApp) {
+.factory('$mmEmulatorInAppBrowser', function($log, $q, $mmFS, $window, $mmApp, $timeout, $mmEmulatorHelper, $mmUtil) {
 
     $log = $log.getInstance('$mmEmulatorInAppBrowser');
 
     var self = {};
+
+    /**
+     * Recursive function to get the launch URL from the contents of a BrowserWindow.
+     *
+     * @param  {Object} webContents BrowserWindow's webcontents.
+     * @param  {Number} [retry=0]   Retry number.
+     * @return {[type]}             [description]
+     */
+    function getLaunchUrl(webContents, retry) {
+        retry = retry || 0;
+
+        // Execute Javascript to retrieve the launch link.
+        var jsCode = 'var el = document.querySelector("#launchapp"); el && el.href;',
+            deferred = $q.defer(),
+            found = false;
+
+        webContents.executeJavaScript(jsCode).then(function(launchUrl) {
+            found = true;
+            deferred.resolve(launchUrl);
+        });
+
+        $timeout(function() {
+            if (found) {
+                // URL found, stop.
+            } else if (retry > 5) {
+                // Waited enough, stop.
+                deferred.reject();
+            } else {
+                getLaunchUrl(webContents, retry + 1).then(deferred.resolve, deferred.reject);
+            }
+        }, 300);
+
+        return deferred.promise;
+    }
 
     /**
      * Load the emulation of the Cordova plugin.
@@ -49,7 +83,9 @@ angular.module('mm.core.emulator')
                 height = 600,
                 display,
                 newWindow,
-                listeners = {};
+                listeners = {},
+                isLinux = $mmEmulatorHelper.isLinux(),
+                isSSO = !!(url && url.match(/\/launch\.php\?service=.+&passport=/));
 
             if (screen) {
                 display = screen.getPrimaryDisplay();
@@ -65,13 +101,42 @@ angular.module('mm.core.emulator')
             });
             newWindow.loadURL(url);
 
+            if (isLinux && isSSO) {
+                // SSO in Linux. Simulate it's an iOS device so we can retrieve the launch URL.
+                // This is needed because custom URL scheme is not supported in Linux.
+                var userAgent = 'Mozilla/5.0 (iPad) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60';
+                newWindow.webContents.setUserAgent(userAgent);
+            }
+
             // Add the missing functions that InAppBrowser supports but BrowserWindow doesn't.
             newWindow.addEventListener = function(name, callback) {
                 var that = this;
 
+                // Store the received function instance to be able to remove the listener.
+                listeners[callback] = [received];
+
                 switch (name) {
                     case 'loadstart':
                         that.webContents.addListener('did-start-loading', received);
+
+                        if (isLinux && isSSO) {
+                            // Linux doesn't support custom URL Schemes. Check if launch page is loaded.
+                            listeners[callback].push(finishLoad);
+                            that.webContents.addListener('did-finish-load', finishLoad);
+
+                            function finishLoad(event) {
+                                // Check if user is back to launch page.
+                                if ($mmUtil.removeUrlParams(url) == $mmUtil.removeUrlParams(that.getURL())) {
+                                    // The launch page was loaded. Search for the launch link.
+                                    getLaunchUrl(that.webContents).then(function(launchUrl) {
+                                        if (launchUrl) {
+                                            // Launch URL retrieved, send it and stop listening.
+                                            received(event, launchUrl);
+                                        }
+                                    });
+                                }
+                            }
+                        }
                         break;
 
                     case 'loadstop':
@@ -87,12 +152,9 @@ angular.module('mm.core.emulator')
                         break;
                 }
 
-                // Store the received function instance to be able to remove the listener.
-                listeners[callback] = received;
-
-                function received(event) {
+                function received(event, url) {
                     try {
-                        event.url = that.getURL();
+                        event.url = url || that.getURL();
                         callback(event);
                     } catch(ex) {}
                 }
@@ -100,23 +162,30 @@ angular.module('mm.core.emulator')
 
             newWindow.removeEventListener = function(name, callback) {
                 var that = this,
-                    listener = listeners[callback];
+                    cbListeners = listeners[callback];
+
+                if (!cbListeners || !cbListeners.length) {
+                    return;
+                }
 
                 switch (name) {
                     case 'loadstart':
-                        that.webContents.removeListener('did-start-loading', listener);
+                        that.webContents.removeListener('did-start-loading', cbListeners[0]);
+                        if (cbListeners.length > 1) {
+                            that.webContents.removeListener('did-finish-load', cbListeners[1]);
+                        }
                         break;
 
                     case 'loadstop':
-                        that.webContents.removeListener('did-finish-load', listener);
+                        that.webContents.removeListener('did-finish-load', cbListeners[0]);
                         break;
 
                     case 'loaderror':
-                        that.webContents.removeListener('did-fail-load', listener);
+                        that.webContents.removeListener('did-fail-load', cbListeners[0]);
                         break;
 
                     case 'exit':
-                        that.removeListener('close', listener);
+                        that.removeListener('close', cbListeners[0]);
                         break;
                 }
             };
