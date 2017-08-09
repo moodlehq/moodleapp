@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopIndexCtrl', function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
         $mmCourseHelper, $q, $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $ionicModal,
-        $mmGroups, $ionicPlatform) {
+        $mmGroups, $ionicPlatform, $mmaModWorkshopHelper, $mmSite, mmaModWorkshopPerPage) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -35,11 +35,21 @@ angular.module('mm.addons.mod_workshop')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.moduleName = $mmCourse.translateModuleName('workshop');
+    $scope.module = module;
     $scope.refreshIcon = 'spinner';
     $scope.syncIcon = 'spinner';
     $scope.component = mmaModWorkshopComponent;
     $scope.workshopLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
+    $scope.page = 0;
+
+    $scope.workshopPhases = {
+        PHASE_SETUP: $mmaModWorkshop.PHASE_SETUP,
+        PHASE_SUBMISSION: $mmaModWorkshop.PHASE_SUBMISSION,
+        PHASE_ASSESSMENT: $mmaModWorkshop.PHASE_ASSESSMENT,
+        PHASE_EVALUATION: $mmaModWorkshop.PHASE_EVALUATION,
+        PHASE_CLOSED: $mmaModWorkshop.PHASE_CLOSED
+    };
 
     function fetchWorkshopData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
@@ -78,7 +88,10 @@ angular.module('mm.addons.mod_workshop')
             $scope.phases = phases;
             angular.forEach(phases, function(phase) {
                 angular.forEach(phase.tasks, function(task) {
-                    if (task.link && typeof supportedTasks[task.code] !== 'undefined') {
+                    if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                        // Add links to manage examples.
+                        task.link = $scope.moduleUrl;
+                    } else if (task.link && typeof supportedTasks[task.code] !== 'undefined') {
                         task.support = true;
                     }
                 });
@@ -91,6 +104,8 @@ angular.module('mm.addons.mod_workshop')
                 }
             });
 
+            return setPhaseInfo();
+        }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModWorkshopComponent);
         }).catch(function(message) {
@@ -120,6 +135,12 @@ angular.module('mm.addons.mod_workshop')
         if ($scope.workshop) {
             promises.push($mmaModWorkshop.invalidateWorkshopAccessInformationData($scope.workshop.id));
             promises.push($mmaModWorkshop.invalidateUserPlanPhasesData($scope.workshop.id));
+            if ($scope.canSubmit) {
+                promises.push($mmaModWorkshop.invalidateSubmissionsData($scope.workshop.id));
+            }
+            if ($scope.access.canviewallsubmissions) {
+                promises.push($mmaModWorkshop.invalidateGradeReportData($scope.workshop.id));
+            }
             promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
         }
 
@@ -168,7 +189,7 @@ angular.module('mm.addons.mod_workshop')
     };
 
     // Just close the modal.
-    $scope.closeModal = function(phase) {
+    $scope.closeModal = function() {
         $scope.phaseModal.hide();
     };
 
@@ -179,6 +200,15 @@ angular.module('mm.addons.mod_workshop')
         } else if (task.link) {
             $mmUtil.openInBrowser(task.link);
         }
+    };
+
+    // Run task link on current phase.
+    $scope.runTaskByCode = function(taskCode) {
+        var task = $mmaModWorkshopHelper.getTask($scope.phases[$scope.workshop.phase].tasks, taskCode);
+        if (task) {
+            return $scope.runTask(task);
+        }
+        return false;
     };
 
     // Confirm and Remove action.
@@ -208,6 +238,47 @@ angular.module('mm.addons.mod_workshop')
             });
         }
     };
+
+    // Retrieves and shows submissions grade page.
+    $scope.gotoSubmissionsPage = function(page) {
+        return $mmaModWorkshop.getGradesReport($scope.workshop.id, undefined, page).then(function(report) {
+            var numEntries = (report && report.grades && report.grades.length) || 0;
+            $scope.page = page;
+            $scope.hasNextPage = numEntries >= mmaModWorkshopPerPage && (($scope.page  + 1) * mmaModWorkshopPerPage) < report.totalcount;
+            $scope.grades = report.grades || [];
+            return $scope.grades;
+        });
+    };
+
+    // Convenience function to set current phase information.
+    function setPhaseInfo() {
+        var phase = $scope.phases[$scope.workshop.phase];
+
+        switch ($scope.workshop.phase) {
+            case  $mmaModWorkshop.PHASE_SETUP:
+                break;
+            case $mmaModWorkshop.PHASE_SUBMISSION:
+                $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access, phase.tasks);
+
+                $scope.submission = false;
+                if ($scope.canSubmit) {
+                    return $mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
+                        $scope.submission = submission;
+                    });
+                }
+
+                if ($scope.access.canviewallsubmissions) {
+                    return $scope.gotoSubmissionsPage($scope.page);
+                }
+                break;
+            case $mmaModWorkshop.PHASE_ASSESSMENT:
+                break;
+            case $mmaModWorkshop.PHASE_EVALUATION:
+                break;
+            case $mmaModWorkshop.PHASE_CLOSED:
+                break;
+        }
+    }
 
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {

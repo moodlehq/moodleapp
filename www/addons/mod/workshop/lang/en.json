@@ -1,9 +1,17 @@
 {
+    "areainstructauthors": "Instructions for submission",
+    "areainstructreviewers": "Instructions for assessment",
+    "createsubmission": "Start preparing your submission",
+    "deletesubmission": "Delete submission",
+    "editsubmission": "Edit submission",
+    "noyoursubmission": "You have not submitted your work yet",
     "selectphase": "Select phase",
+    "submissionsreport": "Workshop submissions report",
     "switchphase10": "Switch to the setup phase",
     "switchphase20": "Switch to the submission phase",
     "switchphase30": "Switch to the assessment phase",
     "switchphase40": "Switch to the evaluation phase",
     "switchphase50": "Close workshop",
-    "userplancurrentphase": "Current phase"
+    "userplancurrentphase": "Current phase",
+    "yoursubmission": "Your submission"
 }

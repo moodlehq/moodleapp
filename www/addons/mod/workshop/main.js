@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_workshop', ['mm.core'])
 
 .constant('mmaModWorkshopComponent', 'mmaModWorkshop')
+.constant('mmaModWorkshopPerPage', 10)
 
 .config(function($stateProvider) {
 
@@ -32,6 +33,24 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
             'site': {
                 controller: 'mmaModWorkshopIndexCtrl',
                 templateUrl: 'addons/mod/workshop/templates/index.html'
+            }
+        }
+    })
+
+    .state('site.mod_workshop-submission', {
+        url: '/mod_workshop-submission',
+        params: {
+            module: null,
+            access: null,
+            courseid: null,
+            profile: null,
+            submission: null,
+            submissionid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopSubmissionCtrl',
+                templateUrl: 'addons/mod/workshop/templates/submissionview.html'
             }
         }
     });
