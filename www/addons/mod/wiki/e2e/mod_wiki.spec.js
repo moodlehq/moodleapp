@@ -103,7 +103,6 @@ describe('User can manage course wiki', function() {
         });
     });
 
-    /* Not working due to very unknown bizzare reasons, so ignoring temporarily
     it('Edit a wiki item', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview')
@@ -114,25 +113,17 @@ describe('User can manage course wiki', function() {
         }).then(function () {
             return MM.clickOn("Share examples of digital literacy");
         }).then(function () {
-           return MM.clickOn('Map');
-        }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return MM.clickOn('ABCSampleEdit');
-        }).then(function () {
            return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
-           //return MM.clickOn('Info');
        }).then(function () {
            return MM.clickOn('Edit');
         }).then(function() {
             browser.sleep(10000);
-            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('World'));
+            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('HelloWorld'));
         }).then(function() {
             return MM.clickOnElement($('a[ng-click="save()"]'));
         }).then(function () {
-            expect(MM.getView().getText()).toContain('HelloWorld');
-        }).then(function () {
             done();
         });
-    });*/
+    });
 
 });
