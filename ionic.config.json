@@ -1,5 +1,5 @@
 {
-  "name": "moodlemobile2",
+  "name": "quasarmobile2",
   "app_id": "",
   "watchPatterns": [
     "www/**/*.html",
