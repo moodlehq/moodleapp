@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.3.1">
-    <name>Moodle Mobile</name>
+    <name>Plataforma Virtual Quasar</name>
     <description>
-        Moodle Mobile official app
+        Quasar Mobile Official App
     </description>
-    <author href="http://moodle.com" email="mobile@moodle.com">
-        Moodle Mobile team
+    <author href="http://educaecuador.net" email="atencionalcliente@gmail.com">
+        Soporte Técnico
     </author>
     <content src="index.html"/>
     <access origin="*"/>
