@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can search courses', function() {
+describe('User can search courses', function () {
 
     it('User can search courses with valid word count', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -23,7 +23,7 @@ describe('User can search courses', function() {
             element(by.css('.mm-site_mm_searchcourses input')).sendKeys('cinema');
         }).then(function () {
             return MM.clickOn('Search');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Psychology in Cinema');
         }).then(function () {
             done();

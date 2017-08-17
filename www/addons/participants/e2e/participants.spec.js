@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see listed correctly the participants list in a course', function() {
+describe('User can see listed correctly the participants list in a course', function () {
 
     it('User can see participants page', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
         }).then(function () {
             done();
@@ -32,14 +32,14 @@ describe('User can see listed correctly the participants list in a course', func
     it('User can see participants list', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Frances Banks');
             expect(MM.getView().getText()).toMatch('Angela Bowman');
         }).then(function () {
@@ -50,16 +50,16 @@ describe('User can see listed correctly the participants list in a course', func
     it('Can click logged-in user tab', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Barbara Gardner');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Barbara Gardner');
         }).then(function () {
             done();
@@ -69,25 +69,23 @@ describe('User can see listed correctly the participants list in a course', func
     it('Can click other specific users tab', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Angela Bowman');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Angela Bowman');
-        }).then(function() {
+        }).then(function () {
             return MM.goBack();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Brian Franklin');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Brian Franklin');
-        }).then(function() {
-            return MM.goBack();
         }).then(function () {
             done();
         });

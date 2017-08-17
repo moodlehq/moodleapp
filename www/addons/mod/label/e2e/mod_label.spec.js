@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course label content', function() {
+describe('User can manage course label content', function () {
 
     it('View course label in course content', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('About this course');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('This course explores Digital Literacy');
         }).then(function () {
             return MM.goBack();
         }).then(function () {
             return MM.clickOn('Extra resources');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Useful links to take your learning further.');
         }).then(function () {
-            return MM.goBack();
-        }).then(function() {
             done();
         });
     });

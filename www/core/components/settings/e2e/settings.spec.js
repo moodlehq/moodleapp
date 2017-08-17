@@ -12,27 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can change App settings', function() {
+describe('User can change App settings', function () {
 
     it('User can click settings page tabs', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
             return MM.clickOn('General');
-        }).then(function() {
-           return MM.goBack();
         }).then(function () {
-           return MM.clickOn('Space usage');
-        }).then(function() {
             return MM.goBack();
         }).then(function () {
-           return MM.clickOn('Synchronization');
-        }).then(function() {
+            return MM.clickOn('Space usage');
+        }).then(function () {
             return MM.goBack();
-        }).then(function() {
+        }).then(function () {
+            return MM.clickOn('Synchronization');
+        }).then(function () {
+            return MM.goBack();
+        }).then(function () {
             return MM.clickOn('About');
-        }).then(function() {
-            return MM.goBack();
         }).then(function () {
             done();
         });
@@ -55,13 +53,13 @@ describe('User can change App settings', function() {
             return MM.clickOnElement($('option[value="string:en"]'));
         }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(1));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(1));
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -71,9 +69,7 @@ describe('User can change App settings', function() {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
             return MM.clickOn('Space usage');
-        }).then(function() {
-            return MM.goBack();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -86,9 +82,9 @@ describe('User can change App settings', function() {
         }).then(function () {
             MM.clickOnElement($('button[ng-click="synchronize(site.id)"]'));
             return expect(element.all(by.css('ion-spinner[ng-if="site.synchronizing"]')).isDisplayed()).toBeTruthy();
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -98,23 +94,23 @@ describe('User can change App settings', function() {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
             return MM.clickOn('Notification preferences');
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(1));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(1));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(2));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(2));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(3));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(3));
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -124,15 +120,15 @@ describe('User can change App settings', function() {
             return MM.clickOnInSideMenu('App settings');
         }).then(function () {
             return MM.clickOn('Message preferences');
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(1));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(1));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function(){
+        }).then(function () {
             return MM.clickOnElement(element.all(by.css('label[class="toggle disable-user-behavior"]')).get(0));
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -143,9 +139,7 @@ describe('User can change App settings', function() {
         }).then(function () {
             return MM.clickOn('About');
         }).then(function () {
-            expect(MM.getView().getText()).toContain('Moodle Mobile 3.3');
-            return MM.goBack();
-        }).then(function () {
+            expect(MM.getView().getText()).toContain(/Moodle Mobile \d+\.\d+\.\d+/);
             done();
         });
     });

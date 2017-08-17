@@ -12,52 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage their messages', function() {
+describe('User can manage their messages', function () {
 
-    it('View user profile via chat box', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('View user profile via chat box', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Messages');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Amanda Hamilton');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Amanda Hamilton');
             done();
         });
     });
 
-    it('Sending a message', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Sending a message', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Messages');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Amanda Hamilton');
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             $('textarea[ng-model="newMessage"]').sendKeys('Hello World');
-            browser.sleep(5000); //wait for everything to render
-            //return MM.clickOnElement('button[id="mma-messages-send-message-button"]');
+            browser.sleep(5000); // Wait for everything to render
             return MM.clickOn('Send');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Hello World');
             done();
         });
     });
 
-    it('Searching a message', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Searching a message', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Messages');
-        }).then(function() {
-            browser.sleep(7500); //wait to render
+        }).then(function () {
+            browser.sleep(7500); // Wait to render
             $('input[placeholder="Message"]').sendKeys('facebook');
             return MM.clickOnElement(element.all(by.css('button[type="submit"]')).get(1));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Brian Franklin');
-        }).then(function() {
-            browser.sleep(7500); //wait to render
+        }).then(function () {
+            browser.sleep(7500); // Wait to render
             expect(MM.getView().getText()).toMatch('facebook');
-            return MM.goBack();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course resource', function() {
+describe('User can manage course resource', function () {
 
     it('User can click resource tab and landing the resource page', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -21,12 +21,12 @@ describe('User can manage course resource', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Background reading');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Download the video introduction transcript');
         }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Download the video introduction transcript');
             expect(MM.getView().getText()).toMatch('Open the file');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -38,12 +38,12 @@ describe('User can manage course resource', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Background reading');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Download the video introduction transcript');
         }).then(function () {
-            browser.sleep(5000); //wait for css to render
+            browser.sleep(5000); // Wait for css to render.
             return $('[ng-click="open()"]').click();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -55,15 +55,15 @@ describe('User can manage course resource', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Background reading');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Download the video introduction transcript');
         }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-       }).then(function () {
-           browser.sleep(5000); //wait for css to render
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+           browser.sleep(5000); // Wait for css to render.
            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

@@ -12,25 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course choice', function() {
-
-    it('Click All sections course choice tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
-        }).then(function () {
-            return MM.clickOn('Digital Literacy');
-        }).then(function () {
-            return MM.clickOn('All sections');
-        }).then(function () {
-            return MM.clickOn('How confident are you? (1)');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('How confident are you');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
+describe('User can manage course choice', function () {
 
     it('Click About this course course choice tabs', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -41,9 +23,9 @@ describe('User can manage course choice', function() {
             return MM.clickOn('About this course');
         }).then(function () {
             return MM.clickOn('How confident are you? (1)');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('How confident are you');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -55,15 +37,13 @@ describe('User can manage course choice', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn("About this course");
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('How confident are you? (1)');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Not so confident');
         }).then(function () {
             return MM.clickOn('Save my choice');
         }).then(function () {
-            return MM.goBack();
-        }).then(function() {
             done();
         });
     });
@@ -75,14 +55,14 @@ describe('User can manage course choice', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn("About this course");
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('How confident are you? (1)');
         }).then(function () {
-            browser.sleep(5000); //wait for button css to render
+            browser.sleep(5000); // Wait for button css to render.
             return $('.secondary-buttons').click();
-        }).then(function() {
-           browser.sleep(5000); //wait for button css to render
-           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
+            browser.sleep(5000); // Wait for button css to render.
+            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();
         });

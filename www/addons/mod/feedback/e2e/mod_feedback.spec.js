@@ -98,10 +98,10 @@ describe('User can manage feedback', function () {
        }).then(function () {
            return MM.clickOn('Your views on this course');
        }).then(function () {
-           browser.sleep(7500); //wait for button css to render
+           browser.sleep(7500); // Wait for button css to render.
            return $('.secondary-buttons').click();
        }).then(function () {
-           browser.sleep(5000); //wait for button css to render
+           browser.sleep(5000); // Wait for button css to render.
            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
        }).then(function () {
            done();

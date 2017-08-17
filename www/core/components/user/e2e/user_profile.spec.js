@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can view and manage their profile', function() {
+describe('User can view and manage their profile', function () {
 
-    it('Visit the user profile', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Visit the user profile', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.openSideMenu();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('a[userid="56"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Barbara Gardner');
-        }).then(function() {
             expect(MM.getView().getText()).toContain('Barbara Gardner');
             expect(MM.getView().getText()).toContain('Orange City, Australia');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('View user details page', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('View user details page', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.openSideMenu();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('a[userid="56"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Details');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Contact');
             expect(MM.getView().getText()).toContain('Email address');
             expect(MM.getView().getText()).toContain('User details');
@@ -44,56 +43,56 @@ describe('User can view and manage their profile', function() {
             expect(MM.getView().getText()).toContain('music, horses, friends, Films');
             expect(MM.getView().getText()).toContain("Description");
             expect(MM.getView().getText()).toContain("I'm Barbara but friends call me B");
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('View user learning plans incompetent one', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('View user learning plans incompetent one', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.openSideMenu();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('a[userid="56"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Learning plans');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Learning plans');
             return MM.clickOn('Digital Literacies Basics');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Digital Literacies Basics');
             expect($('progress').isDisplayed()).toBeTruthy();
             expect(MM.getView().getText()).toContain('Learning plan competencies');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('220221072');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toContain('220221072');
             expect(MM.getView().getText()).toContain('remix content into something new');
             expect(MM.getView().getText()).toContain('Proficient');
             expect(MM.getView().getText()).toContain('No');
             expect(MM.getView().getText()).toContain('Cross-referenced competencies');
             expect(MM.getView().getText()).toContain('Digital Literacies (Starter level)');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('View user learning plans competent one', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('View user learning plans competent one', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.openSideMenu();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('a[userid="56"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Learning plans');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Learning plans');
             return MM.clickOn('Digital Literacies Basics');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Digital Literacies Basics');
             expect($('progress').isDisplayed()).toBeTruthy();
             expect(MM.getView().getText()).toContain('Learning plan competencies');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('220220174');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toContain('220220174');
             expect(MM.getView().getText()).toContain('get involved locally and nationally');
             expect(MM.getView().getText()).toContain('Proficient');
@@ -101,35 +100,35 @@ describe('User can view and manage their profile', function() {
             expect(MM.getView().getText()).toContain('Cross-referenced competencies');
             expect(MM.getView().getText()).toContain('Competent');
             expect(MM.getView().getText()).toContain('Digital Literacies (Starter level)');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('View user badge page', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('View user badge page', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.openSideMenu();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('a[userid="56"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Badges');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toContain('Badges');
             expect(MM.getView().getText()).toContain('Analysis');
             expect(MM.getView().getText()).toContain('2014');
             expect(MM.getView().getText()).toContain('Subject Knowledge');
             expect(MM.getView().getText()).toContain('Moodle Support Hero');
             expect(MM.getView().getText()).toContain('Assignment Superstar');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Analysis');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toContain('Analysis');
             expect($('img[ng-src="http://school.demo.moodle.net/pluginfile.php/411/user/icon/boost/f1?rev=2472"]').isPresent()).toBeTruthy();
             expect(MM.getView().getText()).toContain('Recipient details');
             expect(MM.getView().getText()).toContain('Barbara Gardner');
             expect(MM.getView().getText()).toContain('Issuer details');
             expect(MM.getView().getText()).toContain('Mount Orange school');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

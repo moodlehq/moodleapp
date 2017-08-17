@@ -13,79 +13,79 @@
 // limitations under the License.
 
 describe('User can manage feedback as a Teacher', function () {
- 
-   it('View Feedback overview as Teacher', function (done) {
-       return MM.loginAsTeacher().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Self-reflection');
-       }).then(function () {
-           return MM.clickOn('Your views on this course');
-       }).then(function () {
-           expect(MM.getNavBar().getText()).toMatch('Your views on this course');
-       }).then(function () {
-           done();
-       });
-   });
 
-   it('View Feedback responses as Teacher', function (done) {
-       return MM.loginAsTeacher().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Self-reflection');
-       }).then(function () {
-           return MM.clickOn('Your views on this course');
-       }).then(function () {
-           return MM.clickOnElement($('[ng-click="access.canviewreports && openFeature(\'respondents\')"]'));
-       }).then(function () {
-           return MM.clickOn('Barbara Gardner');
-       }).then(function () {
-           expect(MM.getNavBar().getText()).toContain('Barbara Gardner');
-           expect(MM.getView().getText()).toContain('Good');
-       }).then(function() {
-           done();
-       });
-   });
+    it('View Feedback overview as Teacher', function (done) {
+        return MM.loginAsTeacher().then(function () {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Self-reflection');
+        }).then(function () {
+            return MM.clickOn('Your views on this course');
+        }).then(function () {
+            expect(MM.getNavBar().getText()).toMatch('Your views on this course');
+        }).then(function () {
+            done();
+        });
+    });
 
-   it('View Feedback analysis as Teacher', function (done) {
-       return MM.loginAsTeacher().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Self-reflection');
-       }).then(function () {
-           return MM.clickOn('Your views on this course');
-       }).then(function () {
-           return MM.clickOnElement($('[ng-click="setTab(DISPLAY_ANALYSIS)"]'));
-       }).then(function () {
-           expect($('.chart.chart-doughnut').isPresent()).toBeTruthy();
-       }).then(function() {
-           done();
-       });
-   });
+    it('View Feedback responses as Teacher', function (done) {
+        return MM.loginAsTeacher().then(function () {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Self-reflection');
+        }).then(function () {
+            return MM.clickOn('Your views on this course');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="access.canviewreports && openFeature(\'respondents\')"]'));
+        }).then(function () {
+            return MM.clickOn('Barbara Gardner');
+        }).then(function () {
+            expect(MM.getNavBar().getText()).toContain('Barbara Gardner');
+            expect(MM.getView().getText()).toContain('Good');
+        }).then(function () {
+            done();
+        });
+    });
 
-   it('See Feedback non-respondents as Teacher', function (done) {
-       return MM.loginAsTeacher().then(function () {
-           return MM.clickOnInSideMenu('Course overview');
-       }).then(function () {
-           return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           return MM.clickOn('Self-reflection');
-       }).then(function () {
-           return MM.clickOn('Your views on this course');
-       }).then(function () {
-           return MM.clickOnElement($('[ng-click="openFeature(\'nonrespondents\')"]'));
-       }).then(function () {
-           expect(MM.getView().getText()).toContain('Donna Taylor');
-           expect(MM.getView().getText()).toContain('Non respondents students');
-       }).then(function() {
-           done();
-       });
-   });
+    it('View Feedback analysis as Teacher', function (done) {
+        return MM.loginAsTeacher().then(function () {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Self-reflection');
+        }).then(function () {
+            return MM.clickOn('Your views on this course');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="setTab(DISPLAY_ANALYSIS)"]'));
+        }).then(function () {
+            expect($('.chart.chart-doughnut').isPresent()).toBeTruthy();
+        }).then(function () {
+            done();
+        });
+    });
+
+    it('See Feedback non-respondents as Teacher', function (done) {
+        return MM.loginAsTeacher().then(function () {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Self-reflection');
+        }).then(function () {
+            return MM.clickOn('Your views on this course');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="openFeature(\'nonrespondents\')"]'));
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('Donna Taylor');
+            expect(MM.getView().getText()).toContain('Non respondents students');
+        }).then(function () {
+            done();
+        });
+    });
 
 });

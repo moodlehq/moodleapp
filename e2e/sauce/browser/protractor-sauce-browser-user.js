@@ -20,24 +20,23 @@ exports.config = {
     baseUrl: 'http://localhost:8100/',
     seleniumAddress: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub",
     multiCapabilities: [{
-            "name": 'chrome',
-            "browserName": "chrome",
-            "chromeOptions": {
-                args: [
-                    "--allow-file-access",
-                    "--allow-file-access-from-files",
-                    "--enable-local-file-accesses",
-                    "--unlimited-storage"
-                ]
-            },
-            "platform": "Windows 10",
-            "version": "56.0",
-            "username": process.env.SAUCE_USERNAME,
-            "accessKey": process.env.SAUCE_ACCESS_KEY,
-            "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-            "build": process.env.TRAVIS_BUILD_NUMBER
-        }
-    ],
+        "name": 'chrome',
+        "browserName": "chrome",
+        "chromeOptions": {
+            args: [
+                "--allow-file-access",
+                "--allow-file-access-from-files",
+                "--enable-local-file-accesses",
+                "--unlimited-storage"
+            ]
+        },
+        "platform": "Windows 10",
+        "version": "56.0",
+        "username": process.env.SAUCE_USERNAME,
+        "accessKey": process.env.SAUCE_ACCESS_KEY,
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        "build": process.env.TRAVIS_BUILD_NUMBER
+    }],
     restartBrowserBetweenTests: true,
     onPrepare: function () {
         var wd = require('wd'),

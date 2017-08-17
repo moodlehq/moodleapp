@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see course final grade as a teacher', function() {
+describe('User can see course final grade as a teacher', function () {
 
     it('User can click course grade button as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Grades');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Grades');
             expect(MM.getView().getText()).toContain('Digital Literacy');
         }).then(function () {
@@ -39,18 +39,18 @@ describe('User can see course final grade as a teacher', function() {
     it('User can see grades of all activities as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Grades');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Assignment 1 (Text)');
             expect(MM.getView().getText()).toContain('75.00');
             expect(MM.getView().getText()).toContain('Fun quiz:');
@@ -69,20 +69,20 @@ describe('User can see course final grade as a teacher', function() {
     it('Check the grade of an activity as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Grades');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Assignment 1 (Text)');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Grade');
             expect(MM.getView().getText()).toContain('Weight');
             expect(MM.getView().getText()).toContain('Grade');
@@ -96,21 +96,21 @@ describe('User can see course final grade as a teacher', function() {
     it('Check the final course grade as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Grades');
-        }).then(function() {
-            browser.sleep(7500); //wait for css to render
+        }).then(function () {
+            browser.sleep(7500); // Wait for css to render.
             return $('[id="row_411_48"]').click();
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Grade');
             expect(MM.getView().getText()).toContain('Grade');
             expect(MM.getView().getText()).toContain('175.00');

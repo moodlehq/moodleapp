@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see more options in course content section as a teacher', function() {
+describe('User can see more options in course content section as a teacher', function () {
 
     it('User can see different options in Group Projects and Individual tasks as a teacher  ', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Psychology in Cinema');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Group Projects and Individual tasks');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Select your focus film');
             expect(MM.getView().getText()).toContain('Group Project');
             expect(MM.getView().getText()).toContain('Dissertation: Fight club');

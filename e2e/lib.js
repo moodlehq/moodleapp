@@ -17,8 +17,6 @@ var MM = {},
     currentNavBar = '.nav-bar-block[nav-bar="active"]',
     currentView = 'ion-view[nav-view="active"]';
 
-//Diff wait times are used at EC waits, for debugging purposes. We caneasily know where a particular spec failed by the its wait time.
-
 /**
  * Finds and click on a target using text.
  *
@@ -46,7 +44,7 @@ MM.clickOn = function (text, container) {
 /**
  * Click on a element.
  *
- * This will scroll the view if required. This is buggy, not scrolling after entire page is rendered
+ * This will scroll the view if required.
  *
  * @param  {Element} el
  * @return {Promise}
@@ -61,22 +59,6 @@ MM.clickOnElement = function (el) {
 };
 
 /**
- * Click on a element after it is loaded.
- *
- * This will scroll the view if required. This is buggy, not scrolling after entire page is rendered
- *
- * @param  {Element} el
- * @return {Promise}
- */
-MM.clickOnElementAfterPresent = function (el) {
-    waitForCondition();
-    browser.sleep(2000);
-    browser.wait(EC.presenceOf(el), 50000);
-    browser.executeScript('arguments[0].scrollIntoView(true)', el.getWebElement());
-    return el.click();
-};
-
-/**
  * Go to bottom of page and Click on a element.
  *
  * This will scroll the view if required.
@@ -86,7 +68,7 @@ MM.clickOnElementAfterPresent = function (el) {
  */
 MM.goToBottomAndClick = function (text) {
     waitForCondition();
-    browser.sleep(2000); // this is must, due to slow page rendering issues. Need to contact protractor team.
+    browser.sleep(2000); // This is must, due to slow page rendering issues.
     var locator = by.xpath('(//a | //button | //*[contains(concat(" ",normalize-space(@class)," ")," item ")])[contains(.,"' + text + '") or contains(@aria-label,"' + text + '")]');
     browser.wait(EC.presenceOf(element(locator)), 5000);
     node = element(locator);
@@ -110,7 +92,6 @@ MM.clickOnInSideMenu = function (text) {
         var menu = $('ion-side-menu[side="left"]');
         browser.wait(EC.visibilityOf(menu), 7000);
         browser.wait(EC.elementToBeClickable(menu), 5000);
-        //browser.sleep(5000);
         return MM.clickOn(text, menu);
     });
 };
@@ -123,7 +104,7 @@ MM.clickOnInSideMenu = function (text) {
 MM.getNavBar = function () {
     waitForCondition();
     browser.wait(EC.visibilityOf($(currentNavBar)), 10000);
-    browser.sleep(7000); //for contents to render
+    browser.sleep(7000); // Wait for contents to render.
     return $(currentNavBar);
 };
 
@@ -135,7 +116,7 @@ MM.getNavBar = function () {
 MM.getView = function () {
     waitForCondition();
     browser.wait(EC.visibilityOf($(currentView)), 50000);
-    browser.sleep(7000); //for contents to render
+    browser.sleep(7000); // Wait for contents to render.
     return $(currentView);
 };
 
@@ -236,7 +217,7 @@ MM.openSideMenu = function () {
     var menuBtn = $(currentNavBar + ' [menu-toggle="left"]:not(.hide)');
     waitForCondition();
     browser.wait(EC.visibilityOf(menuBtn), 10000);
-    browser.wait(EC.elementToBeClickable(menuBtn), 05000);
+    browser.wait(EC.elementToBeClickable(menuBtn), 50000);
 
     function navigateBack() {
         return MM.goBack().then(function () {

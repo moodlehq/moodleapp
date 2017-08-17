@@ -12,91 +12,89 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can view and manage Course Overview.', function() {
+describe('User can view and manage Course Overview.', function () {
 
-    it("Land on course overview page", function(done) {
-        return MM.loginAsStudent().then(function() {
+    it("Land on course overview page", function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Course overview');
-        }).then(function() {
+        }).then(function () {
             done();
-        })
+        });
     });
 
-    it("Redirect to an activity via timeline", function(done) {
-        return MM.loginAsStudent().then(function() {
+    it("Redirect to an activity via timeline", function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($("a[ng-click=\"switchTab('timeline')\"]"));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Future');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Feedback Your views on this course closes');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000);
             expect(MM.getNavBar().getText()).toMatch('Your views on this course');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it("Sort via courses in timeline view", function(done) {
-        return MM.loginAsStudent().then(function() {
+    it("Sort via courses in timeline view", function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($("a[ng-click=\"switchTab('timeline')\"]"));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('select[ng-change="switchSort()"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('option[value="sortbycourses"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Celebrating Cultures');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it("View courses in different grid types", function(done) {
-        return MM.loginAsStudent().then(function() {
+    it("View courses in different grid types", function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($("a[ng-click=\"switchTab('courses')\"]"));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Celebrating Cultures');
             expect($('svg').isPresent()).toBeTruthy();
-            //expect($('circle[class="circle percent-30"]').isPresent()).toBeTruthy();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('a[ng-click="switchGrid()"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Celebrating Cultures');
             expect($('progress').isPresent()).toBeTruthy();
-            //expect($('progress[value="30"]').isPresent()).toBeTruthy();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it("Sort via courses in timeline view", function(done) {
-        return MM.loginAsStudent().then(function() {
+    it("Sort via courses in timeline view", function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($("a[ng-click=\"switchTab('courses')\"]"));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('select[ng-model="courses.selected"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('option[value="inprogress"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Celebrating Cultures');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('option[value="future"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Mystère à Hyères');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('option[value="past"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Moodle and Mountaineering');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

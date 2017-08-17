@@ -12,23 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course chat', function() {
-
-    it('Click All sections course chat tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('All sections');
-        }).then(function () {
-            return MM.clickOn('Course chat');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
+describe('User can manage course chat', function () {
 
     it('View course chat windows', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -39,10 +23,10 @@ describe('User can manage course chat', function() {
             return MM.clickOn('Course welcome');
         }).then(function () {
             return MM.clickOn('Course chat');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Heather and I will be available on this chat most lunchtimes');
             expect(MM.getView().getText()).toMatch('Click here to enter the chat now');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -61,8 +45,6 @@ describe('User can manage course chat', function() {
         }).then(function () {
             expect(MM.getView().getText()).toMatch('Heather and I will be available on this chat most lunchtimes');
         }).then(function () {
-            return MM.goBack();
-        }).then(function () {
             done();
         });
     });
@@ -79,16 +61,14 @@ describe('User can manage course chat', function() {
         }).then(function () {
             return MM.clickOn('Click here to enter the chat now');
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             return $('[ng-model="newMessage.text"]').sendKeys('Hello World');
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             return element(by.id('mma-chat-send-button')).click();
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             expect(MM.getView().getText()).toContain('Hello World');
-        }).then(function () {
-            return MM.goBack();
         }).then(function () {
             done();
         });
@@ -106,13 +86,11 @@ describe('User can manage course chat', function() {
         }).then(function () {
             return MM.clickOn('Click here to enter the chat now');
         }).then(function () {
-            browser.sleep(7500); //wait for everything to render
+            browser.sleep(7500); // Wait for everything to render
             return $('[ng-click="showChatUsers()"]').click();
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             return $('[ng-click="closeModal()"]').click();
-        }).then(function () {
-            return MM.goBack();
         }).then(function () {
             done();
         });
@@ -128,10 +106,10 @@ describe('User can manage course chat', function() {
         }).then(function () {
             return MM.clickOn('Course chat');
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             return $('.secondary-buttons').click();
-        }).then(function() {
-           browser.sleep(5000); //wait for button css to render
+        }).then(function () {
+           browser.sleep(5000); // Wait for button css to render.
            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();

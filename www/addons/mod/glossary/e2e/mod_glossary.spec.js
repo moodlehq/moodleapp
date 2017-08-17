@@ -12,46 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course glossary', function() {
-
-    it('Click All sections course glossary tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
-        }).then(function () {
-            return MM.clickOn('Digital Literacy');
-        }).then(function () {
-            return MM.clickOn('All sections');
-        }).then(function () {
-            return MM.clickOn('Common terms used in digital literacy');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
+describe('User can manage course glossary', function () {
 
     it('View course glossary windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Background reading');
         }).then(function () {
             return MM.clickOn('Common terms used in digital literacy');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Read through and add some common terms');
             expect(MM.getView().getText()).toContain('Accessibility');
         }).then(function () {
-            return MM.goBack();
-        }).then(function() {
             done();
         });
     });
 
     it('Click course glossary tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
@@ -65,17 +47,13 @@ describe('User can manage course glossary', function() {
         }).then(function () {
             return MM.clickOn('Blended learning');
         }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
             done();
         });
     });
 
     it('Search course glossary', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
@@ -95,15 +73,13 @@ describe('User can manage course glossary', function() {
         }).then(function () {
             return MM.clickOn('Accessibility');
         }).then(function () {
-            return MM.goBack();
-        }).then(function() {
             done();
         });
     });
 
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
@@ -111,10 +87,10 @@ describe('User can manage course glossary', function() {
         }).then(function () {
             return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            browser.sleep(5000); //wait for button css to render
+            browser.sleep(5000); // Wait for button css to render.
             return $('[ng-click="showContextMenu($event)"]').click();
-        }).then(function() {
-           browser.sleep(5000); //wait for css to render
+        }).then(function () {
+           browser.sleep(5000); // Wait for css to render.
            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();
@@ -123,7 +99,7 @@ describe('User can manage course glossary', function() {
 
     it('Add a new glossary entry', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
@@ -131,12 +107,12 @@ describe('User can manage course glossary', function() {
         }).then(function () {
             return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            browser.sleep(5000); //wait for button css to render
+            browser.sleep(5000); // Wait for button css to render.
             return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
-        }).then(function() {
-           return MM.clickOn('Add a new entry');
         }).then(function () {
-           return MM.clickOnElement($('input[ng-model="entry.concept"]'));
+            return MM.clickOn('Add a new entry');
+        }).then(function () {
+            return MM.clickOnElement($('input[ng-model="entry.concept"]'));
         }).then(function () {
             browser.sleep(5000);
             $('input[ng-model="entry.concept"]').sendKeys('ASampleEntry');

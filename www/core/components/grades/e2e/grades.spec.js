@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see course final grade', function() {
+describe('User can see course final grade', function () {
 
     it('User can click course grade button', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Psychology in Cinema');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
-           browser.sleep(5000); //wait for button css to render
-           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(5000); // Wait for button css to render.
+            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
             browser.sleep(5000);
             return element.all(by.css('[ng-click="contextMenuItemClicked($event, item)"]')).get(3).click();
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Grades');
             expect(MM.getView().getText()).toContain('Psychology in Cinema');
         }).then(function () {
@@ -39,15 +39,15 @@ describe('User can see course final grade', function() {
     it('User can see main content of course grades', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Psychology in Cinema');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
-            browser.sleep(7500); //wait for button css to render
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
             return element.all(by.css('[ng-click="contextMenuItemClicked($event, item)"]')).get(3).click();
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Analysis');
         }).then(function () {
             done();
@@ -57,15 +57,15 @@ describe('User can see course final grade', function() {
     it('Check the expected final grades of course', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Psychology in Cinema');
-       }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-        }).then(function() {
-            browser.sleep(7500); //wait for button css to render
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
             return element.all(by.css('[ng-click="contextMenuItemClicked($event, item)"]')).get(3).click();
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toContain('Analysis total');
         }).then(function () {
             done();

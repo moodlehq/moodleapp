@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can prefetch course contents', function() {
+describe('User can prefetch course contents', function () {
 
     it('User can prefetch a section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('button[ng-click="showContextMenu($event)"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Enable download sections');
         }).then(function () {
             MM.clickOnElement(element.all(by.css('button[ng-click="prefetch($event, section)"]')).get(1));
@@ -34,9 +34,9 @@ describe('User can prefetch course contents', function() {
     it('User can prefetch a module section view', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Group work and assessment');
         }).then(function () {
             MM.clickOnElement(element.all(by.css('button[ng-click="button.action($event)"]')).get(2));
@@ -49,16 +49,15 @@ describe('User can prefetch course contents', function() {
     it('User can prefetch a module from context menu', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacy');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Group work and assessment');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Assignment 1 (Text)');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('button[ng-click="showContextMenu($event)"]'));
         }).then(function () {
-            //MM.clickOnElement($('ion-content').$('i[class="icon ion-ios-cloud-download-outline"]'));
             MM.clickOn('Last modified');
             return expect(element.all(by.css('ion-spinner[ng-if="(item.href || item.action) && item.iconAction == \'spinner\'"]')).isDisplayed()).toBeTruthy();
         }).then(function () {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course page', function() {
+describe('User can manage course page', function () {
 
     it('User can click page tab and landing the page page', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -21,12 +21,12 @@ describe('User can manage course page', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Background reading');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Video introduction');
         }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Video introduction');
             expect(MM.getView().getText()).toMatch('Here is a three minute video');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -38,15 +38,15 @@ describe('User can manage course page', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Background reading');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Video introduction');
         }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-       }).then(function () {
-           browser.sleep(5000); //wait for css to render
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+           browser.sleep(5000); // Wait for css to render.
            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

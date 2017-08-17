@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see more options in participants section as a teacher', function() {
+describe('User can see more options in participants section as a teacher', function () {
 
     it('User can see student grades and add notes', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Barbara Gardner');
-        }).then(function() {
-            browser.sleep(5000); //wait to render
+        }).then(function () {
+            browser.sleep(5000); // Wait to render
             expect(MM.getView().getText()).toContain('Grades');
             expect(MM.getView().getText()).toContain('Add a new note');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

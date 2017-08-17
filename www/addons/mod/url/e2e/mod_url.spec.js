@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course url', function() {
+describe('User can manage course url', function () {
 
     it('User can click url tab and landing the url', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -21,12 +21,12 @@ describe('User can manage course url', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Extra resources');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacies in Higher Ed');
         }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Digital Literacies in Higher Ed');
             expect(MM.getView().getText()).toMatch('URL this resource points to');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -38,12 +38,12 @@ describe('User can manage course url', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Extra resources');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacies in Higher Ed');
         }).then(function () {
-            browser.sleep(5000); //wait for css to render
+            browser.sleep(5000); // Wait for css to render.
             return $('[ng-click="go()"]').click();
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -55,15 +55,15 @@ describe('User can manage course url', function() {
             return MM.clickOn('Digital Literacy');
         }).then(function () {
             return MM.clickOn('Extra resources');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Digital Literacies in Higher Ed');
         }).then(function () {
-           browser.sleep(7500); //wait for button css to render
-           return $('.secondary-buttons').click();
-       }).then(function () {
-           browser.sleep(5000); //wait for css to render
-           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
-        }).then(function() {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(5000); // Wait for css to render.
+            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
             done();
         });
     });

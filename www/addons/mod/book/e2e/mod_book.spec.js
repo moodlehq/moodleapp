@@ -12,23 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course book', function() {
-
-    it('Click All sections course book tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
-        }).then(function () {
-            return MM.clickOn('Digital Literacy');
-        }).then(function () {
-            return MM.clickOn('All sections');
-        }).then(function () {
-            return MM.clickOn('One approach to digital literacy');
-        }).then(function () {
-            expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
-        }).then(function() {
-            done();
-        });
-    });
+describe('User can manage course book', function () {
 
     it('Click Background reading course book tabs', function (done) {
         return MM.loginAsStudent().then(function () {
@@ -41,7 +25,7 @@ describe('User can manage course book', function() {
             return MM.clickOn('One approach to digital literacy');
         }).then(function () {
             expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -55,23 +39,23 @@ describe('User can manage course book', function() {
             return MM.clickOn('Background reading');
         }).then(function () {
             return MM.clickOn('One approach to digital literacy');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
         }).then(function () {
             return MM.clickOnElement($('[ng-click="action(next)"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('2. Youtube video');
         }).then(function () {
             return MM.clickOnElement($('[ng-click="action(next)"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('3. Cultural');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('[ng-click="action(previous)"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('[ng-click="action(previous)"]'));
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -86,12 +70,12 @@ describe('User can manage course book', function() {
         }).then(function () {
             return MM.clickOn('One approach to digital literacy');
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             return $('[ng-click="openToc($event)"]').click();
         }).then(function () {
             return MM.clickOn('Cognitive');
-        }).then(function() {
-            browser.sleep(5000); //wait for everything to render
+        }).then(function () {
+            browser.sleep(5000); // Wait for everything to render
             expect(MM.getView().getText()).toMatch('4. Cognitive');
         }).then(function () {
             done();
@@ -108,10 +92,10 @@ describe('User can manage course book', function() {
         }).then(function () {
             return MM.clickOn('One approach to digital literacy');
         }).then(function () {
-            browser.sleep(5000); //wait for everything to render
+            browser.sleep(5000); // Wait for everything to render
             return $('[ng-click="showContextMenu($event)"]').click();
-       }).then(function () {
-           browser.sleep(5000); //wait for button css to render
+        }).then(function () {
+           browser.sleep(5000); // Wait for button css to render.
            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();

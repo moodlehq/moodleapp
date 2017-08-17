@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can create notes in a course', function() {
+describe('User can create notes in a course', function () {
 
     it('User can click notes icon', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Notes');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Notes');
         }).then(function () {
             done();
@@ -32,12 +32,12 @@ describe('User can create notes in a course', function() {
     it('User can see notes side tabs', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Notes');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Notes');
             expect(MM.getView().getText()).toMatch('Site notes');
             expect(MM.getView().getText()).toMatch('Course notes');
@@ -50,14 +50,14 @@ describe('User can create notes in a course', function() {
     it('User can click Site notes tabs', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Notes');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Site notes');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Site notes');
             expect(MM.getView().getText()).toMatch('Barbara Gardner');
             expect(MM.getView().getText()).toMatch('Please teachers and support staff -keep an eye on Barbara for any recurring bullying issues.');
@@ -69,14 +69,14 @@ describe('User can create notes in a course', function() {
     it('User can click Course notes tabs', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Notes');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Course notes');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Course notes');
             expect(MM.getView().getText()).toMatch('There are no notes of this type yet');
         }).then(function () {
@@ -87,14 +87,14 @@ describe('User can create notes in a course', function() {
     it('User can click Personal notes tabs', function (done) {
         return MM.loginAsTeacher().then(function () {
             return MM.clickOnInSideMenu('Course overview');
-        }).then(function() {
+        }).then(function () {
             browser.sleep(5000); // wait to render
             return $('[ng-click="showCourseActions($event)"]').click();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Notes');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Personal notes');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Personal notes');
             expect(MM.getView().getText()).toMatch('There are no notes of this type yet');
         }).then(function () {
