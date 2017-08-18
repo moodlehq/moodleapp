@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.3.1">
     <name>Moodle Mobile</name>
     <description>
-        Moodle Mobile official app
+        App ufficiale Aulaweb
     </description>
     <author href="http://moodle.com" email="mobile@moodle.com">
         Moodle Mobile team
