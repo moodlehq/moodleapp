@@ -40,6 +40,8 @@
 <preference name="SplashScreenDelay" value="10000"/>
 
 <gap:plugin name="org.apache.cordova.splashscreen" />
+<gap:plugin name="cordova-plugin-whitelist" source="npm" version="~1" />
+<preference name="phonegap-version" value="cli-5.2.0" />
 <feature name="SplashScreen" >
     <param
         name="android-package"
