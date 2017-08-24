@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.3.1">
-    <name>Moodle Mobile</name>
+    <name>Moodle CDS</name>
     <description>
        Moodle Mobile official app
     </description>
@@ -38,7 +38,6 @@
 <preference name="AutoHideSplashScreen" value="false" />
 <!-- Do not auto hide splash on Android -->
 <preference name="SplashScreenDelay" value="6000"/>
-<gap:plugin name="cordova-plugin-splashscreen" source="npm" version="2.1.0" />
 <preference name="phonegap-version" value="cli-6.5.0" />
 <feature name="SplashScreen" >
     <param
