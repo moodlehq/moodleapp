@@ -46,7 +46,7 @@ angular.module('mm.core')
             $mmUtil.openFile(href).catch(function(error) {
                 $mmUtil.showErrorModal(error);
             });
-        } else if (href.charAt(0) == '#'){
+        } else if (href.charAt(0) == '#') {
             href = href.substr(1);
             // In site links
             if (href.charAt(0) == '/') {

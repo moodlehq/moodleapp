@@ -209,7 +209,7 @@ angular.module('mm.core')
          * @return {Boolean}   TRUE if the url is absolute. FALSE if it is relative.
          */
         self.isAbsoluteURL = function(url) {
-            return /^[^:]{2,10}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
+            return /^[^:]{2,}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
         };
 
         /**
