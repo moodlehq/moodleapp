@@ -39,6 +39,19 @@
 <!-- Do not auto hide splash on Android -->
 <preference name="SplashScreenDelay" value="6000"/>
 <preference name="phonegap-version" value="cli-6.5.0" />
+
+ <!-- PhoneGap Build - core plugins -->
+    <plugin name="cordova-plugin-device" source="npm" spec="1.1.6" />
+    <plugin name="cordova-plugin-file" source="npm" spec="4.3.3" />
+    <plugin name="cordova-plugin-file-transfer" source="npm" spec="1.6.3" />
+    <plugin name="cordova-plugin-globalization" source="npm" spec="1.0.7" />
+    <plugin name="cordova-plugin-dialogs" source="npm" spec="1.3.3" />
+    <plugin name="cordova-plugin-fonts" source="npm" spec="0.6.5" />
+    <plugin name="cordova-plugin-keyboard" source="npm" spec="1.1.5" />
+    <plugin name="cordova-plugin-splashscreen" source="npm" spec="4.0.3" />
+    <plugin name="cordova-plugin-statusbar" source="npm" spec="2.2.3" />
+
+
 <feature name="SplashScreen" >
     <param
         name="android-package" value="org.apache.cordova.splashscreen" />
