@@ -38,10 +38,7 @@
 <preference name="AutoHideSplashScreen" value="false" />
 <!-- Do not auto hide splash on Android -->
 <preference name="SplashScreenDelay" value="6000"/>
-
-
 <gap:plugin name="cordova-plugin-splashscreen" source="npm" version="2.1.0" />
-
 <preference name="phonegap-version" value="cli-6.0.0" />
 <feature name="SplashScreen" >
     <param
