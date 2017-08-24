@@ -31,13 +31,15 @@
     <preference name="AndroidPersistentFileLocation" value="Compatibility"/>
     <preference name="iosPersistentFileLocation" value="Compatibility"/>
     <preference name="SplashScreen" value="screen"/>
-    <preference name="SplashScreenDelay" value="6000"/>
 	<preference name="ShowSplashScreen" value="true"/>
 
-<preference
-    name="AutoHideSplashScreen"
-    value="true" />
 
+<!-- Do not auto hide splash on iOS -->
+<preference name="AutoHideSplashScreen" value="false" />
+<!-- Do not auto hide splash on Android -->
+<preference name="SplashScreenDelay" value="10000"/>
+
+<gap:plugin name="org.apache.cordova.splashscreen" />
 <feature name="SplashScreen" >
     <param
         name="android-package"
