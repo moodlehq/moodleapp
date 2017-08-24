@@ -37,20 +37,21 @@
 <!-- Do not auto hide splash on iOS -->
 <preference name="AutoHideSplashScreen" value="false" />
 <!-- Do not auto hide splash on Android -->
-<preference name="SplashScreenDelay" value="10000"/>
+<preference name="SplashScreenDelay" value="6000"/>
 
-<gap:plugin name="org.apache.cordova.splashscreen" />
-<gap:plugin name="cordova-plugin-whitelist" source="npm" version="~1" />
-<preference name="phonegap-version" value="cli-5.2.0" />
+
+<gap:plugin name="cordova-plugin-splashscreen" source="npm" version="2.1.0" />
+
+<preference name="phonegap-version" value="cli-6.0.0" />
 <feature name="SplashScreen" >
     <param
-        name="android-package"
-        value="org.apache.cordova.splashscreen.SplashScreen" />
-
-    <param
-        name="onload"
-        value="true" />
+        name="android-package" value="org.apache.cordova.splashscreen" />
+		
+	<param
+        name="onload" value="true" />
 </feature>
+
+
     <feature name="StatusBar">
         <param name="ios-package" value="CDVStatusBar" onload="true"/>
     </feature>
