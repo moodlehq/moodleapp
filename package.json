@@ -26,6 +26,9 @@
         "cordova-plugin-file-transfer": "^1.6.3",
         "cordova-plugin-fonts": "^0.6.5",
         "cordova-plugin-globalization": "^1.0.7",
+        "cordova-plugin-keyboard": "^1.1.5",
+        "cordova-plugin-splashscreen": "^4.0.3",
+        "cordova-plugin-statusbar": "^2.2.3",
         "electron-builder-squirrel-windows": "^19.3.0",
         "electron-windows-notifications": "^1.1.13"
     },
