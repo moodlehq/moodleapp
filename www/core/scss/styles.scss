@@ -1687,3 +1687,7 @@ h2.invert {
 *[ng-click] {
   cursor: pointer;
 }
+
+::-webkit-media-controls {
+  max-width: 100%;
+}
