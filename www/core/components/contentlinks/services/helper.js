@@ -176,10 +176,12 @@ angular.module('mm.core.contentlinks')
      * @return {True}       True if the URL should be handled by this component, false otherwise.
      */
     self.handleCustomUrl = function(url) {
-        var contentLinksScheme = mmCoreConfigConstants.customurlscheme + '://link=';
+        var contentLinksScheme = mmCoreConfigConstants.customurlscheme + '://link';
         if (url.indexOf(contentLinksScheme) == -1) {
             return false;
         }
+
+        url = decodeURIComponent(url);
 
         // App opened using custom URL scheme.
         $log.debug('Treating custom URL scheme: ' + url);
@@ -188,7 +190,7 @@ angular.module('mm.core.contentlinks')
             username;
 
         // Delete the scheme from the URL.
-        url = url.replace(contentLinksScheme, '');
+        url = url.replace(contentLinksScheme + '=', '');
 
         // Detect if there's a user specified.
         username = $mmText.getUsernameFromUrl(url);
