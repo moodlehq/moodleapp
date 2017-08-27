@@ -1,6 +1,6 @@
 {
     "address": "Adres",
-    "city": "Stad",
+    "city": "Plaats",
     "contact": "Contact",
     "country": "Land",
     "description": "Beschrijving",
@@ -18,8 +18,9 @@
     "phone1": "Telefoon",
     "phone2": "Mobiele telefoon",
     "roles": "Rollen",
+    "sendemail": "E-mail",
     "student": "Leerling",
     "teacher": "Leraar zonder bewerken",
     "viewprofile": "Bekijk profiel",
-    "webpage": "Webpagina"
+    "webpage": "Website"
 }

@@ -1,3 +1,6 @@
 {
-    "browsemode": "Előzetes megtekintés üzemmódja"
+    "attachment": "Kitűző hozzákapcsolása az üzenethez",
+    "browsemode": "Előzetes megtekintés üzemmódja",
+    "casesensitive": "Kis-/nagybetű különböző",
+    "categories": "Kategóriák"
 }

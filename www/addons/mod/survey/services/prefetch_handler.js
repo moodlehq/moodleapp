@@ -124,7 +124,7 @@ angular.module('mm.addons.mod_survey')
                 // If the survey has introfiles there's no need to do this because they have timemodified.
                 var urls = $mmUtil.extractDownloadableFilesFromHtml(survey.intro);
                 urls = urls.sort(function (a, b) {
-                    return a > b;
+                    return a >= b ? 1 : -1;
                 });
                 return revision + '#' + md5.createHash(JSON.stringify(urls));
             }
@@ -225,9 +225,7 @@ angular.module('mm.addons.mod_survey')
             timemod = $mmFilepool.getTimemodifiedFromFileList(files);
 
             // Prefetch files.
-            angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // If survey isn't answered, prefetch the questions.
             if (!survey.surveydone) {

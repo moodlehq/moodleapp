@@ -7,8 +7,13 @@
     "edit": "حرر",
     "group": "مجموعة",
     "message": "رسالة",
+    "modeflatnewestfirst": "عرض الردود حسب الأحدث",
+    "modeflatoldestfirst": "عرض الردود حسب الأقدم",
+    "modenested": "عرض الردود حسب المداخلات",
     "posttoforum": "أضف المشاركة للمنتدى",
     "re": "إعادة:",
     "reply": "رد",
-    "subject": "الموضوع"
+    "subject": "الموضوع",
+    "unread": "لم يتم قرائتها",
+    "unreadpostsnumber": "{{$a}} مشاركات التي لم تقراء"
 }

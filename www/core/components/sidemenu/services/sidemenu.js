@@ -21,11 +21,101 @@ angular.module('mm.core.sidemenu')
  * @ngdoc service
  * @name $mmSideMenu
  */
-.factory('$mmSideMenu', function($log) {
+.factory('$mmSideMenu', function($log, $mmLang, $mmSitesManager, mmCoreConfigConstants) {
     $log = $log.getInstance('$mmSideMenu');
 
     var self = {},
         scope;
+
+    /**
+     * Get a list of custom menu items for a certain site.
+     *
+     * @module mm.core.sidemenu
+     * @ngdoc method
+     * @name $mmSideMenu#getCustomMenuItems
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Object[]}        List of custom menu items.
+     */
+    self.getCustomMenuItems = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var itemsString = site.getStoredConfig('tool_mobile_custommenuitems'),
+                items,
+                position = 0, // Position of each item, to keep the same order as it's configured.
+                map = {},
+                result = [];
+
+            if (!itemsString || typeof itemsString != 'string') {
+                // Setting not valid.
+                return result;
+            }
+
+            // Add items to the map.
+            items = itemsString.split(/(?:\r\n|\r|\n)/);
+            angular.forEach(items, function(item) {
+                var values = item.split('|'),
+                    id,
+                    label = values[0] ? values[0].trim() : values[0],
+                    url = values[1] ? values[1].trim() : values[1],
+                    type = values[2] ? values[2].trim() : values[2],
+                    lang = (values[3] ? values[3].trim() : values[3]) || 'none',
+                    icon = values[4] ? values[4].trim() : values[4];
+
+                if (!label || !url || !type) {
+                    // Invalid item, ignore it.
+                    return;
+                }
+
+                id = url + '#' + type;
+                if (!icon) {
+                    // Icon not defined, use default one.
+                    icon = type == 'embedded' ? 'ion-qr-scanner' : 'ion-link';
+                }
+
+                if (!map[id]) {
+                    // New entry, add it to the map.
+                    map[id] = {
+                        url: url,
+                        type: type,
+                        position: position,
+                        labels: {}
+                    };
+                    position++;
+                }
+
+                map[id].labels[lang.toLowerCase()] = {
+                    label: label,
+                    icon: icon
+                };
+            });
+
+            if (!position) {
+                // No valid items found, stop.
+                return result;
+            }
+
+            return $mmLang.getCurrentLanguage().then(function(currentLang) {
+                var fallbackLang = mmCoreConfigConstants.default_lang || 'en';
+
+                // Get the right label for each entry and add it to the result.
+                angular.forEach(map, function(entry) {
+                    var data = entry.labels[currentLang] || entry.labels.none || entry.labels[fallbackLang];
+                    if (!data) {
+                        // No valid label found, get the first one.
+                        data = entry.labels[Object.keys(entry.labels)[0]];
+                    }
+
+                    result[entry.position] = {
+                        url: entry.url,
+                        type: entry.type,
+                        label: data.label,
+                        icon: data.icon
+                    };
+                });
+
+                return result;
+            });
+        });
+    };
 
     /**
      * Hide the right side menu.

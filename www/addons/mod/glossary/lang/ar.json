@@ -1,7 +1,10 @@
 {
+    "attachment": "ملف مرفق",
     "browsemode": "النمط العرضي",
     "byauthor": "التجميع طبقا للمؤلف",
     "bynewestfirst": "الأحدث أولا",
     "byrecentlyupdated": "تم تحديثه مؤخرا",
-    "bysearch": "بحث"
+    "bysearch": "بحث",
+    "casesensitive": "مطابقة حالة الأحرف",
+    "categories": "التصنيفات"
 }

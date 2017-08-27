@@ -28,9 +28,7 @@
                 <p class="item item-divider">{{ 'mm.courses.courses' | translate }}</p>
                 <mm-course-list-item ng-repeat="course in courses" course="course"></mm-course-list-item>
             </div>
-            <div ng-if="!categories.length && !courses.length" class="item">
-                {{ 'mm.courses.nocoursesyet' | translate }}
-            </div>
+            <mm-empty-box ng-if="!categories.length && !courses.length" icon="ion-ionic" message="{{ 'mm.courses.nocoursesyet' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

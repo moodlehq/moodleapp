@@ -12,25 +12,25 @@
         </ion-refresher>
         <mm-loading hide-until="notesLoaded">
             <!-- There are notes pending to be synchronized. -->
-            <div class="mm-warning" ng-if="hasOffline">
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.thereisdatatosync' | translate:{$a: notesStr} }}
             </div>
 
             <div class="list">
                 <article class="card" ng-repeat="note in notes">
-                        <div class="item item-avatar">
-                            <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
-                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
-                            <div class="item-note" ng-if="!note.offline">{{note.lastmodified | mmDateDayOrTime}}</div>
-                            <div class="item-note" ng-if="note.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
-                            <p>{{note.userfullname}}</p>
-                        </div>
-                        <div class="item item-body">
-                            <p><mm-format-text watch="true" clean="true">{{note.content}}</mm-format-text></p>
-                        </div>
+                    <div class="item item-avatar">
+                        <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
+                        <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
+                        <div class="item-note" ng-if="!note.offline">{{note.lastmodified | mmDateDayOrTime}}</div>
+                        <div class="item-note" ng-if="note.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+                        <p>{{note.userfullname}}</p>
+                    </div>
+                    <div class="item item-body">
+                        <p><mm-format-text watch="true" clean="true">{{note.content}}</mm-format-text></p>
+                    </div>
                 </article>
-                <div ng-if="notes.length == 0" class="item item-text-wrap">{{ 'mma.notes.nonotes' | translate }}</div>
             </div>
+            <mm-empty-box ng-if="notes.length == 0" icon="ion-ios-list" message="{{ 'mma.notes.nonotes' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

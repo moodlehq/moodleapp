@@ -23,43 +23,65 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, $translate, $mmEvents,
             $ionicScrollDelegate, mmaModForumComponent, mmaModForumReplyDiscussionEvent, $mmaModForumOffline, $mmaModForumSync,
-            mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, $ionicPlatform, mmCoreEventOnlineStatusChanged) {
+            mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, $ionicPlatform, mmCoreEventOnlineStatusChanged,
+            $mmaModForumHelper, $mmFileUploaderHelper) {
 
     var discussionId = $stateParams.discussionid,
-        courseid = $stateParams.cid,
+        courseId = $stateParams.cid,
         forumId = $stateParams.forumid,
         cmid = $stateParams.cmid,
         scrollView,
         syncObserver, syncManualObserver, onlineObserver;
+
+    // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+    $mmUtil.blockLeaveView($scope, leaveView);
+
+    // Possible sort types.
+    $scope.sortTypeFlatNewest = 'flat-newest';
+    $scope.sortTypeFlatOldest = 'flat-oldest';
+    $scope.sortTypeNested = 'nested';
 
     $scope.discussionId = discussionId;
     $scope.trackPosts = $stateParams.trackposts;
     $scope.component = mmaModForumComponent;
     $scope.discussionStr = $translate.instant('discussion');
     $scope.componentId = cmid;
-    $scope.courseid = courseid;
+    $scope.courseId = courseId;
     $scope.refreshPostsIcon = 'spinner';
     $scope.syncIcon = 'spinner';
-    $scope.newpost = {
+    $scope.newPost = {
         replyingto: undefined,
         editing: undefined,
         subject: '',
         text: '',
-        isEditing: false
+        isEditing: false,
+        files: []
     };
-    $scope.sort = {
-        icon: 'ion-arrow-up-c',
-        direction: 'ASC',
-        text: $translate.instant('mma.mod_forum.sortnewestfirst')
-    };
+    $scope.sort = $scope.sortTypeFlatOldest; // By default, flat with oldest first.
+
     // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
     $scope.locked = !!$stateParams.locked;
 
+    $scope.originalData = {};
+
+    // Convenience function to get the forum.
+    function fetchForum() {
+        if (courseId && cmid) {
+            return $mmaModForum.getForum(courseId, cmid);
+        } else if (courseId && forumId) {
+            return $mmaModForum.getForumById(courseId, forumId);
+        } else {
+            // Cannot get the forum.
+            return $q.reject();
+        }
+    }
+
     // Convenience function to get forum discussions.
-    function fetchPosts(sync, showErrors) {
+    function fetchPosts(sync, showErrors, forceMarkAsRead) {
         var syncPromise,
             onlinePosts = [],
-            offlineReplies = [];
+            offlineReplies = [],
+            hasUnreadPosts = false;
 
         $scope.isOnline = $mmApp.isOnline();
         $scope.isTablet = $ionicPlatform.isTablet();
@@ -76,57 +98,80 @@ angular.module('mm.addons.mod_forum')
             return $mmaModForum.getDiscussionPosts(discussionId).then(function(posts) {
                 onlinePosts = posts;
 
-            }).finally(function() {
+            }).then(function() {
                 // Check if there are responses stored in offline.
-                return $mmaModForumOffline.hasDiscussionReplies(discussionId).then(function(hasOffline) {
-                    $scope.postHasOffline = hasOffline;
+                return $mmaModForumOffline.getDiscussionReplies(discussionId).then(function(replies) {
+                    $scope.postHasOffline = !!replies.length;
 
-                    if (hasOffline) {
-                        return $mmaModForumOffline.getDiscussionReplies(discussionId).then(function(replies) {
-                            var convertPromises = [];
+                    var convertPromises = [];
 
-                            // Index posts to allow quick access.
-                            var posts = {};
-                            angular.forEach(onlinePosts, function(post) {
-                                posts[post.id] = post;
-                            });
+                    // Index posts to allow quick access. Also check unread field.
+                    var posts = {};
+                    angular.forEach(onlinePosts, function(post) {
+                        posts[post.id] = post
+                        hasUnreadPosts = hasUnreadPosts || !post.postread;
+                    });
 
-                            angular.forEach(replies, function(offlineReply) {
-                                convertPromises.push($mmaModForumOffline.convertOfflineReplyToOnline(offlineReply)
-                                        .then(function(reply) {
-                                    offlineReplies.push(reply);
+                    angular.forEach(replies, function(offlineReply) {
+                        // If we don't have forumId and courseId, get it from the post.
+                        if (!forumId) {
+                            forumId = offlineReply.forumid;
+                        }
+                        if (!courseId) {
+                            courseId = offlineReply.courseid;
+                            $scope.courseId = courseId;
+                        }
 
-                                    // Disable reply of the parent. Reply in offline to the same post is not allowed, edit instead.
-                                    posts[reply.parent].canreply = false;
-                                }));
-                            });
+                        convertPromises.push($mmaModForumHelper.convertOfflineReplyToOnline(offlineReply).then(function(reply) {
+                            offlineReplies.push(reply);
 
-                            return $q.all(convertPromises).then(function() {
-                                // Convert back to array.
-                                onlinePosts = Object.keys(posts).map(function (key) {return posts[key];});
-                            });
-                        });
-                    }
+                            // Disable reply of the parent. Reply in offline to the same post is not allowed, edit instead.
+                            posts[reply.parent].canreply = false;
+                        }));
+                    });
+
+                    return $q.all(convertPromises).then(function() {
+                        // Convert back to array.
+                        onlinePosts = Object.keys(posts).map(function (key) {return posts[key];});
+                    });
                 });
             });
-        }).finally(function() {
+        }).then(function() {
             var posts = offlineReplies.concat(onlinePosts);
             $scope.discussion = $mmaModForum.extractStartingPost(posts);
 
-            // Set default reply subject.
-            $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
-            $scope.defaultSubject = $translate.instant('mma.mod_forum.re') + ' ' + $scope.discussion.subject;
-            $scope.newpost.subject = $scope.defaultSubject;
-
-            if ($scope.discussion.userfullname && $scope.discussion.parent == 0 && courseid && cmid) {
-                return $mmaModForum.getForum(courseid, cmid).then(function(forum) {
-                    if (forum.type == 'single') {
-                        // Hide author for first post and type single.
-                        $scope.discussion.userfullname = null;
-                    }
-                });
+            // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
+            if ($scope.sort == $scope.sortTypeNested) {
+                // Sort first by creation date to make format tree work.
+                posts = $mmaModForum.sortDiscussionPosts(posts, 'ASC');
+                $scope.posts = $mmUtil.formatTree(posts, 'parent', 'id', $scope.discussion.id);
+            } else {
+                // Set default reply subject.
+                var direction = $scope.sort == $scope.sortTypeFlatNewest ? 'DESC' : 'ASC';
+                $scope.posts = $mmaModForum.sortDiscussionPosts(posts, direction);
             }
-            return $q.when();
+            $scope.defaultSubject = $translate.instant('mma.mod_forum.re') + ' ' + $scope.discussion.subject;
+            $scope.newPost.subject = $scope.defaultSubject;
+
+            // Now try to get the forum.
+            return fetchForum().then(function(forum) {
+                if ($scope.discussion.userfullname && $scope.discussion.parent == 0 && forum.type == 'single') {
+                    // Hide author for first post and type single.
+                    $scope.discussion.userfullname = null;
+                }
+
+                // forum.istracked is more reliable than $stateParams.trackposts.
+                if (typeof forum.istracked != "undefined") {
+                    $scope.trackPosts = forum.istracked;
+                }
+
+                forumId = forum.id;
+                cmid = forum.cmid;
+                $scope.componentId = cmid;
+                $scope.forum = forum;
+            }).catch(function() {
+                // Ignore errors.
+            });
         }).catch(function(message) {
             $mmUtil.showErrorModal(message);
             return $q.reject();
@@ -134,26 +179,21 @@ angular.module('mm.addons.mod_forum')
             $scope.discussionLoaded = true;
             $scope.refreshPostsIcon = 'ion-refresh';
             $scope.syncIcon = 'ion-loop';
+
+            if (forceMarkAsRead || (hasUnreadPosts && $scope.trackPosts)) {
+                // // Add log in Moodle and mark unread posts as readed.
+                $mmaModForum.logDiscussionView(discussionId);
+            }
         });
     }
 
     // Function to change posts sorting.
-    $scope.changeSort = function(init) {
+    $scope.changeSort = function(type) {
         $scope.discussionLoaded = false;
+        scrollTop();
 
-        if (!init) {
-            $scope.sort.direction = $scope.sort.direction == 'ASC' ? 'DESC' : 'ASC';
-        }
-
-        return fetchPosts(init).then(function() {
-            if ($scope.sort.direction == 'ASC') {
-                $scope.sort.icon = 'ion-arrow-up-c';
-                $scope.sort.text = $translate.instant('mma.mod_forum.sortnewestfirst');
-            } else {
-                $scope.sort.icon = 'ion-arrow-down-c';
-                $scope.sort.text = $translate.instant('mma.mod_forum.sortoldestfirst');
-            }
-        });
+        $scope.sort = type;
+        return fetchPosts();
     };
 
     // Tries to synchronize the posts discussion.
@@ -206,10 +246,7 @@ angular.module('mm.addons.mod_forum')
         $mmEvents.trigger(mmaModForumReplyDiscussionEvent, data);
     }
 
-    $scope.changeSort(true).then(function() {
-        // Add log in Moodle.
-        $mmaModForum.logDiscussionView(discussionId);
-    });
+    fetchPosts(true, false, true);
 
     // Pull to refresh.
     $scope.refreshPosts = function(showErrors) {
@@ -244,6 +281,22 @@ angular.module('mm.addons.mod_forum')
         }
     });
 
+    // Ask to confirm if there are changes.
+    function leaveView() {
+        var promise;
+
+        if (!$mmaModForumHelper.hasPostDataChanged($scope.newPost, $scope.originalData)) {
+            promise = $q.when();
+        } else {
+            // Show confirmation if some data has been modified.
+            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+        }
+
+        return promise.then(function() {
+            // Delete the local files from the tmp folder.
+            $mmFileUploaderHelper.clearTmpFiles($scope.newPost.files);
+        });
+    }
 
     function scrollTop() {
         if (!scrollView) {
@@ -254,12 +307,6 @@ angular.module('mm.addons.mod_forum')
 
     // New post added.
     $scope.postListChanged = function() {
-        $scope.newpost.replyingto = undefined;
-        $scope.newpost.editing = undefined;
-        $scope.newpost.subject = $scope.defaultSubject;
-        $scope.newpost.text = '';
-        $scope.newpost.isEditing = false;
-
         notifyPostListChanged();
 
         $scope.discussionLoaded = false;

@@ -21,9 +21,10 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc service
  * @name $mmaModResourceHandlers
  */
-.factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper,
-            $mmCoursePrefetchDelegate, $mmUtil, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
-            mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper, $mmaModResourcePrefetchHandler) {
+.factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmUtil,
+            $mmCoursePrefetchDelegate, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, $mmaModResourceHelper,
+            mmCoreEventPackageStatusChanged, mmaModResourceComponent, $mmContentLinksHelper, $mmaModResourcePrefetchHandler,
+            mmCoreDownloaded) {
     var self = {};
 
     /**
@@ -56,7 +57,8 @@ angular.module('mm.addons.mod_resource')
         self.getController = function(module, courseId) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn;
+                    refreshBtn,
+                    openBtn;
 
                 downloadBtn = {
                     hidden: true,
@@ -80,9 +82,20 @@ angular.module('mm.addons.mod_resource')
                     }
                 };
 
+                openBtn = {
+                    hidden: true,
+                    icon: 'ion-document',
+                    label: 'mma.mod_resource.openthefile',
+                    action: function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $mmaModResourceHelper.openFile(module, courseId);
+                    }
+                };
+
                 $scope.title = module.name;
                 $scope.class = 'mma-mod_resource-handler';
-                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.buttons = [downloadBtn, refreshBtn, openBtn];
                 $scope.spinner = true; // Show spinner while calculating status.
 
                 // Show resource icon while calculating the right icon to show.
@@ -99,6 +112,9 @@ angular.module('mm.addons.mod_resource')
                     } else {
                         $scope.icon = $mmCourse.getModuleIconSrc('resource');
                     }
+                }).finally(function() {
+                    // Get current status to decide which icon should be shown.
+                    $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
                 });
 
                 $scope.action = function(e) {
@@ -111,12 +127,14 @@ angular.module('mm.addons.mod_resource')
 
                 function download(refresh) {
                     var dwnBtnHidden = downloadBtn.hidden,
-                        rfrshBtnHidden = refreshBtn.hidden;
+                        rfrshBtnHidden = refreshBtn.hidden,
+                        openBtnHidden = openBtn.hidden;
 
                     // Show spinner since this operation might take a while.
                     $scope.spinner = true;
                     downloadBtn.hidden = true;
                     refreshBtn.hidden = true;
+                    openBtn.hidden = true;
 
                     // Get download size to ask for confirm if it's high.
                     $mmaModResourcePrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
@@ -126,27 +144,28 @@ angular.module('mm.addons.mod_resource')
                             $scope.spinner = false;
                             downloadBtn.hidden = dwnBtnHidden;
                             refreshBtn.hidden = rfrshBtnHidden;
+                            openBtn.hidden = openBtnHidden;
                         });
                     }).catch(function(error) {
                         // Error, leave the buttons as they were.
                         $scope.spinner = false;
                         downloadBtn.hidden = dwnBtnHidden;
                         refreshBtn.hidden = rfrshBtnHidden;
+                        openBtn.hidden = openBtnHidden;
 
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 }
 
                 // Show buttons according to module status.
                 function showStatus(status) {
+                    status = $mmaModResourcePrefetchHandler.determineStatus(status, false, module);
+
                     if (status) {
                         $scope.spinner = status === mmCoreDownloading;
                         downloadBtn.hidden = status !== mmCoreNotDownloaded;
                         refreshBtn.hidden = status !== mmCoreOutdated;
+                        openBtn.hidden = status !== mmCoreDownloaded || $mmaModResource.isDisplayedInIframe(module);
                     }
                 }
 
@@ -157,9 +176,6 @@ angular.module('mm.addons.mod_resource')
                         showStatus(data.status);
                     }
                 });
-
-                // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();
@@ -177,58 +193,7 @@ angular.module('mm.addons.mod_resource')
      * @ngdoc method
      * @name $mmaModResourceHandlers#linksHandler
      */
-    self.linksHandler = function() {
-
-        var self = {};
-
-        /**
-         * Whether or not the handler is enabled for a certain site.
-         *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            return $mmaModResource.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's a resource URL.
-            if (typeof self.handles(url) != 'undefined') {
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
-            }
-            return $q.when([]);
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            var position = url.indexOf('/mod/resource/view.php');
-            if (position > -1) {
-                return url.substr(0, position);
-            }
-        };
-
-        return self;
-    };
+    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModResource', 'resource', $mmaModResource);
 
     return self;
 });

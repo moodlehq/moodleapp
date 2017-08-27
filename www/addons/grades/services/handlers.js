@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper,
+.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmContentLinksHelper, $mmContentLinkHandlerFactory,
             mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
     var self = {},
@@ -210,110 +210,73 @@ angular.module('mm.addons.grades')
     };
 
     /**
-     * Content links handler.
+     * Content links handler for view user grades (can be current user).
      *
      * @module mm.addons.grades
      * @ngdoc method
-     * @name $mmaGradesHandlers#linksHandler
+     * @name $mmaGradesHandlers#userLinksHandler
      */
-    self.linksHandler = function() {
+    self.userLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                '/grade/report/user/index.php', '$mmUserDelegate_mmaGrades:viewGrades');
 
-        var self = {};
-
-        /**
-         * Whether or not the handler is enabled for a certain site and course.
-         *
-         * @param  {String} siteId   Site ID.
-         * @param  {Number} courseId Course ID.
-         * @return {Promise}         Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            return $mmGrades.isPluginEnabled(siteId).then(function(enabled) {
-                if (enabled) {
-                    return $mmGrades.isPluginEnabledForCourse(courseId, siteId);
-                }
-            });
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.userLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+        if (!courseId) {
+            return false;
         }
 
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds Site IDs the URL belongs to.
-         * @param {String} url       URL to treat.
-         * @return {Object[]}        Promise resolved with the list of actions.
-         *                           See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            // Check it's a grade URL.
-            if (typeof self.handles(url) != 'undefined') {
-                // Check for the courses grades link first.
-                if (url.indexOf('overview') > -1) {
-                    return $mmContentLinksHelper.filterSupportedSites(siteIds, $mmaCoursesGrades.isPluginEnabled, false).then(function(ids) {
-                        if (!ids.length) {
-                            return [];
-                        } else {
-                            // Return actions.
-                            return [{
-                                message: 'mm.core.view',
-                                icon: 'ion-eye',
-                                sites: ids,
-                                action: function(siteId) {
-                                    var stateParams = {};
-                                    $mmContentLinksHelper.goInSite('site.coursesgrades', stateParams, siteId);
-                                }
-                            }];
-                        }
-                    });
-                } else {
-                    var params = $mmUtil.extractUrlParams(url);
-                    if (typeof params.id != 'undefined') {
-                        var courseId = parseInt(params.id, 10);
-                        // Pass false because all sites should have the same siteurl.
-                        return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
-                            if (!ids.length) {
-                                return [];
-                            } else {
-                                // Return actions.
-                                return [{
-                                    message: 'mm.core.view',
-                                    icon: 'ion-eye',
-                                    sites: ids,
-                                    action: function(siteId) {
-                                        var stateParams = {
-                                            course: {id: courseId},
-                                            userid: parseInt(params.userid, 10),
-                                            courseid: courseId,
-                                            forcephoneview: false
-                                        };
-                                        $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
-                                    }
-                                }];
-                            }
-                        });
-                    }
-                }
+        return $mmGrades.isPluginEnabled(siteId).then(function(enabled) {
+            if (!enabled) {
+                return false;
             }
-            return [];
-        };
 
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            // Accept any of these patterns.
-            var patterns = ['/grade/report/user/index.php', '/grade/report/overview/index.php'];
-            for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
+            return $mmGrades.isPluginEnabledForCourse(courseId, siteId);
+        });
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.userLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+
+        return [{
+            action: function(siteId) {
+                var stateParams = {
+                    course: {id: courseId},
+                    userid: params.userid ? parseInt(params.userid, 10) : false,
+                    courseid: courseId,
+                    forcephoneview: false
+                };
+                $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
             }
-        };
+        }];
+    };
 
-        return self;
+    /**
+     * Content links handler for overview courses grades.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGradesHandlers#overviewLinksHandler
+     */
+    self.overviewLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                '/grade/report/overview/index.php', '$mmSideMenuDelegate_mmaGrades');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.overviewLinksHandler.isEnabled = $mmaCoursesGrades.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.overviewLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.coursesgrades',
+                    params: {}
+                });
+            }
+        }];
     };
 
     /**

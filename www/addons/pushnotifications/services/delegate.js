@@ -27,6 +27,7 @@ angular.module('mm.addons.pushnotifications')
 
     var clickHandlers = {},
         receiveHandlers = {},
+        counterHandlers = {},
         self = {};
 
     /**
@@ -114,6 +115,44 @@ angular.module('mm.addons.pushnotifications')
     self.unregisterReceiveHandler = function(name) {
         $log.debug("Unregister handler '" + name + "' from RECEIVE push notification handlers.");
         delete receiveHandlers[name];
+    };
+
+    /**
+     * Register a push notifications handler for update badge counter.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#registerCounterHandler
+     * @param {String} name       Handler's name.
+     */
+    self.registerCounterHandler = function(name) {
+        $log.debug("Registered handler '" + name + "' as badge counter handler.");
+        counterHandlers[name] = name;
+    };
+
+    /**
+     * Check if a counter handler is present.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#isCounterHandlerRegistered
+     * @param {String} name       Handler's name.
+     * @return {Boolean}  If handler name is present.
+     */
+    self.isCounterHandlerRegistered = function(name) {
+        return typeof counterHandlers[name] != "undefined";
+    };
+
+    /**
+     * Get all counter badge handlers.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#getCounterHandlers
+     * @return {Object}  with all the handler names.
+     */
+    self.getCounterHandlers = function() {
+        return counterHandlers;
     };
 
     return self;

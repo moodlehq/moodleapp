@@ -36,6 +36,7 @@
     "graded": "Kalifikatua",
     "gradedby": "Nork kalifikatua",
     "gradedon": "Noiz kalifikatua",
+    "gradenotsynced": "Kalifikazioa ez da sinkronizatu",
     "gradeoutof": "Kalifikazioa ({{$a}}-(e)ra arte)",
     "gradingstatus": "Kalifikazioaren egoera",
     "groupsubmissionsettings": "Taldeko bidalketen ezarpenak",

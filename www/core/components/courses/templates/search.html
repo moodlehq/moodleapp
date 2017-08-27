@@ -3,7 +3,7 @@
         <mm-searchbox submit-action="search" placeholder="{{ 'mm.courses.search' | translate }}" initial-value="{{searchText}}" search-label="{{ 'mm.courses.search' | translate}}" autofocus="true"></mm-searchbox>
         <div ng-if="courses">
             <p class="item item-divider">{{ 'mm.courses.totalcoursesearchresults' | translate:{$a: total} }}</p>
-            <p class="item" ng-if="total == 0">{{ 'mm.courses.nosearchresults' | translate }}</p>
+            <mm-empty-box ng-if="total == 0" icon="ion-ios-search-strong" message="{{ 'mm.courses.nosearchresults' | translate }}"></mm-empty-box>
             <mm-course-list-item ng-repeat="course in courses track by course.id" course="course"></mm-course-list-item>
             <ion-infinite-scroll ng-if="canLoadMore" immediate-check="false" on-infinite="loadMoreResults()">
             </ion-infinite-scroll>

@@ -65,7 +65,7 @@ angular.module('mm.addons.mod_quiz')
     self.gatherPreflightData = function(quiz, quizAccessInfo, attempt, preflightData, siteId, askPreflight, modalTitle) {
         if (askPreflight) {
             // Check if the quiz requires preflight data.
-            scope = $rootScope.$new();
+            var scope = $rootScope.$new();
             scope.preflightData = preflightData;
             scope.preflightModalTitle = modalTitle;
 
@@ -294,13 +294,14 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModQuiz.getQuiz(courseId, module.id, false, true).then(function(quiz) {
+        var siteId = $mmSite.getId();
+        return $mmaModQuiz.getQuiz(courseId, module.id, siteId).then(function(quiz) {
             if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
                 return false;
             }
 
             // Not downloadable if we reached max attempts.
-            return $mmaModQuiz.getUserAttempts(quiz.id).then(function(attempts) {
+            return $mmaModQuiz.getUserAttempts(quiz.id, false, true, false, false, siteId).then(function(attempts) {
                 var isLastFinished = !attempts.length || $mmaModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
                 return quiz.attempts === 0 || quiz.attempts > attempts.length || !isLastFinished;
             });
@@ -371,10 +372,7 @@ angular.module('mm.addons.mod_quiz')
                 attemptAccessInfo = info;
             }));
 
-            angular.forEach(introFiles, function(file) {
-                var url = file.fileurl;
-                promises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, introFiles, self.component, module.id));
 
             return $q.all(promises);
         }).then(function() {
@@ -401,6 +399,11 @@ angular.module('mm.addons.mod_quiz')
                 // Re-fetch user attempts since we created a new one.
                 promises.push($mmaModQuiz.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                     attempts = atts;
+                }));
+
+                // Update the download time to prevent detecting the new attempt as an update.
+                promises.push($mmFilepool.updatePackageDownloadTime(siteId, self.component, module.id).catch(function() {
+                    // Ignore errors.
                 }));
             }
 

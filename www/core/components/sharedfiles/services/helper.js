@@ -15,12 +15,14 @@
 angular.module('mm.core.sharedfiles')
 
 .factory('$mmSharedFilesHelper', function($mmSharedFiles, $mmUtil, $log, $mmApp, $mmSitesManager, $mmFS, $rootScope, $q,
-            $ionicModal, $state, $translate) {
+            $ionicModal, $state, $translate, $mmSite) {
 
     $log = $log.getInstance('$mmSharedFilesHelper');
 
     var self = {},
-        filePickerDeferred;
+        filePickerDeferred,
+        fileListModal,
+        fileListScope;
 
     /**
      * Ask a user if he wants to replace a file (using originalName) or rename it (using newName).
@@ -117,6 +119,32 @@ angular.module('mm.core.sharedfiles')
     };
 
     /**
+     * Initialize the file list modal if it isn't initialized already.
+     *
+     * @module mm.core.sharedfiles
+     * @ngdoc method
+     * @name $mmSharedFilesHelper#initFileListModal
+     * @return {Promise} Promise resolved when the modal is initialized.
+     */
+    self.initFileListModal = function() {
+        if (fileListModal) {
+            // Already initialized.
+            return $q.when();
+        }
+
+        if (!fileListScope) {
+            fileListScope = $rootScope.$new();
+        }
+
+        return $ionicModal.fromTemplateUrl('core/components/sharedfiles/templates/listmodal.html', {
+            scope: fileListScope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            fileListScope.modal = modal;
+        });
+    };
+
+    /**
      * Open the view to select a shared file.
      *
      * @module mm.core.sharedfiles
@@ -125,9 +153,70 @@ angular.module('mm.core.sharedfiles')
      * @return {Promise} Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
     self.pickSharedFile = function() {
+        var path = '',
+            siteId = $mmSite.getId();
+
         filePickerDeferred = $q.defer();
-        $state.go('site.sharedfiles-list', {pick: true});
+
+        self.initFileListModal().then(function() {
+            fileListScope.filesLoaded = false;
+            if (path) {
+                fileListScope.title = $mmFS.getFileAndDirectoryFromPath(path).name;
+            } else {
+                fileListScope.title = $translate.instant('mm.sharedfiles.sharedfiles');
+            }
+
+            // Load the shared files to show.
+            loadFiles().then(function() {
+
+                // Close the modal.
+                fileListScope.closeModal = function() {
+                    fileListScope.modal.hide();
+                    self.filePickerClosed();
+                };
+
+                // Refresh current list.
+                fileListScope.refreshFiles = function() {
+                    loadFiles().finally(function() {
+                        fileListScope.$broadcast('scroll.refreshComplete');
+                    });
+                };
+
+                // Open a subfolder.
+                fileListScope.openFolder = function(folder) {
+                    path = $mmFS.concatenatePaths(path, folder.name);
+                    fileListScope.filesLoaded = false;
+                    loadFiles();
+                };
+
+                // Change site loaded.
+                fileListScope.changeSite = function(sid) {
+                    siteId = sid;
+                    path = '';
+                    fileListScope.filesLoaded = false;
+                    loadFiles();
+                };
+
+                // File picked.
+                fileListScope.filePicked = function(file) {
+                    self.filePicked(file.fullPath);
+                    fileListScope.modal.hide();
+                };
+            });
+
+            fileListScope.modal.show();
+        }).catch(function() {
+            self.filePickerClosed();
+        });
+
         return filePickerDeferred.promise;
+
+        function loadFiles() {
+            return $mmSharedFiles.getSiteSharedFiles(siteId, path).then(function(files) {
+                fileListScope.files = files;
+                fileListScope.filesLoaded = true;
+            });
+        }
     };
 
     /**

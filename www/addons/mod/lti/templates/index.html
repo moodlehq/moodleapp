@@ -12,7 +12,7 @@
         <mm-loading hide-until="ltiLoaded">
             <mm-course-mod-description watch="true" description="description" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
             <a ng-if="isValidUrl" ng-click="launch()" class="button button-block icon-left ion-link">{{ 'mma.mod_lti.launchactivity' | translate }}</a>
-            <p ng-if="!isValidUrl">{{ 'mma.mod_lti.errorinvalidlaunchurl' | translate }}</p>
+            <div class="mm-info-card" ng-if="!isValidUrl">{{ 'mma.mod_lti.errorinvalidlaunchurl' | translate }}</div>
         </mm-loading>
     </ion-content>
 </ion-view>

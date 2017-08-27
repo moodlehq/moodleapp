@@ -1,16 +1,13 @@
 {
-    "admindisableddownload": "Por favor note que o administrador do Moodle desativou a opção de descarregar ficheiros, poderá navegar nos ficheiros, mas não conseguirá descarregá-los.",
+    "admindisableddownload": "Tenha en atenção que o administrador do Moodle desativou a opção de descarregar ficheiros. Poderá navegar nos ficheiros mas não conseguirá descarregá-los.",
     "clicktoupload": "Clique no botão abaixo para carregar ficheiros para os seus ficheiros privados.",
     "couldnotloadfiles": "Não foi possível carregar a lista de ficheiros",
     "emptyfilelist": "Não há ficheiros",
-    "errorcapturingvideo": "Erro ao capturar vídeo.",
-    "errorreceivefilenosites": "Não existem sites armazenados. Por favor adicione um site antes de carregar um ficheiro.",
-    "myfiles": "Meus ficheiros",
-    "myprivatefiles": "Meus ficheiros privados",
+    "erroruploadnotworking": "Infelizmente não é possível carregar ficheiros para o seu site.",
+    "files": "Anexos",
     "myprivatefilesdesc": "Ficheiros disponíveis na sua área privada neste site Moodle",
-    "readingfile": "A ler ficheiro",
+    "privatefiles": "Ficheiros privados",
     "sitefiles": "Ficheiros do site",
     "sitefilesdesc": "Os outros ficheiros que estão disponíveis para si neste site Moodle.",
-    "success": "Sucesso!",
     "uploadfiles": "Carregar ficheiros"
 }

@@ -1,11 +1,15 @@
 {
+    "allowguests": "В този курс могат да влизат гости",
+    "availablecourses": "Налични курсове",
+    "categories": "Категории",
+    "courses": "Курсове",
     "enrolme": "Запишете ме",
     "errorloadcourses": "Грешка при зареждането на курсовете.",
-    "filter": "Филтър",
     "frontpage": "Заглавна страница",
     "mycourses": "Моите курсове",
-    "nocourses": "Няма информация за курса, която да бъде показана.",
-    "nosearchresults": "Няма открити резултати за Вашето търсене",
+    "nocourses": "Няма курсове",
+    "nocoursesyet": "Няма курсове в тази категория",
+    "nosearchresults": "Няма резултати",
     "password": "Парола",
     "search": "Търсене",
     "searchcourses": "Търсене на курсове"

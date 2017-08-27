@@ -1,0 +1,127 @@
+<ion-view can-swipe-back="false">
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button menu-toggle="right" ng-if="displayMenu || mediaFile" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_lesson.lessonmenu' | translate }}"></button>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModLessonPlayerScroll">
+        <mm-loading hide-until="pageLoaded">
+            <!-- Info messages. Only show the first one. -->
+            <div class="mm-info-card-icon" ng-if="lesson && messages && messages.length">
+                <i class="icon ion-information-circled padding"></i> {{ messages[0].message }}
+            </div>
+
+            <div ng-class='{"mma-mod-lesson-slideshow": lesson.slideshow}' ng-style="{'width': lessonWidth, 'height': lessonHeight}">
+
+                <mm-timer ng-if="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_lesson.timeremaining' | translate }}"></mm-timer>
+
+                <!-- Page content, including questions and buttons. -->
+                <p ng-if="showRetake && !eolData && !processData" class="item item-text-wrap">{{ 'mma.mod_lesson.attempt' | translate:{$a: retake} }}</p>
+                <mm-format-text ng-if="pageData.ongoingscore && !eolData && !processData" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{pageData.ongoingscore}}</mm-format-text>
+                <form ng-if="!eolData && !processData" name="mma-mod_lesson-player-form" class="card">
+                    <p class="item item-text-wrap" ng-class="{'item-divider': question}"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text></p>
+
+                    <input ng-if="question" ng-repeat="input in question.hiddenInputs" type="hidden" name="{{input.name}}" value="{{input.value}}" />
+                    <div ng-if="question" class="mm-lesson-questions" ng-include="question.template"></div>
+                    <div ng-if="question" class="item">
+                        <button class="button button-block button-positive" ng-click="submitQuestion()">{{ question.submitLabel }}</button>
+                    </div>
+                </form>
+                <div ng-if="!eolData && !processData" class="list">
+                    <div ng-if="pageButtons && pageButtons.length" class="item item-text-wrap row-buttons responsive-sm">
+                        <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button.data)">{{button.content}}</button>
+                    </div>
+                    <div ng-if="lesson.progressbar && !canManage" class="item">
+                        <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>
+                        <mm-progress-bar progress="pageData.progress"></mm-progress-bar>
+                    </div>
+                    <div ng-if="lesson.progressbar && canManage" class="mm-info-card-icon">
+                        <i class="icon ion-information-circled padding"></i>{{ 'mma.mod_lesson.progressbarteacherwarning2' | translate }}
+                    </div>
+                </div>
+
+                <!-- End of lesson reached. -->
+                <div ng-if="eolData && !processData" class="card">
+                    <div class="mm-warning-card-icon" ng-if="eolData.offline && eolData.offline.value">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_lesson.finishretakeoffline' | translate }}
+                    </div>
+                    <h3 class="padding" ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
+                    <p class="item item-text-wrap" ng-if="eolData.notenoughtimespent"><mm-format-text>{{ eolData.notenoughtimespent.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.numberofpagesviewed"><mm-format-text>{{ eolData.numberofpagesviewed.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.youshouldview"><mm-format-text>{{ eolData.youshouldview.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.numberofcorrectanswers"><mm-format-text>{{ eolData.numberofcorrectanswers.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.displayscorewithessays"><mm-format-text>{{ eolData.displayscorewithessays.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="!eolData.displayscorewithessays && eolData.displayscorewithoutessays"><mm-format-text>{{ eolData.displayscorewithoutessays.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.yourcurrentgradeisoutof"><mm-format-text>{{ eolData.yourcurrentgradeisoutof.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.eolstudentoutoftimenoanswers"><mm-format-text>{{ eolData.eolstudentoutoftimenoanswers.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.welldone"><mm-format-text>{{ eolData.welldone.message }}</mm-format-text></p>
+                    <div class="item item-text-wrap" ng-if="lesson.progressbar && eolData.progresscompleted">
+                        <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}</p>
+                        <mm-progress-bar progress="eolData.progresscompleted.value"></mm-progress-bar>
+                    </div>
+                    <p class="item item-text-wrap" ng-if="eolData.displayofgrade"><mm-format-text>{{ eolData.displayofgrade.message }}</mm-format-text></p>
+                    <div class="item item-text-wrap" ng-if="eolData.reviewlesson"><button class="button button-block" ng-click="reviewLesson(eolData.reviewlesson.pageid)"><mm-format-text>{{ 'mma.mod_lesson.reviewlesson' | translate }}</mm-format-text></button></div>
+                    <p class="item item-text-wrap" ng-if="eolData.modattemptsnoteacher"><mm-format-text>{{ eolData.modattemptsnoteacher.message }}</mm-format-text></p>
+                    <p class="item item-text-wrap" ng-if="eolData.activitylink"><mm-format-text watch="true">{{ eolData.activitylink.value }}</mm-format-text></p>
+                </div>
+
+                <!-- Feedback returned when processing an action. -->
+                <div ng-if="processData" class="list">
+                    <mm-format-text ng-if="processData.ongoingscore && !processData.reviewmode" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{processData.ongoingscore}}</mm-format-text>
+                    <div ng-if="!processData.reviewmode || review" class="item item-text-wrap">
+                        <p ng-if="!processData.reviewmode"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{processData.feedback}}</mm-format-text></p>
+                        <div ng-if="review">
+                            <p>{{ 'mma.mod_lesson.gotoendoflesson' | translate }}</p>
+                            <p>{{ 'mma.mod_lesson.or' | translate }}</p>
+                            <p>{{ 'mma.mod_lesson.continuetonextpage' | translate }}</p>
+                        </div>
+                    </div>
+                    <div ng-if="review || (processData.buttons && processData.buttons.length)" class="item">
+                        <button ng-if="review" class="button button-block" ng-click="loadPage(LESSON_EOL)">{{ 'mma.mod_lesson.finish' | translate }}</button>
+                        <button ng-repeat="button in processData.buttons track by $index" class="button button-block" ng-click="loadPage(button.pageid, true)">{{ button.label | translate }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List of questions templates. -->
+            <script type="text/ng-template" id="multichoice">
+                <ion-radio class="item-border" ng-if="!question.multi" ng-repeat="option in question.options" id="{{option.id}}" name="{{option.name}}" ng-value="option.value" ng-model="question.model[option.name]" ng-disabled="option.disabled">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{option.text}}</mm-format-text></p>
+                </ion-radio>
+                <ion-checkbox class="item-border" ng-if="question.multi" ng-repeat="option in question.options" id="{{option.id}}" name="{{option.name}}" ng-value="option.value" ng-model="question.model[option.name]" ng-disabled="option.disabled" class="item-text-wrap item-checkbox-right">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{option.text}}</mm-format-text></p>
+                </ion-checkbox>
+            </script>
+
+            <script type="text/ng-template" id="shortanswer">
+                <ion-input class="item item-input item-border ">
+                    <input type="{{question.input.type}}" placeholder="{{ 'mma.mod_lesson.youranswer' | translate }}" id="{{question.input.id}}" name="{{question.input.name}}" autocorrect="off" ng-model="question.model[question.input.name]" maxlength="{{question.input.maxlength}}" ng-disabled="question.input.readonly">
+                </ion-input>
+            </script>
+
+            <script type="text/ng-template" id="essay">
+                <ion-input ng-if="question.textarea" class="item item-border item-input mm-item-has-rich-text-editor">
+                    <mm-rich-text-editor model="question.model[question.textarea.name]" property="{{question.textarea.property}}" placeholder="{{ 'mma.mod_lesson.youranswer' | translate }}" name="{{question.textarea.name}}" scroll-handle="mmaModLessonPlayerScroll" component="{{component}}" component-id="{{lesson.coursemodule}}" first-render="firstRender()"></mm-rich-text-editor>
+                </ion-input>
+                <div ng-if="!question.textarea && question.useranswer" class="item item-text-wrap">
+                    <p class="item-heading">{{ 'mma.mod_lesson.youranswer' | translate }}</p>
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{question.useranswer}}</mm-format-text></p>
+                </div>
+            </script>
+
+            <script type="text/ng-template" id="matching">
+                <div class="item item-border item-text-wrap row mm-item-padding" ng-repeat="row in question.rows">
+                    <div class="col">
+                        <p><mm-format-text id="mma-mod_lesson-{{row.id}}" watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{ row.text }}</mm-format-text></p>
+                    </div>
+                    <div class="col" ng-class='{"item-select": !row.disabled}'>
+                        <select ng-if="!row.disabled" id="{{row.id}}" name="{{row.name}}" aria-labelledby="mma-mod_lesson-{{row.id}}" ng-options="option.label for option in row.options" ng-model="question.model[row.name]" mm-ios-select-fix>
+                        </select>
+                        <p class="mm-select-fix" ng-if="question.model[row.name] && question.model[row.name].label">
+                            {{question.model[row.name].label}}
+                        </p>
+                    </div>
+                </div>
+            </script>
+        </mm-loading>
+    </ion-content>
+</ion-view>

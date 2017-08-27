@@ -318,16 +318,24 @@ angular.module('mm.core')
 
         return candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos)) {
-                var siteid = self.createSiteID(infos.siteurl, infos.username);
-                // Add site to sites list.
-                self.addSite(siteid, siteurl, token, infos, privateToken);
-                // Turn candidate site into current site.
-                candidateSite.setId(siteid);
+                // Set site ID and infos.
+                var siteId = self.createSiteID(infos.siteurl, infos.username);
+                candidateSite.setId(siteId);
                 candidateSite.setInfo(infos);
-                currentSite = candidateSite;
-                // Store session.
-                self.login(siteid);
-                $mmEvents.trigger(mmCoreEventSiteAdded, siteid);
+
+                // Try to get the site config.
+                return getSiteConfig(candidateSite).then(function(config) {
+                    candidateSite.setConfig(config);
+                    // Add site to sites list.
+                    self.addSite(siteId, siteurl, token, infos, privateToken, config);
+                    // Turn candidate site into current site.
+                    currentSite = candidateSite;
+                    // Store session.
+                    self.login(siteId);
+                    $mmEvents.trigger(mmCoreEventSiteAdded, siteId);
+
+                    return siteId;
+                });
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');
             }
@@ -442,16 +450,19 @@ angular.module('mm.core')
      * @param  {String} token          User's token in the site.
      * @param  {Object} infos          Site's info.
      * @param  {String} [privateToken] User's private token.
+     * @param  {Object} [config]       Site config (from tool_mobile_get_config).
      * @return {Promise}               Promise resolved when done.
      */
-    self.addSite = function(id, siteurl, token, infos, privateToken) {
+    self.addSite = function(id, siteurl, token, infos, privateToken, config) {
         privateToken = privateToken || '';
         return $mmApp.getDB().insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
             infos: infos,
-            privatetoken: privateToken
+            privatetoken: privateToken,
+            config: config,
+            loggedout: 0
         });
     };
 
@@ -471,16 +482,15 @@ angular.module('mm.core')
             currentSite = site;
             self.login(siteId);
 
-            if (site.isTokenExpired()) {
-                $log.debug('Token expired, rejecting.');
-                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
-                return $mmLang.translateAndReject('mm.login.reconnectdescription');
+            if (site.isLoggedOut()) {
+                // Logged out, nothing else to do.
+                return;
             }
 
             // Check if local_mobile was installed to Moodle.
             return site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
+                $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: siteId});
             }, function() {
                 // Update site info. We don't block the UI.
                 self.updateSiteInfo(siteId);
@@ -581,7 +591,8 @@ angular.module('mm.core')
             return $q.when(sites[siteId]);
         } else {
             return $mmApp.getDB().get(mmCoreSitesStore, siteId).then(function(data) {
-                var site = $mmSitesFactory.makeSite(siteId, data.siteurl, data.token, data.infos, data.privatetoken);
+                var site = $mmSitesFactory.makeSite(siteId, data.siteurl, data.token,
+                        data.infos, data.privatetoken, data.config, data.loggedout);
                 sites[siteId] = site;
                 return site;
             });
@@ -712,10 +723,20 @@ angular.module('mm.core')
             // Already logged out.
             return $q.when();
         }
-        var siteId = currentSite.getId();
+
+        var siteId = currentSite.getId(),
+            siteConfig = currentSite.getStoredConfig(),
+            promises = [];
 
         currentSite = undefined;
-        return $mmApp.getDB().remove(mmCoreCurrentSiteStore, 1).finally(function() {
+
+        if (siteConfig && siteConfig.tool_mobile_forcelogout == "1") {
+            promises.push(self.setSiteLoggedOut(siteId, true));
+        }
+
+        promises.push($mmApp.getDB().remove(mmCoreCurrentSiteStore, 1));
+
+        return $q.all(promises).finally(function() {
             $mmEvents.trigger(mmCoreEventLogout, siteId);
         });
     };
@@ -744,6 +765,32 @@ angular.module('mm.core')
     };
 
     /**
+     * Mark or unmark a site as logged out so the user needs to authenticate again.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#setSiteLoggedOut
+     * @param  {String} siteId     ID of the site.
+     * @param  {Boolean} loggedOut True to set the site as logged out, false otherwise.
+     * @return {Promise}           Promise resolved when done.
+     */
+    self.setSiteLoggedOut = function(siteId, loggedOut) {
+        return self.getSite(siteId).then(function(site) {
+            site.setLoggedOut(loggedOut);
+
+            return $mmApp.getDB().insert(mmCoreSitesStore, {
+                id: siteId,
+                siteurl: site.getURL(),
+                token: site.getToken(),
+                infos: site.getInfo(),
+                privatetoken: site.getPrivateToken(),
+                config: site.getStoredConfig(),
+                loggedout: loggedOut ? 1 : 0
+            });
+        });
+    };
+
+    /**
      * Updates a site's token.
      *
      * @module mm.core
@@ -761,7 +808,7 @@ angular.module('mm.core')
     };
 
     /**
-     * Updates a site's token usign siteId.
+     * Updates a site's token using siteId.
      *
      * @module mm.core
      * @ngdoc method
@@ -776,13 +823,16 @@ angular.module('mm.core')
         return self.getSite(siteId).then(function(site) {
             site.token = token;
             site.privateToken = privateToken;
+            site.setLoggedOut(false); // Token updated means the user authenticated again, not logged out anymore.
 
             return $mmApp.getDB().insert(mmCoreSitesStore, {
                 id: siteId,
                 siteurl: site.getURL(),
                 token: token,
                 infos: site.getInfo(),
-                privatetoken: privateToken
+                privatetoken: privateToken,
+                config: site.getStoredConfig(),
+                loggedout: 0
             });
         });
     };
@@ -800,14 +850,25 @@ angular.module('mm.core')
         return self.getSite(siteid).then(function(site) {
             return site.fetchSiteInfo().then(function(infos) {
                 site.setInfo(infos);
-                return $mmApp.getDB().insert(mmCoreSitesStore, {
-                    id: siteid,
-                    siteurl: site.getURL(),
-                    token: site.getToken(),
-                    infos: infos,
-                    privatetoken: site.getPrivateToken()
-                }).finally(function() {
-                    $mmEvents.trigger(mmCoreEventSiteUpdated, siteid);
+
+                // Try to get the site config.
+                return getSiteConfig(site).catch(function() {
+                    // Error getting config, keep the current one.
+                    return site.getStoredConfig();
+                }).then(function(config) {
+                    site.setConfig(config);
+
+                    return $mmApp.getDB().insert(mmCoreSitesStore, {
+                        id: siteid,
+                        siteurl: site.getURL(),
+                        token: site.getToken(),
+                        infos: infos,
+                        privatetoken: site.getPrivateToken(),
+                        config: config,
+                        loggedout: site.isLoggedOut() ? 1 : 0
+                    }).finally(function() {
+                        $mmEvents.trigger(mmCoreEventSiteUpdated, siteid);
+                    });
                 });
             });
         });
@@ -852,7 +913,7 @@ angular.module('mm.core')
         // Check if URL has http(s) protocol.
         if (!url.match(/^https?:\/\//i)) {
             // URL doesn't have http(s) protocol. Check if it has any protocol.
-            if (url.match(/^[^:]{2,10}:\/\//i)) {
+            if ($mmUtil.isAbsoluteURL(url)) {
                 // It has some protocol. Return empty array.
                 return $q.when([]);
             } else {
@@ -869,7 +930,8 @@ angular.module('mm.core')
             var ids = [];
             angular.forEach(sites, function(site) {
                 if (!sites[site.id]) {
-                    sites[site.id] = $mmSitesFactory.makeSite(site.id, site.siteurl, site.token, site.infos, site.privatetoken);
+                    sites[site.id] = $mmSitesFactory.makeSite(
+                            site.id, site.siteurl, site.token, site.infos, site.privatetoken, site.config, site.loggedout);
                 }
                 if (sites[site.id].containsUrl(url)) {
                     if (!username || sites[site.id].getInfo().username == username) {
@@ -910,6 +972,37 @@ angular.module('mm.core')
     self.getSitePublicConfig = function(siteUrl) {
         var temporarySite = $mmSitesFactory.makeSite(undefined, siteUrl);
         return temporarySite.getPublicConfig();
+    };
+
+    /**
+     * Get site config.
+     *
+     * @param  {Object} site The site to get the config.
+     * @return {Promise}     Promise resolved with config if available.
+     */
+    function getSiteConfig(site) {
+        if (!site.wsAvailable('tool_mobile_get_config')) {
+            // WS not available, cannot get config.
+            return $q.when();
+        }
+
+        return site.getConfig(false, true);
+    }
+
+    /**
+     * Check if a certain feature is disabled in a site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#isFeatureDisabled
+     * @param  {String} name     Name of the feature to check.
+     * @param  {Number} [siteId] The site ID. If not defined, current site (if available).
+     * @return {Promise}         Promise resolved with true if disabled.
+     */
+    self.isFeatureDisabled = function(name, siteId) {
+        return self.getSite(siteId).then(function(site) {
+            return site.isFeatureDisabled(name);
+        });
     };
 
     return self;

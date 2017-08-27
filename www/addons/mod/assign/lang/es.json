@@ -15,6 +15,7 @@
     "attemptreopenmethod_untilpass": "Automática hasta aprobar",
     "attemptsettings": "Configuración de intentos",
     "cannoteditduetostatementsubmission": "No puede añadir o editar un envío en la app porque no pudimos recuperar las condiciones de envío del sitio.",
+    "cannotgradefromapp": "Algunos métodos de calificación no son compatibles aún con la aplicación y no se pueden modificar.",
     "cannotsubmitduetostatementsubmission": "No puede enviar para calificar en la app porque no pudimos recuperar las condiciones de envío del sitio.",
     "confirmsubmission": "¿Está seguro que quiere enviar su trabajo para que sea evaluado? Una vez enviado ya no podrá realizar modificaciones.",
     "currentattempt": "Este es el intento {{$a}}.",
@@ -35,6 +36,7 @@
     "graded": "Calificado",
     "gradedby": "Calificado por",
     "gradedon": "Calificado sobre",
+    "gradenotsynced": "Calificación no sincronizada",
     "gradeoutof": "Calificación sobre {{$a}}",
     "gradingstatus": "Estado de la calificación",
     "groupsubmissionsettings": "Configuración de entrega por grupo",
@@ -90,5 +92,6 @@
     "userswhoneedtosubmit": "Componentes del equipo pendientes de entrega: {{$a}}",
     "userwithid": "Usuario con ID {{id}}",
     "viewsubmission": "Ver entrega",
+    "warningsubmissiongrademodified": "La calificación del envío se modificó en el sitio.",
     "warningsubmissionmodified": "El envío del usuario fue modificado en el sitio."
 }

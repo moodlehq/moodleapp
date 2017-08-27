@@ -1,13 +1,17 @@
 {
+    "allowguests": "הקורס הזה מרשה למשתמשים אורחים להכנס",
+    "availablecourses": "קורסים זמינים",
+    "categories": "קטגוריות חישוב ציונים",
+    "courses": "קורסים",
     "enrolme": "רשום אותי",
     "errorloadcourses": "התרחשה שגיאה בזמן טעינת הקורסים.",
-    "filter": "מסנן",
     "frontpage": "עמוד ראשי",
     "mycourses": "הקורסים שלי",
-    "nocourses": "אין מידע שניתן להציג על הקורס",
-    "nosearchresults": "לחיפוש שלך לא היו תוצאות",
+    "nocourses": "אף קורס",
+    "nocoursesyet": "אין קורסים בקטגוריה זו",
+    "nosearchresults": "אין תוצאות",
     "notenroled": "אינך רשום לקורס זה",
     "password": "סיסמה",
-    "search": "חיפוש",
+    "search": "חפשו",
     "searchcourses": "חיפוש קורסים"
 }

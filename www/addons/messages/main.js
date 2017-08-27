@@ -28,6 +28,8 @@ angular.module('mm.addons.messages', ['mm.core'])
 .constant('mmaMessagesReadChangedEvent', 'mma-messages_read_changed')
 .constant('mmaMessagesReadCronEvent', 'mma-messages_read_cron')
 .constant('mmaMessagesAutomSyncedEvent', 'mma_messages_autom_synced')
+.constant('mmaMessagesLimitSearchMessages', 50)
+.constant('mmaMessagesPushSimulationComponent', 'mmaMessagesPushSimulation')
 
 .config(function($stateProvider, $mmUserDelegateProvider, $mmSideMenuDelegateProvider, mmaMessagesSendMessagePriority,
             mmaMessagesAddContactPriority, mmaMessagesBlockContactPriority, mmaMessagesPriority, $mmContentLinksDelegateProvider,
@@ -77,7 +79,8 @@ angular.module('mm.addons.messages', ['mm.core'])
     $mmUserDelegateProvider.registerProfileHandler('mmaMessages:blockContact', '$mmaMessagesHandlers.blockContact', mmaMessagesBlockContactPriority);
 
     // Register content links handler.
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages', '$mmaMessagesHandlers.linksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages:index', '$mmaMessagesHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages:discussion', '$mmaMessagesHandlers.discussionLinksHandler');
 
     // Register settings handler.
     $mmSettingsDelegateProvider.registerHandler('mmaMessages:preferences',
@@ -85,7 +88,7 @@ angular.module('mm.addons.messages', ['mm.core'])
 })
 
 .run(function($mmaMessages, $mmEvents, $state, $mmAddonManager, $mmUtil, mmCoreEventLogin, $mmCronDelegate, $mmaMessagesSync,
-            mmCoreEventOnlineStatusChanged) {
+            mmCoreEventOnlineStatusChanged, $mmSitesManager, $mmLocalNotifications, $mmApp, mmaMessagesPushSimulationComponent) {
 
     // Invalidate messaging enabled WS calls.
     $mmEvents.on(mmCoreEventLogin, function() {
@@ -97,11 +100,7 @@ angular.module('mm.addons.messages', ['mm.core'])
     if ($mmPushNotificationsDelegate) {
         $mmPushNotificationsDelegate.registerHandler('mmaMessages', function(notification) {
             if ($mmUtil.isFalseOrZero(notification.notif)) {
-                $mmaMessages.isMessagingEnabledForSite(notification.site).then(function() {
-                    $mmaMessages.invalidateDiscussionsCache().finally(function() {
-                        $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
-                    });
-                });
+                notificationClicked(notification);
                 return true;
             }
         });
@@ -117,4 +116,24 @@ angular.module('mm.addons.messages', ['mm.core'])
             $mmaMessagesSync.syncAllDiscussions(undefined, true);
         }
     });
+
+    if ($mmApp.isDesktop()) {
+        // Listen for clicks in simulated push notifications.
+        $mmLocalNotifications.registerClick(mmaMessagesPushSimulationComponent, notificationClicked);
+    }
+
+    function notificationClicked(notification) {
+        $mmaMessages.isMessagingEnabledForSite(notification.site).then(function() {
+            $mmSitesManager.isFeatureDisabled('$mmSideMenuDelegate_mmaMessages', notification.site).then(function(disabled) {
+                if (disabled) {
+                    // Messages are disabled, stop.
+                    return;
+                }
+
+                $mmaMessages.invalidateDiscussionsCache().finally(function() {
+                    $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
+                });
+            });
+        });
+    }
 });

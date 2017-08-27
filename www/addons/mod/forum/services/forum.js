@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForum
  */
 .factory('$mmaModForum', function($q, $mmSite, $mmUser, $mmGroups, $translate, $mmSitesManager, mmaModForumDiscPerPage,
-            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil) {
+            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil, $mmLang) {
     var self = {};
 
     /**
@@ -87,41 +87,44 @@ angular.module('mm.addons.mod_forum')
      * @param {Number} courseId       Course ID the forum belongs to.
      * @param {String} subject        New discussion's subject.
      * @param {String} message        New discussion's message.
-     * @param {String} subscribe      True if should subscribe to the discussion, false otherwise.
+     * @param {Object} [options]      Options (subscribe, pin, ...).
      * @param {String} [groupId]      Group this discussion belongs to.
      * @param {String} [siteId]       Site ID. If not defined, current site.
      * @param {Number} [timecreated]  The time the discussion was created. Only used when editing discussion.
-     * @return {Promise}              Promise resolved when the discussion is created.
+     * @param {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
+     * @return {Promise}              Promise resolved with discussion ID if sent online, resolved with false if stored offline.
      */
-    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, timecreated) {
+    self.addNewDiscussion = function(forumId, name, courseId, subject, message, options, groupId, siteId,
+                timecreated, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
         // If we are editing an offline discussion, discard previous first.
         var discardPromise = timecreated ? $mmaModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId) : $q.when();
 
         return discardPromise.then(function() {
-            if (!$mmApp.isOnline()) {
+            if (!$mmApp.isOnline() && allowOffline) {
                 // App is offline, store the action.
                 return storeOffline();
             }
 
-            return self.addNewDiscussionOnline(forumId, subject, message, subscribe, groupId, siteId).then(function() {
-                return true;
+            return self.addNewDiscussionOnline(forumId, subject, message, options, groupId, siteId).then(function(id) {
+                // Success, return the discussion ID.
+                return id;
             }).catch(function(error) {
-                if (error && error.wserror) {
-                    // The WebService has thrown an error, this means that responses cannot be deleted.
-                    return $q.reject(error.error);
-                } else {
+                if (allowOffline && error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
                 }
             });
         });
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, subscribe, groupId, siteId)
-                    .then(function() {
+            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, options,
+                    groupId, timecreated, siteId).then(function() {
                 return false;
             });
         }
@@ -133,15 +136,15 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#addNewDiscussionOnline
-     * @param {Number} forumId   Forum ID.
-     * @param {String} subject   New discussion's subject.
-     * @param {String} message   New discussion's message.
-     * @param {String} subscribe True if should subscribe to the discussion, false otherwise.
-     * @param {String} [groupId] Group this discussion belongs to.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the discussion is created.
+     * @param  {Number} forumId    Forum ID.
+     * @param  {String} subject    New discussion's subject.
+     * @param  {String} message    New discussion's message.
+     * @param  {Object} [options]  Options (subscribe, pin, ...).
+     * @param  {String} [groupId]  Group this discussion belongs to.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when the discussion is created.
      */
-    self.addNewDiscussionOnline = function(forumId, subject, message, subscribe, groupId, siteId) {
+    self.addNewDiscussionOnline = function(forumId, subject, message, options, groupId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -149,13 +152,9 @@ angular.module('mm.addons.mod_forum')
                 forumid: forumId,
                 subject: subject,
                 message: message,
-                options: [
-                    {
-                        name: 'discussionsubscribe',
-                        value: !!subscribe
-                    }
-                ]
+                options: $mmUtil.objectToArrayOfObjects(options, 'name', 'value')
             };
+
             if (groupId) {
                 params.groupid = groupId;
             }
@@ -175,6 +174,22 @@ angular.module('mm.addons.mod_forum')
                     return response.discussionid;
                 }
             });
+        });
+    };
+
+    /**
+     * Check if a the site allows adding attachments in posts and discussions.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#canAddAttachments
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with a boolean: true if can add attachments, false otherwise.
+     */
+    self.canAddAttachments = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Attachments allowed from Moodle 3.1.
+            return site.isVersionGreaterEqualThan('3.1');
         });
     };
 
@@ -199,7 +214,17 @@ angular.module('mm.addons.mod_forum')
 
         return $mmSite.read('mod_forum_can_add_discussion', params, preSets).then(function(result) {
             if (result) {
-                return !!result.status;
+                if (typeof result.canpindiscussions == 'undefined') {
+                    // WS doesn't support it yet, default it to false to prevent students from seing the option.
+                    result.canpindiscussions = false;
+                    result.defaultpinflag = true;
+                }
+                if (typeof result.cancreateattachment == 'undefined') {
+                    // WS doesn't support it yet, default it to true since usually the users will be able to create them.
+                    result.cancreateattachment = true;
+                    result.defaultcreateattachmentflag = true;
+                }
+                return result;
             }
             return $q.reject();
         });
@@ -239,6 +264,18 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * There was a bug adding new discussions to All Participants (see MDL-57962). Check if it's fixed.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#isAllParticipantsFixed
+     * @return {Boolean} True if fixed, false otherwise.
+     */
+    self.isAllParticipantsFixed = function() {
+        return $mmSite.isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
+    };
+
+    /**
      * Check if canAddDiscussion is available.
      *
      * @module mm.addons.mod_forum
@@ -272,33 +309,36 @@ angular.module('mm.addons.mod_forum')
     /**
      * Format discussions, setting groupname if the discussion group is valid.
      *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#formatDiscussionsGroups
      * @param  {Number} cmid          Forum cmid.
      * @param  {Object[]} discussions List of discussions to format.
      * @return {Promise}              Promise resolved with the formatted discussions.
      */
     self.formatDiscussionsGroups = function(cmid, discussions) {
         discussions = angular.copy(discussions);
-        return $translate('mm.core.allparticipants').then(function(strAllParts) {
-            return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
-                // Turn groups into an object where each group is identified by id.
-                var groups = {};
-                angular.forEach(forumgroups, function(fg) {
-                    groups[fg.id] = fg;
-                });
 
-                // Format discussions.
-                angular.forEach(discussions, function(disc) {
-                    if (disc.groupid === -1) {
-                        disc.groupname = strAllParts;
-                    } else {
-                        var group = groups[disc.groupid];
-                        if (group) {
-                            disc.groupname = group.name;
-                        }
-                    }
-                });
-                return discussions;
+        var strAllParts = $translate.instant('mm.core.allparticipants');
+        return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
+            // Turn groups into an object where each group is identified by id.
+            var groups = {};
+            angular.forEach(forumgroups, function(fg) {
+                groups[fg.id] = fg;
             });
+
+            // Format discussions.
+            angular.forEach(discussions, function(disc) {
+                if (disc.groupid === -1) {
+                    disc.groupname = strAllParts;
+                } else {
+                    var group = groups[disc.groupid];
+                    if (group) {
+                        disc.groupname = group.name;
+                    }
+                }
+            });
+            return discussions;
         }).catch(function() {
             return discussions;
         });
@@ -342,6 +382,28 @@ angular.module('mm.addons.mod_forum')
         return self.getCourseForums(courseId, siteId).then(function(forums) {
             for (var x in forums) {
                 if (forums[x].cmid == cmId) {
+                    return forums[x];
+                }
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Get a forum by forum ID.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#getForumById
+     * @param {Number} courseId Course ID.
+     * @param {Number} forumId  Forum ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the forum is retrieved.
+     */
+    self.getForumById = function(courseId, forumId, siteId) {
+        return self.getCourseForums(courseId, siteId).then(function(forums) {
+            for (var x in forums) {
+                if (forums[x].id == forumId) {
                     return forums[x];
                 }
             }
@@ -679,42 +741,49 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#replyPost
-     * @param {Number} postId           ID of the post being replied.
-     * @param {Number} discussionId     ID of the discussion the user is replying to.
-     * @param {Number} forumId          ID of the forum the user is replying to.
-     * @param {String} name             Forum name.
-     * @param {Number} courseId         Course ID the forum belongs to.
-     * @param {String} subject          New post's subject.
-     * @param {String} message          New post's message.
-     * @param {String} [siteId]         Site ID. If not defined, current site.
-     * @return {Promise}                Promise resolved when the post is created.
+     * @param {Number} postId         ID of the post being replied.
+     * @param {Number} discussionId   ID of the discussion the user is replying to.
+     * @param {Number} forumId        ID of the forum the user is replying to.
+     * @param {String} name           Forum name.
+     * @param {Number} courseId       Course ID the forum belongs to.
+     * @param {String} subject        New post's subject.
+     * @param {String} message        New post's message.
+     * @param {Object} [options]      Options (subscribe, attachments, ...).
+     * @param {String} [siteId]       Site ID. If not defined, current site.
+     * @param {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
+     * @return {Promise}              Promise resolved when the post is created.
      */
-    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, siteId) {
+    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, options, siteId, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
-        if (!$mmApp.isOnline()) {
+        if (!$mmApp.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }
 
         // If there's already a reply to be sent to the server, discard it first.
         return $mmaModForumOffline.deleteReply(postId, siteId).then(function() {
-            return self.replyPostOnline(postId, subject, message, siteId).then(function() {
+            return self.replyPostOnline(postId, subject, message, options, siteId).then(function() {
                 return true;
             }).catch(function(error) {
-                if (error && error.wserror) {
-                    // The WebService has thrown an error, this means that responses cannot be deleted.
-                    return $q.reject(error.error);
-                } else {
+                if (allowOffline && error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
                 }
             });
         });
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, siteId)
+            if (!forumId) {
+                // Not enough data to store in offline, reject.
+                return $mmLang.translateAndReject('mm.core.networkerrormsg');
+            }
+
+            return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, options, siteId)
                     .then(function() {
                 return false;
             });
@@ -727,20 +796,22 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#replyPostOnline
-     * @param {Number} postId   ID of the post being replied.
-     * @param {String} subject  New post's subject.
-     * @param {String} message  New post's message.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the post is created.
+     * @param  {Number} postId     ID of the post being replied.
+     * @param  {String} subject    New post's subject.
+     * @param  {String} message    New post's message.
+     * @param  {Object} [options]  Options (subscribe, attachments, ...).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when the post is created.
      */
-    self.replyPostOnline = function(postId, subject, message, siteId) {
+    self.replyPostOnline = function(postId, subject, message, options, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 postid: postId,
                 subject: subject,
-                message: message
+                message: message,
+                options: $mmUtil.objectToArrayOfObjects(options, 'name', 'value')
             };
 
             return site.write('mod_forum_add_discussion_post', params).catch(function(error) {

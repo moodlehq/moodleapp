@@ -4,7 +4,6 @@
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="gradesLoaded" on-refresh="refreshGrades()">
             </ion-refresher>
             <mm-loading hide-until="gradesLoaded">
-                <p ng-if="grades.length == 0" class="padding">{{ 'mma.grades.nogradesreturned' | translate }}</p>
                 <ul class="list">
                     <li ng-repeat="grade in grades">
                         <a class="item item-icon-right" mm-split-view-link="site.grades({courseid: grade.courseid, user: userid, forcephoneview: 1})" title="{{grade.coursefullname}}">
@@ -13,6 +12,7 @@
                         </a>
                     </li>
                 </ul>
+                <mm-empty-box ng-if="grades.length == 0" icon="ion-stats-bars" message="{{ 'mma.grades.nogradesreturned' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

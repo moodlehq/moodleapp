@@ -77,19 +77,17 @@
                     </div>
                     <mm-user-profile-field ng-repeat="field in user.customfields" field="field"></mm-user-profile-field>
                 </div>
-                <div class="list">
-                    <div class="item item-divider" ng-if="user.description">
+                <div class="list" ng-if="user.description">
+                    <div class="item item-divider">
                         <h2>{{ 'mm.user.description' | translate}}</h2>
                     </div>
-                    <div class="item item-text-wrap" ng-if="user.description">
+                    <div class="item item-text-wrap">
                         <mm-format-text watch="true">{{user.description}}</mm-format-text>
                     </div>
                 </div>
             </div>
 
-            <div ng-if="!user">
-                {{ 'mm.user.detailsnotavailable' | translate }}
-            </div>
+            <mm-empty-box ng-if="!user || (!hasContact && !hasDetails && !user.description)" icon="ion-person" message="{{ 'mm.user.detailsnotavailable' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

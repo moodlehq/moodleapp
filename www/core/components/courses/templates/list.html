@@ -7,39 +7,16 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="coursesLoaded" on-refresh="refreshCourses()">
         </ion-refresher>
         <mm-loading hide-until="coursesLoaded">
-            <div class="list" ng-if="courses && courses.length > 5">
-                <ion-input class="item item-input">
+            <div ng-if="courses && courses.length > 5" class="item item-transparent item-input-inset">
+                <ion-input class="item-input-wrapper">
                     <i class="icon ion-funnel placeholder-icon"></i>
                     <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="filter.filterText">
                 </ion-input>
             </div>
-            <section ng-repeat="course in courses | filter:{fullname: filter.filterText}" class="list card">
-                <a class="item item-icon-right" ui-sref="site.mm_course({courseid: course.id, coursefullname: course.fullname})" title="{{course.fullname}}">
-                    <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
-                    <i class="icon icon-accessory ion-chevron-right"></i>
-                </a>
-                <div class="item item-text-wrap" ng-show="course.summary">
-                    <p>
-                        <summary>
-                            <mm-format-text watch="true" max-height="60">{{course.summary}}</mm-format-text>
-                        </summary>
-                    </p>
-                </div>
-                <div class="item mm-tab-handlers" ng-show="(course._handlers && course._handlers.length) || !areNavHandlersLoadedFor(course.id)">
-                    <div class="item tabs tabs-icon-top" ng-show="course._handlers && course._handlers.length">
-                        <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active mm-courses-handler {{class}}" title="{{title | translate}}">
-                            <i class="icon {{icon}}"></i> {{title | translate}}
-                        </a>
-                    </div>
-                    <div class="mm-loading-handlers text-center" ng-if="!course._handlers || !course._handlers.length">
-                        <ion-spinner></ion-spinner>
-                    </div>
-                </div>
-            </section>
-            <div ng-if="!courses || !courses.length">
-                <p>{{ 'mm.courses.nocourses' | translate }}</p>
+            <mm-course-list-progress ng-repeat="course in courses | filter:{fullname: filter.filterText}" course="course" show-summary="true"></mm-course-list-progress>
+            <mm-empty-box ng-if="!courses || !courses.length" icon="ion-ionic" message="{{ 'mm.courses.nocourses' | translate }}">
                 <p ng-if="searchEnabled">{{ 'mm.courses.searchcoursesadvice' | translate }}</p>
-            </div>
+            </mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

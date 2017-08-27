@@ -15,7 +15,9 @@
         </ion-refresher>
         <mm-loading hide-until="scormLoaded">
 	        <mm-course-mod-description watch="true" description="description" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
-	        <p ng-if="scorm.warningmessage">{{ scorm.warningmessage }}</p>
+            <div class="mm-info-card-icon" ng-if="scorm.warningmessage">
+                <i class="icon ion-information-circled padding"></i> {{ scorm.warningmessage }}
+            </div>
 	        <div ng-if="allDataLoaded && !scorm.warningmessage">
 	        	<!-- Attempts status -->
 	        	<div class="card" ng-if="scorm.displayattemptstatus || Object.keys(scorm.offlineAttempts).length">
@@ -56,7 +58,7 @@
 	                </div>
 	            </div>
                 <!-- Synchronize button -->
-                <div class="mm-warning" ng-if="!errorMessage && hasOffline">
+                <div class="mm-warning-card-icon" ng-if="!errorMessage && hasOffline">
                     <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
                 </div>
 	            <!-- TOC -->
@@ -114,7 +116,7 @@
                     </ion-checkbox>
                 	<div class="item item-text-wrap" ng-if="!downloading">
                 		<p ng-if="statusMessage">{{ statusMessage | translate }}</p>
-	                    <button class="button button-block">{{ 'mma.mod_scorm.enter' | translate }}</button>
+	                    <button class="button button-block button-positive">{{ 'mma.mod_scorm.enter' | translate }}</button>
                 	</div>
                 	<div class="item text-center" ng-if="downloading">
 	                	<ion-spinner></ion-spinner>

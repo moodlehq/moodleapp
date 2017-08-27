@@ -1,6 +1,7 @@
 {
     "answer": "Réponse",
-    "complete": "Complet",
+    "answersaved": "Réponse enregistrée",
+    "complete": "Terminer",
     "correct": "Correct",
     "errorattachmentsnotsupported": "L'application ne permet pas encore d'annexer des fichiers aux réponses.",
     "errorinlinefilesnotsupported": "L'app ne permet pas encore la modification de fichiers en ligne.",
@@ -8,9 +9,13 @@
     "feedback": "Feedback",
     "howtodraganddrop": "Tapoter pour sélectionner, puis tapoter pour déposer.",
     "incorrect": "Incorrect",
-    "notanswered": "Pas encore répondu",
+    "information": "Description",
+    "invalidanswer": "Réponse incomplète",
+    "notanswered": "Non répondue",
     "notyetanswered": "Pas encore répondu",
     "partiallycorrect": "Partiellement correct",
     "questionmessage": "Question {{$a}} : {{$b}}",
+    "questionno": "Question {{$a}}",
+    "requiresgrading": "Nécessite évaluation",
     "unknown": "Impossible de déterminer l'état"
 }

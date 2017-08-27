@@ -2,13 +2,11 @@
     "admindisableddownload": "Atenție! Administratorul platformei a dezactivat descărcarea de fișiere; puteți accesa fișierele dar nu le puteți descărca.",
     "clicktoupload": "Apăsați butonul de mai jos pentru a încarcă fișierele în contul dumneavoastră.",
     "couldnotloadfiles": "Lista fișierelor nu a putut fi încărcată.",
-    "emptyfilelist": "Nu sunt fișiere disponibile.",
-    "errorreceivefilenosites": "Nu aveți stocat niciun sit. Adăugați un sit înainte de a încărca un fișier.",
-    "myfiles": "Fișierele mele",
-    "myprivatefiles": "Fisiere personale",
+    "emptyfilelist": "Nu există fișiere",
+    "files": "Fișiere",
     "myprivatefilesdesc": "Fișierele disponibile din zona personală, pe care o dețineți pe acest site.",
-    "sitefiles": "Fișierele disponibile pe site",
+    "privatefiles": "Fișiere private",
+    "sitefiles": "Fişiere site",
     "sitefilesdesc": "Alte fișiere disponibile pe acest site.",
-    "success": "Succes!",
-    "uploadfiles": "Încărcați mai multe fișiere"
+    "uploadfiles": "Trimite fișiere de feedback"
 }

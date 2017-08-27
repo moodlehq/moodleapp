@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "Primename, kad Moodle administratorius panaikino galimybę parsisiųsti failus, failų atsisiųsti negalima, galite tik naršyti.",
+    "clicktoupload": "Paspauskite mygtuką, esantį žemiau, kad galėtumėte atsisiųsti failus į privatų aplanką.",
+    "couldnotloadfiles": "Negalima užkrauti failų sąrašo.",
+    "emptyfilelist": "Nėra ką rodyti.",
+    "erroruploadnotworking": "Deja, failo į pasirinktą svetainę įkelti negalima.",
+    "files": "Failai",
+    "myprivatefilesdesc": "Jūsų privatūs failai Moodle svetainėje.",
+    "privatefiles": "Asmeniniai failai",
+    "sitefiles": "Svetainės failai",
+    "sitefilesdesc": "Kiti failai Moodle svetainėje",
+    "uploadfiles": "Įkelti failus"
+}

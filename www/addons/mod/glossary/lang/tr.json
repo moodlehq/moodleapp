@@ -1,3 +1,6 @@
 {
-    "browsemode": "Önizleme Modu"
+    "attachment": "Dosya",
+    "browsemode": "Önizleme Modu",
+    "casesensitive": "Harf duyarlılığı",
+    "categories": "Kategoriler"
 }

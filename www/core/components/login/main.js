@@ -14,7 +14,9 @@
 
 angular.module('mm.core.login', [])
 
-.constant('mmCoreLoginTokenChangePassword', '*changepassword*')
+.constant('mmCoreLoginTokenChangePassword', '*changepassword*') // Deprecated.
+.constant('mmCoreLoginSiteCheckedEvent', 'mm_login_site_checked')
+.constant('mmCoreLoginSiteUncheckedEvent', 'mm_login_site_unchecked')
 
 .config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
@@ -28,6 +30,12 @@ angular.module('mm.core.login', [])
         onEnter: function($ionicHistory) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
+        },
+        controller: function($scope) {
+            // Required for Electron app so the title doesn't change.
+            $scope.$on('$ionicView.afterEnter', function(ev) {
+                ev.stopPropagation();
+            });
         }
     })
 
@@ -83,7 +91,10 @@ angular.module('mm.core.login', [])
             siteurl: '',
             username: '',
             infositeurl: '',
-            siteid: ''
+            siteid: '',
+            statename: null, // Name and params of the state to go once authenticated. If not defined, site initial page.
+            stateparams: null,
+            siteconfig: null
         }
     })
 
@@ -119,7 +130,7 @@ angular.module('mm.core.login', [])
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
                 $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants, $mmText,
-                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed) {
+                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed, $q) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -164,8 +175,7 @@ angular.module('mm.core.login', [])
     // Observe loaded pages in the InAppBrowser to handle SSO URLs.
     $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
-        var protocol = $mmText.getUrlProtocol(event.url),
-            url = event.url.replace(/^https?:\/\//, '');
+        var url = event.url.replace(/^https?:\/\//, '');
 
         if (appLaunchedByURL(url)) {
             // Close the browser if it's a valid SSO URL.
@@ -173,7 +183,7 @@ angular.module('mm.core.login', [])
         } else if (ionic.Platform.isAndroid()) {
             // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
             var urlScheme = $mmText.getUrlProtocol(url);
-            if (urlScheme) {
+            if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
                 // Open in browser should launch the right app if found and do nothing if not found.
                 $mmUtil.openInBrowser(url);
 
@@ -186,7 +196,7 @@ angular.module('mm.core.login', [])
                     $mmUtil.closeInAppBrowser();
                 }
             } else {
-                lastInAppUrl = protocol + '://' + url;
+                lastInAppUrl = event.url;
             }
         }
     });
@@ -195,11 +205,13 @@ angular.module('mm.core.login', [])
     $rootScope.$on('$cordovaInAppBrowser:exit', function() {
         waitingForBrowser = false;
         lastInAppUrl = false;
+        checkLogout();
     });
     $ionicPlatform.on('resume', function() {
         // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
         $timeout(function() {
             waitingForBrowser = false;
+            checkLogout();
         }, 1000);
     });
 
@@ -243,19 +255,22 @@ angular.module('mm.core.login', [])
     });
 
     // Function to handle session expired events.
-    function sessionExpired(siteid) {
+    function sessionExpired(data) {
 
-        var siteurl = $mmSite.getURL();
-        if (typeof(siteurl) === 'undefined') {
+        var siteId = data && data.siteid,
+            siteUrl = $mmSite.getURL(),
+            promise;
+
+        if (typeof(siteUrl) === 'undefined') {
             return;
         }
 
-        if (siteid && siteid !== $mmSite.getId()) {
+        if (siteId && siteId !== $mmSite.getId()) {
             return; // Site that triggered the event is not current site.
         }
 
         // Check authentication method.
-        $mmSitesManager.checkSite(siteurl).then(function(result) {
+        $mmSitesManager.checkSite(siteUrl).then(function(result) {
 
             if (result.warning) {
                 $mmUtil.showErrorModal(result.warning, true, 4000);
@@ -266,25 +281,46 @@ angular.module('mm.core.login', [])
                 // or show it again if the user is already authenticating using SSO.
                 if (!$mmApp.isSSOAuthenticationOngoing() && !isSSOConfirmShown && !waitingForBrowser) {
                     isSSOConfirmShown = true;
-                    $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
+
+                    if ($mmLoginHelper.shouldShowSSOConfirm(result.code)) {
+                        promise = $mmUtil.showConfirm($translate.instant(
+                                'mm.login.' + ($mmSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
+                    } else {
+                        promise = $q.when();
+                    }
+
+                    promise.then(function() {
                         waitingForBrowser = true;
-                        $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
-                                    result.siteurl, result.code, result.service, result.config && result.config.launchurl);
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code, result.service,
+                                result.config && result.config.launchurl, data.statename, data.stateparams);
+                    }).catch(function() {
+                        // User cancelled, logout him.
+                        logout();
                     }).finally(function() {
                         isSSOConfirmShown = false;
                     });
                 }
             } else {
                 var info = $mmSite.getInfo();
-                if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
+                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
                     $ionicHistory.nextViewOptions({disableBack: true});
                     $state.go('mm_login.reconnect', {
                         siteurl: result.siteurl,
                         username: info.username,
                         infositeurl: info.siteurl,
-                        siteid: $mmSite.getId()
+                        siteid: siteId,
+                        statename: data.statename,
+                        stateparams: data.stateparams,
+                        siteconfig: result.config
                     });
                 }
+            }
+        }).catch(function(error) {
+            // Error checking site.
+            if ($mmSite.isLoggedOut()) {
+                // Site is logged out, show error and logout the user.
+                $mmUtil.showErrorModalDefault(error, 'mm.core.networkerrormsg', true);
+                logout();
             }
         });
     }
@@ -327,15 +363,22 @@ angular.module('mm.core.login', [])
             // Authentication ongoing, probably duplicated request.
             return true;
         }
+        if ($mmApp.isDesktop()) {
+            // In desktop, make sure InAppBrowser is closed.
+            $mmUtil.closeInAppBrowser(true);
+        }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
         $mmApp.startSSOAuthentication();
         $log.debug('App launched by URL');
 
-        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true);
-
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
+
+        // Some platforms like Windows add a slash at the end. Remove it.
+        // Some sites add a # at the end of the URL. If it's there, remove it.
+        url = url.replace(/\/?#?\/?$/, '');
+
         // Decode from base64.
         try {
             url = atob(url);
@@ -345,13 +388,22 @@ angular.module('mm.core.login', [])
             return false;
         }
 
+        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true),
+            siteData;
+
         // Wait for app to be ready.
         $mmApp.ready().then(function() {
             return $mmLoginHelper.validateBrowserSSOLogin(url);
-        }).then(function(siteData) {
+        }).then(function(data) {
+            siteData = data;
             return $mmLoginHelper.handleSSOLoginAuthentication(siteData.siteurl, siteData.token, siteData.privateToken);
         }).then(function() {
-            $mmLoginHelper.goToSiteInitialPage();
+            if (siteData.statename) {
+                // State defined, go to that state instead of site initial page.
+                $state.go(siteData.statename, siteData.stateparams);
+            } else {
+                $mmLoginHelper.goToSiteInitialPage();
+            }
         }).catch(function(errorMessage) {
             if (typeof errorMessage === 'string' && errorMessage !== '') {
                 $mmUtil.showErrorModal(errorMessage);
@@ -362,5 +414,25 @@ angular.module('mm.core.login', [])
         });
 
         return true;
+    }
+
+    // Logout the user if needed.
+    function checkLogout() {
+        if (!$mmApp.isSSOAuthenticationOngoing() && $mmSite.isLoggedIn() && $mmSite.isLoggedOut() &&
+                $state.current.name != 'mm_login.reconnect') {
+            // User must reauthenticate but he closed the InAppBrowser without doing so, logout him and go to sites list.
+            logout();
+        }
+    }
+
+    // Logout user and go to sites list.
+    function logout() {
+        $mmSitesManager.logout().then(function() {
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.go('mm_login.sites');
+        });
     }
 });

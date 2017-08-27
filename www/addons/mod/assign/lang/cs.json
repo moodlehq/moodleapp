@@ -15,6 +15,7 @@
     "attemptreopenmethod_untilpass": "Automaticky dokud neuspěje",
     "attemptsettings": "Nastavení pokusů",
     "cannoteditduetostatementsubmission": "V aplikaci nemůžete přidat nebo upravit řešení úkolu, protože jsme nemohli získat stav řešení z webu.",
+    "cannotgradefromapp": "Některé metody známkování zatím nejsou aplikací podporovány a nemohou být změněny.",
     "cannotsubmitduetostatementsubmission": "V aplikaci nemůžete odeslat známku úkolu, protože jsme nemohli získat stav řešení z webu.",
     "confirmsubmission": "Jste si jisti, že chcete odeslat svou práci k hodnocení? Nebudete moci provádět žádné další změny.",
     "currentattempt": "Toto je pokus č. {{$a}}.",
@@ -35,6 +36,7 @@
     "graded": "Udělena známka",
     "gradedby": "Hodnoceno",
     "gradedon": "Hodnoceno na",
+    "gradenotsynced": "Známky nejsou synchronizovány",
     "gradeoutof": "Hodnoceno z {{$a}}",
     "gradingstatus": "Stav hodnocení",
     "groupsubmissionsettings": "Nastavení skupinového řešení",
@@ -90,5 +92,6 @@
     "userswhoneedtosubmit": "Uživatelé, kteří potřebují odevzdat úkol:  {{$a}}",
     "userwithid": "Uživatel s ID {{id}}",
     "viewsubmission": "Zobrazit odevzdané úkoly",
+    "warningsubmissiongrademodified": "Známka úkolu byla na webu upravena.",
     "warningsubmissionmodified": "Řešení úkolu bylo na webu upraveno."
 }

@@ -1,0 +1,20 @@
+{
+    "attachment": "Прикріпити відзнаку до повідомлення",
+    "browsemode": "Перегляд записів",
+    "byalphabet": "По алфавіту",
+    "byauthor": "Групувати за автором",
+    "bycategory": "Групувати за категорією",
+    "bynewestfirst": "Новіші перші",
+    "byrecentlyupdated": "Нещодавно оновлені",
+    "bysearch": "Пошук",
+    "cannoteditentry": "Неможливо редагувати запис",
+    "casesensitive": "Чутливість відповіді до регістра",
+    "categories": "Категорії",
+    "entriestobesynced": "Записи будуть синхронізовані",
+    "entrypendingapproval": "Цей запис очікує схвалення.",
+    "errorloadingentries": "Сталася помилка під час завантаження записів.",
+    "errorloadingentry": "Сталася помилка під час завантаження запису.",
+    "errorloadingglossary": "Сталася помилка під час завантаження глосарію.",
+    "noentriesfound": "Немає записів",
+    "searchquery": "Пошуковий запит"
+}

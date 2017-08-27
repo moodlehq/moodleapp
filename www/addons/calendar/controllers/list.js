@@ -21,9 +21,9 @@ angular.module('mm.addons.calendar')
  * @ngdoc controller
  * @name mmaCalendarListCtrl
  */
-.controller('mmaCalendarListCtrl', function($scope, $stateParams, $log, $state, $mmaCalendar, $mmUtil, $ionicHistory, $mmEvents,
+.controller('mmaCalendarListCtrl', function($scope, $stateParams, $log, $state, $mmaCalendar, $mmUtil, $timeout, $mmEvents,
         mmaCalendarDaysInterval, $ionicScrollDelegate, $mmLocalNotifications, $mmCourses, mmaCalendarDefaultNotifTimeChangedEvent,
-        $ionicPopover, $q, $translate) {
+        $ionicPopover, $q, $translate, $ionicPlatform) {
 
     $log = $log.getInstance('mmaCalendarListCtrl');
 
@@ -37,9 +37,11 @@ angular.module('mm.addons.calendar')
             fullname: $translate.instant('mm.core.fulllistofcourses')
         };
 
-    if ($stateParams.eventid) {
-        // We arrived here via notification click, let's clear history and redirect to event details.
-        $ionicHistory.clearHistory();
+    $scope.events = [];
+    $scope.eventToLoad = 1;
+
+    if ($stateParams.eventid && !$ionicPlatform.isTablet()) {
+        // There is an event to load and it's a phone device, open the event in a new state.
         $state.go('site.calendar-event', {id: $stateParams.eventid});
     }
 
@@ -47,7 +49,6 @@ angular.module('mm.addons.calendar')
     function initVars() {
         daysLoaded = 0;
         emptyEventsTimes = 0;
-        $scope.events = [];
     }
 
     // Fetch all the data required for the view.
@@ -68,19 +69,26 @@ angular.module('mm.addons.calendar')
                 emptyEventsTimes++;
                 if (emptyEventsTimes > 5) { // Stop execution if we retrieve empty list 6 consecutive times.
                     $scope.canLoadMore = false;
-                    $scope.eventsLoaded = true;
+                    if (refresh) {
+                        $scope.events = [];
+                    }
                 } else {
                     // No events returned, load next events.
-                    return fetchEvents();
+                    return fetchEvents(refresh);
                 }
             } else {
+                // Sort the events by timestart, they're ordered by id.
+                events.sort(function(a, b) {
+                    return a.timestart - b.timestart;
+                });
+
                 angular.forEach(events, $mmaCalendar.formatEventData);
                 if (refresh) {
                     $scope.events = events;
                 } else {
-                    $scope.events = $scope.events.concat(events);
+                    // Filter events with same ID. Repeated events are returned once per WS call, show them only once.
+                    $scope.events = $mmUtil.mergeArraysWithoutDuplicates($scope.events, events, 'id');
                 }
-                $scope.eventsLoaded = true;
                 $scope.canLoadMore = true;
 
                 // Schedule notifications for the events retrieved (might have new events).
@@ -90,12 +98,7 @@ angular.module('mm.addons.calendar')
             // Resize the scroll view so infinite loading is able to calculate if it should load more items or not.
             scrollView.resize();
         }, function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.calendar.errorloadevents', true);
-            }
-            $scope.eventsLoaded = true;
+            $mmUtil.showErrorModalDefault(error, 'mma.calendar.errorloadevents', true);
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
@@ -115,7 +118,30 @@ angular.module('mm.addons.calendar')
     $scope.notificationsEnabled = $mmLocalNotifications.isAvailable();
 
     // Get first events.
-    fetchData();
+    fetchData().then(function() {
+        if ($stateParams.eventid && $ionicPlatform.isTablet()) {
+            // There is an event to load and it's a tablet device. Search the position of the event in the list and load it.
+            var found = false;
+
+            for (var i = 0; i < $scope.events.length; i++) {
+                if ($scope.events[i].id == $stateParams.eventid) {
+                    $scope.eventToLoad = i + 1;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                // Event not found in the list, open it in a new state. Use a $timeout to open the state after the
+                // split view is loaded.
+                $timeout(function() {
+                    $state.go('site.calendar-event', {id: $stateParams.eventid});
+                });
+            }
+        }
+    }).finally(function() {
+        $scope.eventsLoaded = true;
+    });
 
     // Init popover.
     $ionicPopover.fromTemplateUrl('addons/calendar/templates/course_picker.html', {
@@ -149,9 +175,7 @@ angular.module('mm.addons.calendar')
         promises.push($mmaCalendar.invalidateEventsList());
 
         return $q.all(promises).finally(function() {
-            fetchData(true).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+            return fetchData(true);
         });
     };
 

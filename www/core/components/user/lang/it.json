@@ -1,8 +1,8 @@
 {
     "address": "Indirizzo",
-    "city": "Città",
+    "city": "Città /Località",
     "contact": "Contatto",
-    "country": "Stato",
+    "country": "Nazione",
     "description": "Descrizione",
     "details": "Dettagli",
     "detailsnotavailable": "Non puoi visualizzare i dettagli di questo utente.",
@@ -20,6 +20,6 @@
     "roles": "Ruoli",
     "student": "Studente",
     "teacher": "Docente non editor",
-    "viewprofile": "Visualizza profilo",
+    "viewprofile": "Visualizza",
     "webpage": "Pagina web"
 }

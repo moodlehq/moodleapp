@@ -1,10 +1,16 @@
 {
-    "answer": "Odpowiedz",
-    "complete": "Pełna wersja",
+    "answer": "Odpowiedź",
+    "answersaved": "Odpowiedź zapisana",
+    "complete": "Zakończone",
     "correct": "Poprawnie",
     "feedback": "Informacja zwrotna",
-    "incorrect": "Niepoprawnie",
-    "notanswered": "Jeszcze nie udzielono odpowiedzi",
-    "notyetanswered": "Brak odpowiedzi",
-    "partiallycorrect": "Częściowo poprawnie"
+    "incorrect": "Niepoprawny(a)",
+    "information": "Informacja",
+    "invalidanswer": "Niekompletna odpowiedź",
+    "notanswered": "Nie udzielono odpowiedzi",
+    "notyetanswered": "Nie udzielono odpowiedzi",
+    "partiallycorrect": "Częściowo poprawnie",
+    "questionno": "Pytanie {{$a}}",
+    "requiresgrading": "Wymaga oceny",
+    "unknown": "Nieznany"
 }

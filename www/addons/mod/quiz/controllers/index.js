@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizIndexCtrl
  */
-.controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
+.controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $q, $translate,
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
             $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, $mmCourseHelper, mmaModQuizEventAutomSynced, $mmSite,
             $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
@@ -46,7 +46,6 @@ angular.module('mm.addons.mod_quiz')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.moduleName = $mmCourse.translateModuleName('quiz');
-    $scope.isTablet = $ionicPlatform.isTablet();
     $scope.courseId = courseId;
     $scope.refreshIcon = 'spinner';
     $scope.syncIcon = 'spinner';
@@ -407,10 +406,7 @@ angular.module('mm.addons.mod_quiz')
     // Showing or hide a status message depending on the SCORM status.
     function showStatus(status) {
         currentStatus = status;
-
-        if (status == mmCoreDownloading) {
-            $scope.showSpinner = true;
-        }
+        $scope.showSpinner = status == mmCoreDownloading;
     }
 
     // Fetch the Quiz data.
@@ -453,7 +449,12 @@ angular.module('mm.addons.mod_quiz')
                     // Success downloading, open quiz.
                     openQuiz();
                 }).catch(function(error) {
-                    $mmaModQuizHelper.showError(error, 'mma.mod_quiz.errordownloading');
+                    if ($scope.hasOffline) {
+                        // Error downloading but there is something offline, allow continuing it.
+                        openQuiz();
+                    } else {
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                    }
                 }).finally(function() {
                     $scope.showSpinner = false;
                 });
@@ -475,7 +476,7 @@ angular.module('mm.addons.mod_quiz')
     $scope.prefetch = function() {
         $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
     };
-    
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModQuizComponent, module.id);

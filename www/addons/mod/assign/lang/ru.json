@@ -29,6 +29,7 @@
     "graded": "Оценено",
     "gradedby": "Оценено",
     "gradedon": "Оценено в",
+    "gradenotsynced": "Оценка не синхронизирована",
     "gradeoutof": "Оценка из {{$a}}",
     "gradingstatus": "Состояние оценивания",
     "groupsubmissionsettings": "Настройки представления работ группы",

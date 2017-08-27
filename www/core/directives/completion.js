@@ -79,11 +79,14 @@ angular.module('mm.core')
         link: function(scope, element, attrs) {
             if (scope.completion) {
                 showStatus(scope);
+            }
 
-                element.on('click', function(e) {
+            scope.completionClicked = function (e) {
+                if (scope.completion) {
                     if (typeof scope.completion.cmid == 'undefined' || scope.completion.tracking !== 1) {
                         return;
                     }
+
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -102,15 +105,13 @@ angular.module('mm.core')
                             scope.afterChange();
                         }
                     }).catch(function(error) {
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errorchangecompletion', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errorchangecompletion', true);
                     }).finally(function() {
                         modal.dismiss();
                     });
-                });
+
+                    return false;
+                }
             }
         }
     };

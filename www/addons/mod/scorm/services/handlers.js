@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .factory('$mmaModScormHandlers', function($mmCourse, $mmaModScorm, $mmEvents, $state, $mmSite, $mmaModScormHelper,
         $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-        mmaModScormComponent, $q, $mmContentLinksHelper, $mmUtil, $mmaModScormSync, $mmaModScormPrefetchHandler) {
+        mmaModScormComponent, $q, $mmContentLinksHelper, $mmaModScormSync, $mmaModScormPrefetchHandler) {
     var self = {};
 
     /**
@@ -90,14 +90,15 @@ angular.module('mm.addons.mod_scorm')
                     var revision = scorm.sha1hash,
                         timemodified = 0;
 
-                    function download() {
+                    function download(isOutdated) {
                         // We need to call getScorm again, the package might have been updated.
                         $scope.spinner = true; // Show spinner since this operation might take a while.
                         $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
-                            $mmaModScormHelper.confirmDownload(scorm).then(function() {
-                                $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function() {
+                            $mmaModScormHelper.confirmDownload(scorm, isOutdated).then(function() {
+                                return $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function(error) {
                                     if (!$scope.$$destroyed) {
-                                        $mmaModScormHelper.showDownloadError(scorm);
+                                        $mmaModScormHelper.showDownloadError(scorm, error);
+                                        return $q.reject();
                                     }
                                 });
                             }).catch(function() {
@@ -106,11 +107,7 @@ angular.module('mm.addons.mod_scorm')
                             });
                         }).catch(function(error) {
                             $scope.spinner = false;
-                            if (error) {
-                                $mmUtil.showErrorModal(error);
-                            } else {
-                                $mmaModScormHelper.showDownloadError(scorm);
-                            }
+                            $mmaModScormHelper.showDownloadError(scorm, error);
                         });
                     }
 
@@ -128,8 +125,8 @@ angular.module('mm.addons.mod_scorm')
                             e.preventDefault();
                             e.stopPropagation();
                         }
-                        $mmaModScorm.invalidateContent(scorm.coursemodule, courseid).finally(function() {
-                            download();
+                        $mmaModScorm.invalidateAllScormData(scorm.id).finally(function() {
+                            download(true);
                         });
                     };
 
@@ -156,6 +153,9 @@ angular.module('mm.addons.mod_scorm')
                     $scope.$on('$destroy', function() {
                         statusObserver && statusObserver.off && statusObserver.off();
                     });
+                }).catch(function() {
+                    // Error getting SCORM, hide the spinner.
+                    $scope.spinner = false;
                 });
             };
         };
@@ -164,73 +164,23 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Content links handler.
+     * Content links handler for module index page.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
-     * @name $mmaModScormHandlers#linksHandler
+     * @name $mmaModScormHandlers#indexLinksHandler
      */
-    self.linksHandler = function() {
+    self.indexLinksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModScorm', 'scorm', $mmaModScorm);
 
-        var self = {},
-            patterns = ['/mod/scorm/view.php', '/mod/scorm/grade.php'];
-
-        /**
-         * Whether or not the handler is enabled for a certain site.
-         *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            return $mmaModScorm.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's a SCORM URL.
-            if (url.indexOf(patterns[0]) > -1) {
-                // SCORM index.
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
-            } else if (url.indexOf(patterns[1]) > -1) {
-                // SCORM grade.
-                // @todo Go to user attempts list if it isn't current user.
-                return $mmContentLinksHelper.treatModuleGradeUrl(siteIds, url, isEnabled, courseId);
-            }
-
-            return $q.when([]);
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
-            }
-        };
-
-        return self;
-    };
+    /**
+     * Content links handler for quiz grade page.
+     * @todo Go to user attempts list if it isn't current user.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHandlers#gradeLinksHandler
+     */
+    self.gradeLinksHandler = $mmContentLinksHelper.createModuleGradeLinkHandler('mmaModScorm', 'scorm', $mmaModScorm);
 
     /**
      * Synchronization handler.

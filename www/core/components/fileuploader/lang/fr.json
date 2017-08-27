@@ -15,7 +15,7 @@
     "file": "Fichier",
     "fileuploaded": "Le fichier a été déposé.",
     "maxbytesfile": "Le fichier {{$a.file}} est trop gros. La taille maximale permise est de {{$a.size}}.",
-    "photoalbums": "Albums de photos",
+    "photoalbums": "Albums photos",
     "readingfile": "Lecture du fichier",
     "selectafile": "Choisir un fichier",
     "uploadafile": "Déposer un fichier",

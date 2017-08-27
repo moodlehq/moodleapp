@@ -11,6 +11,7 @@
           <h2>{{site.fullname}}</h2>
           <p><mm-format-text clean="true" watch="true">{{site.sitename}}</mm-format-text></p>
           <p>{{site.siteurl}}</p>
+          <span ng-show="!data.showDelete && site.badge" class="badge badge-positive">{{site.badge}}</span>
       </ion-item>
     </ion-list>
   </ion-content>

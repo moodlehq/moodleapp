@@ -58,6 +58,7 @@
     "submitassignment": "Trimite răspuns corespunzător sarcinii de lucru",
     "submittedearly": "Sarcina de lucru a fost rezolvată {{$a}} mai repede",
     "submittedlate": "Sarcina de lucru a fost rezolvată {{$a}} mai târziu",
+    "timemodified": "Ora la care a fost modificat",
     "timeremaining": "Timp rămas",
     "unlimitedattempts": "Nelimitat",
     "userwithid": "Utilizatorul cu ID-ul {{id}}",

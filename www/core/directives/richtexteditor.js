@@ -52,7 +52,8 @@ angular.module('mm.core')
 .directive('mmRichTextEditor', function($ionicPlatform, $mmLang, $timeout, $q, $window, $ionicScrollDelegate, $mmUtil,
             $mmSite, $mmFilepool) {
 
-    var editorInitialHeight = 300,
+    var editorInitialHeightDefault = 300,
+        adjustHeightDefault = true,
         frameTags = ['iframe', 'frame', 'object', 'embed'];
 
     /**
@@ -68,8 +69,7 @@ angular.module('mm.core')
         }
 
         if (ionContentEl.nodeName == 'ION-CONTENT') {
-            ionContentHeight = ionContentEl.offsetHeight || ionContentEl.height || ionContentEl.clientHeight;
-            return $window.innerHeight - ionContentHeight;
+            return $window.innerHeight - $mmUtil.getElementHeight(ionContentEl);
         } else {
             return 0;
         }
@@ -103,6 +103,31 @@ angular.module('mm.core')
         if (ckeditorEl) {
             return angular.element(ckeditorEl).controller('ckeditor');
         }
+    }
+
+    /**
+     * Get the height of the surrounding elements from the current to the top element.
+     *
+     * @param  {Object} element Directive DOM element to get surroundings elements from.
+     * @param  {Object} top     Top DOM element to stop getting elements.
+     * @return {Number}         Surrounding height in px.
+     */
+    function getSurroundingHeight(element, top) {
+        var height = 0;
+
+        while (element.parentNode && element.parentNode.tagName != "ION-CONTENT" && (!top || element != top)) {
+            var parent = element.parentNode;
+            angular.forEach(parent.childNodes, function(child) {
+                if (child.tagName && element.tagName && element.tagName != 'MM-LOADING' && child != element) {
+                    height += $mmUtil.getElementHeight(child, false, true, true);
+                }
+            });
+            element = parent;
+        }
+        var cs = getComputedStyle(element);
+        height += (parseInt(cs.paddingTop, 10) + parseInt(cs.paddingBottom, 10));
+
+        return height;
     }
 
     /**
@@ -251,10 +276,13 @@ angular.module('mm.core')
             element = element[0];
 
             // More customization in http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-customConfig
+            // Option adjustHeight can be boolean or HTML DOM id. Specifying it will adjust height of the editor to the selected
+            // element.
             var defaultOptions = {
                     allowedContent: true,
                     defaultLanguage: 'en',
-                    height: editorInitialHeight,
+                    height: editorInitialHeightDefault,
+                    adjustHeight: adjustHeightDefault,
                     toolbarCanCollapse: true,
                     toolbarStartupExpanded: false,
                     toolbar: [
@@ -276,7 +304,9 @@ angular.module('mm.core')
                 component = scope.component,
                 componentId = scope.componentId,
                 firstChange = true,
-                renderTime;
+                renderTime,
+                editorInitialHeight = editorInitialHeightDefault,
+                adjustHeight = adjustHeightDefault;
 
             // Default to text.
             scope.property = typeof scope.property == 'string' ? scope.property : 'text';
@@ -287,22 +317,59 @@ angular.module('mm.core')
 
             // Check if we should use rich text editor.
             $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+                var promise;
+
                 scope.richTextEditor = !!enabled;
                 renderTime = new Date().getTime();
 
                 if (enabled) {
                     // Get current language to configure the editor.
-                    $mmLang.getCurrentLanguage().then(function(lang) {
+                    promise = $mmLang.getCurrentLanguage().then(function(lang) {
                         defaultOptions.language = changeLanguageCode(lang);
-
-                        if ($ionicPlatform.isTablet()) {
-                            scope.editorOptions = angular.extend(defaultOptions, scope.options, scope.tabletOptions);
-                        } else {
-                            scope.editorOptions = angular.extend(defaultOptions, scope.options, scope.phoneOptions);
-                        }
                     });
+                } else {
+                    promise = $q.when();
                 }
+
+                promise.then(function() {
+                    if ($ionicPlatform.isTablet()) {
+                        scope.editorOptions = angular.extend(defaultOptions, scope.options, scope.tabletOptions);
+                    } else {
+                        scope.editorOptions = angular.extend(defaultOptions, scope.options, scope.phoneOptions);
+                    }
+
+                    editorInitialHeight = scope.editorOptions.height;
+                    adjustHeight = scope.editorOptions.adjustHeight;
+
+                    if (!enabled) {
+                        textareaReady();
+                    }
+                });
             });
+
+            // Function called when textarea is ready.
+            function textareaReady() {
+                var editorEl;
+                $timeout(function() {
+                    if (firstChange) {
+                        firstChange = false;
+                        editorEl = element.querySelector('.mm-textarea');
+                        resizeContentTextarea(editorEl);
+
+                        // Listen for event resize.
+                        ionic.on('resize', onResize, window);
+                    }
+                }, 1000);
+
+                scope.$on('$destroy', function() {
+                    ionic.off('resize', onResize, window);
+                });
+
+                // Window resized.
+                function onResize() {
+                    resizeContentTextarea(editorEl);
+                }
+            }
 
             // Function called when editor is ready.
             scope.editorReady = function() {
@@ -359,11 +426,14 @@ angular.module('mm.core')
                 }
 
                 // If text isn't changed we won't throw firstRender, so throw it manually.
-                if (scope.richTextEditor && scope.firstRender) {
+                if (scope.richTextEditor) {
                     $timeout(function() {
                         if (firstChange) {
-                            scope.firstRender();
+                            if (scope.firstRender) {
+                                scope.firstRender();
+                            }
                             firstChange = false;
+                            resizeContent(editorEl, contentsEl, toolbar);
                         }
                     }, 1000);
                 }
@@ -415,10 +485,61 @@ angular.module('mm.core')
                 }
             };
 
-            // Resize the editor to fill the visible screen size (except top bar).
+            /**
+             * Resize the textarea to fill the visible screen size (except top bar).
+             *
+             * @param  {Object} editorEl   Textare element
+             */
+            function resizeContentTextarea(editorEl) {
+                var editorHeight = editorInitialHeight,
+                    contentVisibleHeight,
+                    screenSmallerThanEditor;
+
+                if (typeof fixedBarsHeight == 'undefined') {
+                    fixedBarsHeight = calculateFixedBarsHeight(editorEl);
+                }
+
+                contentVisibleHeight = $window.innerHeight - fixedBarsHeight;
+
+                // Editor is ready, adjust Height if needed.
+                if (adjustHeight && contentVisibleHeight > 0) {
+                    var topElement,
+                        height;
+
+                    if (adjustHeight !== true) {
+                        topElement = document.getElementById(adjustHeight);
+                        contentVisibleHeight = $mmUtil.getElementHeight(topElement) || contentVisibleHeight;
+                    }
+
+                    height = getSurroundingHeight(element, topElement);
+                    if (contentVisibleHeight > height) {
+                        editorHeight = contentVisibleHeight - height;
+                        editorInitialHeight = editorHeight;
+                    }
+                }
+                screenSmallerThanEditor = contentVisibleHeight > 0 && contentVisibleHeight < editorHeight;
+
+                if (resized && !screenSmallerThanEditor) {
+                    // The editor was resized but now it isn't needed anymore, undo the resize.
+                    undoResize(editorEl);
+                } else if (editorHeight > 60 && (resized || screenSmallerThanEditor || adjustHeight)) {
+                    // The visible screen size is lower than the editor size, resize editor to fill the screen.
+                    // We don't resize if the content new height is too small.
+                    angular.element(editorEl).css('height', editorHeight + 'px');
+                    resized = true;
+                }
+            }
+
+            /**
+             * Resize the editor to fill the visible screen size (except top bar).
+             *
+             * @param  {Object} editorEl   Editor element of CKE (the biggest element .cke)
+             * @param  {Object} contentsEl Just the writtable part of CKE (.cke_contents)
+             * @param  {Object} toolbar    Toolbar of CKE editor (.cke_bottom)
+             */
             function resizeContent(editorEl, contentsEl, toolbar) {
-                var toolbarHeight = toolbar.offsetHeight || toolbar.height || toolbar.clientHeight || 0,
-                    editorHeightWithoutResize = editorInitialHeight + toolbarHeight,
+                var toolbarHeight = $mmUtil.getElementHeight(toolbar),
+                    editorWithToolbarHeight = editorInitialHeight + toolbarHeight,
                     contentVisibleHeight,
                     editorContentNewHeight,
                     screenSmallerThanEditor,
@@ -430,16 +551,34 @@ angular.module('mm.core')
 
                 editorMaximized = !!editorEl.querySelector('.cke_maximized');
                 contentVisibleHeight = $window.innerHeight - fixedBarsHeight;
-                screenSmallerThanEditor = !editorMaximized && contentVisibleHeight > 0 && contentVisibleHeight < editorHeightWithoutResize;
-                editorContentNewHeight = contentVisibleHeight - toolbarHeight;
+
+                // Editor is ready, adjust Height if needed.
+                if (adjustHeight && !editorMaximized && contentVisibleHeight > 0) {
+                    var topElement,
+                        height;
+
+                    if (adjustHeight !== true) {
+                        topElement = document.getElementById(adjustHeight);
+                        contentVisibleHeight = $mmUtil.getElementHeight(topElement) || contentVisibleHeight;
+                    }
+
+                    height = getSurroundingHeight(element, topElement);
+                    if (contentVisibleHeight > height) {
+                        editorWithToolbarHeight = contentVisibleHeight - height;
+                        editorInitialHeight = editorWithToolbarHeight - toolbarHeight;
+                    }
+                }
+                screenSmallerThanEditor = !editorMaximized && contentVisibleHeight > 0 &&
+                    contentVisibleHeight < editorWithToolbarHeight;
+                editorContentNewHeight = editorWithToolbarHeight - toolbarHeight;
 
                 if (resized && !screenSmallerThanEditor) {
                     // The editor was resized but now it isn't needed anymore, undo the resize.
                     undoResize(editorEl, contentsEl);
-                } else if (editorContentNewHeight > 50 && (resized || screenSmallerThanEditor)) {
+                } else if (editorContentNewHeight > 60 && (resized || screenSmallerThanEditor || adjustHeight)) {
                     // The visible screen size is lower than the editor size, resize editor to fill the screen.
                     // We don't resize if the content new height is too small.
-                    angular.element(editorEl).css('height', contentVisibleHeight + 'px');
+                    angular.element(editorEl).css('height', editorWithToolbarHeight + 'px');
                     angular.element(contentsEl).css('height', editorContentNewHeight + 'px');
                     resized = true;
 
@@ -458,8 +597,14 @@ angular.module('mm.core')
 
             // Undo resize.
             function undoResize(editorEl, contentsEl) {
-                angular.element(editorEl).css('height', 'auto');
-                angular.element(contentsEl).css('height', editorInitialHeight + 'px');
+                if (contentsEl) {
+                    // RTE enabled.
+                    angular.element(editorEl).css('height', '');
+                    angular.element(contentsEl).css('height', editorInitialHeight + 'px');
+                } else {
+                    // Textarea.
+                    angular.element(editorEl).css('height', editorInitialHeight + 'px');
+                }
                 resized = false;
             }
         }

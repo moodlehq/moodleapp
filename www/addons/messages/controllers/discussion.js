@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5,
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5, $mmText,
         mmaMessagesReadChangedEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
@@ -85,6 +85,15 @@ angular.module('mm.addons.messages')
         return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
     };
 
+    /**
+     * Copy message to clipboard
+     *
+     * @param  {String} text Message text to be copied.
+     */
+    $scope.copyMessage = function(text) {
+        $mmUtil.copyToClipboard(text);
+    };
+
     $scope.sendMessage = function(text) {
         var message;
 
@@ -98,7 +107,7 @@ angular.module('mm.addons.messages')
         $scope.data.showDelete = false;
         $scope.newMessage = ''; // Clear new message.
 
-        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        text = $mmText.replaceNewLines(text, '<br>');
         message = {
             pending: true,
             sending: true,
@@ -139,18 +148,14 @@ angular.module('mm.addons.messages')
 
                     notifyNewMessage();
                 });
-            }, function(error) {
+            }).catch(function(error) {
                 messagesBeingSent--;
 
                 // Only close the keyboard if an error happens, we want the user to be able to send multiple
                 // messages without the keyboard being closed.
                 $mmApp.closeKeyboard();
 
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.messagenotsent', true);
                 $scope.messages.splice($scope.messages.indexOf(message), 1);
             });
         });
@@ -319,33 +324,41 @@ angular.module('mm.addons.messages')
     // Mark messages as read.
     function markMessagesAsRead() {
         var readChanged = false,
-            previousMessageRead = false,
             promises = [];
 
-        angular.forEach($scope.messages, function(message) {
-
-            if (message.useridfrom != $scope.currentUserId) {
+        if ($mmaMessages.isMarkAllMessagesReadEnabled()) {
+            var messageUnreadFound = false;
+            // Mark all messages at a time if one messages is unread.
+            for (var x in $scope.messages) {
+                var message = $scope.messages[x];
+                // If an unread message is found, mark all messages as read.
+                if (message.useridfrom != $scope.currentUserId && message.read == 0) {
+                    messageUnreadFound = true;
+                    break;
+                }
+            }
+            if (messageUnreadFound) {
+                setUnreadLabelPosition();
+                promises.push($mmaMessages.markAllMessagesRead(userId).then(function() {
+                    readChanged = true;
+                    // Mark all messages as read.
+                    angular.forEach($scope.messages, function(message) {
+                        message.read = 1;
+                    });
+                }));
+            }
+        } else {
+            setUnreadLabelPosition();
+            // Mark each message as read one by one.
+            angular.forEach($scope.messages, function(message) {
                 // If the message is unread, call $mmaMessages.markMessageRead.
-                if (message.read == 0) {
+                if (message.useridfrom != $scope.currentUserId && message.read == 0) {
                     promises.push($mmaMessages.markMessageRead(message.id).then(function() {
                         readChanged = true;
                         message.read = 1;
                     }));
                 }
-
-                // Place unread from message label only once.
-                if (!unreadMessageFrom) {
-                    message.unreadFrom = message.read == 0 && previousMessageRead;
-                    // Save where the label is placed.
-                    unreadMessageFrom = message.unreadFrom && parseInt(message.id, 10);
-                    previousMessageRead = message.read != 0;
-                }
-            }
-        });
-        // Do not update the message unread from label on next refresh.
-        if (!unreadMessageFrom) {
-            // Using true to indicate the label is not placed but should not be placed.
-            unreadMessageFrom = true;
+            });
         }
 
         $q.all(promises).finally(function() {
@@ -356,6 +369,34 @@ angular.module('mm.addons.messages')
                 });
             }
         });
+    }
+
+    // Set the place where the unread label position has to be.
+    function setUnreadLabelPosition() {
+        if (unreadMessageFrom) {
+            return;
+        }
+
+        var previousMessageRead = false;
+
+        // Check all messages again and mark it as read.
+        angular.forEach($scope.messages, function(message) {
+            if (message.useridfrom != $scope.currentUserId) {
+                // Place unread from message label only once.
+                if (!unreadMessageFrom) {
+                    message.unreadFrom = message.read == 0 && previousMessageRead;
+                    // Save where the label is placed.
+                    unreadMessageFrom = message.unreadFrom && parseInt(message.id, 10);
+                    previousMessageRead = message.read != 0;
+                }
+            }
+        });
+
+        // Do not update the message unread from label on next refresh.
+        if (!unreadMessageFrom) {
+            // Using true to indicate the label is not placed but should not be placed.
+            unreadMessageFrom = true;
+        }
     }
 
     // Get a discussion. Can load several "pages".
@@ -561,11 +602,7 @@ angular.module('mm.addons.messages')
                 $scope.messages.splice(index, 1); // Remove message from the list without having to wait for re-fetch.
                 fetchMessages(); // Re-fetch messages to update cached data.
             }).catch(function(error) {
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.errordeletemessage', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.errordeletemessage', true);
             }).finally(function() {
                 modal.dismiss();
             });

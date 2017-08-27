@@ -17,6 +17,7 @@
     "maxbytesfile": "O arquivo {{$a.file}} é muito grande. O tamanho máximo que você pode enviar é {{$a.size}}.",
     "photoalbums": "Álbuns de fotos",
     "readingfile": "Lendo arquivos",
+    "selectafile": "Selecione um arquivo",
     "uploadafile": "Enviando um arquivo",
     "uploading": "Enviando",
     "uploadingperc": "Enviando: {{$a}}%",

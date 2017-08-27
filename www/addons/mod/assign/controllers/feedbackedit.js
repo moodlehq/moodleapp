@@ -53,7 +53,7 @@ angular.module('mm.addons.mod_assign')
 
     // Check if data has changed.
     function hasDataChanged() {
-        return $mmaModAssignFeedbackDelegate.hasPluginDataChanged($scope.assign, $scope.plugin, getInputData()).catch(function() {
+        return $mmaModAssignFeedbackDelegate.hasPluginDataChanged($scope.assign, $scope.userId, $scope.plugin, getInputData()).catch(function() {
             // Ignore errors.
             return true;
         });

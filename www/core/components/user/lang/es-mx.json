@@ -16,10 +16,11 @@
     "manager": "Mánager",
     "newpicture": "Imagen nueva",
     "phone1": "Teléfono",
-    "phone2": "Móvil",
+    "phone2": "Teléfono móvil",
     "roles": "Roles",
+    "sendemail": "Email",
     "student": "Estudiante",
     "teacher": "Profesor sin derechos de edición",
     "viewprofile": "Ver perfil",
-    "webpage": "Página Web"
+    "webpage": "Página web"
 }

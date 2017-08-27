@@ -1,9 +1,16 @@
 {
-    "answer": "Yanıt",
-    "complete": "Tamamlanmış",
+    "answer": "Cevap",
+    "answersaved": "Cevap kaydedildi",
+    "complete": "Tamamlandı",
     "correct": "Doğru",
     "feedback": "Geribildirim",
     "incorrect": "Yanlış",
-    "notanswered": "Henüz yanıtlanmadı",
-    "partiallycorrect": "Kısmen doğru"
+    "information": "Bilgi",
+    "invalidanswer": "Tamamlanmamış cevap",
+    "notanswered": "Cevaplanmadı",
+    "notyetanswered": "Henüz cevaplanmadı",
+    "partiallycorrect": "Kısmen doğru",
+    "questionno": "Soru {{$a}}",
+    "requiresgrading": "Notlandırma gerekir",
+    "unknown": "Bilinmeyen"
 }

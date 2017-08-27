@@ -1,10 +1,16 @@
 {
-    "answer": "Răspunde",
-    "complete": "Finalizează",
+    "answer": "Răspuns",
+    "answersaved": "Răspuns salvat",
+    "complete": "Complet",
     "correct": "Corect",
     "feedback": "Feedback",
     "incorrect": "Incorect",
-    "notanswered": "Nu a fost rezolvat încă",
-    "notyetanswered": "Incă nu s-a răspuns",
-    "partiallycorrect": "Parţial corect"
+    "information": "Informații",
+    "invalidanswer": "Răspuns incomplet",
+    "notanswered": "Nu a primit răspuns",
+    "notyetanswered": "Nu a primit răspuns încă",
+    "partiallycorrect": "Parțial corect",
+    "questionno": "Întrebare {{$a}}",
+    "requiresgrading": "Trebuie să fie notată",
+    "unknown": "Necunoscut"
 }

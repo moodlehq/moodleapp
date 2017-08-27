@@ -40,7 +40,7 @@ angular.module('mm.core')
  * @param {Boolean} [noBorder=false]   True if want to show file entry without borders. Defaults to false.
  */
 .directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents, $mmFS, mmCoreDownloaded, mmCoreDownloading,
-            mmCoreNotDownloaded, mmCoreOutdated) {
+            mmCoreNotDownloaded, mmCoreOutdated, $mmLang) {
 
     /**
      * Convenience function to get the file state and set scope variables based on it.
@@ -81,13 +81,14 @@ angular.module('mm.core')
         }
 
         scope.isDownloading = true;
-        return $mmFilepool.downloadUrl(siteId, fileUrl, false, component, componentId, timeModified).then(function(localUrl) {
-            getState(scope, siteId, fileUrl, timeModified, alwaysDownload); // Update state.
+        return $mmFilepool.downloadUrl(siteId, fileUrl, false, component, componentId, timeModified, undefined, scope.file)
+                .then(function(localUrl) {
             return localUrl;
-        }, function() {
+        }).catch(function() {
+            // Call getState to make sure we have the right state.
             return getState(scope, siteId, fileUrl, timeModified, alwaysDownload).then(function() {
                 if (scope.isDownloaded) {
-                    return localUrl;
+                    return $mmFilepool.getInternalUrlByUrl(siteId, fileUrl);
                 } else {
                     return $q.reject();
                 }
@@ -120,15 +121,17 @@ angular.module('mm.core')
 
                 if (scope.isDownloaded && !scope.showDownload) {
                     // Get the local file URL.
-                    return $mmFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timeModified);
+                    return $mmFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timeModified, false, false, scope.file);
                 } else {
                     if (!isOnline && !scope.isDownloaded) {
                         // Not downloaded and we're offline, reject.
                         return $q.reject();
                     }
 
+                    var isDownloading = scope.isDownloading;
+                    scope.isDownloading = true; // This check could take a while, show spinner.
                     return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, fileSize).then(function() {
-                        if (scope.isDownloading) {
+                        if (isDownloading) {
                             // It's already downloading, stop.
                             return;
                         }
@@ -140,12 +143,13 @@ angular.module('mm.core')
                             downloadFile(scope, siteId, fileUrl, component, componentId, timeModified, alwaysDownload);
                         }
 
-                        if (scope.isDownloading || !scope.isDownloaded || isOnline) {
+                        if (isDownloading || !scope.isDownloaded || isOnline) {
                             // Not downloaded or outdated and online, return the online URL.
                             return fixedUrl;
                         } else {
                             // Outdated but offline, so we return the local URL.
-                            return $mmFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timeModified);
+                            return $mmFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timeModified,
+                                    false, false, scope.file);
                         }
                     });
                 }
@@ -161,7 +165,27 @@ angular.module('mm.core')
             }
 
             if (url.indexOf('http') === 0) {
-                return $mmUtil.openOnlineFile(url);
+                return $mmUtil.openOnlineFile(url).catch(function(error) {
+                    // Error opening the file, some apps don't allow opening online files.
+                    if (!$mmFS.isAvailable()) {
+                        return $q.reject(error);
+                    }
+
+                    var subPromise;
+                    if (scope.isDownloading) {
+                        subPromise = $mmLang.translateAndReject('mm.core.erroropenfiledownloading');
+                    } else if (status === mmCoreNotDownloaded) {
+                        // File is not downloaded, download and then return the local URL.
+                        subPromise = downloadFile(scope, siteId, fileUrl, component, componentId, timeModified, alwaysDownload);
+                    } else {
+                        // File is outdated and can't be opened in online, return the local URL.
+                        subPromise = $mmFilepool.getInternalUrlByUrl(siteId, fileUrl);
+                    }
+
+                    return subPromise.then(function(url) {
+                        return $mmUtil.openFile(url);
+                    });
+                });
             } else {
                 return $mmUtil.openFile(url);
             }
@@ -195,18 +219,20 @@ angular.module('mm.core')
                 return;
             }
 
+            if (scope.file.isexternalfile) {
+                alwaysDownload = true; // Always show the download button in external files.
+            }
+
             scope.filename = fileName;
             scope.fileicon = $mmFS.getFileIcon(fileName);
 
             if (canDownload) {
                 getState(scope, siteId, fileUrl, timeModified, alwaysDownload);
 
+                // Update state when receiving events about this file.
                 $mmFilepool.getFileEventNameByUrl(siteId, fileUrl).then(function(eventName) {
-                    observer = $mmEvents.on(eventName, function(data) {
+                    observer = $mmEvents.on(eventName, function() {
                         getState(scope, siteId, fileUrl, timeModified, alwaysDownload);
-                        if (!data.success) {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
                     });
                 });
             }
@@ -229,16 +255,19 @@ angular.module('mm.core')
                     // File needs to be opened now. If file needs to be downloaded, skip the queue.
                     openFile(scope, siteId, fileUrl, fileSize, component, componentId, timeModified, alwaysDownload)
                             .catch(function(error) {
-                        $mmUtil.showErrorModal(error);
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 } else {
                     // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-                    promise = fileSize ? $mmUtil.confirmDownloadSize(fileSize) : $q.when();
+                    promise = fileSize ? $mmUtil.confirmDownloadSize({size: fileSize, total: true}) : $q.when();
                     promise.then(function() {
                         // User confirmed, add the file to queue.
                         $mmFilepool.invalidateFileByUrl(siteId, fileUrl).finally(function() {
                             scope.isDownloading = true;
-                            $mmFilepool.addToQueueByUrl(siteId, fileUrl, component, componentId, timeModified);
+                            $mmFilepool.addToQueueByUrl(siteId, fileUrl, component, componentId, timeModified,
+                                    undefined, 0, scope.file).catch(function(error) {
+                                $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                            });
                         });
                     });
                 }

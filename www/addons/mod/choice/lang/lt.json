@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Atsiprašome, buvo problema pateikiant tavo pasirinkimą. Prašau, pabandykite dar kartą.",
+    "choiceoptions": "Pasirinkimo parinktys",
+    "errorgetchoice": "Klaida gaunant alternatyvius duomenis.",
+    "expired": "Atsiprašome, veikla uždaryta {{$a}} ir nebegalima",
+    "full": "(Visas)",
+    "noresultsviewable": "Rezultatai dabar nematomi.",
+    "notopenyet": "Apgailestaujame, ši veikla negalima iki {{$a}}",
+    "numberofuser": "Atsakymų skaičius",
+    "numberofuserinpercentage": "Atsakymų procentas",
+    "previewonly": "Tai yra tik šios veiklos galimų variantų peržiūra. Savo pasirinkimo negalėsite pateikti iki {{$a}}.",
+    "removemychoice": "Pašalinti mano pasirinkimą",
+    "responses": "Atsakymai",
+    "responsesresultgraphdescription": "{{number}}%  dalyvių pasirinkusių pasirinkimą: {{tekstas}}",
+    "responsesresultgraphheader": "Pavaizduota grafiku",
+    "resultsnotsynced": "Galutinis atsakymas neužfiksuotas. Prašome sinchronizuotai atnaujinti duomenis.",
+    "savemychoice": "Įrašyti mano pasirinkimą",
+    "userchoosethisoption": "Naudotojas, kuris pasirenka šią parinktį",
+    "yourselection": "Jūsų pasirinkimas"
+}

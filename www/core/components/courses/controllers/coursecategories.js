@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc controller
  * @name mmCourseCategoriesCtrl
  */
-.controller('mmCourseCategoriesCtrl', function($scope, $stateParams, $mmCourses, $mmUtil, $q, $state, $mmSite) {
+.controller('mmCourseCategoriesCtrl', function($scope, $stateParams, $mmCourses, $mmUtil, $q, $mmSite) {
 
     var categoryId = $stateParams.categoryid || 0;
 

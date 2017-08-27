@@ -1,0 +1,4 @@
+<div ng-if="progress !== false && progress >= 0">
+    <progress max="100" value="{{ progress }}"></progress>
+    <span class="mm-progress-text">{{ 'mm.core.percentagenumber' | translate: {$a: text} }}</span>
+</div>

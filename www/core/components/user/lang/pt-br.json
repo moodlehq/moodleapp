@@ -1,6 +1,6 @@
 {
     "address": "Endereço",
-    "city": "Cidade",
+    "city": "Cidade/Município",
     "contact": "Contato",
     "country": "País",
     "description": "Descrição",
@@ -10,16 +10,17 @@
     "email": "Email",
     "emailagain": "Confirmar endereço de e-mail",
     "firstname": "Nome",
-    "interests": "interesses",
+    "interests": "Interesses",
     "invaliduser": "Usuário inválido.",
     "lastname": "Sobrenome",
     "manager": "Gerente",
     "newpicture": "Nova imagem",
-    "phone1": "Telefone",
-    "phone2": "Celular",
+    "phone1": "Fone",
+    "phone2": "Telefone celular",
     "roles": "Papéis",
+    "sendemail": "Email",
     "student": "Estudante",
     "teacher": "Professor não-editor",
     "viewprofile": "Ver perfil",
-    "webpage": "Página da internet"
+    "webpage": "Página web"
 }

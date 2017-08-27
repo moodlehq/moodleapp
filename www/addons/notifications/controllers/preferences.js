@@ -21,12 +21,34 @@ angular.module('mm.addons.notifications')
  * @ngdoc controller
  * @name mmaNotificationsPreferencesCtrl
  */
-.controller('mmaNotificationsPreferencesCtrl', function($scope, $mmaNotifications, $mmUtil, $ionicPlatform, $mmUser,
-            $mmaMessageOutputDelegate, $q, $timeout, $mmSettingsHelper) {
+.controller('mmaNotificationsPreferencesCtrl', function($scope, $mmaNotifications, $mmUtil, $ionicPlatform, $mmUser, $mmConfig,
+            $mmaMessageOutputDelegate, $q, $timeout, $mmSettingsHelper, mmCoreSettingsNotificationSound, $mmLocalNotifications,
+            $mmEvents, mmCoreEventNotificationSoundChanged, $mmApp) {
 
     var updateTimeout;
 
     $scope.isTablet = $ionicPlatform.isTablet();
+    $scope.notifPrefsEnabled = $mmaNotifications.isNotificationPreferencesEnabled();
+    $scope.canChangeSound = $mmLocalNotifications.isAvailable() && !$mmApp.isDesktop();
+
+    if ($scope.canChangeSound) {
+        // Notification sound setting.
+        $mmConfig.get(mmCoreSettingsNotificationSound, true).then(function(enabled) {
+            $scope.notificationSound = enabled;
+        });
+
+        $scope.notificationSoundChanged = function(enabled) {
+            $mmConfig.set(mmCoreSettingsNotificationSound, enabled);
+            $mmEvents.trigger(mmCoreEventNotificationSoundChanged, enabled);
+            $mmLocalNotifications.rescheduleAll();
+        };
+    }
+
+    if (!$scope.notifPrefsEnabled) {
+        // Notification preferences aren't enabled, stop.
+        $scope.preferencesLoaded = true;
+        return;
+    }
 
     function fetchPreferences() {
         return $mmaNotifications.getNotificationPreferences().then(function(preferences) {

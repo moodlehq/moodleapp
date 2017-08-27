@@ -110,6 +110,13 @@ angular.module('mm.addons.mod_survey')
                         var isTextArea = q.multi && q.multi.length === 0 && q.type === 0;
                         $scope.answers[q.name] = q.required ? -1 : (isTextArea ? '' : '0');
                     }
+
+                    if (q.multi && !q.multi.length && q.parent === 0 && q.type > 0) {
+                        // Options shown in a select. Remove all HTML.
+                        q.options = q.options.map(function(option) {
+                            return $mmText.cleanTags(option);
+                        });
+                    }
                 });
             });
         });

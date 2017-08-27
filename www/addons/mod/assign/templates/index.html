@@ -15,7 +15,7 @@
         <mm-loading hide-until="assignmentLoaded">
             <div class="card" ng-if="description" ng-click="expandDescription()">
                 <div class="item item-text-wrap">
-                    <mm-format-text max-height="120" clean="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">{{ description }}</mm-format-text>
+                    <mm-format-text max-height="120" fullview-on-click="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">{{ description }}</mm-format-text>
                 </div>
             </div>
             <div class="list card" ng-if="assign.introattachments && assign.introattachments.length">
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Assign has something offline. -->
-            <div class="mm-warning" ng-if="hasOffline">
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
             </div>
 
@@ -37,27 +37,27 @@
                 <div ng-if="summary.participantcount" class="item item-text-wrap item-icon-right" ng-click="gotoSubmissionList()">
                     <h2 ng-if="assign.teamsubmission">{{ 'mma.mod_assign.numberofteams' | translate }}</h2>
                     <h2 ng-if="!assign.teamsubmission">{{ 'mma.mod_assign.numberofparticipants' | translate }}</h2>
-                    <span class="badge badge-positive">{{summary.participantcount}}</span>
+                    <span ng-if="showNumbers" class="badge badge-positive">{{summary.participantcount}}</span>
                     <i class="icon icon-accessory ion-chevron-right"></i>
                 </div>
 
-                <div ng-if="assign.submissiondrafts && summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissiondraftscount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusDraft, summary.submissiondraftscount)">
+                <div ng-if="assign.submissiondrafts && summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': !showNumbers || summary.submissiondraftscount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusDraft, summary.submissiondraftscount)">
                     <h2>{{ 'mma.mod_assign.numberofdraftsubmissions' | translate }}</h2>
-                    <span class="badge badge-positive">{{summary.submissiondraftscount}}</span>
-                    <i class="icon icon-accessory ion-chevron-right" ng-if="summary.submissiondraftscount"></i>
+                    <span ng-if="showNumbers" class="badge badge-positive">{{summary.submissiondraftscount}}</span>
+                    <i class="icon icon-accessory ion-chevron-right" ng-if="!showNumbers || summary.submissiondraftscount"></i>
                 </div>
 
-                <div ng-if="summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissionssubmittedcount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusSubmitted, summary.submissionssubmittedcount)">
+                <div ng-if="summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': !showNumbers || summary.submissionssubmittedcount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusSubmitted, summary.submissionssubmittedcount)">
                     <h2>{{ 'mma.mod_assign.numberofsubmittedassignments' | translate }}</h2>
-                    <span class="badge badge-positive">{{summary.submissionssubmittedcount}}</span>
-                    <i class="icon icon-accessory ion-chevron-right" ng-if="summary.submissionssubmittedcount"></i>
+                    <span ng-if="showNumbers" class="badge badge-positive">{{summary.submissionssubmittedcount}}</span>
+                    <i class="icon icon-accessory ion-chevron-right" ng-if="!showNumbers || summary.submissionssubmittedcount"></i>
                 </div>
-                <div ng-if="summary.submissionsenabled && !assign.teamsubmission" class="item item-text-wrap" ng-class="{'item-icon-right': needsGradingAvalaible}" ng-click="gotoSubmissionList(mmaModAssignNeedGrading, needsGradingAvalaible)">
+                <div ng-if="summary.submissionsenabled && !assign.teamsubmission && showNumbers" class="item item-text-wrap" ng-class="{'item-icon-right': needsGradingAvalaible}" ng-click="gotoSubmissionList(mmaModAssignNeedGrading, needsGradingAvalaible)">
                     <h2>{{ 'mma.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2>
                     <span class="badge badge-positive">{{summary.submissionsneedgradingcount}}</span>
                     <i class="icon icon-accessory ion-chevron-right" ng-if="needsGradingAvalaible"></i>
                 </div>
-                <p class="mm-warning" ng-if="assign.teamsubmission && summary.warnofungroupedusers">{{ 'mma.mod_assign.ungroupedusers' | translate }}</p>
+                <p class="mm-info-card" ng-if="assign.teamsubmission && summary.warnofungroupedusers">{{ 'mma.mod_assign.ungroupedusers' | translate }}</p>
             </div>
 
             <mma-mod-assign-submission ng-if="!canviewsubmissions" courseid="{{courseid}}" moduleid="{{moduleid}}" scroll-handle="mmaModAssignIndexScroll"></mma-mod-assign-submission>

@@ -14,19 +14,32 @@
 
 angular.module('mm.addons.mod_wiki')
 
-.constant('mmaModWikiNewPagesStore', 'mma_mod_wiki_new_pages')
+.constant('mmaModWikiNewPagesStore', 'mma_mod_wiki_new_pages_store')
 
 .config(function($mmSitesFactoryProvider, mmaModWikiNewPagesStore) {
     var stores = [
         {
             name: mmaModWikiNewPagesStore,
-            keyPath: ['subwikiid', 'title'],
+            keyPath: ['subwikiid', 'wikiid', 'userid', 'groupid', 'title'],
             indexes: [
                 {
                     name: 'subwikiid'
                 },
                 {
+                    name: 'wikiid'
+                },
+                {
+                    name: 'userid'
+                },
+                {
+                    name: 'groupid'
+                },
+                {
                     name: 'title'
+                },
+                {
+                    name: 'subwikiWikiUserGroup',
+                    keyPath: ['subwikiid', 'wikiid', 'userid', 'groupid']
                 }
             ]
         }
@@ -52,16 +65,21 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiOffline#deleteNewPage
-     * @param  {Number} subwikiId Subwiki ID.
      * @param  {String} title     Title of the page.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
      * @param  {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}          Promise resolved if deleted, rejected if failure.
      */
-    self.deleteNewPage = function(subwikiId, title, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.deleteNewPage = function(title, subwikiId, wikiId, userId, groupId,  siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().remove(mmaModWikiNewPagesStore, [subwikiId, title]);
+            subwikiId = (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0;
+            wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
+            userId = (userId = parseInt(userId, 10)) > 0 ? userId : 0;
+            groupId = (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0;
+            return site.getDb().remove(mmaModWikiNewPagesStore, [subwikiId, wikiId, userId, groupId, title]);
         });
     };
 
@@ -75,8 +93,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}         Promise resolved with pages.
      */
     self.getAllNewPages = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().getAll(mmaModWikiNewPagesStore);
         });
@@ -88,16 +104,22 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiOffline#getNewPage
-     * @param  {Number} subwikiId Subwiki ID.
      * @param  {String} title     Title of the page.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @param  {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}          Promise resolved with page.
      */
-    self.getNewPage = function(subwikiId, title, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.getNewPage = function(title, subwikiId, wikiId, userId, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().get(mmaModWikiNewPagesStore, [subwikiId, title]);
+            subwikiId = (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0;
+            wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
+            userId = (userId = parseInt(userId, 10)) > 0 ? userId : 0;
+            groupId = (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0;
+            return site.getDb().get(mmaModWikiNewPagesStore, [subwikiId, wikiId, userId, groupId, title]);
         });
     };
 
@@ -107,15 +129,20 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiOffline#getSubwikiNewPages
-     * @param  {Number} subwikiId Subwiki ID.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
      * @param  {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}          Promise resolved with pages.
      */
-    self.getSubwikiNewPages = function(subwikiId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.getSubwikiNewPages = function(subwikiId, wikiId, userId, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModWikiNewPagesStore, 'subwikiid', subwikiId);
+            subwikiId = (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0;
+            wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
+            userId = (userId = parseInt(userId, 10)) > 0 ? userId : 0;
+            groupId = (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0;
+            return site.getDb().whereEqual(mmaModWikiNewPagesStore, 'subwikiWikiUserGroup', [subwikiId, wikiId, userId, groupId]);
         });
     };
 
@@ -125,7 +152,7 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiOffline#getSubwikisNewPages
-     * @param  {Number[]} subwikis List of subwiki IDs.
+     * @param  {Object[]} subwikis List of subwiki.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved with pages.
      */
@@ -135,8 +162,9 @@ angular.module('mm.addons.mod_wiki')
         var promises = [],
             pages = [];
 
-        angular.forEach(subwikis, function(subwikiId) {
-            promises.push(self.getSubwikiNewPages(subwikiId, siteId).then(function(subwikiPages) {
+        angular.forEach(subwikis, function(subwiki) {
+            promises.push(self.getSubwikiNewPages(subwiki.id, subwiki.wikiid, subwiki.userid, subwiki.groupid, siteId)
+                    .then(function(subwikiPages) {
                 pages = pages.concat(subwikiPages);
             }));
         });
@@ -152,21 +180,25 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiOffline#saveNewPage
-     * @param  {Number} subwikiId Subwiki ID.
-     * @param  {String} title     Title of the page.
-     * @param  {String} content   Content of the page.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved if stored, rejected if failure.
+     * @param  {String} title       Title of the page.
+     * @param  {String} content     Content of the page.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved if stored, rejected if failure.
      */
-    self.saveNewPage = function(subwikiId, title, content, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.saveNewPage = function(title, content, subwikiId, wikiId, userId, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var now = new Date().getTime(),
                 entry = {
-                    subwikiid: subwikiId,
                     title: title,
                     cachedcontent: content,
+                    subwikiid: (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0,
+                    wikiid: (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0,
+                    userid: (userId = parseInt(userId, 10)) > 0 ? userId : 0,
+                    groupid: (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0,
                     contentformat: 'html',
                     timecreated: now,
                     timemodified: now,
@@ -178,28 +210,12 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
-     * Check if a subwiki has offline data stored.
-     *
-     * @module mm.addons.mod_wiki
-     * @ngdoc method
-     * @name $mmaModWikiOffline#subwikiHasOfflineData
-     * @param  {Number} subwikiId Subwiki ID.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved with boolean: true if has offline data, false otherwise.
-     */
-    self.subwikiHasOfflineData = function(subwikiId, siteId) {
-        return self.getSubwikiNewPages(subwikiId, siteId).then(function(pages) {
-            return !!pages.length;
-        });
-    };
-
-    /**
      * Check if a list of subwikis have offline data stored.
      *
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiOffline#subwikisHaveOfflineData
-     * @param  {Number[]} subwikis List of subwiki IDs.
+     * @param  {Object[]} subwikis List of subwikis.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved with boolean: true if has offline data, false otherwise.
      */

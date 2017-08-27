@@ -9,3 +9,5 @@ www/build
 .sass-cache/
 www/lib
 e2e/build
+/desktop/*
+!/desktop/assets/

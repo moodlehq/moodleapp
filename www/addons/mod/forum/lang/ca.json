@@ -5,6 +5,8 @@
     "cannotcreatediscussion": "No s'ha pogut obrir un debat nou",
     "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
     "discussion": "Debat",
+    "discussionlocked": "Aquest fil de debat ha finalitzat, així que no admet respostes.",
+    "discussionpinned": "Fixat",
     "discussionsubscription": "Subscripció als debats",
     "edit": "Edita",
     "erroremptymessage": "El missatge no pot estar buit",
@@ -14,6 +16,9 @@
     "forumnodiscussionsyet": "Encara no hi ha temes de debat en aquest fòrum",
     "group": "Grup",
     "message": "Missatge",
+    "modeflatnewestfirst": "Visualitza les respostes, començant per la més recent",
+    "modeflatoldestfirst": "Visualitza les respostes, començant per la més antiga",
+    "modenested": "Visualitza les respostes escalonades",
     "numdiscussions": "{{numdiscussions}} discussions",
     "numreplies": "{{numreplies}} respostes",
     "posttoforum": "Envia al fòrum",
@@ -21,7 +26,7 @@
     "refreshdiscussions": "Actualitza els debats",
     "refreshposts": "Actualitza els missatges",
     "reply": "Respon",
-    "sortnewestfirst": "Mostra els més recents primer",
-    "sortoldestfirst": "Mostra els més antics primer",
-    "subject": "Assumpte"
+    "subject": "Assumpte",
+    "unread": "No llegit",
+    "unreadpostsnumber": "{{$a}} missatges no llegits"
 }

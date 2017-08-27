@@ -36,6 +36,7 @@
     "graded": "Bewertet",
     "gradedby": "Bewertet von",
     "gradedon": "Bewertet am",
+    "gradenotsynced": "Bewertung nicht synchronisiert",
     "gradeoutof": "Bewertung (max. {{$a}})",
     "gradingstatus": "Bewertungsstatus",
     "groupsubmissionsettings": "Einstellungen für Gruppeneinreichungen",

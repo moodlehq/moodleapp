@@ -5,7 +5,7 @@
     "newpagehdr": "Pagină nouă",
     "newpagetitle": "Un nou titlu de pagină",
     "nocontent": "Nu există conținut pentru această pagină",
-    "notingroup": "Ne pare rău, dar trebuie să faceţi parte dintr-un grup pentru a putea vizualiza această activitate.",
-    "page": "Pagină",
+    "notingroup": "Ne pare rău, pentru a putea vizualiza acest forum trebuie să fiţi membru al unui grup.",
+    "page": "Pagina {{$a}}",
     "pagename": "Nume pagină"
 }

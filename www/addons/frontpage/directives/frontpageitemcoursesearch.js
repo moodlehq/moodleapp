@@ -21,10 +21,13 @@ angular.module('mm.addons.frontpage')
  * @ngdoc directive
  * @name mmaFrontpageItemCourseSearch
  */
-.directive('mmaFrontpageItemCourseSearch', function() {
+.directive('mmaFrontpageItemCourseSearch', function($mmCourses) {
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/frontpage/templates/frontpageitemcoursesearch.html'
+        templateUrl: 'addons/frontpage/templates/frontpageitemcoursesearch.html',
+        link: function(scope) {
+            scope.show = !$mmCourses.isSearchCoursesDisabledInSite();
+        }
     };
 });

@@ -37,6 +37,8 @@ angular.module('mm.addons.mod_wiki', [])
             pagetitle: null,
             wikiid: null,
             subwikiid: null,
+            userid: null,
+            groupid: null,
             action: null
         },
         views: {
@@ -55,6 +57,9 @@ angular.module('mm.addons.mod_wiki', [])
             pageid: null,
             pagetitle: null,
             subwikiid: null,
+            wikiid: null,
+            userid: null,
+            groupid: null,
             section: null
         },
         views: {
@@ -69,8 +74,11 @@ angular.module('mm.addons.mod_wiki', [])
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModWiki', 'wiki', '$mmaModWikiHandlers.courseContent');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWiki', '$mmaModWikiHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModWiki', 'wiki', '$mmaModWikiPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWiki:index', '$mmaModWikiHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWiki:pagemap', '$mmaModWikiHandlers.pageMapLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWiki:create', '$mmaModWikiHandlers.createLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWiki:edit', '$mmaModWikiHandlers.editLinksHandler');
 })
 
 .run(function($mmEvents, mmCoreEventLogout, $mmaModWiki, $mmCronDelegate) {

@@ -5,6 +5,8 @@
     "cannotcreatediscussion": "Não foi possível criar o novo tópico de discussão",
     "couldnotadd": "Não foi possível inserir a mensagem que submeteu devido a um erro desconhecido",
     "discussion": "Tópico",
+    "discussionlocked": "Este tópico de discussão foi bloqueado, logo já não pode responder ao mesmo",
+    "discussionpinned": "Destacado",
     "discussionsubscription": "Subscrição da discussão",
     "edit": "Editar",
     "erroremptymessage": "O texto da mensagem não pode estar em branco",
@@ -14,10 +16,17 @@
     "forumnodiscussionsyet": "Ainda não foram criados tópicos de discussão neste fórum.",
     "group": "Grupo",
     "message": "Mensagem",
+    "modeflatnewestfirst": "Mostrar respostas por ordem, a começar pela mais recente",
+    "modeflatoldestfirst": "Mostrar respostas por ordem, a começar pela mais antiga",
+    "modenested": "Mostrar respostas em lista encadeada",
     "numdiscussions": "{{numdiscussions}} tópicos de discussão",
     "numreplies": "{{numreplies}} respostas",
     "posttoforum": "Submeter tópico",
     "re": "Re:",
+    "refreshdiscussions": "Atualizar tópicos de discussão",
+    "refreshposts": "Atualizar repostas dos tópicos de discussão",
     "reply": "Responder",
-    "subject": "Assunto"
+    "subject": "Assunto",
+    "unread": "Não lidas",
+    "unreadpostsnumber": "{{$a}} mensagens não lidas"
 }

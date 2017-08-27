@@ -3,11 +3,11 @@
     "cacheexpirationtime": "Czas wygasania pamięci podręcznej (milisekundy)",
     "currentlanguage": "Aktualny język",
     "deletesitefiles": "Czy na pewno chcesz usunąć pliki pobrane z tej strony?",
-    "disableall": "Tymczasowo wyłącz powiadomienia",
-    "disabled": "Wyłączony",
+    "disableall": "Wyłącz powiadomienia",
+    "disabled": "Wyłączone",
     "enabledebugging": "Włącz debugowanie",
     "estimatedfreespace": "Szacowana wolna przestrzeń",
-    "general": "Ogólne",
+    "general": "Dane ogólne",
     "language": "Język",
     "license": "Licencja",
     "loggedin": "On-line",
@@ -15,5 +15,5 @@
     "settings": "Ustawienia",
     "sites": "Serwisy",
     "spaceusage": "Użyta przestrzeń",
-    "total": "Suma"
+    "total": "Ogólnie"
 }

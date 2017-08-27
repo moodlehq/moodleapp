@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Додај  нову белешку",
+    "coursenotes": "Белешке курса",
+    "eventnotecreated": "Белешка креирана",
+    "nonotes": "Још не постоје белешке овог типа",
+    "note": "Белешка",
+    "notes": "Белешке",
+    "personalnotes": "Личне белешке",
+    "publishstate": "Контекст",
+    "sitenotes": "Белешке сајта",
+    "userwithid": "Корисник са ID ознаком  {{id}}",
+    "warningnotenotsent": "Није могуће додати белешку/е курсу {{course}}. {{error}}"
+}

@@ -54,16 +54,16 @@
                     </li>
                     <li class="item item-text-wrap">
                         <strong>{{ 'mma.competency.proficient' | translate }}</strong>:
-                        <span class="badge badge-inline badge-balanced" ng-if="competency.usercompetency.proficiency">
+                        <span class="badge badge-inline text-center badge-balanced" ng-if="competency.usercompetency.proficiency">
                             {{ 'mm.core.yes' | translate }}
                         </span>
-                        <span class="badge badge-inline badge-assertive" ng-if="!competency.usercompetency.proficiency">
+                        <span class="badge badge-inline text-center badge-assertive" ng-if="!competency.usercompetency.proficiency">
                             {{ 'mm.core.no' | translate }}
                         </span>
                     </li>
                     <li class="item item-text-wrap">
                         <strong>{{ 'mma.competency.rating' | translate }}</strong>:
-                        <span class="badge badge-inline badge-dark">{{ competency.usercompetency.gradename }}</span>
+                        <span class="badge badge-inline text-center badge-dark">{{ competency.usercompetency.gradename }}</span>
                     </li>
                 </ul>
             </article>
@@ -80,7 +80,7 @@
                         <p>{{ evidence.timemodified | mmToLocaleString }}</p>
                     </a>
                     <div class="item item-body">
-                        <div><span class="badge badge-inline badge-dark">{{ evidence.gradename }}</span></div>
+                        <div><span class="badge badge-inline text-center badge-dark">{{ evidence.gradename }}</span></div>
                         <p ng-if="evidence.description">{{ evidence.description }}</p>
                         <blockquote ng-if="evidence.note"><mm-format-text watch="true">{{ evidence.note }}</mm-format-text></blockquote>
                     </div>

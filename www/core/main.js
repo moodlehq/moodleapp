@@ -19,10 +19,12 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreUserPasswordChangeForced', 'mmCoreUserPasswordChangeForced')
 .constant('mmCoreUserNotFullySetup', 'mmCoreUserNotFullySetup')
 .constant('mmCoreSitePolicyNotAgreed', 'mmCoreSitePolicyNotAgreed')
+.constant('mmCoreUnicodeNotSupported', 'mmCoreUnicodeNotSupported')
 .constant('mmCoreSecondsYear', 31536000)
 .constant('mmCoreSecondsDay', 86400)
 .constant('mmCoreSecondsHour', 3600)
 .constant('mmCoreSecondsMinute', 60)
+.constant('mmCoreDontShowError', 'mmCoreDontShowError') // Pass it to reject functions to indicate that no error should be shown.
 
 // States for downloading files/modules.
 .constant('mmCoreDownloaded', 'downloaded')
@@ -43,6 +45,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Use JS scrolling.
     $ionicConfigProvider.scrolling.jsScrolling(true);
+
+    // Translate back button (it's only shown in iOS and browser).
+    if (!ionic.Platform.isAndroid()) {
+        $ionicConfigProvider.backButton.text("{{'mm.core.back' | translate}}");
+    }
 
     // Decorate $ionicPlatform.
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
@@ -88,13 +95,16 @@ angular.module('mm.core', ['pascalprecht.translate'])
             },
             cache: false,
             template: '<ion-view><ion-content mm-state-class><mm-loading class="mm-loading-center"></mm-loading></ion-content></ion-view>',
-            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp) {
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp,
+                        $mmLoginHelper) {
 
                 $ionicHistory.nextViewOptions({disableBack: true});
 
                 function loadSiteAndGo() {
                     $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                        $state.go($stateParams.state, $stateParams.params);
+                        if (!$mmLoginHelper.isSiteLoggedOut($stateParams.state, $stateParams.params)) {
+                            $state.go($stateParams.state, $stateParams.params);
+                        }
                     }, function() {
                         // Site doesn't exist.
                         $state.go('mm_login.sites');
@@ -133,6 +143,46 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     $httpProvider.defaults.transformRequest = [function(data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
+    }];
+
+    // Angular's default transform detects RTF format as JSON, throwing an error when trying to parse it.
+    // This custom transform fixes this problem.
+    $httpProvider.defaults.transformResponse = [function(data, headers) {
+        if (angular.isString(data)) {
+            // Strip json vulnerability protection prefix and trim whitespace
+            var JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/,
+                tempData = data.replace(JSON_PROTECTION_PREFIX, '').trim();
+
+            if (tempData) {
+                var contentType = headers('Content-Type');
+                if ((contentType && (contentType.indexOf('application/json') === 0)) || isJsonLike(tempData, contentType)) {
+                    try {
+                        data = angular.fromJson(tempData);
+                    } catch(ex) {
+                        // Error parsing data, leave the data as it is.
+                    }
+                }
+            }
+        }
+
+        return data;
+
+        // Check if the returned data is JSON.
+        function isJsonLike(str, contentType) {
+            if (contentType && contentType.indexOf('text/rtf') != -1) {
+                // RTF files can be mistaken as JSON since they start and end with {}.
+                return false;
+            }
+
+            var JSON_START = /^\[|^\{(?!\{)/,
+                JSON_ENDS = {
+                  '[': /]$/,
+                  '{': /}$/
+                },
+                jsonStart = str.match(JSON_START);
+
+            return jsonStart && JSON_ENDS[jsonStart[0]].test(str);
+        }
     }];
 
     // Add some protocols to safe protocols.
@@ -192,6 +242,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
         $window.addEventListener('native.keyboardshow', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardShow, e);
 
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
+
             if (ionic.Platform.isIOS() && document.activeElement && document.activeElement.tagName != 'BODY') {
                 if ($mmUtil.closest(document.activeElement, 'ion-footer-bar[keyboard-attach]')) {
                     // Input element is in a footer with keyboard-attach directive, nothing to be done.
@@ -217,14 +272,31 @@ angular.module('mm.core', ['pascalprecht.translate'])
                                 $ionicScrollDelegate.$getByHandle(delegateHandle) : $ionicScrollDelegate;
 
                         // Scroll to the position.
-                        $ionicScrollDelegate.scrollTo(position[0], position[1]);
+                        scrollView.scrollTo(position[0], position[1]);
                     }
                 }
             }
         });
+
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
+
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
         });
+
+        // In desktop, re-define getParentOrSelfWithClass to allow scrolling with trackpad when hovering deep elements.
+        // In iOS, re-define getParentWithClass to prevent the keyboard to hide deep input elements.
+        var fnName = !$mmApp.isDevice() ? 'getParentOrSelfWithClass' : (ionic.Platform.isIOS() ? 'getParentWithClass' : '');
+        if (fnName) {
+            var originalFunction = ionic.DomUtil[fnName];
+            ionic.DomUtil[fnName] = function(e, className, depth) {
+                depth = depth || 20;
+                return originalFunction(e, className, depth);
+            };
+        }
     });
 
     // Send event when device goes online.

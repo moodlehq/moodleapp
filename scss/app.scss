@@ -4,23 +4,107 @@
  * Use it to customise the look and feel of the app.
  */
 
-// Colors.
-$positive: #387ef5;
-$stable: #f5f5f5;
+// Color palette
+$black:           #3a3a3a; // Headings, standard text.
+$gray-darker:     #626262; // Text (emphasis-detail), placeholder, background.
+$gray-dark:       #9e9e9e; // Borders (never text).
+$gray:            #dddddd;
+$gray-light:      #eeeeee; // Background.
+$gray-lighter:    #f5f5f5;
+$white:           #ffffff; // Background, reversed text.
 
-$base-background-color: #fcfcfc;
-$item-default-bg: white;
-$item-divider-bg: #f1f1f1;
+$blue:            #0064d2; // Link, background.
+$blue-light:      mix($blue, white, 20%); // Background.
+$blue-dark:       darken($blue, 10%);
 
-// Setting the default button to button-outline.
-$button-default-bg: white;
-$button-default-text: $positive;
-$button-default-border: $positive;
-$button-default-active-bg: $positive;
-$button-default-active-border: $positive;
+$turquoise:       #007982; // Accent.
+$turquoise-light: mix($turquoise, white, 20%); // Background.
+$turquoise-dark:  darken($turquoise, 10%);
+
+$green:           #5e8100; // Accent.
+$green-light:     mix($green, white, 20%);
+$green-dark:      darken($green, 10%);
+
+$red:             #cb3d4d;
+$red-light:       mix($red, white, 20%);
+$red-dark:        darken($red, 10%);
+
+$orange:          #f98012; // Accent (never text).
+$orange-light:    lighten($orange, 10%);
+
+$yellow:          #fbad1a; // Accent (never text).
+$yellow-light:    mix($yellow, white, 20%);
+$yellow-dark:     mix($yellow, black, 40%);
+
+// Change Ionic default colors.
+$dark: $black !default;
+$positive: $blue !default;
+$balanced: $green !default;
+$assertive: $red !default;
+$energized: $yellow !default;
+$stable: $gray-lighter !default;
+$royal: $orange !default;
+$calm: $turquoise !default;
+
+$mm-color:          $orange;
+$mm-color-light:    lighten($mm-color, 10%);
+$mm-color-dark:     darken($mm-color, 10%);
+
+$mm-color-init-screen:          #ff5c00;
+$mm-color-init-screen-alt:      #ff7600;
+$mm-init-screen-spinner-color:  $white;
+$mm-init-screen-logo-width:     60%;
+$mm-init-screen-logo-max-width: 300px;
+
+$mm-fixed-url:                  false;
+
+$mm-buttons-color: $positive;
+
+// Change Ionic default elements colors.
+$base-color: $black !default;
+$base-background-color: $gray-light !default;
+
+$item-default-text: $black;
+$sheet-options-text-color: $mm-buttons-color;
+
+$item-default-bg: $white;
+$item-divider-bg: $gray-lighter;
+$item-disabled-color: $gray-dark !default;
+
+$button-light-border: $gray;
+
+// Header.
+$bar-content-bg: $mm-color !default;
+$bar-content-border: transparent !default;
+$bar-content-text: $white !default;
+
+$bar-side-menu-height: 80px !default;
+$bar-side-menu-color: $bar-content-bg !default;
+$bar-side-menu-border-color: $bar-content-border !default;
+$bar-side-menu-text-color: $bar-content-text !default;
+
+$bar-side-menu-item-border-color: $button-light-border;
+$bar-side-menu-item-divider-color: $item-divider-bg;
+$bar-side-menu-item-background-color: $item-default-bg;
+$bar-side-menu-item-text-color: $item-default-text;
+$bar-side-menu-item-icon-color: $gray-darker;
+
+$toggle-on-default-bg: $mm-buttons-color;
 
 $tabs-off-opacity:                0.6;
 $tabs-striped-off-opacity:        $tabs-off-opacity;
+
+// Setting the default button to button-outline.
+$button-default-bg: $white !default;
+$button-default-text: $mm-buttons-color !default;
+$button-default-border: $mm-buttons-color !default;
+$button-default-active-bg: $mm-buttons-color !default;
+$button-default-active-border: $mm-buttons-color !default;
+
+$button-positive-bg:              $mm-buttons-color !default;
+$button-positive-border:          darken($mm-buttons-color, 10%) !default;
+$button-positive-active-bg:       darken($mm-buttons-color, 10%) !default;
+$button-positive-active-border:   darken($mm-buttons-color, 10%) !default;
 
 // The path to the font icons.
 $ionicons-font-path: "../lib/ionic/release/fonts" !default;
@@ -28,54 +112,105 @@ $ionicons-font-path: "../lib/ionic/release/fonts" !default;
 // Include all of Ionic.
 @import "www/lib/ionic/scss/ionic";
 
-// Tmp fix until Ionic adds !default to $button-default-border and $button-default-active-border.
-$button-default-bg: white;
-$button-default-text: $positive;
-$button-default-border: $positive;
-$button-default-active-bg: $positive;
-$button-default-active-border: $positive;
+.icon {
+  color: $gray-darker;
 
-// Setting the default button to button-outline.
-.button.active, .button.activated {
-  background-color: $button-default-active-bg;
-  box-shadow: none;
-  color: #fff;
-}
-
-.button, .button.button-light, .button.button-stable, .button.button-positive, .button.button-calm, .button.button-assertive,
-.button.button-balanced, .button.button-energized, .button.button-royal, .button.button-dark {
-  border-color: $button-default-border;
-
-  &.activated, &.active  {
-    border-color: $button-default-active-border;
+  &.positive {
+    color: $mm-buttons-color;
+  }
+  &.assertive {
+    color: $assertive;
+  }
+  &.dark {
+    color: $dark;
+  }
+  &.icon-accessory {
+    color: $item-icon-accessory-color;
   }
 }
 
-.button.button-light, .button.button-stable, .button.button-calm, .button.button-assertive, .button.button-balanced,
-.button.button-energized, .button.button-royal, .button.button-dark {
-  color: $button-default-text;
-}
+.button,
+.button.button-icon {
+  .icon,
+  &.active,
+  &.activated,
+  &.active .icon,
+  &.activated .icon {
+    color: $mm-buttons-color;
 
-.button-clear, .button.button-clear {
-  color: $button-default-text;
-
-  &.activated, &.active  {
-    background: none;
+    &.assertive {
+      color: $assertive;
+    }
+    &.dark {
+      color: $dark;
+    }
+    &.icon-accessory {
+      color: $item-icon-accessory-color;
+    }
   }
 }
 
-.button-outline, .button.button-outline {
-  border-color: $button-default-border;
-
-  &.activated, &.active  {
-    background-color: $button-default-active-bg;
-  }
+.action-sheet .button .icon {
+  color: $sheet-options-text-color;
 }
 
-.button.button-icon, .button-icon {
-  border-color: transparent;
-  color: $button-default-text;
-  background-color: transparent;
+.platform-android .action-sheet .button .icon {
+  color: inherit;
+}
+
+.bar-content .icon , .bar-side-menu .icon{
+  color: $bar-content-text;
+}
+
+.item-delete .button.icon,
+.item-delete .button.icon.active,
+.item-delete .button.icon.actived {
+  color: $assertive;
+}
+
+// Setting the default button to button-outline $mm-buttons-color.
+.button {
+  &.button-light,
+  &.button-stable,
+  &.button-calm,
+  &.button-assertive,
+  &.button-balanced,
+  &.button-energized,
+  &.button-royal {
+    @include button-style($button-default-bg, $button-default-border, $button-default-active-bg, $button-default-active-border, $button-default-text);
+    @include button-clear($button-default-border);
+    @include button-outline($button-default-border);
+
+    &.active,
+    &.activated {
+      box-shadow: none;
+      color: $white;
+
+      .icon {
+        color: $white;
+      }
+    }
+  }
+
+  &.active,
+  &.activated {
+    box-shadow: none;
+    color: $white;
+
+    .icon {
+      color: $white;
+    }
+  }
+
+  &.button-dark {
+    @include button-style($button-default-bg, $button-default-border, $button-default-active-bg, $button-default-active-border, $button-default-text);
+    @include button-clear($button-dark-bg);
+    @include button-outline($button-default-border);
+
+    &.button-icon {
+      color: $gray-darker;
+    }
+  }
 }
 
 // Include all of Moodle Mobile.

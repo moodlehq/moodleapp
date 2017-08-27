@@ -1,13 +1,18 @@
 {
+    "allowguests": "Курс доступен гостю",
+    "availablecourses": "Доступные курсы",
+    "categories": "Категории",
+    "courses": "Курсы",
     "enrolme": "Записаться на курс",
     "errorloadcourses": "При загрузке курсов произошла ошибка.",
-    "filter": "Фильтр",
+    "filtermycourses": "Поиск моих курсов",
     "frontpage": "Главная страница",
     "mycourses": "Мои курсы",
-    "nocourses": "Нет информации для отображения.",
-    "nosearchresults": "Поиск не дал результатов",
+    "nocourses": "Нет курсов",
+    "nocoursesyet": "В этой категории нет курсов",
+    "nosearchresults": "Нет результатов",
     "notenroled": "Вы не записаны на этот курс",
     "password": "Пароль",
-    "search": "Найти",
-    "searchcourses": "Поиск курса"
+    "search": "Искать",
+    "searchcourses": "Поиск курсов"
 }

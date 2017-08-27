@@ -3,7 +3,7 @@
     <ion-content mm-state-class padding="true">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="frontpageLoaded" on-refresh="doRefresh()">
         </ion-refresher>
-        <mm-loading hide-until="frontpageLoaded" loading-padding-top="loadingPaddingTop">
+        <mm-loading hide-until="frontpageLoaded">
 
             <section class="card" ng-if="section && sectionHasContent(section)">
                 <div class="item item-text-wrap clearfix" ng-if="section.summary">
@@ -23,7 +23,7 @@
                 <mm-course-module class="item item-complex" ng-repeat="module in block.modules" module="module"></mm-course-module>
             </section>
 
-            <p class="padding" ng-if="!hasContent">{{ 'mm.course.nocontentavailable' | translate }}</p>
+            <mm-empty-box ng-if="!hasContent" icon="ion-qr-scanner" message="{{ 'mm.course.nocontentavailable' | translate }}"></mm-empty-box>
         </mm-loading>
     </ion-content>
 </ion-view>

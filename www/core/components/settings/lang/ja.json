@@ -3,12 +3,12 @@
     "cacheexpirationtime": "キャッシュ有効期限（ミリ秒単位）",
     "currentlanguage": "現在の言語",
     "deletesitefiles": "本当にこのサイトからダウンロードしたファイルを消去しますか？",
-    "disableall": "一時的に通知を無効にする",
-    "disabled": "無効",
+    "disableall": "通知を無効にする",
+    "disabled": "このサイトではメッセージングが無効にされています。",
     "enabledebugging": "デバッグを有効にする",
     "estimatedfreespace": "概算の空き容量",
-    "general": "一般",
-    "language": "言語",
+    "general": "一般設定",
+    "language": "言語設定",
     "license": "ライセンス",
     "loggedin": "オンライン",
     "loggedoff": "オフライン",
@@ -16,5 +16,6 @@
     "settings": "設定",
     "sites": "サイト",
     "spaceusage": "保存領域使用量",
-    "total": "総計"
+    "synchronization": "同期",
+    "total": "合計"
 }

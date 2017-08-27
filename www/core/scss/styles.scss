@@ -15,36 +15,25 @@
  * Variables
  */
 
-// Bar content.
-$bar-content-bg: #f70 !default;
-$bar-content-border: transparent !default;
-$bar-content-text: #fff !default;
-
 // Small avatar ideal for icons.
 $item-media-width: 32px !default;
 $item-media-height: 32px !default;
 
-// Howto tips.
-$item-howto-color: #d9edf7 !default;
-
 // Messages.
-$item-message-bg: $stable !default;
-$item-message-note-text: #999 !default;
+$item-message-bg: $gray-lighter !default;
+$item-message-note-text: $gray-darker !default;
 $item-message-note-font-size: $font-size-small !default;
-$item-message-mine-bg: rgba(17, 193, 243, .1) !default;
+$item-message-mine-bg: $blue-light !default;
 
-// Disabled items.
-$item-disabled-color: #999 !default;
-
-// Warnings (energized).
-$mm-warning-color: $energized !default;
-
-// Errors (red).
-$mm-error-color: #c00 !default;
+// Messages boxes.
+$mm-warning-color: $energized !default; // Energized / yellow.
+$mm-success-color: $balanced !default; // Balanced / green.
+$mm-info-color: $positive !default; // Positive / blue.
+$mm-error-color: $assertive !default; // Red.
 
 // Timer variables.
-$mm-timer-warn-color:     #f00 !default;
-$mm-timer-color:          #fff !default;
+$mm-timer-warn-color:     $assertive !default;
+$mm-timer-color:          $white !default;
 $mm-timer-iterations:     15 !default;
 
 // Text with icon.
@@ -54,7 +43,7 @@ $mm-text-with-icon-height: 22px !default;
 $mm-button-icon-small-height: 22px !default;
 
 // Required inputs asterisk color.
-$mm-input-required-asterisk-color: #ff4136 !default;
+$mm-input-required-asterisk-color: $red !default;
 
 // Item padding.
 $item-input-padding: 16px !default;
@@ -63,32 +52,39 @@ $item-input-padding: 16px !default;
  * App Branding
  */
 .mm-bglogo {
-  background-color: white; /* Change this to add a bg image or change color */
+  background-color: $mm-color-init-screen; /* Change this to add a bg image or change color */
+  background: -webkit-radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
+  background: radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
   background-repeat: no-repeat;
   background-position: center center;
-  width: 100%;
   position: absolute;
   top: 0;
   bottom: 0;
-}
-
-.mm-logo {
-  background-image: url('../img/moodle.png'); /* Change logo here */
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  text-align: center;
-}
-
-.mm-logo:before {
-  content: '';
-  display: inline-block;
+  left: 0;
+  right: 0;
   height: 100%;
-  vertical-align: middle;
-  margin-top: 120px; /* Change this to place spinner under the logo (usually double of the logo size) */
+  width: 100%;
+  display: table;
+
+  .mm-logo {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  img {
+    width: $mm-init-screen-logo-width;
+    max-width: $mm-init-screen-logo-max-width;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 30px;
+  }
+
+  .spinner {
+    color: $mm-init-screen-spinner-color;
+    stroke: $mm-init-screen-spinner-color;
+    fill: $mm-init-screen-spinner-color;
+  }
 }
 
 /**
@@ -102,6 +98,10 @@ em {
 /**
  * Styles.
  */
+
+a.button {
+  line-height: $button-height + 5px - ($button-border-width * 2);
+}
 
 .mm-big   { font-size: 115%; }
 
@@ -121,7 +121,7 @@ em {
   @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
   .button {
     @include button-style($bar-content-bg, $bar-content-border, $bar-content-bg, $bar-content-border, $bar-content-text);
-    @include button-clear(#fff, $bar-title-font-size);
+    @include button-clear($bar-content-text, $bar-title-font-size);
   }
 }
 
@@ -134,7 +134,8 @@ em {
   }
 }
 
-.item.item-text-wrap .item-heading {
+.item.item-text-wrap .item-heading,
+p.item-text-wrap {
   overflow: visible;
   white-space: normal;
 }
@@ -154,14 +155,17 @@ em {
 .col-65 {
   @include flex(0, 0, 65%);
   max-width: 65%;
+  width: 65%;
 }
 .col-60 {
   @include flex(0, 0, 60%);
+  width: 60%;
   max-width: 60%;
 }
 .col-40 {
   @include flex(0, 0, 40%);
   max-width: 40%;
+  width: 40%;
 }
 
 // Media item, ideal for icons.
@@ -186,28 +190,6 @@ em {
   }
 }
 
-// Howto tips.
-.item.item-howto {
-  padding-bottom: 12px;
-  padding: 9px;
-  margin-bottom: 12px;
-  background-color: $item-howto-color;
-  border-color: $item-howto-color;
-  color: #666;
-
-  &.item-icon-left {
-    padding-left: 35px;
-
-    .icon:first-child {
-      left: 4px;
-    }
-  }
-
-  &.item-icon-right {
-    @extend .item-icon-right;
-  }
-}
-
 // Message item.
 .item-message {
   clear: both;
@@ -224,15 +206,6 @@ em {
     font-size: $item-message-note-font-size;
     margin-left: 20px;
   }
-
-  mm-format-text > p:only-child {
-    display: inline;
-  }
-}
-
-.item-message .item-content {
-  background-color: $item-message-bg;
-  padding: 0;
 }
 
 // Defines when an item-message is the user's.
@@ -255,15 +228,20 @@ em {
   }
 }
 
-.item-message-mine .item-content {
+.item-message .item-content,
+.item-message-mine .item-content{
   background-color: transparent;
   padding: 0;
 }
 
 // Defines a "disabled" item.
 .item.item-disabled,
+.item-toggle[disabled],
 .platform-android .item.item-disabled {
   color: $item-disabled-color;
+  h2 {
+    color: $item-disabled-color;
+  }
 }
 
 // Avoid adding too much padding.
@@ -299,7 +277,7 @@ em {
           border-radius: 2%;
           border: 0;
           max-width: 100%;
-          max-height: 200px;
+          max-height: 160px;
           width: auto;
           height: auto;
         }
@@ -311,23 +289,47 @@ em {
   border-top: 0;
 }
 
+.item-dimmed {
+  opacity: 0.6;
+}
+
 /* Show buttons as tabs */
+@include tabs-striped-color('mm-tabs-color', $mm-color);
+@include tabs-color('mm-tabs-color', $mm-color);
+
 .tabs.tabs-free {
   position: initial;
-  background: transparent;
+  background: white;
   border: 0;
-  margin-bottom: 0;
-  margin-top: 10px;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2);
 
   .tab-item {
-    margin-top: -1px;
+    color: $gray-darker;
+    margin-top: 0;
     max-width: initial;
     font-size: 120%;
 
     &.active, &.activated {
-      margin-top: -1px;
+      color: $black;
+      margin-top: 0;
       border-top-width: 0;
       border-bottom-width: 3px;
+    }
+  }
+}
+
+.mm-menu-selected:not(.button) {
+  background-color: $gray-lighter;
+  border-left: 5px solid $mm-color-light;
+  padding-left: $item-padding - 4;
+
+  &.item-avatar,
+  &.item-avatar-left {
+    padding-left: $item-avatar-width + ($item-padding * 2) - 4;
+    > img:first-child {
+      left: $item-padding - 4;
     }
   }
 }
@@ -350,6 +352,13 @@ em {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+}
+.avatar-round {
+  max-width: 40px;
+  max-height: 40px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 // Split pane.
@@ -377,10 +386,11 @@ em {
   .mm-split-pane-menu {
     @include flex(0, 0, $menu-width);
     width: $menu-width;
-    border-right: 1px solid #ddd;
+    margin-right: 2px;
   }
   .mm-split-pane-content {
     display: block;
+    box-shadow: $menu-side-shadow;
   }
 }
 
@@ -452,9 +462,30 @@ button.item.item-button-right {
 }
 
 .mm-loading-container {
-    width: 100%;
+  width: 100%;
+  text-align: center;
+  padding-top: 10px;
+  clear: both;
+}
+
+.scroll > .padding > mm-loading > .mm-loading-container,
+.scroll > mm-loading > .mm-loading-container,
+.mm-loading-center .mm-loading-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  display: table;
+  z-index: -1;
+  padding-top: 0px;
+
+  .mm-loading-spinner {
+    display: table-cell;
     text-align: center;
-    margin-top: 10px;
+    vertical-align: middle;
+  }
 }
 
 .mm-loading-content {
@@ -465,19 +496,6 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   height: auto;
 }
 
-mm-loading.mm-loading-center {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: inline-block;
-
-  .mm-loading-container {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-}
-
 // Align ion-spinner right
 .spinner-right {
   position: absolute;
@@ -485,9 +503,9 @@ mm-loading.mm-loading-center {
   right: 16px;
 }
 
-.mm-split-item-selected, .mm-split-item-selected .item {
-  border-color: #ccc;
-  background-color: #D9D9D9;
+.mm-split-item-selected,
+.mm-split-item-selected.item {
+  @extend .mm-menu-selected;
 }
 
 .mm-module-buttons {
@@ -526,7 +544,13 @@ mm-loading.mm-loading-center {
 .mm-media-adapt-width {
   max-width: 100%;
 }
-img.mm-media-adapt-width {
+
+audio.mm-media-adapt-width {
+  width: 100%;
+}
+
+.mm-enabled-media-adapt img.mm-media-adapt-width,
+img.mm-media-adapt-width-enabled {
   height: auto;
 }
 
@@ -539,7 +563,7 @@ img.mm-media-adapt-width {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  color: black;
+  color: $black;
   font-size: 20px;
   border-radius: 5px;
   background: rgba(255, 255, 255, .5);
@@ -547,6 +571,10 @@ img.mm-media-adapt-width {
   height: 30px;
   text-align: center;
   line-height: 30px;
+
+  i.icon:before {
+    color: $black !important;
+  }
 }
 
 // Remove padding-top and bottom from navigation bar to minimize height used.
@@ -571,24 +599,160 @@ mm-navigation-bar {
 
 // When using .item and .row in the same element, .row's padding prevails. Use this class to keep .item's padding.
 .item.row.mm-item-padding {
-  padding: $item-padding;
+  padding: $item-padding / 2;
+  width: initial;
 }
 
-p.mm-error {
-  color: $mm-error-color;
+.row-buttons {
+  @include display-flex();
+  padding: 0;
+
+  &.item {
+    padding: $item-padding - ($button-block-margin / 2);
+  }
+  &.padding-top {
+    padding-top: $content-padding;
+  }
+
+  .button.button-block {
+    @include flex(1);
+    margin: ($button-block-margin/2) $button-block-margin ($button-block-margin/2) 0;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 }
 
-.mm-warning {
-  border-bottom: 3px solid $mm-warning-color;
+/* Message cards */
+// Mixin to create message "cards" with a colored border-bottom and, optionally, an icon. For examples, for mm-warning.
+@mixin mm-message-card($color) {
+  border-bottom: 3px solid $color;
   padding: $card-padding;
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
-  background-color: #fff;
+  background-color: $white;
+  position: relative;
+  text-align: left;
 
   i.icon:before {
-      color: $mm-warning-color;
-      font-size: 125%;
+    color: $color;
+    font-size: 125%;
   }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mm-error-card {
+  @include mm-message-card($mm-error-color);
+}
+
+.mm-warning-card {
+  @include mm-message-card($mm-warning-color);
+}
+
+.mm-info-card {
+  @include mm-message-card($mm-info-color);
+}
+
+.mm-success-card {
+  @include mm-message-card($mm-success-color);
+}
+
+@mixin mm-message-card-icon($color) {
+  border-bottom: 3px solid $color;
+  padding: $card-padding;
+  box-shadow: $card-box-shadow;
+  margin: 20px 10px;
+  background-color: $white;
+  position: relative;
+  padding-left: $item-padding * 3;
+  text-align: left;
+
+  i.icon {
+    @include display-flex();
+    @include align-items(center);
+    position: absolute;
+    top: 0;
+    height: 100%;
+    font-size: ceil(($item-icon-font-size / 4) * 3);
+    left: ceil($item-padding / 4);
+
+    &:before {
+      color: $color;
+      display: block;
+      width: ceil(($item-icon-font-size / 4) * 3);
+      text-align: center;
+    }
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mm-error-card-icon {
+  @include mm-message-card-icon($mm-error-color);
+}
+
+.mm-warning, // mm-warning is deprecated, use mm-warning-card-icon instead.
+.mm-warning-card-icon {
+  @include mm-message-card-icon($mm-warning-color);
+}
+
+.mm-info-card-icon {
+  @include mm-message-card-icon($mm-info-color);
+}
+
+.mm-success-card-icon {
+  @include mm-message-card-icon($mm-success-color);
+}
+
+.padding {
+  .mm-error-card, .mm-warning-card, .mm-info-card, .mm-success-card,
+  .mm-error-card-icon, .mm-warning-card-icon, .mm-info-card-icon, .mm-success-card-icon {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+// These will need item-icon-left as well.
+@mixin mm-message-item($color) {
+  border-bottom: 3px solid $color !important;
+  padding-top: 12px;
+  padding-bottom: 9px;
+  i.icon:before:not(.radio-icon) {
+    color: $color;
+  }
+  &.item-icon-left {
+    @extend .item-icon-left;
+  }
+
+  &.item-icon-right {
+    @extend .item-icon-right;
+  }
+}
+
+.mm-error-item {
+  @include mm-message-item($mm-error-color);
+}
+
+.mm-warning-item {
+  @include mm-message-item($mm-warning-color);
+}
+
+.item.item-howto, // item-howto is deprecated, use mm-info-item instead.
+.mm-info-item {
+  @include mm-message-item($mm-info-color);
+}
+
+.mm-success-item {
+  @include mm-message-item($mm-success-color);
+}
+
+p.mm-error { // Deprecated, use one of the above mm-error classes.
+  color: $mm-error-color;
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
@@ -641,33 +805,47 @@ p.mm-error {
   border-radius: 50%;
 }
 
+.item.item-button-right .badge.badge-inline,
 .badge.badge-inline {
   display: inline-block;
   position: relative;
   top: initial;
   right: initial;
   white-space: normal;
+  text-align: left;
+}
+
+.badge-positive, .badge-calm, .badge-balanced, .badge-energize, .badge-assertive, .badge-royal, badge-dark {
+  a {
+    color: white;
+  }
 }
 
 // Timer.
 mm-timer {
   display: block;
-}
 
-// Style timer in items.
-.item mm-timer.mm-timer, mm-timer.mm-timer.item {
-  p, span, label {
-    color: $item-default-text;
+  span, label {
     font-size: $item-font-size;
+    color: $item-default-text;
+  }
+  span {
+    font-weight: bold;
+  }
+
+  // Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
+  @for $i from 0 through $mm-timer-iterations {
+    &.mm-timer-timeleft-#{$i} {
+      background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
+      @if $i <= $mm-timer-iterations / 2 {
+        label, span, i {
+          color: $white;
+        }
+      }
+    }
   }
 }
 
-// Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
-@for $i from 0 through $mm-timer-iterations {
-  mm-timer.mm-timer.mm-timer-timeleft-#{$i} {
-    background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
-  }
-}
 
 .mm-monospaced {
   font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
@@ -681,6 +859,39 @@ mm-timer {
 
 .popover.mm-context-menu {
   width: 320px;
+  max-width: 100%;
+}
+
+.popup-container .popup-title
+
+
+.mm-icon-with-badge {
+  position: relative;
+
+  .icon {
+    font-size: $button-large-icon-size;
+  }
+
+  .mm-icon-badge {
+    width: auto;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    top: -18px;
+    right: -8px;
+    color: red;
+    font-size: $button-large-icon-size / 2;
+  }
+}
+
+.popup-container.mm-nohead .popup-head {
+  display: none;
+}
+
+.popup-container.mm-bigpopup .popup {
+  width: 90%; // Fallback of calc.
+  width: calc(100% - 20px);
+  max-width: none;
 }
 
 // Inline icons and inputs.
@@ -690,7 +901,7 @@ mm-timer {
   .icon {
     font-size: $mm-text-with-icon-height;
     padding: 0 5px;
-    color: $positive;
+    color: $mm-buttons-color;
   }
 }
 
@@ -725,10 +936,64 @@ mm-timer {
   }
 }
 
+.item-select.mm-full-width-centered {
+  display: inline;
+
+  select {
+    max-width: 100%;
+    background: transparent;
+    text-indent: 0;
+    margin: 0 auto;
+    padding: ($item-input-padding - 1) ($item-input-padding/2*5) ($item-input-padding - 1) $item-input-padding;
+    line-height: $font-size-base + 2;
+    border: 0;
+    position: relative;
+  }
+}
+
+.item-select .mm-select-fix {
+  // Taken from .item-select select.
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0 ($item-padding * 3) 0 $item-padding;
+  max-width: 65%;
+  width: 100%;
+  border: none;
+  background: $item-default-bg;
+  color: #333;
+  text-indent: .01px;
+  white-space: nowrap;
+  font-size: $font-size-base;
+  cursor: pointer;
+  direction: rtl; // right align the select text
+
+  pointer-events: none;
+}
+
+
 .item-input-inset .item-input-wrapper input,
 .item-input .item-input-wrapper input {
   width: 100%;
   background: transparent;
+}
+
+mm-multiple-select {
+  cursor: pointer;
+
+  .item-stacked-label {
+    ion-label.input-label, p {
+      padding-right: 30px;
+      white-space: normal;
+    }
+  }
+  .icon.ion-android-arrow-dropdown {
+    font-size: 21px;
+    color: #999999;
+    right: 5px;
+  }
+
 }
 
 .button.mm-button-icon-small {
@@ -737,6 +1002,21 @@ mm-timer {
 
   .icon:before {
     font-size: $mm-button-icon-small-height;
+  }
+}
+
+// Increase size for buttons with only an icon inside.
+.button.icon {
+  &:before {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 30px;
+  }
+
+  &.button-small:before {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 20px;
   }
 }
 
@@ -754,6 +1034,59 @@ mm-timer {
 // Squared checkboxes.
 .checkbox input:before, .checkbox-icon:before {
   border-radius: 0;
+}
+
+input[type="radio"].mm-radio {
+  position: relative;
+  width: $checkbox-width;
+  height: $checkbox-height;
+  display: block;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  margin: 0 auto;
+  -webkit-appearance: none;
+
+  &:before {
+    // what the checkbox looks like when its not checked
+    display: table;
+    width: 100%;
+    height: 100%;
+    border-width: $checkbox-border-width;
+    border-style: solid;
+    border-radius: $checkbox-border-radius;
+    border-color: $checkbox-off-border-light;
+    background: $checkbox-off-bg-color;
+    content: ' ';
+    @include transition(background-color 20ms ease-in-out);
+  }
+  &:checked:before {
+    background: $checkbox-on-bg-positive;
+    border-color: $checkbox-off-border-positive;
+  }
+  &:disabled:before {
+    border-color: $checkbox-off-border-light;
+    background: $checkbox-on-bg-light;
+  }
+
+  &:after {
+    @include transition(opacity .05s ease-in-out);
+    @include rotate(-45deg);
+    position: absolute;
+    top: 33%;
+    left: 25%;
+    display: table;
+    width: ($checkbox-width / 2);
+    height: ($checkbox-width / 4) - 1;
+    border: $checkbox-check-width solid $checkbox-check-color;
+    border-top: 0;
+    border-right: 0;
+    content: ' ';
+    opacity: 0;
+  }
+  &:checked:after {
+    opacity: 1;
+  }
 }
 
 .item-title {
@@ -775,10 +1108,40 @@ mm-timer {
   padding: 0;
 }
 
-.padding .mm-searchbox .item-input-inset {
+.item-transparent {
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+
+  &.item-input-inset .item-input-wrapper {
+    background: white;
+    height: 36px;
+  }
+}
+
+.padding mm-searchbox .item-input-inset {
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
+}
+
+mm-searchbox .item-input-inset .item-input-wrapper {
+  background: white;
+}
+
+.mm-filter-box {
+  @extend .item-transparent;
+
+  padding-bottom: $item-padding - 4;
+  &.item-input-inset .item-input-wrapper {
+    height: 36px;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .mm-filter-box {
+    padding-right: ($item-padding / 2);
+  }
 }
 
 .item.mm-not-clickable {
@@ -803,7 +1166,7 @@ mm-timer {
     border: 0;
   }
   .tabs-icon-round {
-    color: $positive;
+    color: $mm-buttons-color;
 
     .tab-item.activated {
       opacity: 0.7;
@@ -815,7 +1178,7 @@ mm-timer {
       font-size: 22px;
       line-height: 32px;
       color: white;
-      background-color: $positive;
+      background-color: $mm-buttons-color;
       margin-bottom: 5px;
 
       &:before {
@@ -855,158 +1218,14 @@ mm-timer {
   .hidden-phone {
     display: none !important;
   }
-}
-/**
- * RichTextEditor.
- */
-
-.mm-textarea {
-  width: 100%;
-  resize: none;
-
-  &[mm-auto-rows] {
-    height: auto;
-    line-height: 18px;
-    padding: 5px;
-  }
-  &:not([mm-auto-rows]) {
-    height: 200px;
+  .item-badge-right-phone {
+    padding-right: $item-avatar-width + ($item-padding * 2);
   }
 }
 
-.item-input-wrapper .mm-textarea {
-  background: transparent;
-}
-
-.item.mm-item-has-rich-text-editor {
-  padding: 0;
-  display: block;
-
-  .input-label, .mm-textarea {
-    padding-left: $item-padding;
-  }
-}
-
-.mm-rich-text-editor-container {
-
-  .cke.cke_chrome {
-    border: 0;
-    box-shadow: none;
-  }
-
-  .cke_bottom.cke_expanded {
-    height: auto;
-  }
-
-  .cke_bottom .cke_path {
-    display: none;
-    float: none;
-    margin: 0;
-  }
-
-  .cke_bottom.cke_expanded .cke_path {
-    display: block;
-  }
-
-  textarea.cke_source {
-    padding: 20px;
-    box-sizing: border-box;
-  }
-}
-
-.mm-rich-text-editor-container,
-.cke_inner.cke_maximized {
-
-  .cke_bottom {
-    padding: 0;
-    border-color: #ddd;
-    box-shadow: none;
-    background: #F2F2F2;
-    height: 30px;
-  }
-
-  .cke_button:first-child, .cke_button:last-child {
-    border-radius: 0;
-  }
-
-  .cke_button,
-  a.cke_combo_button,
-  .cke_toolbox_collapser {
-    background: white;
-    background-image: none;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
-    padding: 5px 8px;
-    border-radius: 0;
-    border: 0;
-    margin: 1px;
-  }
-
-  a.cke_combo_button {
-    min-height: 26px;
-    padding: 1px;
-  }
-
-  .cke_button:hover,
-  a.cke_combo_button:hover,
-  .cke_combo_off a.cke_combo_button:hover,
-  .cke_toolbox_collapser:hover {
-    background-image: radial-gradient(ellipse at center, #ffffff 60%,#dfdfdf 100%);
-    background-color: #ebebeb;
-  }
-
-  .cke_button:active,
-  a.cke_combo_button:active,
-  .cke_toolbox_collapser:active {
-    background-image: radial-gradient(ellipse at center, #ffffff 50%, #dfdfdf 100%);
-    background-color: #ebebeb;
-    border: 0;
-  }
-
-  .cke_toolgroup {
-    margin: 0;
-    border: 0;
-    background: none;
-    background-image: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .cke_toolbar_separator,
-  .cke_toolbar_break {
-    clear: none;
-    display: none;
-  }
-
-  .cke_toolbox_collapser {
-    padding-top: 9px;
-    padding-bottom: 8px;
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-
-  .cke_toolbox_main {
-    margin-right: 30px;
-    float: left;
-    display: block !important;
-  }
-
-  .cke_button__source_label {
-    display: none;
-  }
-}
-
-.cke_inner.cke_maximized {
-  .cke_bottom {
-    height: auto;
-  }
-
-  .cke_toolbox_collapser {
-    display: none;
-  }
-
-  .cke_toolbox_main {
-    margin: 0;
+@media only screen and (min-width: 769px) {
+  .hidden-tablet {
+    display: none !important;
   }
 }
 
@@ -1064,6 +1283,21 @@ mm-timer {
       left: auto;
       right: auto;
     }
+  }
+}
+
+.mm-toast {
+  pointer-events: none;
+  bottom: 100px;
+  -ms-flex-align: flex-end;
+  -webkit-align-items: flex-end;
+  -moz-align-items: flex-end;
+  align-items: flex-end;
+
+  .loading {
+    padding: 10px 20px;
+    border-radius: 25px;
+    margin: 0 10px;
   }
 }
 
@@ -1127,6 +1361,17 @@ ion-spinner.mm-spinner-right {
 
   .toggle {
     top: 0;
+  }
+}
+
+.card .item-border,
+.item-border {
+  &:first-child {
+    border-top: $item-border-width solid $item-light-border;
+  }
+
+  &:last-child {
+    border-bottom: $item-border-width solid $item-light-border;
   }
 }
 
@@ -1238,89 +1483,207 @@ i, cite, em, var, address, dfn {
   }
 }
 
-/** Format Text */
-mm-format-text, *[mm-format-text] {
-  audio, video, a, iframe {
-    pointer-events: auto;
-  }
+.button.button-icon.icon.ion-funnel:before {
+  font-size: 26px;
+}
 
-  // Fix lists styles in mm-format-text.
-  ul, ol {
-    -webkit-padding-start: 40px;
-  }
-  ul {
-    list-style: disc;
-  }
-  ol {
-    list-style: decimal;
+// Position modals over action sheet. This means that modals will ALWAYS be over action sheet (in Ionic it's the opposite).
+.action-sheet-open .modal-backdrop.active {
+  z-index: 20;
+  .modal {
+    pointer-events: auto;
   }
 }
 
-mm-format-text[max-height], *[mm-format-text][max-height] {
-  display: block;
-  position: relative;
+// Disable action sheet if loading is active.
+.action-sheet-open .backdrop-loading.active {
+  z-index: 21;
+}
+.action-sheet-open.loading-active .action-sheet-backdrop {
+  pointer-events: none;
+}
+
+.item-divider .item-note {
+  color: $gray-darker;
+}
+
+
+.mm-empty-box {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: table;
+  height: 100%;
   width: 100%;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+  clear: both;
 
-  /* Force display inline */
-  &.inline {
-    display: inline-block;
-    width: auto;
+  .mm-empty-box-content {
+    color: $dark;
+    margin: 0;
+    padding: $item-padding;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
   }
 
-  // This is to allow clicks in radio/checkbox content.
-  &.mm-text-formatted {
-    cursor: pointer;
+  &.mm-empty-box-inline {
+    position: relative;
+    top: initial;
+    left: initial;
+    right: initial;
+    z-index: initial;
+  }
 
-    .mm-show-more {
-      display: none;
+  .icon {
+    font-size: 120px;
+  }
+  img {
+    height: 125px;
+    width: 145px;
+  }
+  p {
+    font-size: 120%;
+  }
+  .icon + p, img + p {
+    padding-top: $item-padding;
+  }
+}
+
+@media only screen and (max-height: 420px) {
+  .mm-empty-box {
+    position: relative;
+
+    .mm-empty-box-content {
+      padding: $item-padding / 2;
     }
-
-    &:not(.mm-shortened) {
-      max-height: none !important;
+    .icon {
+      font-size: 100px;
     }
-
-    &.mm-shortened {
-      color: #777;
-      overflow: hidden;
-      min-height: 50px;
-
-      .mm-show-more {
-        color: $dark;
-        text-align: right;
-        font-size: 14px;
-        display: block;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        z-index: 1001;
-
-        &:after {
-          @extend .ion;
-          content: $ionicon-var-chevron-down;
-          margin-left: 10px;
-          color: $item-icon-accessory-color;
-        }
-      }
-
-      &.mm-expand-in-fullview .mm-show-more:after {
-        content: $ionicon-var-chevron-right;
-      }
-
-      &:before {
-        content: '';
-        height: 100%;
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
-        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
-        z-index: 1000;
-      }
+    img {
+      height: 104px;
+      width: 121px;
+    }
+    .icon + p, img + p {
+      padding-top: $item-padding / 2;
     }
   }
+}
+
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  margin: 15px 0;
+  padding: 0;
+
+  &[value]::-webkit-progress-bar {
+    background-color: $gray-light;
+    border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  }
+
+  &[value]::-webkit-progress-value {
+    background-color: $mm-color-light;
+    border-radius: 2px;
+  }
+}
+
+
+mm-progress-bar {
+  padding-right: 55px;
+  position: relative;
+  display: block;
+  @extend .clearfix;
+
+  .mm-progress-text {
+    margin-left: 10px;
+    line-height: 35px;
+    color: $gray-darker;
+    right: 0;
+    top: 0;
+    color: #626262;
+    position: absolute;
+  }
+}
+
+.padding > .button.button-block:only-child {
+  margin-bottom: 0;
+}
+
+h2.invert {
+  color: $white;
+}
+
+
+@media only screen and (min-width: 430px) {
+  .mm-center-view .scroll {
+    margin: 0 auto;
+    max-width: 600px;
+    display: table !important;
+    width: 100% !important;
+    height: 100% !important;
+    .mm-view-content {
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+}
+
+/* Animations */
+.mm-animate-show,
+.mm-animate-show-hide {
+  &.ng-enter {
+    transition: 0.5s ease all;
+    opacity: 0;
+  }
+
+  &.ng-enter.ng-enter-active {
+    opacity: 1;
+  }
+}
+
+.mm-animate-hide,
+.mm-animate-show-hide {
+  &.ng-leave {
+    transition: 0.5s ease all;
+    opacity: 1;
+  }
+  &.ng-leave.ng-leave-active {
+    opacity: 0;
+  }
+}
+
+// Textarea to copy text in browser or desktop. Don't use display none because otherwise it can't be selected.
+.mm-browser-copy-area {
+  position: absolute;
+  left: -10000px;
+}
+
+// Full screen modal.
+.modal-wrapper .modal.mm-fullscreen-modal {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0
+}
+
+// Buttons in header in modals.
+.modal .bar-header .button {
+  border-color: transparent;
+  background: none;
+}
+
+::-webkit-calendar-picker-indicator, ::-webkit-inner-spin-button, ::-webkit-clear-button {
+  display: none;
+}
+
+*[ng-click] {
+  cursor: pointer;
 }

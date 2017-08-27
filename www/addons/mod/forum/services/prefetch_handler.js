@@ -148,7 +148,7 @@ angular.module('mm.addons.mod_forum')
             // If the forum has introfiles there's no need to do this because they have timemodified.
             var urls = $mmUtil.extractDownloadableFilesFromHtml(forum.intro);
             urls = urls.sort(function (a, b) {
-                return a > b;
+                return a >= b ? 1 : -1;
             });
             return revision + '#' + md5.createHash(JSON.stringify(urls));
         }
@@ -223,8 +223,8 @@ angular.module('mm.addons.mod_forum')
      */
     self.invalidateModule = function(module, courseId) {
         if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
-            // No need to invalidate anything if can check updates.
-            return $q.when();
+            // If can check updates only get forum by course is needed.
+            return $mmaModForum.invalidateForumData(courseId);
         }
 
         // Get the forum since we need its ID.
@@ -315,9 +315,7 @@ angular.module('mm.addons.mod_forum')
             });
 
             // Prefetch files.
-            angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // Prefetch groups data.
             promises.push(prefetchGroupsInfo(forum, courseId, canCreateDiscussions));
@@ -344,14 +342,24 @@ angular.module('mm.addons.mod_forum')
         // Check group mode.
         return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
             if (mode !== $mmGroups.SEPARATEGROUPS && mode !== $mmGroups.VISIBLEGROUPS) {
-                // Activity doesn't use groups, nothing else to prefetch.
+                // Activity doesn't use groups. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
+                if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                    return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
+                        // Ignore errors.
+                    });
+                }
                 return;
             }
 
             // Activity uses groups, prefetch allowed groups.
             return $mmGroups.getActivityAllowedGroups(forum.cmid).then(function(groups) {
                 if (mode === $mmGroups.SEPARATEGROUPS) {
-                    // Groups are already filtered by WS, nothing else to prefetch.
+                    // Groups are already filtered by WS. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
+                    if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                        return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
+                            // Ignore errors.
+                        });
+                    }
                     return;
                 }
 
@@ -361,9 +369,11 @@ angular.module('mm.addons.mod_forum')
                         // Can add discussion WS available, prefetch the calls.
                         return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
                             // The call failed, let's assume he can't.
-                            return false;
-                        }).then(function(canAdd) {
-                            if (canAdd) {
+                            return {
+                                status: false
+                            };
+                        }).then(function(response) {
+                            if (response.status) {
                                 // User can post to all groups, nothing else to prefetch.
                                 return;
                             }

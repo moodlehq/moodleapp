@@ -35,6 +35,11 @@ angular.module('mm.core.login')
             return;
         }
 
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mm.core.networkerrormsg', true);
+            return;
+        }
+
         var modal = $mmUtil.showModalLoading(),
             sitedata = $mmSitesManager.getDemoSiteData(url);
 
@@ -88,7 +93,8 @@ angular.module('mm.core.login')
         $scope.issue = issue;
         var popup = $ionicPopup.show({
             templateUrl:  'core/components/login/templates/login-issue.html',
-            scope: $scope
+            scope: $scope,
+            cssClass: 'mm-nohead mm-bigpopup'
         });
 
         $scope.closePopup = function() {

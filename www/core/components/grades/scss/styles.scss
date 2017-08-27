@@ -2,6 +2,7 @@
 -------------------------------------------------------------------------- */
 .mm-grades-container {
   padding-right: 2px;
+  background: white;
 }
 
 .mm-grades-table {
@@ -59,7 +60,7 @@
   .itemcenter {
     @extend .item;
     padding: 10px;
-    white-space: nowrap;
+    white-space: normal;
   }
   .feedbacktext {
     padding-left: 10px;

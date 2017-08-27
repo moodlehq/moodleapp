@@ -104,10 +104,11 @@ angular.module('mm.core.user')
 
     // Allow to change the profile image only in the app profile page.
     $scope.canChangeProfilePicture =
-        (!$scope.courseId ||$scope.courseId == ($mmSite.getSiteHomeId())) &&
+        (!$scope.courseId || $scope.courseId == $mmSite.getSiteHomeId()) &&
         $scope.userId == $mmSite.getUserId() &&
         $mmSite.canUploadFiles() &&
-        $mmSite.wsAvailable('core_user_update_picture');
+        $mmSite.wsAvailable('core_user_update_picture') &&
+        !$mmUser.isUpdatePictureDisabledInSite();
 
     $scope.changeProfilePicture = function() {
         var maxSize = -1;
@@ -115,10 +116,13 @@ angular.module('mm.core.user')
         var filterMethods = ['album', 'camera'];
 
         return $mmFileUploaderHelper.selectAndUploadFile(maxSize, title, filterMethods).then(function(result) {
+            var modal = $mmUtil.showModalLoading('mm.core.sending', true);
             return $mmUser.changeProfilePicture(result.itemid, $scope.userId).then(function(profileimageurl) {
                 $mmEvents.trigger(mmUserProfilePictureUpdated, {userId: $scope.userId, picture: profileimageurl});
                 $mmSitesManager.updateSiteInfo($mmSite.getId());
                 $scope.refreshUser();
+            }).finally(function() {
+                modal.dismiss();
             });
         }).catch(function(message) {
             if (message) {

@@ -1,0 +1,19 @@
+{
+    "beep": "сигнал",
+    "currentusers": "Поточні користувачі",
+    "enterchat": "Увійти в чат",
+    "entermessage": "Введіть ваше повідомлення",
+    "errorwhileconnecting": "Помилка при підключенні до чату.",
+    "errorwhilegettingchatdata": "Помилка отримання даних чату.",
+    "errorwhilegettingchatusers": "Помилка отримання користувачів чату.",
+    "errorwhileretrievingmessages": "Помилка отримання повідомлень з серверу.",
+    "errorwhilesendingmessage": "Помилка відправки повідомлення.",
+    "messagebeepsyou": "{{$a}} відправив Вам сигнал!",
+    "messageenter": "{{$a}} з'явився в чаті",
+    "messageexit": "{{$a}} пішов із чату",
+    "mustbeonlinetosendmessages": "Ви повинні бути онлайн для відправки повідомлення",
+    "nomessages": "Ще немає повідомлень",
+    "send": "Відіслати",
+    "sessionstart": "Чат-сесію буде розпочато: {{$a}}",
+    "talk": "Розмова"
+}

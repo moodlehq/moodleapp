@@ -39,11 +39,8 @@ angular.module('mm.addons.mod_scorm')
                     name: 'timemodified'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'scormAndUser',
-                    generator: function(obj) {
-                        return [obj.scormid, obj.userid];
-                    }
+                    keyPath: ['scormid', 'userid']
                 }
             ]
         },
@@ -70,18 +67,12 @@ angular.module('mm.addons.mod_scorm')
                     name: 'synced'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'scormUserAttempt',
-                    generator: function(obj) {
-                        return [obj.scormid, obj.userid, obj.attempt];
-                    }
+                    keyPath: ['scormid', 'userid', 'attempt']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'scormUserAttemptSynced',
-                    generator: function(obj) {
-                        return [obj.scormid, obj.userid, obj.attempt, obj.synced];
-                    }
+                    keyPath: ['scormid', 'userid', 'attempt', 'synced']
                 }
             ]
         }
@@ -430,16 +421,18 @@ angular.module('mm.addons.mod_scorm')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
-            var where;
+            var fieldName, where;
 
             if (excludeSynced && excludeNotSynced) {
                 return $q.when([]);
             } else if (excludeSynced || excludeNotSynced) {
-                where = ['scormUserAttemptSynced', '=', [scormId, userId, attempt, excludeNotSynced ? 1 : 0]];
+                fieldName = 'scormUserAttemptSynced';
+                where = [scormId, userId, attempt, excludeNotSynced ? 1 : 0];
             } else {
-                where = ['scormUserAttempt', '=', [scormId, userId, attempt]];
+                fieldName = 'scormUserAttempt';
+                where = [scormId, userId, attempt];
             }
-            return site.getDb().query(mmaModScormOfflineTracksStore, where);
+            return site.getDb().whereEqual(mmaModScormOfflineTracksStore, fieldName, where);
         });
     };
 

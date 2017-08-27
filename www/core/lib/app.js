@@ -23,6 +23,7 @@ angular.module('mm.core')
  * @description
  * This provider is the interface with the app database. The modules that need to store
  * information here need to register their stores.
+ * Remote addons cannot register stores in the app database.
  *
  * Example:
  *
@@ -52,10 +53,13 @@ angular.module('mm.core')
      */
     this.registerStore = function(store) {
         if (typeof(store.name) === 'undefined') {
-            console.log('$mmApp: Error: store name is undefined.');
+            console.error('$mmApp: Error: store name is undefined.');
+            return;
+        } else if (typeof store.keyPath  === 'undefined' || !store.keyPath) {
+            console.error('$mmApp: Error: store ' + store.name + ' keyPath is invalid.');
             return;
         } else if (storeExists(store.name)) {
-            console.log('$mmApp: Error: store ' + store.name + ' is already defined.');
+            console.error('$mmApp: Error: store ' + store.name + ' is already defined.');
             return;
         }
         dbschema.stores.push(store);
@@ -63,6 +67,7 @@ angular.module('mm.core')
 
     /**
      * Register multiple stores at once.
+     * Remote addons cannot register stores in the app database.
      *
      * @param  {Array} stores Array of store objects.
      * @return {Void}
@@ -99,6 +104,30 @@ angular.module('mm.core')
             ssoAuthenticationDeferred;
 
         /**
+         * Check if the browser supports mediaDevices.getUserMedia.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canGetUserMedia
+         * @return {Boolean} Whether the function is supported.
+         */
+        self.canGetUserMedia = function() {
+            return !!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        };
+
+        /**
+         * Check if the browser supports MediaRecorder.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canRecordMedia
+         * @return {Boolean} Whether the function is supported.
+         */
+        self.canRecordMedia = function() {
+            return !!window.MediaRecorder;
+        };
+
+        /**
          * Create a new state in the UI-router.
          *
          * @module mm.core
@@ -115,6 +144,9 @@ angular.module('mm.core')
         /**
          * Closes the keyboard if plugin is available.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#closeKeyboard
          * @return {Boolean} True if plugin is available, false otherwise.
          */
         self.closeKeyboard = function() {
@@ -127,6 +159,10 @@ angular.module('mm.core')
 
         /**
          * Get the application global database.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#getDB
          * @return {Object} App's DB.
          */
         self.getDB = function() {
@@ -142,6 +178,9 @@ angular.module('mm.core')
          *
          * Do not use this method to modify the schema. Use $mmAppProvider#registerStore instead.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#getSchema
          * @return {Object} The schema.
          */
         self.getSchema = function() {
@@ -172,6 +211,18 @@ angular.module('mm.core')
         };
 
         /**
+         * Checks if the app is running in a desktop environment (not browser).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isDesktop
+         * @return {Bool} Whether the app is running in a desktop environment (not browser).
+         */
+        self.isDesktop = function() {
+            return !!(window.process && window.process.versions && typeof window.process.versions.electron != 'undefined');
+        };
+
+        /**
          * Checks if the app is running in a real device with cordova-plugin-device installed.
          *
          * @module mm.core
@@ -186,6 +237,9 @@ angular.module('mm.core')
         /**
          * Check if the keyboard is visible.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isKeyboardVisible
          * @return {Boolean} True if keyboard is visible, false otherwise.
          */
         self.isKeyboardVisible = function() {
@@ -254,6 +308,9 @@ angular.module('mm.core')
         /**
          * Open the keyboard if plugin is available.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#openKeyboard
          * @return {Boolean} True if plugin is available, false otherwise.
          */
         self.openKeyboard = function() {

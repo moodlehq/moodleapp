@@ -23,7 +23,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontPageHandlers
  */
-.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $mmUtil, $state, $mmSitesManager, $mmSite) {
+.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $state, $mmSitesManager, $mmContentLinkHandlerFactory) {
     $log = $log.getInstance('$mmaFrontPageHandlers');
 
     var self = {};
@@ -84,68 +84,43 @@ angular.module('mm.addons.frontpage')
      *
      * @module mm.addons.frontpage
      * @ngdoc method
-     * @name $mmaFrontPageHandlers#sideMenuNav
+     * @name $mmaFrontPageHandlers#linksHandler
      */
-    self.linksHandler = function() {
+    self.linksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/course\/view\.php.*([\?\&]id=\d+)/, '$mmSideMenuDelegate_mmaFrontpage');
 
-        var self = {};
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.linksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = parseInt(params.id, 10);
+        if (!courseId) {
+            return false;
+        }
 
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds Site IDs the URL belongs to.
-         * @param {String} url       URL to treat.
-         * @return {Object[]}        List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            // Check if it's a course URL.
-            if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url),
-                    courseId = parseInt(params.id, 10);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (courseId != site.getSiteHomeId()) {
+                // The course is not site home.
+                return false;
+            }
 
-                // Get the course id of Site Home for the first site (all the siteIds should belong to the same Moodle).
-                return $mmSitesManager.getSiteHomeId(siteIds[0]).then(function(siteHomeId) {
-                    if (courseId === siteHomeId) {
-                        // Return actions.
-                        return [{
-                            message: 'mm.core.view',
-                            icon: 'ion-eye',
-                            sites: siteIds,
-                            action: function(siteId) {
-                                siteId = siteId || $mmSite.getId();
-                                // Use redirect to make the course the new history root (to avoid "loops" in history).
-                                $state.go('redirect', {
-                                    siteid: siteId,
-                                    state: 'site.frontpage'
-                                });
-                            }
-                        }];
-                    }
+            return $mmaFrontpage.isFrontpageAvailable(siteId).then(function() {
+                return true;
+            }).catch(function() {
+                return false;
+            });
+        });
+    };
 
-                    return [];
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.linksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.frontpage'
                 });
             }
-            return [];
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            // Accept any of these patterns.
-            var patterns = ['/course/view.php'];
-            for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
-            }
-        };
-
-        return self;
+        }];
     };
 
     return self;

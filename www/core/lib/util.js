@@ -69,7 +69,7 @@ angular.module('mm.core')
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
                 $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
-                $window) {
+                $window, $cordovaClipboard, mmCoreDontShowError) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -78,7 +78,8 @@ angular.module('mm.core')
             inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
                 'search', 'tel', 'text', 'time', 'url', 'week'],
             originalBackFunction = $rootScope.$ionicGoBack,
-            backFunctionsStack = [originalBackFunction];
+            backFunctionsStack = [originalBackFunction],
+            toastPromise;
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -199,6 +200,19 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns if a URL has any protocol, if not is a relative URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isAbsoluteURL
+         * @param {String} url The url to test against the pattern
+         * @return {Boolean}   TRUE if the url is absolute. FALSE if it is relative.
+         */
+        self.isAbsoluteURL = function(url) {
+            return /^[^:]{2,10}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
+        };
+
+        /**
          * Returns if a URL is a theme image URL.
          *
          * @module mm.core
@@ -264,7 +278,8 @@ angular.module('mm.core')
             } else {
                 url += '?';
             }
-            url += 'token=' + token;
+            // Always send offline=1 (for external repositories). It shouldn't cause problems for local files or old Moodles.
+            url += 'token=' + token + '&offline=1';
 
             // Some webservices returns directly the correct download url, others not.
             if (url.indexOf('/webservice/pluginfile') == -1) {
@@ -290,7 +305,16 @@ angular.module('mm.core')
         self.openFile = function(path) {
             var deferred = $q.defer();
 
-            if (window.plugins) {
+            if ($mmApp.isDesktop()) {
+                // It's a desktop app, send an event so the file is opened. It has to be done with an event
+                // because opening the file from here (renderer process) doesn't focus the opened app.
+                // Use sendSync so we can receive the result.
+                if (require('electron').ipcRenderer.sendSync('openItem', path)) {
+                    deferred.resolve();
+                } else {
+                    $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+                }
+            } else if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
 
@@ -329,7 +353,7 @@ angular.module('mm.core')
                         // with white spaces, special characters...
                         if (path.indexOf(fsRoot > -1)) {
                             path = path.replace(fsRoot, "");
-                            path = encodeURIComponent(decodeURIComponent(path));
+                            path = encodeURIComponent($mmText.decodeURIComponent(path));
                             path = fsRoot + path;
                         }
 
@@ -376,7 +400,16 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.openInBrowser = function(url) {
-            window.open(url, '_system');
+            if ($mmApp.isDesktop()) {
+                // It's a desktop app, use Electron shell library to open the browser.
+                var shell = require('electron').shell;
+                if (!shell.openExternal(url)) {
+                    // Open browser failed, open a new window in the app.
+                    window.open(url, '_system');
+                }
+            } else {
+                window.open(url, '_system');
+            }
         };
 
         /**
@@ -417,10 +450,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#closeInAppBrowser
+         * @param  {Boolean} [closeAll] Desktop only. True to close all secondary windows, false to close only the "current" one.
          * @return {Void}
          */
-        self.closeInAppBrowser = function() {
-            $cordovaInAppBrowser.close();
+        self.closeInAppBrowser = function(closeAll) {
+            // Use try/catch because it will fail if there is no opened InAppBrowser.
+            try {
+                $cordovaInAppBrowser.close();
+                if (closeAll && $mmApp.isDesktop()) {
+                    require('electron').ipcRenderer.send('closeSecondaryWindows');
+                }
+            } catch(ex) {}
         };
 
         /**
@@ -444,14 +484,15 @@ angular.module('mm.core')
 
             if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
                 // In Android we need the mimetype to open it.
-                var extension,
-                    iParams;
+                var iParams;
 
-                $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                self.getMimeTypeFromUrl(url).catch(function() {
+                    // Error getting mimetype, return undefined.
+                }).then(function(mimetype) {
                     if (!mimetype) {
-                        // Couldn't retireve mimetype. Try to guess it.
-                        extension = $mmFS.guessExtensionFromUrl(url);
-                        mimetype = $mmFS.getMimeType(extension);
+                        // Couldn't retrieve mimetype. Return error.
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                        return;
                     }
 
                     iParams = {
@@ -472,12 +513,7 @@ angular.module('mm.core')
                             $log.debug('url: ' + iParams.url);
                             $log.debug('type: ' + iParams.type);
 
-                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
-                                // Extension not found.
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
-                            } else {
-                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
-                            }
+                            $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
                         }
                     );
                 });
@@ -491,22 +527,42 @@ angular.module('mm.core')
         };
 
         /**
-         * Get the mimetype of a file given its URL. It'll perform a HEAD request to get it, if that
-         * fails it'll try to guess it using the URL.
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#getMimeType
          * @param  {String} url The URL of the file.
          * @return {Promise}    Promise resolved with the mimetype.
+         * @deprecated since 3.3. Use $mmUtil#getMimeTypeFromUrl.
          */
         self.getMimeType = function(url) {
+            $log.warn('$mmUtil#getMimeType is deprecated. Use $mmUtil#getMimeTypeFromUrl instead');
+            return self.getMimeTypeFromUrl(url);
+        };
+
+        /**
+         * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+         * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getMimeTypeFromUrl
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved with the mimetype.
+         */
+        self.getMimeTypeFromUrl = function(url) {
+            // First check if it can be guessed from the URL.
+            var extension = $mmFS.guessExtensionFromUrl(url),
+                mimetype = $mmFS.getMimeType(extension);
+
+            if (mimetype) {
+                return $q.when(mimetype);
+            }
+
+            // Can't be guessed, get the remote mimetype.
             return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
-                if (!mimetype) {
-                    // Couldn't retireve mimetype. Try to guess it.
-                    extension = $mmFS.guessExtensionFromUrl(url);
-                    mimetype = $mmFS.getMimeType(extension);
-                }
                 return mimetype || '';
             });
         };
@@ -517,9 +573,9 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModalLoading
-         * @param {String}  text           The text of the modal window.
-         * @param {Boolean} needsTranslate True if the 'text' is a $translate key, false otherwise.
-         * @return {Object}                Object with a 'dismiss' function to close the modal.
+         * @param {String}  [text]                  The text of the modal window. Default: mm.core.loading.
+         * @param {Boolean} [needsTranslate=false]  True if the 'text' is a $translate key, false otherwise.
+         * @return {Object}                         Object with a 'dismiss' function to close the modal.
          * @description
          * Usage:
          *     var modal = $mmUtil.showModalLoading(myText);
@@ -531,33 +587,22 @@ angular.module('mm.core')
                 modalShown = false,
                 showModalPromise;
 
-            if (!text) {
-                text = 'mm.core.loading';
-                needsTranslate = true;
-            }
-
-            function showModal(text) {
-                if (!modalClosed) {
-                    $ionicLoading.show({
-                        template:   '<ion-spinner></ion-spinner>' +
-                                    '<p>' + addFormatTextIfNeeded(text) + '</p>'
-                    });
-
-                    // Leave some delay before setting modalShown to true.
-                    // @todo In Ionic 1.3.1 $ionicLoading returns a promise, we should use that promise instead of a delay.
-                    showModalPromise = $timeout(function() {
-                        showModalPromise = null;
-                        if (!modalClosed) {
-                            modalShown = true;
-                        }
-                    }, 200);
+            if (!modalClosed) {
+                if (!text) {
+                    text = $translate.instant('mm.core.loading');
+                } else if (needsTranslate) {
+                    text = $translate.instant(text);
                 }
-            }
 
-            if (needsTranslate) {
-                $translate(text).then(showModal);
-            } else {
-                showModal(text);
+                showModalPromise = $ionicLoading.show({
+                    template:   '<ion-spinner></ion-spinner>' +
+                                '<p>' + addFormatTextIfNeeded(text) + '</p>'
+                }).then(function() {
+                    showModalPromise = null;
+                    if (!modalClosed) {
+                        modalShown = true;
+                    }
+                });
             }
 
             return {
@@ -575,6 +620,59 @@ angular.module('mm.core')
                 }
             };
         };
+
+        /**
+         * Displays an autodimissable toast modal window.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showToast
+         * @param {String}  text                    The text of the toast.
+         * @param {Boolean} [needsTranslate=false]  True if the 'text' is a $translate key, false otherwise.
+         * @param {Number}  [duration=2000]         Duration in ms of the dimissable toast.
+         * @return {Promise}                        Returned by $ionicLoading.
+         */
+        self.showToast = function(text, needsTranslate, duration) {
+            duration = duration || 2000;
+
+            if (needsTranslate) {
+                text = $translate.instant(text);
+            }
+
+            return $ionicLoading.show({
+                template: text,
+                duration: duration,
+                noBackdrop: true,
+                hideOnStateChange: true
+            }).then(function() {
+                var container = angular.element(document.querySelector(".loading-container.visible")).addClass('mm-toast');
+
+                // Remove class on close.
+                $timeout.cancel(toastPromise);
+                toastPromise = $timeout(function() {
+                    container.removeClass('mm-toast');
+                }, duration);
+            });
+        };
+
+        /**
+         * Copies a text to clipboard and shows a toast message.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showToast
+         * @param  {String} text Text to be copied
+         * @return {Promise}     Resolved when text is copied.
+         */
+        self.copyToClipboard = function(text) {
+            return $cordovaClipboard.copy(text).then(function() {
+                // Show toast using ionicLoading.
+                return self.showToast('mm.core.copiedtoclipboard', true);
+            }).catch(function () {
+                // Ignore errors.
+            });
+        };
+
 
         /**
          * Displays a loading modal window using a certain template.
@@ -621,10 +719,6 @@ angular.module('mm.core')
          *                                   If not defined, modal won't be automatically closed.
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
-            var errorKey = 'mm.core.error',
-                langKeys = [errorKey],
-                matches;
-
             if (angular.isObject(errorMessage)) {
                 // We received an object instead of a string. Search for common properties.
                 if (typeof errorMessage.content != 'undefined') {
@@ -641,30 +735,33 @@ angular.module('mm.core')
                 }
 
                 // Try to remove tokens from the contents.
-                matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
+                var matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
                 if (matches && matches[1]) {
                     errorMessage = errorMessage.replace(new RegExp(matches[1], 'g'), 'secret');
                 }
             }
 
-            if (needsTranslate) {
-                langKeys.push(errorMessage);
+            var message = $mmText.decodeHTML(needsTranslate ? $translate.instant(errorMessage) : errorMessage),
+                popup = $ionicPopup.alert({
+                    title: getErrorTitle(message),
+                    template: addFormatTextIfNeeded(message) // Add format-text to handle links.
+                });
+
+            if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
+                $timeout(function() {
+                    popup.close();
+                }, parseInt(autocloseTime));
             }
-
-            $translate(langKeys).then(function(translations) {
-                var message = $mmText.decodeHTML(needsTranslate ? translations[errorMessage] : errorMessage),
-                    popup = $ionicPopup.alert({
-                        title: $mmText.decodeHTML(translations[errorKey]),
-                        template: addFormatTextIfNeeded(message) // Add format-text to handle links.
-                    });
-
-                if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
-                    $timeout(function() {
-                        popup.close();
-                    }, parseInt(autocloseTime));
-                }
-            });
         };
+
+        function getErrorTitle(message) {
+            if (message == $translate.instant('mm.core.networkerrormsg') ||
+                    message == $translate.instant('mm.fileuploader.errormustbeonlinetoupload')) {
+                return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
+                    <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
+            }
+            return $mmText.decodeHTML($translate.instant('mm.core.error'));
+        }
 
         /**
          * Show a modal with an error message specifying a default message if error is empty.
@@ -679,8 +776,10 @@ angular.module('mm.core')
          *                                    If not defined, modal won't be automatically closed.
          */
         self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
-            errorMessage = errorMessage ? errorMessage : defaultError;
-            return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
+            if (errorMessage != mmCoreDontShowError) {
+                errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
+                return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
+            }
         };
 
         /**
@@ -730,6 +829,9 @@ angular.module('mm.core')
 
             options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
             options.title = title;
+            if (!title) {
+                options.cssClass = 'mm-nohead';
+            }
             return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
                     return $q.reject();
@@ -774,7 +876,7 @@ angular.module('mm.core')
          */
         function addFormatTextIfNeeded(message) {
             if ($mmText.hasHTMLTags(message)) {
-                return '<mm-format-text>' + message + '</mm-format-text>';
+                return '<mm-format-text watch="true">' + message + '</mm-format-text>';
             }
             return message;
         }
@@ -873,6 +975,18 @@ angular.module('mm.core')
         };
 
         /**
+         * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#readableTimestamp
+         * @return {Number} The readable timestamp.
+         */
+        self.readableTimestamp = function() {
+            return moment(Date.now()).format('YYYYMMDDHHmmSS');
+        };
+
+        /**
          * Return true if the param is false (bool), 0 (number) or "0" (string).
          *
          * @module mm.core
@@ -905,70 +1019,79 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#formatTime
          * @param  {Integer} seconds A number of seconds
-         * @return {String}         Human readable seconds formatted
+         * @return {Promise}         Promise resolved with human readable seconds formatted
+         * @deprecated since 3.3. Please use $mmUtil#formatTimeInstant instead.
          */
         self.formatTime = function(seconds) {
-            var langKeys = ['mm.core.day', 'mm.core.days', 'mm.core.hour', 'mm.core.hours', 'mm.core.min', 'mm.core.mins',
-                            'mm.core.sec', 'mm.core.secs', 'mm.core.year', 'mm.core.years', 'mm.core.now'];
+            return $q.when(self.formatTimeInstant(seconds));
+        };
 
-            return $translate(langKeys).then(function(translations) {
+        /**
+         * Returns hours, minutes and seconds in a human readable format.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatTimeInstant
+         * @param  {Integer} seconds A number of seconds
+         * @return {String}          Human readable seconds formatted
+         * @since 3.3
+         */
+        self.formatTimeInstant = function(seconds) {
+            var totalSecs = Math.abs(seconds);
+            var years     = Math.floor(totalSecs / mmCoreSecondsYear);
+            var remainder = totalSecs - (years * mmCoreSecondsYear);
+            var days      = Math.floor(remainder / mmCoreSecondsDay);
+            remainder = totalSecs - (days * mmCoreSecondsDay);
+            var hours     = Math.floor(remainder / mmCoreSecondsHour);
+            remainder = remainder - (hours * mmCoreSecondsHour);
+            var mins      = Math.floor(remainder / mmCoreSecondsMinute);
+            var secs      = remainder - (mins * mmCoreSecondsMinute);
 
-                totalSecs = Math.abs(seconds);
+            var ss = $translate.instant('mm.core.' + (secs == 1 ? 'sec' : 'secs'));
+            var sm = $translate.instant('mm.core.' + (mins == 1 ? 'min' : 'mins'));
+            var sh = $translate.instant('mm.core.' + (hours == 1 ? 'hour' : 'hours'));
+            var sd = $translate.instant('mm.core.' + (days == 1 ? 'day' : 'days'));
+            var sy = $translate.instant('mm.core.' + (years == 1 ? 'year' : 'years'));
 
-                var years     = Math.floor(totalSecs / mmCoreSecondsYear);
-                var remainder = totalSecs - (years * mmCoreSecondsYear);
-                var days      = Math.floor(remainder / mmCoreSecondsDay);
-                remainder = totalSecs - (days * mmCoreSecondsDay);
-                var hours     = Math.floor(remainder / mmCoreSecondsHour);
-                remainder = remainder - (hours * mmCoreSecondsHour);
-                var mins      = Math.floor(remainder / mmCoreSecondsMinute);
-                var secs      = remainder - (mins * mmCoreSecondsMinute);
+            var oyears = '',
+                odays = '',
+                ohours = '',
+                omins = '',
+                osecs = '';
 
-                var ss = (secs == 1)  ? translations['mm.core.sec']  : translations['mm.core.secs'];
-                var sm = (mins == 1)  ? translations['mm.core.min']  : translations['mm.core.mins'];
-                var sh = (hours == 1) ? translations['mm.core.hour'] : translations['mm.core.hours'];
-                var sd = (days == 1)  ? translations['mm.core.day']  : translations['mm.core.days'];
-                var sy = (years == 1) ? translations['mm.core.year'] : translations['mm.core.years'];
+            if (years) {
+                oyears  = years + ' ' + sy;
+            }
+            if (days) {
+                odays  = days + ' ' + sd;
+            }
+            if (hours) {
+                ohours = hours + ' ' + sh;
+            }
+            if (mins) {
+                omins  = mins + ' ' + sm;
+            }
+            if (secs) {
+                osecs  = secs + ' ' + ss;
+            }
 
-                var oyears = '',
-                    odays = '',
-                    ohours = '',
-                    omins = '',
-                    osecs = '';
+            if (years) {
+                return oyears + ' ' + odays;
+            }
+            if (days) {
+                return odays + ' ' + ohours;
+            }
+            if (hours) {
+                return ohours + ' ' + omins;
+            }
+            if (mins) {
+                return omins + ' ' + osecs;
+            }
+            if (secs) {
+                return osecs;
+            }
 
-                if (years) {
-                    oyears  = years + ' ' + sy;
-                }
-                if (days) {
-                    odays  = days + ' ' + sd;
-                }
-                if (hours) {
-                    ohours = hours + ' ' + sh;
-                }
-                if (mins) {
-                    omins  = mins + ' ' + sm;
-                }
-                if (secs) {
-                    osecs  = secs + ' ' + ss;
-                }
-
-                if (years) {
-                    return oyears + ' ' + odays;
-                }
-                if (days) {
-                    return odays + ' ' + ohours;
-                }
-                if (hours) {
-                    return ohours + ' ' + omins;
-                }
-                if (mins) {
-                    return omins + ' ' + osecs;
-                }
-                if (secs) {
-                    return osecs;
-                }
-                return translations['mm.core.now'];
-            });
+            return $translate.instant('mm.core.now');
         };
 
         /**
@@ -1030,10 +1153,9 @@ angular.module('mm.core')
          * @return {Array}                      Array with the formatted tree, children will be on each node under children field.
          */
         self.formatTree = function(list, parentFieldName, idFieldName, rootParentId, maxDepth) {
-            var original = list,
-                map = {},
+            var map = {},
                 mapDepth = {},
-                node, parent, id,
+                parent, id,
                 tree = [];
 
             parentFieldName = parentFieldName || 'parent';
@@ -1049,24 +1171,25 @@ angular.module('mm.core')
                 // Use map to look-up the parents.
                 map[id] = index;
                 if (parent != rootParentId) {
-                    if (mapDepth[parent] == maxDepth) {
-                        // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
-                        var parentNode = list[map[parent]];
-                        if (parentNode != null) {
+                    var parentNode = list[map[parent]];
+                    if (parentNode) {
+                        if (mapDepth[parent] == maxDepth) {
+                            // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
                             var parentOfParent = parentNode[parentFieldName];
-                            // This element will be the child of the node that is two levels up the hierarchy
-                            // (i.e. the child of node.parent.parent).
-                            list[map[parentOfParent]].children.push(node);
-                            // Assign depth level to the same depth as the parent (i.e. max depth level).
-                            mapDepth[id] = mapDepth[parent];
-                            // Change the parent to be the one that is two levels up the hierarchy.
-                            //node.parent = parentOfParent;
+                            if (parentOfParent) {
+                                // This element will be the child of the node that is two levels up the hierarchy
+                                // (i.e. the child of node.parent.parent).
+                                list[map[parentOfParent]].children.push(node);
+                                // Assign depth level to the same depth as the parent (i.e. max depth level).
+                                mapDepth[id] = mapDepth[parent];
+                                // Change the parent to be the one that is two levels up the hierarchy.
+                                node.parent = parentOfParent;
+                            }
+                        } else {
+                            parentNode.children.push(node);
+                            // Increase the depth level.
+                            mapDepth[id] = mapDepth[parent] + 1;
                         }
-                    } else {
-                        list[map[parent]].children.push(node);
-
-                        // Increase the depth level.
-                        mapDepth[id] = mapDepth[parent] + 1;
                     }
                 } else {
                     tree.push(node);
@@ -1146,6 +1269,85 @@ angular.module('mm.core')
         };
 
         /**
+         * Execute promises one depending on the previous.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#executeOrderedPromises
+         * @param  {Object[]} orderedPromisesData       Data to be executed including the following values:
+         *                                               - func: Function to be executed.
+         *                                               - params: Array of data to be sent to the function.
+         *                                               - blocking: Boolean. If promise should block the following.
+         * @return {Promise}                        Promise resolved when all generated promises are resolved.
+         */
+        self.executeOrderedPromises = function(orderedPromisesData) {
+            var promises = [],
+                dependency = $q.when();
+
+            // Execute all the processes in order.
+            angular.forEach(orderedPromisesData, function(data) {
+                var promise;
+
+                // Add the process to the dependency stack.
+                promise = dependency.finally(function() {
+                    var prom, fn;
+
+                    try {
+                        fn = self.resolveObject(data.func);
+                        prom = fn.apply(prom, data.params || []);
+                    } catch (e) {
+                        $log.error(e.message);
+                        return;
+                    }
+                    return prom;
+                });
+                promises.push(promise);
+
+                // If the new process is blocking, we set it as the dependency.
+                if (data.blocking) {
+                    dependency = promise;
+                }
+            });
+
+            // Return when all promises are done.
+            return self.allPromises(promises);
+        };
+
+        /**
+         * Check if a promise works and returns true if resolves or false if rejects.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseWorks
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises resolves and false if rejects.
+         */
+        self.promiseWorks = function(promise) {
+            return promise.then(function() {
+                return true;
+            }).catch(function() {
+                return false;
+            });
+        };
+
+        /**
+         * Check if a promise works and returns true if rejects or false if resolves.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseFails
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises rejects and false if resolves.
+         */
+        self.promiseFails = function(promise) {
+            return promise.then(function() {
+                return false;
+            }).catch(function() {
+                return true;
+            });
+        };
+
+        /**
          * Compare two objects. This function won't compare functions and proto properties, it's a basic compare.
          * Also, this will only check if itemA's properties are in itemB with same value. This function will still
          * return true if itemB has more properties than itemA.
@@ -1174,6 +1376,11 @@ angular.module('mm.core')
 
                 var equal = true;
                 angular.forEach(itemA, function(value, name) {
+                    if (name == '$$hashKey') {
+                        // Ignore $$hashKey property since it's a "calculated" property.
+                        return;
+                    }
+
                     if (!self.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
                         equal = false;
                     }
@@ -1308,7 +1515,7 @@ angular.module('mm.core')
             // Convert float to string.
             float += '';
             return float.replace('.', localeSeparator);
-        }
+        };
 
         /**
          * Converts locale specific floating point/comma number back to standard PHP float value
@@ -1351,7 +1558,7 @@ angular.module('mm.core')
                 return false;
             }
             return localeFloat;
-        }
+        };
 
         /**
          * Serialize an object to be used in a request.
@@ -1407,6 +1614,20 @@ angular.module('mm.core')
         };
 
         /**
+         * Remove the parameters from a URL, returning the URL without them.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#removeUrlParams
+         * @param  {String} url URL to treat.
+         * @return {String}     URL without params.
+         */
+        self.removeUrlParams = function(url) {
+            var matches = url.match(/^[^\?]+/);
+            return matches && matches[0];
+        };
+
+        /**
          * Given an HTML, searched all links and media and tries to restore original sources using the paths object.
          *
          * @module mm.core
@@ -1425,15 +1646,23 @@ angular.module('mm.core')
             // Treat elements with src (img, audio, video, ...).
             media = div[0].querySelectorAll('img, video, audio, source, track');
             angular.forEach(media, function(el) {
-                var src = paths[decodeURIComponent(el.getAttribute('src'))];
+                var src = paths[$mmText.decodeURIComponent(el.getAttribute('src'))];
                 if (typeof src !== 'undefined') {
                     el.setAttribute('src', src);
+                }
+
+                // Treat video posters.
+                if (el.tagName == 'VIDEO' && el.getAttribute('poster')) {
+                    src = paths[$mmText.decodeURIComponent(el.getAttribute('poster'))];
+                    if (typeof src !== 'undefined') {
+                        el.setAttribute('poster', src);
+                    }
                 }
             });
 
             // We do the same for links.
             angular.forEach(div.find('a'), function(anchor) {
-                var href = decodeURIComponent(anchor.getAttribute('href')),
+                var href = $mmText.decodeURIComponent(anchor.getAttribute('href')),
                     url = paths[href];
 
                 if (typeof url !== 'undefined') {
@@ -1728,12 +1957,20 @@ angular.module('mm.core')
                 urls = [];
 
             div.innerHTML = html;
-            elements = div.querySelectorAll('a, img, audio, video, source');
+            elements = div.querySelectorAll('a, img, audio, video, source, track');
 
             angular.forEach(elements, function(element) {
                 var url = element.tagName === 'A' ? element.href : element.src;
                 if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                     urls.push(url);
+                }
+
+                // Treat video poster.
+                if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
+                    url = element.getAttribute('poster');
+                    if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+                        urls.push(url);
+                    }
                 }
             });
 
@@ -1774,21 +2011,76 @@ angular.module('mm.core')
          * @return {Object[]}         Array of objects with the name & value of each property.
          */
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
-            var result = [],
-                keys = Object.keys(obj);
-
+            var entries = getEntries('', obj);
             if (sort) {
-                keys = keys.sort();
+                return entries.sort(function(a, b) {
+                    return a.name >= b.name ? 1 : -1;
+                });
             }
+            return entries;
 
-            angular.forEach(keys, function(key) {
-                var entry = {};
-                entry[keyName] = key;
-                entry[valueName] = obj[key];
-                result.push(entry);
-            });
-            return result;
+            // Get the entries from an object or primitive value.
+            function getEntries(elKey, value) {
+                if (typeof value == 'object') {
+                    // It's an object, return at least an entry for each property.
+                    var keys = Object.keys(value),
+                        entries = [];
+
+                    angular.forEach(keys, function(key) {
+                        var newElKey = elKey ? elKey + '[' + key + ']' : key;
+                        entries = entries.concat(getEntries(newElKey, value[key]));
+                    });
+
+                    return entries;
+                } else {
+                    // Not an object, return a single entry.
+                    var entry = {};
+                    entry[keyName] = elKey;
+                    entry[valueName] = value;
+                    return entry;
+                }
+            }
         };
+
+        /**
+         * Converts an object into an arrayloosing the keys.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToArray
+         * @param  {Object} obj       Object to convert.
+         * @return {Array}            Array with the values of the object but loosing the keys.
+         */
+        self.objectToArray = function(obj) {
+            return Object.keys(obj).map(function(key) {
+                return obj[key];
+            });
+        };
+
+        /**
+         * Converts an array of objects into an object with key and value.
+         * The contrary of objectToArrayOfObjects
+         * For example, it can convert [{name: 'size', value: 2}] into {size: 2}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToKeyValueMap
+         * @param  {Object} obj         Object to convert.
+         * @param  {String} keyName     Name of the properties where the keys are stored.
+         * @param  {String} valueName   Name of the properties where the keys are stored.
+         * @param  {String} [keyPrefix] Key prefix if needed to delete it.
+         * @return {Object[]}         Array of objects mapped.
+         */
+        self.objectToKeyValueMap = function(obj, keyName, valueName, keyPrefix) {
+            var prefixSubstr = keyPrefix ? keyPrefix.length : 0,
+                mapped = {};
+            angular.forEach(obj, function(item) {
+                var key = prefixSubstr > 0 ? item[keyName].substr(prefixSubstr) : item[keyName];
+                mapped[key] = item[valueName];
+            });
+            return mapped;
+        };
+
 
         /**
          * Tests to see whether two arrays or objects have the same value at a particular key.
@@ -1824,10 +2116,11 @@ angular.module('mm.core')
          * @name $mmUtil#mergeArraysWithoutDuplicates
          * @param  {Array} array1 The first array.
          * @param  {Array} array2 The second array.
+         * @param  {String} [key] Key of the property that must be unique. If not specified, the whole entry.
          * @return {Array}        Merged array.
          */
-        self.mergeArraysWithoutDuplicates = function(array1, array2) {
-            return self.uniqueArray(array1.concat(array2));
+        self.mergeArraysWithoutDuplicates = function(array1, array2, key) {
+            return self.uniqueArray(array1.concat(array2), key);
         };
 
         /**
@@ -1836,19 +2129,25 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#uniqueArray
-         * @param  {Array} array The array to treat.
-         * @return {Array}       Array without duplicate values.
+         * @param  {Array} array  The array to treat.
+         * @param  {String} [key] Key of the property that must be unique. If not specified, the whole entry.
+         * @return {Array}        Array without duplicate values.
          */
-        self.uniqueArray = function(array) {
-            var unique = [],
+        self.uniqueArray = function(array, key) {
+            var filtered = [],
+                unique = [],
                 len = array.length;
+
             for (var i = 0; i < len; i++) {
-                var value = array[i];
+                var entry = array[i],
+                    value = key ? entry[key] : entry;
                 if (unique.indexOf(value) == -1) {
                     unique.push(value);
+                    filtered.push(entry);
                 }
             }
-            return unique;
+
+            return filtered;
         };
 
         /**
@@ -1872,7 +2171,8 @@ angular.module('mm.core')
                 $translate.instant('mm.core.errorinvalidresponse'),
                 $translate.instant('mm.core.sitemaintenance'),
                 $translate.instant('mm.core.upgraderunning'),
-                $translate.instant('mm.core.nopasswordchangeforced')
+                $translate.instant('mm.core.nopasswordchangeforced'),
+                $translate.instant('mm.core.unicodenotsupported')
             ];
             return error && localErrors.indexOf(error) == -1;
         };
@@ -2125,6 +2425,152 @@ angular.module('mm.core')
             }
 
             return elementMidPoint > $window.innerHeight || elementMidPoint < scrollTopPos;
+        };
+
+        /**
+         * Copy properties from one object to another.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#copyProperties
+         * @param  {Object} from Object to copy the properties from.
+         * @param  {Object} to   Object where to store the properties.
+         * @return {Void}
+         */
+        self.copyProperties = function(from, to) {
+            angular.forEach(from, function(value, name) {
+                to[name] = angular.copy(value);
+            });
+        };
+
+        /**
+         * Filter the list of site IDs based on a isEnabled function.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterEnabledSites
+         * @param  {String[]} siteIds     Site IDs to filter.
+         * @param  {Function} isEnabledFn Function to call for each site. Must return true or a promise resolved with true if
+         *                                enabled. It receives a siteId param and all the params sent to this function after
+         *                                'checkAll'.
+         * @param  {Boolean} checkAll     True if it should check all the sites, false if it should check only 1 and treat them all
+         *                                depending on this result.
+         * @param  {Mixed}                All the params sent after checkAll will be passed to isEnabledFn.
+         * @return {Promise}              Promise resolved with the list of enabled sites.
+         */
+        self.filterEnabledSites = function(siteIds, isEnabledFn, checkAll) {
+            var promises = [],
+                enabledSites = [],
+                extraParams = Array.prototype.slice.call(arguments, 3); // Params received after 'checkAll'.
+
+            angular.forEach(siteIds, function(siteId) {
+                if (checkAll || !promises.length) {
+                    promises.push($q.when(isEnabledFn.apply(isEnabledFn, [siteId].concat(extraParams))).then(function(enabled) {
+                        if (enabled) {
+                            enabledSites.push(siteId);
+                        }
+                    }));
+                }
+            });
+
+            return self.allPromises(promises).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                if (!checkAll) {
+                    // Checking 1 was enough, so it will either return all the sites or none.
+                    return enabledSites.length ? siteIds : [];
+                } else {
+                    return enabledSites;
+                }
+            });
+        };
+
+        /**
+         * Returns element height of an element.
+         *
+         * @param  {Object}  element                DOM element to measure.
+         * @param  {Boolean} [usePadding=false]     Use padding to calculate the measure.
+         * @param  {Boolean} [useMargin=false]      Use margin to calculate the measure.
+         * @param  {Boolean} [useBorder=false]      Use borders to calculate the measure.
+         * @param  {Boolean} [innerMeasure=false]   If inner measure is needed: padding, margin or borders will be substracted.
+         * @return {Number}                         Height in pixels.
+         */
+        self.getElementHeight = function(element, usePadding, useMargin, useBorder, innerMeasure) {
+            var measure = element.offsetHeight || element.height || element.clientHeight || 0;
+
+            // Measure not correctly taken.
+            if (measure <= 0) {
+                var angElement = angular.element(element);
+                if (angElement.css('display') == '') {
+                    angElement.css('display', 'inline-block');
+                    measure = element.offsetHeight || element.height || element.clientHeight || 0;
+                    angElement.css('display', '');
+                }
+            }
+
+            if (usePadding || useMargin || useBorder) {
+                var surround = 0,
+                    cs = getComputedStyle(element);
+                if (usePadding) {
+                    surround += parseInt(cs.paddingTop, 10) + parseInt(cs.paddingBottom, 10);
+                }
+                if (useMargin) {
+                    surround += parseInt(cs.marginTop, 10) + parseInt(cs.marginBottom, 10);
+                }
+                if (useBorder) {
+                    surround += parseInt(cs.borderTop, 10) + parseInt(cs.borderBottom, 10);
+                }
+                if (innerMeasure) {
+                    measure = measure > surround ? measure - surround : 0;
+                } else {
+                    measure += surround;
+                }
+            }
+            return measure;
+        };
+
+        /**
+         * Returns element width of an element.
+         *
+         * @param  {Object}  element                DOM element to measure.
+         * @param  {Boolean} [usePadding=false]     Use padding to calculate the measure.
+         * @param  {Boolean} [useMargin=false]      Use margin to calculate the measure.
+         * @param  {Boolean} [useBorder=false]      Use borders to calculate the measure.
+         * @param  {Boolean} [innerMeasure=false]   If inner measure is needed: padding, margin or borders will be substracted.
+         * @return {Number}                         Witdh in pixels.
+         */
+        self.getElementWidth = function(element, usePadding, useMargin, useBorder, innerMeasure) {
+            var measure = element.offsetWidth || element.width || element.clientWidth || 0;
+
+            // Measure not correctly taken.
+            if (measure <= 0) {
+                var angElement = angular.element(element);
+                if (angElement.css('display') == '') {
+                    angElement.css('display', 'inline-block');
+                    measure = element.offsetWidth || element.width || element.clientWidth || 0;
+                    angElement.css('display', '');
+                }
+            }
+
+            if (usePadding || useMargin || useBorder) {
+                var surround = 0,
+                    cs = getComputedStyle(element);
+                if (usePadding) {
+                    surround += parseInt(cs.paddingLeft, 10) + parseInt(cs.paddingRight, 10);
+                }
+                if (useMargin) {
+                    surround += parseInt(cs.marginLeft, 10) + parseInt(cs.marginRight, 10);
+                }
+                if (useBorder) {
+                    surround += parseInt(cs.borderLeft, 10) + parseInt(cs.borderRight, 10);
+                }
+                if (innerMeasure) {
+                    measure = measure > surround ? measure - surround : 0;
+                } else {
+                    measure += surround;
+                }
+            }
+            return measure;
         };
 
         return self;

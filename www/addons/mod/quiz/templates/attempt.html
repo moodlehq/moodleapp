@@ -26,10 +26,10 @@
                     <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ attempt.feedback }}</mm-format-text></p>
                 </div>
                 <div class="item" ng-if="quiz.showReviewColumn && attempt.finished">
-                    <button class="button button-block" ui-sref="site.mod_quiz-review({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})">{{ 'mma.mod_quiz.review' | translate }}</button>
+                    <button class="button button-block icon-left ion-search" ui-sref="site.mod_quiz-review({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})">{{ 'mma.mod_quiz.review' | translate }}</button>
                 </div>
-                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="!quiz.showReviewColumn">
-                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.noreviewattempt' | translate }}</p>
+                <div class="item item-text-wrap mm-error-item" ng-if="!quiz.showReviewColumn">
+                    <p>{{ 'mma.mod_quiz.noreviewattempt' | translate }}</p>
                 </div>
             </div>
         </mm-loading>

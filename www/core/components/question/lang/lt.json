@@ -1,0 +1,21 @@
+{
+    "answer": "Atsakymas",
+    "answersaved": "Atsakymas išsaugotas",
+    "complete": "Baigta",
+    "correct": "Teisinga",
+    "errorattachmentsnotsupported": "Programėlė nepalaiko pridėtų failų.",
+    "errorinlinefilesnotsupported": "Programėlė nepalaiko redaguojamų failų",
+    "errorquestionnotsupported": "Šis klausimo tipas programėlėje nepalaikomas: {{$a}}.",
+    "feedback": "Grįžtamasis ryšys",
+    "howtodraganddrop": "Paspauskite pasirinkimui, tada perneškite.",
+    "incorrect": "Neteisinga",
+    "information": "Informacija",
+    "invalidanswer": "Nepilnas atsakymas",
+    "notanswered": "Neatsakyta",
+    "notyetanswered": "Neatsakyta",
+    "partiallycorrect": "Iš dalies teisingas",
+    "questionmessage": "Klausimas {{$a}}: {{$b}}",
+    "questionno": "Klausimas {{$a}}",
+    "requiresgrading": "Reikia vertinimo",
+    "unknown": "Negalima nustatyti statuso"
+}

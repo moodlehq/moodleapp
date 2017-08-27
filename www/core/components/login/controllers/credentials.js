@@ -21,8 +21,9 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginCredentialsCtrl
  */
-.controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
-            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate) {
+.controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $mmEvents,
+            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent,
+            mmCoreLoginSiteUncheckedEvent) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
@@ -31,21 +32,25 @@ angular.module('mm.core.login')
     $scope.siteChecked = false;
 
     var urlToOpen = $stateParams.urltoopen,
-        siteConfig = $stateParams.siteconfig;
+        siteConfig = $stateParams.siteconfig,
+        eventThrown = false,
+        siteId;
 
     treatSiteConfig(siteConfig);
 
     // Function to check if a site uses local_mobile, requires SSO login, etc.
     // This should be used only if a fixed URL is set, otherwise this check is already performed in mmLoginSiteCtrl.
     function checkSite(siteurl) {
+        $scope.pageLoaded = false;
+
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
-        var checkmodal = $mmUtil.showModalLoading(),
-            protocol = siteurl.indexOf('http://') === 0 ? 'http://' : undefined;
+        var protocol = siteurl.indexOf('http://') === 0 ? 'http://' : undefined;
         return $mmSitesManager.checkSite(siteurl, protocol).then(function(result) {
 
             $scope.siteChecked = true;
             $scope.siteurl = result.siteurl;
 
+            siteConfig = result.config;
             treatSiteConfig(result.config);
 
             if (result && result.warning) {
@@ -69,7 +74,7 @@ angular.module('mm.core.login')
             $mmUtil.showErrorModal(error);
             return $q.reject();
         }).finally(function() {
-            checkmodal.dismiss();
+            $scope.pageLoaded = true;
         });
     }
 
@@ -79,12 +84,21 @@ angular.module('mm.core.login')
             $scope.sitename = siteConfig.sitename;
             $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
             $scope.authInstructions = siteConfig.authinstructions || $translate.instant('mm.login.loginsteps');
-            $scope.canSignup = siteConfig.registerauth == 'email';
+            $scope.canSignup = siteConfig.registerauth == 'email' && !$mmLoginHelper.isEmailSignupDisabled(siteConfig);
+            $scope.identityProviders = $mmLoginHelper.getValidIdentityProviders(siteConfig);
+
+            if (!eventThrown && !$scope.$$destroyed) {
+                eventThrown = true;
+                $mmEvents.trigger(mmCoreLoginSiteCheckedEvent, {
+                    config: siteConfig
+                });
+            }
         } else {
             $scope.sitename = null;
             $scope.logourl = null;
             $scope.authInstructions = null;
             $scope.canSignup = false;
+            $scope.identityProviders = [];
         }
     }
 
@@ -93,6 +107,7 @@ angular.module('mm.core.login')
         checkSite($scope.siteurl);
     } else {
         $scope.siteChecked = true;
+        $scope.pageLoaded = true;
     }
 
     $scope.login = function() {
@@ -126,13 +141,19 @@ angular.module('mm.core.login')
             return;
         }
 
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mm.core.networkerrormsg', true);
+            return;
+        }
+
         var modal = $mmUtil.showModalLoading();
 
         // Start the authentication process.
         return $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
-            return $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function() {
+            return $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function(id) {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
+                siteId = id;
 
                 if (urlToOpen) {
                     // There's a content link to open.
@@ -156,4 +177,17 @@ angular.module('mm.core.login')
         });
     };
 
+    // An OAuth button was clicked.
+    $scope.oauthClicked = function(provider) {
+        if (!$mmLoginHelper.openBrowserForOAuthLogin($scope.siteurl, provider, siteConfig.launchurl)) {
+            $mmUtil.showErrorModal('Invalid data.');
+        }
+    };
+
+    $scope.$on('$destroy', function() {
+        $mmEvents.trigger(mmCoreLoginSiteUncheckedEvent, {
+            siteid: siteId,
+            config: siteConfig
+        });
+    });
 });

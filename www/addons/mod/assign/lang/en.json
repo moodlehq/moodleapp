@@ -40,7 +40,7 @@
     "gradeoutof": "Grade out of {{$a}}",
     "gradingstatus": "Grading status",
     "groupsubmissionsettings": "Group submission settings",
-    "hiddenuser": "Participant ",
+    "hiddenuser": "Participant",
     "latesubmissions": "Late submissions",
     "latesubmissionsaccepted": "Allowed until {{$a}}",
     "markingworkflowstate": "Marking workflow state",

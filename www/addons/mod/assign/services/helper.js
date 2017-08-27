@@ -21,10 +21,41 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignHelper
  */
-.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmFilepool, $mmaModAssign,
-            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate) {
+.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmaModAssign, $mmGroups,
+            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate,
+            mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusReopened) {
 
     var self = {};
+
+    /**
+     * Check if a submission can be edited in offline.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#canEditSubmissionOffline
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission.
+     * @return {Boolean}           True if can edit offline, false otherwise.
+     */
+    self.canEditSubmissionOffline = function(assign, submission) {
+        if (!submission) {
+            return false;
+        }
+
+        if (submission.status == mmaModAssignSubmissionStatusNew || submission.status == mmaModAssignSubmissionStatusReopened) {
+            // It's a new submission, allow creating it in offline.
+            return true;
+        }
+
+        for (var i = 0; i < submission.plugins.length; i++) {
+            var plugin = submission.plugins[i];
+            if (!$mmaModAssignSubmissionDelegate.canPluginEditOffline(assign, submission, plugin)) {
+                return false;
+            }
+        }
+
+        return true;
+    };
 
     /**
      * Clear plugins temporary data because a submission was cancelled.
@@ -240,34 +271,35 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Check if the feedback has draft data for a certain submission and assign.
+     * Check if the feedback data has changed for a certain submission and assign.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignHelper#hasFeedbackDraftData
-     * @param  {Number} assignId        Assignment Id.
+     * @name $mmaModAssignHelper#hasFeedbackDataChanged
+     * @param  {Object} assign        Assignment.
      * @param  {Number} userId          User Id.
      * @param  {Object} feedback        Feedback data.
-     * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    self.hasFeedbackDraftData = function(assignId, userId, feedback, siteId) {
-        var hasDraft = false,
+    self.hasFeedbackDataChanged = function(assign, userId, feedback) {
+        var hasChanged = false,
             promises = [];
 
         angular.forEach(feedback.plugins, function(plugin) {
-            promises.push($mmaModAssignFeedbackDelegate.hasPluginDraftData(assignId, userId, plugin, siteId)
-                    .then(function(draft) {
-                if (draft) {
-                    hasDraft = true;
-                }
-            }).catch(function() {
-                // Ignore errors.
+            promises.push(self.prepareFeedbackPluginData(assign.id, userId, feedback).then(function(inputData) {
+                return $mmaModAssignFeedbackDelegate.hasPluginDataChanged(assign, userId, plugin, inputData)
+                        .then(function(changed) {
+                    if (changed) {
+                        hasChanged = true;
+                    }
+                }).catch(function() {
+                    // Ignore errors.
+                });
             }));
         });
 
         return $mmUtil.allPromises(promises).then(function() {
-            return hasDraft;
+            return hasChanged;
         });
     };
 
@@ -374,47 +406,9 @@ angular.module('mm.addons.mod_assign')
     self.storeSubmissionFiles = function(assignId, pluginName, files, userId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var result = {
-            online: [],
-            offline: 0
-        };
-
-        if (!files || !files.length) {
-            return $q.when(result);
-        }
-
+        // Get the folder where to store the files.
         return $mmaModAssignOffline.getSubmissionPluginFolder(assignId, pluginName, userId, siteId).then(function(folderPath) {
-            // Remove unused files from previous submissions.
-            return $mmFS.removeUnusedFiles(folderPath, files).then(function() {
-                var promises = [];
-
-                angular.forEach(files, function(file) {
-                    if (file.filename && !file.name) {
-                        // It's an online file, add it to the result and ignore it.
-                        result.online.push({
-                            filename: file.filename,
-                            fileurl: file.fileurl
-                        });
-                        return;
-                    } else if (!file.name) {
-                        // Error.
-                        promises.push($q.reject());
-                    } else if (file.fullPath && file.fullPath.indexOf(folderPath) != -1) {
-                        // File already in the submission folder.
-                        result.offline++;
-                    } else {
-                        // Local file, copy it. Use copy instead of move to prevent having a unstable state if
-                        // some copies succeed and others don't.
-                        var destFile = $mmFS.concatenatePaths(folderPath, file.name);
-                        promises.push($mmFS.copyFile(file.fullPath, destFile));
-                        result.offline++;
-                    }
-                });
-
-                return $q.all(promises).then(function() {
-                    return result;
-                });
-            });
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
         });
     };
 
@@ -431,30 +425,7 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with the itemId.
      */
     self.uploadFile = function(assignId, file, itemId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        var promise,
-            fileName;
-
-        if (file.filename && !file.name) {
-            // It's an online file. We need to download it and re-upload it.
-            fileName = file.filename;
-            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, mmaModAssignComponent, assignId).then(function(path) {
-                return $mmFS.getExternalFile(path);
-            });
-        } else {
-            // Local file, we already have the file entry.
-            fileName = file.name;
-            promise = $q.when(file);
-        }
-
-        return promise.then(function(fileEntry) {
-            // Now upload the file.
-            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId, siteId)
-                    .then(function(result) {
-                return result.itemid;
-            });
-        });
+        return $mmFileUploader.uploadOrReuploadFile(file, itemId, mmaModAssignComponent, assignId, siteId);
     };
 
     /**
@@ -471,36 +442,7 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with the itemId.
      */
     self.uploadFiles = function(assignId, files, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        if (!files || !files.length) {
-            // Return fake draft ID.
-            return $q.when(1);
-        }
-
-        // Upload only the first file first to get a draft id.
-        return self.uploadFile(assignId, files[0]).then(function(itemId) {
-            var promises = [],
-                error;
-
-            angular.forEach(files, function(file, index) {
-                if (index === 0) {
-                    // First file has already been uploaded.
-                    return;
-                }
-
-                promises.push(self.uploadFile(assignId, file, itemId, siteId).catch(function(message) {
-                    error = message;
-                    return $q.reject();
-                }));
-            });
-
-            return $q.all(promises).then(function() {
-                return itemId;
-            }).catch(function() {
-                return $q.reject(error);
-            });
-        });
+        return $mmFileUploader.uploadOrReuploadFiles(files, mmaModAssignComponent, assignId, siteId);
     };
 
     /**
@@ -567,6 +509,44 @@ angular.module('mm.addons.mod_assign')
             }
         });
         return configs;
+    };
+
+    /**
+     * List the participants for a single assignment, with some summary info about their submissions.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getParticipants
+     * @param {Object} assign       Assignment object
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the list of participants and summary of submissions.
+     */
+    self.getParticipants = function(assign, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmaModAssign.listParticipants(assign.id, undefined, siteId).then(function(participants) {
+            if (participants && participants.length > 0) {
+                return participants;
+            }
+
+            // If no participants returned, get participants by groups.
+            return $mmGroups.getActivityAllowedGroupsIfEnabled(assign.cmid, undefined, siteId).then(function(userGroups) {
+                var promises = [],
+                    particips = {};
+
+                angular.forEach(userGroups, function(userGroup) {
+                    promises.push($mmaModAssign.listParticipants(assign.id, userGroup.id, siteId).then(function(parts) {
+                        // Do not get repeated users.
+                        angular.forEach(parts, function(p) {
+                            particips[p.id] = p;
+                        });
+                    }));
+                });
+                return $q.all(promises).then(function() {
+                    return $mmUtil.objectToArray(particips);
+                });
+            });
+        });
     };
 
     return self;

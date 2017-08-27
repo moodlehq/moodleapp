@@ -87,33 +87,48 @@ angular.module('mm.core')
      * @return {Number}          The width of the element in pixels. When 0 is returned it means the element is not visible.
      */
     function getElementWidth(element) {
-        var width = element.offsetWidth || element.width || element.clientWidth;
+        var width = $mmUtil.getElementWidth(element);
 
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
             var angElement = angular.element(element),
-                parentNode = element.parentNode,
-                parentWidth = parentNode.offsetWidth || parentNode.width || parentNode.clientWidth,
+                parentWidth = $mmUtil.getElementWidth(element.parentNode, true, false, false, true),
                 previousDisplay = angElement.css('display');
 
             angElement.css('display', 'inline-block');
 
-            width = element.offsetWidth || element.width || element.clientWidth;
+            width = $mmUtil.getElementWidth(element);
 
-            if (parentWidth > 0) {
-                var cs = getComputedStyle(parentNode);
-                parentWidth -= (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight));
-
-                // If width is incorrectly calculated use parent width instead.
-                if (parentWidth > 0 && (!width || width > parentWidth)) {
-                    width = parentWidth;
-                }
+            // If width is incorrectly calculated use parent width instead.
+            if (parentWidth > 0 && (!width || width > parentWidth)) {
+                width = parentWidth;
             }
 
             angElement.css('display', previousDisplay);
         }
 
         return parseInt(width, 10);
+    }
+
+    /**
+     * Returns the element height in pixels.
+     *
+     * @param  {Object}  elementAng Angular DOM element to get height from.
+     * @return {Number}             The height of the element in pixels. When 0 or false is returned it means the element
+     *                                  is not visible.
+     */
+    function getElementHeight(elementAng) {
+        var element = elementAng[0],
+            height;
+
+        // Disable media adapt to correctly calculate the height.
+        elementAng.removeClass('mm-enabled-media-adapt');
+
+        height = $mmUtil.getElementHeight(element);
+
+        elementAng.addClass('mm-enabled-media-adapt');
+
+        return parseInt(height, 10) || false;
     }
 
     /**
@@ -150,8 +165,9 @@ angular.module('mm.core')
                 // Render text before calculating text to get the proper height.
                 renderText(scope, element, fullText);
                 // Height cannot be calculated if the element is not shown while calculating.
-                //@todo: Work on calculate better this height.
-                var height = element[0].offsetHeight || element[0].height || element[0].clientHeight;
+                // Force shorten if it was previously shortened.
+                //@todo: Work on calculate this height better.
+                var height = element.css('max-height') ? false : getElementHeight(element);
 
                 // If cannot calculate height, shorten always.
                 if (!height || height > maxHeight) {
@@ -188,6 +204,8 @@ angular.module('mm.core')
                     });
                 }
             }
+            element.addClass('mm-enabled-media-adapt');
+
             renderText(scope, element, fullText, attrs.afterRender);
         });
     }
@@ -238,7 +256,12 @@ angular.module('mm.core')
                             container = angular.element('<span class="mm-adapted-img-container"></span>'),
                             jqImg = angular.element(img);
 
-                        container.css('float', img.style.float); // Copy the float to corretly position the search icon.
+                        container.css('float', img.style.float); // Copy the float to correctly position the search icon.
+                        if (jqImg.hasClass('atto_image_button_right')) {
+                            container.addClass('atto_image_button_right');
+                        } else if (jqImg.hasClass('atto_image_button_left')) {
+                            container.addClass('atto_image_button_left');
+                        }
                         jqImg.wrap(container);
 
                         if (imgWidth > elWidth) {
@@ -319,7 +342,7 @@ angular.module('mm.core')
             return;
         }
 
-        var data = JSON.parse(el.getAttribute('data-setup') || '{}'),
+        var data = JSON.parse(el.getAttribute('data-setup') || el.getAttribute('data-setup-lazy') || '{}'),
             youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
                 data.sources[0].src && youtubeGetId(data.sources[0].src);
 
@@ -376,6 +399,9 @@ angular.module('mm.core')
                     scope.$watch(variable, function() {
                         formatAndRenderContents(scope, element, attrs, content);
                     });
+                } else {
+                    // Variable not found, just format the original content.
+                    formatAndRenderContents(scope, element, attrs, content);
                 }
             } else {
                 formatAndRenderContents(scope, element, attrs, content);

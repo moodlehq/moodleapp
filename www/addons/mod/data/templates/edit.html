@@ -1,0 +1,27 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()" aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModDataEntryScroll">
+        <mm-loading hide-until="databaseLoaded">
+            <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                <ion-label id="mma-data-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                <ion-label id="mma-data-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-data-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                </select>
+            </div>
+            <div class="mm-data-contents mma-data-entries-{{data.id}}">
+                <style ng-if="cssTemplate">
+                    {{ cssTemplate }}
+                </style>
+
+                <form id="mma-mod_data-edit-form">
+                    <mm-format-text component="{{component}}" component-id="{{data.cmid}}" watch="true">
+                        {{ editForm }}
+                    </mm-format-text>
+                </form>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignFeedbackCommentsHandler
  */
-.factory('$mmaModAssignFeedbackCommentsHandler', function($mmText, $mmSite) {
+.factory('$mmaModAssignFeedbackCommentsHandler', function($mmText, $mmSite, $mmUtil, $mmaModAssignOffline) {
 
     var self = {},
         drafts = {};
@@ -66,7 +66,14 @@ angular.module('mm.addons.mod_assign')
     self.prepareFeedbackData = function(assignId, userId, pluginData, siteId) {
         var draft = self.getDraft(assignId, userId, siteId);
         if (draft) {
-            pluginData.assignfeedbackcomments_editor = draft;
+            return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+                if (!enabled) {
+                    // Rich text editor not enabled, add some HTML to the text if needed.
+                    draft.text = $mmText.formatHtmlLines(draft.text);
+                }
+
+                pluginData.assignfeedbackcomments_editor = draft;
+            });
         }
     };
 
@@ -90,15 +97,29 @@ angular.module('mm.addons.mod_assign')
      * @param  {Object} assign     Assignment.
      * @param  {Object} plugin     Plugin.
      * @param  {Object} inputData  Data entered in the feedback form.
+     * @param  {Number} userId     User Id.
      * @return {Promise}           Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    self.hasDataChanged = function(assign, plugin, inputData) {
-        // Check if text has changed.
-        if (typeof plugin.originalText != 'undefined') {
-            return plugin.originalText != inputData.assignfeedbackcomments_editor;
-        } else {
-            return false;
-        }
+    self.hasDataChanged = function(assign, plugin, inputData, userId) {
+        // Get it from plugin or offline.
+        return $mmaModAssignOffline.getSubmissionGrade(assign.id, userId).catch(function() {
+            // No offline data found.
+        }).then(function(data) {
+            if (data && data.plugindata && data.plugindata.assignfeedbackcomments_editor) {
+                return data.plugindata.assignfeedbackcomments_editor.text;
+            }
+            // No offline data found, get text from plugin.
+            return plugin.originalText || "";
+        }).then(function(initialText) {
+            var text = getTextToSubmit(plugin, inputData);
+            if (typeof text == "undefined") {
+                return false;
+            }
+            text = text.text || text;
+
+            // Check if text has changed.
+            return initialText != text;
+        });
     };
 
     /**

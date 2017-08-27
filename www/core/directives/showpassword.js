@@ -30,7 +30,7 @@ angular.module('mm.core')
  */
 .directive('mmShowPassword', function($compile) {
 
-    var buttonHtml = '<a class="button button-clear button-positive icon" aria-label="{{ label | translate }}" ' +
+    var buttonHtml = '<a class="button button-clear icon" aria-label="{{ label | translate }}" ' +
                         'ng-class="{\'ion-eye\': !shown, \'ion-eye-disabled\': shown}" ng-click="toggle()" ' +
                         'mm-keep-keyboard="{{selector}}" keep-in-button="true"></a>';
 

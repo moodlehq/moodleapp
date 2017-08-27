@@ -1,0 +1,18 @@
+{
+    "future": "Etorkizunean",
+    "inprogress": "Martxan",
+    "morecourses": "Ikastaro gehiago",
+    "next30days": "Datozen 30 egunetan",
+    "next7days": "Datozen 7 egunetan",
+    "nocourses": "Ez dago ikastarorik",
+    "nocoursesfuture": "Ez dago ikastarorik etorkizunean",
+    "nocoursesinprogress": "Ez dago martxan dagoen ikastarorik",
+    "nocoursespast": "Ez dago ikastarorik iraganean",
+    "noevents": "Ez dago jardueren muga-egunik laster",
+    "past": "Iragana",
+    "pluginname": "Ikuspegi orokorra",
+    "recentlyoverdue": "Orain dela gutxi iragotako muga-egunak",
+    "sortbycourses": "Ordenatu ikastaroen arabera",
+    "sortbydates": "Ordenatu dataren arabera",
+    "timeline": "Kronologia"
+}

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_book')
  * @name $mmaModBook
  */
 .factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent,
-            $mmCourse) {
+            $mmCourse, $mmText) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -278,7 +278,7 @@ angular.module('mm.addons.mod_book')
                             // Remove the chapter folder from the path and add the filename.
                             key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
                         }
-                        map[chapter].paths[decodeURIComponent(key)] = content.fileurl;
+                        map[chapter].paths[$mmText.decodeURIComponent(key)] = content.fileurl;
                     }
                 }
             }
@@ -353,9 +353,7 @@ angular.module('mm.addons.mod_book')
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var version = site.getInfo().version;
-            // Require Moodle 2.9.
-            return version && (parseInt(version) >= 2015051100) && site.canDownloadFiles();
+            return site.isVersionGreaterEqualThan('2.9') && site.canDownloadFiles();
         });
     };
 

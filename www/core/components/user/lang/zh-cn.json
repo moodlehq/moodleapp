@@ -1,8 +1,8 @@
 {
     "address": "地址",
-    "city": "城市",
+    "city": "市/县",
     "contact": "联系方式",
-    "country": "国家",
+    "country": "国家和地区",
     "description": "描述",
     "details": "详情",
     "email": "Email",

@@ -1,0 +1,18 @@
+{
+    "future": "Будущие",
+    "inprogress": "В процессе",
+    "morecourses": "Больше курсов",
+    "next30days": "Следующие 30 дней",
+    "next7days": "Следующие 7 дней",
+    "nocourses": "Нет курсов",
+    "nocoursesfuture": "Нет будущих курсов",
+    "nocoursesinprogress": "Нет курсов в процессе",
+    "nocoursespast": "Нет прошлых курсов",
+    "noevents": "Нет предстоящих заданий",
+    "past": "Прошлые",
+    "pluginname": "Обзор курсов",
+    "recentlyoverdue": "Недавно пропущенное",
+    "sortbycourses": "Сортировать по курсам",
+    "sortbydates": "Сортировать по датам",
+    "timeline": "Обзор"
+}

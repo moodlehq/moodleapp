@@ -100,6 +100,7 @@ angular.module('mm.addons.mod_assign')
                 scope.text = $mmaModAssign.getSubmissionPluginText(plugin);
                 scope.files = $mmaModAssign.getSubmissionPluginAttachments(plugin);
                 scope.notSupported = $mmaModAssignFeedbackDelegate.isPluginSupported(plugin.type);
+                scope.pluginLoaded = true;
             }
         }
     };

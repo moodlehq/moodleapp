@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.notifications.notifications' | translate }}">
-    <ion-content padding="true" mm-state-class>
+    <ion-content padding="notifications.length > 0" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notificationsLoaded" on-refresh="refreshNotifications()">
         </ion-refresher>
         <mm-loading hide-until="notificationsLoaded">
@@ -17,14 +17,12 @@
                 <mma-notifications-actions contexturl="notification.contexturl" courseid="notification.courseid"></mma-notifications-actions>
             </article>
 
+            <mm-empty-box ng-if="!notifications || notifications.length <= 0" icon="ion-ios-bell" message="{{ 'mma.notifications.therearentnotificationsyet' | translate }}"></mm-empty-box>
+
             <ion-infinite-scroll ng-if="canLoadMore"
                     immediate-check="false"
                     on-infinite="loadMoreNotifications()" >
             </ion-infinite-scroll>
-
-            <div class="padding" ng-if="!notifications || notifications.length <= 0">
-                <p>{{ 'mma.notifications.therearentnotificationsyet' | translate}}</p>
-            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

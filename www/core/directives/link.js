@@ -22,6 +22,7 @@ angular.module('mm.core')
  * @name mmLink
  *
  * @param {Boolean} [captureLink=false] If the link needs to be captured by the app.
+ * @param {Boolean} [inApp=false]       True to open in embedded browser, false to open in system browser.
  * @param {String} [autoLogin=check] If the link should be open with auto-login. Accepts the following values:
  *                                   "yes" -> Always auto-login.
  *                                   "no" -> Never auto-login.
@@ -33,9 +34,11 @@ angular.module('mm.core')
      * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param  {String} href              HREF to be opened.
+     * @param  {Mixed} [inApp]            True to open in embedded browser, false to open in system browser.
      * @param  {String} [autoLogin=check] Whether to auto-login. "yes", "no" or "check".
      */
-    function navigate(href, autoLogin) {
+    function navigate(href, inApp, autoLogin) {
+        inApp = inApp && inApp !== 'false';
         autoLogin = autoLogin || 'check';
 
         if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
@@ -53,16 +56,45 @@ angular.module('mm.core')
                 $mmUtil.scrollToElement(document, "#" + href + ", [name='" + href + "']");
             }
         } else {
+
             // It's an external link, we will open with browser. Check if we need to auto-login.
             if (!$mmSite.isLoggedIn()) {
                 // Not logged in, cannot auto-login.
-                $mmUtil.openInBrowser(href);
-            } else if (autoLogin == 'yes') {
-                $mmSite.openInBrowserWithAutoLogin(href);
-            } else if (autoLogin == 'no') {
-                $mmUtil.openInBrowser(href);
+                if (inApp) {
+                    $mmUtil.openInApp(href);
+                } else {
+                    $mmUtil.openInBrowser(href);
+                }
             } else {
-                $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                // Check if URL does not have any protocol, so it's a relative URL.
+                if (!$mmUtil.isAbsoluteURL(href)) {
+                    // Add the site URL at the begining.
+                    if (href.charAt(0) == '/') {
+                        href = $mmSite.getURL() + href;
+                    } else {
+                        href = $mmSite.getURL() + '/' + href;
+                    }
+                }
+
+                if (autoLogin == 'yes') {
+                    if (inApp) {
+                        $mmSite.openInAppWithAutoLogin(href);
+                    } else {
+                        $mmSite.openInBrowserWithAutoLogin(href);
+                    }
+                } else if (autoLogin == 'no') {
+                    if (inApp) {
+                        $mmUtil.openInApp(href);
+                    } else {
+                        $mmUtil.openInBrowser(href);
+                    }
+                } else {
+                    if (inApp) {
+                        $mmSite.openInAppWithAutoLoginIfSameSite(href);
+                    } else {
+                        $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                    }
+                }
             }
         }
     }
@@ -82,11 +114,11 @@ angular.module('mm.core')
                         if (attrs.captureLink && attrs.captureLink !== 'false') {
                             $mmContentLinksHelper.handleLink(href).then(function(treated) {
                                 if (!treated) {
-                                   navigate(href, attrs.autoLogin);
+                                   navigate(href, attrs.inApp, attrs.autoLogin);
                                 }
                             });
                         } else {
-                            navigate(href, attrs.autoLogin);
+                            navigate(href, attrs.inApp, attrs.autoLogin);
                         }
                     }
                 }

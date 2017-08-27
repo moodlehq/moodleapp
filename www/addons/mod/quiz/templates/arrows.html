@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" ng-if="previous >= 0 || next >= -1">
     <div class="col">
         <a class="button button-icon icon ion-arrow-left-b" ng-if="previous >= 0" ng-click="action(previous)" title="{{ 'mm.core.previous' | translate }}"></a>
     </div>

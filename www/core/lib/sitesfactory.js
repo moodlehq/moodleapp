@@ -42,6 +42,7 @@ angular.module('mm.core')
  * @description
  * This provider is the interface with the DB database. The modules that need to store
  * information here need to register their stores.
+ * Remote addons registering stores MUST call $mmSite#reloadDb.
  *
  * Example:
  *
@@ -63,7 +64,8 @@ angular.module('mm.core')
         },
         dboptions = {
             autoSchema: true
-        };
+        },
+        supportWhereEqual;
 
     /**
      * Register a store schema.
@@ -75,19 +77,98 @@ angular.module('mm.core')
      */
     this.registerStore = function(store) {
         if (typeof(store.name) === 'undefined') {
-            console.log('$mmSite: Error: store name is undefined.');
+            console.error('$mmSite: Error: store name is undefined.');
+            return;
+        } else if (typeof store.keyPath  === 'undefined' || !store.keyPath) {
+            console.error('$mmSite: Error: store ' + store.name + ' keyPath is invalid.');
             return;
         } else if (storeExists(store.name)) {
-            console.log('$mmSite: Error: store ' + store.name + ' is already defined.');
+            console.error('$mmSite: Error: store ' + store.name + ' is already defined.');
             return;
         }
+        store.indexes = getIndexes(store.indexes);
         siteSchema.stores.push(store);
     };
+
+    /**
+     * Convenience function that translates indexes of a store keyPath values into generators if needed.
+     *
+     * @param  {Array} indexes Indexes Schema
+     * @return {Array}         Indexes translated if needed.
+     */
+    function getIndexes(indexes) {
+        if (!isWhereEqualSupported()) {
+            var neededIndexes = {},
+                uniqueIndexes = {};
+
+            // Get compound indexes and add the individual ones if not added.
+            angular.forEach(indexes, function(index) {
+                if (index.keyPath) {
+                    angular.forEach(index.keyPath, function(keyName) {
+                        neededIndexes[keyName] = keyName;
+                    });
+                } else {
+                    uniqueIndexes[index.name] = true;
+                }
+            });
+
+            // Add needed indexes not added.
+            angular.forEach(neededIndexes, function(index) {
+                if (typeof uniqueIndexes[index] == "undefined") {
+                    indexes.push({
+                        name: index
+                    });
+                    uniqueIndexes[index] = true;
+                }
+            });
+        } else {
+            // Needs a generator instead of keyPath.
+            angular.forEach(indexes, function(index) {
+                if (index.keyPath) {
+                    var path = index.keyPath;
+                    index.generator = function(obj) {
+                        var arr = [];
+                        angular.forEach(path, function(keyName) {
+                            arr.push(obj[keyName]);
+                        });
+                        return arr;
+                    };
+                    delete index.keyPath;
+                }
+            });
+        }
+
+        return indexes;
+    }
+
+    /**
+     * Convenience function to check if WhereEqual is supported by the DB.
+     *
+     * @return {Boolean} If Where equal function will be supported by the device.
+     */
+    function isWhereEqualSupported() {
+        if (typeof supportWhereEqual != "undefined") {
+            return supportWhereEqual;
+        }
+
+        if (ionic.Platform.isIOS()) {
+            supportWhereEqual = true;
+            return true;
+        }
+
+        var isSafari = !ionic.Platform.isIOS() && !ionic.Platform.isAndroid() && navigator.userAgent.indexOf('Safari') != -1 &&
+                            navigator.userAgent.indexOf('Chrome') == -1 && navigator.userAgent.indexOf('Firefox') == -1;
+        supportWhereEqual = typeof IDBObjectStore != 'undefined' && typeof IDBObjectStore.prototype.count != 'undefined' &&
+                            !isSafari;
+
+        return supportWhereEqual;
+    }
 
     /**
      * Register multiple stores at once.
      * IMPORTANT: Modifying the schema of an already existing store deletes all its data in WebSQL Storage.
      * If a store schema needs to be modified, the data should be manually migrated to the new store.
+     * Remote addons registering stores MUST call $mmSite#reloadDb.
      *
      * @param  {Array} stores Array of store objects.
      * @return {Void}
@@ -119,7 +200,7 @@ angular.module('mm.core')
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
             $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced,
             mmCoreLoginTokenChangePassword, mmCoreSecondsMinute, mmCoreUserNotFullySetup, mmCoreEventUserNotFullySetup,
-            mmCoreSitePolicyNotAgreed, mmCoreEventSitePolicyNotAgreed) {
+            mmCoreSitePolicyNotAgreed, mmCoreEventSitePolicyNotAgreed, mmCoreUnicodeNotSupported) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -158,7 +239,18 @@ angular.module('mm.core')
             "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
         };
 
-        var self = {};
+        var self = {},
+            moodleReleases = {
+                '2.4': 2012120300,
+                '2.5': 2013051400,
+                '2.6': 2013111800,
+                '2.7': 2014051200,
+                '2.8': 2014111000,
+                '2.9': 2015051100,
+                '3.0': 2015111600,
+                '3.1': 2016052300,
+                '3.2': 2016120500
+            };
 
         /**
          * Site object to store site data.
@@ -168,14 +260,19 @@ angular.module('mm.core')
          * @param  {String} token          User's token in the site.
          * @param  {Object} infos          Site's info.
          * @param  {String} [privateToken] User's private token.
+         * @param  {Object} [config]       Site config.
+         * @param  {Boolean} loggedOut     True if logged out and needs to authenticate again, false otherwise.
          * @return {Void}
          */
-        function Site(id, siteurl, token, infos, privateToken) {
+        function Site(id, siteurl, token, infos, privateToken, config, loggedOut) {
             this.id = id;
             this.siteurl = siteurl;
             this.token = token;
             this.infos = infos;
             this.privateToken = privateToken;
+            this.config = config;
+            this.loggedOut = !!loggedOut;
+            this.cleanUnicode = false;
 
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
@@ -237,6 +334,18 @@ angular.module('mm.core')
         };
 
         /**
+         * Reload the site database.
+         * This must be used by remote addons that register stores in the site database.
+         *
+         * @return {Void}
+         */
+        Site.prototype.reloadDb = function() {
+            if (this.db) {
+                this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions, true);
+            }
+        };
+
+        /**
          * Get site user's ID.
          *
          * @return {Object} User's ID.
@@ -290,9 +399,19 @@ angular.module('mm.core')
          * Check if token is already expired using local data.
          *
          * @return {Boolean} is token is expired or not.
+         * @deprecated since version 3.2.
          */
         Site.prototype.isTokenExpired = function() {
             return this.token == mmCoreLoginTokenChangePassword;
+        };
+
+        /**
+         * Check if user logged out from the site and needs to authenticate again.
+         *
+         * @return {Boolean} Whether is logged out.
+         */
+        Site.prototype.isLoggedOut = function() {
+            return !!this.loggedOut;
         };
 
         /**
@@ -302,6 +421,24 @@ angular.module('mm.core')
          */
         Site.prototype.setInfo = function(infos) {
             this.infos = infos;
+        };
+
+        /**
+         * Set site config.
+         *
+         * @param {Object} Config.
+         */
+        Site.prototype.setConfig = function(config) {
+            this.config = config;
+        };
+
+        /**
+         * Set site logged out.
+         *
+         * @param  {Boolean} loggedOut True if logged out and needs to authenticate again, false otherwise.
+         */
+        Site.prototype.setLoggedOut = function(loggedOut) {
+            this.loggedOut = !!loggedOut;
         };
 
         /**
@@ -376,6 +513,9 @@ angular.module('mm.core')
                 getFromCache: 0,
                 saveToCache: 0
             };
+
+            // Reset clean Unicode to check if it's supported again.
+            site.cleanUnicode = false;
 
             site.read('core_webservice_get_site_info', {}, preSets).then(deferred.resolve, function(error) {
                 site.read('moodle_webservice_get_siteinfo', {}, preSets).then(deferred.resolve, function(error) {
@@ -473,13 +613,6 @@ angular.module('mm.core')
                 initialToken = site.token;
             data = data || {};
 
-            // Prevent calls with expired tokens.
-            if (site.isTokenExpired()) {
-                $log.debug('Token expired, rejecting.');
-                $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
-                return $mmLang.translateAndReject('mm.login.reconnectdescription');
-            }
-
             // Get the method to use based on the available ones.
             method = site.getCompatibleFunction(method);
 
@@ -498,6 +631,16 @@ angular.module('mm.core')
             preSets = angular.copy(preSets) || {};
             preSets.wstoken = site.token;
             preSets.siteurl = site.siteurl;
+            preSets.cleanUnicode = site.cleanUnicode;
+
+            if (preSets.cleanUnicode && $mmText.hasUnicodeData(data)) {
+                // Data will be cleaned, notify the user.
+                // @todo: Detect if the call is a syncing call and not notify.
+                $mmUtil.showToast('mm.core.unicodenotsupported', true, 3000);
+            } else {
+                // No need to clean data in this call.
+                preSets.cleanUnicode = false;
+            }
 
             // Enable text filtering by default.
             data.moodlewssettingfilter = preSets.filter === false ? false : true;
@@ -539,7 +682,7 @@ angular.module('mm.core')
                         }
 
                         // Session expired, trigger event.
-                        $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
+                        $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: site.id});
                         // Change error message. We'll try to get data from cache.
                         error = $translate.instant('mm.core.lostconnection');
                     } else if (error === mmCoreUserDeleted) {
@@ -558,6 +701,14 @@ angular.module('mm.core')
                         // Site policy not agreed, trigger event.
                         $mmEvents.trigger(mmCoreEventSitePolicyNotAgreed, site.id);
                         return $mmLang.translateAndReject('mm.login.sitepolicynotagreederror');
+                    } else if (error === mmCoreUnicodeNotSupported) {
+                        if (!site.cleanUnicode) {
+                            // Try again cleaning unicode.
+                            site.cleanUnicode = true;
+                            return site.request(method, data, preSets);
+                        }
+                        // This should not happen.
+                        return $mmLang.translateAndReject('mm.core.unicodenotsupported');
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         return $q.reject(error);
@@ -615,7 +766,7 @@ angular.module('mm.core')
          */
         Site.prototype.uploadFile = function(uri, options) {
             if (!options.fileArea) {
-                if (parseInt(this.infos.version, 10) >= 2016052300) {
+                if (this.isVersionGreaterEqualThan('3.1')) {
                     // From Moodle 3.1 only draft is allowed.
                     options.fileArea = 'draft';
                 } else {
@@ -665,6 +816,37 @@ angular.module('mm.core')
                 if (entries && entries.length > 0) {
                     return invalidateWsCacheEntries(db, entries);
                 }
+            });
+        };
+
+        /**
+         * Invalidates all the cache entries in an array of keys.
+         *
+         * @param  {Array} keys Keys to search.
+         * @return {Promise}    Promise resolved when the cache entries are invalidated.
+         */
+        Site.prototype.invalidateMultipleWsCacheForKey = function(keys) {
+            var db = this.db;
+            if (!db) {
+                return $q.reject();
+            }
+
+            var allEntries = [],
+                promises = [];
+
+            $log.debug('Invalidating multiple cache keys');
+            angular.forEach(keys, function(key) {
+                if (key) {
+                    promises.push(db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
+                        if (entries && entries.length > 0) {
+                            allEntries.concat(entries);
+                        }
+                    }));
+                }
+            });
+
+            return $q.all(promises).then(function() {
+                return invalidateWsCacheEntries(db, allEntries);
             });
         };
 
@@ -891,7 +1073,7 @@ angular.module('mm.core')
          * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
         Site.prototype.openInBrowserWithAutoLogin = function(url, alertMessage) {
-            return this.openWithAutoLogin(false, url, alertMessage);
+            return this.openWithAutoLogin(false, url, undefined, alertMessage);
         };
 
         /**
@@ -902,7 +1084,7 @@ angular.module('mm.core')
          * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
         Site.prototype.openInBrowserWithAutoLoginIfSameSite = function(url, alertMessage) {
-            return this.openWithAutoLoginIfSameSite(false, url, alertMessage);
+            return this.openWithAutoLoginIfSameSite(false, url, undefined, alertMessage);
         };
 
         /**
@@ -993,12 +1175,15 @@ angular.module('mm.core')
         /**
          * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available and the URL belongs to the site.
          *
-         * @param  {String} url The URL to open.
-         * @return {Promise}    Promise resolved when done, rejected otherwise.
+         * @param  {Boolean} inApp         True to open it in InAppBrowser, false to open in browser.
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openWithAutoLoginIfSameSite = function(inApp, url, options) {
+        Site.prototype.openWithAutoLoginIfSameSite = function(inApp, url, options, alertMessage) {
             if (this.containsUrl(url)) {
-                return this.openWithAutoLogin(inApp, url, options);
+                return this.openWithAutoLogin(inApp, url, options, alertMessage);
             } else {
                 if (inApp) {
                     $mmUtil.openInApp(url, options);
@@ -1011,10 +1196,11 @@ angular.module('mm.core')
 
         /**
          * Get the config of this site.
+         * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
          *
-         * @param {String}   [name]         Name of the setting to get. If not set or false, all settings will be returned.
-         * @param {Boolean}  [ignoreCache]  True if it should ignore cached data.
-         * @return {Promise} Promise resolved with site config. Rejected with an object if error.
+         * @param {String}  [name]        Name of the setting to get. If not set or false, all settings will be returned.
+         * @param {Boolean} [ignoreCache] True if it should ignore cached data.
+         * @return {Promise}              Promise resolved with site config. Rejected with an object if error.
          */
         Site.prototype.getConfig = function(name, ignoreCache) {
             var site = this;
@@ -1058,9 +1244,48 @@ angular.module('mm.core')
             return site.invalidateWsCacheForKey(getConfigCacheKey());
         };
 
+        /**
+         * Get cache key for getConfig WS calls.
+         *
+         * @return {String} Cache key.
+         */
         function getConfigCacheKey() {
             return 'tool_mobile_get_config';
         }
+
+        /**
+         * Get the stored config of this site.
+         *
+         * @param {String} [name] Name of the setting to get. If not set or false, all settings will be returned.
+         * @return {Object}       Site config or a specific setting.
+         */
+        Site.prototype.getStoredConfig = function(name) {
+            if (!this.config) {
+                return;
+            }
+
+            if (name) {
+                return this.config[name];
+            } else {
+                return this.config;
+            }
+        };
+
+        /**
+         * Check if a certain feature is disabled in the site.
+         *
+         * @param {String} name Name of the feature to check.
+         * @return {Boolean}    True if disabled, false otherwise.
+         */
+        Site.prototype.isFeatureDisabled = function(name) {
+            var disabledFeatures = this.getStoredConfig('tool_mobile_disabledfeatures');
+            if (!disabledFeatures) {
+                return false;
+            }
+
+            var regEx = new RegExp('(,|^)' + $mmText.escapeForRegex(name) + '(,|$)', 'g');
+            return !!disabledFeatures.match(regEx);
+        };
 
         /**
          * Invalidate entries from the cache.
@@ -1072,9 +1297,10 @@ angular.module('mm.core')
         function invalidateWsCacheEntries(db, entries) {
             var promises = [];
             angular.forEach(entries, function(entry) {
-                entry.expirationtime = 0;
-                var promise = db.insert(mmCoreWSCacheStore, entry);
-                promises.push(promise);
+                if (entry.expirationtime > 0) {
+                    entry.expirationtime = 0;
+                    promises.push(db.insert(mmCoreWSCacheStore, entry));
+                }
             });
             return $q.all(promises);
         }
@@ -1109,6 +1335,123 @@ angular.module('mm.core')
             }
             return method;
         };
+
+        /**
+         * Check if the site version is greater than one or some versions.
+         * This function accepts a string or an array of strings. If array, the last version must be the highest.
+         *
+         * @param  {Mixed} versions Version or list of versions to check.
+         * @return {Boolean}        True if greater or equal, false otherwise.
+         * @description
+         * If a string is supplied (e.g. '3.2.1'), it will check if the site version is greater or equal than this version.
+         *
+         * If an array of versions is supplied, it will check if the site version is greater or equal than the last version,
+         * or if it's higher or equal than any of the other releases supplied but lower than the next major release. The last
+         * version of the array must be the highest version.
+         * For example, if the values supplied are ['3.0.5', '3.2.3', '3.3.1'] the function will return true if the site version
+         * is either:
+         *     - Greater or equal than 3.3.1.
+         *     - Greater or equal than 3.2.3 but lower than 3.3.
+         *     - Greater or equal than 3.0.5 but lower than 3.1.
+         *
+         * This function only accepts versions from 2.4.0 and above. If any of the versions supplied isn't found, it will assume
+         * it's the last released major version.
+         */
+        Site.prototype.isVersionGreaterEqualThan = function(versions) {
+            var siteVersion = parseInt(this.getInfo().version, 10);
+
+            if (angular.isArray(versions)) {
+                if (!versions.length) {
+                    return false;
+                }
+
+                for (var i = 0; i < versions.length; i++) {
+                    var versionNumber = getVersionNumber(versions[i]);
+                    if (i == versions.length - 1) {
+                        // It's the last version, check only if site version is greater than this one.
+                        return siteVersion >= versionNumber;
+                    } else {
+                        // Check if site version if bigger than this number but lesser than next major.
+                        if (siteVersion >= versionNumber && siteVersion < getNextMajorVersionNumber(versions[i])) {
+                            return true;
+                        }
+                    }
+                }
+            } else if (typeof versions == 'string') {
+                // Compare with this version.
+                return siteVersion >= getVersionNumber(versions);
+            }
+
+            return false;
+        };
+
+        /**
+         * Get a version number from a release version.
+         * If release version is valid but not found in the list of Moodle releases, it will use the last released major version.
+         *
+         * @param  {String} version Release version to convert to version number.
+         * @return {Number}         Version number, 0 if invalid.
+         */
+        function getVersionNumber(version) {
+            var data = getMajorAndMinor(version);
+
+            if (!data) {
+                // Invalid version.
+                return 0;
+            }
+
+            if (typeof moodleReleases[data.major] == 'undefined') {
+                // Major version not found. Use the last one.
+                data.major = Object.keys(moodleReleases).slice(-1);
+            }
+
+            return moodleReleases[data.major] + data.minor;
+        }
+
+        /**
+         * Given a release version, return the major and minor versions.
+         *
+         * @param  {String} version Release version (e.g. '3.1.0').
+         * @return {Object}         Object with major and minor. Returns false if invalid version.
+         */
+        function getMajorAndMinor(version) {
+            var match = version.match(/(\d)+(?:\.(\d)+)?(?:\.(\d)+)?/);
+            if (!match || !match[1]) {
+                // Invalid version.
+                return false;
+            }
+
+            return {
+                major: match[1] + '.' + (match[2] || '0'),
+                minor: parseInt(match[3] || 0, 10)
+            };
+        }
+
+        /**
+         * Given a release version, return the next major version number.
+         *
+         * @param  {String} version Release version (e.g. '3.1.0').
+         * @return {Number}         Next major version number.
+         */
+        function getNextMajorVersionNumber(version) {
+            var data = getMajorAndMinor(version),
+                position,
+                releases = Object.keys(moodleReleases);
+
+            if (!data) {
+                // Invalid version.
+                return 0;
+            }
+
+            position = releases.indexOf(data.major);
+
+            if (position == -1 || position == releases.length -1) {
+                // Major version not found or it's the last one. Use the last one.
+                return moodleReleases[releases[position]];
+            }
+
+            return moodleReleases[releases[position + 1]];
+        }
 
         /**
          * Get cache ID.
@@ -1269,12 +1612,14 @@ angular.module('mm.core')
          * @param  {String} token          User's token in the site.
          * @param  {Object} infos          Site's info.
          * @param  {String} [privateToken] User's private token.
+         * @param  {Object} [config]       Site config.
+         * @param  {Boolean} loggedOut     True if logged out and needs to authenticate again, false otherwise.
          * @return {Object}                The current site object.
          * @description
          * This returns a site object.
          */
-        self.makeSite = function(id, siteurl, token, infos, privateToken) {
-            return new Site(id, siteurl, token, infos, privateToken);
+        self.makeSite = function(id, siteurl, token, infos, privateToken, config, loggedOut) {
+            return new Site(id, siteurl, token, infos, privateToken, config, loggedOut);
         };
 
         /**

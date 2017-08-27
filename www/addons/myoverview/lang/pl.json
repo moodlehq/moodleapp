@@ -1,0 +1,18 @@
+{
+    "future": "Nadchodzące",
+    "inprogress": "Aktualne",
+    "morecourses": "Więcej kursów",
+    "next30days": "Następne 30 dni",
+    "next7days": "Następne 7 dni",
+    "nocourses": "Brak kursów",
+    "nocoursesfuture": "Brak nadchodzących kursów",
+    "nocoursesinprogress": "Brak aktualnych kursów",
+    "nocoursespast": "Brak zakończonych kursów",
+    "noevents": "Brak nadchodzących terminów zadań",
+    "past": "Zakończone",
+    "pluginname": "Przegląd kursu",
+    "recentlyoverdue": "Obecnie opóźnione",
+    "sortbycourses": "Sortuj wg kursów",
+    "sortbydates": "Sortuj wg dat",
+    "timeline": "Porządek chronologiczny"
+}

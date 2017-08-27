@@ -1,13 +1,13 @@
 {
     "address": "כתובת",
-    "city": "עיר",
+    "city": "ישוב",
     "contact": "צור קשר",
     "country": "ארץ",
-    "description": "תיאור",
+    "description": "הנחיה למטלה",
     "details": "פרטים",
     "detailsnotavailable": "פרטי משתמש זה אינם זמינים לך.",
     "editingteacher": "מרצה",
-    "email": "דואר אלקטרוני",
+    "email": "דוא\"ל",
     "emailagain": "דואר אלקטרוני (שוב)",
     "firstname": "שם פרטי",
     "interests": "תחומי עניין",
@@ -21,5 +21,5 @@
     "student": "סטודנט",
     "teacher": "עוזר/ת הוראה",
     "viewprofile": "תצוגת מאפיינים",
-    "webpage": "עמוד אינטרנט"
+    "webpage": "דף בית באינטרנט"
 }
