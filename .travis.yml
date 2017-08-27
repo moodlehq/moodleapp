@@ -1,0 +1,38 @@
+sudo: true
+
+dist: trusty
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+      - screen
+
+language: node_js
+
+node_js:
+- '0.12'
+
+before_install:
+- npm cache clean
+- npm install -g cordova ionic
+- npm install
+- npm install -g bower
+- npm install -g gulp
+- bower install
+- ./node_modules/protractor/bin/webdriver-manager update
+
+before_script:
+- "export DISPLAY=:99.0"
+- sh -e /etc/init.d/xvfb start
+- sleep 5   # Wait so xvfb can start properly.
+- gulp
+- gulp e2e-build --target browser
+- screen -dm ionic serve -b -a -d --nogulp --address localhost --port 8100 # We use screen here because nohup does not work with ionic serve.
+- nohup bash -c "./node_modules/protractor/bin/webdriver-manager start 2>&1 &"
+- sleep 5  # Wait a lot here, selenium and ionic must be running.
+
+script:
+- ./node_modules/protractor/bin/protractor e2e/build/protractor.conf.js

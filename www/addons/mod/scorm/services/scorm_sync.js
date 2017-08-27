@@ -14,19 +14,6 @@
 
 angular.module('mm.addons.mod_scorm')
 
-.constant('mmaModScormSynchronizationStore', 'mod_scorm_sync')
-
-.config(function($mmSitesFactoryProvider, mmaModScormSynchronizationStore) {
-    var stores = [
-        {
-            name: mmaModScormSynchronizationStore,
-            keyPath: 'scormid',
-            indexes: []
-        }
-    ];
-    $mmSitesFactoryProvider.registerStores(stores);
-})
-
 /**
  * SCORM synchronization service.
  *
@@ -34,55 +21,14 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScormSync
  */
-.factory('$mmaModScormSync', function($mmaModScorm, $mmSite, $q, $translate, $mmaModScormOnline, $mmaModScormOffline, $mmUtil,
-            $log, mmaModScormSynchronizationStore, mmaModScormSyncTime, $mmConfig, mmCoreSettingsSyncOnlyOnWifi, $mmApp,
-            $mmEvents, mmaModScormEventAutomSynced, $mmSitesManager) {
+.factory('$mmaModScormSync', function($mmaModScorm, $mmSite, $q, $translate, $mmaModScormOnline, $mmaModScormOffline, $mmUtil, $log,
+            mmaModScormSyncTime, $mmApp, $mmEvents, mmaModScormEventAutomSynced, $mmSitesManager, $mmSync, mmaModScormComponent,
+            $mmaModScormPrefetchHandler, $mmCourse, $mmSyncBlock, $mmLang) {
+
     $log = $log.getInstance('$mmaModScormSync');
 
-    var self = {},
-        syncPromises = {}; // Store sync promises.
-
-    /**
-     * Get the synchronization time of a SCORM. Returns 0 if no time stored.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScormSync#getScormSyncTime
-     * @param {Number} scormId  SCORM ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved with the time.
-     */
-    self.getScormSyncTime = function(scormId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
-            return db.get(mmaModScormSynchronizationStore, scormId).then(function(entry) {
-                return entry.time;
-            }).catch(function() {
-                return 0;
-            });
-        });
-    };
-
-    /**
-     * Set the synchronization time of a SCORM.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScormSync#setScormSyncTime
-     * @param {Number} scormId  SCORM ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @param {Number} [time]   Time to set. If not defined, current time.
-     * @return {Promise}        Promise resolved when the time is set.
-     */
-    self.setScormSyncTime = function(scormId, siteId, time) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
-            if (typeof time == 'undefined') {
-                time = new Date().getTime();
-            }
-            return db.insert(mmaModScormSynchronizationStore, {scormid: scormId, time: time});
-        });
-    };
+    // Inherit self from $mmSync.
+    var self = $mmSync.createChild(mmaModScormComponent, mmaModScormSyncTime);
 
     /**
      * Try to synchronize all SCORMs from current site that need it and haven't been synchronized in a while.
@@ -99,67 +45,60 @@ angular.module('mm.addons.mod_scorm')
             return $q.reject();
         }
 
-        // We first check sync settings and current connection to see if we can sync.
-        return $mmConfig.get(mmCoreSettingsSyncOnlyOnWifi, true).then(function(syncOnlyOnWifi) {
+        var promise;
+        if (!siteId) {
+            // No site ID defined, sync all sites.
+            $log.debug('Try to sync SCORMs in all sites.');
+            promise = $mmSitesManager.getSitesIds();
+        } else {
+            $log.debug('Try to sync SCORMs in site ' + siteId);
+            promise = $q.when([siteId]);
+        }
 
-            if (syncOnlyOnWifi && $mmApp.isNetworkAccessLimited()) {
-                $log.debug('Cannot sync all SCORMs because device isn\'t using a WiFi network.');
-                return $q.reject();
-            }
+        return promise.then(function(siteIds) {
+            var sitePromises = [];
 
-            var promise;
-            if (!siteId) {
-                // No site ID defined, sync all sites.
-                $log.debug('Try to sync SCORMs in all sites.');
-                promise = $mmSitesManager.getSitesIds();
-            } else {
-                $log.debug('Try to sync SCORMs in site ' + siteId);
-                promise = $q.when([siteId]);
-            }
+            angular.forEach(siteIds, function(siteId) {
+                sitePromises.push($mmaModScormOffline.getAllAttempts(siteId).then(function(attempts) {
+                    var scorms = [],
+                        ids = [], // To prevent duplicates.
+                        promises = [];
 
-            return promise.then(function(siteIds) {
-                var sitePromises = [];
+                    // Get the IDs of all the SCORMs that have something to be synced.
+                    angular.forEach(attempts, function(attempt) {
+                        if (ids.indexOf(attempt.scormid) == -1) {
+                            ids.push(attempt.scormid);
+                            scorms.push({
+                                id: attempt.scormid,
+                                courseid: attempt.courseid
+                            });
+                        }
+                    });
 
-                angular.forEach(siteIds, function(siteId) {
-                    sitePromises.push($mmaModScormOffline.getAllAttempts(siteId).then(function(attempts) {
-                        var scorms = [],
-                            ids = [], // To prevent duplicates.
-                            promises = [];
-
-                        // Get the IDs of all the SCORMs that have something to be synced.
-                        angular.forEach(attempts, function(attempt) {
-                            if (ids.indexOf(attempt.scormid) == -1) {
-                                ids.push(attempt.scormid);
-                                scorms.push({
-                                    id: attempt.scormid,
-                                    courseid: attempt.courseid
+                    // Sync all SCORMs that haven't been synced for a while and that aren't played right now.
+                    angular.forEach(scorms, function(scorm) {
+                        if (!$mmSyncBlock.isBlocked(mmaModScormComponent, scorm.id, siteId)) {
+                            promises.push($mmaModScorm.getScormById(scorm.courseid, scorm.id, '', siteId).then(function(scorm) {
+                                return self.syncScormIfNeeded(scorm, siteId).then(function(data) {
+                                    if (typeof data != 'undefined') {
+                                        // We tried to sync. Send event.
+                                        $mmEvents.trigger(mmaModScormEventAutomSynced, {
+                                            siteid: siteId,
+                                            scormid: scorm.id,
+                                            attemptFinished: data.attemptFinished,
+                                            warnings: data.warnings
+                                        });
+                                    }
                                 });
-                            }
-                        });
+                            }));
+                        }
+                    });
 
-                        // Sync all SCORMs that haven't been synced for a while and that aren't played right now.
-                        angular.forEach(scorms, function(scorm) {
-                            if (!$mmaModScorm.isScormBeingPlayed(scorm.id, siteId)) {
-                                promises.push($mmaModScorm.getScormById(scorm.courseid, scorm.id, '', siteId).then(function(scorm) {
-                                    return self.syncScormIfNeeded(scorm, siteId).then(function(warnings) {
-                                        if (typeof warnings != 'undefined') {
-                                            // We tried to sync. Send event.
-                                            $mmEvents.trigger(mmaModScormEventAutomSynced, {
-                                                siteid: siteId,
-                                                scormid: scorm.id
-                                            });
-                                        }
-                                    });
-                                }));
-                            }
-                        });
-
-                        return $q.all(promises);
-                    }));
-                });
-
-                return $q.all(sitePromises);
+                    return $q.all(promises);
+                }));
             });
+
+            return $q.all(sitePromises);
         });
     };
 
@@ -282,9 +221,8 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}        Promise resolved when the SCORM is synced or if it doesn't need to be synced.
      */
     self.syncScormIfNeeded = function(scorm, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return self.getScormSyncTime(scorm.id, siteId).then(function(time) {
-            if (new Date().getTime() - mmaModScormSyncTime >= time) {
+        return self.isSyncNeeded(scorm.id, siteId).then(function(needed) {
+            if (needed) {
                 return self.syncScorm(scorm, siteId);
             }
         });
@@ -300,38 +238,69 @@ angular.module('mm.addons.mod_scorm')
      * @name $mmaModScormSync#syncScorm
      * @param  {Object} scorm   SCORM to sync.
      * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved with warnings in success, rejected if synchronization fails.
+     * @return {Promise}        Promise rejected in failure, resolved in success with an object containing:
+     *                                  -warnings Array of warnings.
+     *                                  -attemptFinished True if an attempt was finished in Moodle due to this sync.
      */
     self.syncScorm = function(scorm, siteId) {
         siteId = siteId || $mmSite.getId();
         var warnings = [],
-            syncPromise,
-            deleted = false;
+            initialAttemptsData,
+            lastOnline = 0,
+            lastOnlineWasFinished = false,
+            syncPromise;
 
-        if (syncPromises[siteId] && syncPromises[siteId][scorm.id]) {
+        if (self.isSyncing(scorm.id, siteId)) {
             // There's already a sync ongoing for this SCORM, return the promise.
-            return syncPromises[siteId][scorm.id];
-        } else if (!syncPromises[siteId]) {
-            syncPromises[siteId] = {};
+            return self.getOngoingSync(scorm.id, siteId);
         }
 
-        if ($mmaModScormOnline.isScormBlocked(siteId, scorm.id) || $mmaModScormOffline.isScormBlocked(siteId, scorm.id)) {
+        if ($mmSyncBlock.isBlocked(mmaModScormComponent, scorm.id, siteId)) {
             $log.debug('Cannot sync SCORM ' + scorm.id + ' because it is blocked.');
-            return $q.reject();
+            var modulename = $mmCourse.translateModuleName('scorm');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync SCORM ' + scorm.id + ' in site ' + siteId);
 
         // Prefetches data , set sync time and return warnings.
-        function finishSync() {
-            return $mmaModScorm.invalidateAllScormData(scorm.id, siteId).catch(function() {}).then(function() {
-                return $mmaModScorm.prefetchData(scorm, siteId).then(function() {
-                    return self.setScormSyncTime(scorm.id, siteId).catch(function() {
-                        // Ignore errors.
-                    }).then(function() {
-                        return warnings; // No offline attempts, nothing to sync.
-                    });
+        function finishSync(updated) {
+            var promise;
+
+            if (updated) {
+                promise = $mmaModScorm.invalidateAllScormData(scorm.id, siteId).catch(function() {}).then(function() {
+                    return $mmaModScormPrefetchHandler.downloadWSData(scorm, siteId);
                 });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+                return self.setSyncTime(scorm.id, siteId).catch(function() {
+                    // Ignore errors.
+                });
+            }).then(function() {
+                // Check if an attempt was finished in Moodle.
+                if (initialAttemptsData) {
+                    // Get attempt count again to check if an attempt was finished.
+                    return $mmaModScorm.getAttemptCount(scorm.id, siteId, undefined, false).then(function(attemptsData) {
+                        if (attemptsData.online.length > initialAttemptsData.online.length) {
+                            return true;
+                        } else if (!lastOnlineWasFinished && lastOnline > 0) {
+                            // Last online attempt wasn't finished, let's check if it is now.
+                            return $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, false, false, siteId).then(function(inc) {
+                                return !inc;
+                            });
+                        }
+                        return false;
+                    });
+                }
+                return false;
+            }).then(function(attemptFinished) {
+                return {
+                    warnings: warnings,
+                    attemptFinished: attemptFinished
+                };
             });
         }
 
@@ -341,8 +310,9 @@ angular.module('mm.addons.mod_scorm')
                 return finishSync();
             }
 
+            initialAttemptsData = attemptsData;
+
             var collisions = [],
-                lastOnline = 0,
                 promise;
 
             // Check if there are collisions between offline and online attempts (same number).
@@ -357,6 +327,8 @@ angular.module('mm.addons.mod_scorm')
             promise = lastOnline > 0 ? $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, false, true, siteId) : $q.when(false);
 
             return promise.then(function(incomplete) {
+                lastOnlineWasFinished = !incomplete;
+
                 if (!collisions.length && !incomplete) {
                     // No collisions and last attempt is complete. Send offline attempts to Moodle.
                     var promises = [];
@@ -366,7 +338,7 @@ angular.module('mm.addons.mod_scorm')
                         }
                     });
                     return $q.all(promises).then(function() {
-                        return finishSync();
+                        return finishSync(true);
                     });
 
                 } else if (collisions.length) {
@@ -402,7 +374,7 @@ angular.module('mm.addons.mod_scorm')
                                 if (cannotSyncSome) {
                                     warnings.push($translate.instant('mma.mod_scorm.warningsynconlineincomplete'));
                                 }
-                                return finishSync();
+                                return finishSync(true);
                             });
                         });
                     });
@@ -412,15 +384,9 @@ angular.module('mm.addons.mod_scorm')
                     return finishSync();
                 }
             });
-        }).finally(function() {
-            deleted = true;
-            delete syncPromises[siteId][scorm.id];
         });
 
-        if (!deleted) {
-            syncPromises[siteId][scorm.id] = syncPromise;
-        }
-        return syncPromise;
+        return self.addOngoingSync(scorm.id, syncPromise, siteId);
     };
 
     /**
@@ -755,26 +721,6 @@ angular.module('mm.addons.mod_scorm')
 
         return true;
     }
-
-    /**
-     * If there's an ongoing sync for a certain SCORM, wait for it to end.
-     * If there's no sync ongoing the promise will be resolved right away.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScormSync#waitForSync
-     * @param  {Number} scormId  SCORM to check.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when there's no sync going on for the SCORM.
-     */
-    self.waitForSync = function(scormId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        if (syncPromises[siteId] && syncPromises[siteId][scormId]) {
-            // There's a sync ongoing for this SCORM.
-            return syncPromises[siteId][scormId].catch(function() {});
-        }
-        return $q.when();
-    };
 
     return self;
 });

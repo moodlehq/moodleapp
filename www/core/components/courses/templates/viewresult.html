@@ -1,26 +1,31 @@
 <ion-view>
-    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content padding="true" mm-state-class>
+    <ion-nav-title><mm-format-text watch="true">{{ 'mm.core.course' | translate }}</mm-format-text></ion-nav-title>
+    <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="courseLoaded"></ion-refresher>
         <mm-loading hide-until="courseLoaded">
-            <div ng-if="course" class="list card">
-                <div class="item item-divider">
+
+            <div ng-if="course" class="list">
+                <a class="item item-icon-left" ui-sref="site.mm_course({courseid: course.id, coursefullname: course.fullname})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
+                    <i class="icon ion-ionic"></i>
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
+                    <p ng-if="course.categoryname">{{course.categoryname}}</p>
+                    <p ng-if="course.startdate">{{course.startdate * 1000 | mmFormatDate:"dfdaymonthyear"}} <span ng-if="course.enddate"> - {{course.enddate * 1000 | mmFormatDate:"dfdaymonthyear"}}</span></p>
+                </a>
+
+                <div class="item item-icon-left" ng-if="!handlersShouldBeShown">
+                    <i class="icon ion-ionic"></i>
+                    <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
+                    <p ng-if="course.categoryname">{{course.categoryname}}</p>
+                    <p ng-if="course.startdate">{{course.startdate * 1000 | mmFormatDate:"dfdaymonthyear"}} <span ng-if="course.enddate"> - {{course.enddate * 1000 | mmFormatDate:"dfdaymonthyear"}}</span></p>
                 </div>
-                <div class="item" ng-if="course.categoryname">
-                    <p class="item-heading">{{ 'mm.core.category' | translate }}</p>
-                    <p><mm-format-text watch="true">{{course.categoryname}}</mm-format-text></p>
+
+                <div class="item item-text-wrap item-stack-top" ng-if="course.summary">
+                    <mm-format-text watch="true" max-height="120">{{course.summary}}</mm-format-text>
                 </div>
+
                 <div class="item" ng-if="course.contacts && course.contacts.length" mm-user-link userid="{{course.contacts[0].id}}" aria-label="{{ 'mm.core.viewprofile' | translate }}">
                     <p class="item-heading">{{ 'mm.core.teachers' | translate }}</p>
                     <p ng-repeat="contact in course.contacts">{{contact.fullname}}</p>
-                </div>
-                <div class="item item-text-wrap" ng-if="course.summary">
-                    <p>
-                        <summary>
-                            <mm-format-text class="mm-content-with-float" watch="true" shorten="40%" expand-on-click="true">{{course.summary}}</mm-format-text>
-                        </summary>
-                    </p>
                 </div>
                 <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file>
                 <div class="item" ng-if="!isEnrolled" ng-repeat="instance in selfEnrolInstances track by instance.id">
@@ -30,13 +35,20 @@
                 <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
-                <div class="item tabs tabs-icon-left" ng-show="course._handlers && course._handlers.length">
-                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active mm-courses-handler {{class}}" title="{{title | translate}}">
-                        <i class="icon {{icon}}"></i> {{title | translate}}
+                <a class="item item-icon-left item-icon-right" ui-sref="site.mm_course({courseid: course.id, coursefullname: course.fullname})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
+                    <i class="icon ion-briefcase"></i>
+                    <h2><mm-format-text watch="true">{{ 'mm.course.contents' | translate }}</mm-format-text></h2>
+                    <i class="icon icon-accessory ion-chevron-right"></i>
+                </a>
+                <div class="mm-course-handlers" ng-show="(handlersShouldBeShown && course._handlers && course._handlers.length) || loadingHandlers()">
+                    <a class="item item-icon-left item-icon-right item-text-wrap mm-courses-handler {{class}}" ng-show="handlersShouldBeShown && course._handlers && course._handlers.length" ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" title="{{title | translate}}">
+                        <i class="icon {{icon}}"></i>
+                        <h2><mm-format-text watch="true">{{title | translate}}</mm-format-text></h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
                     </a>
-                </div>
-                <div class="item text-center" ng-if="(!course._handlers || !course._handlers.length) && loadingHandlers()">
-                    <ion-spinner></ion-spinner>
+                    <div class="mm-loading-course-handlers text-center" ng-if="!course._handlers || !course._handlers.length">
+                        <ion-spinner></ion-spinner>
+                    </div>
                 </div>
             </div>
         </mm-loading>

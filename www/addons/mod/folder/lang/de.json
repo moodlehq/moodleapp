@@ -1,4 +1,4 @@
 {
-    "emptyfilelist": "Keine Dateien zum Anzeigen",
-    "errorwhilegettingfolder": "Fehler beim Empfangen der Verzeichnisdaten"
+    "emptyfilelist": "Keine Dateien",
+    "errorwhilegettingfolder": "Fehler beim Laden der Verzeichnisdaten"
 }

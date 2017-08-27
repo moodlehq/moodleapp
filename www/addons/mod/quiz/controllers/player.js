@@ -21,10 +21,9 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizPlayerCtrl
  */
-.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
-            $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizEventAttemptFinished, $mmSideMenu, mmaModQuizComponent,
-            $mmaModQuizSync) {
+.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil, $mmSyncBlock,
+            $ionicPopover, $ionicScrollDelegate, $translate, $timeout, $mmQuestionHelper, $mmaModQuizAutoSave, $mmEvents,
+            mmaModQuizEventAttemptFinished, $mmSideMenu, mmaModQuizComponent, $mmaModQuizSync) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -35,12 +34,16 @@ angular.module('mm.addons.mod_quiz')
         attemptAccessInfo,
         attempt,
         newAttempt,
-        originalBackFunction = $rootScope.$ionicGoBack,
-        unregisterHardwareBack,
-        leaving = false,
         timeUpCalled = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll'),
-        offline;
+        offline,
+        blockData;
+
+    // Block the quiz so it cannot be synced.
+    $mmSyncBlock.blockOperation(mmaModQuizComponent, quizId);
+
+    // Block leaving the view, we want to save changes before leaving.
+    blockData = $mmUtil.blockLeaveView($scope, leavePlayer);
 
     $scope.moduleUrl = moduleUrl;
     $scope.component = mmaModQuizComponent;
@@ -114,7 +117,7 @@ angular.module('mm.addons.mod_quiz')
                 newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
 
                 // Load quiz last sync time. We set it to the attempt so it's accessible in access rules handlers.
-                promises.push($mmaModQuizSync.getQuizSyncTime(quiz.id).then(function(time) {
+                promises.push($mmaModQuizSync.getSyncTime(quiz.id).then(function(time) {
                     attempt.quizSyncTime = time;
                     quiz.syncTimeReadable = $mmaModQuizHelper.getReadableTimeFromTimestamp(time);
                 }));
@@ -192,10 +195,14 @@ angular.module('mm.addons.mod_quiz')
                 $mmQuestionHelper.extractQuestionInfoBox(question, '.info');
                 // Set the preferred behaviour.
                 question.preferredBehaviour = quiz.preferredbehaviour;
+                // Check if the question is blocked. If it is, treat it as a description question.
+                if ($mmaModQuiz.isQuestionBlocked(question)) {
+                    question.type = 'description';
+                }
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
-            $mmaModQuiz.logViewAttempt(attempt.id, page, offline);
+            $mmaModQuiz.logViewAttempt(attempt.id, page, $scope.preflightData, offline);
 
             // Start looking for changes.
             $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt);
@@ -215,7 +222,7 @@ angular.module('mm.addons.mod_quiz')
             attempt.dueDateWarning = $mmaModQuiz.getAttemptDueDateWarning(quiz, attempt);
 
             // Log summary as viewed.
-            $mmaModQuiz.logViewAttemptSummary(attempt.id);
+            $mmaModQuiz.logViewAttemptSummary(attempt.id, $scope.preflightData);
         }).catch(function(message) {
             $scope.showSummary = false;
             return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorgetquestions');
@@ -239,32 +246,24 @@ angular.module('mm.addons.mod_quiz')
 
     // Function called when the user wants to leave the player. Save the attempt before leaving.
     function leavePlayer() {
-        if (leaving) {
-            return;
-        }
-
-        leaving = true;
         var promise,
-            modal = $mmUtil.showModalLoading('mm.core.sending', true);
+            modal;
 
         if ($scope.questions && $scope.questions.length && !$scope.showSummary) {
             // Save answers.
+            modal = $mmUtil.showModalLoading('mm.core.sending', true);
             promise = processAttempt(false, false);
         } else {
             // Nothing to save.
             promise = $q.when();
         }
 
-        promise.catch(function() {
+        return promise.catch(function() {
             // Save attempt failed. Show confirmation.
-            modal.dismiss();
+            modal && modal.dismiss();
             return $mmUtil.showConfirm($translate('mma.mod_quiz.confirmleavequizonerror'));
-        }).then(function() {
-            // Attempt data successfully saved or user confirmed to leave. Leave player.
-            modal.dismiss();
-            originalBackFunction();
         }).finally(function() {
-            leaving = false;
+            modal && modal.dismiss();
         });
     }
 
@@ -280,14 +279,17 @@ angular.module('mm.addons.mod_quiz')
         }
 
         return promise.then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
             return processAttempt(finish, timeup).then(function() {
                 // Trigger an event to notify the attempt was finished.
                 $mmEvents.trigger(mmaModQuizEventAttemptFinished, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
                 // Leave the player.
-                $scope.questions = [];
-                leavePlayer();
+                blockData && blockData.back();
             }).catch(function(message) {
                 return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
+            }).finally(function() {
+                modal.dismiss();
             });
         });
     }
@@ -307,12 +309,6 @@ angular.module('mm.addons.mod_quiz')
     function scrollToQuestion(slot) {
         $mmUtil.scrollToElement(document, '#mma-mod_quiz-question-' + slot, scrollView);
     }
-
-    // Override Ionic's back button behavior.
-    $rootScope.$ionicGoBack = leavePlayer;
-
-    // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
-    unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leavePlayer, 101);
 
     // Init the auto save.
     $mmaModQuizAutoSave.init($scope, 'mma-mod_quiz-player-form', 'conErrPopover', '#mma-mod_quiz-connectionerror-button');
@@ -443,11 +439,10 @@ angular.module('mm.addons.mod_quiz')
     });
 
     $scope.$on('$destroy', function() {
-        // Restore original back functions.
-        unregisterHardwareBack();
-        $rootScope.$ionicGoBack = originalBackFunction;
         // Stop auto save.
         $mmaModQuizAutoSave.stopAutoSaving();
         $mmaModQuizAutoSave.stopCheckChangesProcess();
+        // Unblock the quiz so it can be synced.
+        $mmSyncBlock.unblockOperation(mmaModQuizComponent, quizId);
     });
 });

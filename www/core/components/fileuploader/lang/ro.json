@@ -1,0 +1,22 @@
+{
+    "addfiletext": "Adăugați fișier",
+    "audio": "Audio",
+    "camera": "Camera WEB",
+    "confirmuploadfile": "Sunteți pe cale să încărcați {{dimensiune}}. Sunteți sigur ca doriți să continuați?",
+    "errorcapturingaudio": "Eroare la înregistrarea audio.",
+    "errorcapturingimage": "Eroare la realizarea capturii foto.",
+    "errorcapturingvideo": "Eroare la înregistrarea video.",
+    "errorgettingimagealbum": "Eroare la obținerea imaginii din album.",
+    "errormustbeonlinetoupload": "Pentru a putea încărca fișiere trebuie să fiți conectat la o rețea de date.",
+    "errornoapp": "Nu aveți instalată o aplicație dedicată realizării acestei operațiuni.",
+    "errorreadingfile": "Eroare la citirea fișierului.",
+    "errorwhileuploading": "A apărut o eroare în timpul încărcării fișierului.",
+    "file": "Fișier",
+    "fileuploaded": "Fișierul a fost încărcat cu succes.",
+    "maxbytesfile": "Fișierul {{$a.file}} este prea mare. Dimensiunea maximă pe care o puteți încărca este {{$a.size}}.",
+    "photoalbums": "Albume foto",
+    "readingfile": "Se citește fișierul",
+    "uploadafile": "Încărcați un fișier",
+    "uploading": "Se încarcă",
+    "video": "Video"
+}

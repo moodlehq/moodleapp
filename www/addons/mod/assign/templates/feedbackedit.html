@@ -1,0 +1,11 @@
+<ion-view can-swipe-back="false">
+    <ion-nav-title><mm-format-text watch="true">{{plugin.name}}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="done()" aria-label="{{ 'mm.core.done' | translate }}"> {{ 'mm.core.done' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <form name="mma-mod_assign-edit-form" ng-if="userId && plugin">
+            <mma-mod-assign-feedback-plugin assign="assign" submission="submission" userid="userId" plugin="plugin" edit="true"></mma-mod-assign-feedback-plugin>
+        </form>
+    </ion-content>
+</ion-view>

@@ -172,8 +172,7 @@ angular.module('mm.core.contentlinks')
                 });
             } else {
                 // Get the site URL.
-                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url),
-                    formatted = $mmUtil.formatURL(siteUrl);
+                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url);
                 if (!siteUrl) {
                     $mmUtil.showErrorModal('mm.login.invalidsite', true);
                     return;
@@ -188,13 +187,8 @@ angular.module('mm.core.contentlinks')
                     modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
                     if (!$mmSite.isLoggedIn()) {
-                        if (ssoNeeded) {
-                            // Ask SSO confirmation.
-                            promise = $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
-                        } else {
-                            // Not logged in and no SSO, no need to confirm.
-                            promise = $q.when();
-                        }
+                        // Not logged in, no need to confirm. If SSO the confirm will be shown later.
+                        promise = $q.when();
                     } else {
                         // Ask the user before changing site.
                         promise = $mmUtil.showConfirm($translate('mm.contentlinks.confirmurlothersite')).then(function() {
@@ -208,7 +202,8 @@ angular.module('mm.core.contentlinks')
 
                     return promise.then(function() {
                         if (ssoNeeded) {
-                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
+                            $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                                        result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                         } else {
                             $state.go('mm_login.credentials', {
                                 siteurl: result.siteurl,
@@ -271,6 +266,60 @@ angular.module('mm.core.contentlinks')
         }).catch(function() {
             return false;
         });
+    };
+
+    /**
+     * Treats a module grade URL (grade.php).
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#treatModuleGradeUrl
+     * @param {String[]} siteIds      Site IDs the URL belongs to.
+     * @param {String} url            URL to treat.
+     * @param {Function} isEnabled    Function to check if the module is enabled. @see $mmContentLinksHelper#filterSupportedSites.
+     * @param {Number} [courseId]     Course ID related to the URL.
+     * @param {Function} [gotoReview] Function to go to review page if user is not current user.
+     * @return {Promise}              Promise resolved with the list of actions.
+     */
+    self.treatModuleGradeUrl = function(siteIds, url, isEnabled, courseId, gotoReview) {
+        var params = $mmUtil.extractUrlParams(url);
+        if (typeof params.id != 'undefined') {
+            // If courseId is not set we check if it's set in the URL as a param.
+            courseId = courseId || params.courseid || params.cid;
+
+            // Pass false because all sites should have the same siteurl.
+            return self.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                if (!ids.length) {
+                    return [];
+                } else {
+                    // Return actions.
+                    return [{
+                        message: 'mm.core.view',
+                        icon: 'ion-eye',
+                        sites: ids,
+                        action: function(siteId) {
+                            // Check if userid is the site's current user.
+                            var modal = $mmUtil.showModalLoading();
+                            $mmSitesManager.getSite(siteId).then(function(site) {
+                                if (!params.userid || params.userid == site.getUserId()) {
+                                    // No user specified or current user. Navigate to module.
+                                    $mmCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                                } else if (angular.isFunction(gotoReview)) {
+                                    // gotoReview function is defined, use it.
+                                    gotoReview(url, params, courseId, siteId);
+                                } else {
+                                    // Not current user and no gotoReview function specified, open it in browser.
+                                    return site.openInBrowserWithAutoLogin(url);
+                                }
+                            }).finally(function() {
+                                modal.dismiss();
+                            });
+                        }
+                    }];
+                }
+            });
+        }
+        return $q.when([]);
     };
 
     /**

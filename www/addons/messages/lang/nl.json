@@ -1,16 +1,18 @@
 {
     "addcontact": "Voeg contact toe",
     "blockcontact": "Blokkeer contact",
+    "blocknoncontacts": "Blokkeer gebruikers  die niet op mijn contactenlijst staan",
     "contactlistempty": "De contactenlijst is leeg",
     "contactname": "Naam",
     "contacts": "Contacten",
     "deletemessage": "Verwijder bericht",
     "deletemessageconfirmation": "Weet je zeker dat je dit bericht wil verwijderen? Het zal alleen verwijderd worden van je berichtengeschiedenis. Het zal nog zichtbaar blijven voor de gebruiker die het bericht verstuurd of ontvangen heeft.",
-    "errordeletemessage": "Fout bij het verwijderen van het bericht",
+    "errordeletemessage": "Fout bij het verwijderen van het bericht.",
     "errorwhileretrievingcontacts": "Fout bij het ophalen van contacten van de server.",
-    "errorwhileretrievingdiscussions": "Fout bij het ophalen van discussies van de server",
-    "errorwhileretrievingmessages": "Fout bij het ophalen van berichten van de server",
-    "messagenotsent": "Het bericht is niet verzonden. Probeer later opnieuw.",
+    "errorwhileretrievingdiscussions": "Fout bij het ophalen van discussies van de server.",
+    "errorwhileretrievingmessages": "Fout bij het ophalen van berichten van de server.",
+    "messagenotsent": "Het bericht is niet verzonden. Probeer het later opnieuw.",
+    "messagepreferences": "Berichten voorkeuren",
     "messages": "Berichten",
     "mustbeonlinetosendmessages": "Je moet online zijn om berichten te versturen",
     "newmessage": "Nieuw bericht...",
@@ -24,5 +26,6 @@
     "type_online": "Online",
     "type_search": "Zoekresultaten",
     "type_strangers": "Anderen",
-    "unblockcontact": "Contact deblokkeren"
+    "unblockcontact": "Contact deblokkeren",
+    "warningmessagenotsent": "Kon bericht(en) niet versturen naar gebruiker {{user}}. {{error}}"
 }

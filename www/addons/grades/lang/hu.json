@@ -1,13 +1,4 @@
 {
-    "average": "Átlag",
-    "feedback": "Visszajelzés",
-    "grade": "Osztályzat",
-    "grades": "Osztályzatok",
-    "itemname": "Tétel neve",
-    "lettergrade": "Betűpontozás",
-    "percentage": "Százalék",
-    "range": "Tartomány",
-    "rank": "Sorrend",
-    "viewgrades": "Pontok kijelzése",
-    "weight": "súly"
+    "nogradesreturned": "Nincs kapott pont",
+    "viewgrades": "Pontok kijelzése"
 }

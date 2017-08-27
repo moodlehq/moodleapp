@@ -21,8 +21,9 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryHandlers
  */
-.factory('$mmaModGlossaryHandlers', function($mmCourse, $mmaModGlossary, $state, $q, $mmContentLinksHelper, $mmUtil,
-            $mmCourseHelper) {
+.factory('$mmaModGlossaryHandlers', function($mmCourse, $mmaModGlossary, $state, $q, $mmContentLinksHelper, $mmUtil, $mmEvents,
+            $mmCourseHelper, $mmaModGlossaryPrefetchHandler, mmaModGlossaryComponent, mmCoreEventPackageStatusChanged,
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreDownloaded, mmCoreNotDownloaded, mmCoreOutdated, $mmSite) {
     var self = {};
 
     /**
@@ -49,21 +50,106 @@ angular.module('mm.addons.mod_glossary')
          * Get the controller.
          *
          * @param {Object} module The module info.
-         * @param {Number} courseid The course ID.
+         * @param {Number} courseId The course ID.
          * @return {Function}
          */
-        self.getController = function(module, courseid) {
+        self.getController = function(module, courseId) {
             return function($scope) {
-                $scope.icon = $mmCourse.getModuleIconSrc('glossary');
+                var downloadBtn = {
+                        hidden: true,
+                        icon: 'ion-ios-cloud-download-outline',
+                        label: 'mm.core.download',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            download();
+                        }
+                    },
+                    refreshBtn = {
+                        hidden: true,
+                        icon: 'ion-android-refresh',
+                        label: 'mm.core.refresh',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            $scope.spinner = true; // Show spinner while invalidating.
+                            $mmaModGlossary.invalidateContent(module.id, courseId).finally(function() {
+                                download();
+                            });
+                        }
+                    };
+
                 $scope.title = module.name;
+                $scope.icon = $mmCourse.getModuleIconSrc('glossary');
                 $scope.class = 'mma-mod_glossary-handler';
+                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.spinner = true; // Show spinner while calculating status.
+
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();
                         e.stopPropagation();
                     }
-                    $state.go('site.mod_glossary', {module: module, courseid: courseid});
+                    $state.go('site.mod_glossary', {module: module, courseid: courseId});
                 };
+
+                function download() {
+
+                    $scope.spinner = true; // Show spinner since this operation might take a while.
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModGlossaryPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
+                        $mmUtil.confirmDownloadSize(size).then(function() {
+                            $mmaModGlossaryPrefetchHandler.prefetch(module, courseId).catch(function() {
+                                if (!$scope.$$destroyed) {
+                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                }
+                            });
+                        }).catch(function() {
+                            // User hasn't confirmed, stop spinner.
+                            $scope.spinner = false;
+                        });
+                    }).catch(function(error) {
+                        $scope.spinner = false;
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
+
+                // Show buttons according to module status.
+                function showStatus(status) {
+                    if (status) {
+                        $scope.spinner = status === mmCoreDownloading;
+                        downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                        if (!$mmCoursePrefetchDelegate.canCheckUpdates()) {
+                            // Always show refresh button if downloaded because it costs a lot to get timemodified.
+                            refreshBtn.hidden = refreshBtn.hidden && status !== mmCoreDownloaded;
+                        }
+                    }
+                }
+
+                // Listen for changes on this module status.
+                var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                    if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                            data.component === mmaModGlossaryComponent) {
+                        showStatus(data.status);
+                    }
+                });
+
+                // Get current status to decide which icon should be shown.
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
+
+                $scope.$on('$destroy', function() {
+                    statusObserver && statusObserver.off && statusObserver.off();
+                });
             };
         };
 

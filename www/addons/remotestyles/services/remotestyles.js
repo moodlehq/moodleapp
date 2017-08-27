@@ -22,7 +22,7 @@ angular.module('mm.addons.remotestyles')
  * @name $mmaRemoteStyles
  */
 .factory('$mmaRemoteStyles', function($log, $q, $mmSite, $mmSitesManager, $mmFilepool, $http, $mmFS, mmaRemoteStylesComponent,
-            mmCoreNotDownloaded, $mmUtil, md5) {
+            mmCoreNotDownloaded, $mmUtil, md5, $mmText) {
 
     $log = $log.getInstance('$mmaRemoteStyles');
 
@@ -272,7 +272,7 @@ angular.module('mm.addons.remotestyles')
             if (url.indexOf('http') == 0) {
                 promises.push($mmFilepool.downloadUrl(siteId, url, false, mmaRemoteStylesComponent, 2).then(function(fileUrl) {
                     if (fileUrl != url) {
-                        cssCode = cssCode.replace(new RegExp(url, 'g'), fileUrl);
+                        cssCode = cssCode.replace(new RegExp($mmText.escapeForRegex(url), 'g'), fileUrl);
                         updated = true;
                     }
                 }).catch(function(error) {

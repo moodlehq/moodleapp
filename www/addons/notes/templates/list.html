@@ -1,17 +1,28 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
+    <mm-nav-buttons side="secondary">
+        <mm-context-menu merge="true">
+            <mm-context-menu-item priority="700" ng-if="notesLoaded && !hasOffline" content="'mm.core.refresh' | translate" action="refreshNotes(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="notesLoaded && hasOffline" content="'mm.settings.synchronizenow' | translate" action="refreshNotes(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+        </mm-context-menu>
+    </mm-nav-buttons>
 
-    <ion-content mm-state-class>
-        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notesLoaded"
-                       on-refresh="refreshNotes()">
+    <ion-content mm-state-class delegate-handle="mmaNotesListScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notesLoaded" on-refresh="refreshNotes()">
         </ion-refresher>
         <mm-loading hide-until="notesLoaded">
+            <!-- There are notes pending to be synchronized. -->
+            <div class="mm-warning" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.thereisdatatosync' | translate:{$a: notesStr} }}
+            </div>
+
             <div class="list">
                 <article class="card" ng-repeat="note in notes">
                         <div class="item item-avatar">
                             <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
                             <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
-                            <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>
+                            <div class="item-note" ng-if="!note.offline">{{note.lastmodified | mmDateDayOrTime}}</div>
+                            <div class="item-note" ng-if="note.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
                             <p>{{note.userfullname}}</p>
                         </div>
                         <div class="item item-body">

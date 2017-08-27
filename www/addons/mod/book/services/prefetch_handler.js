@@ -21,11 +21,13 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBookPrefetchHandler
  */
-.factory('$mmaModBookPrefetchHandler', function($mmaModBook, mmCoreDownloaded, mmCoreOutdated, mmaModBookComponent) {
+.factory('$mmaModBookPrefetchHandler', function($mmaModBook, $mmSite, $mmPrefetchFactory, $q, mmCoreDownloaded, mmCoreOutdated,
+            mmaModBookComponent, $mmCourse) {
 
-    var self = {};
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModBookComponent, true);
 
-    self.component = mmaModBookComponent;
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^entries$/;
 
     /**
      * Determine the status of a module based on the current status detected.
@@ -33,11 +35,12 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBookPrefetchHandler#determineStatus
-     * @param {String} status Current status.
-     * @return {String}       Status to show.
+     * @param {String} status     Current status.
+     * @param  {Boolean} canCheck True if updates can be checked using core_course_check_updates.
+     * @return {String}           Status to show.
      */
-    self.determineStatus = function(status) {
-        if (status === mmCoreDownloaded) {
+    self.determineStatus = function(status, canCheck) {
+        if (!canCheck && status === mmCoreDownloaded) {
             // Books are always treated as outdated since revision and timemodified aren't reliable.
             return mmCoreOutdated;
         } else {
@@ -46,22 +49,72 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
-     * Get the download size of a module.
+     * Returns book intro files.
      *
      * @module mm.addons.mod_book
      * @ngdoc method
-     * @name $mmaModBookPrefetchHandler#getDownloadSize
-     * @param {Object} module Module to get the size.
-     * @return {Number}       Size.
+     * @name $mmaModBookPrefetchHandler#getIntroFiles
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID.
+     * @return {Promise}         Promise resolved with list of intro files.
      */
-    self.getDownloadSize = function(module) {
-        var size = 0;
-        angular.forEach(module.contents, function(content) {
-            if ($mmaModBook.isFileDownloadable(content) && content.filesize) {
-                size = size + content.filesize;
-            }
+    self.getIntroFiles = function(module, courseId) {
+        return $mmaModBook.getBook(courseId, module.id).catch(function() {
+            // Not found, return undefined so module description is used.
+        }).then(function(book) {
+            return self.getIntroFilesFromInstance(module, book);
         });
-        return size;
+    };
+
+    /**
+     * Returns module revision and timemodified. Right now we'll always show it outdated, so we return fake values.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#getRevisionAndTimemodified
+     * @param  {Object} module         The module object returned by WS.
+     * @param  {Number} courseId       Course ID.
+     * @param  {Object[]} [introFiles] List of intro files. If undefined, they will be calculated.
+     * @return {Promise}               Promise resolved with revision and timemodified.
+     */
+    self.getRevisionAndTimemodified = function(module, courseId, introFiles) {
+        return $q.when({
+            timemod: 0,
+            revision: "0"
+        });
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModBook.invalidateContent(moduleId, courseId);
+    };
+
+    /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        var promises = [];
+
+        promises.push($mmaModBook.invalidateBookData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+
+        return $q.all(promises);
     };
 
     /**
@@ -73,22 +126,11 @@ angular.module('mm.addons.mod_book')
      * @return {Boolean}
      */
     self.isEnabled = function() {
-        return $mmaModBook.isPluginEnabled();
-    };
+        if (!$mmSite.canDownloadFiles()) {
+            return false;
+        }
 
-    /**
-     * Prefetch the module.
-     *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBookPrefetchHandler#prefetch
-     * @param  {Object} module   The module object returned by WS.
-     * @param  {Number} courseId Course ID the module belongs to.
-     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
-     */
-    self.prefetch = function(module, courseId, single) {
-        return $mmaModBook.prefetchContent(module);
+        return $mmaModBook.isPluginEnabled();
     };
 
     return self;

@@ -1,0 +1,10 @@
+{
+    "chooseaccountstorefile": "Escolha uma conta para armazenar os arquivos.",
+    "chooseactionrepeatedfile": "Já existe um arquivo com esse nome. Você deseja substituir o arquivo existente ou renomear ele para \"{{$a}}\"?",
+    "errorreceivefilenosites": "Não existem sites armazenados. Por favor, adicione um site antes de compartilhar o arquivo com o aplicativo.",
+    "nosharedfiles": "Não existem arquivos compartilhados guardados nesse site.",
+    "rename": "Renomear",
+    "replace": "Substituir",
+    "sharedfiles": "Arquivos compartilhados",
+    "successstorefile": "Arquivo armazenado com sucesso. Agora você pode selecionar esse arquivo para enviar para seus \"arquivos privados\" ou anexar em atividades."
+}

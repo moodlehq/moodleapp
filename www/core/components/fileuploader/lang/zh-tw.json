@@ -1,0 +1,14 @@
+{
+    "addfiletext": "添加檔案",
+    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "errorcapturingaudio": "錄製聲音時發生錯誤",
+    "errorcapturingvideo": "錄製影片時發生錯誤",
+    "errorreadingfile": "讀取檔案 \"{$a}\" 時發生錯誤",
+    "file": "檔案",
+    "fileuploaded": "檔案已上傳",
+    "maxbytesfile": "這檔案 {{$a.file}} 太大了。你可以上傳的檔案最大容量是 {{$a.size}}。",
+    "readingfile": "Odczytywanie pliku",
+    "uploadafile": "上傳一個檔案",
+    "uploading": "上傳中",
+    "video": "錄製影片"
+}

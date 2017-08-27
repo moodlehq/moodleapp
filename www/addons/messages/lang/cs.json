@@ -1,6 +1,7 @@
 {
     "addcontact": "Přidat kontakt",
     "blockcontact": "Blokovat kontakt",
+    "blocknoncontacts": "Blokuj všechny nové zprávy od uživatelů, které nemám v seznamu kontaktů",
     "contactlistempty": "Seznam kontaktů je prázdný",
     "contactname": "Jméno kontaktu",
     "contacts": "Kontakty",
@@ -11,6 +12,7 @@
     "errorwhileretrievingdiscussions": "Chyba při načítání diskusí ze serveru.",
     "errorwhileretrievingmessages": "Chyba při načítání zpráv ze serveru.",
     "messagenotsent": "Zpráva nebyla odeslána, zkuste to prosím později.",
+    "messagepreferences": "Nastavení zpráv",
     "messages": "Zprávy",
     "mustbeonlinetosendmessages": "Pro odesílání zpráv musíte být online",
     "newmessage": "Nová zpráva...",
@@ -24,5 +26,6 @@
     "type_online": "Online",
     "type_search": "Výsledky hledání",
     "type_strangers": "Další",
-    "unblockcontact": "Odblokovat kontakt"
+    "unblockcontact": "Odblokovat kontakt",
+    "warningmessagenotsent": "Nelze odeslat zprávu (y) uživateli {{user}}. {{error}}"
 }

@@ -2,21 +2,26 @@
   "name": "mm2",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#v1.1.1",
+    "ionic": "1.3.2",
     "ydn.db": ">=1.0.3",
     "ngCordova": ">=0.1.24-alpha",
-    "angular-mocks": "1.4.3",
+    "angular-mocks": "1.5.3",
     "angular-md5": "0.1.8",
-    "angular-translate": ">=2.7.0",
-    "angular-translate-loader-partial": ">=2.7.0",
-    "angular-aria": "1.4.3",
+    "angular-translate": "~2.13.0",
+    "angular-translate-loader-partial": "~2.13.0",
+    "angular-aria": "1.5.3",
     "moment": "~2.10.6",
     "jszip": "~2.5.0",
-    "oclazyload": "~1.0.9"
+    "oclazyload": "~1.0.9",
+    "ckeditor": "=4.5.9",
+    "angular-ckeditor": "=1.0.3",
+    "angular-messages": "1.5.3"
   },
   "resolutions": {
-    "angular": "1.4.3",
-    "angular-animate": "1.4.3",
-    "angular-sanitize": "1.4.3"
+    "angular": "1.5.3"
+  },
+  "dependencies": {
+    "chart.js": "^2.4.0",
+    "angular-chart.js": "^1.0.2"
   }
 }

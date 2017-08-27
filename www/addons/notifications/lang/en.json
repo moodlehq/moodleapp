@@ -1,5 +1,6 @@
 {
     "errorgetnotifications": "Error getting notifications",
+	"notificationpreferences": "Notification preferences",
     "notifications": "Notifications",
     "therearentnotificationsyet": "There are no notifications"
 }

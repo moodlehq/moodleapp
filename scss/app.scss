@@ -6,26 +6,77 @@
 
 // Colors.
 $positive: #387ef5;
+$stable: #f5f5f5;
+
+$base-background-color: #fcfcfc;
+$item-default-bg: white;
+$item-divider-bg: #f1f1f1;
 
 // Setting the default button to button-outline.
-$button-default-bg: transparent;
+$button-default-bg: white;
 $button-default-text: $positive;
 $button-default-border: $positive;
 $button-default-active-bg: $positive;
 $button-default-active-border: $positive;
 
+$tabs-off-opacity:                0.6;
+$tabs-striped-off-opacity:        $tabs-off-opacity;
+
 // The path to the font icons.
-$ionicons-font-path: "../lib/ionic/fonts" !default;
+$ionicons-font-path: "../lib/ionic/release/fonts" !default;
 
 // Include all of Ionic.
 @import "www/lib/ionic/scss/ionic";
 
-// Include all of Moodle Mobile.
-@import "www/build/mm.bundle.scss";
+// Tmp fix until Ionic adds !default to $button-default-border and $button-default-active-border.
+$button-default-bg: white;
+$button-default-text: $positive;
+$button-default-border: $positive;
+$button-default-active-bg: $positive;
+$button-default-active-border: $positive;
 
 // Setting the default button to button-outline.
-.button.active,
-.button.activated {
+.button.active, .button.activated {
+  background-color: $button-default-active-bg;
   box-shadow: none;
   color: #fff;
 }
+
+.button, .button.button-light, .button.button-stable, .button.button-positive, .button.button-calm, .button.button-assertive,
+.button.button-balanced, .button.button-energized, .button.button-royal, .button.button-dark {
+  border-color: $button-default-border;
+
+  &.activated, &.active  {
+    border-color: $button-default-active-border;
+  }
+}
+
+.button.button-light, .button.button-stable, .button.button-calm, .button.button-assertive, .button.button-balanced,
+.button.button-energized, .button.button-royal, .button.button-dark {
+  color: $button-default-text;
+}
+
+.button-clear, .button.button-clear {
+  color: $button-default-text;
+
+  &.activated, &.active  {
+    background: none;
+  }
+}
+
+.button-outline, .button.button-outline {
+  border-color: $button-default-border;
+
+  &.activated, &.active  {
+    background-color: $button-default-active-bg;
+  }
+}
+
+.button.button-icon, .button-icon {
+  border-color: transparent;
+  color: $button-default-text;
+  background-color: transparent;
+}
+
+// Include all of Moodle Mobile.
+@import "www/build/mm.bundle.scss";

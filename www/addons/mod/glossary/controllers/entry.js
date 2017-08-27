@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc controller
  * @name mmaModGlossaryEntryCtrl
  */
-.controller('mmaModGlossaryEntryCtrl', function($scope, $stateParams, $mmaModGlossary, $translate,
+.controller('mmaModGlossaryEntryCtrl', function($scope, $stateParams, $mmaModGlossary, $translate, mmaModGlossaryComponent,
         mmUserProfileState) {
     var entry = $stateParams.entry || {},
         courseid = $stateParams.cid || 0,
@@ -48,6 +48,8 @@ angular.module('mm.addons.mod_glossary')
         $scope.entry = entry;
         $scope.courseid = courseid;
         $scope.userStateName = mmUserProfileState;
+        $scope.component = mmaModGlossaryComponent;
+        $scope.componentId = glossary.coursemodule;
 
         if (displayFormat == 'fullwithauthor' || displayFormat == 'encyclopedia') {
             $scope.showAuthor = true;

@@ -16,7 +16,7 @@
 // Using JS confirm function we are sure that the user get notified in a Mobile device.
 // This script should be added at the begining of the index.html and it should only use native javascript functions.
 
-var appVersion = '3.1.0 (2012)',
+var appVersion = '3.2.0 (2016)',
     reportInBackgroundName = 'mmCoreReportInBackground',
     errors = [],
     ignoredFiles = ['www/index.html#/site/mod_page', 'www/index.html#/site/mod_resource', 'www/index.html#/site/mm_course-section'];
@@ -27,30 +27,17 @@ var appVersion = '3.1.0 (2012)',
  * @return {Boolean} True if should be reported in background, false otherwise.
  */
 function shouldReportInBackground() {
-    var inBackground = false,
-        flag;
-
     if (localStorage && localStorage.getItem && localStorage.setItem) {
-        flag = localStorage.getItem(reportInBackgroundName);
-        if (isNaN(parseInt(flag, 10))) {
-            // Flag not set. Show a confirm modal.
-            var confirmmsg = 'Do you want to report errors automatically? Reporting errors will help us fixing them. ' +
-                                'You can change this setting in App Settings.';
-            inBackground = confirm(confirmmsg);
-            localStorage.setItem(reportInBackgroundName, inBackground ? '1' : '0');
-        } else {
-            inBackground = flag === '1';
-        }
+        return localStorage.getItem(reportInBackgroundName) === '1';
     }
 
-    return inBackground;
+    return false;
 }
 
 window.onerror = function(msg, url, lineNumber) {
     try {
         var errorReported = false,
-            reportedOnDBReady = false,
-            reportInBackground = false;
+            reportedOnDBReady = false;
 
         /**
          * Add the storage type to the error report and send it.
@@ -74,7 +61,7 @@ window.onerror = function(msg, url, lineNumber) {
                 errorReported = true;
                 var reportUrl = 'http://prototype.moodle.net/mobile/feedback/mmfeedback.php?message=' + encodeURIComponent(msg) +
                                 '&file=' + encodeURIComponent(url) + '&line=' + encodeURIComponent(lineNumber) + '&appv=' +
-                                encodeURIComponent(appVersion) + '&bg=' + (reportInBackground ? 1 : 0);
+                                encodeURIComponent(appVersion) + '&bg=1';
 
                 if (window.device) {
                     reportUrl = reportUrl + '&platform=' + encodeURIComponent(window.device.platform) +
@@ -112,13 +99,9 @@ window.onerror = function(msg, url, lineNumber) {
          * @param  {String} reportUrl URL to report the error.
          */
         function sendError(reportUrl) {
-            if (reportInBackground) {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', reportUrl, true);
-                xhr.send();
-            } else {
-                window.open(reportUrl, '_system');
-            }
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', reportUrl, true);
+            xhr.send();
         }
 
         /**
@@ -127,6 +110,10 @@ window.onerror = function(msg, url, lineNumber) {
          * @return {Boolean} True if error should be ignored, false otherwise.
          */
         function shouldBeIgnored() {
+            if (!url) {
+                return false;
+            }
+
             for (var i = 0; i < ignoredFiles.length; i++) {
                 if (url.indexOf(ignoredFiles[i]) > -1) {
                     return true;
@@ -135,31 +122,17 @@ window.onerror = function(msg, url, lineNumber) {
             return false;
         }
 
-        if (errors.indexOf(msg) == -1 && !shouldBeIgnored()) {
+        if (typeof msg == "string" && errors.indexOf(msg) == -1 && !shouldBeIgnored()) {
             // Error hasn't happened yet.
             errors.push(msg);
-            reportInBackground = shouldReportInBackground();
 
-            // Use setTimeout to prevent the following error if the app crashes right at the start:
-            // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
-            setTimeout(function() {
-                if (typeof msg == "string") {
-                    var send = true,
-                        confirmmsg = 'Unexpected error, please accept to report the bug so we can work on fixing it ' +
-                                        '(Internet connection required).';
-
-                    if (!reportInBackground) {
-                        send = confirm(confirmmsg);
-                    }
-
-                    if (send) {
-                        // Wait for device ready so we can retrieve device data. In most cases device will already be ready.
-                        document.addEventListener('deviceready', reportError);
-                        // Report error if device ready isn't fired after 5 seconds.
-                        setTimeout(reportError, 5000);
-                    }
-                }
-            }, 100);
+            // Only report errors in background. See MOBILE-1889.
+            if (shouldReportInBackground()) {
+                // Wait for device ready so we can retrieve device data. In most cases device will already be ready.
+                document.addEventListener('deviceready', reportError);
+                // Report error if device ready isn't fired after 5 seconds.
+                setTimeout(reportError, 5000);
+            }
         }
 
         // This may help debugging if we use logging apps in iOs or Android.

@@ -22,7 +22,7 @@ angular.module('mm.core.question')
  * @name $mmQuestionHelper
  */
 .factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q,
-            $mmQuestion) {
+            $mmQuestion, $mmSite) {
 
     var self = {},
         lastErrorShown = 0;
@@ -172,7 +172,7 @@ angular.module('mm.core.question')
     self.extractQbehaviourRedoButton = function(question) {
         // Create a fake div element so we can search using querySelector.
         var div = document.createElement('div'),
-            redoSelector = 'input[type="submit"][name*=redoslot]';
+            redoSelector = 'input[type="submit"][name*=redoslot], input[type="submit"][name*=tryagain]';
 
         // Search redo button in feedback (Moodle 3.1+).
         if (!searchButton('html', '.outcome ' + redoSelector)) {
@@ -186,7 +186,7 @@ angular.module('mm.core.question')
             }
 
             // Button still not found. Now search in the info box if it exists.
-            if (!question.infoHtml) {
+            if (question.infoHtml) {
                 searchButton('infoHtml', redoSelector);
             }
         }
@@ -528,6 +528,25 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Check if some HTML contains draft file URLs for the current site.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#hasDraftFileUrls
+     * @param  {String} html Question's HTML.
+     * @return {Boolean}     True if contains draft files URLs, false otherwise.
+     */
+    self.hasDraftFileUrls = function(html) {
+        var url = $mmSite.getURL();
+        if (url.slice(-1) != '/') {
+            url = url += '/';
+        }
+        url += 'draftfile.php';
+
+        return html.indexOf(url) != -1;
+    };
+
+    /**
      * Generic link function for question directives with an input of type "text".
      *
      * @module mm.core.question
@@ -802,12 +821,19 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#prefetchQuestionFiles
-     * @param  {Object} question Question.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when all the files have been downloaded.
+     * @param  {Object} question     Question.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @param  {String} component    The component to link the files to. If not defined, question component.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component. If not defined, question ID.
+     * @return {Promise}             Promise resolved when all the files have been downloaded.
      */
-    self.prefetchQuestionFiles = function(question, siteId) {
+    self.prefetchQuestionFiles = function(question, siteId, component, componentId) {
         var urls = $mmUtil.extractDownloadableFilesFromHtml(question.html);
+
+        if (!component) {
+            component = mmQuestionComponent;
+            componentId = question.id;
+        }
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var promises = [];
@@ -821,7 +847,7 @@ angular.module('mm.core.question')
                     return;
                 }
 
-                promises.push($mmFilepool.addToQueueByUrl(siteId, url, mmQuestionComponent, question.id));
+                promises.push($mmFilepool.addToQueueByUrl(siteId, url, component, componentId));
             });
 
             return $q.all(promises);

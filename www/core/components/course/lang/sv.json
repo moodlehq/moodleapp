@@ -12,6 +12,7 @@
     "errorgetmodule": "Fel vid hämtning av data",
     "gotothesite": "Gå till webbplatsen",
     "nocontentavailable": "Inget innehåll tillgängligt för tillfället.",
+    "overriddennotice": "Ditt sammanfattningsbetyg för den här aktiviteten har justerats manuellt.",
     "showall": "Visa alla",
     "whoops": "Hoppsan!"
 }

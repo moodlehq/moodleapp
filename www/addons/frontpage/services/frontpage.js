@@ -21,7 +21,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontpage
  */
-.factory('$mmaFrontpage', function($mmSite, $log, $q, $mmCourse) {
+.factory('$mmaFrontpage', function($mmSite, $log, $q, $mmCourse, $mmSite) {
     $log = $log.getInstance('$mmaFrontpage');
 
     var self = {};
@@ -57,14 +57,42 @@ angular.module('mm.addons.frontpage')
      * @return {Promise} Resolved when enabled, otherwise rejected.
      */
     self.isFrontpageAvailable = function() {
-
         // On older version we cannot check other than calling a WS. If the request
         // fails there is a very high chance that frontpage is not available.
         $log.debug('Using WS call to check if frontpage is available.');
-        return $mmCourse.getSections(1, {emergencyCache: false}).then(function(data) {
-            if (!angular.isArray(data) || data.length == 0) {
+
+        var siteHomeId = $mmSite.getSiteHomeId();
+
+        var hasData = false;
+
+        return $mmCourse.getSections(siteHomeId, false, true, {emergencyCache: false}).then(function(data) {
+            if (!angular.isArray(data) || !data.length) {
                 return $q.reject();
             }
+
+            angular.forEach(data, function(section) {
+                if (section.summary || (section.modules && section.modules.length)) {
+                    hasData = true;
+                }
+            });
+
+            if (!hasData) {
+                return $q.reject();
+            }
+        }).catch(function() {
+            return $mmSite.getConfig().then(function(config) {
+                if (config.frontpageloggedin) {
+                    var items = config.frontpageloggedin.split(',');
+
+                    if (items.length > 0) {
+                        return $q.when();
+                    }
+                }
+
+                if (!hasData) {
+                    return $q.reject();
+                }
+            });
         });
     };
 

@@ -4,7 +4,10 @@
     "cannotadddiscussionall": "Nemáte oprávnění vkládat téma diskuse pro všechny účastníky.",
     "cannotcreatediscussion": "Nelze vytvořit novou diskusi",
     "couldnotadd": "Neznámá chyba! Nemohu přidat váš příspěvek.",
+    "discussion": "Diskuse",
+    "discussionlocked": "Tato diskuse byla uzavřena, takže již nemůže odpovídat.",
     "discussionsubscription": "Odebírání diskuse",
+    "edit": "Upravit",
     "erroremptymessage": "Text příspěvku nemůže být prázdný",
     "erroremptysubject": "Předmět příspěvku nemůže být prázdný",
     "errorgetforum": "Chyba při načítání dat fóra.",
@@ -16,6 +19,10 @@
     "numreplies": "{{numreplies}} odpovědí",
     "posttoforum": "Poslat do fóra",
     "re": "Re:",
+    "refreshdiscussions": "Obnovit diskuse",
+    "refreshposts": "Obnovit diskusní příspěvky",
     "reply": "Odpovědět",
+    "sortnewestfirst": "Zobrazit nejnovější",
+    "sortoldestfirst": "Zobrazit nejstarší",
     "subject": "Předmět"
 }

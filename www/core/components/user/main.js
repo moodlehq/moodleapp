@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.user', [])
+angular.module('mm.core.user', ['mm.core.contentlinks'])
 
 .constant('mmUserEventProfileRefreshed', 'user_profile_refreshed') // User refreshed an user profile.
+.constant('mmUserProfilePictureUpdated', 'user_profile_picture_updated') // User profile picture updated.
+.constant('mmUserProfileHandlersTypeNewPage', 'newpage') // User profile handler type for new page.
+.constant('mmUserProfileHandlersTypeCommunication', 'communication') // User profile handler type for communication.
+.constant('mmUserProfileHandlersTypeAction', 'action') // User profile handler type for actions.
+.constant('mmUserPriority', 700)
 .value('mmUserProfileState', 'site.mm_user-profile')
 
-.config(function($stateProvider, $mmContentLinksDelegateProvider) {
+.config(function($stateProvider, $mmContentLinksDelegateProvider, $mmUserDelegateProvider, mmUserPriority) {
 
     $stateProvider
 
@@ -33,18 +38,36 @@ angular.module('mm.core.user', [])
                 courseid: 0,
                 userid: 0
             }
+        })
+        .state('site.mm_user-about', {
+            url: '/mm_user-about',
+            views: {
+                'site': {
+                    controller: 'mmUserAboutCtrl',
+                    templateUrl: 'core/components/user/templates/about.html'
+                }
+            },
+            params: {
+                courseid: 0,
+                userid: 0
+            }
         });
 
     // Register content links handler.
     $mmContentLinksDelegateProvider.registerLinkHandler('mmUser', '$mmUserHandlers.linksHandler');
-
+    $mmUserDelegateProvider.registerProfileHandler('mmUser', '$mmUserHandlers.userEmail', mmUserPriority);
 })
 
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmUserDelegate, $mmSite, mmCoreEventUserDeleted, $mmUser,
-            mmCoreEventRemoteAddonsLoaded) {
-    $mmEvents.on(mmCoreEventLogin, $mmUserDelegate.updateProfileHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmUserDelegate.updateProfileHandlers);
-    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmUserDelegate.updateProfileHandlers);
+            mmCoreEventRemoteAddonsLoaded, $mmUserProfileFieldsDelegate) {
+    function updateHandlers() {
+        $mmUserDelegate.updateProfileHandlers();
+        $mmUserProfileFieldsDelegate.updateFieldHandlers();
+    }
+
+    $mmEvents.on(mmCoreEventLogin, updateHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, updateHandlers);
 
     $mmEvents.on(mmCoreEventUserDeleted, function(data) {
         if (data.siteid && data.siteid === $mmSite.getId() && data.params) {

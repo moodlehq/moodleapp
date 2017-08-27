@@ -9,6 +9,6 @@
     "messageexit": "{{$a}} most lépett ki a csevegésből",
     "nomessages": "Még nincs üzenet",
     "send": "Elküld",
-    "sessionstart": "A csevegés kezdete: {{$a}}",
+    "sessionstart": "A következő csevegés kezdete  {{$a.date}}, (mostantól {{$a.fromnow}})",
     "talk": "Beszéljen"
 }

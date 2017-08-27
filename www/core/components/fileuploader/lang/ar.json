@@ -1,0 +1,15 @@
+{
+    "audio": "صوتي",
+    "camera": "الكاميرا",
+    "errorcapturingaudio": "خطأ في التقاط الصوت",
+    "errorcapturingimage": "خطأ في التقاط الصورة",
+    "errorcapturingvideo": "خطأ في التقاط الفيديو",
+    "errormustbeonlinetoupload": "لابد أن تكون متصل بالأنترنت لكي يتم رفع الملفات",
+    "errorreadingfile": "خطأ في قراءة الملف",
+    "file": "ملف",
+    "fileuploaded": "الملف الذي تم رفعه",
+    "readingfile": "يتم قراءة الملف",
+    "uploadafile": "إرفع ملف",
+    "uploading": "يتم الرفع",
+    "video": "فيديو"
+}

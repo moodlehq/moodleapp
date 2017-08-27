@@ -1,0 +1,20 @@
+{
+    "audio": "Audio",
+    "camera": "Kamera",
+    "confirmuploadfile": "Du är på väg att ladda upp {{size}}. Är du säker på att du vill fortsätta?",
+    "errorcapturingaudio": "Fel med att spela in ljud",
+    "errorcapturingimage": "Fel med att fånga in bild",
+    "errorcapturingvideo": "Fel vid inspelning av video",
+    "errorgettingimagealbum": "Fel att få bild från album.",
+    "errormustbeonlinetoupload": "Du måste vara online för att ladda upp filer.",
+    "errornoapp": "Du behöver att ha en app installerat för att utföra den här åtgärden.",
+    "errorreadingfile": "Fel vid läsning av fil.",
+    "errorwhileuploading": "Ett fel uppstod under filöverföringen.",
+    "file": "Fil",
+    "fileuploaded": "Fil laddades upp",
+    "photoalbums": "Fotoalbum",
+    "readingfile": "Läsa fil",
+    "uploadafile": "Ladda upp en fil",
+    "uploading": "Laddar upp",
+    "video": "Video"
+}

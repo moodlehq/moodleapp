@@ -1,10 +1,12 @@
 {
-    "addanewdiscussion": "Afegeix un nou tema de debat",
+    "addanewdiscussion": "Afegeix un tema de debat nou",
     "cannotadddiscussion": "Afegir debats en aquest fòrum requereix pertànyer al grup.",
-    "cannotadddiscussionall": "No teniu permís per a afegir un nou tema de debat per a tots els participants.",
-    "cannotcreatediscussion": "No s'ha pogut obrir un nou debat",
+    "cannotadddiscussionall": "No teniu permís per a afegir un tema de debat nou per a tots els participants.",
+    "cannotcreatediscussion": "No s'ha pogut obrir un debat nou",
     "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
-    "discussionsubscription": "Subcripció a les discussions",
+    "discussion": "Debat",
+    "discussionsubscription": "Subscripció als debats",
+    "edit": "Edita",
     "erroremptymessage": "El missatge no pot estar buit",
     "erroremptysubject": "La casella «Assumpte» no pot estar buida",
     "errorgetforum": "S'ha produït un error descarregant les dades del fòrum.",
@@ -16,6 +18,10 @@
     "numreplies": "{{numreplies}} respostes",
     "posttoforum": "Envia al fòrum",
     "re": "Re:",
-    "reply": "Contesta",
+    "refreshdiscussions": "Actualitza els debats",
+    "refreshposts": "Actualitza els missatges",
+    "reply": "Respon",
+    "sortnewestfirst": "Mostra els més recents primer",
+    "sortoldestfirst": "Mostra els més antics primer",
     "subject": "Assumpte"
 }

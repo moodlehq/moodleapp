@@ -1,0 +1,28 @@
+<ion-view view-title="{{title}}">
+    <ion-content mm-state-class>
+        <div class="list">
+            <a class="item" ng-if="!filterMethods || filterMethods.indexOf('album') > -1" ng-click="upload('album', true)">
+                {{ 'mm.fileuploader.photoalbums' | translate }}
+            </a>
+            <a class="item" ng-if="!filterMethods || filterMethods.indexOf('camera') > -1"  ng-click="upload('camera', false)">
+                {{ 'mm.fileuploader.camera' | translate }}
+            </a>
+            <a class="item" ng-if="!filterMethods || filterMethods.indexOf('audio') > -1"  ng-click="upload('audio', true)">
+                {{ 'mm.fileuploader.audio' | translate }}
+            </a>
+            <a class="item" ng-if="!filterMethods || filterMethods.indexOf('video') > -1"  ng-click="upload('video', false)">
+                {{ 'mm.fileuploader.video' | translate }}
+            </a>
+            <div class="item" ng-if="isAndroid && (!filterMethods || filterMethods.indexOf('file') > -1)">
+                {{ 'mm.fileuploader.file' | translate }}
+                <input class="mm-fileuploader-picker" type="file" mm-file-uploader-on-change="uploadFile"> <!-- Hidden input, intercepts clicks on button-->
+            </div>
+            <a ng-if="!filterMethods || filterMethods.indexOf('handlers') > -1" ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" class="item mm-file-uploader-handler {{class}}" ng-click="handlerClicked($event, action)" ng-class='{"item-icon-left": icon}' title="{{title}}">
+                <i class="icon {{icon}}" ng-if="icon"></i>
+                {{title | translate}}
+            </a>
+        </div>
+    </ion-content>
+</ion-view>
+
+

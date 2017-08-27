@@ -22,6 +22,7 @@
     "gulp-strip-comments": "^1.0.1",
     "gulp-tap": "^0.1.3",
     "gulp-util": "^2.2.14",
+    "gulp-zip": "^3.2.0",
     "jasmine": "^2.2.1",
     "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
@@ -43,7 +44,15 @@
     "cordova-plugin-file-transfer",
     "cordova-plugin-network-information",
     "cordova-plugin-camera",
-    "cordova-plugin-media-capture",
+    {
+      "locator": "cordova-plugin-media-capture",
+      "id": "cordova-plugin-media-capture",
+      "variables": {
+        "CAMERA_USAGE_DESCRIPTION": "We'd like to access your camera to let you take a photo",
+        "PHOTOLIBRARY_USAGE_DESCRIPTION": "We'd like like to open your photo library to let you pick a photo",
+        "MICROPHONE_USAGE_DESCRIPTION": "We'd like to access your microphone to let you record an audio"
+      }
+    },
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "cordova-plugin-whitelist",

@@ -5,6 +5,7 @@
 	"complete": "Complete",
 	"correct": "Correct",
 	"errorattachmentsnotsupported": "The application doesn't support attaching files to answers yet.",
+	"errorinlinefilesnotsupported": "The application doesn't support editing inline files yet.",
 	"errorquestionnotsupported": "This question type is not supported by the app: {{$a}}.",
 	"feedback": "Feedback",
 	"howtodraganddrop": "Tap to select then tap to drop.",

@@ -1,0 +1,12 @@
+{
+    "addfiletext": "Állomány hozzáadása",
+    "errorcapturingaudio": "Hiba a hang rögzítélse közben.",
+    "errorcapturingvideo": "Nem sikerült videofelvételt készíteni.",
+    "errorreadingfile": "Hiba a(z) \"{$a}\" állomány olvasása közben",
+    "file": "Állomány",
+    "fileuploaded": "Fájl feltöltve",
+    "maxbytesfile": "A(z)  {{$a.file}} állomány túl nagy. A feltölthető maximális méret  {{$a.size}}.",
+    "uploadafile": "Egy állomány feltöltése",
+    "uploading": "Feltöltés",
+    "video": "Videó"
+}

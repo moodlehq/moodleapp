@@ -134,7 +134,7 @@ angular.module('mm.addons.mod_scorm')
         }
 
         return promise.then(function(size) {
-            return $mmUtil.confirmDownloadSize(size);
+            return $mmUtil.confirmDownloadSize({size: size, total: true});
         });
     };
 
@@ -306,7 +306,7 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}        Promise resolved with the readable time.
      */
     self.getScormReadableSyncTime = function(scormId, siteId) {
-        return $mmaModScormSync.getScormSyncTime(scormId, siteId).then(function(time) {
+        return $mmaModScormSync.getSyncTime(scormId, siteId).then(function(time) {
             if (time == 0) {
                 return $translate('mm.core.none');
             } else {

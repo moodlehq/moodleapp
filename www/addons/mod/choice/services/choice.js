@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_choice')
  * @name $mmaModChoice
  */
 .factory('$mmaModChoice', function($q, $mmSite, $mmSitesManager, mmaModChoiceResultsAfterAnswer, mmaModChoiceResultsAfterClose,
-            mmaModChoiceResultsAlways) {
+            mmaModChoiceResultsAlways, mmaModChoiceComponent, $mmFilepool, $mmApp, $mmaModChoiceOffline, $mmUtil) {
     var self = {};
 
     /**
@@ -48,20 +48,86 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#deleteResponses
-     * @param {Number} choiceid      Choice ID.
+     * @param {Number}   choiceId    Choice ID.
+     * @param {String}   name        Choice name.
+     * @param {Number}   courseId    Course ID the choice belongs to.
      * @param {Number[]} [responses] IDs of the answers. If not defined, delete all the answers of the current user.
+     * @param {String}   [siteId]    Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved when the options are deleted.
      */
-    self.deleteResponses = function(choiceid, responses) {
+    self.deleteResponses = function(choiceId, name, courseId, responses, siteId) {
+        siteId = siteId || $mmSite.getId();
         responses = responses || [];
-        var params = {
-            choiceid: choiceid,
-            responses: responses
-        };
-        return $mmSite.write('mod_choice_delete_choice_responses', params).then(function(response) {
-            if (!response || response.status === false) {
-                return $q.reject();
-            }
+
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If there's already a response to be sent to the server, discard it first.
+        return $mmaModChoiceOffline.deleteResponse(choiceId, siteId).then(function() {
+            return self.deleteResponsesOnline(choiceId, responses, siteId).then(function() {
+                return true;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be deleted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModChoiceOffline.saveResponse(choiceId, name, courseId, responses, true, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Delete responses from a choice. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#deleteResponsesOnline
+     * @param {Number}   choiceId    Choice ID.
+     * @param {Number[]} [responses] IDs of the answers. If not defined, delete all the answers of the current user.
+     * @param  {String}  [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved when responses are successfully deleted.
+     */
+    self.deleteResponsesOnline = function(choiceId, responses, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                choiceid: choiceId,
+                responses: responses
+            };
+
+            return site.write('mod_choice_delete_choice_responses', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || response.status === false) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Invalidate related data.
+                var promises = [
+                    self.invalidateOptions(choiceId, siteId),
+                    self.invalidateResults(choiceId, siteId)
+                ];
+                return $q.all(promises).catch(function() {
+                    // Ignore errors.
+                });
+            });
         });
     };
 
@@ -128,37 +194,77 @@ angular.module('mm.addons.mod_choice')
     };
 
     /**
-     * Get a choice.
+     * Get a choice with key=value. If more than one is found, only the first will be returned.
+     *
+     * @param  {String}     siteId          Site ID.
+     * @param  {Number}     courseId        Course ID.
+     * @param  {String}     key             Name of the property to check.
+     * @param  {Mixed}      value           Value to search.
+     * @param  {Boolean}    [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return {Promise}                    Promise resolved when the choice is retrieved.
+     */
+    function getChoice(siteId, courseId, key, value, forceCache) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getChoiceDataCacheKey(courseId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
+
+            return site.read('mod_choice_get_choices_by_courses', params, preSets).then(function(response) {
+                if (response && response.choices) {
+                    var currentChoice;
+                    angular.forEach(response.choices, function(choice) {
+                        if (!currentChoice && choice[key] == value) {
+                            currentChoice = choice;
+                        }
+                    });
+                    if (currentChoice) {
+                        return currentChoice;
+                    }
+                }
+                return $q.reject();
+            });
+        });
+    }
+
+    /**
+     * Get a choice by course module ID.
      *
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#getChoice
-     * @param {Number} courseid Course ID.
-     * @param {Number} cmid     Course module ID.
-     * @return {Promise}        Promise resolved when the choice is retrieved.
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Number}    cmId            Course module ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return  {Promise}                   Promise resolved when the choice is retrieved.
      */
-    self.getChoice = function(courseid, cmid) {
-        var params = {
-                courseids: [courseid]
-            },
-            preSets = {
-                cacheKey: getChoiceDataCacheKey(courseid)
-            };
+    self.getChoice = function(courseId, cmId, siteId, forceCache) {
+        siteId = siteId || $mmSite.getId();
+        return getChoice(siteId, courseId, 'coursemodule', cmId, forceCache);
+    };
 
-        return $mmSite.read('mod_choice_get_choices_by_courses', params, preSets).then(function(response) {
-            if (response.choices) {
-                var currentChoice;
-                angular.forEach(response.choices, function(choice) {
-                    if (choice.coursemodule == cmid) {
-                        currentChoice = choice;
-                    }
-                });
-                if (currentChoice) {
-                    return currentChoice;
-                }
-            }
-            return $q.reject();
-        });
+    /**
+     * Get a choice by ID.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#getChoiceById
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Number}    id              Choice ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return  {Promise}                   Promise resolved when the choice is retrieved.
+     */
+    self.getChoiceById = function(courseId, id, siteId, forceCache) {
+        siteId = siteId || $mmSite.getId();
+        return getChoice(siteId, courseId, 'id', id, forceCache);
     };
 
     /**
@@ -225,16 +331,49 @@ angular.module('mm.addons.mod_choice')
     };
 
     /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#invalidateContent
+     * @param {Number} moduleId The module ID.
+     * @param {Number} courseId Course ID.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        var promises = [],
+            siteId = $mmSite.getId();
+
+        promises.push(self.getChoice(courseId, moduleId).then(function(choice) {
+            var ps = [];
+            ps.push(self.invalidateChoiceData(courseId));
+            ps.push(self.invalidateOptions(choice.id));
+            ps.push(self.invalidateResults(choice.id));
+
+            return $q.all(ps);
+        }));
+
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModChoiceComponent, moduleId));
+
+        return $q.all(promises);
+    };
+
+    /**
      * Invalidates options.
      *
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#invalidateOptions
-     * @param {Number} choiceid Choice ID.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @param {Number} choiceId     Choice ID.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when the data is invalidated.
      */
-    self.invalidateOptions = function(choiceid) {
-        return $mmSite.invalidateWsCacheForKey(getChoiceOptionsCacheKey(choiceid));
+    self.invalidateOptions = function(choiceId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getChoiceOptionsCacheKey(choiceId));
+        });
     };
 
     /**
@@ -243,11 +382,16 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#invalidateResults
-     * @param {Number} choiceid Choice ID.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @param {Number} choiceId     Choice ID.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when the data is invalidated.
      */
-    self.invalidateResults = function(choiceid) {
-        return $mmSite.invalidateWsCacheForKey(getChoiceResultsCacheKey(choiceid));
+    self.invalidateResults = function(choiceId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getChoiceResultsCacheKey(choiceId));
+        });
     };
 
     /**
@@ -275,16 +419,79 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#submitResponse
-     * @param {Number} choiceid    Choice ID.
-     * @param {Number[]} responses IDs of selected options.
-     * @return {Promise}           Promise resolved when results are successfully submitted.
+     * @param  {Number}   choiceId  Choice ID.
+     * @param  {String}   name      Choice name.
+     * @param  {Number}   courseId  Course ID the choice belongs to.
+     * @param  {Number[]} responses IDs of selected options.
+     * @param  {String}   [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with boolean: true if response was sent to server, false if stored in device.
      */
-    self.submitResponse = function(choiceid, responses) {
-        var params = {
-            choiceid: choiceid,
-            responses: responses
-        };
-        return $mmSite.write('mod_choice_submit_choice_response', params);
+    self.submitResponse = function(choiceId, name, courseId, responses, siteId) {
+        siteId = siteId || $mmSite.getId();
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If there's already a response to be sent to the server, discard it first.
+        return $mmaModChoiceOffline.deleteResponse(choiceId, siteId).then(function() {
+            return self.submitResponseOnline(choiceId, responses, siteId).then(function() {
+                return true;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModChoiceOffline.saveResponse(choiceId, name, courseId, responses, false, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Send a response to a choice to Moodle. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#submitResponseOnline
+     * @param  {Number}   choiceId  Choice ID.
+     * @param  {Number[]} responses IDs of selected options.
+     * @param  {String}   [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when responses are successfully submitted.
+     */
+    self.submitResponseOnline = function(choiceId, responses, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                choiceid: choiceId,
+                responses: responses
+            };
+
+            return site.write('mod_choice_submit_choice_response', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function() {
+                // Invalidate related data.
+                var promises = [
+                    self.invalidateOptions(choiceId, siteId),
+                    self.invalidateResults(choiceId, siteId)
+                ];
+                return $q.all(promises).catch(function() {
+                    // Ignore errors.
+                });
+            });
+        });
     };
 
     return self;

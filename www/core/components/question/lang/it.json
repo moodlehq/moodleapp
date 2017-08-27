@@ -6,5 +6,7 @@
     "incorrect": "Sbagliato",
     "notanswered": "Senza scelta",
     "notyetanswered": "Senza risposta",
-    "partiallycorrect": "Parzialmente corretto"
+    "partiallycorrect": "Parzialmente corretto",
+    "questionmessage": "Domanda {{$a}}: {{$b}}",
+    "unknown": "Non è possibile determinare lo stato"
 }

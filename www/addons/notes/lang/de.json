@@ -8,5 +8,6 @@
     "personalnotes": "Meine Anmerkungen",
     "publishstate": "Kontext",
     "sitenotes": "Anmerkungen zur Website",
-    "userwithid": "Nutzer/in mit ID {{id}}"
+    "userwithid": "Nutzer/in mit ID {{id}}",
+    "warningnotenotsent": "Anmerkungen konnten nicht zum Kurs {{course}} hinzugefügt werden. {{error}}"
 }

@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Vyberte účet pro uložení souboru.",
+    "chooseactionrepeatedfile": "Soubor s tímto názvem již existuje. Chcete existující soubor nahradit nebo jej přejmenovat na \"{{$a}}\"?",
+    "errorreceivefilenosites": "Nejsou zde uloženy žádné stránky. Před sdílením souborů s aplikací přidejte prosím web.",
+    "nosharedfiles": "Na tomto webu nejsou uložené žádné sdílené soubory.",
+    "nosharedfilestoupload": "Nemáte žádné nahrané soubory. Pokud chcete nahrát soubor z jiné aplikace, vyhledejte tento soubor a klikněte na tlačítko \"Otevřít v\".",
+    "rename": "Přejmenovat",
+    "replace": "Nahradit",
+    "sharedfiles": "Sdílené soubory",
+    "successstorefile": "Soubor byl úspěšně uložen. Nyní můžete vybrat tento soubor a nahrát do vašich soukromých souborů nebo připojit ji do některých činností."
+}

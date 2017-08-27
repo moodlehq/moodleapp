@@ -14,18 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.config(function($mmAppProvider, mmaFilesSharedFilesStore) {
-    var stores = [
-        {
-            name: mmaFilesSharedFilesStore,
-            keyPath: 'id'
-        }
-    ];
-    $mmAppProvider.registerStores(stores);
-})
-
-.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
-            mmaFilesSharedFilesStore) {
+.factory('$mmaFiles', function($mmSite, $mmFS, $q, $log, $mmSitesManager, md5) {
 
     $log = $log.getInstance('$mmaFiles');
 
@@ -37,7 +26,8 @@ angular.module('mm.addons.files')
             "itemid": 0,
             "filepath": "",
             "filename": ""
-        };
+        },
+        moodle310version = 2016052300;
 
     /**
      * Check if core_files_get_files WS call is available.
@@ -52,85 +42,20 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Checks if there is a new file received in iOS. If more than one file is found, treat only the first one.
-     * The file returned is marked as "treated" and will be deleted in the next execution.
+     * Check if core_user_add_user_private_files WS call is available.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#checkIOSNewFiles
-     * @return {Promise} Promise resolved with a new file to be treated. If no new files found, promise is rejected.
+     * @name $mmaFiles#canMoveFromDraftToPrivate
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if WS is available, false otherwise.
      */
-    self.checkIOSNewFiles = function() {
+    self.canMoveFromDraftToPrivate = function(siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        var deferred = $q.defer();
-
-        $log.debug('Search for new files on iOS');
-        $mmFS.getDirectoryContents('Inbox').then(function(entries) {
-
-            if (entries.length > 0) {
-
-                var promises = [];
-                angular.forEach(entries, function(entry) {
-
-                    var fileDeferred = $q.defer(),
-                        fileId = md5.createHash(entry.name);
-
-                    // Check if file was already treated.
-                    $mmApp.getDB().get(mmaFilesSharedFilesStore, fileId).then(function() {
-                        // File already treated. Delete it.
-                        $log.debug('Delete already treated file: ' + entry.name);
-                        fileDeferred.resolve();
-
-                        entry.remove(function() {
-                            $log.debug('File deleted: ' + entry.name);
-                            $mmApp.getDB().remove(mmaFilesSharedFilesStore, fileId).then(function() {
-                                $log.debug('"Treated" mark removed from file: ' + entry.name);
-                            }, function() {
-                                $log.debug('Error deleting "treated" mark from file: ' + entry.name);
-                            });
-                        }, function() {
-                            $log.debug('Error deleting file in Inbox: ' + entry.name);
-                        });
-
-                    }, function() {
-                        // File not treated before, send it to resolve so it's a candidate to be notified.
-                        $log.debug('Found new file ' + entry.name + ' shared with the app.');
-                        fileDeferred.resolve(entry);
-                    });
-
-                    promises.push(fileDeferred.promise);
-                });
-
-                $q.all(promises).then(function(responses) {
-                    var fileToReturn,
-                        fileId;
-                    for (var i = 0; i < responses.length; i++) {
-                        if (typeof(responses[i]) !== 'undefined') {
-                            // Found new entry to treat.
-                            fileToReturn = responses[i];
-                            break;
-                        }
-                    }
-                    if (fileToReturn) {
-                        fileId = md5.createHash(fileToReturn.name);
-                        // Mark it as "treated".
-                        $mmApp.getDB().insert(mmaFilesSharedFilesStore, {id: fileId}).then(function() {
-                            $log.debug('File marked as "treated": ' + fileToReturn.name);
-                            deferred.resolve(fileToReturn);
-                        }, function() {
-                            $log.debug('Error marking file as "treated": ' + fileToReturn.name);
-                            deferred.reject();
-                        });
-                    } else {
-                        deferred.reject();
-                    }
-                }, deferred.reject);
-            } else {
-                deferred.reject();
-            }
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('core_user_add_user_private_files');
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -304,7 +229,7 @@ angular.module('mm.addons.files')
         }
 
         return $mmSitesManager.getSite(siteid).then(function(site) {
-            site.invalidateWsCacheForKey(getFilesListCacheKey(params));
+            return site.invalidateWsCacheForKey(getFilesListCacheKey(params));
         });
     };
 
@@ -352,139 +277,75 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Upload a file.
+     * Move a file from draft area to private files.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#uploadFile
-     * @param  {Object} uri      File URI.
-     * @param  {Object} options  Options for the upload.
-     *                           - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
-     *                           - {String} fileKey
-     *                           - {String} fileName
-     *                           - {String} mimeType
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}
+     * @name $mmaFiles#moveFromDraftToPrivate
+     * @param  {Number} draftId  The draft area ID of the file.
+     * @param  {String} [siteid] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved in success, rejected otherwise.
      */
-    self.uploadFile = function(uri, options, siteid) {
-        options = options || {};
-        siteid = siteid || $mmSite.getId();
+    self.moveFromDraftToPrivate = function(draftId, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        var deleteAfterUpload = options.deleteAfterUpload,
-            deferred = $q.defer(),
-            ftOptions = {
-                fileKey: options.fileKey,
-                fileName: options.fileName,
-                mimeType: options.mimeType
+        var params = {
+                draftid: draftId
+            },
+            preSets = {
+                responseExpected: false
             };
 
-        function deleteFile() {
-            $timeout(function() {
-                // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
-                $mmFS.removeExternalFile(uri);
-            }, 500);
-        }
-
-        $mmSitesManager.getSite(siteid).then(function(site) {
-            site.uploadFile(uri, ftOptions).then(deferred.resolve, deferred.reject, deferred.notify).finally(function() {
-                if (deleteAfterUpload) {
-                    deleteFile();
-                }
-            });
-        }, function() {
-            if (deleteAfterUpload) {
-                deleteFile();
-            }
-            deferred.reject(error);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.write('core_user_add_user_private_files', params, preSets);
         });
-
-        return deferred.promise;
     };
 
     /**
-     * Upload image.
-     * @todo Handle Node Webkit.
+     * Check the Moodle version in order to check if file should be moved from draft to private files.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#uploadImage
-     * @param  {String}  uri         File URI.
-     * @param  {Boolean} isFromAlbum True if the image was taken from album, false if it's a new image taken with camera.
-     * @return {Promise}
+     * @name $mmaFiles#shouldMoveFromDraftToPrivate
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Resolved with true if should be moved, false otherwise.
      */
-    self.uploadImage = function(uri, isFromAlbum) {
-        $log.debug('Uploading an image');
-        var options = {};
+    self.shouldMoveFromDraftToPrivate = function(siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        if (typeof(uri) === 'undefined' || uri === ''){
-            // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
-            // and cancel, this function is called with an empty uri. Let's filter it.
-            $log.debug('Received invalid URI in $mmaFiles.uploadImage()');
-            return $q.reject();
-        }
-
-        options.deleteAfterUpload = !isFromAlbum;
-        options.fileKey = "file";
-        options.fileName = "image_" + new Date().getTime() + ".jpg";
-        options.mimeType = "image/jpeg";
-
-        return self.uploadFile(uri, options);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = parseInt(site.getInfo().version, 10);
+            return version && version >= moodle310version;
+        });
     };
 
     /**
-     * Upload media.
+     * Check the Moodle version in order to check if upload files is working.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#uploadMedia
-     * @param  {Array} mediaFiles Array of file objects.
-     * @return {Array} Array of promises.
+     * @name $mmaFiles#versionCanUploadFiles
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Resolved with true if WS is working, false otherwise.
      */
-    self.uploadMedia = function(mediaFiles) {
-        $log.debug('Uploading media');
-        var promises = [];
-        angular.forEach(mediaFiles, function(mediaFile) {
-            var options = {},
-                filename = mediaFile.name,
-                split;
+    self.versionCanUploadFiles = function(siteId) {
+        siteId = siteId || $mmSite.getId();
 
-            if (ionic.Platform.isIOS()) {
-                // In iOS we'll add a timestamp to the filename to make it unique.
-                split = filename.split('.');
-                split[0] += '_' + new Date().getTime();
-                filename = split.join('.');
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = parseInt(site.getInfo().version, 10);
+            if (!version) {
+                // Cannot determine version, return false.
+                return false;
+            } else if (version == moodle310version) {
+                // Uploading is not working right now for Moodle 3.1.0 (2016052300).
+                return false;
+            } else if (version > moodle310version) {
+                // In Moodle 3.1.1 or higher we need a WS to move to private files.
+                return self.canMoveFromDraftToPrivate(siteId);
             }
 
-            options.fileKey = null;
-            options.fileName = filename;
-            options.mimeType = null;
-            options.deleteAfterUpload = true;
-            promises.push(self.uploadFile(mediaFile.fullPath, options));
+            return true;
         });
-        return promises;
-    };
-
-    /**
-     * Upload a file of any type.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadGenericFile
-     * @param  {String} uri      File URI.
-     * @param  {String} name     File name.
-     * @param  {String} type     File type.
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}     Promise resolved when the file is uploaded.
-     */
-    self.uploadGenericFile = function(uri, name, type, siteid) {
-        var options = {};
-        options.fileKey = null;
-        options.fileName = name;
-        options.mimeType = type;
-        // Don't delete the file on iOS, it's going to be deleted on $mmaFiles#checkIOSNewFiles.
-        options.deleteAfterUpload = !ionic.Platform.isIOS();
-
-        return self.uploadFile(uri, options, siteid);
     };
 
     return self;

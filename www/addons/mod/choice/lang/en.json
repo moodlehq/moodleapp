@@ -13,6 +13,7 @@
     "responses": "Responses",
     "responsesresultgraphdescription": "{{number}}% of the users chose the option: {{text}}.",
     "responsesresultgraphheader": "Graph display",
+    "resultsnotsynced": "Results doesn't include your last response. Please, synchronize to update them.",
     "savemychoice": "Save my choice",
     "userchoosethisoption": "Users who chose this option",
     "yourselection": "Your selection"

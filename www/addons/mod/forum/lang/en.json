@@ -4,7 +4,10 @@
     "cannotadddiscussionall": "You do not have permission to add a new discussion topic for all participants.",
     "cannotcreatediscussion": "Could not create new discussion",
     "couldnotadd": "Could not add your post due to an unknown error",
+    "discussion": "Discussion",
+    "discussionlocked": "This discussion has been locked so you can no longer reply to it.",
     "discussionsubscription": "Discussion subscription",
+    "edit": "Edit",
     "erroremptymessage": "Post message cannot be empty",
     "erroremptysubject": "Post subject cannot be empty",
     "errorgetforum": "Error getting forum data.",
@@ -16,6 +19,12 @@
     "numreplies": "{{numreplies}} replies",
     "posttoforum": "Post to forum",
     "re": "Re:",
+    "refreshdiscussions": "Refresh discussions",
+    "refreshposts": "Refresh discussion posts",
     "reply": "Reply",
-    "subject": "Subject"
+    "sortnewestfirst": "Display newest first",
+    "sortoldestfirst": "Display oldest first",
+    "subject": "Subject",
+    "unread": "Unread",
+    "unreadpostsnumber": "{{$a}} unread posts"
 }

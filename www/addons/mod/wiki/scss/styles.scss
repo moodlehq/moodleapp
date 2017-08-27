@@ -38,7 +38,7 @@ $mma-mod-wiki-subwiki-selected-background-color:   #eee !default;
 }
 
 /* Hide edit section links */
-a.wiki_edit_section {
+.mma-mod_wiki-noedit a.wiki_edit_section {
   display: none;
 }
 

@@ -15,7 +15,7 @@
     "errordownloadscorm": "Fehler beim Laden des Lernpakets '{{name}}'.",
     "errorgetscorm": "Fehler beim Laden von Lernpaketdaten.",
     "errorinvalidversion": "Die App unterstützt ausschließlich Lernpakete mit SCORM 1.2.",
-    "errornotdownloadable": "Das Herunterladen von Lernpaketen ist für Ihr Moodle deaktiviert. Fragen Sie den Administrator.",
+    "errornotdownloadable": "Das Herunterladen von Lernpaketen ist für Ihre Website deaktiviert. Wenden Sie sich an den Administrator der Website.",
     "errornovalidsco": "Dieses Lernpaket hat kein sichtbares SCO zum Laden.",
     "errorpackagefile": "Die App unterstützt ausschließlich ZIP-Pakete.",
     "errorsyncscorm": "Fehler beim Synchronisieren. Versuchen Sie es noch einmal.",
@@ -32,7 +32,7 @@
     "highestattempt": "Bester Versuch",
     "incomplete": "Unvollständig",
     "lastattempt": "Letzter vollständiger Versuch",
-    "lastsync": "Letzte Synchronisation",
+    "lastsync": "Letztes Synchronisieren",
     "mode": "Einstellung",
     "newattempt": "Neuen Versuch beginnen",
     "noattemptsallowed": "Zahl zulässiger Versuche",
@@ -48,5 +48,5 @@
     "scormstatusoutdated": "Dieses Lernpaket wurde seit dem Herunterladen verändert. Es wird automatisch heruntergeladen, wenn Sie es öffnen.",
     "suspended": "Ausgeschlossen",
     "warningofflinedatadeleted": "Offline-Daten von Versuch {{number}} wurden gelöscht, weil sie nicht für einen neuen Versuch verwendet werden können.",
-    "warningsynconlineincomplete": "Mehrere Versuche konnten nicht synchronisiert werden, weil der letzte Online-Versuch auf der Website nicht beendet ist. Beenden Sie zuerst den Online-Versuch."
+    "warningsynconlineincomplete": "Die Versuche konnten nicht synchronisiert werden, weil der letzte Online-Versuchnicht beendet wurde. Beenden Sie zuerst den Online-Versuch."
 }

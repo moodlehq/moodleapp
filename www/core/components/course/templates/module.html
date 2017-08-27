@@ -1,0 +1,17 @@
+<a class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-click="action && action($event)" ng-class="{'item-media': icon, 'mm-not-clickable': !action}" ng-controller="module._controller" title="{{ module.name }}">
+
+    <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
+
+    <div class="buttons mm-module-buttons" ng-class="{'mm-button-completion': module.completionstatus}" ng-if="(buttons && buttons.length > 0) || spinner || module.completionstatus">
+        <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="module.name" after-change="completionChanged"></mm-completion>
+
+        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
+            <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
+        </button>
+
+        <ion-spinner ng-if="spinner"></ion-spinner>
+    </div>
+
+    <mm-format-text watch="true">{{ title }}</mm-format-text>
+    <mm-format-text watch="true" max-height="80" ng-if="module.description">{{ module.description }}</mm-format-text>
+</a>

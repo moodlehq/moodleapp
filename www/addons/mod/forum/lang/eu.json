@@ -4,7 +4,9 @@
     "cannotadddiscussionall": "Ez duzu baimenik partaide guztientzako eztabaida-gai berririk gehitzeko.",
     "cannotcreatediscussion": "Ezin da eztabaida sortu",
     "couldnotadd": "Ezin izan da zure mezua gehitu; errore bat gertatu da nonbait.",
+    "discussion": "Eztabaida",
     "discussionsubscription": "Eztabaidaren harpidetza",
+    "edit": "Editatu",
     "erroremptymessage": "Mezua ezin da hutsik egon",
     "erroremptysubject": "Mezuaren gaia ezin da hutsik egon",
     "errorgetforum": "Errorea foroko datuak jasotzean.",
@@ -16,6 +18,10 @@
     "numreplies": "{{numreplies}} erantzun",
     "posttoforum": "Mezua forora bidali",
     "re": "Er:",
+    "refreshdiscussions": "Freskatu eztabaidak",
+    "refreshposts": "Freskatu eztabaidetako mezuak",
     "reply": "Erantzun",
+    "sortnewestfirst": "Erakutsi berrienak lehenago",
+    "sortoldestfirst": "Erakutsi zaharrenak lehenago",
     "subject": "Gaia"
 }

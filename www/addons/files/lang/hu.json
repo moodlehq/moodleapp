@@ -1,16 +1,6 @@
 {
-    "downloading": "Letöltés...",
     "emptyfilelist": "Nincs megjeleníthető állomány",
-    "errorcapturingaudio": "Hiba a hang rögzítélse közben.",
-    "errorcapturingvideo": "Nem sikerült videofelvételt készíteni.",
-    "errorreadingfile": "Hiba a(z) \"{$a}\" állomány olvasása közben",
-    "file": "Állomány",
-    "fileuploaded": "Fájl feltöltve",
     "myfiles": "Saját állományaim",
     "sitefiles": "A portálon levő fájlok",
-    "success": "Sikerült",
-    "uploadafile": "Egy állomány feltöltése",
-    "uploadfiles": "Feltölthet állományokat",
-    "uploading": "Feltöltés",
-    "video": "Videó"
+    "uploadfiles": "Feltölthet állományokat"
 }

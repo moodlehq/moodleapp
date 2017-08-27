@@ -21,15 +21,19 @@ angular.module('mm.addons.mod_chat')
  * @ngdoc controller
  * @name mmaModChatIndexCtrl
  */
-.controller('mmaModChatIndexCtrl', function($scope, $stateParams, $mmaModChat, $mmUtil, $q, $mmCourse) {
+.controller('mmaModChatIndexCtrl', function($scope, $stateParams, $mmaModChat, $mmUtil, $q, $mmCourse, $mmText, $translate,
+            mmaModChatComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         chat;
 
     $scope.title = module.name;
     $scope.description = module.description;
-    $scope.moduleurl = module.url;
+    $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModChatComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to get chat data.
     function fetchChatData(refresh) {
@@ -70,12 +74,22 @@ angular.module('mm.addons.mod_chat')
         });
     }).finally(function() {
         $scope.chatLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModChatComponent, module.id);
+    };
 
     // Pull to refresh.
     $scope.refreshChat = function() {
-        fetchChatData(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.chatLoaded) {
+            $scope.refreshIcon = 'spinner';
+            return fetchChatData(true).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 });

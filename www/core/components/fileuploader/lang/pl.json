@@ -1,0 +1,14 @@
+{
+    "addfiletext": "Dodaj plik",
+    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "errorcapturingaudio": "Błąd poczas nagrywania dźwięku",
+    "errorcapturingvideo": "Błąd podczas przechwytywania wideo",
+    "errorreadingfile": "Błąd podczas odczytu pliku \"{$a}\"",
+    "file": "Plik",
+    "fileuploaded": "Plik wysłany",
+    "maxbytesfile": "Plik {{$a.file}} jest za duży Maksymalny rozmiar pliku, który możesz przesłać, może wynosić {{$a.size}}.",
+    "readingfile": "Odczytywanie pliku",
+    "uploadafile": "Prześlij plik",
+    "uploading": "Wysyłanie",
+    "video": "Film"
+}

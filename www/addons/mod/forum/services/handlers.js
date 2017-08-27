@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc service
  * @name $mmaModForumHandlers
  */
-.factory('$mmaModForumHandlers', function($mmCourse, $mmaModForum, $state, $mmUtil, $mmContentLinksHelper, $q) {
+.factory('$mmaModForumHandlers', function($mmCourse, $mmaModForum, $state, $mmUtil, $mmContentLinksHelper, $q, $mmEvents, $mmSite,
+            $mmaModForumPrefetchHandler, $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            mmaModForumComponent, mmCoreEventPackageStatusChanged, $mmaModForumSync) {
     var self = {};
 
     /**
@@ -53,21 +55,103 @@ angular.module('mm.addons.mod_forum')
          * @ngdoc method
          * @name $mmaModForumCourseContentHandler#isEnabled
          * @param {Object} module The module info.
-         * @param {Number} courseid The course ID.
+         * @param {Number} courseId The course ID.
          * @return {Function}
          */
-        self.getController = function(module, courseid) {
+        self.getController = function(module, courseId) {
             return function($scope) {
+                var downloadBtn = {
+                        hidden: true,
+                        icon: 'ion-ios-cloud-download-outline',
+                        label: 'mm.core.download',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            download();
+                        }
+                    },
+                    refreshBtn = {
+                        hidden: true,
+                        icon: 'ion-android-refresh',
+                        label: 'mm.core.refresh',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+
+                            $scope.spinner = true; // Show spinner since invalidateContent might take a while.
+                            $mmaModForum.invalidateContent(module.id, courseId).finally(function() {
+                                download();
+                            });
+                        }
+                    };
+
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('forum');
                 $scope.class = 'mma-mod_forum-handler';
+                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.spinner = true; // Show spinner while calculating status.
+
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();
                         e.stopPropagation();
                     }
-                    $state.go('site.mod_forum', {module: module, courseid: courseid});
+                    $state.go('site.mod_forum', {module: module, courseid: courseId});
                 };
+
+                function download() {
+
+                    $scope.spinner = true; // Show spinner since this operation might take a while.
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModForumPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
+                        $mmUtil.confirmDownloadSize(size).then(function() {
+                            $mmaModForumPrefetchHandler.prefetch(module, courseId).catch(function() {
+                                if (!$scope.$$destroyed) {
+                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                }
+                            });
+                        }).catch(function() {
+                            // User hasn't confirmed, stop spinner.
+                            $scope.spinner = false;
+                        });
+                    }).catch(function(error) {
+                        $scope.spinner = false;
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
+
+                // Show buttons according to module status.
+                function showStatus(status) {
+                    if (status) {
+                        $scope.spinner = status === mmCoreDownloading;
+                        downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                    }
+                }
+
+                // Listen for changes on this module status.
+                var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                    if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                            data.component === mmaModForumComponent) {
+                        showStatus(data.status);
+                    }
+                });
+
+                // Get current status to decide which icon should be shown.
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
+
+                $scope.$on('$destroy', function() {
+                    statusObserver && statusObserver.off && statusObserver.off();
+                });
             };
         };
 
@@ -172,6 +256,58 @@ angular.module('mm.addons.mod_forum')
                     return url.substr(0, position);
                 }
             }
+        };
+
+        return self;
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaModForumSync.syncAllForums(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;

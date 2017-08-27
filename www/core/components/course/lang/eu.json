@@ -1,10 +1,16 @@
 {
-    "activitynotyetviewable": "Jarduera edo baliabide hau oraindik ezin da app-ean ikusi.",
+    "activitynotyetviewable": "Jarduera hau oraindik ezin da app-ean ikusi.",
     "activitynotyetviewablegothere": "Jarduera edo baliabide hau oraindik ezin da app-ean ikusi, sakatu beheko botoia gunearen bidez sartzeko.",
+    "activitynotyetviewableinapp": "{{$a}} jarduera onartzeko lanean ari gara.",
+    "activitynotyetviewableremoteaddon": "Zure erakundeak oraindik app-ean onartzen ez den gehigarri bat instalatuta dauka..",
+    "activitynotyetviewablesiteupgradeneeded": "Zure erakundeko Moodle instalazioak eguneraketa bat behar du.",
     "allsections": "Atal guztiak",
+    "askadmintosupport": "Jarri harremanetan zure guneko kudeatzailearekin eta esaiozu jarduera hau Moodle Mobile app-an erabili nahi duzula.",
+    "confirmdeletemodulefiles": "Ziur zaude modulu honetako fitxategiak ezabatu nahi dituzula?",
     "confirmdownload": "{{size}} jaistear zaude. Ziur al zaude aurrera egin nahi duzula?",
     "confirmdownloadsection": "{{size}} deskargatzera zoaz. Ziur zaude jarraitu nahi duzula?",
     "confirmdownloadunknownsize": "Ezin izan dugu deskargaren tamaina kalkulatu. Ziur zaude jaitsi nahi duzula?",
+    "confirmpartialdownloadsize": "<strong>Gutxienez</strong> {{size}} jaistera zoaz. Ziur zaude jarraitu nahi duzula?",
     "contents": "Edukiak",
     "couldnotloadsectioncontent": "Ezin izan da ataleko edukia kargatu, saiatu beranduago mesedez.",
     "couldnotloadsections": "Ezin izan dira atalak kargatu, saiatu beranduago mesedez.",
@@ -12,6 +18,8 @@
     "errorgetmodule": "Errorea moduluaren datuak eskuratzean.",
     "gotothesite": "Joan gunera",
     "nocontentavailable": "Ez dago edukirik eskuragarri momentu honetan.",
+    "overriddennotice": "Jarduera honetako zure azken kalifikazioa eskuz egokitu da.",
     "showall": "Erakutsi denak",
+    "useactivityonbrowser": "Zure gailuko nabigatzailea erabilita erabili dezakezu.",
     "whoops": "Ups!"
 }

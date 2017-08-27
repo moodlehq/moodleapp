@@ -9,7 +9,7 @@
 <div class="item item-complex" mm-question-behaviour ng-repeat="directive in behaviourDirectives"></div>
 <!-- Question validation error. -->
 <div class="item item-text-wrap" ng-if="question.validationError">
-    <p class="mm-warning">{{ question.validationError }}</p>
+    <p class="mm-error">{{ question.validationError }}</p>
 </div>
 <!-- Question behaviour buttons. -->
 <div class="item item-text-wrap" ng-repeat="bButton in question.behaviourButtons">
@@ -17,9 +17,9 @@
 </div>
 <!-- Question feedback -->
 <div class="item item-text-wrap mm-question-feedback-container" ng-if="question.feedbackHtml">
-	<p><mm-format-text watch="true" class="mm-content-with-float">{{ question.feedbackHtml }}</mm-format-text></p>
+	<p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.feedbackHtml }}</mm-format-text></p>
 </div>
 <!-- Question comment -->
 <div class="item item-text-wrap mm-question-comment" ng-if="question.commentHtml">
-	<p><mm-format-text watch="true" class="mm-content-with-float">{{ question.commentHtml }}</mm-format-text></p>
+	<p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.commentHtml }}</mm-format-text></p>
 </div>

@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBookHandlers
  */
-.factory('$mmaModBookHandlers', function($mmCourse, $mmaModBook, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
-            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloaded,
+.factory('$mmaModBookHandlers', function($mmCourse, $mmaModBook, $mmEvents, $state, $mmSite, $mmCourseHelper,
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloaded, $mmUtil,
             mmCoreEventPackageStatusChanged, mmaModBookComponent, $mmContentLinksHelper, $q, $mmaModBookPrefetchHandler) {
 
     var self = {};
@@ -56,9 +56,7 @@ angular.module('mm.addons.mod_book')
         self.getController = function(module, courseid) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn,
-                    revision = $mmFilepool.getRevisionFromFileList(module.contents),
-                    timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+                    refreshBtn;
 
                 downloadBtn = {
                     hidden: true,
@@ -67,8 +65,7 @@ angular.module('mm.addons.mod_book')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModBookPrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModBook, module, size, false);
+                        download(false);
                     }
                 };
 
@@ -79,8 +76,7 @@ angular.module('mm.addons.mod_book')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModBookPrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModBook, module, size, true);
+                        download(true);
                     }
                 };
 
@@ -98,13 +94,48 @@ angular.module('mm.addons.mod_book')
                     $state.go('site.mod_book', {module: module, courseid: courseid});
                 };
 
+                function download(refresh) {
+                    var dwnBtnHidden = downloadBtn.hidden,
+                        rfrshBtnHidden = refreshBtn.hidden;
+
+                    // Show spinner since this operation might take a while.
+                    $scope.spinner = true;
+                    downloadBtn.hidden = true;
+                    refreshBtn.hidden = true;
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModBookPrefetchHandler.getDownloadSize(module, courseid).then(function(size) {
+                        $mmCourseHelper.prefetchModule($scope, $mmaModBookPrefetchHandler, module, size, refresh, courseid)
+                                .catch(function() {
+                            // Error or cancelled, leave the buttons as they were.
+                            $scope.spinner = false;
+                            downloadBtn.hidden = dwnBtnHidden;
+                            refreshBtn.hidden = rfrshBtnHidden;
+                        });
+                    }).catch(function(error) {
+                        // Error, leave the buttons as they were.
+                        $scope.spinner = false;
+                        downloadBtn.hidden = dwnBtnHidden;
+                        refreshBtn.hidden = rfrshBtnHidden;
+
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
+
                 // Show buttons according to module status.
                 function showStatus(status) {
                     if (status) {
                         $scope.spinner = status === mmCoreDownloading;
                         downloadBtn.hidden = status !== mmCoreNotDownloaded;
-                        // Always show refresh button if a book is downloaded because revision and timemodified aren't reliable.
-                        refreshBtn.hidden = status !== mmCoreOutdated && status !== mmCoreDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                        if (!$mmCoursePrefetchDelegate.canCheckUpdates()) {
+                            // Always show refresh button if downloaded because revision and timemodified aren't reliable.
+                            refreshBtn.hidden = refreshBtn.hidden && status !== mmCoreDownloaded;
+                        }
                     }
                 }
 
@@ -116,7 +147,7 @@ angular.module('mm.addons.mod_book')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();

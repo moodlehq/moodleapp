@@ -1,0 +1,29 @@
+<ion-view>
+    <ion-nav-title>{{ 'mma.frontpage.sitehome' | translate }}</ion-nav-title>
+    <ion-content mm-state-class padding="true">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="frontpageLoaded" on-refresh="doRefresh()">
+        </ion-refresher>
+        <mm-loading hide-until="frontpageLoaded" loading-padding-top="loadingPaddingTop">
+
+            <section class="card" ng-if="section && sectionHasContent(section)">
+                <div class="item item-text-wrap clearfix" ng-if="section.summary">
+                    <mm-format-text>{{ section.summary }}</mm-format-text>
+                </div>
+
+                <mm-course-module class="item item-complex" ng-repeat="module in section.modules" module="module"></mm-course-module>
+            </section>
+
+            <mma-frontpage-item ng-repeat="item in items" name="{{item}}"></mma-frontpage-item>
+
+            <section class="card" ng-if="block && sectionHasContent(block)">
+                <div class="item item-text-wrap clearfix" ng-if="block.summary">
+                    <mm-format-text>{{ block.summary }}</mm-format-text>
+                </div>
+
+                <mm-course-module class="item item-complex" ng-repeat="module in block.modules" module="module"></mm-course-module>
+            </section>
+
+            <p class="padding" ng-if="!hasContent">{{ 'mm.course.nocontentavailable' | translate }}</p>
+        </mm-loading>
+    </ion-content>
+</ion-view>

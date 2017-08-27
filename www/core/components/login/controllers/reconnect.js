@@ -31,6 +31,17 @@ angular.module('mm.core.login')
         password: ''
     };
 
+    $mmSitesManager.getSite($stateParams.siteid).then(function(site) {
+        $scope.site = {
+            id: site.id,
+            fullname: site.infos.fullname,
+            avatar: site.infos.userpictureurl
+        };
+
+        $scope.credentials.username = site.infos.username;
+        $scope.siteurl = site.infos.siteurl;
+    });
+
     $scope.cancel = function() {
         $mmSitesManager.logout().finally(function() {
             $ionicHistory.nextViewOptions({
@@ -59,7 +70,7 @@ angular.module('mm.core.login')
 
         // Start the authentication process.
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
-            $mmSitesManager.updateSiteToken(infositeurl, username, data.token).then(function() {
+            $mmSitesManager.updateSiteToken(infositeurl, username, data.token, data.privatetoken).then(function() {
                 // Update site info too because functions might have changed (e.g. unisntall local_mobile).
                 $mmSitesManager.updateSiteInfoByUrl(infositeurl, username).finally(function() {
                     delete $scope.credentials; // Delete password from the scope.
@@ -75,7 +86,7 @@ angular.module('mm.core.login')
             });
         }, function(error) {
             modal.dismiss();
-            $mmUtil.showErrorModal(error);
+            $mmLoginHelper.treatUserTokenError(siteurl, error);
         });
     };
 

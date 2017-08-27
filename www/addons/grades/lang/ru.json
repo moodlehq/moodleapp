@@ -1,14 +1,4 @@
 {
-    "average": "Среднее",
-    "contributiontocoursetotal": "Вклад в курс",
-    "feedback": "Отзыв",
-    "grade": "Оценка",
-    "grades": "Оценки",
-    "itemname": "Элемент оценки",
-    "lettergrade": "Буквенная оценка",
-    "percentage": "В процентах",
-    "range": "Диапазон",
-    "rank": "Ранг",
-    "viewgrades": "Просмотр оценок",
-    "weight": "Вес"
+    "nogradesreturned": "Нет оценок",
+    "viewgrades": "Просмотр оценок"
 }

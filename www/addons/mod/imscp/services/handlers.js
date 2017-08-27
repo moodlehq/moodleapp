@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_imscp')
  */
 .factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-            mmaModImscpComponent, $mmContentLinksHelper, $q, $mmaModImscpPrefetchHandler) {
+            mmaModImscpComponent, $mmContentLinksHelper, $q, $mmaModImscpPrefetchHandler, $mmUtil) {
     var self = {};
 
     /**
@@ -62,9 +62,7 @@ angular.module('mm.addons.mod_imscp')
         self.getController = function(module, courseid) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn,
-                    revision = $mmFilepool.getRevisionFromFileList(module.contents),
-                    timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+                    refreshBtn;
 
                 downloadBtn = {
                     hidden: true,
@@ -73,8 +71,7 @@ angular.module('mm.addons.mod_imscp')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModImscpPrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModImscp, module, size, false);
+                        download(false);
                     }
                 };
 
@@ -85,8 +82,7 @@ angular.module('mm.addons.mod_imscp')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModImscpPrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModImscp, module, size, true);
+                        download(true);
                     }
                 };
 
@@ -103,6 +99,38 @@ angular.module('mm.addons.mod_imscp')
                     }
                     $state.go('site.mod_imscp', {module: module, courseid: courseid});
                 };
+
+                function download(refresh) {
+                    var dwnBtnHidden = downloadBtn.hidden,
+                        rfrshBtnHidden = refreshBtn.hidden;
+
+                    // Show spinner since this operation might take a while.
+                    $scope.spinner = true;
+                    downloadBtn.hidden = true;
+                    refreshBtn.hidden = true;
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModImscpPrefetchHandler.getDownloadSize(module, courseid).then(function(size) {
+                        $mmCourseHelper.prefetchModule($scope, $mmaModImscpPrefetchHandler, module, size, refresh, courseid)
+                                .catch(function() {
+                            // Error or cancelled, leave the buttons as they were.
+                            $scope.spinner = false;
+                            downloadBtn.hidden = dwnBtnHidden;
+                            refreshBtn.hidden = rfrshBtnHidden;
+                        });
+                    }).catch(function(error) {
+                        // Error, leave the buttons as they were.
+                        $scope.spinner = false;
+                        downloadBtn.hidden = dwnBtnHidden;
+                        refreshBtn.hidden = rfrshBtnHidden;
+
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
 
                 // Show buttons according to module status.
                 function showStatus(status) {
@@ -121,7 +149,7 @@ angular.module('mm.addons.mod_imscp')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();

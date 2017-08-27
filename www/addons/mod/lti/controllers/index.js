@@ -21,14 +21,19 @@ angular.module('mm.addons.mod_lti')
  * @ngdoc controller
  * @name mmaModLtiIndexCtrl
  */
-.controller('mmaModLtiIndexCtrl', function($scope, $stateParams, $mmaModLti, $mmUtil, $q, $mmCourse) {
+.controller('mmaModLtiIndexCtrl', function($scope, $stateParams, $mmaModLti, $mmUtil, $q, $mmCourse, $mmText, $translate,
+            mmaModLtiComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         lti;
 
     $scope.title = module.name;
     $scope.description = module.description;
+    $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModLtiComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to get LTI data.
     function fetchLTI(refresh) {
@@ -68,13 +73,18 @@ angular.module('mm.addons.mod_lti')
 
     fetchLTI().finally(function() {
         $scope.ltiLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Pull to refresh.
     $scope.doRefresh = function() {
-        refreshAllData().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.ltiLoaded) {
+            $scope.refreshIcon = 'spinner';
+            return refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     // Launch the LTI.
@@ -90,5 +100,10 @@ angular.module('mm.addons.mod_lti')
                 $mmUtil.showErrorModal(message);
             }
         });
+    };
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModLtiComponent, module.id);
     };
 });

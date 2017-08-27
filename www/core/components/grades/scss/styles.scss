@@ -1,0 +1,103 @@
+/* - User grades table (most of it extracted from MM1)
+-------------------------------------------------------------------------- */
+.mm-grades-container {
+  padding-right: 2px;
+}
+
+.mm-grades-table {
+  border-collapse: collapse;
+  line-height: 20px;
+  width: 100%;
+  font-size: 16px;
+  color: $item-stable-text;
+  tr {
+    border-bottom: 1px solid $item-light-border;
+  }
+  th,
+  td {
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+    white-space: normal;
+  }
+  thead th {
+    padding-left: 10px;
+    vertical-align: bottom;
+    font-weight: bold;
+  }
+  tbody th {
+    font-weight: normal;
+  }
+  .item {
+    display: table-cell;
+  }
+  th {
+    &.b1b {
+      padding-left: 20px;
+    }
+    &.item {
+      padding-left: 30px;
+    }
+    &.baggt {
+      padding-left: 30px;
+    }
+    img {
+      margin-left: -20px;
+      float: left;
+    }
+  }
+  .b1l {
+    width: 10px;
+    min-width: 10px;
+  }
+  .b1t,
+  .baggt {
+    font-weight: bold;
+  }
+  .itemcenter {
+    @extend .item;
+    padding: 10px;
+    white-space: nowrap;
+  }
+  .feedbacktext {
+    padding-left: 10px;
+    .no-overflow {
+      overflow: auto;
+    }
+  }
+  .dimmed_text,
+  .hidden,
+  .hidden a {
+    color: #aaa;
+  }
+  .oddd1,
+  .oddd3,
+  .evend3,
+  .levelodd {
+    background-color: $item-divider-bg;
+  }
+  .oddd2,
+  .evend2,
+  .oddd4,
+  .evend4 {
+    background-color: $item-stable-bg;
+  }
+  .leveleven {
+    background-color: $item-light-bg;
+  }
+  .column-leader {
+    border-left: 1px solid $item-light-border;
+    border-top: 1px solid $item-light-border;
+    border-bottom: 1px solid $item-light-border;
+    &.level1 {
+      border-left: 0;
+    }
+  }
+  .column-itemname {
+    border-right: 1px solid $item-light-border;
+    border-top: 1px solid $item-light-border;
+    border-bottom: 1px solid $item-light-border;
+  }
+}

@@ -12,11 +12,11 @@
                         <mm-format-text>{{user.fullname}}</mm-format-text>
                     </div>
                     <div class="item tabs tabs-secondary tabs-icon-left" ng-if="currentUserId != user.id && !isAppOffline()">
-                        <a class="tab-item" href="#" ng-click="talkTo(user.fullname)">
+                        <a class="tab-item" ng-click="talkTo(user.fullname)">
                             <i class="icon ion-chatbox"></i>
                             {{ 'mma.mod_chat.talk' | translate}}
                         </a>
-                        <a class="tab-item" href="#" ng-click="beepTo(user.id)">
+                        <a class="tab-item" ng-click="beepTo(user.id)">
                             <i class="icon ion-ios-bell"></i>
                             {{ 'mma.mod_chat.beep' | translate}}
                         </a>

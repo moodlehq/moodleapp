@@ -23,7 +23,7 @@ angular.module('mm.addons.competency')
  * @ngdoc service
  * @name $mmaCompetencyHandlers
  */
-.factory('$mmaCompetencyHandlers', function($log, $mmaCompetency, mmCoursesAccessMethods) {
+.factory('$mmaCompetencyHandlers', function($log, $mmaCompetency, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
     $log = $log.getInstance('$mmaCompetencyHandlers');
 
     var self = {},
@@ -132,18 +132,25 @@ angular.module('mm.addons.competency')
         /**
          * Check if handler is enabled for this course.
          *
-         * @param {Number} courseId   Course ID.
-         * @param {Object} accessData Type of access to the course: default, guest, ...
-         * @return {Boolean}          True if handler is enabled, false otherwise.
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Boolean}             True if handler is enabled, false otherwise.
          */
-        self.isEnabledForCourse = function(courseId, accessData) {
+        self.isEnabledForCourse = function(courseId, accessData, navOptions, admOptions) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
+            }
+
+            if (navOptions && typeof navOptions.competencies != 'undefined') {
+                return navOptions.competencies;
             }
 
             if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
                 return coursesNavEnabledCache[courseId];
             }
+
             return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
                 var enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
                 // We can also cache call for participantsNav.
@@ -194,7 +201,9 @@ angular.module('mm.addons.competency')
      */
     self.learningPlan = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.
@@ -210,9 +219,11 @@ angular.module('mm.addons.competency')
          *
          * @param {Number} user     User to check.
          * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
          * @return {Boolean}          True if handler is enabled, false otherwise.
          */
-        self.isEnabledForUser = function(user, courseId) {
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
 
             if (courseId) {
                 // Link on a user course profile.

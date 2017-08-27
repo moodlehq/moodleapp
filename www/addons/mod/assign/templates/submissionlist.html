@@ -1,0 +1,30 @@
+<ion-view view-title="{{ title }}">
+    <mm-split-view load-when="assignmentLoaded" component="{{assignComponent}}">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshSubmissionList()"></ion-refresher>
+            <mm-loading hide-until="assignmentLoaded">
+                <ul class="list">
+                    <li ng-repeat="submission in submissions">
+                        <a ng-class="{'item-avatar': submission.userprofileimageurl}" class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_assign-submission({'submitid': submission.submitid, 'blindid': submission.blindid, 'courseid': courseId, 'moduleid': moduleId})">
+                            <img ng-if="submission.userprofileimageurl" ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: submission.userfullname} }}" role="presentation">
+                            <h2 ng-if="submission.userfullname">{{submission.userfullname}}</h2>
+                            <h2 ng-if="!submission.userfullname">{{ 'mma.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
+                            <p ng-if="assign.teamsubmission">
+                                <span ng-if="submission.groupname">{{submission.groupname}}</span>
+                                <span ng-if="assign.preventsubmissionnotingroup && !submission.groupname && !submission.manyGroups && !submission.blindid">{{ 'mma.mod_assign.noteam' | translate }}</span>
+                                <span ng-if="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
+                                <span ng-if="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
+                            </p>
+                            <p ng-if="submission.statusTranslated" class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
+                            <p ng-if="submission.gradingStatusTranslationId" class="badge badge-inline {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="mm-warning item item-text-wrap" ng-if="!haveAllParticipants">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.notallparticipantsareshown' | translate }}
+                    </li>
+                </ul>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

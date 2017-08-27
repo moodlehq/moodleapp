@@ -9,6 +9,6 @@
     "messageexit": "{{$a}} 已退出這次聊天",
     "nomessages": "尚無訊息",
     "send": "傳送",
-    "sessionstart": "下一個對話時段將開始於：{{$a}}",
+    "sessionstart": "下一個聊天時段即將在{{$a.date}}開始，(離現在{{$a.fromnow}} )",
     "talk": "交談"
 }

@@ -4,7 +4,9 @@
     "cannotadddiscussionall": "No tiene permiso para añadir un nuevo tema de discusión para todos los participantes.",
     "cannotcreatediscussion": "No se pudo crear un debate nuevo",
     "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
+    "discussion": "Tema",
     "discussionsubscription": "Suscripción a la discusión",
+    "edit": "Editar",
     "erroremptymessage": "El mensaje no puede estar vacío",
     "erroremptysubject": "El asunto del mensaje no puede estar vacío.",
     "errorgetforum": "Error al obtener datos del foro.",
@@ -16,6 +18,10 @@
     "numreplies": "{{numreplies}} respuestas",
     "posttoforum": "Enviar al foro",
     "re": "Re:",
+    "refreshdiscussions": "Actualizar foro",
+    "refreshposts": "Actualizar publicaciones del foro",
     "reply": "Responder",
+    "sortnewestfirst": "Mostrar los más nuevos primero",
+    "sortoldestfirst": "Mostrar los más antiguos primero",
     "subject": "Asunto"
 }

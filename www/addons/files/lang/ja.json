@@ -1,20 +1,6 @@
 {
-    "chooseaccountuploadfile": "ファイルをアップロードするアカウントの選択：",
-    "confirmuploadfile": "{$a}をアップロードしようとしています。続けますか？",
-    "downloading": "ダウンロード中 ...",
     "emptyfilelist": "表示するファイルはありません。",
-    "errorcapturingaudio": "音声キャプチャーのエラー",
-    "errorcapturingvideo": "ビデオキャプチャーのエラー",
-    "errorreadingfile": "ファイル\"{$a}\"の読み取りエラー",
-    "errorreceivefilenosites": "登録されているサイトがありません。ファイルをアップロードする前にサイトを追加してください。",
-    "file": "ファイル",
-    "fileuploaded": "アップロードしたファイル",
     "myfiles": "マイファイル",
-    "readingfile": "ファイル読み取り",
     "sitefiles": "サイトファイル",
-    "success": "成功",
-    "uploadafile": "ファイルをアップロードする",
-    "uploadfiles": "ファイルをアップロードできる",
-    "uploading": "アップロード中",
-    "video": "ビデオ"
+    "uploadfiles": "ファイルをアップロードできる"
 }

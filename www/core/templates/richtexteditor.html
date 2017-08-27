@@ -1,0 +1,5 @@
+<div ng-if="richTextEditor === true || richTextEditor === false" ng-class="{'mm-rich-text-editor-container': richTextEditor}" data-tap-disabled="{{richTextEditor}}">
+	<!-- This textarea won't be seen, but we set {{model[property]}} inside it so it can be retrieved via plain JS. -->
+	<textarea ng-if="richTextEditor" ckeditor="editorOptions" ng-model="model[property]" ready="editorReady()" placeholder="{{ placeholder }}" name="{{name}}" ng-change="onChange()" ng-required="{{required}}">{{model[property]}}</textarea>
+	<textarea ng-if="!richTextEditor" class="mm-textarea" placeholder="{{ placeholder }}" name="{{name}}" ng-model="model[property]" aria-multiline="true" ng-change="onChange()" ng-required="{{required}}"></textarea>
+</div>

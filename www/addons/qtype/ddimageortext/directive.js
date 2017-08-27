@@ -66,7 +66,7 @@ angular.module('mm.addons.qtype_ddimageortext')
                 var qi = $mmaQtypeDdimageortextRender.init_question(question, question.readonly, drops);
 
                 scope.$on('$destroy', function() {
-                    qi.stop_polling();
+                    qi.destroy();
                 });
             });
         }

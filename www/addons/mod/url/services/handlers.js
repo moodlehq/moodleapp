@@ -48,10 +48,10 @@ angular.module('mm.addons.mod_url')
          * Get the controller.
          *
          * @param {Object} module The module info.
-         * @param {Number} courseid The course ID.
+         * @param {Number} courseId The course ID.
          * @return {Function}
          */
-        self.getController = function(module, courseid) {
+        self.getController = function(module, courseId) {
             return function($scope) {
                 $scope.icon = $mmCourse.getModuleIconSrc('url');
                 $scope.title = module.name;
@@ -61,25 +61,31 @@ angular.module('mm.addons.mod_url')
                         e.preventDefault();
                         e.stopPropagation();
                     }
-                    $state.go('site.mod_url', {module: module, courseid: courseid});
+                    $state.go('site.mod_url', {module: module, courseid: courseId});
                 };
 
-                if (module.contents && module.contents[0] && module.contents[0].fileurl) {
-                    $scope.buttons = [{
-                        icon: 'ion-link',
-                        label: 'mm.core.openinbrowser',
-                        action: function(e) {
-                            if (e) {
-                                e.preventDefault();
-                                e.stopPropagation();
+                // Get contents.
+                $scope.spinner = true;
+                $mmCourse.loadModuleContents(module, courseId).then(function() {
+                    if (module.contents && module.contents[0] && module.contents[0].fileurl) {
+                        $scope.buttons = [{
+                            icon: 'ion-link',
+                            label: 'mm.core.openinbrowser',
+                            action: function(e) {
+                                if (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                                $mmaModUrl.logView(module.instance).then(function() {
+                                    $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+                                });
+                                $mmaModUrl.open(module.contents[0].fileurl);
                             }
-                            $mmaModUrl.logView(module.instance).then(function() {
-                                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
-                            });
-                            $mmaModUrl.open(module.contents[0].fileurl);
-                        }
-                    }];
-                }
+                        }];
+                    }
+                }).finally(function() {
+                    $scope.spinner = false;
+                });
             };
         };
 

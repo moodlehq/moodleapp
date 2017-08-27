@@ -1,0 +1,17 @@
+<ion-popover-view class="mm-context-menu">
+    <ion-content>
+        <div class="list">
+            <div ng-if="title" class="item item-divider">{{ title }}</div>
+            <a ng-repeat="item in ctxtMenuItems | orderBy: '-priority'" class="item" mm-link capture-link="{{item.captureLink}}"
+                ng-class="{'item-icon-right': item.href || item.iconAction, 'item-icon-left': item.iconDescription}"
+                ng-href="{{item.href}}" ng-click="contextMenuItemClicked($event, item)" aria-label="{{ item.ariaAction }}"
+                ng-show="item.ngShow" auto-login="{{item.autoLogin}}">
+                <i ng-if="item.iconDescription" class="icon {{ item.iconDescription }}" aria-label="{{ item.ariaDescription }}"></i>
+                <mm-format-text clean="true" watch="true">{{ item.content }}</mm-format-text>
+                <i ng-if="(item.href || item.action) && item.iconAction && item.iconAction != 'spinner'" class="icon {{item.iconAction}}"></i>
+                <i ng-if="item.href && !item.iconAction" class="icon ion-arrow-right-c"></i>
+                <ion-spinner ng-if="(item.href || item.action) && item.iconAction == 'spinner'" class="icon spinner spinner-ios-small"></ion-spinner>
+            </a>
+        </div>
+    </ion-content>
+</ion-popover-view>

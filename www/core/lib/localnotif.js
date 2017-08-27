@@ -58,14 +58,33 @@ angular.module('mm.core')
  * @description
  * Provides methods to trigger notifications, listen clicks on them, etc.
  */
-.factory('$mmLocalNotifications', function($log, $cordovaLocalNotification, $mmApp, $q,
+.factory('$mmLocalNotifications', function($log, $cordovaLocalNotification, $mmApp, $q, $rootScope, $ionicPopover, $timeout,
         mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore, mmCoreNotificationsTriggeredStore) {
 
     $log = $log.getInstance('$mmLocalNotifications');
 
     var self = {},
         observers = {},
-        codes = {}; // Store codes in memory to make getCode function faster.
+        codes = {}, // Store codes in memory to make getCode function faster.
+        scope,
+        hidePopoverTimeout;
+
+    // Setup inapp notifications popover.
+    scope = $rootScope.$new();
+    $ionicPopover.fromTemplateUrl('core/templates/notificationpopover.html', {
+        scope: scope,
+    }).then(function(popover) {
+        // Disable the backdrop.
+        popover.viewType = 'mm-inappnotif-popover';
+        angular.element(popover.el).removeClass('popover-backdrop').addClass('mm-inapp-notification-backdrop');
+
+        scope.popover = popover;
+
+        scope.hide = function() {
+            scope.popover.hide();
+            $timeout.cancel(hidePopoverTimeout);
+        };
+    });
 
     // We need a queue to request unique codes, to handle simultaneous requests.
     var codeRequestsQueue = {};
@@ -365,6 +384,13 @@ angular.module('mm.core')
             notification.data = notification.data || {};
             notification.data.component = component;
             notification.data.siteid = siteid;
+            if (ionic.Platform.isAndroid()) {
+                notification.icon = notification.icon || 'res://icon';
+                notification.smallIcon = notification.smallIcon || 'res://icon';
+                notification.led = notification.led || 'FF9900';
+                notification.ledOnTime = notification.ledOnTime || 1000;
+                notification.ledOffTime = notification.ledOffTime || 1000;
+            }
 
             return self.isTriggered(notification).then(function(triggered) {
                 if (!triggered) {
@@ -374,6 +400,69 @@ angular.module('mm.core')
                 }
             });
         });
+    };
+
+    /**
+     * Show an in app notification popover.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#showNotificationPopover
+     * @param  {Object} notification Notification.
+     * @return {Void}
+     */
+    self.showNotificationPopover = function(notification) {
+        if (!scope || !scope.popover) {
+            // Not initialized yet.
+            return;
+        }
+
+        if (!notification || !notification.title || !notification.text) {
+            // Invalid data.
+            return;
+        }
+
+        var isShown = scope.popover.isShown();
+
+        // Set the data.
+        setData(isShown);
+
+        if (isShown) {
+            // Already shown, restart the hide timeout.
+            $timeout.cancel(hidePopoverTimeout);
+        } else {
+            // Not shown, show the popover.
+            scope.popover.show(document.querySelector('ion-nav-bar'));
+        }
+
+        hidePopoverTimeout = $timeout(function() {
+            scope.popover.hide();
+        }, 4000);
+
+        function setData(isShown) {
+            // Use a timeout to update the texts so the changes are applied to the view.
+            $timeout(function() {
+                if (isShown && scope.title == notification.title) {
+                    if (scope.ids.indexOf(notification.id) != -1) {
+                        // Notification already shown, don't show it.
+                        return;
+                    }
+
+                    // Same title and the notification is shown, update it.
+                    scope.texts.push(notification.text);
+                    scope.ids.push(notification.id);
+                    if (scope.texts.length > 3) {
+                        scope.texts.shift();
+                        scope.ids.shift();
+                    }
+                } else {
+                    // Not shown or title is different, set new data.
+                    scope.title = notification.title;
+                    scope.texts = [notification.text];
+                    scope.ids = [notification.id];
+                }
+            });
+        }
     };
 
     /**
@@ -387,6 +476,11 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved when stored, rejected otherwise.
      */
     self.trigger = function(notification) {
+        if (ionic.Platform.isIOS() && parseInt(ionic.Platform.version(), 10) >= 10) {
+            // In iOS10 show in app notification.
+            self.showNotificationPopover(notification);
+        }
+
         var id = parseInt(notification.id);
         if (!isNaN(id)) {
             return $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {

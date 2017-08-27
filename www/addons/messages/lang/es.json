@@ -1,6 +1,7 @@
 {
     "addcontact": "Añadir como contacto",
     "blockcontact": "Bloquear contacto",
+    "blocknoncontacts": "Bloquear mensajes de usuarios que no figuren en mi lista de contactos",
     "contactlistempty": "Lista de contactos vacía",
     "contactname": "Nombre del contacto",
     "contacts": "Contactos",
@@ -24,5 +25,6 @@
     "type_online": "En línea",
     "type_search": "Resultados de la búsqueda",
     "type_strangers": "Otros",
-    "unblockcontact": "Desbloquear contacto"
+    "unblockcontact": "Desbloquear contacto",
+    "warningmessagenotsent": "No se pudo enviar mensaje(s) al usuario {{user}}. {{error}}"
 }

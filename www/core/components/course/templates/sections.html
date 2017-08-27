@@ -1,23 +1,28 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{fullname}}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" content="'mm.settings.enabledownloadsection' | translate" action="toggleDownloadSections()" icon-action="downloadSectionsIcon"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
     <mm-split-view load-when="sectionsLoaded" load="{{sectionToLoad}}" component="mmCoreCourseSectionsList">
         <ion-content mm-state-class>
            <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionsLoaded"></ion-refresher>
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">
-                    <li ng-repeat="section in sections" ng-if="section.modules.length > 0 || section.summary != ''">
+                    <li ng-repeat="section in sections" ng-if="sectionHasContent(section)">
                         <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({cid: courseId, sectionid: section.id, mid: moduleId})" title="{{section.name}}">
                             <mm-format-text watch="true">{{section.name}}</mm-format-text>
 
-                            <button ng-if="section.showDownload && !section.isDownloading && !section.isCalculating" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.download' | translate }}">
+                            <button ng-if="downloadSectionsEnabled && section.showDownload && !section.isDownloading && !section.isCalculating" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.download' | translate }}">
                                 <i class="icon ion-ios-cloud-download-outline"></i>
                             </button>
-                            <button ng-if="section.showRefresh && !section.isDownloading && !section.isCalculating" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.refresh' | translate }}">
+                            <button ng-if="downloadSectionsEnabled && section.showRefresh && !section.isDownloading && !section.isCalculating" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.refresh' | translate }}">
                                 <i class="icon ion-android-refresh"></i>
                             </button>
 
-                            <ion-spinner ng-if="(section.isDownloading && section.total > 0) || section.isCalculating"></ion-spinner>
-                            <span class="badge mm-course-download" ng-if="section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</span>
+                            <ion-spinner ng-if="downloadSectionsEnabled && ((section.isDownloading && section.total > 0) || section.isCalculating)"></ion-spinner>
+                            <span class="badge mm-course-download" ng-if="downloadSectionsEnabled && section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</span>
                         </a>
                     </li>
                 </ul>

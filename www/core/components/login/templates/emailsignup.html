@@ -1,0 +1,89 @@
+<ion-view view-title="{{ 'mm.login.newaccount' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <button ng-if="authInstructions" class="button button-icon ion-help-circled" ng-click="showAuthInstructions()" aria-label="{{ 'mm.login.instructions' | translate }}"></button>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmLoginEmailSignupScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="settingsLoaded" on-refresh="refreshSettings()">
+        </ion-refresher>
+        <mm-loading hide-until="settingsLoaded">
+            <form name="signupForm" class="list list-inset" ng-if="settings" novalidate="">
+                <div class="item item-text-wrap item-avatar-center" ng-if="logourl">
+                    <img ng-src="{{logourl}}" class="avatar-full" mm-external-content role="presentation">
+                </div>
+                <!-- Username and password. -->
+                <div class="item item-divider item-text-wrap">
+                    {{ 'mm.login.createuserandpass' | translate }}
+                </div>
+                <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="usernameErrors">
+                    <ion-label mm-mark-required="true">{{ 'mm.login.username' | translate }}</ion-label>
+                    <input type="text" name="username" placeholder="{{ 'mm.login.username' | translate }}" ng-model="data.username" autocapitalize="none" autocorrect="off" mm-auto-focus required>
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="passwordErrors">
+                    <ion-label mm-mark-required="true">{{ 'mm.login.password' | translate }}</ion-label>
+                    <input id="mm-login-emailsignup-password-input" type="password" name="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="data.password" required mm-show-password>
+                    <p ng-if="settings.passwordpolicy" class="mm-input-footnote">
+                        {{settings.passwordpolicy}}
+                    </p>
+                </ion-input>
+                <!-- More details. -->
+                <div class="item item-divider item-text-wrap">{{ 'mm.login.supplyinfo' | translate }}</div>
+                <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="emailErrors">
+                    <ion-label mm-mark-required="true">{{ 'mm.user.email' | translate }}</ion-label>
+                    <input type="email" name="email" placeholder="{{ 'mm.user.email' | translate }}" ng-model="data.email" autocapitalize="none" autocorrect="off" required>
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="email2Errors">
+                    <ion-label mm-mark-required="true">{{ 'mm.user.emailagain' | translate }}</ion-label>
+                    <input type="email" name="email2" placeholder="{{ 'mm.user.emailagain' | translate }}" ng-model="data.email2" autocapitalize="none" autocorrect="off" required ng-pattern="escapeForRegex(data.email)">
+                </ion-input>
+                <ion-input ng-repeat="namefield in settings.namefields track by $index" class="item item-input item-stacked-label item-text-wrap" mm-input-errors field-name="{{namefield}}" error-messages="namefieldsErrors[namefield]">
+                    <ion-label mm-mark-required="true">{{ 'mm.user.' + namefield | translate }}</ion-label>
+                    <input type="text" name="{{namefield}}" placeholder="{{ 'mm.user.' + namefield | translate }}" ng-model="data[namefield]" autocorrect="off" required>
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label>{{ 'mm.user.city' | translate }}</ion-label>
+                    <input type="text" name="city" placeholder="{{ 'mm.user.city' | translate }}" ng-model="data.city" autocorrect="off">
+                </ion-input>
+                <ion-input class="item item-select">
+                    <ion-label id="mm-login-signup-country">{{ 'mm.user.country' | translate }}</ion-label>
+                    <select name="country" ng-model="data.country" ng-options="code as name for (code, name) in countries" aria-labelledby="mm-login-signup-country" mm-ios-select-fix>
+                        <option value="">{{ 'mm.login.selectacountry' | translate }}</option>
+                    </select>
+                </ion-input>
+                <!-- Other categories. -->
+                <div ng-repeat="category in categories">
+                    <div class="item item-divider item-text-wrap">{{ category.name }}</div>
+                    <mm-user-profile-field ng-repeat="field in category.fields" field="field" edit="true" signup="true" register-auth="email" model="data" scroll-handle="mmLoginEmailSignupScroll"></mm-user-profile-field>
+                </div>
+                <!-- ReCAPTCHA -->
+                <div ng-if="settings.recaptchachallengehash && settings.recaptchachallengeimage">
+                    <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
+                    <div class="item">
+                        <img ng-src="{{settings.recaptchachallengeimage}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
+                    </div>
+                    <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors>
+                        <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
+                        <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="data.recaptcharesponse" autocapitalize="none" autocorrect="off" required>
+                    </ion-input>
+                    <div class="item padding">
+                        <!-- Use anchor instead of button to prevent marking form as submitted. -->
+                        <a class="button button-block" ng-click="requestCaptcha()">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+                    </div>
+                </div>
+                <!-- Site policy (if any). -->
+                <div ng-if="settings.sitepolicy">
+                    <div class="item item-divider item-text-wrap">{{ 'mm.login.policyagreement' | translate }}</div>
+                    <div class="item item-text-wrap">
+                        <p><a ng-href="{{settings.sitepolicy}}" mm-link capture-link="false">{{ 'mm.login.policyagreementclick' | translate }}</a></p>
+                    </div>
+                    <ion-checkbox name="policyagreed" class="item-text-wrap item-checkbox-right" ng-model="data.policyagreed" required="true" mm-input-errors error-messages="policyErrors">
+                        <ion-label mm-mark-required="true">{{ 'mm.login.policyaccept' | translate }}</ion-label>
+                    </ion-checkbox>
+                </div>
+                <!-- Submit button. -->
+                <div class="item padding">
+                    <button class="button button-block button-positive" ng-click="create(signupForm)">{{ 'mm.login.createaccount' | translate }}</button>
+                </div>
+            </form>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -55,7 +55,7 @@ angular.module('mm.addons.mod_url')
         var modal = $mmUtil.showModalLoading();
         $mmContentLinksHelper.handleLink(url).then(function(treated) {
             if (!treated) {
-                $mmUtil.openInBrowser(url);
+                return $mmSite.openInBrowserWithAutoLoginIfSameSite(url);
             }
         }).finally(function() {
             modal.dismiss();

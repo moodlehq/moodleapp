@@ -21,10 +21,10 @@ angular.module('mm.core')
  * @description
  * This service provides functions related to text, like formatting texts from Moodle.
  */
-.factory('$mmText', function($q, $mmLang, $translate) {
+.factory('$mmText', function($q, $mmLang, $translate, $state) {
 
     var self = {},
-        extensionRegex = new RegExp('^[a-z0-9]+$');
+        element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
 
     /**
      * Given a list of sentences, build a message with all of them wrapped in <p>.
@@ -90,6 +90,10 @@ angular.module('mm.core')
      * @return {String}               Text cleaned.
      */
     self.cleanTags = function(text, singleLine) {
+        if (!text) {
+            return '';
+        }
+
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig,"");
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
@@ -159,6 +163,31 @@ angular.module('mm.core')
             text += '&hellip;';
         }
         return text;
+    };
+
+    /**
+     * Shows a text on a new State
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#expandText
+     * @param  {String} title              Title of the new state.
+     * @param  {String} text               Content of the text to be expanded.
+     * @param  {Boolean} replaceLineBreaks Replace line breaks by br tag. Default: false.
+     * @param  {String} [component]        Component to link the embedded files to.
+     * @param  {Mixed} [componentId]       An ID to use in conjunction with the component.
+     */
+    self.expandText = function(title, text, replaceLineBreaks, component, componentId) {
+        if (text.length > 0) {
+            // Open a new state with the interpolated contents.
+            $state.go('site.mm_textviewer', {
+                title: title,
+                content: text,
+                replacelinebreaks: replaceLineBreaks,
+                component: component,
+                componentId: componentId
+            });
+        }
     };
 
     /**
@@ -250,28 +279,22 @@ angular.module('mm.core')
     };
 
     /**
-     * Decode an escaped HTML text. This implementation is based on PHP's htmlspecialchars_decode.
+     * Decode HTML entities in a text. Equivalent to PHP html_entity_decode.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmText#decodeHTML
+     * @name $mmText#decodeHTMLEntities
      * @param  {String} text Text to decode.
      * @return {String}      Decoded text.
      */
-    self.decodeHTML = function(text) {
-        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
-            return '';
-        } else if (typeof text != 'string') {
-            return '' + text;
+    self.decodeHTMLEntities = function(text) {
+        if (text && typeof text === 'string') {
+            element.innerHTML = text;
+            text = element.textContent;
+            element.textContent = '';
         }
 
-        return text
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&#039;/g, "'")
-            .replace(/&nbsp;/g, ' ');
+        return text;
     };
 
     /**
@@ -368,39 +391,6 @@ angular.module('mm.core')
     };
 
     /**
-     * Guess the extension of a file from its URL.
-     *
-     * This is very weak and unreliable.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmText#guessExtensionFromUrl
-     * @param {String} fileUrl The file URL.
-     * @return {String}        The lowercased extension without the dot, or undefined.
-     */
-    self.guessExtensionFromUrl = function(fileUrl) {
-        var split = fileUrl.split('.'),
-            candidate,
-            extension,
-            position;
-
-        if (split.length > 1) {
-            candidate = split.pop().toLowerCase();
-            // Remove params if any.
-            position = candidate.indexOf('?');
-            if (position > -1) {
-                candidate = candidate.substr(0, position);
-            }
-
-            if (extensionRegex.test(candidate)) {
-                extension = candidate;
-            }
-        }
-
-        return extension;
-    };
-
-    /**
      * If a number has only 1 digit, add a leading zero to it.
      *
      * @module mm.core
@@ -415,6 +405,161 @@ angular.module('mm.core')
         } else {
             return '' + num; // Convert to string for coherence.
         }
+    };
+
+    /**
+     * Escapes some characters in a string to be used as a regular expression.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#escapeForRegex
+     * @param  {String} text Text to escape.
+     * @return {String}      Escaped text.
+     */
+    self.escapeForRegex = function(text) {
+        if (!text || !text.replace) {
+            return '';
+        }
+        return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    };
+
+    /**
+     * Count words in a text.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#countWords
+     * @param  {String} text Text to count.
+     * @return {Number}      Number of words.
+     */
+    self.countWords = function(text) {
+        // Clean HTML scripts and tags.
+        text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+        text = text.replace(/<\/?(?!\!)[^>]*>/gi, '');
+        // Decode HTML entities.
+        text = self.decodeHTMLEntities(text);
+        // Replace underscores (which are classed as word characters) with spaces.
+        text = text.replace(/_/gi, " ");
+        // Remove any characters that shouldn't be treated as word boundaries.
+        text = text.replace(/[\'"’-]/gi, "");
+        // Remove dots and commas from within numbers only.
+        text = text.replace(/([0-9])[.,]([0-9])/gi, '$1$2');
+
+        return text.split(/\w\b/gi).length - 1;
+    };
+
+    /**
+     * Get the pluginfile URL to replace @@PLUGINFILE@@ wildcards.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getTextPluginfileUrl
+     * @param  {Object[]} files Files to extract the URL from. They need to have the URL in a 'fileurl' attribute.
+     * @return {String}         Pluginfile URL, false if no files found.
+     */
+    self.getTextPluginfileUrl = function(files) {
+        if (files && files.length) {
+            var fileURL = files[0].fileurl;
+            // Remove text after last slash (encoded or not).
+            return fileURL.substr(0, Math.max(fileURL.lastIndexOf('/'), fileURL.lastIndexOf('%2F')));
+        }
+
+        return false;
+    };
+
+    /**
+     * Replace @@PLUGINFILE@@ wildcards with the real URL in a text.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#replacePluginfileUrls
+     * @param  {String} text    Text to treat.
+     * @param  {Object[]} files Files to extract the pluginfile URL from. They need to have the URL in a 'fileurl' attribute.
+     * @return {String}         Treated text.
+     */
+    self.replacePluginfileUrls = function(text, files) {
+        if (text) {
+            var fileURL = self.getTextPluginfileUrl(files);
+            if (fileURL) {
+                return text.replace(/@@PLUGINFILE@@/g, fileURL);
+            }
+        }
+        return text;
+    };
+
+    /**
+     * Replace pluginfile URLs with @@PLUGINFILE@@ wildcards.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#restorePluginfileUrls
+     * @param  {String} text    Text to treat.
+     * @param  {Object[]} files Files to extract the pluginfile URL from.  They need to have the URL in a 'fileurl' attribute.
+     * @return {String}         Treated text.
+     */
+    self.restorePluginfileUrls = function(text, files) {
+        if (text) {
+            var fileURL = self.getTextPluginfileUrl(files);
+            if (fileURL) {
+                return text.replace(new RegExp(self.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');
+            }
+        }
+        return text;
+    };
+
+    /**
+     * Get the protocol from a URL.
+     * E.g. http://www.google.com returns 'http'.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getUrlProtocol
+     * @param  {String} url URL to treat.
+     * @return {String}     Protocol, undefined if no protocol found.
+     */
+    self.getUrlProtocol = function(url) {
+        if (!url) {
+            return;
+        }
+
+        var matches = url.match(/^([^\/:\.\?]*):\/\//);
+        if (matches && matches[1]) {
+            return matches[1];
+        }
+    };
+
+    /**
+     * Get the scheme from a URL. Please notice that, if a URL has protocol, it will return the protocol.
+     * E.g. javascript:doSomething() returns 'javascript'.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getUrlScheme
+     * @param  {String} url URL to treat.
+     * @return {String}     Scheme, undefined if no scheme found.
+     */
+    self.getUrlScheme = function(url) {
+        if (!url) {
+            return;
+        }
+
+        var matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
+        if (matches && matches[1]) {
+            return matches[1];
+        }
+    };
+
+    /**
+     * Check if a text contains HTML tags.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#hasHTMLTags
+     * @param  {String} text Text to check.
+     * @return {Boolean}     True if has HTML tags, false otherwise.
+     */
+    self.hasHTMLTags = function(text) {
+        return /<[a-z][\s\S]*>/i.test(text);
     };
 
     return self;

@@ -2,5 +2,9 @@
     "answer": "پاسخ",
     "complete": "کامل",
     "correct": "درست",
-    "feedback": "بازخورد"
+    "feedback": "بازخورد",
+    "incorrect": "نادرست",
+    "notanswered": "هنوز پاسخ نداده‌اند",
+    "notyetanswered": "هنوز پاسخ داده نشده است",
+    "partiallycorrect": "نیمه درست"
 }

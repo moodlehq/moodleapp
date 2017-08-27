@@ -44,14 +44,9 @@ angular.module('mm.core.courses')
 
             page++;
             $scope.canLoadMore = $scope.courses.length < $scope.total;
-
         }).catch(function(message) {
             $scope.canLoadMore = false;
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('mma.searchcourses.errorsearching', true);
-            }
+            $mmUtil.showErrorModalDefault(message, 'mm.courses.errorsearching', true);
             return $q.reject();
         });
     }

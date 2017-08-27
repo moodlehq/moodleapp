@@ -23,7 +23,7 @@
                 </div>
                 <div class="item item-text-wrap" ng-if="quiz.showFeedbackColumn && attempt.feedback">
                     <p class="item-heading">{{ 'mma.mod_quiz.feedback' | translate }}</p>
-                    <p><mm-format-text watch="true">{{ attempt.feedback }}</mm-format-text></p>
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ attempt.feedback }}</mm-format-text></p>
                 </div>
                 <div class="item" ng-if="quiz.showReviewColumn && attempt.finished">
                     <button class="button button-block" ui-sref="site.mod_quiz-review({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})">{{ 'mma.mod_quiz.review' | translate }}</button>

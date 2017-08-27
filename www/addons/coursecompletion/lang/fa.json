@@ -2,6 +2,15 @@
     "complete": "کامل",
     "completed": "کامل شد",
     "coursecompletion": "اتمام درس",
+    "criteria": "ضابطه",
+    "criteriagroup": "گروه ضوابط",
+    "criteriarequiredall": "تمام ضوابط زیر باید برآورده شوند",
+    "criteriarequiredany": "حداقل یکی از ضوابط زیر برآورده شود",
+    "inprogress": "در جریان",
+    "manualselfcompletion": "علامت زدن به عنوان کامل توسط خود افراد",
+    "notyetstarted": "هنوز شروع نشده است",
+    "pending": "معلق",
     "required": "لازم است",
-    "status": "وضعیت"
+    "status": "وضعیت",
+    "viewcoursereport": "مشاهده گزارش درس"
 }

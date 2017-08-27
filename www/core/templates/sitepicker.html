@@ -1,0 +1,7 @@
+<li class="item item-input item-select">
+    <div class="input-label" id="mm-site-picker-label">
+        {{ 'mm.core.site' | translate }}
+    </div>
+    <select ng-model="selectedSite" ng-options="site.id as site.fullnameandsitename for site in sites" ng-change="siteSelected({siteId: selectedSite})" aria-labelledby="mm-site-picker-label" mm-ios-select-fix>
+    </select>
+</li>

@@ -5,5 +5,6 @@
     "feedback": "تقرير",
     "incorrect": "خطاء",
     "notanswered": "لم تتم الأجابة بعد",
-    "notyetanswered": "لم يتم الاجابة بعد"
+    "notyetanswered": "لم يتم الاجابة بعد",
+    "partiallycorrect": "إجابة جزئية"
 }

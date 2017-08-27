@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResourceHandlers
  */
 .factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper,
-            $mmCoursePrefetchDelegate, $mmFilepool, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            $mmCoursePrefetchDelegate, $mmUtil, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
             mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper, $mmaModResourcePrefetchHandler) {
     var self = {};
 
@@ -50,15 +50,13 @@ angular.module('mm.addons.mod_resource')
          * Get the controller.
          *
          * @param {Object} module   The module info.
-         * @param {Number} courseid The course ID.
+         * @param {Number} courseId The course ID.
          * @return {Function}
          */
-        self.getController = function(module, courseid) {
+        self.getController = function(module, courseId) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn,
-                    revision = $mmFilepool.getRevisionFromFileList(module.contents),
-                    timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+                    refreshBtn;
 
                 downloadBtn = {
                     hidden: true,
@@ -67,8 +65,7 @@ angular.module('mm.addons.mod_resource')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModResourcePrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModResource, module, size, false);
+                        download(false);
                     }
                 };
 
@@ -79,35 +76,70 @@ angular.module('mm.addons.mod_resource')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModResourcePrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModResource, module, size, true);
+                        download(true);
                     }
                 };
 
                 $scope.title = module.name;
-
-                if (module.contents.length) {
-                    var filename = module.contents[0].filename,
-                        extension = $mmFS.getFileExtension(filename);
-                    if (module.contents.length == 1 || (extension != "html" && extension != "htm")) {
-                        $scope.icon = $mmFS.getFileIcon(filename);
-                    } else {
-                        $scope.icon = $mmCourse.getModuleIconSrc('resource');
-                    }
-                } else {
-                    $scope.icon = $mmCourse.getModuleIconSrc('resource');
-                }
                 $scope.class = 'mma-mod_resource-handler';
                 $scope.buttons = [downloadBtn, refreshBtn];
                 $scope.spinner = true; // Show spinner while calculating status.
+
+                // Show resource icon while calculating the right icon to show.
+                $scope.icon = $mmCourse.getModuleIconSrc('resource');
+                $mmCourse.loadModuleContents(module, courseId).then(function() {
+                    if (module.contents.length) {
+                        var filename = module.contents[0].filename,
+                            extension = $mmFS.getFileExtension(filename);
+                        if (module.contents.length == 1 || (extension != "html" && extension != "htm")) {
+                            $scope.icon = $mmFS.getFileIcon(filename);
+                        } else {
+                            $scope.icon = $mmCourse.getModuleIconSrc('resource');
+                        }
+                    } else {
+                        $scope.icon = $mmCourse.getModuleIconSrc('resource');
+                    }
+                });
 
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();
                         e.stopPropagation();
                     }
-                    $state.go('site.mod_resource', {module: module, courseid: courseid});
+                    $state.go('site.mod_resource', {module: module, courseid: courseId});
                 };
+
+                function download(refresh) {
+                    var dwnBtnHidden = downloadBtn.hidden,
+                        rfrshBtnHidden = refreshBtn.hidden;
+
+                    // Show spinner since this operation might take a while.
+                    $scope.spinner = true;
+                    downloadBtn.hidden = true;
+                    refreshBtn.hidden = true;
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModResourcePrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
+                        $mmCourseHelper.prefetchModule($scope, $mmaModResourcePrefetchHandler, module, size, refresh, courseId)
+                                .catch(function() {
+                            // Error or cancelled, leave the buttons as they were.
+                            $scope.spinner = false;
+                            downloadBtn.hidden = dwnBtnHidden;
+                            refreshBtn.hidden = rfrshBtnHidden;
+                        });
+                    }).catch(function(error) {
+                        // Error, leave the buttons as they were.
+                        $scope.spinner = false;
+                        downloadBtn.hidden = dwnBtnHidden;
+                        refreshBtn.hidden = rfrshBtnHidden;
+
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
 
                 // Show buttons according to module status.
                 function showStatus(status) {
@@ -127,7 +159,7 @@ angular.module('mm.addons.mod_resource')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();

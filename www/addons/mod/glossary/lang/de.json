@@ -1,14 +1,14 @@
 {
-    "browsemode": "Einträge blättern",
+    "browsemode": "Einträge durchblättern",
     "byalphabet": "Alphabetisch",
-    "byauthor": "Sortieren nach Autor/in",
-    "bynewestfirst": "Neueste zuerst",
-    "byrecentlyupdated": "Aktuelle zuerst",
+    "byauthor": "Nach Autor/in",
+    "bynewestfirst": "Neu zuerst",
+    "byrecentlyupdated": "Gerade aktualisiert",
     "bysearch": "Suchen",
-    "entrypendingapproval": "Dieser Eintrag wartet auf Freigabe.",
+    "entrypendingapproval": "Dieser Eintrag wartet auf eine Freigabe.",
     "errorloadingentries": "Fehler beim Laden von Einträgen",
     "errorloadingentry": "Fehler beim Laden des Eintrags",
     "errorloadingglossary": "Fehler beim Laden des Glossars",
-    "noentriesfound": "Keine EInträge gefunden.",
+    "noentriesfound": "Keine Einträge",
     "searchquery": "Suchanfrage"
 }

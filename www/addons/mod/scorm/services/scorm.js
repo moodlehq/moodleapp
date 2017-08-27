@@ -21,13 +21,12 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline, $state,
-            $mmaModScormOffline, $mmUtil, $log, $mmSitesManager, mmaModScormComponent, mmCoreNotDownloaded) {
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline, $state,
+            $mmaModScormOffline, $mmUtil, $log, $mmSitesManager, mmaModScormComponent) {
     $log = $log.getInstance('$mmaModScorm');
 
     var self = {},
-        statuses = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'],
-        downloadPromises = {}; // Store download promises to be able to restore them.
+        statuses = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
 
     // Constants.
     self.GRADESCOES     = 0;
@@ -207,99 +206,6 @@ angular.module('mm.addons.mod_scorm')
      */
     self.displayTocInPlayer = function(scorm) {
         return scorm.hidetoc !== 3;
-    };
-
-    /**
-     * Download and unzips the SCORM package.
-     * @see $mmaModScorm#_downloadOrPrefetch
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#download
-     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
-     * @return {Promise}     Promise resolved when the package is downloaded and unzipped.
-     */
-    self.download = function(scorm) {
-        return self._downloadOrPrefetch(scorm, false);
-    };
-
-    /**
-     * Downloads/Prefetches and unzips the SCORM package.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#_downloadOrPrefetch
-     * @param {Object} scorm     SCORM object returned by $mmaModScorm#getScorm.
-     * @param {Boolean} prefetch True if prefetch, false otherwise.
-     * @return {Promise}         Promise resolved when the package is downloaded and unzipped. It will call notify in these cases:
-     *                                   -File download in progress. Notify object will have these properties:
-     *                                       packageDownload {Boolean} Always true.
-     *                                       loaded {Number} Number of bytes of the package loaded.
-     *                                       fileProgress {Object} FileTransfer's notify param for the current file.
-     *                                   -Download or unzip starting. Notify object will have these properties:
-     *                                       message {String} Message code related to the starting operation.
-     *                                   -File unzip in progress. Notify object will have these properties:
-     *                                       loaded {Number} Number of bytes unzipped.
-     *                                       total {Number} Total of bytes of the ZIP file.
-     * @protected
-     */
-    self._downloadOrPrefetch = function(scorm, prefetch) {
-        var result = self.isScormSupported(scorm),
-            siteId = $mmSite.getId();
-        if (result !== true) {
-            return $mmLang.translateAndReject(result);
-        }
-
-        if (downloadPromises[siteId] && downloadPromises[siteId][scorm.id]) {
-            // There's already a download ongoing for this package, return the promise.
-            return downloadPromises[siteId][scorm.id];
-        } else if (!downloadPromises[siteId]) {
-            downloadPromises[siteId] = {};
-        }
-
-        var files = self.getScormFileList(scorm),
-            revision = scorm.sha1hash, // We use sha1hash instead of revision number.
-            dirPath,
-            deferred = $q.defer(), // We use a deferred to be able to notify.
-            fn = prefetch ? $mmFilepool.prefetchPackage : $mmFilepool.downloadPackage;
-
-        downloadPromises[siteId][scorm.id] = deferred.promise; // Store promise to be able to restore it later.
-
-        // Get the folder where the unzipped files will be.
-        self.getScormFolder(scorm.moduleurl).then(function(path) {
-            dirPath = path;
-            // Download the ZIP file to the filepool.
-            // Using undefined for success & fail will pass the success/failure to the parent promise.
-            deferred.notify({message: 'mm.core.downloading'});
-            return fn(siteId, files, mmaModScormComponent, scorm.coursemodule, revision, 0)
-                                                        .then(undefined, undefined, deferred.notify);
-        }).then(function() {
-            // Remove the destination folder to prevent having old unused files.
-            return $mmFS.removeDir(dirPath).catch(function() {
-                // Ignore errors, it might have failed because the folder doesn't exist.
-            });
-        }).then(function() {
-            // Get the ZIP file path.
-            return $mmFilepool.getFilePathByUrl(siteId, self.getPackageUrl(scorm));
-        }).then(function(zippath) {
-            // Unzip and delete the zip when finished.
-            deferred.notify({message: 'mm.core.unzipping'});
-            return $mmFS.unzipFile(zippath, dirPath).then(function() {
-                return $mmFilepool.removeFileByUrl(siteId, self.getPackageUrl(scorm)).catch(function() {
-                    // Ignore errors.
-                });
-            }, function(error) {
-                // Error unzipping. Set status as not downloaded and reject.
-                return $mmFilepool.storePackageStatus(siteId, mmaModScormComponent, scorm.coursemodule,
-                                            mmCoreNotDownloaded, revision, 0).then(function() {
-                    return $q.reject(error);
-                });
-            }, deferred.notify);
-        }).then(deferred.resolve, deferred.reject).finally(function() {
-            delete downloadPromises[siteId][scorm.id]; // Delete stored promise.
-        });
-
-        return deferred.promise;
     };
 
     /**
@@ -940,14 +846,15 @@ angular.module('mm.addons.mod_scorm')
     /**
      * Get a SCORM with key=value. If more than one is found, only the first will be returned.
      *
-     * @param  {String} siteId    Site ID.
-     * @param  {Number} courseId  Course ID.
-     * @param  {String} key       Name of the property to check.
-     * @param  {Mixed} value      Value to search.
-     * @param  {String} moduleUrl Module URL.
-     * @return {Promise}          Promise resolved when the SCORM is retrieved.
+     * @param  {String}     siteId          Site ID.
+     * @param  {Number}     courseId        Course ID.
+     * @param  {String}     key             Name of the property to check.
+     * @param  {Mixed}      value           Value to search.
+     * @param  {String}     moduleUrl       Module URL.
+     * @param  {Boolean}    [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return {Promise}                    Promise resolved when the SCORM is retrieved.
      */
-    function getScorm(siteId, courseId, key, value, moduleUrl) {
+    function getScorm(siteId, courseId, key, value, moduleUrl, forceCache) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     courseids: [courseId]
@@ -955,6 +862,10 @@ angular.module('mm.addons.mod_scorm')
                 preSets = {
                     cacheKey: getScormDataCacheKey(courseId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
 
             return site.read('mod_scorm_get_scorms_by_courses', params, preSets).then(function(response) {
                 if (response && response.scorms) {
@@ -988,15 +899,16 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#getScorm
-     * @param {Number} courseId  Course ID.
-     * @param {Number} cmid      Course module ID.
-     * @parma {String} moduleUrl Module URL.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the SCORM is retrieved.
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Number}    cmid            Course module ID.
+     * @parma   {String}    moduleUrl       Module URL.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return  {Promise}                   Promise resolved when the SCORM is retrieved.
      */
-    self.getScorm = function(courseId, cmid, moduleUrl, siteId) {
+    self.getScorm = function(courseId, cmid, moduleUrl, siteId, forceCache) {
         siteId = siteId || $mmSite.getId();
-        return getScorm(siteId, courseId, 'coursemodule', cmid, moduleUrl);
+        return getScorm(siteId, courseId, 'coursemodule', cmid, moduleUrl, forceCache);
     };
 
     /**
@@ -1005,15 +917,16 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#getScormById
-     * @param {Number} courseId  Course ID.
-     * @param {Number} cmid      Course module ID.
-     * @parma {String} moduleUrl Module URL.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the SCORM is retrieved.
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Number}    cmid            Course module ID.
+     * @parma   {String}    moduleUrl       Module URL.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return  {Promise}                   Promise resolved when the SCORM is retrieved.
      */
-    self.getScormById = function(courseId, id, moduleUrl, siteId) {
+    self.getScormById = function(courseId, id, moduleUrl, siteId, forceCache) {
         siteId = siteId || $mmSite.getId();
-        return getScorm(siteId, courseId, 'id', id, moduleUrl);
+        return getScorm(siteId, courseId, 'id', id, moduleUrl, forceCache);
     };
 
     /**
@@ -1077,13 +990,21 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
+     * @param {Number} courseId Course ID of the module.
      * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}
+     * @param {Number} [userId] User ID. If not defined use site's current user.
+     * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateContent = function(moduleId, siteId) {
+    self.invalidateContent = function(moduleId, courseId, siteId, userId) {
         siteId = siteId || $mmSite.getId();
-        return $mmFilepool.invalidateFilesByComponent(siteId, mmaModScormComponent, moduleId);
+
+        return self.getScorm(courseId, moduleId).then(function(scorm) {
+            var promises = [];
+            promises.push(self.invalidateAllScormData(scorm.id, siteId, userId));
+            promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModScormComponent, moduleId));
+            return $q.all(promises);
+        });
     };
 
     /**
@@ -1170,22 +1091,6 @@ angular.module('mm.addons.mod_scorm')
                     site.wsAvailable('mod_scorm_get_scorms_by_courses') &&
                     site.wsAvailable('mod_scorm_insert_scorm_tracks');
         });
-    };
-
-    /**
-     * Check if a SCORM is being played right now.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#isScormBeingPlayed
-     * @param  {Number}  scormId SCORM ID.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Boolean}         True if it's being played, false otherwise.
-     */
-    self.isScormBeingPlayed = function(scormId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSite.getId() == siteId && $state.current.name == 'site.mod_scorm-player' &&
-                        $state.params.scorm && $state.params.scorm.id == scormId;
     };
 
     /**
@@ -1351,94 +1256,6 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Prefetches and unzips the SCORM package, and also prefetches some WS calls.
-     * @see $mmaModScorm#_downloadOrPrefetch
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#prefetch
-     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
-     * @return {Promise}     Promise resolved when prefetch is done. Resolve param is a warning message (if needed).
-     */
-    self.prefetch = function(scorm) {
-        var promises = [];
-
-        promises.push(self.prefetchPackage(scorm));
-
-        promises.push(self.prefetchData(scorm).catch(function() {
-            // If prefetchData fails we don't want to fail the whole downloaded, so we'll ignore the error for now.
-            // @todo Implement a warning system so the user knows which SCORMs have failed.
-        }));
-
-        return $q.all(promises);
-    };
-
-    /**
-     * Prefetches some WS data for a SCORM.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#prefetchData
-     * @param {Object} scorm    SCORM object returned by $mmaModScorm#getScorm.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the data is prefetched.
-     */
-    self.prefetchData = function(scorm, siteId) {
-        siteId = siteId || $mmSite.getId();
-        var promises = [];
-
-        // Prefetch number of attempts (including not completed).
-        promises.push($mmaModScormOnline.getAttemptCount(siteId, scorm.id).catch(function() {
-            // If it fails, assume we have no attempts.
-            return 0;
-        }).then(function(numAttempts) {
-            if (numAttempts > 0) {
-                // Get user data for each attempt.
-                var datapromises = [],
-                    attempts = [];
-
-                // Fill an attempts array to be able to use forEach and prevent problems with attempt variable changing.
-                for (var i = 1; i <= numAttempts; i++) {
-                    attempts.push(i);
-                }
-
-                attempts.forEach(function(attempt) {
-                    datapromises.push($mmaModScormOnline.getScormUserData(siteId, scorm.id, attempt).catch(function(err) {
-                        // Ignore failures of all the attempts that aren't the last one.
-                        if (attempt == numAttempts) {
-                            return $q.reject(err);
-                        }
-                    }));
-                });
-
-                return $q.all(datapromises);
-            } else {
-                // No attempts. We'll still try to get user data to be able to identify SCOs not visible and so.
-                return $mmaModScormOnline.getScormUserData(siteId, scorm.id, 0);
-            }
-        }));
-
-        // Prefetch SCOs.
-        promises.push(self.getScos(scorm.id, siteId));
-
-        return $q.all(promises);
-    };
-
-    /**
-     * Prefetches and unzips the SCORM package.
-     * @see $mmaModScorm#_downloadOrPrefetch
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#prefetchPackage
-     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
-     * @return {Promise}     Promise resolved when the package is prefetched and unzipped.
-     */
-    self.prefetchPackage = function(scorm) {
-        return self._downloadOrPrefetch(scorm, true);
-    };
-
-    /**
      * Saves a SCORM tracking record.
      *
      * @module mm.addons.mod_scorm
@@ -1461,7 +1278,10 @@ angular.module('mm.addons.mod_scorm')
                 return $mmaModScormOffline.saveTracks(siteId, scorm, scoId, attempt, tracks, userData);
             });
         } else {
-            return $mmaModScormOnline.saveTracks(siteId, scorm.id, scoId, attempt, tracks);
+            return $mmaModScormOnline.saveTracks(siteId, scorm.id, scoId, attempt, tracks).then(function() {
+                // Tracks have been saved, update cached user data.
+                self._updateUserDataAfterSave(siteId, scorm.id, attempt, tracks);
+            });
         }
     };
 
@@ -1486,8 +1306,43 @@ angular.module('mm.addons.mod_scorm')
         if (offline) {
             return $mmaModScormOffline.saveTracksSync(scorm, scoId, attempt, tracks, userData);
         } else {
-            return $mmaModScormOnline.saveTracksSync(scoId, attempt, tracks);
+            var success = $mmaModScormOnline.saveTracksSync(scoId, attempt, tracks);
+            if (success) {
+                // Tracks have been saved, update cached user data.
+                self._updateUserDataAfterSave($mmSite.getId(), scorm.id, attempt, tracks);
+            }
+            return success;
         }
+    };
+
+    /**
+     * If needed, updates cached user data after saving tracks in online.
+     *
+     * @param  {String} siteId   Site ID.
+     * @param  {Number} scormId  SCORM ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Object[]} tracks Tracking data saved.
+     * @return {Promise}         Promise resolved when updated.
+     * @protected
+     */
+    self._updateUserDataAfterSave = function(siteId, scormId, attempt, tracks) {
+        if (!tracks || !tracks.length) {
+            return $q.when();
+        }
+
+        // Check if we need to update. We only update if we sent some track with a dot notation.
+        var needsUpdate = false;
+        for (var i = 0, len = tracks.length; i < len && !needsUpdate; i++) {
+            var track = tracks[i];
+            if (track.element && track.element.indexOf('.') > -1) {
+                needsUpdate = true;
+            }
+        }
+
+        if (needsUpdate) {
+            return $mmaModScormOnline.getScormUserData(siteId, scormId, attempt, true);
+        }
+        return $q.when();
     };
 
     return self;

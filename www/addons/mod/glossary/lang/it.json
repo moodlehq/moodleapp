@@ -1,3 +1,10 @@
 {
-    "browsemode": "Modalità anteprima"
+    "browsemode": "Modalità anteprima",
+    "byrecentlyupdated": "Aggiornati di recente",
+    "bysearch": "Cerca",
+    "entrypendingapproval": "Questa voce è in attesa di approvazione.",
+    "errorloadingentries": "Si è verificato un errore durante il caricamento delle voci.",
+    "errorloadingentry": "Si è verificato un errore durante il caricamento della voce.",
+    "errorloadingglossary": "Si è verificato un errore durante il caricamento del glossario.",
+    "noentriesfound": "Non sono state trovate voci."
 }

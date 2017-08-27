@@ -21,12 +21,24 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotifications
  */
-.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, mmCoreConfigConstants,
-            $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, $mmSitesManager, mmaPushNotificationsComponent) {
+.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, $mmSitesManager,
+            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
         pushID;
+
+    /**
+     * Get the pushID for this device.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getPushId
+     * @return {String} Push ID.
+     */
+    self.getPushId = function() {
+        return pushID;
+    };
 
     /**
      * Returns whether or not the plugin is enabled for the current site.
@@ -83,7 +95,6 @@ angular.module('mm.addons.pushnotifications')
                     var localNotif = {
                             id: 1,
                             at: new Date(),
-                            smallIcon: 'res://icon',
                             data: {
                                 notif: data.notif,
                                 site: data.site
@@ -99,15 +110,22 @@ angular.module('mm.addons.pushnotifications')
                     }));
 
                     promises.push($mmText.formatText(notification.message, true, true).then(function(formattedMessage) {
-                        localNotif.message = formattedMessage;
+                        localNotif.text = formattedMessage;
                     }).catch(function() {
-                        localNotif.message = notification.message;
+                        localNotif.text = notification.message;
                     }));
 
                     $q.all(promises).then(function() {
                         $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
                     });
                 }
+
+                // Trigger a notification received event.
+                $mmApp.ready().then(function() {
+                    data.title = notification.title;
+                    data.message = notification.message;
+                    $mmPushNotificationsDelegate.received(data);
+                });
             } else {
                 // The notification was clicked. For compatibility with old push plugin implementation
                 // we'll merge all the notification data in a single object.

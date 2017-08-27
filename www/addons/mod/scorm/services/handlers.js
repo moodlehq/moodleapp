@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .factory('$mmaModScormHandlers', function($mmCourse, $mmaModScorm, $mmEvents, $state, $mmSite, $mmaModScormHelper,
         $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-        mmaModScormComponent, $q, $mmContentLinksHelper, $mmUtil) {
+        mmaModScormComponent, $q, $mmContentLinksHelper, $mmUtil, $mmaModScormSync, $mmaModScormPrefetchHandler) {
     var self = {};
 
     /**
@@ -95,7 +95,7 @@ angular.module('mm.addons.mod_scorm')
                         $scope.spinner = true; // Show spinner since this operation might take a while.
                         $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
                             $mmaModScormHelper.confirmDownload(scorm).then(function() {
-                                $mmaModScorm.prefetch(scorm).catch(function() {
+                                $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function() {
                                     if (!$scope.$$destroyed) {
                                         $mmaModScormHelper.showDownloadError(scorm);
                                     }
@@ -128,7 +128,7 @@ angular.module('mm.addons.mod_scorm')
                             e.preventDefault();
                             e.stopPropagation();
                         }
-                        $mmaModScorm.invalidateContent(scorm.coursemodule).finally(function() {
+                        $mmaModScorm.invalidateContent(scorm.coursemodule, courseid).finally(function() {
                             download();
                         });
                     };
@@ -172,7 +172,8 @@ angular.module('mm.addons.mod_scorm')
      */
     self.linksHandler = function() {
 
-        var self = {};
+        var self = {},
+            patterns = ['/mod/scorm/view.php', '/mod/scorm/grade.php'];
 
         /**
          * Whether or not the handler is enabled for a certain site.
@@ -201,9 +202,15 @@ angular.module('mm.addons.mod_scorm')
          */
         self.getActions = function(siteIds, url, courseId) {
             // Check it's a SCORM URL.
-            if (typeof self.handles(url) != 'undefined') {
+            if (url.indexOf(patterns[0]) > -1) {
+                // SCORM index.
                 return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
+            } else if (url.indexOf(patterns[1]) > -1) {
+                // SCORM grade.
+                // @todo Go to user attempts list if it isn't current user.
+                return $mmContentLinksHelper.treatModuleGradeUrl(siteIds, url, isEnabled, courseId);
             }
+
             return $q.when([]);
         };
 
@@ -214,10 +221,64 @@ angular.module('mm.addons.mod_scorm')
          * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
          */
         self.handles = function(url) {
-            var position = url.indexOf('/mod/scorm/view.php');
-            if (position > -1) {
-                return url.substr(0, position);
+            for (var i = 0; i < patterns.length; i++) {
+                var position = url.indexOf(patterns[i]);
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
             }
+        };
+
+        return self;
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaModScormSync.syncAllScorms(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;

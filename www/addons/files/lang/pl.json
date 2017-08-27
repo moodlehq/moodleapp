@@ -1,20 +1,6 @@
 {
-    "chooseaccountuploadfile": "Wybierz konto do którego chcesz wysłać plik",
-    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
-    "downloading": "Pobieranie ...",
     "emptyfilelist": "Brak plików do wyświetlenia",
-    "errorcapturingaudio": "Błąd poczas nagrywania dźwięku",
-    "errorcapturingvideo": "Błąd podczas przechwytywania wideo",
-    "errorreadingfile": "Błąd podczas odczytu pliku \"{$a}\"",
-    "errorreceivefilenosites": "Brak zachowanych stron. Dodaj stronę zanim będziesz próbować wysłać plik.",
-    "file": "Plik",
-    "fileuploaded": "Plik wysłany",
     "myfiles": "Moje pliku",
-    "readingfile": "Odczytywanie pliku",
     "sitefiles": "Pliki strony",
-    "success": "Gotowe",
-    "uploadafile": "Prześlij plik",
-    "uploadfiles": "Może przesłać pliki",
-    "uploading": "Wysyłanie",
-    "video": "Film"
+    "uploadfiles": "Może przesłać pliki"
 }

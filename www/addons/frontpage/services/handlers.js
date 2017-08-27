@@ -23,7 +23,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontPageHandlers
  */
-.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage) {
+.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $mmUtil, $state, $mmSitesManager, $mmSite) {
     $log = $log.getInstance('$mmaFrontPageHandlers');
 
     var self = {};
@@ -71,9 +71,78 @@ angular.module('mm.addons.frontpage')
             return function($scope) {
                 $scope.icon = 'ion-home';
                 $scope.title = 'mma.frontpage.sitehome';
-                $scope.state = 'site.mm_course-section';
+                $scope.state = 'site.frontpage';
                 $scope.class = 'mma-frontpage-handler';
             };
+        };
+
+        return self;
+    };
+
+    /**
+     * Content links handler.
+     *
+     * @module mm.addons.frontpage
+     * @ngdoc method
+     * @name $mmaFrontPageHandlers#sideMenuNav
+     */
+    self.linksHandler = function() {
+
+        var self = {};
+
+        /**
+         * Get actions to perform with the link.
+         *
+         * @param {String[]} siteIds Site IDs the URL belongs to.
+         * @param {String} url       URL to treat.
+         * @return {Object[]}        List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         */
+        self.getActions = function(siteIds, url) {
+            // Check if it's a course URL.
+            if (typeof self.handles(url) != 'undefined') {
+                var params = $mmUtil.extractUrlParams(url),
+                    courseId = parseInt(params.id, 10);
+
+                // Get the course id of Site Home for the first site (all the siteIds should belong to the same Moodle).
+                return $mmSitesManager.getSiteHomeId(siteIds[0]).then(function(siteHomeId) {
+                    if (courseId === siteHomeId) {
+                        // Return actions.
+                        return [{
+                            message: 'mm.core.view',
+                            icon: 'ion-eye',
+                            sites: siteIds,
+                            action: function(siteId) {
+                                siteId = siteId || $mmSite.getId();
+                                // Use redirect to make the course the new history root (to avoid "loops" in history).
+                                $state.go('redirect', {
+                                    siteid: siteId,
+                                    state: 'site.frontpage'
+                                });
+                            }
+                        }];
+                    }
+
+                    return [];
+                });
+            }
+            return [];
+        };
+
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            // Accept any of these patterns.
+            var patterns = ['/course/view.php'];
+            for (var i = 0; i < patterns.length; i++) {
+                var position = url.indexOf(patterns[i]);
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
+            }
         };
 
         return self;

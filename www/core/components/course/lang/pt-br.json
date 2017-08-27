@@ -2,6 +2,7 @@
     "activitynotyetviewable": "Essa atividade ou recurso ainda não é visualizável nesse aplicativo.",
     "activitynotyetviewablegothere": "Essa atividade ou recurso ainda não é visualizável nesse aplicativo, clique no botão abaixo para acessar isso pelo site.",
     "allsections": "Todas as seções",
+    "confirmdeletemodulefiles": "Você tem certeza que quer excluir esse modulo arquivos?",
     "confirmdownload": "Você está prestes a baixar {{size}}. Você tem certeza que quer continuar?",
     "confirmdownloadsection": "Você está prestes a baixar {{size}}. Você tem certeza que quer continuar?",
     "confirmdownloadunknownsize": "Não fomos capazes de calcular o tamanho do download. Tem certeza de que deseja fazer o download?",
@@ -12,6 +13,7 @@
     "errorgetmodule": "Erro ao obter os dados do módulo.",
     "gotothesite": "Ir para o site",
     "nocontentavailable": "Nenhum conteúdo disponível nesse momento.",
+    "overriddennotice": "Sua nota final para esta atividade foi ajustada manualmente",
     "showall": "Mostrar todos",
     "whoops": "Opa!!!"
 }

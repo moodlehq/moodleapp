@@ -1,11 +1,13 @@
 {
     "addcontact": "Aggiungi contatto",
     "blockcontact": "Blocca contatto",
+    "blocknoncontacts": "Evita messaggi da parte di utenti che non fanno parte dei miei contatti",
     "contactlistempty": "L'elenco dei contatti è vuoto",
     "contactname": "Nome del contatto",
     "contacts": "Contatti",
     "deletemessage": "Elimina messaggio",
     "deletemessageconfirmation": "Sei sicuro di eliminare questo messaggio? Verrà eliminato solamente dalla storico dei tuoi messaggi rimanendo comunque visibile a coloro che lo hanno ricevuto.",
+    "errordeletemessage": "Si è verificato un errore durante l'eliminazione del messaggio.",
     "errorwhileretrievingcontacts": "Si è verificato un errore durante la ricezione dei contatti dal server.",
     "errorwhileretrievingdiscussions": "Si è verificato un errore durante la ricezione delle discussioni dal server.",
     "errorwhileretrievingmessages": "Si è verificato un errore durante la ricezione dei messaggi dal server.",

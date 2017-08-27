@@ -1,0 +1,71 @@
+<ion-view view-title="{{ 'mma.notifications.notificationpreferences' | translate }}">
+    <mm-nav-buttons side="secondary">
+        <mm-context-menu merge="true">
+            <mm-context-menu-item ng-repeat="processor in preferences.processors" priority="700" ng-show="processor.name != currentProcessor.name" content="processor.displayname" action="changeProcessor(processor)" icon-action="'ion-gear-b'"></mm-context-menu-item>
+            <mm-context-menu-item ng-show="currentProcessor && currentProcessor.hassettings && currentProcessor.supported" priority="600" content="currentProcessor.preferencesLabel" action="openProcessorPreferences()" icon-action="'ion-gear-b'"></mm-context-menu-item>
+        </mm-context-menu>
+    </mm-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaNotificationsNotificationPreferencesScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="preferencesLoaded" on-refresh="refreshPreferences()">
+        </ion-refresher>
+        <mm-loading hide-until="preferencesLoaded">
+            <!-- Disable all. -->
+            <div class="card" ng-if="preferences">
+                <ion-toggle class="item item-text-wrap" ng-model="preferences.disableall" ng-change="disableAll(preferences.disableall)" >
+                    {{ 'mm.settings.disableall' | translate }}
+                </ion-toggle>
+            </div>
+
+            <!-- Show current processor. -->
+            <div class="card" ng-if="currentProcessor">
+                <p class="item item-icon-left item-howto item-text-wrap" ng-class="{'item-icon-right': currentProcessor.hassettings && currentProcessor.supported}" ng-click="openProcessorPreferences()">
+                    <i class="icon ion-information"></i>
+                    {{ 'mm.settings.configuringnotifications' | translate:{$a: currentProcessor.displayname} }}
+                    <i ng-if="currentProcessor.hassettings && currentProcessor.supported" class="icon ion-gear-b"></i>
+                </p>
+            </div>
+
+            <!-- Tablet view -->
+            <ul ng-if="isTablet" class="list card" ng-repeat="component in components">
+                <li class="item item-divider item-text-wrap row">
+                    <div class="col col-60">{{ component.displayname }}</div>
+                    <p class="col col-20 text-center">{{ 'mm.settings.loggedin' | translate }}</p>
+                    <p class="col col-20 text-center">{{ 'mm.settings.loggedoff' | translate }}</p>
+                </li>
+                <li class="item item-text-wrap item-toggle-relative row" ng-repeat="notification in component.notifications">
+                    <div class="col col-60">{{ notification.displayname }}</div>
+                    <div class="col col-20 text-center" ng-repeat="state in ['loggedin', 'loggedoff']">
+                        <!-- If notifications not disabled, show toggle. -->
+                        <ion-toggle ng-if="!preferences.disableall" ng-model="notification.currentProcessor[state].checked" ng-change="changePreference(notification, state)" ng-disabled="notification.currentProcessor.locked || notification.currentProcessor[state].updating">
+                            <ion-spinner ng-if="notification.currentProcessor[state].updating" class="mm-spinner-right"></ion-spinner>
+                        </ion-toggle>
+                        <!-- If notifications are disabled, show "Disabled" instead of toggle. -->
+                        <span ng-if="preferences.disableall">{{ 'mm.settings.disabled' | translate }}</span>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Phone view -->
+            <ul ng-if="!isTablet" class="list card" ng-repeat="component in components">
+                <li class="item item-divider item-text-wrap">{{ component.displayname }}</li>
+                <div class="item item-text-wrap" ng-repeat="notification in component.notifications">
+                    {{ notification.displayname }}
+                    <!-- If notifications not disabled, show toggles. -->
+                    <div ng-if="!preferences.disableall">
+                        <ion-toggle ng-repeat="state in ['loggedin', 'loggedoff']" class="item-text-wrap has-spinner-right" ng-model="notification.currentProcessor[state].checked" ng-change="changePreference(notification, state)" ng-disabled="notification.currentProcessor.locked || notification.currentProcessor[state].updating">
+                            <small>{{ 'mm.settings.' + state | translate }}</small>
+                            <ion-spinner ng-if="notification.currentProcessor[state].updating" class="mm-spinner-right"></ion-spinner>
+                        </ion-toggle>
+                    </div>
+                    <!-- If notifications are disabled, show "Disabled" instead of toggle. -->
+                    <div ng-if="preferences.disableall">
+                        <div ng-repeat="state in ['loggedin', 'loggedoff']" class="item item-text-wrap">
+                            <small>{{ 'mm.settings.' + state | translate }}</small>
+                            <span class="item-note">{{ 'mm.settings.disabled' | translate }}</span>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </mm-loading>
+    </ion-content>
+</ion-view>

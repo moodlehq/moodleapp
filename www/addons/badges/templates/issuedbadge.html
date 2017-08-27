@@ -1,0 +1,80 @@
+<ion-view>
+    <ion-nav-title>{{badge.name}}</ion-nav-title>
+    <ion-content padding="true" mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="badgeLoaded" on-refresh="refreshBadges()"></ion-refresher>
+        <mm-loading hide-until="badgeLoaded">
+            <div class="list">
+                <div class="item item-text-wrap item-avatar-center">
+                    <img ng-if="badge.badgeurl" class="avatar" ng-src="{{badge.badgeurl}}" mm-external-content alt="{{badge.name}}" role="presentation">
+                </div>
+            </div>
+
+            <div class="list" ng-if="user.fullname">
+                <div class="item item-divider">
+                    <h2>{{ 'mma.badges.recipientdetails' | translate}}</h2>
+                </div>
+                <div class="item">
+                    <p class="item-heading">{{ 'mm.core.name' | translate}}</p>
+                    <p>
+                        <mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text>
+                    </p>
+                </div>
+            </div>
+
+            <div class="list">
+                <div class="item item-divider">
+                    <h2>{{ 'mma.badges.issuerdetails' | translate}}</h2>
+                </div>
+                <div class="item" ng-if="badge.issuername">
+                    <p class="item-heading">{{ 'mma.badges.issuername' | translate}}</p>
+                    <p>
+                        <mm-format-text watch="true" clean="true">{{badge.issuername}}</mm-format-text>
+                    </p>
+                </div>
+                <div class="item" ng-if="badge.issuercontact">
+                    <p class="item-heading">{{ 'mma.badges.contact' | translate}}</p>
+                    <p>
+                        <mm-format-text watch="true" clean="true">{{badge.issuercontact}}</mm-format-text>
+                    </p>
+                </div>
+            </div>
+
+            <div class="list">
+                <div class="item item-divider">
+                    <h2>{{ 'mma.badges.badgedetails' | translate}}</h2>
+                </div>
+                <div class="item" ng-if="badge.name">
+                    <p class="item-heading">{{ 'mm.core.name' | translate}}</p>
+                    <p>{{badge.name}}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="badge.description">
+                    <p class="item-heading">{{ 'mm.core.description' | translate}}</p>
+                    <p>
+                        <mm-format-text watch="true" clean="true">{{badge.description}}</mm-format-text>
+                    </p>
+                </div>
+                <div class="item item-text-wrap" ng-if="course.fullname">
+                    <p class="item-heading">{{ 'mm.core.course' | translate}}</p>
+                    <p>
+                        <mm-format-text watch="true" clean="true">{{course.fullname}}</mm-format-text>
+                    </p>
+                </div>
+            </div>
+
+            <div class="list">
+                <div class="item item-divider">
+                    <h2>{{ 'mma.badges.issuancedetails' | translate}}</h2>
+                </div>
+                <div class="item" ng-if="badge.dateissued">
+                    <p class="item-heading">{{ 'mma.badges.dateawarded' | translate}}</p>
+                    <p>{{badge.dateissued | mmToLocaleString }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="badge.dateexpire">
+                    <p class="item-heading">{{ 'mma.badges.expirydate' | translate}}</p>
+                    <p>{{badge.dateexpire | mmToLocaleString }}</p>
+                </div>
+            </div>
+
+        </mm-loading>
+    </ion-content>
+</ion-view>

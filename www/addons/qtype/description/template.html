@@ -2,6 +2,6 @@
 	<!-- "Seen" hidden input -->
 	<input ng-if="seenInput" type="hidden" name="{{seenInput.name}}" value="{{seenInput.value}}" >
     <div class="item item-text-wrap">
-        <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
     </div>
 </section>

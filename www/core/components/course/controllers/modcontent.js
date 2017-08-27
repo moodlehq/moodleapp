@@ -23,10 +23,20 @@ angular.module('mm.core.course')
  * @ngdoc controller
  * @name mmCourseModContentCtrl
  */
-.controller('mmCourseModContentCtrl', function($log, $stateParams, $scope) {
+.controller('mmCourseModContentCtrl', function($log, $stateParams, $scope, $mmCourseDelegate, $mmCourse, $translate, $mmText) {
     $log = $log.getInstance('mmCourseModContentCtrl');
     var module = $stateParams.module || {};
+
+    $scope.isSupportedByTheApp = $mmCourseDelegate.hasContentHandler(module.modname);
+    $scope.moduleName = $mmCourse.translateModuleName(module.modname);
+    $scope.isContributedPlugin = $scope.moduleName == $translate.instant('mm.core.mod_external-tool');
+
     $scope.description = module.description;
     $scope.title = module.name;
     $scope.url = module.url;
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false);
+    };
 });

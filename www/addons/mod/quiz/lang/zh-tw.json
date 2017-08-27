@@ -7,8 +7,11 @@
     "comment": "評論",
     "completedon": "完成於",
     "confirmclose": "一旦您提交答案，您將無法再更改您這次作答的答案。",
+    "confirmstart": "這一測驗有 {{$a}} 的時間限制。時間將會從你開始做測驗時倒數計時，而你必須在時限到之前提交答案。你確定你現在就要開始作答？",
+    "confirmstartheader": "計時的測驗",
     "connectionerror": "網路連結中斷。(自動儲存失敗)\n\n系統會紀錄最後幾分鐘在這一頁所做的任何回應，然後嘗試重新連結。\n\n一旦重新建立起連結，你的回應將會被儲存，且這一訊息將會消失。",
     "continueattemptquiz": "繼續上一次作答",
+    "continuepreview": "繼續上一次的預覽",
     "feedback": "回饋",
     "finishattemptdots": "完成作答....",
     "grade": "分數",
@@ -19,6 +22,7 @@
     "marks": "得分",
     "mustbesubmittedby": "這作答應該由{{$a}}提交",
     "noquestions": "尚未加入題目",
+    "noreviewattempt": "你不被允許重新檢視作答結果",
     "notyetgraded": "還沒被計分過",
     "outof": "{{$a.grade}}分（滿分為{{$a.maxgrade}}分）",
     "outofpercent": "得分{{$a.grade}}/配分{{$a.maxgrade}}({{$a.percent}}%)",
@@ -29,7 +33,9 @@
     "preview": "預覽",
     "previewquiznow": "立刻預覽測驗",
     "question": "試題",
+    "quizpassword": "測驗密碼",
     "reattemptquiz": "再測驗一次",
+    "requirepasswordmessage": "要進行這個測驗，你需要知道這測驗的密碼",
     "returnattempt": "回到作答次",
     "review": "復習",
     "reviewofattempt": "回顧第 {{$a}} 次作答",
@@ -50,5 +56,5 @@
     "summaryofattempts": "你的先前作答記錄摘要",
     "timeleft": "剩餘時間",
     "timetaken": "所用時間",
-    "yourfinalgradeis": "這個測驗您的最後得分是{{$a}}"
+    "yourfinalgradeis": "這個測驗您的最後成績是{{$a}}"
 }

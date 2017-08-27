@@ -1,6 +1,7 @@
 {
     "addcontact": "Gehitu kontaktua",
     "blockcontact": "Blokeatu kontaktua",
+    "blocknoncontacts": "Ez utzi kontaktu ez direnei niri mezuak bidaltzen",
     "contactlistempty": "Kontaktu zerrenda hutsik dago",
     "contactname": "Kontaktuaren izena",
     "contacts": "Kontaktuak",
@@ -24,5 +25,6 @@
     "type_online": "Online",
     "type_search": "Bilaketaren emaitzak",
     "type_strangers": "Beste batzuk",
-    "unblockcontact": "Desblokeatu kontaktua"
+    "unblockcontact": "Desblokeatu kontaktua",
+    "warningmessagenotsent": "Ezin izan d(ir)a mezua(k) bidali {{user}} erabiltzaileari. {{error}}"
 }

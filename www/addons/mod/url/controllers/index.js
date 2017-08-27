@@ -21,17 +21,49 @@ angular.module('mm.addons.mod_url')
  * @ngdoc controller
  * @name mmaModUrlIndexCtrl
  */
-.controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl, $mmCourse) {
+.controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl, $mmCourse, $mmText, $translate, mmaModUrlComponent) {
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid;
+        courseId = $stateParams.courseid;
+
     $scope.title = module.name;
     $scope.description = module.description;
-    $scope.url = (module.contents && module.contents[0] && module.contents[0].fileurl) ? module.contents[0].fileurl : undefined;
+    $scope.moduleUrl = module.url;
+    $scope.component = mmaModUrlComponent;
+    $scope.componentId = module.id;
+
+    function fetchContent() {
+        // Load module contents if needed.
+        return $mmCourse.loadModuleContents(module, courseId).then(function() {
+            $scope.url = (module.contents && module.contents[0] && module.contents[0].fileurl) ?
+                            module.contents[0].fileurl : undefined;
+        }).finally(function() {
+            $scope.loaded = true;
+            $scope.refreshIcon = 'ion-refresh';
+        });
+    }
+
+    fetchContent();
 
     $scope.go = function() {
         $mmaModUrl.logView(module.instance).then(function() {
-            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
         });
         $mmaModUrl.open($scope.url);
+    };
+
+    $scope.doRefresh = function() {
+        if ($scope.loaded) {
+            $scope.refreshIcon = 'spinner';
+            return $mmCourse.invalidateModule(module.id).then(function() {
+                return fetchContent();
+            }).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+    };
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModUrlComponent, module.id);
     };
 });

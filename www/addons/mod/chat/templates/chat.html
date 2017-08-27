@@ -27,7 +27,7 @@
                             <span>{{ 'mma.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}</span>
                         </p>
 
-                        <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar item-text-wrap" href="#">
+                        <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar item-text-wrap">
                             <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: message.userfullname} }}" role="presentation">
                             <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: message.userfullname} }}" role="presentation">
                             <h2>{{ message.userfullname }}</h2>
@@ -46,17 +46,16 @@
         </mm-loading>
     </ion-content>
 
+    <ion-footer-bar class="bar-light bar-footer-adjustable" keyboard-attach>
+        <p class="mma-chat-footer-note" ng-if="isAppOffline()">{{ 'mma.mod_chat.mustbeonlinetosendmessages' | translate }}</p>
+        <form ng-if="!isAppOffline() && polling && loaded" class="mma-chat-send-form" ng-submit="sendMessage(newMessage.text);">
+            <div class="mma-chat-input-inset item-input-inset">
+                <ion-input class="item-input-wrapper">
+                    <textarea class="mm-textarea" placeholder="{{ 'mma.mod_chat.entermessage' | translate }}" ng-model="newMessage.text" rows="1" mm-auto-rows mm-keep-keyboard="#mma-chat-send-button"></textarea>
+                </ion-input>
+                <button id="mma-chat-send-button" type="submit" class="button button-clear button-positive" ng-disabled="!newMessage.text">{{ 'mma.mod_chat.send' | translate}}</button>
+            </div>
+        </form>
+        <button ng-if="!isAppOffline() && !polling && loaded" class="button button-block mma-chat-reconnect-button" ng-click="reconnect()">{{ 'mm.login.reconnect' | translate }}</button>
+    </ion-footer-bar>
 </ion-view>
-
-<ion-footer-bar>
-    <p class="mma-chat-footer-note" ng-if="isAppOffline()">{{ 'mma.mod_chat.mustbeonlinetosendmessages' | translate }}</p>
-    <form ng-if="!isAppOffline() && polling && loaded" class="mma-chat-send-form" ng-submit="sendMessage(newMessage.text);">
-        <div class="mma-chat-input-inset item-input-inset">
-            <label class="item-input-wrapper">
-                <input type="text" placeholder="{{ 'mma.mod_chat.entermessage' | translate }}" ng-model="newMessage.text" style="width: 100%;">
-            </label>
-            <button type="submit" class="button button-clear" ng-disabled="!newMessage.text">{{ 'mma.mod_chat.send' | translate}}</button>
-        </div>
-    </form>
-    <button ng-if="!isAppOffline() && !polling && loaded" class="button button-block mma-chat-reconnect-button" ng-click="reconnect()">{{ 'mm.login.reconnect' | translate }}</button>
-</ion-footer-bar>

@@ -33,19 +33,63 @@ $item-message-note-text: #999 !default;
 $item-message-note-font-size: $font-size-small !default;
 $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 
-// Completion
-$completion-img-width: 24px !default;
-
 // Disabled items.
 $item-disabled-color: #999 !default;
 
-// Warnings (red).
-$mm-warning-color: #c00 !default;
+// Warnings (energized).
+$mm-warning-color: $energized !default;
+
+// Errors (red).
+$mm-error-color: #c00 !default;
 
 // Timer variables.
 $mm-timer-warn-color:     #f00 !default;
 $mm-timer-color:          #fff !default;
 $mm-timer-iterations:     15 !default;
+
+// Text with icon.
+$mm-text-with-icon-height: 22px !default;
+
+// Smaller button icon.
+$mm-button-icon-small-height: 22px !default;
+
+// Required inputs asterisk color.
+$mm-input-required-asterisk-color: #ff4136 !default;
+
+// Item padding.
+$item-input-padding: 16px !default;
+
+/**
+ * App Branding
+ */
+.mm-bglogo {
+  background-color: white; /* Change this to add a bg image or change color */
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.mm-logo {
+  background-image: url('../img/moodle.png'); /* Change logo here */
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+.mm-logo:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-top: 120px; /* Change this to place spinner under the logo (usually double of the logo size) */
+}
 
 /**
  * Styles revert.
@@ -58,6 +102,19 @@ em {
 /**
  * Styles.
  */
+
+.mm-big   { font-size: 115%; }
+
+.item-stacked-label {
+  background-color: $item-default-bg;
+}
+
+.item-stacked-label, .item-checkbox {
+  .input-label {
+    max-width: 100%;
+    width: 100%;
+  }
+}
 
 // Default bar.
 .bar-content {
@@ -72,11 +129,25 @@ em {
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
   @extend h2;
+  &.padding {
+    @extend .padding;
+  }
 }
 
 .item.item-text-wrap .item-heading {
   overflow: visible;
   white-space: normal;
+}
+
+.item h1:first-child,
+.item h2:first-child,
+.item .item-heading:first-child,
+.item h3:first-child,
+.item h4:first-child,
+.item h5:first-child,
+.item h6:first-child,
+.item p:first-child {
+    margin-top: 0;
 }
 
 // More options for grids.
@@ -108,6 +179,7 @@ em {
   }
   &.item-button-right {
     > .button,
+    > .buttons,
     > .spinner {
       top: $item-padding;
     }
@@ -126,9 +198,13 @@ em {
   &.item-icon-left {
     padding-left: 35px;
 
-    .icon {
+    .icon:first-child {
       left: 4px;
     }
+  }
+
+  &.item-icon-right {
+    @extend .item-icon-right;
   }
 }
 
@@ -146,14 +222,24 @@ em {
   .item-note {
     color: $item-message-note-text;
     font-size: $item-message-note-font-size;
-    margin-left: 10px;
+    margin-left: 20px;
   }
+
+  mm-format-text > p:only-child {
+    display: inline;
+  }
+}
+
+.item-message .item-content {
+  background-color: $item-message-bg;
+  padding: 0;
 }
 
 // Defines when an item-message is the user's.
 .item-message-mine {
   background-color: $item-message-mine-bg;
   float: right;
+  max-width: 80%;
 
   .spinner {
     float: right;
@@ -169,10 +255,101 @@ em {
   }
 }
 
+.item-message-mine .item-content {
+  background-color: transparent;
+  padding: 0;
+}
+
 // Defines a "disabled" item.
 .item.item-disabled,
 .platform-android .item.item-disabled {
   color: $item-disabled-color;
+}
+
+// Avoid adding too much padding.
+.item-complex .item-checkbox .item-content {
+  padding: 0;
+}
+
+// Large centered avatar.
+.item-avatar-center {
+    @extend .item-avatar;
+    text-align: center;
+    padding-left: 16px;
+
+    &.item-complex .item-content {
+        text-align: center;
+        padding-left: 49px;
+    }
+
+    > img:first-child,
+    &.item-complex .item-content > img:first-child,
+    img.avatar {
+        position: static;
+        width: 90px;
+        height: 90px;
+        max-width: 90px;
+        max-height: 90px;
+        margin-bottom: 10px;
+        border-radius : 50%;
+        padding: 4px;
+        border: 1px solid #ddd;
+
+        &.avatar-full {
+          border-radius: 2%;
+          border: 0;
+          max-width: 100%;
+          max-height: 200px;
+          width: auto;
+          height: auto;
+        }
+    }
+}
+
+.item-stack-top {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Show buttons as tabs */
+.tabs.tabs-free {
+  position: initial;
+  background: transparent;
+  border: 0;
+  margin-bottom: 0;
+  margin-top: 10px;
+
+  .tab-item {
+    margin-top: -1px;
+    max-width: initial;
+    font-size: 120%;
+
+    &.active, &.activated {
+      margin-top: -1px;
+      border-top-width: 0;
+      border-bottom-width: 3px;
+    }
+  }
+}
+
+.user-with-avatar {
+  position: relative;
+  z-index: 2;
+  display: block;
+  padding: 4px;
+  padding-left: 56px;
+  min-height: 48px;
+  text-decoration: none;
+}
+.user-with-avatar > img:first-child {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    max-width: 40px;
+    max-height: 40px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
 }
 
 // Split pane.
@@ -212,7 +389,7 @@ em {
   .spinner {
     position: absolute;
     right: $button-padding;
-    padding-top: floor(($button-height + ($button-border-width * 2) + 1 - 28) / 2);
+    padding-top: 0;
     line-height: 28px;
   }
 }
@@ -230,6 +407,37 @@ em {
     line-height: $item-button-line-height;
   }
 }
+
+// Buttons.
+.item-button-right,
+a.item.item-button-right,
+button.item.item-button-right {
+  &.item-2-button-right {
+    padding-right: $item-padding * 7;
+  }
+  &.item-3-button-right {
+    padding-right: $item-padding * 10;
+  }
+}
+
+.item-button-right > .buttons.buttons-vertical {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.button.button-block {
+  line-height: 28px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+
+  .icon:before,
+  &.icon:before,
+  &.icon-left:before,
+  &.icon-right:before {
+    line-height: 28px;
+  }
+}
+
 /**
  * Core directives.
  */
@@ -243,12 +451,6 @@ em {
   right: 0;
 }
 
-// mm-format-text can have elements with float. These styles makes sure height is calculated right.
-.mm-content-with-float {
-  display: inline-block;
-  width: 100%;
-}
-
 .mm-loading-container {
     width: 100%;
     text-align: center;
@@ -256,7 +458,24 @@ em {
 }
 
 .mm-loading-content {
+  padding-bottom: 1px; /* This makes height be real */
+}
+
+mm-loading.mm-loading-noheight .mm-loading-content {
+  height: auto;
+}
+
+mm-loading.mm-loading-center {
+  position: relative;
+  width: 100%;
   height: 100%;
+  display: inline-block;
+
+  .mm-loading-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 // Align ion-spinner right
@@ -271,21 +490,36 @@ em {
   background-color: #D9D9D9;
 }
 
-.item.item-text-wrap.item-completion { // Add .item and .item-text-wrap to give more priority to the rule, otherwise it's overridden by Ionic styles.
-  padding-right: $item-icon-font-size + ($button-border-width * 2) + $item-padding * 3 + $completion-img-width;
+.mm-module-buttons {
+  float: right;
+  width: $button-height;
+  height: 30px;
+  margin-top: - ($button-padding);
+  margin-bottom: $button-padding;
+  margin-left: 2px;
+  position: relative;
+  text-align: center;
+
+  &.mm-button-completion {
+    margin-left: $button-icon-size + ($button-padding * 2) + 2;
+  }
+
+  .spinner {
+    bottom: - ($button-padding);
+    right: 7px;
+    position: absolute;
+  }
 }
 
 .mm-completion-container {
   // Based on .item-checkbox .checkbox and .item-checkbox.item-checkbox-right
   position: absolute;
-  top: 50%;
-  right: $item-padding / 2;
-  margin-right: $item-icon-font-size + ($button-border-width * 2) + ($item-padding * 2);
-  margin-top: ($completion-img-width / 2) * -1;
+  top: 0;
+  right: $button-height;
+  padding: $button-padding;
 
   img {
-    float: right;
-    width: $completion-img-width;
+    width: $button-icon-size;
   }
 }
 
@@ -298,7 +532,9 @@ img.mm-media-adapt-width {
 
 .mm-adapted-img-container {
   position: relative;
+  display: inline-block;
 }
+
 .mm-image-viewer-icon {
   position: absolute;
   right: 10px;
@@ -338,15 +574,42 @@ mm-navigation-bar {
   padding: $item-padding;
 }
 
-// Red color for paragraphs.
-p.mm-warning {
-  color: $mm-warning-color;
+p.mm-error {
+  color: $mm-error-color;
+}
+
+.mm-warning {
+  border-bottom: 3px solid $mm-warning-color;
+  padding: $card-padding;
+  box-shadow: $card-box-shadow;
+  margin: 20px 10px;
+  background-color: #fff;
+
+  i.icon:before {
+      color: $mm-warning-color;
+      font-size: 125%;
+  }
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
-
 .scroll {
-  height: 100%;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  // Fix too much padding when a card is on top.
+  &.padding>.card:first-child,
+  &.padding .mm-loading-content>.card:first-child,
+  &.padding .scroll-refresher>.card:first-child {
+    margin-top: $content-padding;
+  }
+}
+
+// Fix padding for modal.
+.padding .scroll {
+  padding: $content-padding;
 }
 
 .iframe-wrapper {
@@ -357,6 +620,10 @@ p.mm-warning {
   height: auto;
   width: auto;
   position: absolute !important; // Position fixed causes problems in Android 4.1-4.3.
+}
+
+.mm-zoom-pane {
+  height: 100%;
 }
 
 .mm-has-navigation-bar {
@@ -375,10 +642,11 @@ p.mm-warning {
 }
 
 .badge.badge-inline {
-  display: inline;
+  display: inline-block;
   position: relative;
   top: initial;
   right: initial;
+  white-space: normal;
 }
 
 // Timer.
@@ -405,6 +673,163 @@ mm-timer {
   font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
 }
 
+.mm-bold {
+  font-weight: bold;
+}
+
+// Context Menu
+
+.popover.mm-context-menu {
+  width: 320px;
+}
+
+// Inline icons and inputs.
+
+.mm-text-with-icon-right {
+  line-height: $mm-text-with-icon-height;
+  .icon {
+    font-size: $mm-text-with-icon-height;
+    padding: 0 5px;
+    color: $positive;
+  }
+}
+
+.mm-full-width {
+  width: 100%;
+}
+
+.item-input-inset.mm-input-inset-no-padding {
+  padding: 0;
+}
+
+.item-input.mm-item-input-padding-right {
+  padding-right: $item-input-padding;
+}
+
+.item-input.item-stacked-label {
+  padding: $item-input-padding;
+
+  .item-input-wrapper.item-select {
+    display: block;
+
+    select {
+      background: transparent;
+      padding: 12px;
+      margin: 0;
+      width: 100%;
+      position: relative;
+      max-width: 100%;
+      direction: ltr;
+      line-height: 14px;
+    }
+  }
+}
+
+.item-input-inset .item-input-wrapper input,
+.item-input .item-input-wrapper input {
+  width: 100%;
+  background: transparent;
+}
+
+.button.mm-button-icon-small {
+  padding: 0 3px;
+  min-height: $mm-button-icon-small-height;
+
+  .icon:before {
+    font-size: $mm-button-icon-small-height;
+  }
+}
+
+.item-input-wrapper ~ .button.mm-button-icon-small {
+  margin-left: 5px;
+}
+
+// This is to allow clicks in links inside buttons.
+.mm-button-with-inner-link, .button.mm-button-with-inner-link {
+  &:after {
+    display: none;
+  }
+}
+
+// Squared checkboxes.
+.checkbox input:before, .checkbox-icon:before {
+  border-radius: 0;
+}
+
+.item-title {
+  border: 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: white;
+
+  input {
+    font-size: 20px;
+    line-height: 22px;
+    width: 100%;
+  }
+}
+
+.item-noborder {
+  border: 0;
+  padding: 0;
+}
+
+.padding .mm-searchbox .item-input-inset {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.item.mm-not-clickable {
+  cursor: default;
+
+  &[ng-click]:hover {
+    cursor: default;
+  }
+
+  &.activated {
+    border-color: $item-default-border;
+    background-color: $item-default-bg;
+  }
+}
+
+.item.mm-tab-handlers,
+.mm-tab-handlers {
+  padding: 6px 2px;
+
+  .tabs {
+    background: white;
+    border: 0;
+  }
+  .tabs-icon-round {
+    color: $positive;
+
+    .tab-item.activated {
+      opacity: 0.7;
+    }
+
+    .icon {
+      border-radius: 50%;
+      max-width: 32px;
+      font-size: 22px;
+      line-height: 32px;
+      color: white;
+      background-color: $positive;
+      margin-bottom: 5px;
+
+      &:before {
+        line-height: 32px;
+      }
+    }
+  }
+
+  .mm-loading-handlers {
+    padding: 7px;
+    padding-bottom: 6px;
+  }
+}
+
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors
  * for ion radio that are broken in iOS 9 UIWebView.
@@ -420,3 +845,482 @@ mm-timer {
     /* show the checkmark icon when its checked */
     visibility: visible;
   }
+
+/** Hide PTR when slowly released */
+.scroll-refresher .ionic-refresher-content.ionic-refresher-with-text {
+  bottom: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+  .hidden-phone {
+    display: none !important;
+  }
+}
+/**
+ * RichTextEditor.
+ */
+
+.mm-textarea {
+  width: 100%;
+  resize: none;
+
+  &[mm-auto-rows] {
+    height: auto;
+    line-height: 18px;
+    padding: 5px;
+  }
+  &:not([mm-auto-rows]) {
+    height: 200px;
+  }
+}
+
+.item-input-wrapper .mm-textarea {
+  background: transparent;
+}
+
+.item.mm-item-has-rich-text-editor {
+  padding: 0;
+  display: block;
+
+  .input-label, .mm-textarea {
+    padding-left: $item-padding;
+  }
+}
+
+.mm-rich-text-editor-container {
+
+  .cke.cke_chrome {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .cke_bottom.cke_expanded {
+    height: auto;
+  }
+
+  .cke_bottom .cke_path {
+    display: none;
+    float: none;
+    margin: 0;
+  }
+
+  .cke_bottom.cke_expanded .cke_path {
+    display: block;
+  }
+
+  textarea.cke_source {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+}
+
+.mm-rich-text-editor-container,
+.cke_inner.cke_maximized {
+
+  .cke_bottom {
+    padding: 0;
+    border-color: #ddd;
+    box-shadow: none;
+    background: #F2F2F2;
+    height: 30px;
+  }
+
+  .cke_button:first-child, .cke_button:last-child {
+    border-radius: 0;
+  }
+
+  .cke_button,
+  a.cke_combo_button,
+  .cke_toolbox_collapser {
+    background: white;
+    background-image: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+    padding: 5px 8px;
+    border-radius: 0;
+    border: 0;
+    margin: 1px;
+  }
+
+  a.cke_combo_button {
+    min-height: 26px;
+    padding: 1px;
+  }
+
+  .cke_button:hover,
+  a.cke_combo_button:hover,
+  .cke_combo_off a.cke_combo_button:hover,
+  .cke_toolbox_collapser:hover {
+    background-image: radial-gradient(ellipse at center, #ffffff 60%,#dfdfdf 100%);
+    background-color: #ebebeb;
+  }
+
+  .cke_button:active,
+  a.cke_combo_button:active,
+  .cke_toolbox_collapser:active {
+    background-image: radial-gradient(ellipse at center, #ffffff 50%, #dfdfdf 100%);
+    background-color: #ebebeb;
+    border: 0;
+  }
+
+  .cke_toolgroup {
+    margin: 0;
+    border: 0;
+    background: none;
+    background-image: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .cke_toolbar_separator,
+  .cke_toolbar_break {
+    clear: none;
+    display: none;
+  }
+
+  .cke_toolbox_collapser {
+    padding-top: 9px;
+    padding-bottom: 8px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .cke_toolbox_main {
+    margin-right: 30px;
+    float: left;
+    display: block !important;
+  }
+
+  .cke_button__source_label {
+    display: none;
+  }
+}
+
+.cke_inner.cke_maximized {
+  .cke_bottom {
+    height: auto;
+  }
+
+  .cke_toolbox_collapser {
+    display: none;
+  }
+
+  .cke_toolbox_main {
+    margin: 0;
+  }
+}
+
+// Disable input copy to prevent errors in iOS.
+
+.previous-input-focus, .previous-input-focus.mm-textarea, .cloned-text-input + input, .cloned-text-input + textarea.mm-textarea {
+  width: 100%;
+  position: relative !important;
+  left: 0px;
+}
+
+.cloned-text-input, textarea.cloned-text-input, input.cloned-text-input {
+  display: none;
+}
+
+// InApp notifications.
+
+.mm-inapp-notification-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  width: 100%;
+  opacity: 0;
+  margin-top: -130px;
+  -webkit-transition: 0.5s all ease-in-out;
+  transition: 0.5s all ease-in-out;
+
+  &.active {
+    opacity: 1;
+    margin-top: 0;
+  }
+
+  &.hide {
+    opacity: 0;
+    margin-top: -130px;
+    display: block;
+    pointer-events: none;
+  }
+
+  .mm-inapp-notification {
+    position: static;
+    height: auto;
+    width: auto;
+    max-width: 400px;
+    margin-left: auto  !important;
+    margin-right: auto  !important;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    padding: 2px 0;
+
+    .scroll-content, .scroll {
+      position: relative;
+      top: auto;
+      bottom: auto;
+      left: auto;
+      right: auto;
+    }
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .mm-inapp-notification-backdrop .mm-inapp-notification {
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+  }
+}
+
+// Toggles with relative positioning.
+
+.item-toggle-relative {
+  .item.item-toggle {
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+
+    .toggle {
+      position: relative;
+      top: 0px;
+      right: 0px;
+    }
+  }
+}
+
+// Spinner aligned right.
+
+ion-spinner.mm-spinner-right {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    top: ($item-padding / 2) + 2; // Same top as toggle.
+    right: 5px;
+  }
+
+  .toggle {
+    right: $item-padding + 19px;
+  }
+}
+
+// If the item-toggle is nested inside another item then the spinner can be aligned to the right.
+.item .item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    right: 0px;
+  }
+
+  .toggle {
+    right: $item-padding + 14px;
+  }
+}
+
+.item-borderless.item-toggle {
+  padding-left: 0;
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+  .toggle {
+    top: 0;
+  }
+}
+
+// Video subtitles.
+.platform-ios video::cue {
+  font-size: 12px;
+}
+// Add note below an input.
+.item .mm-input-footnote {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+// Mark input as required styles.
+.mm-input-required-asterisk, .icon.mm-input-required-asterisk, i.icon.mm-input-required-asterisk {
+  color: $mm-input-required-asterisk-color !important;
+  font-size: 8px;
+  padding-left: 4px;
+  line-height: 100%;
+  vertical-align: top;
+}
+
+// Allow placeholders in date inputs.
+.platform-android, .platform-ios {
+  input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="time"] {
+    &.ng-empty:before {
+      color: $input-color-placeholder;
+      content: attr(placeholder);
+    }
+  }
+}
+
+/**
+ * Form validation.
+ */
+
+.item.mm-input-has-errors, .item .mm-input-has-errors {
+  input {
+    border-bottom: 1px solid $mm-error-color;
+  }
+  .checkbox-icon, textarea {
+    border: 1px solid $mm-error-color;
+  }
+  &.mm-item-has-rich-text-editor, .mm-item-has-rich-text-editor {
+    .mm-rich-text-editor-container {
+      border: 1px solid $mm-error-color;
+    }
+  }
+}
+
+.mm-input-error-container {
+  margin: 0;
+
+  .mm-input-error {
+    padding: 4px;
+    color: $mm-error-color;
+    font-size: 12px;
+  }
+}
+
+// Ionic overrides italic font-style, apply it again.
+i, cite, em, var, address, dfn {
+    font-style: italic;
+}
+
+// Footer with auto height.
+.bar-footer.bar-footer-adjustable {
+  height: auto;
+}
+
+// Show password styles.
+.item,
+.card .item,
+.list-inset .item,
+.padding > .list .item,
+.padding-horizontal > .list .item {
+
+  &.item-input {
+    padding-right: $item-padding;
+
+    input {
+      padding-right: 0px;
+    }
+
+    .mm-show-password-container {
+      padding: 0px;
+      width: 100%;
+
+      .button {
+        margin-left: ($item-padding / 3) * 2;
+        padding: 0 $button-clear-padding;
+      }
+    }
+  }
+}
+
+.item-button-right > .buttons.buttons-small {
+  min-width: 20px;
+  height: 100%;
+  top: 0;
+
+  > .button.button-icon {
+    min-width: 20px;
+
+    .icon.icon-accessory:before {
+      font-size: 16px;
+    }
+  }
+}
+
+/** Format Text */
+mm-format-text, *[mm-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
+
+  // Fix lists styles in mm-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+}
+
+mm-format-text[max-height], *[mm-format-text][max-height] {
+  display: block;
+  position: relative;
+  width: 100%;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // This is to allow clicks in radio/checkbox content.
+  &.mm-text-formatted {
+    cursor: pointer;
+
+    .mm-show-more {
+      display: none;
+    }
+
+    &:not(.mm-shortened) {
+      max-height: none !important;
+    }
+
+    &.mm-shortened {
+      color: #777;
+      overflow: hidden;
+      min-height: 50px;
+
+      .mm-show-more {
+        color: $dark;
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+      }
+
+      &.mm-expand-in-fullview .mm-show-more:after {
+        content: $ionicon-var-chevron-right;
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
+    }
+  }
+}
