@@ -15,7 +15,7 @@
 angular.module('mm.core.sharedfiles')
 
 .factory('$mmSharedFilesHelper', function($mmSharedFiles, $mmUtil, $log, $mmApp, $mmSitesManager, $mmFS, $rootScope, $q,
-            $ionicModal, $state, $translate, $mmSite) {
+            $ionicModal, $state, $translate, $mmSite, $mmFileUploaderHelper) {
 
     $log = $log.getInstance('$mmSharedFilesHelper');
 
@@ -76,11 +76,12 @@ angular.module('mm.core.sharedfiles')
      * @module mm.core.sharedfiles
      * @ngdoc method
      * @name $mmSharedFilesHelper#filePickerClosed
+     * @param  {String} [error] The error message if any.
      * @return {Void}
      */
-    self.filePickerClosed = function() {
+    self.filePickerClosed = function(error) {
         if (filePickerDeferred) {
-            filePickerDeferred.reject();
+            filePickerDeferred.reject(error);
             filePickerDeferred = undefined;
         }
     };
@@ -150,9 +151,10 @@ angular.module('mm.core.sharedfiles')
      * @module mm.core.sharedfiles
      * @ngdoc method
      * @name $mmSharedFilesHelper#pickSharedFile
+     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      * @return {Promise} Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
-    self.pickSharedFile = function() {
+    self.pickSharedFile = function(mimetypes) {
         var path = '',
             siteId = $mmSite.getId();
 
@@ -160,6 +162,7 @@ angular.module('mm.core.sharedfiles')
 
         self.initFileListModal().then(function() {
             fileListScope.filesLoaded = false;
+            // fileListScope.mimetypes = mimetypes;
             if (path) {
                 fileListScope.title = $mmFS.getFileAndDirectoryFromPath(path).name;
             } else {
@@ -199,8 +202,15 @@ angular.module('mm.core.sharedfiles')
 
                 // File picked.
                 fileListScope.filePicked = function(file) {
-                    self.filePicked(file.fullPath);
                     fileListScope.modal.hide();
+
+                    var error = $mmFileUploaderHelper.isInvalidMimetype(mimetypes, file.fullPath);
+                    if (error) {
+                        self.filePickerClosed(error);
+                        return;
+                    }
+
+                    self.filePicked(file.fullPath);
                 };
             });
 
@@ -212,7 +222,7 @@ angular.module('mm.core.sharedfiles')
         return filePickerDeferred.promise;
 
         function loadFiles() {
-            return $mmSharedFiles.getSiteSharedFiles(siteId, path).then(function(files) {
+            return $mmSharedFiles.getSiteSharedFiles(siteId, path, mimetypes).then(function(files) {
                 fileListScope.files = files;
                 fileListScope.filesLoaded = true;
             });

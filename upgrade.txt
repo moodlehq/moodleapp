@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.3.2 ===
+
+ * Handlers registered in $mmFileUploaderDelegate now need to implement a function getSupportedMimeTypes. This function will receive a list of mimetypes and needs to return the ones supported by the handler. Also, the handler's action and afterRender functions now receive a new parameter: mimetypes.
+
 === 3.3 ===
 
  * The project now supports Ionic CLI v2 and Node 6.9. We recommend updating node, npm, Ionic CLI and project dependencies:

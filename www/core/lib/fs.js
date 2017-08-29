@@ -1010,6 +1010,8 @@ angular.module('mm.core')
      * @return {String}           Extension.
      */
     self.getExtension = function(mimetype, url) {
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
         if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
             // Couldn't get the right mimetype (old Moodle), try to guess it.
             return self.guessExtensionFromUrl(url);
