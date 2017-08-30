@@ -1691,3 +1691,8 @@ h2.invert {
 ::-webkit-media-controls {
   max-width: 100%;
 }
+
+ol.list-with-style, ul.list-with-style {
+  list-style: initial;
+  padding-left: 40px;
+}
