@@ -322,9 +322,7 @@ angular.module('mm.addons.mod_feedback')
     }
 
     fetchFeedbackData(false, true).then(function() {
-        $mmaModFeedback.logView(feedback.id).then(function() {
-            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
-        });
+        $mmaModFeedback.logView(feedback.id); // No need to check completion, it's only completed when the user sees the form.
     }).finally(function() {
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
