@@ -2573,6 +2573,54 @@ angular.module('mm.core')
             return measure;
         };
 
+        /**
+         * Gets the index of the first string that matches a regular expression.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#indexOfRegexp
+         * @param  {String[]} array Array to search.
+         * @param  {RegExp} regex   RegExp to apply to each string.
+         * @return {Number}         Index of the first string that matches the RegExp. -1 if not found.
+         */
+        self.indexOfRegexp = function(array, regex) {
+            if (!array || !array.length) {
+                return -1;
+            }
+
+            for (var i = 0; i < array.length; i++) {
+                var entry = array[i],
+                    matches = entry.match(regex);
+
+                if (matches && matches.length) {
+                    return i;
+                }
+            }
+
+            return -1;
+        };
+
+        /**
+         * Given an array of strings, return only the ones that match a regular expression.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterByRegexp
+         * @param  {String[]} array Array to filter.
+         * @param  {RegExp} regex   RegExp to apply to each string.
+         * @return {String[]}       Filtered array.
+         */
+        self.filterByRegexp = function(array, regex) {
+            if (!array || !array.length) {
+                return [];
+            }
+
+            return array.filter(function(entry) {
+                var matches = entry.match(regex);
+                return matches && matches.length;
+            });
+        };
+
         return self;
     };
 });

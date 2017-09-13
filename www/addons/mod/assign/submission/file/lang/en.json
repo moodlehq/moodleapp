@@ -1,3 +1,5 @@
 {
+    "filesofthesetypes": "Files of these types may be added to the submission:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
     "pluginname": "File submissions"
 }

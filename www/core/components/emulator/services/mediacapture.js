@@ -59,7 +59,8 @@ angular.module('mm.core.emulator')
                 extension,
                 quality = 0.92, // Image only.
                 returnData = false, // Image only.
-                isCaptureImage = false; // To identify if it's capturing an image using media capture plugin (instead of camera).
+                isCaptureImage = false, // To identify if it's capturing an image using media capture plugin (instead of camera).
+                mimeAndExt;
 
             loadingModal = $mmUtil.showModalLoading();
 
@@ -72,13 +73,17 @@ angular.module('mm.core.emulator')
             if (type == 'video') {
                 scope.isVideo = true;
                 title = 'mm.core.capturevideo';
-                mimetype = videoMimeType;
-                extension = possibleVideoMimeTypes[mimetype];
+
+                mimeAndExt = getMimeTypeAndExtension(type, options.mimetypes);
+                mimetype = mimeAndExt.mimetype;
+                extension = mimeAndExt.extension;
             } else if (type == 'audio') {
                 scope.isAudio = true;
                 title = 'mm.core.captureaudio';
-                mimetype = audioMimeType;
-                extension = possibleAudioMimeTypes[mimetype];
+
+                mimeAndExt = getMimeTypeAndExtension(type, options.mimetypes);
+                mimetype = mimeAndExt.mimetype;
+                extension = mimeAndExt.extension;
             } else if (type == 'image') {
                 scope.isImage = true;
                 title = 'mm.core.captureimage';
@@ -336,6 +341,45 @@ angular.module('mm.core.emulator')
             loadingModal && loadingModal.dismiss();
             errorCallback && errorCallback(ex.toString());
         }
+    }
+
+    /**
+     * Get the mimetype and extension to capture media.
+     *
+     * @param  {String} type          Type of media: image, audio, video.
+     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
+     * @return {Object}               An object with mimetype and extension to use.
+     */
+    function getMimeTypeAndExtension(type, mimetypes) {
+        var result = {};
+
+        if (mimetypes && mimetypes.length) {
+            // Search for a supported mimetype.
+            for (var i = 0; i < mimetypes.length; i++) {
+                var mimetype = mimetypes[i],
+                    matches = mimetype.match(new RegExp('^' + type + '/'));
+
+                if (matches && matches.length && MediaRecorder.isTypeSupported(mimetype)) {
+                    result.mimetype = mimetype;
+                    break;
+                }
+            }
+        }
+
+        if (result.mimetype) {
+            // Found a supported mimetype in the mimetypes array, get the extension.
+            result.extension = $mmFS.getExtension(result.mimetype);
+        } else if (type == 'video') {
+            // No mimetype found, use default extension.
+            result.mimetype = videoMimeType;
+            result.extension = possibleVideoMimeTypes[result.mimetype];
+        } else if (type == 'audio') {
+            // No mimetype found, use default extension.
+            result.mimetype = audioMimeType;
+            result.extension = possibleAudioMimeTypes[result.mimetype];
+        }
+
+        return result;
     }
 
     /**

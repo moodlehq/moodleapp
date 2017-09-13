@@ -125,6 +125,10 @@ function treatMergedData(data) {
 
       addProperties(merged, data[filepath], 'mm.core.country-');
 
+    } else if (filepath.indexOf('core/assets/mimetypes') === 0) {
+
+      addProperties(merged, data[filepath], 'mm.core.mimetype-');
+
     }
   }
 
@@ -352,6 +356,7 @@ var paths = {
     './www/core/components/**/lang/',
     './www/addons/**/lang/',
     './www/core/assets/countries/',
+    './www/core/assets/mimetypes/',
     '!./www/**/' + remoteAddonPackageFolder + '/*.json',
     '!./www/**/' + remoteAddonPackageFolder + '/**/*.json',
   ],

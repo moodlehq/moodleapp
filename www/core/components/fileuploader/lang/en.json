@@ -14,6 +14,7 @@
     "errorwhileuploading": "An error occurred during the file upload.",
     "file": "File",
     "fileuploaded": "The file was successfully uploaded.",
+    "invalidfiletype": "{{$a}} filetype cannot be accepted.",
     "maxbytesfile": "The file {{$a.file}} is too large. The maximum size you can upload is {{$a.size}}.",
     "photoalbums": "Photo albums",
     "readingfile": "Reading file",

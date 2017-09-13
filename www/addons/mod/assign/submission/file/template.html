@@ -1,7 +1,16 @@
 <!-- Edit -->
 <div ng-if="edit">
     <h2 class="item item-text-wrap item-divider">{{plugin.name}}</h2>
-    <mm-attachments files="files" max-size="{{configs.maxsubmissionsizebytes}}" max-submissions="{{configs.maxfilesubmissions}}" component="{{assignComponent}}" component-id="{{assign.cmid}}" allow-offline="{{allowOffline}}"></mm-attachments>
+    <mm-attachments files="files" max-size="{{configs.maxsubmissionsizebytes}}" max-submissions="{{configs.maxfilesubmissions}}" component="{{assignComponent}}" mimetypes="mimetypes" component-id="{{assign.cmid}}" allow-offline="{{allowOffline}}"></mm-attachments>
+    <div class="item item-text-wrap" ng-if="mimetypes && mimetypes.length">
+        <p>{{ 'mma.mod_assign_submission_file.filesofthesetypes' | translate }}</p>
+        <ul class="list-with-style">
+            <li ng-repeat="typeInfo in typesInfo">
+                <p ng-if="typeInfo.type == 'extension'">{{typeInfo.value}}</p>
+                <p ng-if="typeInfo.type != 'extension'" ng-bind-html="'mma.mod_assign_submission_file.filetypewithexts' | translate:{$a: typeInfo.value}"></p>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <div class="item item-text-wrap" ng-if="files.length && !edit">

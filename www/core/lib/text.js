@@ -725,5 +725,18 @@ angular.module('mm.core')
         return self.escapeHTML(text).replace(/&amp;#(\d+|x[0-9a-f]+);/i, '&#$1;');
     };
 
+    /**
+     * Make a string's first character uppercase
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#ucFirst
+     * @param  {String} text Text to treat.
+     * @return {String}      Treated text.
+     */
+    self.ucFirst = function(text) {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+
     return self;
 });

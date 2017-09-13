@@ -33,7 +33,7 @@ angular.module('mm.core')
  * Example usage:
  *
  * <mm-attachments files="files" max-size="{{maxSize}}" max-submissions="{{maxSubmissions}}"
- *     component="{{component}}" component-id="{{assign.id}}"></mm-attachments>
+ *     component="{{component}}" component-id="{{assign.id}}" mimetypes="mimetypes"></mm-attachments>
  *
  * Parameters accepted:
  *
@@ -43,6 +43,7 @@ angular.module('mm.core')
  * @param {String} [component]      Component the downloaded files will be linked to.
  * @param {Mixed} [componentId]     Component ID the downloaded files will be linked to.
  * @param {Boolean} [allowOffline]  True to allow selecting files in offline.
+ * @param {String[]} [mimetypes]    List of supported mimetypes. If undefined, all mimetypes supported.
  */
 .directive('mmAttachments', function($mmText, $translate, $ionicScrollDelegate, $mmUtil, $mmApp, $mmFileUploaderHelper, $q) {
     return {
@@ -55,7 +56,8 @@ angular.module('mm.core')
             maxSubmissions: '@?',
             component: '@?',
             componentId: '@?',
-            allowOffline: '@?'
+            allowOffline: '@?',
+            mimetypes: '=?'
         },
         link: function(scope) {
             var allowOffline = scope.allowOffline && scope.allowOffline !== 'false';
@@ -77,7 +79,8 @@ angular.module('mm.core')
                 if (!allowOffline && !$mmApp.isOnline()) {
                     $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
                 } else {
-                    return $mmFileUploaderHelper.selectFile(maxSize, allowOffline).then(function(result) {
+                    return $mmFileUploaderHelper.selectFile(maxSize, allowOffline, undefined, undefined, scope.mimetypes)
+                            .then(function(result) {
                         scope.files.push(result);
                     });
                 }
