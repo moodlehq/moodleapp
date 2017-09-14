@@ -783,6 +783,83 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
+     * Deletes the given submission.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#deleteSubmission
+     * @param {Number}  workshopId      Workshop ID.
+     * @param  {Number} submissionId    Submission ID.
+     * @param {Number}  courseId        Course ID the forum belongs to.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
+     * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
+     */
+    self.deleteSubmission = function(workshopId, submissionId, courseId, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, 'delete', siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.deleteSubmissionOnline(submissionId, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveSubmission(workshopId, courseId, false, false, false, submissionId, 'delete',
+                    siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Deletes the given submission. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#deleteSubmissionOnline
+     * @param  {Number} submissionId    Submission ID.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the submission is deleted.
+     */
+    self.deleteSubmissionOnline = function(submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: submissionId
+            };
+
+            return site.write('mod_workshop_delete_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Return submissionId to be consistent with addSubmission.
+                return submissionId;
+            });
+        });
+    };
+
+    /**
      * Invalidate the prefetched content except files.
      * To invalidate files, use $mmaModWorkshop#invalidateFiles.
      *

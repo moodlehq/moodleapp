@@ -132,6 +132,7 @@ angular.module('mm.addons.mod_workshop')
      */
     self.deleteSubmissionAction = function(workshopId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            console.error( [workshopId, submissionId, action]);
             return site.getDb().remove(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
         });
     };

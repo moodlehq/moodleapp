@@ -8,6 +8,7 @@
     "selectphase": "Select phase",
     "submissionattachment": "Attachment",
     "submissioncontent": "Submission content",
+    "submissiondeleteconfirm": "Are you sure you want to delete the following submission?",
     "submissionrequiredcontent": "You need to enter some text or add a file.",
     "submissionsreport": "Workshop submissions report",
     "submissiontitle": "Title",
