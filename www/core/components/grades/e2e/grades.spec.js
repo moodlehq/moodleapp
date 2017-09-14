@@ -12,16 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see course final grade', function() {
+describe('User can see course final grade', function () {
 
     it('User can click course grade button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mm-grades-mine-handler').click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(5000); // Wait for button css to render.
+            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
+            browser.sleep(5000);
+            return element.all(by.css('[ng-click="contextMenuItemClicked($event, item)"]')).get(3).click();
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Grades');
-            expect(MM.getView().getText()).toMatch('Psychology in Cinema');
+            expect(MM.getView().getText()).toContain('Psychology in Cinema');
         }).then(function () {
             done();
         });
@@ -29,13 +38,17 @@ describe('User can see course final grade', function() {
 
     it('User can see main content of course grades', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mm-grades-mine-handler').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Analysis');
-            expect(MM.getView().getText()).toMatch('Collaborative');
-            expect(MM.getView().getText()).toMatch('Individual');
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return element.all(by.css('[ng-click="contextMenuItemClicked($event, item)"]')).get(3).click();
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('Analysis');
         }).then(function () {
             done();
         });
@@ -43,13 +56,17 @@ describe('User can see course final grade', function() {
 
     it('Check the expected final grades of course', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mm-grades-mine-handler').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Analysis total');
-            expect(MM.getView().getText()).toMatch('Group Project -');
-            expect(MM.getView().getText()).toMatch('Collaborative total');
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return element.all(by.css('[ng-click="contextMenuItemClicked($event, item)"]')).get(3).click();
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('Analysis total');
         }).then(function () {
             done();
         });

@@ -12,52 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('A user can register sites to the app', function() {
+describe('A user can register sites to the app', function () {
 
-    it('Adding a site', function(done) {
-        element(by.model('siteurl'))
-            .sendKeys(SITEURL);
-
-        return $('[ng-click="connect(siteurl)"]').click().then(function() {
-            element(by.model('credentials.username'))
-                .sendKeys(USERS.STUDENT.LOGIN);
-            element(by.model('credentials.password'))
-                .sendKeys(USERS.STUDENT.PASSWORD);
-            return $('[ng-click="login()"]').click();
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('My courses');
+    it('Adding a site', function (done) {
+        return MM.loginAsStudent().then(function () {
+            browser.sleep(5000); // wait to render
+            expect(MM.getNavBar().getText()).toMatch('Course overview');
+        }).then(function () {
             done();
         });
     });
 
-    it('Logging out and back in', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Logging out and back in', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Change site');
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('Login');
+        }).then(function () {
+            browser.sleep(5000); // wait to render
+            expect(MM.getNavBar().getText()).toMatch('Sites');
             expect(element.all(by.repeater('site in sites')).count()).toBe(1);
-            expect(MM.getView().getText()).toMatch(SITEURL);
-            return MM.clickOn(SITEURL);
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('My courses');
+            expect(MM.getView().getText()).toContain('school.demo.moodle.net');
+            return MM.clickOn('school.demo.moodle.net');
+        }).then(function () {
+            expect(MM.getNavBar().getText()).toMatch('Course overview');
+        }).then(function () {
             done();
         });
     });
 
-    it('Adding more than one site', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Adding more than one site', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.logout();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement($('[ng-click="add()"]'));
-        }).then(function() {
+        }).then(function () {
             return MM.loginAsTeacher();
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('My courses');
+        }).then(function () {
+            browser.sleep(5000);
+            expect(MM.getNavBar().getText()).toMatch('Course overview');
             return MM.logout();
-        }).then(function() {
-            return browser.waitForAngular();
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(5000);
             expect(element.all(by.repeater('site in sites')).count()).toBe(2);
+        }).then(function () {
             done();
         });
     });

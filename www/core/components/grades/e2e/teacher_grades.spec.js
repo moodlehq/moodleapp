@@ -12,170 +12,109 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see course final grade as a teacher', function() {
+describe('User can see course final grade as a teacher', function () {
 
     it('User can click course grade button as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
+        }).then(function () {
+            return MM.clickOn('Grades');
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Grades');
-            expect(MM.getView().getText()).toMatch('Psychology in Cinema');
+            expect(MM.getView().getText()).toContain('Digital Literacy');
         }).then(function () {
             done();
         });
     });
 
-    it('User can see main content of course grades as a teacher', function (done) {
+    it('User can see grades of all activities as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Analysis');
-            expect(MM.getView().getText()).toMatch('Collaborative');
-            expect(MM.getView().getText()).toMatch('Individual');
-            expect(MM.getView().getText()).toMatch('Group Project');
+        }).then(function () {
+            return MM.clickOn('Grades');
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('Assignment 1 (Text)');
+            expect(MM.getView().getText()).toContain('75.00');
+            expect(MM.getView().getText()).toContain('Fun quiz:');
+            expect(MM.getView().getText()).toContain('Assignment 2 (Upload)');
+            expect(MM.getView().getText()).toContain('Forum');
+            expect(MM.getView().getText()).toContain('0.00');
+            expect(MM.getView().getText()).toContain('FOBO?');
+            expect(MM.getView().getText()).toContain('100.00');
+            expect(MM.getView().getText()).toContain('Course total');
+            expect(MM.getView().getText()).toContain('175.00');
         }).then(function () {
             done();
         });
     });
 
-    it('Check the expected final grades of course as a teacher', function (done) {
+    it('Check the grade of an activity as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Analysis total');
-            expect(MM.getView().getText()).toMatch('Collaborative total');
-            expect(MM.getView().getText()).toMatch('Individual');
+        }).then(function () {
+            return MM.clickOn('Grades');
+        }).then(function () {
+            return MM.clickOn('Assignment 1 (Text)');
+        }).then(function () {
+            expect(MM.getNavBar().getText()).toMatch('Grade');
+            expect(MM.getView().getText()).toContain('Weight');
+            expect(MM.getView().getText()).toContain('Grade');
+            expect(MM.getView().getText()).toContain('37.31');
+            expect(MM.getView().getText()).toContain('Feedback');
         }).then(function () {
             done();
         });
     });
 
-    it('Check the expected Group Project test grades of course as a teacher', function (done) {
+    it('Check the final course grade as a teacher', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
-            return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Group Project');
-            expect(MM.getView().getText()).toMatch('60.00 %');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            done();
-        });
-    });
-
-    it('Check the expected Factual recall test grades of course as a teacher', function (done) {
-        return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
-            return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Factual recall test');
-            expect(MM.getView().getText()).toMatch('8.33 %');
-            expect(MM.getView().getText()).toMatch('6.00');
-            expect(MM.getView().getText()).toMatch('60.00 %');
-            expect(MM.getView().getText()).toMatch('5.00 %');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            done();
-        });
-    });
-
-    it('Check the expected Dissertation: Fight club test grades of course as a teacher', function (done) {
-        return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
-            return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Dissertation: Fight');
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
         }).then(function () {
-            done();
-        });
-    });
-
-    it('Check the expected Dissertation: A Beautiful Mind test grades of course as a teacher', function (done) {
-        return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
-            return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Dissertation: A Beautiful Mind');
+            return MM.clickOn('Participants');
         }).then(function () {
-            done();
-        });
-    });
-
-    it('Check the expected Dissertation: Spider test grades of course as a teacher', function (done) {
-        return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[2]/div[2]/a[2]')).click();
-        }).then(function() {
             return MM.clickOn('Frances Banks');
-        }).then(function() {
-            return MM.clickOn('View grades');
-        }).then(function() {
-            var width = 900;
-            var height =1800;
-            browser.driver.manage().window().setSize(width, height);
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Dissertation: A Beautiful Mind');
+        }).then(function () {
+            return MM.clickOn('Grades');
+        }).then(function () {
+            browser.sleep(7500); // Wait for css to render.
+            return $('[id="row_411_48"]').click();
+        }).then(function () {
+            expect(MM.getNavBar().getText()).toMatch('Grade');
+            expect(MM.getView().getText()).toContain('Grade');
+            expect(MM.getView().getText()).toContain('175.00');
+            expect(MM.getView().getText()).toContain('87.06');
         }).then(function () {
             done();
         });

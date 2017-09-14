@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see listed correctly the participants list in a course', function() {
+describe('User can see listed correctly the participants list in a course', function () {
 
     it('User can see participants page', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[1]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            browser.sleep(5000); // wait to render
+            return $('[ng-click="showCourseActions($event)"]').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
         }).then(function () {
             done();
@@ -28,32 +31,35 @@ describe('User can see listed correctly the participants list in a course', func
 
     it('User can see participants list', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[1]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            browser.sleep(5000); // wait to render
+            return $('[ng-click="showCourseActions($event)"]').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Mark Ellis');
-            expect(MM.getView().getText()).toMatch('Brian Franklin');
-            expect(MM.getView().getText()).toMatch('Barbara Gardner');
-            expect(MM.getView().getText()).toMatch('Amanda Hamilton');
-            expect(MM.getView().getText()).toMatch('Joshua Knight');
+        }).then(function () {
+            expect(MM.getView().getText()).toMatch('Frances Banks');
+            expect(MM.getView().getText()).toMatch('Angela Bowman');
         }).then(function () {
             done();
         });
     });
 
-    it('Can click login user tab', function (done) {
+    it('Can click logged-in user tab', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[1]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            browser.sleep(5000); // wait to render
+            return $('[ng-click="showCourseActions($event)"]').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Barbara Gardner');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Barbara Gardner');
         }).then(function () {
             done();
@@ -62,29 +68,24 @@ describe('User can see listed correctly the participants list in a course', func
 
     it('Can click other specific users tab', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view/ion-content/div[1]/mm-loading/div/section[1]/div[2]/a[2]')).click();
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            browser.sleep(5000); // wait to render
+            return $('[ng-click="showCourseActions($event)"]').click();
+        }).then(function () {
+            return MM.clickOn('Participants');
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Participants');
-        }).then(function() {
-            return MM.clickOn('Mark Ellis');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Mark Ellis');
-        }).then(function() {
+        }).then(function () {
+            return MM.clickOn('Angela Bowman');
+        }).then(function () {
+            expect(MM.getView().getText()).toMatch('Angela Bowman');
+        }).then(function () {
             return MM.goBack();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Brian Franklin');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Brian Franklin');
-        }).then(function() {
-            return MM.goBack();
-        }).then(function() {
-            return MM.clickOn('Amanda Hamilton');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Amanda Hamilton');
-        }).then(function() {
-            return MM.goBack();
         }).then(function () {
             done();
         });

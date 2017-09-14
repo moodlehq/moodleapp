@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course files section', function() {
+describe('User can manage course files section', function () {
 
     it('Click the My files tab in main menu', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('My files');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -27,72 +27,70 @@ describe('User can manage course files section', function() {
     it('User can land the My files page', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('My files');
-            expect(MM.getView().getText()).toMatch('My private files');
+            expect(MM.getView().getText()).toMatch('Private files');
             expect(MM.getView().getText()).toMatch('The files that are available in your private area on this Moodle site.');
             expect(MM.getView().getText()).toMatch('Site files');
             expect(MM.getView().getText()).toMatch('The other files that are available to you on this Moodle site.');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('Visit My private files in files page', function (done) {
+    it('Visit Private files in files page', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
-            return MM.clickOn('My private files');
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('My private files');
+        }).then(function () {
+            return MM.clickOn('Private files');
+        }).then(function () {
+            expect(MM.getNavBar().getText()).toMatch('My files');
             expect(MM.getView().getText()).toMatch('MyPictures');
             expect(MM.getView().getText()).toMatch('My essay notes.odt');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('Click upload button in my private files section', function (done) {
+    it('Click upload button in Private files section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
-            return MM.clickOn('My private files');
-        }).then(function() {
-            return $('.button.button-icon.ion-plus').click();
-        }).then(function() {
-            expect(MM.getNavBar().getText()).toMatch('Upload a file');
-            expect(MM.getView().getText()).toMatch('Photo albums');
-            expect(MM.getView().getText()).toMatch('Camera');
-            expect(MM.getView().getText()).toMatch('Audio');
-            expect(MM.getView().getText()).toMatch('Video');
-        }).then(function() {
+        }).then(function () {
+            return MM.clickOn('Private files');
+        }).then(function () {
+            browser.sleep(5000); // wait to render
+            return $('[ng-click="add()"]').click();
+        }).then(function () {
+           browser.sleep(5000); // Wait for button css to render.
+           expect($('.action-sheet-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
             done();
         });
     });
 
-    it('Click My Pictures tab in my private files section', function (done) {
+    it('Click My Pictures tab in Private files section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
-            return MM.clickOn('My private files');
-        }).then(function() {
+        }).then(function () {
+            return MM.clickOn('Private files');
+        }).then(function () {
             return MM.clickOn('MyPictures');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('MyPictures');
             expect(MM.getView().getText()).toMatch('LakeDistrictUK.jpg');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
-    it('Click essay notes tab in my private files section', function (done) {
+    it('Click essay notes tab in Private files section', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
-            return MM.clickOn('My private files');
-        }).then(function() {
+        }).then(function () {
+            return MM.clickOn('Private files');
+        }).then(function () {
             return MM.clickOn('My essay notes.odt');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -100,11 +98,11 @@ describe('User can manage course files section', function() {
     it('Visit Site files section in my files page', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My files');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Site files');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Site files');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Art and Media');
             expect(MM.getView().getText()).toMatch('Society and Environment');
             expect(MM.getView().getText()).toMatch('Languages');
@@ -113,10 +111,9 @@ describe('User can manage course files section', function() {
             expect(MM.getView().getText()).toMatch('ICT and Computing');
             expect(MM.getView().getText()).toMatch('Mount Orange Community');
             expect(MM.getView().getText()).toMatch('Moodle Resources');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
 
 });
-

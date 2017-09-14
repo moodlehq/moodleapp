@@ -12,30 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can search courses', function() {
+describe('User can search courses', function () {
 
     it('User can search courses with valid word count', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            element(by.css('a[href*="#/site/mm_searchcourses"]')).click();
+            element(by.css('a[ui-sref="site.mm_searchcourses"]')).click();
         }).then(function () {
-            element(by.css('.mm-site_mm_searchcourses input')).sendKeys('Software Engineering');
+            element(by.css('.mm-site_mm_searchcourses input')).sendKeys('cinema');
         }).then(function () {
-            MM.clickOn('Search');
+            return MM.clickOn('Search');
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('Psychology in Cinema');
+        }).then(function () {
             done();
         });
     });
 
     it('User can not search courses without valid word count', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            element(by.css('a[href*="#/site/mm_searchcourses"]')).click();
+            element(by.css('a[ui-sref="site.mm_searchcourses"]')).click();
         }).then(function () {
             element(by.css('.mm-site_mm_searchcourses input')).sendKeys('SE');
         }).then(function () {
-            expect(element(by.buttonText('Search')).isEnabled()).toBe(false);
+            expect(element(by.css('[aria-label="Search"]')).isEnabled()).toBe(false);
             done();
         });
 
