@@ -12,177 +12,91 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course book', function() {
+describe('User can manage course book', function () {
 
-    it('Click All sections course book tabs', function (done) {
+    it('Click Background reading course book tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('All sections');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Useful links');
+            return MM.clickOn('One approach to digital literacy');
         }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('Video resources');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
-
-    it('Click Background information course book tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('Background information');
-        }).then(function () {
-            return MM.clickOn('Useful links');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('Video resources');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
-
-    it('Can go all the useful links press next and previous icon', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('Background information');
-        }).then(function () {
-            return MM.clickOn('Useful links');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('1 A beautiful Mind');
-        }).then(function () {
-            return $('[ng-click="action(next)"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('2 Fight Club');
-        }).then(function () {
-            return $('[ng-click="action(next)"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('3 Spider');
-        }).then(function() {
-            return $('[ng-click="action(previous)"]').click();
-        }).then(function() {
-            return $('[ng-click="action(previous)"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('1 A beautiful Mind');
-        }).then(function() {
-            done();
-        });
-    });
-
-    it('Click secondary button in useful links', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('Background information');
-        }).then(function () {
-            return MM.clickOn('Useful links');
-        }).then(function () {
-            return $('[ng-href="http://school.demo.moodle.net/mod/book/view.php?id=707"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('1 A beautiful Mind');
+            expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
         }).then(function () {
             done();
         });
     });
 
-    it('Click secondary menu button in useful links', function (done) {
+    it('Can go through the One approach to digital literacy press next and previous icon', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Useful links');
+            return MM.clickOn('One approach to digital literacy');
         }).then(function () {
-            return $('[ng-click="popover.show($event)"]').click();
-        }).then(function() {
-            return element(by.xpath('/html/body/div[4]/div/ion-popover-view/ion-content/div[1]/nav/ul/li[3]/a')).click();
-            expect(MM.getView().getText()).toMatch('Spider');
+            expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="action(next)"]'));
+        }).then(function () {
+            expect(MM.getView().getText()).toMatch('2. Youtube video');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="action(next)"]'));
+        }).then(function () {
+            expect(MM.getView().getText()).toMatch('3. Cultural');
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="action(previous)"]'));
+        }).then(function () {
+            return MM.clickOnElement($('[ng-click="action(previous)"]'));
+        }).then(function () {
+            expect(MM.getView().getText()).toMatch('1. Models of digital literacy');
         }).then(function () {
             done();
         });
     });
 
-    it('Can go all the Video resources press next and previous icon', function (done) {
+    it('Click secondary bookmark button in One approach to digital literacy', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Video resources');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('1 Trailer: A beautiful mind');
+            return MM.clickOn('One approach to digital literacy');
         }).then(function () {
-            return $('[ng-click="action(next)"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('2 Trailer: Fight club');
+            browser.sleep(5000); // Wait for everything to render
+            return $('[ng-click="openToc($event)"]').click();
         }).then(function () {
-            return $('[ng-click="action(next)"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('3 Trailer: Spider');
-        }).then(function() {
-            return $('[ng-click="action(previous)"]').click();
-        }).then(function() {
-            return $('[ng-click="action(previous)"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('1 Trailer: A beautiful mind');
-        }).then(function() {
-            done();
-        });
-    });
-
-    it('Click secondary button in Video resources', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOn('Cognitive');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('Background information');
-        }).then(function () {
-            return MM.clickOn('Video resources');
-        }).then(function () {
-            return $('[ng-href="http://school.demo.moodle.net/mod/book/view.php?id=708"]').click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('1 Trailer: A beautiful mind');
+            browser.sleep(5000); // Wait for everything to render
+            expect(MM.getView().getText()).toMatch('4. Cognitive');
         }).then(function () {
             done();
         });
     });
 
-    it('Click secondary menu button in Video resources', function (done) {
+    it('Click secondary menu button in One approach to digital literacy', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Video resources');
+            return MM.clickOn('One approach to digital literacy');
         }).then(function () {
-            return $('[ng-click="popover.show($event)"]').click();
-        }).then(function() {
-            return element(by.xpath('/html/body/div[4]/div/ion-popover-view/ion-content/div[1]/nav/ul/li[3]/a')).click();
-            expect(MM.getView().getText()).toMatch('3 Trailer: Spider');
+            browser.sleep(5000); // Wait for everything to render
+            return $('[ng-click="showContextMenu($event)"]').click();
+        }).then(function () {
+           browser.sleep(5000); // Wait for button css to render.
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
         }).then(function () {
             done();
         });

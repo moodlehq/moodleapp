@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can see more options in course content section as a teacher', function() {
+describe('User can see more options in course content section as a teacher', function () {
 
     it('User can see different options in Group Projects and Individual tasks as a teacher  ', function (done) {
         return MM.loginAsTeacher().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function() {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
             return MM.clickOn('Psychology in Cinema');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Group Projects and Individual tasks');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Select your focus film');
-            expect(MM.getView().getText()).toMatch('Group Project');
-            expect(MM.getView().getText()).toMatch('Dissertation: Fight club');
-            expect(MM.getView().getText()).toMatch('Dissertation: A Beautiful Mind');
-            expect(MM.getView().getText()).toMatch('Dissertation: Spider');
-            expect(MM.getView().getText()).toMatch('Grammar help with your essays');
-            expect(MM.getView().getText()).toMatch('Discussions about your group projects');
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('Select your focus film');
+            expect(MM.getView().getText()).toContain('Group Project');
+            expect(MM.getView().getText()).toContain('Dissertation: Fight club');
+            expect(MM.getView().getText()).toContain('Dissertation: A Beautiful Mind');
+            expect(MM.getView().getText()).toContain('Dissertation: Spider');
+            expect(MM.getView().getText()).toContain('Grammar help with your essays');
+            expect(MM.getView().getText()).toContain('Discussions about your group projects');
         }).then(function () {
             done();
         });
