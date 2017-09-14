@@ -23,13 +23,18 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopIndexCtrl', function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
         $mmCourseHelper, $q, $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $ionicModal,
-        $mmGroups, $ionicPlatform, $mmaModWorkshopHelper, $mmSite, mmaModWorkshopPerPage) {
+        $mmGroups, $ionicPlatform, $mmaModWorkshopHelper, mmaModWorkshopPerPage, $state, mmaModWorkshopSubmissionChangedEvent,
+        $ionicScrollDelegate) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
+        obsSubmissionChanged,
         onlineObserver,
         resumeObserver,
-        supportedTasks = {}; // Add here native supported tasks.
+        scrollView,
+        supportedTasks = { // Add here native supported tasks.
+            'submit': true
+        };
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -196,7 +201,22 @@ angular.module('mm.addons.mod_workshop')
     // Open task.
     $scope.runTask = function(task) {
         if (task.support) {
-            // TODO: Add support depending on task.code.
+            switch (task.code) {
+                case 'submit':
+                    var stateParams = {
+                        module: module,
+                        access: $scope.access,
+                        courseid: courseId,
+                        submission: $scope.submission
+                    };
+
+                    if ($scope.submission.id) {
+                        stateParams.submissionid = $scope.submission.id;
+                    }
+
+                    $state.go('site.mod_workshop-edit-submission', stateParams);
+                    break;
+            }
         } else if (task.link) {
             $mmUtil.openInBrowser(task.link);
         }
@@ -280,6 +300,28 @@ angular.module('mm.addons.mod_workshop')
         }
     }
 
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModWorkshopIndexScroll');
+        }
+        scrollView && scrollView.scrollTop && scrollView.scrollTop();
+    }
+
+    // Function called when we receive an event of submission changes.
+    function eventReceived(data) {
+        if (($scope.workshop && $scope.workshop.id === data.workshopid) || data.cmid === module.id) {
+            scrollTop();
+
+            $scope.workshopLoaded = false;
+            refreshAllData(true, false);
+            // Check completion since it could be configured to complete once the user adds a new discussion or replies.
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+        }
+    }
+
+    // Listen for submission changes.
+    obsSubmissionChanged = $mmEvents.on(mmaModWorkshopSubmissionChangedEvent, eventReceived);
+
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
         $scope.isOnline = online;
@@ -287,12 +329,15 @@ angular.module('mm.addons.mod_workshop')
 
     // Since most actions will take the user out of the app, we should refresh the view when the app is resumed.
     resumeObserver = $ionicPlatform.on('resume', function() {
+        scrollTop();
+
         $scope.workshopLoaded = false;
         return refreshAllData(true, false);
     });
 
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
+        obsSubmissionChanged && obsSubmissionChanged.off && obsSubmissionChanged.off();
         resumeObserver && resumeObserver();
     });
 });

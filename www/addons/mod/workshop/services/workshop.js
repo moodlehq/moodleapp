@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc controller
  * @name $mmaModWorkshop
  */
-.factory('$mmaModWorkshop', function($q, $mmSitesManager, mmaModWorkshopComponent, $mmFilepool, $mmSite, mmaModWorkshopPerPage) {
+.factory('$mmaModWorkshop', function($q, $mmSitesManager, mmaModWorkshopComponent, $mmFilepool, $mmSite, mmaModWorkshopPerPage,
+        $mmaModWorkshopOffline, $mmApp) {
     var self = {
         PHASE_SETUP: 10,
         PHASE_SUBMISSION: 20,
@@ -604,6 +605,180 @@ angular.module('mm.addons.mod_workshop')
     self.invalidateSubmissionAssesmentsData = function(workshopId, submissionId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getSubmissionAssessmentsDataCacheKey(workshopId, submissionId));
+        });
+    };
+
+    /**
+     * Add a new submission to a given workshop.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#addSubmission
+     * @param {Number}  workshopId      Workshop ID.
+     * @param {Number}  courseId        Course ID the forum belongs to.
+     * @param {String}  title           The submission title.
+     * @param {String}  content         The submission text content.
+     * @param {Number}  [attachmentsId] The draft file area id for attachments.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Number}  [timecreated]   The time the submission was created. Only used when editing an offline discussion.
+     * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
+     * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
+     */
+    self.addSubmission = function(workshopId, courseId, title, content, attachmentsId, siteId, timecreated, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        var discardPromise =
+            timecreated ? $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, timecreated, 'add', siteId) : $q.when();
+
+        return discardPromise.then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.addSubmissionOnline(workshopId, title, content, attachmentsId, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveSubmission(workshopId, courseId, title, content, attachmentsId, timecreated, 'add',
+                    siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Add a new submission to a given workshop. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#addSubmissionOnline
+     * @param  {Number} workshopId      Workshop ID.
+     * @param  {String} title           The submission title.
+     * @param  {String} content         The submission text content.
+     * @param  {Number} [attachmentsId] The draft file area id for attachments.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the submission is created.
+     */
+    self.addSubmissionOnline = function(workshopId, title, content, attachmentsId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                workshopid: workshopId,
+                title: title,
+                content: content,
+                attachmentsid: attachmentsId || 0
+            };
+
+            return site.write('mod_workshop_add_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.submissionid) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return response.submissionid;
+            });
+        });
+    };
+
+    /**
+     * Updates the given submission.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#updateSubmission
+     * @param {Number}  workshopId      Workshop ID.
+     * @param  {Number} submissionId    Submission ID.
+     * @param {Number}  courseId        Course ID the forum belongs to.
+     * @param {String}  title           The submission title.
+     * @param {String}  content         The submission text content.
+     * @param {Number}  [attachmentsId] The draft file area id for attachments.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
+     * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
+     */
+    self.updateSubmission = function(workshopId, submissionId, courseId, title, content, attachmentsId, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, 'update', siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.updateSubmissionOnline(submissionId, title, content, attachmentsId, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveSubmission(workshopId, courseId, title, content, attachmentsId, submissionId, 'update',
+                    siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Updates the given submission. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#updateSubmissionOnline
+     * @param  {Number} submissionId    Submission ID.
+     * @param  {String} title           The submission title.
+     * @param  {String} content         The submission text content.
+     * @param  {Number} [attachmentsId] The draft file area id for attachments.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the submission is updated.
+     */
+    self.updateSubmissionOnline = function(submissionId, title, content, attachmentsId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: submissionId,
+                title: title,
+                content: content,
+                attachmentsid: attachmentsId || 0
+            };
+
+            return site.write('mod_workshop_update_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Return submissionId to be consistent with addSubmission.
+                return submissionId;
+            });
         });
     };
 

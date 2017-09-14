@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc controller
  * @name mmaModWorkshopSubmissionCtrl
  */
-.controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
-        $q, $mmUtil, $mmaModWorkshopHelper, $mmSite) {
+.controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
+        $mmaModWorkshopHelper) {
 
     var submission = $stateParams.submission || {},
         module = $stateParams.module,
@@ -32,9 +32,6 @@ angular.module('mm.addons.mod_workshop')
 
     $scope.title = module.name;
     $scope.courseId = $stateParams.courseid;
-    $scope.moduleName = $mmCourse.translateModuleName('workshop');
-    $scope.component = mmaModWorkshopComponent;
-    $scope.componentId = workshopId;
     $scope.submissionLoaded = false;
     $scope.module = module;
 
@@ -66,12 +63,25 @@ angular.module('mm.addons.mod_workshop')
         });
     }
 
+    $scope.editSubmission = function() {
+        var stateParams = {
+            module: module,
+            access: access,
+            courseid: $scope.courseId,
+            submission: $scope.submission,
+            submissionid: $scope.submission.submissionid
+        };
+
+        $state.go('site.mod_workshop-edit-submission', stateParams);
+    };
+
     // Convenience function to refresh all the data.
     function refreshAllData() {
         var promises = [];
 
         promises.push($mmaModWorkshop.invalidateSubmissionData(workshopId, submission.submissionid));
         promises.push($mmaModWorkshop.invalidateSubmissionsData(workshopId));
+        promises.push($mmaModWorkshop.invalidateSubmissionAssesmentsData(workshopId, submission.submissionid));
 
         return $q.all(promises).finally(function() {
             return fetchSubmissionData(true);

@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopHelper
  */
-.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite) {
+.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS,
+        $mmaModWorkshopOffline) {
 
     var self = {},
         examples = {
@@ -135,6 +136,65 @@ angular.module('mm.addons.mod_workshop')
         });
     };
 
+    /**
+     * Delete stored attachment files for a submission.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#deleteSubmissionStoredFiles
+     * @param  {Number} forumId     Forum ID.
+     * @param  {Number} timecreated The time the discussion was created.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when deleted.
+     */
+    self.deleteSubmissionStoredFiles = function(workshopId, submissionId, editing, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFS.removeDir(folderPath);
+        });
+    };
+
+    /**
+     * Given a list of files (either online files or local files), store the local files in a local folder
+     * to be submitted later.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#storeSubmissionFiles
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   submissionId If not editing, it will refer to timecreated.
+     * @param  {Object[]} files        List of files.
+     * @param  {Boolean}  editing      If the submission is being edited or added otherwise.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved if success, rejected otherwise.
+     */
+    self.storeSubmissionFiles = function(workshopId, submissionId, editing, files, siteId) {
+        // Get the folder where to store the files.
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
+        });
+    };
+
+    /**
+     * Upload or store some files for a submission, depending if the user is offline or not.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#uploadOrStoreSubmissionFiles
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   submissionId If not editing, it will refer to timecreated.
+     * @param  {Object[]} files        List of files.
+     * @param  {Boolean}  editing      If the submission is being edited or added otherwise.
+     * @param  {Boolean}  offline      True if files sould be stored for offline, false to upload them.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved if success.
+     */
+    self.uploadOrStoreSubmissionFiles = function(workshopId, submissionId, files, editing, offline, siteId) {
+        if (offline) {
+            return self.storeSubmissionFiles(workshopId, submissionId, editing, files, siteId);
+        } else {
+            return $mmFileUploader.uploadOrReuploadFiles(files, mmaModWorkshopComponent, workshopId, siteId);
+        }
+    };
 
     return self;
 });

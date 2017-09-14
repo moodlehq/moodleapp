@@ -70,8 +70,8 @@
                     </div>
 
                     <div ng-if="canSubmit" class="item item-text-wrap">
-                        <a class="button button-block button-positive" ng-if="access.creatingsubmissionallowed && !submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.createsubmission' | translate }}</a>
-                        <a class="button button-block button-positive" ng-if="access.modifyingsubmissionallowed && submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.editsubmission' | translate }}</a>
+                        <a class="button button-block button-positive icon-left ion-plus-round" ng-if="access.creatingsubmissionallowed && !submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.createsubmission' | translate }}</a>
+                        <a class="button button-block button-positive icon-left ion-edit" ng-if="access.modifyingsubmissionallowed && submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.editsubmission' | translate }}</a>
                     </div>
 
                     <div class="card" ng-if="access.canviewallsubmissions && grades">
