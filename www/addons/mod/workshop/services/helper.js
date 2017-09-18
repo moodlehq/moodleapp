@@ -196,5 +196,74 @@ angular.module('mm.addons.mod_workshop')
         }
     };
 
+    /**
+     * Get a list of stored attachment files for a submission. See $mmaModWorkshopHelper#storeFiles.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getStoredFiles
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   submissionId If not editing, it will refer to timecreated.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the files.
+     */
+    self.getStoredFiles = function(workshopId, submissionId, editing, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function() {
+                // Ignore not found files.
+                return [];
+            });
+        });
+    };
+
+    /**
+     * Returns the action of a given submission.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#filterSubmissionActions
+     * @param  {Array}    actions      Offline actions to be applied to the given submission.
+     * @param  {Number}   submissionId ID of the submission to filter by or false.
+     * @return {Promise}               Promise resolved with the files.
+     */
+    self.filterSubmissionActions = function(actions, submissionId) {
+        return actions.filter(function(action) {
+            if (submissionId) {
+                return action.submissionid == submissionId;
+            } else {
+                return action.submissionid > 0;
+            }
+        });
+    };
+
+    /**
+     * Applies offline data to submission.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#applyOfflineData
+     * @param  {Object}   submission   Submission object to be modified.
+     * @param  {Array}    actions      Offline actions to be applied to the given submission.
+     * @return {Promise}               Promise resolved with the files.
+     */
+    self.applyOfflineData = function(submission, actions) {
+        angular.forEach(actions, function(action) {
+            switch (action.action) {
+                case 'update':
+                    console.error(action);
+                    submission.title = action.title;
+                    submission.content = action.content;
+                    submission.title = action.title;
+                    submission.submissionmodified = action.timemodified;
+                    break;
+                case 'add':
+                    break;
+                case 'delete':
+                    break;
+            }
+        });
+        return submission;
+    };
+
     return self;
 });

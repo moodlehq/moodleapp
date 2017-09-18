@@ -40,6 +40,11 @@ angular.module('mm.addons.mod_workshop')
     $scope.courseId = $stateParams.courseid;
     $scope.submissionLoaded = false;
     $scope.module = module;
+    $scope.submission = {
+        title: "",
+        text: "",
+        attachmentfiles: []
+    };
 
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     blockData = $mmUtil.blockLeaveView($scope, leaveView);
@@ -61,7 +66,7 @@ angular.module('mm.addons.mod_workshop')
                         return;
                     }
 
-                    originalData.title = submissionData.title;
+                    originalData.title = $scope.submission.title;
                     originalData.text = $scope.submission.text;
                     originalData.attachmentfiles = angular.copy($scope.submission.attachmentfiles);
 
@@ -152,8 +157,8 @@ angular.module('mm.addons.mod_workshop')
             if (editing) {
                 if (saveOffline) {
                     // Save submission in offline.
-                    return $mmaModWorkshopOffline.updateSubmission(workshopId, submissionId, $scope.courseId, title, content,
-                            attachmentsId).then(function() {
+                    return $mmaModWorkshopOffline.saveSubmission(workshopId, $scope.courseId, title, content, attachmentsId,
+                            submissionId, 'update').then(function() {
                         // Don't return anything.
                     });
                 }
@@ -165,8 +170,8 @@ angular.module('mm.addons.mod_workshop')
 
             if (saveOffline) {
                 // Save submission in offline.
-                return $mmaModWorkshopOffline.addSubmission(workshopId, $scope.courseId, title, content, attachmentsId,
-                        submissionId).then(function() {
+                return $mmaModWorkshopOffline.saveSubmission(workshopId, $scope.courseId, title, content, attachmentsId,
+                    submissionId, 'add').then(function() {
                     // Don't return anything.
                 });
             }

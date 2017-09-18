@@ -873,14 +873,33 @@ angular.module('mm.addons.mod_workshop')
      */
     self.invalidateContent = function(moduleId, courseId, siteId) {
         siteId = siteId || $mmSite.getId();
-        return self.getWorkshop(courseId, moduleId, siteId, true).then(function(workshop) {
-            var ps = [];
-            // Do not invalidate workshop data before getting workshop info, we need it!
-            ps.push(self.invalidateWorkshopData(courseId, siteId));
-            ps.push(self.invalidateWorkshopWSData(workshop.id, siteId));
 
-            return $q.all(ps);
+        return self.getWorkshop(courseId, moduleId, siteId, true).then(function(workshop) {
+            return self.invalidateContentById(workshop.id, courseId, siteId);
         });
+    };
+
+    /**
+     * Invalidate the prefetched content except files using the activityId.
+     * To invalidate files, use $mmaModWorkshop#invalidateFiles.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateContentById
+     * @param {Number} workshopId Workshop ID.
+     * @param {Number} courseId Course ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.invalidateContentById = function(workshopId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var ps = [];
+        // Do not invalidate workshop data before getting workshop info, we need it!
+        ps.push(self.invalidateWorkshopData(courseId, siteId));
+        ps.push(self.invalidateWorkshopWSData(workshopId, siteId));
+
+        return $q.all(ps);
     };
 
     /**

@@ -24,13 +24,16 @@ angular.module('mm.addons.mod_workshop')
 .controller('mmaModWorkshopIndexCtrl', function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
         $mmCourseHelper, $q, $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $ionicModal,
         $mmGroups, $ionicPlatform, $mmaModWorkshopHelper, mmaModWorkshopPerPage, $state, mmaModWorkshopSubmissionChangedEvent,
-        $ionicScrollDelegate) {
+        $ionicScrollDelegate, $mmaModWorkshopSync, mmaModWorkshopEventAutomSynced, $mmSite, $mmaModWorkshopOffline) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
+        siteId = $mmSite.getId(),
+        offlineSubmissions,
         obsSubmissionChanged,
         onlineObserver,
         resumeObserver,
+        syncObserver,
         scrollView,
         supportedTasks = { // Add here native supported tasks.
             'submit': true
@@ -65,6 +68,13 @@ angular.module('mm.addons.mod_workshop')
 
             $scope.title = $scope.workshop.name || $scope.title;
             $scope.description = $scope.workshop.intro || $scope.description;
+
+            if (sync) {
+                // Try to synchronize the workshop.
+                return syncWorkshop(showErrors).catch(function() {
+                    // Ignore errors.
+                });
+            }
         }).then(function() {
             return $mmaModWorkshop.getWorkshopAccessInformation($scope.workshop.id);
         }).then(function(accessData) {
@@ -109,6 +119,12 @@ angular.module('mm.addons.mod_workshop')
                 }
             });
 
+            // Check if there are info stored in offline.
+            return $mmaModWorkshopOffline.getSubmissions($scope.workshop.id).then(function(submissionsActions) {
+                $scope.hasOffline = !!submissionsActions.length;
+                offlineSubmissions = submissionsActions;
+            });
+        }).then(function() {
             return setPhaseInfo();
         }).then(function() {
             // All data obtained, now fill the context menu.
@@ -151,6 +167,22 @@ angular.module('mm.addons.mod_workshop')
 
         return $q.all(promises).finally(function() {
             return fetchWorkshopData(true, sync, showErrors);
+        });
+    }
+
+    // Tries to synchronize the workshop.
+    function syncWorkshop(showErrors) {
+        return $mmaModWorkshopSync.syncWorkshop($scope.workshop.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
+            }
+            return $q.reject();
         });
     }
 
@@ -282,12 +314,15 @@ angular.module('mm.addons.mod_workshop')
 
                 $scope.submission = false;
                 if ($scope.canSubmit) {
+                    // TODO: applyOfflineData for user submission, also new submissions.
                     return $mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
-                        $scope.submission = submission;
+                        var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.submissionid || false);
+                        $scope.submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
                     });
                 }
 
                 if ($scope.access.canviewallsubmissions) {
+                    // TODO: applyOfflineData for user submissions, also new submissions.
                     return $scope.gotoSubmissionsPage($scope.page);
                 }
                 break;
@@ -335,9 +370,19 @@ angular.module('mm.addons.mod_workshop')
         return refreshAllData(true, false);
     });
 
+    // Refresh workshop on sync.
+    syncObserver = $mmEvents.on(mmaModWorkshopEventAutomSynced, function(eventData) {
+        // Update just when all database is synced.
+        if ($scope.workshop.id == eventData.workshopid && siteId == eventData.siteid) {
+            $scope.workshopLoaded = false;
+            fetchWorkshopData(true);
+        }
+    });
+
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
         obsSubmissionChanged && obsSubmissionChanged.off && obsSubmissionChanged.off();
+        syncObserver && syncObserver.off && syncObserver.off();
         resumeObserver && resumeObserver();
     });
 });

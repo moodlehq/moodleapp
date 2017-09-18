@@ -17,6 +17,9 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
 .constant('mmaModWorkshopComponent', 'mmaModWorkshop')
 .constant('mmaModWorkshopSubmissionChangedEvent', 'mma-mod_workshop_submission_changed')
 .constant('mmaModWorkshopPerPage', 10)
+.constant('mmaModWorkshopEventAutomSynced', 'mma_mod_workshop_autom_synced')
+.constant('mmaModWorkshopEventManualSynced', 'mma_mod_workshop_manual_synced')
+.constant('mmaModWorkshopSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -78,4 +81,9 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModWorkshop', 'workshop', '$mmaModWorkshopHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModWorkshop', 'workshop', '$mmaModWorkshopPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWorkshop:index', '$mmaModWorkshopHandlers.indexLinksHandler');
+})
+
+.run(function($mmCronDelegate) {
+    // Register sync handler.
+    $mmCronDelegate.register('mmaModWorkshop', '$mmaModWorkshopHandlers.syncHandler');
 });

@@ -52,7 +52,7 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopOffline
  */
-.factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, $mmSitesManager, $mmFS) {
+.factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, $mmSitesManager, $mmFS, $q) {
 
     $log = $log.getInstance('$mmaModWorkshopOffline');
 
@@ -69,7 +69,7 @@ angular.module('mm.addons.mod_workshop')
      */
     self.getAllWorkshops = function(siteId) {
         var promises = [];
-        promises.push(getSubmissions(siteId));
+        promises.push(self.getSubmissions(siteId));
         // TODO: Add other objects.
 
         return $q.all(promises).then(function(objects) {
@@ -132,20 +132,28 @@ angular.module('mm.addons.mod_workshop')
      */
     self.deleteSubmissionAction = function(workshopId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            console.error( [workshopId, submissionId, action]);
             return site.getDb().remove(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
         });
     };
 
     /**
-     * Get all the stored submissions from all the workshops.
+     * Delete all workshop submission actions.
      *
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with submissions.
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#deleteAllSubmissionActions
+     * @param  {Number} workshopId   Workshop ID.
+     * @param  {Number} submissionId Submission ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved if stored, rejected if failure.
      */
-    function getAllSubmissions(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().getAll(mmaModWorkshopOfflineSubmissionStore);
+    self.deleteAllSubmissionActions = function(workshopId, submissionId, siteId) {
+        return self.getSubmissionActions(workshopId, submissionId, siteId).then(function(actions) {
+            var promises = [];
+            angular.forEach(actions, function(action) {
+                promises.push(self.deleteSubmissionAction(workshopId, submissionId, action.action, siteId));
+            });
+            return $q.all(promises);
         });
     };
 
@@ -176,7 +184,7 @@ angular.module('mm.addons.mod_workshop')
      * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved with the object to be synced.
      */
-    self.getSubmissionActions = function(workshopId,submissionId, siteId) {
+    self.getSubmissionActions = function(workshopId, submissionId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().whereEqual(mmaModWorkshopOfflineSubmissionStore, 'workshopAndSubmission', [workshopId, submissionId]);
         });
@@ -219,6 +227,7 @@ angular.module('mm.addons.mod_workshop')
     self.saveSubmission = function(workshopId, courseId, title, content, attachmentsId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
+                timemodified = new Date().getTime(),
                 submission = {
                     workshopid: workshopId,
                     courseid: courseId,
@@ -226,7 +235,8 @@ angular.module('mm.addons.mod_workshop')
                     content: content,
                     attachmentsid: attachmentsId || 0,
                     action: action,
-                    submissionid: submissionId ? submissionId : - new Date().getTime()
+                    submissionid: submissionId ? submissionId : -timemodified,
+                    timemodified: timemodified
                 };
 
             return db.insert(mmaModWorkshopOfflineSubmissionStore, submission);
