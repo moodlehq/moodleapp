@@ -3,7 +3,7 @@
     "anonymous": "Anónimo",
     "anonymous_entries": "Respostas anónimas ({{$a}})",
     "average": "Média",
-    "captchaofflinewarning": "Inquérito com captcha não pode ser concluído se não estiver configurado, nem em modo offline ou com o servidor em baixo.",
+    "captchaofflinewarning": "Inquérito com captcha não pode ser concluído offline, ou se não estiver configurado, ou o servidor está em baixo.",
     "complete_the_form": "Responder às questões...",
     "completed_feedbacks": "Respostas submetidas",
     "continue_the_form": "Continuar a responder às perguntas...",

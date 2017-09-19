@@ -5,7 +5,7 @@
     "confirmuploadfile": "Möchten Sie wirklich {{size}} hochladen?",
     "confirmuploadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchten Sie wirklich hochladen?",
     "errorcapturingaudio": "Fehler bei der Audioaufnahme",
-    "errorcapturingimage": "Fehler bei der Fotoaufnahme",
+    "errorcapturingimage": "Fehler beim Fotografieren",
     "errorcapturingvideo": "Fehler bei der Videoaufnahme",
     "errorgettingimagealbum": "Fehler beim Laden aus dem Fotoalbum",
     "errormustbeonlinetoupload": "Dateien können nur online hochgeladen werden.",

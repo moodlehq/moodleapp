@@ -1,7 +1,7 @@
 {
     "cannotsubmit": "Ihre Auswahl konnte nicht gespeichert werden. Versuchen Sie es bitte noch einmal.",
     "choiceoptions": "Abstimmoptionen",
-    "errorgetchoice": "Fehler beim Laden der Abstimmungsdaten",
+    "errorgetchoice": "Fehler beim Laden der Abstimmung",
     "expired": "Diese Abstimmung ist seit {{$a}} beendet. Eine Auswahl ist nicht mehr möglich.",
     "full": "(Nicht verfügbar)",
     "noresultsviewable": "Ergebnisse sind aktuell nicht sichtbar.",
@@ -13,7 +13,7 @@
     "responses": "Stimmabgaben",
     "responsesresultgraphdescription": "{{number}}% der Teilnehmer/innen haben die Option gewählt: {{text}}.",
     "responsesresultgraphheader": "Grafische Darstellung",
-    "resultsnotsynced": "Die letzte Antwort ist in den Ergebnissen noch nicht enthalten. Synchronisieren Sie die Daten.",
+    "resultsnotsynced": "Ihre letzte Antwort ist in den Ergebnissen nicht enthalten. Synchronisieren Sie die Daten.",
     "savemychoice": "Meine Auswahl speichern",
     "userchoosethisoption": "Teilnehmer/innen mit dieser Auswahl",
     "yourselection": "Ihre Auswahl"

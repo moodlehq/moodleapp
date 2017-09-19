@@ -1,0 +1,18 @@
+{
+    "cannotcalculategrade": "Die Bewertung konnte nicht berechnet werden.",
+    "dataattemptshown": "Diese Daten gehören zu Versuch {{number}}.",
+    "errorcreateofflineattempt": "Fehler beim Hinzufügen eines Offline-Versuchs. Versuche es noch einmal.",
+    "errordownloadscorm": "Fehler beim Laden des Lernpakets '{{name}}'.",
+    "errorgetscorm": "Fehler beim Laden von Lernpaketdaten",
+    "errorinvalidversion": "Die App unterstützt ausschließlich Lernpakete mit SCORM 1.2.",
+    "errornotdownloadable": "Das Herunterladen von Lernpaketen ist für deine Website deaktiviert. Frage den Administrator der Website.",
+    "errornovalidsco": "Dieses Lernpaket hat kein sichtbares SCO zum Laden.",
+    "errorpackagefile": "Die App unterstützt ausschließlich ZIP-Pakete.",
+    "errorsyncscorm": "Fehler beim Synchronisieren. Versuche es noch einmal.",
+    "offlineattemptnote": "Dieser Versuch enthält Daten, die noch nicht synchronisiert wurden.",
+    "offlineattemptovermax": "Dieser Versuch kann nicht gesendet werden, weil du die maximale Anzahl von Versuchen überschritten hast.",
+    "scormstatusnotdownloaded": "Dieses Lernpaket ist noch nicht geladen. Es wird automatisch heruntergeladen, wenn du es öffnst.",
+    "scormstatusoutdated": "Dieses Lernpaket wurde seit dem Herunterladen verändert. Es wird automatisch heruntergeladen, wenn du es öffnst.",
+    "warningofflinedatadeleted": "Die Offline-Daten von Versuch {{number}} wurden gelöscht, weil sie nicht für einen neuen Versuch verwendet werden können.",
+    "warningsynconlineincomplete": "Die Versuche konnten nicht synchronisiert werden, weil der letzte Online-Versuchnicht beendet wurde. Beende zuerst den Online-Versuch."
+}

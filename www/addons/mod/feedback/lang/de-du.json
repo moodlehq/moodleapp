@@ -1,0 +1,4 @@
+{
+    "captchaofflinewarning": "Ein Feedback mit Captcha kann offline nicht beendet werden. Captcha funktioniert nur, wenn der Server antwortet.",
+    "feedback_submitted_offline": "Das Feedback wurde gespeichert, um es später zu übertragen."
+}

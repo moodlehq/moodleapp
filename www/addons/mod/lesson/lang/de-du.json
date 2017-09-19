@@ -1,0 +1,9 @@
+{
+    "errorprefetchrandombranch": "Die Lektion enthält einen Sprung zu einer zufälligen Seite. Die Lektion kann nicht in der App versucht werden, ohne im Web begonnen zu sein.",
+    "errorreviewretakenotlast": "Dieser Versuch kann nicht mehr angesehen werden, weil ein weiterer Versuch beendet wurde.",
+    "finishretakeoffline": "Dieser Versuch wurde offline beendet.",
+    "retakefinishedinsync": "Ein Offline-Versuch wurde synchronisiert. Möchtest du ihn überprüfen?",
+    "retakelabelfull": "{{retake}}: {{grade}} {{timestart}} ({{duration}})",
+    "retakelabelshort": "{{retake}}: {{grade}} {{timestart}}",
+    "warningretakefinished": "Der Versuch wurde auf der Website beendet."
+}

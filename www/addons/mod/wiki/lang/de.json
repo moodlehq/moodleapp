@@ -3,7 +3,7 @@
     "createpage": "Seite erstellen",
     "editingpage": "Die Seite '{{$a}}' wird bearbeitet",
     "errorloadingpage": "Fehler beim Laden der Seite",
-    "errornowikiavailable": "Dieses Wiki hat bisher keinen Inhalt.",
+    "errornowikiavailable": "Dieses Wiki hat noch keinen Inhalt.",
     "gowikihome": "Zur Wiki-Startseite",
     "map": "Spezialseiten",
     "newpagehdr": "Neue Seite",

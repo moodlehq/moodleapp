@@ -1,0 +1,18 @@
+{
+    "cannotretrievemorecategories": "Kursbereiche tiefer als Level {{$a}} können nicht abgerufen werden.",
+    "confirmselfenrol": "Möchtest du dich selbst in diesen Kurs einschreiben?",
+    "enrolme": "Selbst einschreiben",
+    "errorloadcategories": "Fehler beim Laden der Kursbereiche",
+    "errorloadcourses": "Fehler beim Laden der Kurse",
+    "errorsearching": "Fehler beim Suchen",
+    "errorselfenrol": "Fehler bei der Selbsteinschreibung",
+    "filtermycourses": "Meine Kurse filtern",
+    "frontpage": "Startseite",
+    "nocourses": "Keine Kursinformation",
+    "nosearchresults": "Keine Suchergebnisse",
+    "notenrollable": "Du kannst dich nicht selbst in diesen Kurs einschreiben.",
+    "password": "Einschreibeschlüssel",
+    "searchcoursesadvice": "Du kannst Kurse suchen, um als Gast teilzunehmen oder dich selbst einzuschreiben, falls dies erlaubt ist.",
+    "selfenrolment": "Selbsteinschreibung",
+    "totalcoursesearchresults": "Alle Kurse: {{$a}}"
+}

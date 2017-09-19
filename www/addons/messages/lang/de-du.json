@@ -1,0 +1,21 @@
+{
+    "blockcontactconfirm": "Du sperrst gerade alle Mitteilungen von dieser Person.",
+    "contactlistempty": "Die Kontaktliste ist leer.",
+    "contactname": "Name",
+    "errordeletemessage": "Fehler beim Löschen der Mitteilung",
+    "errorwhileretrievingcontacts": "Fehler beim Abrufen der Kontakte vom Server",
+    "errorwhileretrievingdiscussions": "Fehler beim Abrufen der Themen vom Server",
+    "errorwhileretrievingmessages": "Fehler beim Abrufen der Mitteilungen vom Server",
+    "loadpreviousmessages": "Vorherige Mitteilungen laden",
+    "messagenotsent": "Die Mitteilung wurde nicht gesendet. Versuche es später noch einmal.",
+    "mustbeonlinetosendmessages": "Du muss online sein, um Mitteilungen zu senden.",
+    "newmessages": "Neue Mitteilungen",
+    "nousersfound": "Keine Personen gefunden",
+    "removecontactconfirm": "Der Kontakt wird aus deiner Kontaktliste gelöscht.",
+    "type_blocked": "Blockiert",
+    "type_offline": "Offline",
+    "type_online": "Online",
+    "type_search": "Suchergebnisse",
+    "type_strangers": "Andere Personen",
+    "warningmessagenotsent": "Die Mitteilung an {{user}} konnte nicht gesendet werden. {{error}}"
+}
