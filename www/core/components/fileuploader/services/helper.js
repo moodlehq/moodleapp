@@ -253,6 +253,7 @@ angular.module('mm.core.fileuploader')
             }
 
             if (mimetype && mimetypes.indexOf(mimetype) == -1) {
+                extension = extension || $translate.instant('mm.core.unknown');
                 return $translate.instant('mm.fileuploader.invalidfiletype', {$a: extension});
             }
         }

@@ -1599,6 +1599,10 @@ angular.module('mm.core')
      * @since 3.3.2
      */
     self.cleanExtension = function(extension) {
+        if (!extension || typeof extension != 'string') {
+            return extension;
+        }
+
         // If the extension has parameters, remove them.
         var position = extension.indexOf('?');
         if (position > -1) {
