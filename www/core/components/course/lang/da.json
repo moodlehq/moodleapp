@@ -1,7 +1,11 @@
 {
+    "activitydisabled": "Denne aktivitet er deaktiveret i mobilappen.",
+    "activitynotyetviewableinapp": "Vi arbejder på at understøtte aktiviteten {{$a}}.",
     "allsections": "Alle sektioner",
+    "confirmdeletemodulefiles": "Er du sikker på at du vil slette disse modulfiler?",
     "confirmdownload": "Du er ved at hente {{size}}. Er du sikker på at du vil fortsætte?",
     "confirmdownloadunknownsize": "Vi kunne ikke beregne størrelsen af dit download. Er du sikker på du vil hende det?",
+    "confirmpartialdownloadsize": "Du er ved at downloade <strong>mindst</strong> {{size}}. Er du sikker på at du vil fortsætte?",
     "contents": "Indhold",
     "couldnotloadsectioncontent": "Kunne ikke indlæse sektionens indhold, prøv igen senere.",
     "couldnotloadsections": "Kunne ikke indlæse sektionerne, prøv igen senere.",

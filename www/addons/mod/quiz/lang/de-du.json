@@ -1,0 +1,22 @@
+{
+    "cannotsubmitquizdueto": "Der Test kann aus folgenden Gründen nicht abgegeben werden:",
+    "confirmcontinueoffline": "Dieser Versuch wurde seit {{$a}} nicht synchronisiert. Falls du inzwischen mit einem anderen Gerät weiter gearbeitet hast, könnten Daten verloren gegangen sein.",
+    "confirmleavequizonerror": "Fehler beim Speichern der Antworten. Möchtest du den Test wirklich verlassen?",
+    "errorbehaviournotsupported": "Der Test kann in der App nicht durchgeführt werden, weil Folgendes nicht unterstützt wird:",
+    "errordownloading": "Fehler beim Laden notwendiger Daten",
+    "errorgetattempt": "Fehler beim Laden der Versuche",
+    "errorgetquestions": "Fehler beim Laden der Fragen",
+    "errorgetquiz": "Fehler beim Laden der Testdaten",
+    "errorparsequestions": "Fehler beim Darstellen der Fragen. Versuche, diesen Test in einem Browser zu öffnen.",
+    "errorquestionsnotsupported": "Dieser Test wird in der App nicht ausgeführt, weil er von der App nicht unterstützte Fragetypen enthält.",
+    "errorrulesnotsupported": "Dieser Test wird in der App nicht ausgeführt, weil er von der App nicht unterstützte aktive Formeln enthält.",
+    "errorsaveattempt": "Fehler beim Speichern des Versuchs",
+    "errorsyncquiz": "Fehler beim Synchronisieren. Versuche es noch einmal.",
+    "errorsyncquizblocked": "Der Test kann im Moment nicht synchronisiert werden. Versuche es später noch einmal. Falls das Problem weiterhin besteht, starte die App neu.",
+    "finishnotsynced": "Beendet, aber nicht synchronisiert",
+    "hasdatatosync": "Dieser Test enthält Offline-Daten, die synchonisiert werden müssen.",
+    "opentoc": "Navigationsfeld öffnen",
+    "warningattemptfinished": "Der Offline-Versuch wurde verworfen, weil er auf der Website beendet wurde oder nicht mehr existiert.",
+    "warningdatadiscarded": "Einige Offline-Antworten könnten verworfen worden sein, weil die Fragen online verändert wurden.",
+    "warningdatadiscardedfromfinished": "Der Versuch wurde nicht beendet, weil Offline-Antworten verworfen wurden. Überprüfe deine Antworten und übermittle den Versuch noch einmal."
+}

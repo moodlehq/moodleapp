@@ -1,0 +1,20 @@
+{
+    "activitydisabled": "Für diese Website ist die Aktivität in der App deaktiviert.",
+    "activitynotyetviewableinapp": "Wir arbeiten daran, die Aktivität {{$a}} zu unterstützen.",
+    "activitynotyetviewableremoteaddon": "Für die Website ist ein Plugin installiert, das bisher nicht unterstützt wird.",
+    "activitynotyetviewablesiteupgradeneeded": "Diese Website muss aktualisiert werden.",
+    "allsections": "Alle Abschnitte",
+    "askadmintosupport": "Frage den Administrator der Website, um die Aktivität mit der mobilen App verwenden zu können.",
+    "confirmdeletemodulefiles": "Möchtest du diese Dateien wirklich löschen?",
+    "confirmdownload": "Möchtest du wirklich {{size}} herunterladen?",
+    "confirmdownloadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchtest du wirklich herunterladen?",
+    "confirmpartialdownloadsize": "Möchtest du wirklich {{size}} herunterladen?",
+    "contents": "Inhalte",
+    "couldnotloadsectioncontent": "Die Abschnittsinhalte konnten nicht geladen werden. Versuche es später noch einmal.",
+    "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuche es später noch einmal.",
+    "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
+    "errorgetmodule": "Fehler beim Laden von Moduldaten",
+    "nocontentavailable": "Momentan sind keine Inhalte verfügbar",
+    "showall": "Alles anzeigen",
+    "useactivityonbrowser": "Du kannst dafür weiterhin den normalen Browser verwenden."
+}

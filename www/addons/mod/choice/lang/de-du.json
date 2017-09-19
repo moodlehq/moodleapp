@@ -1,0 +1,5 @@
+{
+    "errorgetchoice": "Fehler beim Laden der Abstimmung",
+    "responsesresultgraphdescription": "{{number}}% der Teilnehmer/innen haben die Option gewählt: {{text}}.",
+    "resultsnotsynced": "Deine letzte Antwort ist in den Ergebnissen nicht enthalten. Synchronisiere die Daten."
+}

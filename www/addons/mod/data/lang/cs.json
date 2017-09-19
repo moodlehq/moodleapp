@@ -13,6 +13,8 @@
     "emptyaddform": "Nevyplnili jste žádná pole!",
     "entrieslefttoadd": "Ještě musíte vložit {{$a.entriesleft}} záznamů(-y), abyste dokončili tuto činnost",
     "entrieslefttoaddtoview": "Ještě musíte vložit {{$a.entrieslefttoview}} záznamů(-y), než budete moci vidět záznamy ostatních účastníků.",
+    "errorapproving": "Chyba při schvalování nebo odmítnutí položky.",
+    "errordeleting": "Chyba při mazání položky.",
     "errormustsupplyvalue": "Musí obsahovat nějakou hodnotu.",
     "expired": "Tato činnost byla ukončena {{$a}} a není již nadále dostupná.",
     "fields": "Pole",

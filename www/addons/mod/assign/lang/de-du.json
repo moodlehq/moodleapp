@@ -1,0 +1,15 @@
+{
+    "acceptsubmissionstatement": "Bestätige das Abgabestatement zur Eigenständigkeit.",
+    "cannoteditduetostatementsubmission": "Du kann keine Abgabe hinzufügen oder bearbeiten, weil kein Abgabestatement von der Website abgerufen werden konnte.",
+    "cannotgradefromapp": "Manche Bewertungsmethoden werden von der App noch nicht unterstützt und können nicht verändert werden.",
+    "cannotsubmitduetostatementsubmission": "Du kannst nichts zur Bewertung abgeben, weil von der Website kein Abgabestatement  abgerufen werden konnte.",
+    "erroreditpluginsnotsupported": "Du kannst keine Abgabe in der App hinzufügen oder bearbeiten, weil manche Plugins keine Bearbeitung zulassen:",
+    "errorshowinginformation": "Die Abgabeinformationen können nicht angezeigt werden.",
+    "feedbacknotsupported": "Dieses Feedback wird von der App nicht unterstützt und könnte möglicherweise Informationen unvollständig enthalten.",
+    "gradenotsynced": "Bewertung nicht synchronisiert",
+    "notallparticipantsareshown": "Teilnehmer/innen ohne Abgaben werden nicht angezeigt.",
+    "submissionnotsupported": "Diese Abgabe wird von der App nicht unterstützt und könnte möglicherweise nicht alle Informationen enthalten.",
+    "userwithid": "Nutzer/in mit ID {{id}}",
+    "warningsubmissiongrademodified": "Die Abgabebewertung wurde auf der Website geändert.",
+    "warningsubmissionmodified": "Die Abgabe wurde auf der Website geändert."
+}

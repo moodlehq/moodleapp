@@ -1,0 +1,8 @@
+{
+    "errorattachmentsnotsupported": "Die App erlaubt keine Antworten mit Dateianhängen.",
+    "errorinlinefilesnotsupported": "Die App unterstützt keine Bearbeitung von integrierten Dateien.",
+    "errorquestionnotsupported": "Die App unterstützt diesen Fragetyp nicht: {{$a}}.",
+    "howtodraganddrop": "Tippe zum Auswählen und tippe noch einmal zum Ablegen.",
+    "questionmessage": "Frage {{$a}}: {{$b}}",
+    "unknown": "Der Status kann nicht bestimmt werden."
+}
