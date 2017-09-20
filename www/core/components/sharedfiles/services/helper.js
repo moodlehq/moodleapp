@@ -21,7 +21,6 @@ angular.module('mm.core.sharedfiles')
 
     var self = {},
         filePickerDeferred,
-        fileListModal,
         fileListScope;
 
     /**
@@ -115,6 +114,9 @@ angular.module('mm.core.sharedfiles')
      * @return {Promise}         Promise resolved when state changed.
      */
     self.goToChooseSite = function(filePath) {
+        // If the modal is shown, close it.
+        fileListScope && fileListScope.closeModal && fileListScope.closeModal();
+
         var parentState = $state.$current.name.split('.')[0];
         return $state.go(parentState + '.sharedfiles-choose-site', {filepath: filePath});
     };
@@ -128,14 +130,12 @@ angular.module('mm.core.sharedfiles')
      * @return {Promise} Promise resolved when the modal is initialized.
      */
     self.initFileListModal = function() {
-        if (fileListModal) {
+        if (fileListScope && fileListScope.modal) {
             // Already initialized.
             return $q.when();
         }
 
-        if (!fileListScope) {
-            fileListScope = $rootScope.$new();
-        }
+        fileListScope = $rootScope.$new();
 
         return $ionicModal.fromTemplateUrl('core/components/sharedfiles/templates/listmodal.html', {
             scope: fileListScope,
