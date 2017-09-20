@@ -79,6 +79,8 @@ angular.module('mm.addons.grades')
         /**
          * Check if handler is enabled for this course.
          *
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
+         *
          * @param  {Number} courseId     Course ID.
          * @param  {Object} accessData   Type of access to the course: default, guest, ...
          * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.

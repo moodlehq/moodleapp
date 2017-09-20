@@ -151,8 +151,11 @@ angular.module('mm.core.courses')
         }));
 
         return $q.all(promises).then(function() {
-            var getHandlersFn = guest ? $mmCoursesDelegate.getNavHandlersForGuest : $mmCoursesDelegate.getNavHandlersFor;
-            course._handlers = getHandlersFn(course.id, refresh, navOptions[course.id], admOptions[course.id]);
+            // Get the handlers to be shown.
+            return $mmCoursesDelegate.getNavHandlersToDisplay(
+                    course, refresh, guest, true, navOptions[course.id], admOptions[course.id]);
+        }).then(function(handlers) {
+            course._handlers = handlers;
             $scope.handlersShouldBeShown = true;
         });
 

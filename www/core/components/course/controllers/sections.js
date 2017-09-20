@@ -63,7 +63,7 @@ angular.module('mm.core.course')
             }
 
             // Load course actions in background.
-            $mmCoursesDelegate.getNavHandlersForCourse(course, refresh, true).then(function(buttons) {
+            $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, false, true).then(function(buttons) {
                 $scope.courseActions = buttons.map(function(button) {
                     var newScope = $scope.$new();
                     $controller(button.controller, {$scope: newScope});
