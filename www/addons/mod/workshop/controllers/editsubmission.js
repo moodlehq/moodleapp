@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopEditSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $q, $mmUtil, $mmaModWorkshopHelper,
         $mmSite, mmaModWorkshopComponent, $mmFileUploaderHelper, $translate, $mmText, $mmaModWorkshopOffline, $mmEvents,
-        mmaModWorkshopSubmissionChangedEvent) {
+        mmaModWorkshopSubmissionChangedEvent, $mmaModWorkshopOffline) {
 
     var submission = $stateParams.submission || {},
         module = $stateParams.module,
@@ -33,6 +33,7 @@ angular.module('mm.addons.mod_workshop')
         originalData = {},
         blockData,
         timecreated,
+        saveOffline = false,
         editing = false;
 
     $scope.title = module.name;
@@ -49,11 +50,11 @@ angular.module('mm.addons.mod_workshop')
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     blockData = $mmUtil.blockLeaveView($scope, leaveView);
 
-    function fetchSubmissionData(refresh) {
+    function fetchSubmissionData() {
         return $mmaModWorkshop.getWorkshop($scope.courseId, module.id).then(function(workshopData) {
             $scope.workshop = workshopData;
 
-            if (submission && submission.id) {
+            if (submission && submission.id > 0) {
                 editing = true;
                 return $mmaModWorkshopHelper.getSubmissionById(workshopId, submission.id).then(function(submissionData) {
                     $scope.submission = submissionData;
@@ -65,30 +66,30 @@ angular.module('mm.addons.mod_workshop')
                         blockData && blockData.back();
                         return;
                     }
-
-                    originalData.title = $scope.submission.title;
-                    originalData.text = $scope.submission.text;
-                    originalData.attachmentfiles = angular.copy($scope.submission.attachmentfiles);
-
-                    $scope.submissionLoaded = true;
                 });
-            } else {
-                if (!access.cansubmit || !access.creatingsubmissionallowed) {
-                    // Should not happen, but go back if does.
-                    blockData && blockData.back();
-                    return;
-                }
-                originalData.title = "";
-                originalData.text = "";
-                originalData.attachmentfiles = [];
+            } else if (!access.cansubmit || !access.creatingsubmissionallowed) {
+                // Should not happen, but go back if does.
+                blockData && blockData.back();
+                return;
             }
+        }).then(function() {
+            return $mmaModWorkshopOffline.getSubmissions(workshopId).then(function(submissionsActions) {
+                if (submissionsActions && submissionsActions.length) {
+                    var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, editing ? submission.id : false);
+                    var offlineSubmission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
+
+                    $scope.submission.title = offlineSubmission.title;
+                    $scope.submission.text = offlineSubmission.content;
+                    $scope.submission.attachmentfiles = angular.copy(offlineSubmission.attachmentfiles) || [];
+                }
+            });
+        }).then(function() {
+            originalData.title = $scope.submission.title;
+            originalData.text = $scope.submission.text;
+            originalData.attachmentfiles = angular.copy($scope.submission.attachmentfiles) || [];
 
             $scope.submissionLoaded = true;
         }).catch(function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache since it might be a new activity.
-                return refreshAllData();
-            }
             $scope.submissionLoaded = false;
 
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
@@ -121,8 +122,8 @@ angular.module('mm.addons.mod_workshop')
             title = $scope.submission.title,
             content = $scope.submission.text,
             attachmentfiles = $scope.submission.attachmentfiles,
-            saveOffline = false,
-            submissionId = editing ? submission.id : timecreated || Date.now();
+            allowOffline = true,
+            submissionId = submission && (submission.id || submission.submissionid) || false;
 
         if (!title) {
             $mmUtil.showModal('mm.core.notice', 'mm.core.requireduserdatamissing');
@@ -146,11 +147,14 @@ angular.module('mm.addons.mod_workshop')
 
             // Upload attachments first if any.
             if (attachmentfiles.length) {
-                return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, attachmentfiles, editing, saveOffline)
-                        .catch(function() {
+                allowOffline = false;
+                return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, attachmentfiles, editing,
+                        saveOffline).catch(function() {
                     // Cannot upload them in online, save them in offline.
                     saveOffline = true;
-                    return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, attachmentfiles, editing, saveOffline);
+                    allowOffline = true;
+                    return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, attachmentfiles, editing,
+                        saveOffline);
                 });
             }
         }).then(function(attachmentsId) {
@@ -165,7 +169,8 @@ angular.module('mm.addons.mod_workshop')
 
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
-                return $mmaModWorkshop.updateSubmission(workshopId, submissionId, $scope.courseId, title, content, attachmentsId);
+                return $mmaModWorkshop.updateSubmission(workshopId, submissionId, $scope.courseId, title, content, attachmentsId,
+                    false, allowOffline);
             }
 
             if (saveOffline) {
@@ -178,7 +183,8 @@ angular.module('mm.addons.mod_workshop')
 
             // Try to send it to server.
             // Don't allow offline if there are attachments since they were uploaded fine.
-            return $mmaModWorkshop.addSubmission(workshopId, $scope.courseId, title, content, attachmentsId, false, submissionId);
+            return $mmaModWorkshop.addSubmission(workshopId, $scope.courseId, title, content, attachmentsId, false, submissionId,
+                allowOffline);
         }).then(function(newSubmissionId) {
             var data = {
                 workshopid: workshopId,
@@ -244,7 +250,7 @@ angular.module('mm.addons.mod_workshop')
         promises.push($mmaModWorkshop.invalidateSubmissionsData(workshopId));
 
         return $q.all(promises).finally(function() {
-            return fetchSubmissionData(true);
+            return fetchSubmissionData();
         });
     }
 

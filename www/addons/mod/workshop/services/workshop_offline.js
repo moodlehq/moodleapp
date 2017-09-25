@@ -65,7 +65,7 @@ angular.module('mm.addons.mod_workshop')
      * @ngdoc method
      * @name $mmaModWorkshopOffline#getAllWorkshops
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with assignments id that have something to be synced.
+     * @return {Promise}         Promise resolved with workshops id that have something to be synced.
      */
     self.getAllWorkshops = function(siteId) {
         var promises = [];
@@ -73,19 +73,13 @@ angular.module('mm.addons.mod_workshop')
         // TODO: Add other objects.
 
         return $q.all(promises).then(function(objects) {
-            // Flatten array.
-            objects = [].concat.apply([], objects);
-
-            // Get assignmentid.
-            objects = objects.map(function(object) {
-              return object.workshopid;
+            var workshopIds = {};
+            angular.forEach(objects, function(submissions) {
+                angular.forEach(submissions, function(submission) {
+                    workshopIds[submission.workshopid] = true;
+                });
             });
-
-            // Get unique values.
-            objects = objects.filter(function(item, pos) {
-                return objects.indexOf(item) == pos;
-            });
-            return objects;
+            return Object.keys(workshopIds);
         });
     };
 
@@ -202,7 +196,7 @@ angular.module('mm.addons.mod_workshop')
      * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved with the object to be synced.
      */
-    self.getSubmissionAction = function(workshopId,submissionId, action, siteId) {
+    self.getSubmissionAction = function(workshopId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().where(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
         });
@@ -215,12 +209,13 @@ angular.module('mm.addons.mod_workshop')
      * @ngdoc method
      * @name $mmaModWorkshopOffline#saveSubmission
      * @param  {Number} workshopId      Workshop ID.
-     * @param  {Number} courseId        Course ID the forum belongs to.
+     * @param  {Number} courseId        Course ID the workshop belongs to.
      * @param  {String} title           The submission title.
      * @param  {String} content         The submission text content.
      * @param  {Number} [attachmentsId] The draft file area id for attachments.
      * @param  {Number} [submissionId]  SubmissionId, if action is add, the time the submission was created.
      *                                  If not defined, current time.
+     * @param  {String} action          Action to be done. ['add', 'update', 'delete']
      * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when submission action is successfully saved.
      */
@@ -257,9 +252,9 @@ angular.module('mm.addons.mod_workshop')
         return $mmSitesManager.getSite(siteId).then(function(site) {
 
             var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
-                forumFolderPath = 'offlineworkshop/' + workshopId;
+                workshopFolderPath = 'offlineworkshop/' + workshopId;
 
-            return $mmFS.concatenatePaths(siteFolderPath, forumFolderPath);
+            return $mmFS.concatenatePaths(siteFolderPath, workshopFolderPath);
         });
     };
 

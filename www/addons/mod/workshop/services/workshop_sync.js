@@ -232,7 +232,6 @@ angular.module('mm.addons.mod_workshop')
         if (submissionId > 0) {
             editing = true;
             timePromise = $mmaModWorkshop.getSubmission(workshop.id, submissionId, siteId).then(function(submission) {
-                console.error(submission);
                 return submission.timemodified;
             }).catch(function() {
                 return -1;

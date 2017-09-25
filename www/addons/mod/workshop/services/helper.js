@@ -142,10 +142,11 @@ angular.module('mm.addons.mod_workshop')
      * @module mm.addons.mod_workshop
      * @ngdoc method
      * @name $mmaModWorkshopHelper#deleteSubmissionStoredFiles
-     * @param  {Number} forumId     Forum ID.
-     * @param  {Number} timecreated The time the discussion was created.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved when deleted.
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  submissionId  If not editing, it will refer to timecreated.
+     * @param  {Boolean} editing       If the submission is being edited or added otherwise.
+     * @param  {String}  [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when deleted.
      */
     self.deleteSubmissionStoredFiles = function(workshopId, submissionId, editing, siteId) {
         return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
@@ -162,8 +163,8 @@ angular.module('mm.addons.mod_workshop')
      * @name $mmaModWorkshopHelper#storeSubmissionFiles
      * @param  {Number}   workshopId   Workshop ID.
      * @param  {Number}   submissionId If not editing, it will refer to timecreated.
-     * @param  {Object[]} files        List of files.
      * @param  {Boolean}  editing      If the submission is being edited or added otherwise.
+     * @param  {Object[]} files        List of files.
      * @param  {String}   [siteId]     Site ID. If not defined, current site.
      * @return {Promise}               Promise resolved if success, rejected otherwise.
      */
@@ -231,7 +232,7 @@ angular.module('mm.addons.mod_workshop')
             if (submissionId) {
                 return action.submissionid == submissionId;
             } else {
-                return action.submissionid > 0;
+                return action.submissionid < 0;
             }
         });
     };
@@ -247,18 +248,24 @@ angular.module('mm.addons.mod_workshop')
      * @return {Promise}               Promise resolved with the files.
      */
     self.applyOfflineData = function(submission, actions) {
+        if (actions.length && !submission) {
+            submission = {};
+        }
         angular.forEach(actions, function(action) {
             switch (action.action) {
+                case 'add':
+                    submission.id = action.submissionid;
                 case 'update':
-                    console.error(action);
                     submission.title = action.title;
                     submission.content = action.content;
                     submission.title = action.title;
-                    submission.submissionmodified = action.timemodified;
-                    break;
-                case 'add':
+                    submission.courseid = action.courseid;
+                    submission.submissionmodified = parseInt(action.timemodified / 1000, 10);
+                    submission.offline = true;
                     break;
                 case 'delete':
+                    submission.deleted = true;
+                    submission.submissionmodified = parseInt(action.timemodified / 1000, 10);
                     break;
             }
         });

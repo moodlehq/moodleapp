@@ -299,6 +299,11 @@ angular.module('mm.addons.mod_workshop')
             $scope.hasNextPage = numEntries >= mmaModWorkshopPerPage && (($scope.page  + 1) * mmaModWorkshopPerPage) < report.totalcount;
             $scope.grades = report.grades || [];
             return $scope.grades;
+        }).then(function() {
+            angular.forEach($scope.grades, function(submission) {
+                var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.submissionid || false);
+                submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
+            });
         });
     };
 
@@ -314,15 +319,13 @@ angular.module('mm.addons.mod_workshop')
 
                 $scope.submission = false;
                 if ($scope.canSubmit) {
-                    // TODO: applyOfflineData for user submission, also new submissions.
                     return $mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
-                        var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.submissionid || false);
+                        var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
                         $scope.submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
                     });
                 }
 
                 if ($scope.access.canviewallsubmissions) {
-                    // TODO: applyOfflineData for user submissions, also new submissions.
                     return $scope.gotoSubmissionsPage($scope.page);
                 }
                 break;

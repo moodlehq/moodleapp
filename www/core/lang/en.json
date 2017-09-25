@@ -45,6 +45,7 @@
     "decsep": ".",
     "defaultvalue": "Default ({{$a}})",
     "delete": "Delete",
+    "deletedoffline": "Deleted offline",
     "deleting": "Deleting",
     "description": "Description",
     "dffulldate": "dddd, D MMMM YYYY h[:]mm A",

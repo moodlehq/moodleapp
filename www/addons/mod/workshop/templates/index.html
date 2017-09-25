@@ -48,6 +48,12 @@
                 </div>
             </div>
 
+            <!-- Has something offline. -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i>
+                {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
             <div ng-if="workshop.phase == selectedPhase">
                 <div ng-if="workshop.phase == workshopPhases.PHASE_SUBMISSION">
                     <div class="card" ng-if="workshop.instructauthors">
@@ -60,7 +66,7 @@
                     <div class="card" ng-if="canSubmit && !submission">
                         <div class="item item-text-wrap">
                             <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
-                            <p{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
+                            <p>{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
                         </div>
                     </div>
 
@@ -78,7 +84,7 @@
                         <div class="item item-text-wrap">
                             <h2>{{ 'mma.mod_workshop.submissionsreport' | translate }}</h2>
                         </div>
-                        <mma-mod-workshop-submission ng-repeat="submission in grades" submission="submission" courseid="workshop.course" module="module" access="access">
+                        <mma-mod-workshop-submission ng-repeat="submission in grades" submission="submission" courseid="workshop.course" module="module" access="access" summary="true">
                         </mma-mod-workshop-submission>
                         <div ng-if="page > 0 || hasNextPage" class="item item-text-wrap row-buttons responsive-sm">
                             <button ng-if="page > 0" class="button button-block icon-left ion-chevron-left" ng-click="gotoSubmissionsPage(page - 1)">

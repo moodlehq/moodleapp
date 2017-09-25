@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_workshop')
  * @name $mmaModWorkshop
  */
 .factory('$mmaModWorkshop', function($q, $mmSitesManager, mmaModWorkshopComponent, $mmFilepool, $mmSite, mmaModWorkshopPerPage,
-        $mmaModWorkshopOffline, $mmApp) {
+        $mmaModWorkshopOffline, $mmApp, $mmUtil) {
     var self = {
         PHASE_SETUP: 10,
         PHASE_SUBMISSION: 20,
@@ -86,7 +86,7 @@ angular.module('mm.addons.mod_workshop')
     }
 
     /**
-     * Get cache key for workshop submissions data WS calls.
+     * Get cache key for a workshop submission data WS calls.
      *
      * @param  {Number}  workshopId    Workshop ID.
      * @param  {Number}  submissionId  Submission ID.
@@ -615,7 +615,7 @@ angular.module('mm.addons.mod_workshop')
      * @ngdoc method
      * @name $mmaModWorkshop#addSubmission
      * @param {Number}  workshopId      Workshop ID.
-     * @param {Number}  courseId        Course ID the forum belongs to.
+     * @param {Number}  courseId        Course ID the workshop belongs to.
      * @param {String}  title           The submission title.
      * @param {String}  content         The submission text content.
      * @param {Number}  [attachmentsId] The draft file area id for attachments.
@@ -704,7 +704,7 @@ angular.module('mm.addons.mod_workshop')
      * @name $mmaModWorkshop#updateSubmission
      * @param {Number}  workshopId      Workshop ID.
      * @param  {Number} submissionId    Submission ID.
-     * @param {Number}  courseId        Course ID the forum belongs to.
+     * @param {Number}  courseId        Course ID the workshop belongs to.
      * @param {String}  title           The submission title.
      * @param {String}  content         The submission text content.
      * @param {Number}  [attachmentsId] The draft file area id for attachments.
@@ -790,23 +790,22 @@ angular.module('mm.addons.mod_workshop')
      * @name $mmaModWorkshop#deleteSubmission
      * @param {Number}  workshopId      Workshop ID.
      * @param  {Number} submissionId    Submission ID.
-     * @param {Number}  courseId        Course ID the forum belongs to.
+     * @param {Number}  courseId        Course ID the workshop belongs to.
      * @param {String}  [siteId]        Site ID. If not defined, current site.
-     * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
      * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
      */
-    self.deleteSubmission = function(workshopId, submissionId, courseId, siteId, allowOffline) {
+    self.deleteSubmission = function(workshopId, submissionId, courseId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         // If we are editing an offline discussion, discard previous first.
         return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, 'delete', siteId).then(function() {
-            if (!$mmApp.isOnline() && allowOffline) {
+            if (!$mmApp.isOnline()) {
                 // App is offline, store the action.
                 return storeOffline();
             }
 
             return self.deleteSubmissionOnline(submissionId, siteId).catch(function(error) {
-                if (allowOffline && error && !error.wserror) {
+                if (error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
                 } else {

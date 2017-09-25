@@ -15,7 +15,7 @@
 angular.module('mm.addons.mod_workshop')
 
 /**
- * Directive to render an submission.
+ * Directive to render a submission.
  *
  * @module mm.addons.mod_workshop
  * @ngdoc directive
@@ -23,13 +23,14 @@ angular.module('mm.addons.mod_workshop')
  * @description
  * Directive to render submission.
  */
-.directive('mmaModWorkshopSubmission', function(mmaModWorkshopComponent, $mmUser, $state) {
+.directive('mmaModWorkshopSubmission', function(mmaModWorkshopComponent, $mmUser, $state, $mmSite) {
     return {
         scope: {
             submission: '=',
             module: '=',
             access: '=?',
-            courseid: '@'
+            summary: '=?',
+            courseid: '='
         },
         restrict: 'E',
         templateUrl: 'addons/mod/workshop/templates/submission.html',
@@ -37,8 +38,7 @@ angular.module('mm.addons.mod_workshop')
             scope.component = mmaModWorkshopComponent;
             scope.componentId = scope.module.instance;
 
-            scope.userId = scope.submission.authorid || scope.submission.userid;
-            scope.summary = !scope.submission.authorid;
+            scope.userId = scope.submission.authorid || scope.submission.userid || $mmSite.getUserId();
 
             scope.gotoSubmission = function() {
                 if (scope.submission.submissionmodified) {
@@ -57,6 +57,7 @@ angular.module('mm.addons.mod_workshop')
 
             return $mmUser.getProfile(scope.userId, scope.courseid, true).then(function(profile) {
                 scope.profile = profile;
+            }).finally(function() {
                 scope.loaded = true;
             });
         }
