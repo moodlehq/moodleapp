@@ -57,7 +57,7 @@
             </div>
 
             <!-- Result info -->
-            <div class="card" ng-if="showResults">
+            <div class="card" ng-if="showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedbackColumn && overallFeedback))">
                 <p class="item item-text-wrap" ng-if="gradeResult">{{ gradeResult }}</p>
                 <p class="item item-text-wrap" ng-if="gradeOverridden">{{ 'mm.course.overriddennotice' | translate }}</p>
                 <div class="item item-text-wrap" ng-if="gradebookFeedback">
