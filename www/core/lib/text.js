@@ -468,12 +468,9 @@ angular.module('mm.core')
         text = self.decodeHTMLEntities(text);
         // Replace underscores (which are classed as word characters) with spaces.
         text = text.replace(/_/gi, " ");
-        // Remove any characters that shouldn't be treated as word boundaries.
-        text = text.replace(/[\'"’-]/gi, "");
-        // Remove dots and commas from within numbers only.
-        text = text.replace(/([0-9])[.,]([0-9])/gi, '$1$2');
 
-        return text.split(/\w\b/gi).length - 1;
+        // This RegEx will detect any word change including Unicode chars. Some languages without spaces won't be counted fine.
+        return text.match(/\S+/gi).length;
     };
 
     /**
