@@ -48,6 +48,8 @@ $mm-input-required-asterisk-color: $red !default;
 // Item padding.
 $item-input-padding: 16px !default;
 
+$mm-progress-bar-height: 5px !default;
+
 /**
  * App Branding
  */
@@ -1624,22 +1626,36 @@ i, cite, em, var, address, dfn {
 progress {
   -webkit-appearance: none;
   appearance: none;
-  height: 5px;
+  height: $mm-progress-bar-height;
   margin: 15px 0;
   padding: 0;
+  display: block;
 
+  .progress-bar-fallback,
   &[value]::-webkit-progress-bar {
     background-color: $gray-light;
     border-radius: 2px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
   }
 
+  .progress-bar-fallback span,
   &[value]::-webkit-progress-value {
     background-color: $mm-color-light;
     border-radius: 2px;
   }
-}
 
+  .progress-bar-fallback {
+      width: 100%;
+      height: $mm-progress-bar-height;
+      display: block;
+      position: relative;
+
+      span {
+          height: $mm-progress-bar-height;
+          display: block;
+      }
+  }
+}
 
 mm-progress-bar {
   padding-right: 55px;
