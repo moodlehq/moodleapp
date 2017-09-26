@@ -1036,6 +1036,53 @@ mm-multiple-select {
   border-radius: 0;
 }
 
+.item-radio .radio-icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: block;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  top: 14px;
+  right: 14px;
+  visibility: visible;
+
+  &:before {
+    border: 1px solid #ddd;
+    display: table;
+    width: 100%;
+    height: 100%;
+    border-radius: 28px;
+    background: white;
+    -webkit-transition: background-color 20ms ease-in-out;
+    transition: background-color 20ms ease-in-out;
+    content: ' ';
+  }
+
+  &:after {
+    @include transition(opacity .05s ease-in-out);
+    @include rotate(-45deg);
+    position: absolute;
+    top: 33%;
+    left: 25%;
+    display: table;
+    width: ($checkbox-width / 2);
+    height: ($checkbox-width / 4) - 1;
+    border: $checkbox-check-width solid $checkbox-check-color;
+    border-top: 0;
+    border-right: 0;
+    content: ' ';
+  }
+}
+
+.item-radio input:checked + .radio-content .radio-icon:before {
+    background: $checkbox-on-bg-positive;
+    border-color: $checkbox-off-border-positive;
+}
+
+
 input[type="radio"].mm-radio {
   position: relative;
   width: $checkbox-width;
