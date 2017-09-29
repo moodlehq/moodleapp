@@ -28,7 +28,7 @@ angular.module('mm.core')
  *                                   "no" -> Never auto-login.
  *                                   "check" -> Auto-login only if it points to the current site. Default value.
  */
-.directive('mmLink', function($mmUtil, $mmContentLinksHelper, $location, $mmSite) {
+.directive('mmLink', function($mmUtil, $mmContentLinksHelper, $location, $mmSite, mmCoreConfigConstants) {
 
     /**
      * Convenience function to correctly navigate, open file or url in the browser.
@@ -41,12 +41,14 @@ angular.module('mm.core')
         inApp = inApp && inApp !== 'false';
         autoLogin = autoLogin || 'check';
 
+        var contentLinksScheme = mmCoreConfigConstants.customurlscheme + '://link=';
+
         if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
             // We have a local file.
             $mmUtil.openFile(href).catch(function(error) {
                 $mmUtil.showErrorModal(error);
             });
-        } else if (href.charAt(0) == '#'){
+        } else if (href.charAt(0) == '#') {
             href = href.substr(1);
             // In site links
             if (href.charAt(0) == '/') {
@@ -55,6 +57,10 @@ angular.module('mm.core')
                 // Look for id or name
                 $mmUtil.scrollToElement(document, "#" + href + ", [name='" + href + "']");
             }
+        } else if (href.indexOf(contentLinksScheme) === 0) {
+            // Link should be treated by Custom URL Scheme. Encode the right part, otherwise ':' is removed in iOS.
+            href = contentLinksScheme + encodeURIComponent(href.replace(contentLinksScheme, ''));
+            $mmUtil.openInBrowser(href);
         } else {
 
             // It's an external link, we will open with browser. Check if we need to auto-login.

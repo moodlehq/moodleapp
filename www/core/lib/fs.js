@@ -25,7 +25,7 @@ angular.module('mm.core')
  * This service handles the interaction with the FileSystem.
  */
 .factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder,
-        $mmApp) {
+        $mmApp, $translate) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -35,6 +35,7 @@ angular.module('mm.core')
         isHTMLAPI = false,
         extToMime = {},
         mimeToExt = {},
+        groupsMimeInfo = {},
         extensionRegex = new RegExp('^[a-z0-9]+$');
 
     // Loading extensions to mimetypes file.
@@ -916,8 +917,7 @@ angular.module('mm.core')
         if (dot > -1) {
             ext = filename.substr(dot + 1).toLowerCase();
 
-            // Remove hash in extension if there's any. @see $mmFilepool#_getFileIdByUrl
-            ext = ext.replace(/_.{32}$/, '');
+            ext = self.cleanExtension(ext);
 
             // Check extension corresponds to a mimetype to know if it's valid.
             if (typeof self.getMimeType(ext) == 'undefined') {
@@ -939,13 +939,15 @@ angular.module('mm.core')
      * @return {String}           Mimetype.
      */
     self.getMimeType = function(extension) {
+        extension = self.cleanExtension(extension);
+
         if (extToMime[extension] && extToMime[extension].type) {
             return extToMime[extension].type;
         }
     };
 
     /**
-     * Get the "type" of an extension, something like "image", "video" or "audio".
+     * Get the "type" (string) of an extension, something like "image", "video" or "audio".
      *
      * @module mm.core
      * @ngdoc method
@@ -955,8 +957,36 @@ angular.module('mm.core')
      * @since 3.3
      */
     self.getExtensionType = function(extension) {
+        extension = self.cleanExtension(extension);
+
         if (extToMime[extension] && extToMime[extension].string) {
             return extToMime[extension].string;
+        }
+    };
+
+    /**
+     * Get the "type" (string) of a mimetype, something like "image", "video" or "audio".
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getMimetypeType
+     * @param  {String} mimetype Mimetype.
+     * @return {Mixed}           Type of the mimetype.
+     * @since 3.3.2
+     */
+    self.getMimetypeType = function(mimetype) {
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
+        var extensions = mimeToExt[mimetype];
+        if (!extensions) {
+            return;
+        }
+
+        for (var i = 0; i < extensions.length; i++) {
+            var extension = extensions[i];
+            if (extToMime[extension] && extToMime[extension].string) {
+                return extToMime[extension].string;
+            }
         }
     };
 
@@ -1010,6 +1040,9 @@ angular.module('mm.core')
      * @return {String}           Extension.
      */
     self.getExtension = function(mimetype, url) {
+        mimetype = mimetype || '';
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
         if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
             // Couldn't get the right mimetype (old Moodle), try to guess it.
             return self.guessExtensionFromUrl(url);
@@ -1027,6 +1060,22 @@ angular.module('mm.core')
             return extensions[0];
         }
         return undefined;
+    };
+
+    /**
+     * Get all the possible extensions of a mimetype. Returns empty array if not found.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getExtensions
+     * @param  {String} mimetype Mimetype.
+     * @return {String[]}        Extensions.
+     * @since 3.3.2
+     */
+    self.getExtensions = function(mimetype) {
+        mimetype = mimetype || '';
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+        return mimeToExt[mimetype] || [];
     };
 
     /**
@@ -1363,6 +1412,8 @@ angular.module('mm.core')
      * @since 3.3
      */
     self.isExtensionInGroup = function(extension, groups) {
+        extension = self.cleanExtension(extension);
+
         if (groups && groups.length && extToMime[extension] && extToMime[extension].groups) {
             for (var i = 0; i < extToMime[extension].groups.length; i++) {
                 var group = extToMime[extension].groups[i];
@@ -1386,6 +1437,187 @@ angular.module('mm.core')
      */
     self.canBeEmbedded = function(extension) {
         return self.isExtensionInGroup(extension, ['web_image', 'web_video', 'web_audio']);
+    };
+
+    /**
+     * Get the mimetype/extension info belonging to a certain group.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getGroupMimetypes
+     * @param  {String} group   Group name.
+     * @param  {String} [field] The field to get. If not supplied, all the info will be returned.
+     * @return {Mixed}          List of mimetypes.
+     * @since 3.3.2
+     */
+    self.getGroupMimeInfo = function(group, field) {
+        if (typeof groupsMimeInfo[group] == 'undefined') {
+            fillGroupMimeInfo(group);
+        }
+
+        if (field) {
+            return groupsMimeInfo[group][field];
+        }
+        return groupsMimeInfo[group];
+    };
+
+    /**
+     * Fill the mimetypes and extensions info for a certain group.
+     *
+     * @param  {String} group Group name.
+     * @return {Void}
+     * @since 3.3.2
+     */
+    function fillGroupMimeInfo(group) {
+        var mimetypes = {}, // Use an object to prevent duplicates.
+            extensions = []; // Extensions are unique.
+
+        angular.forEach(extToMime, function(data, extension) {
+            if (data.type && data.groups && data.groups.indexOf(group) != -1) {
+                // This extension has the group, add it to the list.
+                mimetypes[data.type] = true;
+                extensions.push(extension);
+            }
+        });
+
+        groupsMimeInfo[group] = {
+            mimetypes: Object.keys(mimetypes),
+            extensions: extensions
+        };
+    }
+
+    /**
+     * Obtains descriptions for file types (e.g. 'Microsoft Word document') from the language file.
+     * Based on Moodle's get_mimetype_description.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getMimetypeDescription
+     * @param  {Mixed} obj          Instance of FileEntry OR object with 'filename' and 'mimetype' OR string with mimetype.
+     * @param  {Boolean} capitalise If true, capitalises first character of result.
+     * @return {String}             Type description.
+     * @since 3.3.2
+     */
+    self.getMimetypeDescription = function(obj, capitalise) {
+        var filename = '',
+            mimetype = '',
+            extension = '',
+            langPrefix = 'mm.core.mimetype-';
+
+        if (typeof obj == 'object' && angular.isFunction(obj.file)) {
+            // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
+            filename = obj.name;
+        } else if (typeof obj == 'object') {
+            filename = obj.filename || '';
+            mimetype = obj.mimetype || '';
+        } else {
+            mimetype = obj;
+        }
+
+        if (filename) {
+            extension = self.getFileExtension(filename);
+
+            if (!mimetype) {
+                // Try to calculate the mimetype using the extension.
+                mimetype = self.getMimeType(extension);
+            }
+        }
+
+        if (!mimetype) {
+            // Don't have the mimetype, stop.
+            return '';
+        }
+
+        if (!extension) {
+            extension = self.getExtension(mimetype);
+        }
+
+        var mimetypeStr = self.getMimetypeType(mimetype) || '',
+            chunks = mimetype.split('/'),
+            attr = {
+                mimetype: mimetype,
+                ext: extension || '',
+                mimetype1: chunks[0],
+                mimetype2: chunks[1] || '',
+            },
+            a = {};
+
+        for (var key in attr) {
+            var value = attr[key];
+            a[key] = value;
+            a[key.toUpperCase()] = value.toUpperCase();
+            a[$mmText.ucFirst(key)] = $mmText.ucFirst(value);
+        }
+
+        // MIME types may include + symbol but this is not permitted in string ids.
+        var safeMimetype = mimetype.replace(/\+/g, '_'),
+            safeMimetypeStr = mimetypeStr.replace(/\+/g, '_'),
+            safeMimetypeTrns = $translate.instant(langPrefix + safeMimetype, {$a: a}),
+            safeMimetypeStrTrns = $translate.instant(langPrefix + safeMimetypeStr, {$a: a}),
+            defaultTrns = $translate.instant(langPrefix + 'default', {$a: a}),
+            result = mimetype;
+
+        if (safeMimetypeTrns != langPrefix + safeMimetype) {
+            result = safeMimetypeTrns;
+        } else if (safeMimetypeStrTrns != langPrefix + safeMimetypeStr) {
+            result = safeMimetypeStrTrns;
+        } else if (defaultTrns != langPrefix + 'default') {
+            result = defaultTrns;
+        }
+
+        if (capitalise) {
+            result = $mmText.ucFirst(result);
+        }
+
+        return result;
+    };
+
+    /**
+     * Given a group name, return the translated name.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getTranslatedGroupName
+     * @param  {String} name Group name.
+     * @return {String}      Translated name.
+     * @since 3.3.2
+     */
+    self.getTranslatedGroupName = function(name) {
+        var key = 'mm.core.mimetype-group:' + name,
+            translated = $translate.instant(key);
+        return translated != key ? translated : name;
+    };
+
+    /**
+     * Clean a extension, removing the dot, hash, extra params...
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#cleanExtension
+     * @param  {String} extension Extension to clean.
+     * @return {String}           Clean extension.
+     * @since 3.3.2
+     */
+    self.cleanExtension = function(extension) {
+        if (!extension || typeof extension != 'string') {
+            return extension;
+        }
+
+        // If the extension has parameters, remove them.
+        var position = extension.indexOf('?');
+        if (position > -1) {
+            extension = extension.substr(0, position);
+        }
+
+        // Remove hash in extension if there's any. @see $mmFilepool#_getFileIdByUrl
+        extension = extension.replace(/_.{32}$/, '');
+
+        // Remove dot from the extension if found.
+        if (extension && extension[0] == '.') {
+            extension = extension.substr(1);
+        }
+
+        return extension;
     };
 
     return self;

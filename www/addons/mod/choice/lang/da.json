@@ -13,6 +13,7 @@
     "responses": "Besvarelser",
     "responsesresultgraphdescription": "{{number}}% af brugerne vælger denne mulighed: {{test}}",
     "responsesresultgraphheader": "Grafisk visning",
+    "resultsnotsynced": "Resultater medtager ikke dine seneste svar. Synkroniser for at opdatere dem.",
     "savemychoice": "Gem",
     "userchoosethisoption": "Brugere, der vælger denne mulighed",
     "yourselection": "Dine valg"

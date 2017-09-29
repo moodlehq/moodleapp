@@ -1,0 +1,8 @@
+{
+    "errorwhileconnecting": "Fehler beim Verbinden zum Chat",
+    "errorwhilegettingchatdata": "Fehler beim Abrufen des Chats",
+    "errorwhilegettingchatusers": "Fehler beim Anzeigen der Personen im Chat",
+    "errorwhileretrievingmessages": "Fehler beim Abrufen der Mitteilungen vom Server",
+    "errorwhilesendingmessage": "Fehler beim Senden der Mitteilung",
+    "mustbeonlinetosendmessages": "Du musst online sein, um Mitteilungen zu senden"
+}

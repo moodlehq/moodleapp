@@ -1,0 +1,10 @@
+{
+    "errorgetforum": "Fehler beim Laden der Forumsdaten",
+    "errorgetgroups": "Fehler beim Laden der Gruppeneinstellungen",
+    "forumnodiscussionsyet": "Keine Themen im Forum",
+    "group": "Gruppe",
+    "numdiscussions": "{{numdiscussions}} Themen",
+    "numreplies": "{{numreplies}} Antworten",
+    "refreshdiscussions": "Themen aktualisieren",
+    "refreshposts": "Forenbeiträge aktualisieren"
+}

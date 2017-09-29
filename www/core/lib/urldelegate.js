@@ -26,7 +26,8 @@ angular.module('mm.core')
     $log = $log.getInstance('$mmURLDelegate');
 
     var observers = {},
-        self = {};
+        self = {},
+        lastUrls = {};
 
     /**
      * Register an observer to be notified when the app is launched via custom URL scheme.
@@ -53,7 +54,16 @@ angular.module('mm.core')
      */
     self.notify = function(url) {
         var treated = false; // Once an observer accepts a URL (return true) we stop notifying.
-        angular.forEach(observers, function(callback, name) {
+
+        // First check that the URL hasn't been treated some instants. This is because sometimes this is called more than once.
+        if (lastUrls[url] && Date.now() - lastUrls[url] < 3000) {
+            // Function called more than once, stop.
+            return;
+        }
+
+        lastUrls[url] = Date.now();
+
+        angular.forEach(observers, function(callback) {
             if (!treated && typeof(callback) === 'function') {
                 treated = callback(url);
             }
@@ -65,7 +75,7 @@ angular.module('mm.core')
 
 .run(function($mmURLDelegate, $log) {
     window.handleOpenURL = function(url) {
-        $log.debug('App launched by URL.');
+        $log.debug('App launched by URL. ' + url);
         $mmURLDelegate.notify(url);
     };
 });

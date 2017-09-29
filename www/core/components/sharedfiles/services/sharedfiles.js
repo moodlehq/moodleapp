@@ -133,11 +133,12 @@ angular.module('mm.core.sharedfiles')
      * @module mm.core.sharedfiles
      * @ngdoc method
      * @name $mmSharedFiles#getSiteSharedFiles
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @param  {String} [path]   Path to search inside the site shared folder.
-     * @return {Promise}         Promise resolved with the files.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @param  {String} [path]        Path to search inside the site shared folder.
+     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
+     * @return {Promise}              Promise resolved with the files.
      */
-    self.getSiteSharedFiles = function(siteId, path) {
+    self.getSiteSharedFiles = function(siteId, path, mimetypes) {
         siteId = siteId || $mmSite.getId();
 
         var pathToGet = self.getSiteSharedFilesDirPath(siteId);
@@ -145,7 +146,19 @@ angular.module('mm.core.sharedfiles')
             pathToGet = $mmFS.concatenatePaths(pathToGet, path);
         }
 
-        return $mmFS.getDirectoryContents(pathToGet).catch(function() {
+        return $mmFS.getDirectoryContents(pathToGet).then(function(files) {
+            if (mimetypes) {
+                // Only show files with the right mimetype and the ones we cannot determine the mimetype.
+                files = files.filter(function(file) {
+                    var extension = $mmFS.getFileExtension(file.name),
+                        mimetype = $mmFS.getMimeType(extension);
+
+                    return !mimetype || mimetypes.indexOf(mimetype) > -1;
+                });
+            }
+
+            return files;
+        }).catch(function() {
             // Directory not found, return empty list.
             return [];
         });

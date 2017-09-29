@@ -1277,14 +1277,16 @@ angular.module('mm.addons.mod_feedback')
      * @module mm.addons.mod_feedback
      * @ngdoc method
      * @name $mmaModFeedback#logView
-     * @param {String}  id       Feedback ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}  Promise resolved when the WS call is successful.
+     * @param  {String}  id           Feedback ID.
+     * @param  {Boolean} [formViewed] True if form was viewed.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved when the WS call is successful.
      */
-    self.logView = function(id, siteId) {
+    self.logView = function(id, formViewed, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
-                feedbackid: id
+                feedbackid: id,
+                moduleviewed: formViewed ? 1 : 0
             };
             return site.write('mod_feedback_view_feedback', params);
         });
