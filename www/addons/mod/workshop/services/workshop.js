@@ -121,6 +121,31 @@ angular.module('mm.addons.mod_workshop')
     }
 
     /**
+     * Get cache key for workshop reviewer assessments data WS calls.
+     *
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  userId        User ID or current user.
+     * @return {String}                Cache key.
+     */
+    function getReviewerAssessmentsDataCacheKey(workshopId, userId) {
+        userId = userId || 0;
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':reviewerassessments:' + userId;
+    }
+
+    /**
+     * Get cache key for workshop assessment form data WS calls.
+     *
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @param  {String}  [mode]        Mode assessment (default) or preview.
+     * @return {String}                Cache key.
+     */
+    function getAssessmentFormDataCacheKey(workshopId, assessmentId, mode) {
+        mode = mode || 'assessment';
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessmentsform:' + assessmentId + ':' + mode;
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the workshop WS are available.
      *
      * @module mm.addons.mod_workshop
@@ -855,6 +880,140 @@ angular.module('mm.addons.mod_workshop')
                 // Return submissionId to be consistent with addSubmission.
                 return submissionId;
             });
+        });
+    };
+
+    /**
+     * Retrieves all the assessments reviewed by the given user.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getReviewerAssessments
+     *
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    [userId]        User ID. If not defined, current user.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getReviewerAssessments = function(workshopId, userId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getReviewerAssessmentsDataCacheKey(workshopId, userId)
+                };
+
+            if (userId) {
+                params.userid = userId;
+            }
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_workshop_get_reviewer_assessments', params, preSets).then(function(response) {
+                if (response && response.assessments) {
+                    return response.assessments;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates workshop user assessments data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateUserAssesmentsData
+     * @param  {Number} workshopId   Workshop ID.
+     * @param  {Number} [userId]     User ID. If not defined, current user.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateReviewerAssesmentsData = function(workshopId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getReviewerAssessmentsDataCacheKey(workshopId, userId));
+        });
+    };
+
+    /**
+     * Retrieves the assessment form definition (data required to be able to display the assessment form).
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getAssessmentForm
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    assessmentId    Assessment ID.
+     * @param   {String}    [mode]          Mode assessment (default) or preview.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getAssessmentForm = function(workshopId, assessmentId, mode, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    assessmentid: assessmentId,
+                    mode: mode || 'assessment'
+                },
+                preSets = {
+                    cacheKey: getAssessmentFormDataCacheKey(workshopId, assessmentId, mode)
+                };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then(function(response) {
+                if (response) {
+                    var fields = [],
+                        options = {};
+                    angular.forEach(response.fields, function(field) {
+                        var args = field.name.split('_'),
+                            name = args[0],
+                            idx = args[3];
+                        if (parseInt(idx, 10) == idx) {
+                            if (!fields[idx]) {
+                                fields[idx] = {};
+                            }
+                            fields[idx][name] = field.value;
+                        }
+                    });
+                    response.fields = fields;
+                    response.options = $mmUtil.objectToKeyValueMap(response.options, 'name', 'value');
+                    response.current = $mmUtil.objectToKeyValueMap(response.current, 'name', 'value');
+                    return response;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates workshop assessments form data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateAssessmentFormData
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    assessmentId    Assessment ID.
+     * @param   {String}    [mode]          Mode assessment (default) or preview.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the data is invalidated.
+     */
+    self.invalidateAssessmentFormData = function(workshopId, assessmentId, mode, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getAssessmentFormDataCacheKey(workshopId, assessmentId, mode));
         });
     };
 

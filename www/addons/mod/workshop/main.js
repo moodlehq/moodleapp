@@ -49,6 +49,7 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
             courseid: null,
             profile: null,
             submission: null,
+            assessment: null,
             submissionid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
         },
         views: {

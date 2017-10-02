@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopHelper
  */
-.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS,
+.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q,
         $mmaModWorkshopOffline) {
 
     var self = {},
@@ -91,6 +91,23 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
+     * Return if a user can assess a workshop.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#canAssess
+     * @param  {Object} workshop  Workshop info.
+     * @param  {Object} access    Access information.
+     * @return {Boolean}          True if the user can assess the workshop.
+     */
+    self.canAssess = function(workshop, access) {
+        var examplesMust = workshop.useexamples && workshop.examplesmode == examples.EXAMPLES_BEFORE_ASSESSMENT,
+            examplesDone = access.canmanageexamples;
+
+        return !examplesMust || examplesDone;
+    };
+
+    /**
      * Return a particular user submission from the submission list.
      *
      * @module mm.addons.mod_workshop
@@ -119,19 +136,50 @@ angular.module('mm.addons.mod_workshop')
      * @module mm.addons.mod_workshop
      * @ngdoc method
      * @name $mmaModWorkshopHelper#getSubmissionById
-     * @param  {Number} workshopId   Workshop ID.
-     * @param  {Number} submissionId Submission ID.
-     * @return {Promise}             Resolved with the submission.
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   submissionId Submission ID.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Resolved with the submission.
      */
-    self.getSubmissionById = function(workshopId, submissionId) {
-        return $mmaModWorkshop.getSubmission(workshopId, submissionId).catch(function() {
-            return $mmaModWorkshop.getSubmissions(workshopId).then(function(submissions) {
+    self.getSubmissionById = function(workshopId, submissionId, siteId) {
+        return $mmaModWorkshop.getSubmission(workshopId, submissionId, siteId).catch(function() {
+            return $mmaModWorkshop.getSubmissions(workshopId, undefined, undefined, undefined, undefined, siteId)
+                    .then(function(submissions) {
                 for (var x in submissions) {
                     if (submissions[x].id == submissionId) {
                         return submissions[x];
                     }
                 }
                 return false;
+            });
+        });
+    };
+
+    /**
+     * Retrieves the assessment of the given user and all the related data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getReviewerAssessments
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    [userId]        User ID. If not defined, current user.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getReviewerAssessments = function(workshopId, userId, offline, ignoreCache, siteId) {
+        return $mmaModWorkshop.getReviewerAssessments(workshopId, userId, offline, ignoreCache, siteId).then(function(assessments) {
+            var promises = [];
+            angular.forEach(assessments, function (assessment) {
+                promises.push(self.getSubmissionById(workshopId, assessment.submissionid, siteId)
+                        .then(function(submission) {
+                    assessment.submission = submission;
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return assessments;
             });
         });
     };

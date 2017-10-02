@@ -55,27 +55,42 @@
             </div>
 
             <div ng-if="workshop.phase == selectedPhase">
-                <div ng-if="workshop.phase == workshopPhases.PHASE_SUBMISSION">
+                <div ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">
                     <div class="card" ng-if="workshop.instructauthors">
                         <div class="item item-text-wrap">
                             <h2>{{ 'mma.mod_workshop.areainstructauthors' | translate }}</h2>
                             <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.instructauthors }}</mm-format-text>
                         </div>
                     </div>
+                </div>
 
-                    <div class="card" ng-if="canSubmit && !submission">
+                <div ng-if="selectedPhase == workshopPhases.PHASE_ASSESSMENT">
+                    <div class="card" ng-if="workshop.instructreviewers">
                         <div class="item item-text-wrap">
-                            <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
-                            <p>{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
+                            <h2>{{ 'mma.mod_workshop.areainstructreviewers' | translate }}</h2>
+                            <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.instructreviewers }}</mm-format-text>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="card" ng-if="canSubmit && submission">
-                        <mma-mod-workshop-submission submission="submission" courseid="workshop.course" module="module">
-                        </mma-mod-workshop-submission>
+            <div ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">
+                <div class="card" ng-if="canSubmit && !submission">
+                    <div class="item item-text-wrap">
+                        <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
+                        <p>{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
                     </div>
+                </div>
 
-                    <div ng-if="canSubmit" class="item item-text-wrap">
+                <div class="card" ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION && canSubmit && submission">
+                    <mma-mod-workshop-submission submission="submission" courseid="workshop.course" module="module">
+                    </mma-mod-workshop-submission>
+                </div>
+            </div>
+
+            <div ng-if="workshop.phase == selectedPhase">
+                <div ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">
+                    <div ng-if="canSubmit && ((access.creatingsubmissionallowed && !submission) || (access.modifyingsubmissionallowed && submission))" class="item item-text-wrap">
                         <a class="button button-block button-positive icon-left ion-plus-round" ng-if="access.creatingsubmissionallowed && !submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.createsubmission' | translate }}</a>
                         <a class="button button-block button-positive icon-left ion-edit" ng-if="access.modifyingsubmissionallowed && submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.editsubmission' | translate }}</a>
                     </div>
@@ -97,11 +112,20 @@
                     </div>
                 </div>
 
-                <div ng-if="workshop.phase == workshopPhases.PHASE_ASSESSMENT">
-                    <div class="card" ng-if="workshop.instructreviewers">
+                <div ng-if="selectedPhase == workshopPhases.PHASE_ASSESSMENT">
+                    <div class="card" ng-if="canAssess && assessments">
                         <div class="item item-text-wrap">
-                            <h2>{{ 'mma.mod_workshop.areainstructreviewers' | translate }}</h2>
-                            <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.instructreviewers }}</mm-format-text>
+                            <h2>{{ 'mma.mod_workshop.assignedassessments' | translate }}</h2>
+                        </div>
+                        <mma-mod-workshop-submission ng-repeat="assessment in assessments" submission="assessment.submission" assessment="assessment" courseid="workshop.course" module="module" access="access" summary="true">
+                        </mma-mod-workshop-submission>
+                        <div ng-if="page > 0 || hasNextPage" class="item item-text-wrap row-buttons responsive-sm">
+                            <button ng-if="page > 0" class="button button-block icon-left ion-chevron-left" ng-click="gotoSubmissionsPage(page - 1)">
+                                {{ 'mm.core.previous' | translate }}
+                            </button>
+                            <button ng-if="hasNextPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoSubmissionsPage(page + 1)">
+                                {{ 'mm.core.next' | translate }}
+                            </button>
                         </div>
                     </div>
                 </div>

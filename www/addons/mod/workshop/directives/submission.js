@@ -27,6 +27,7 @@ angular.module('mm.addons.mod_workshop')
     return {
         scope: {
             submission: '=',
+            assessment: '=?',
             module: '=',
             access: '=?',
             summary: '=?',
@@ -39,16 +40,20 @@ angular.module('mm.addons.mod_workshop')
             scope.componentId = scope.module.instance;
 
             scope.userId = scope.submission.authorid || scope.submission.userid || $mmSite.getUserId();
+            scope.submission.title = scope.submission.title || scope.submission.submissiontitle;
+            scope.submission.timemodified = scope.submission.timemodified || scope.submission.submissionmodified;
+            scope.submission.id = scope.submission.id || scope.submission.submissionid;
 
             scope.gotoSubmission = function() {
-                if (scope.submission.submissionmodified) {
+                if (scope.submission.timemodified) {
                     var stateParams = {
                         module: scope.module,
                         access: scope.access,
                         courseid: scope.courseid,
                         profile: scope.profile,
                         submission: scope.submission,
-                        submissionid: scope.submission.submissionid
+                        assessment: scope.assessment,
+                        submissionid: scope.submission.id
                     };
 
                     $state.go('site.mod_workshop-submission', stateParams);

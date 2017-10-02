@@ -162,6 +162,10 @@ angular.module('mm.addons.mod_workshop')
             if ($scope.access.canviewallsubmissions) {
                 promises.push($mmaModWorkshop.invalidateGradeReportData($scope.workshop.id));
             }
+            if ($scope.canAssess) {
+                promises.push($mmaModWorkshop.invalidateReviewerAssesmentsData($scope.workshop.id));
+            }
+
             promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
         }
 
@@ -311,30 +315,45 @@ angular.module('mm.addons.mod_workshop')
     function setPhaseInfo() {
         var phase = $scope.phases[$scope.workshop.phase];
 
-        switch ($scope.workshop.phase) {
-            case  $mmaModWorkshop.PHASE_SETUP:
-                break;
-            case $mmaModWorkshop.PHASE_SUBMISSION:
-                $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access, phase.tasks);
+        $scope.submission = false;
+        $scope.canAssess = false;
+        $scope.assessments = false;
 
-                $scope.submission = false;
-                if ($scope.canSubmit) {
-                    return $mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
-                        var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
-                        $scope.submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
-                    });
-                }
+        if ($scope.workshop.phase == $mmaModWorkshop.PHASE_SUBMISSION ||
+                $scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
+            var promises = [];
 
+            $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access, phase.tasks);
+            if ($scope.canSubmit) {
+                promises.push($mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
+                    var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
+                    $scope.submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
+                }));
+            }
+
+            if ($scope.workshop.phase == $mmaModWorkshop.PHASE_SUBMISSION) {
                 if ($scope.access.canviewallsubmissions) {
-                    return $scope.gotoSubmissionsPage($scope.page);
+                    promises.push($scope.gotoSubmissionsPage($scope.page));
                 }
-                break;
-            case $mmaModWorkshop.PHASE_ASSESSMENT:
-                break;
-            case $mmaModWorkshop.PHASE_EVALUATION:
-                break;
-            case $mmaModWorkshop.PHASE_CLOSED:
-                break;
+            }
+
+            if ($scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
+                $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
+                if ($scope.canAssess) {
+                    promises.push($mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
+                        $scope.assessments = assessments.map(function(assessment) {
+                            assessment.strategy = $scope.workshop.strategy;
+                            return assessment;
+                        });
+                    }));
+                }
+
+                if ($scope.access.canviewallassessments) {
+                    //promises.push($scope.gotoSubmissionsPage($scope.page));
+                }
+            }
+
+            return $q.all(promises);
         }
     }
 

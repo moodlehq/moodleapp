@@ -28,26 +28,41 @@ angular.module('mm.addons.mod_workshop')
         module = $stateParams.module,
         workshopId = module.instance,
         access = $stateParams.access,
-        userId = $mmSite.getUserId();
+        userId = $mmSite.getUserId(),
+        submissionId = submission.submissionid || submission.id;
+
     $scope.title = module.name;
     $scope.courseId = $stateParams.courseid;
+    $scope.assessment = $stateParams.assessment || false;
     $scope.submissionLoaded = false;
     $scope.module = module;
 
     function fetchSubmissionData() {
-        return $mmaModWorkshopHelper.getSubmissionById(workshopId, submission.submissionid).then(function(submissionData) {
+        return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
+            var promises = [];
+
+            console.error($scope.assessment);
             $scope.submission = submissionData;
             $scope.canEdit = (userId == submissionData.authorid && access.cansubmit && access.modifyingsubmissionallowed);
             $scope.canDelete = access.candeletesubmissions;
             if (!$scope.canDelete && userId == submissionData.authorid && $scope.canEdit) {
                 // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
-                return $mmaModWorkshop.getSubmissionAssessments(workshopId, submission.submissionid).then(function(assessments) {
+                promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(assessments) {
                     $scope.canDelete = !assessments.length;
-                });
+                }));
             }
+
+            if ($scope.assessment) {
+                promises.push($mmaModWorkshop.getAssessmentForm(workshopId, $scope.assessment.id, 'assessment')
+                        .then(function(assessmentForm) {
+                    console.error(assessmentForm);
+                }));
+            }
+
+            return $q.all(promises);
         }).then(function() {
             return $mmaModWorkshopOffline.getSubmissions(workshopId).then(function(submissionsActions) {
-                var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, submission.submissionid);
+                var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, submissionId);
                 $scope.submission = $mmaModWorkshopHelper.applyOfflineData($scope.submission, actions);
             });
         }).catch(function(message) {
@@ -64,7 +79,7 @@ angular.module('mm.addons.mod_workshop')
             access: access,
             courseid: $scope.courseId,
             submission: $scope.submission,
-            submissionid: $scope.submission.submissionid
+            submissionid: submissionId
         };
 
         $state.go('site.mod_workshop-edit-submission', stateParams);
@@ -74,9 +89,9 @@ angular.module('mm.addons.mod_workshop')
         $mmUtil.showConfirm($translate('mma.mod_workshop.submissiondeleteconfirm')).then(function() {
             var modal = $mmUtil.showModalLoading('mm.core.deleting', true),
                 success = false;
-            $mmaModWorkshop.deleteSubmission(workshopId, $scope.submission.id, $scope.courseId).then(function() {
+            $mmaModWorkshop.deleteSubmission(workshopId, submissionId, $scope.courseId).then(function() {
                 success = true;
-                return $mmaModWorkshop.invalidateSubmissionData(workshopId, $scope.submission.id);
+                return $mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId);
             }).catch(function(error) {
                 $mmUtil.showErrorModalDefault(error, 'Cannot delete submission');
             }).finally(function() {
@@ -85,7 +100,7 @@ angular.module('mm.addons.mod_workshop')
                     var data = {
                         workshopid: workshopId,
                         cmid: module.cmid,
-                        submissionid: $scope.submission.id
+                        submissionid: submissionId
                     };
 
                     $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
@@ -97,12 +112,12 @@ angular.module('mm.addons.mod_workshop')
     };
 
     $scope.undoDeleteSubmission = function() {
-        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, $scope.submission.id, "delete").finally(function() {
+        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, "delete").finally(function() {
 
             var data = {
                 workshopid: workshopId,
                 cmid: module.cmid,
-                submissionid: $scope.submission.id
+                submissionid: submissionId
             };
             $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
             return refreshAllData();
@@ -113,9 +128,9 @@ angular.module('mm.addons.mod_workshop')
     function refreshAllData() {
         var promises = [];
 
-        promises.push($mmaModWorkshop.invalidateSubmissionData(workshopId, submission.submissionid));
+        promises.push($mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId));
         promises.push($mmaModWorkshop.invalidateSubmissionsData(workshopId));
-        promises.push($mmaModWorkshop.invalidateSubmissionAssesmentsData(workshopId, submission.submissionid));
+        promises.push($mmaModWorkshop.invalidateSubmissionAssesmentsData(workshopId, submissionId));
 
         return $q.all(promises).finally(function() {
             return fetchSubmissionData();
@@ -123,7 +138,7 @@ angular.module('mm.addons.mod_workshop')
     }
 
     fetchSubmissionData().then(function() {
-        $mmaModWorkshop.logViewSubmission(submission.submissionid).then(function() {
+        $mmaModWorkshop.logViewSubmission(submissionId).then(function() {
             $mmCourse.checkModuleCompletion($scope.courseId, module.completionstatus);
         });
     });
