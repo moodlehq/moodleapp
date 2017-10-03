@@ -10,7 +10,7 @@
     "wsservice" : "promed_mobile_app",
     "wsextservice" : "local_mobile",
     "gcmpn": "694767596569",
-    "customurlscheme": "Promedmobile",
+    "customurlscheme": "moodlemobile",
     "siteurl": "http://promedacademy.net/moodle30",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
