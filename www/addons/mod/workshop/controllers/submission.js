@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_workshop')
  * @name mmaModWorkshopSubmissionCtrl
  */
 .controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
-        $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline) {
+        $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline,
+        mmaModWorkshopAssessmentInvalidatedEvent) {
 
     var submission = $stateParams.submission || {},
         module = $stateParams.module,
@@ -36,12 +37,12 @@ angular.module('mm.addons.mod_workshop')
     $scope.assessment = $stateParams.assessment || false;
     $scope.submissionLoaded = false;
     $scope.module = module;
+    $scope.strategy = $scope.assessment ? $scope.assessment.strategy : false;
 
     function fetchSubmissionData() {
         return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
             var promises = [];
 
-            console.error($scope.assessment);
             $scope.submission = submissionData;
             $scope.canEdit = (userId == submissionData.authorid && access.cansubmit && access.modifyingsubmissionallowed);
             $scope.canDelete = access.candeletesubmissions;
@@ -49,13 +50,6 @@ angular.module('mm.addons.mod_workshop')
                 // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
                 promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(assessments) {
                     $scope.canDelete = !assessments.length;
-                }));
-            }
-
-            if ($scope.assessment) {
-                promises.push($mmaModWorkshop.getAssessmentForm(workshopId, $scope.assessment.id, 'assessment')
-                        .then(function(assessmentForm) {
-                    console.error(assessmentForm);
                 }));
             }
 
@@ -133,6 +127,7 @@ angular.module('mm.addons.mod_workshop')
         promises.push($mmaModWorkshop.invalidateSubmissionAssesmentsData(workshopId, submissionId));
 
         return $q.all(promises).finally(function() {
+            $mmEvents.trigger(mmaModWorkshopAssessmentInvalidatedEvent);
             return fetchSubmissionData();
         });
     }

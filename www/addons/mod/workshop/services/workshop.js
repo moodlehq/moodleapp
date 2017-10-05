@@ -133,6 +133,17 @@ angular.module('mm.addons.mod_workshop')
     }
 
     /**
+     * Get cache key for a workshop assessment data WS calls.
+     *
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @return {String}                Cache key.
+     */
+    function getAssessmentDataCacheKey(workshopId, assessmentId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessment:' + assessmentId;
+    }
+
+    /**
      * Get cache key for workshop assessment form data WS calls.
      *
      * @param  {Number}  workshopId    Workshop ID.
@@ -944,6 +955,53 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
+     * Retrieves the given assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getAssessment
+     *
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    assessmentId    Assessment ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    assessmentid: assessmentId
+                },
+                preSets = {
+                    cacheKey: getAssessmentDataCacheKey(workshopId, assessmentId)
+                };
+
+            return site.read('mod_workshop_get_assessment', params, preSets).then(function(response) {
+                if (response && response.assessment) {
+                    return response.assessment;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates workshop assessment data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateAssessmentData
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @param  {String}  [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when the data is invalidated.
+     */
+    self.invalidateAssessmentData = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getAssessmentDataCacheKey(workshopId, assessmentId));
+        });
+    };
+
+    /**
      * Retrieves the assessment form definition (data required to be able to display the assessment form).
      *
      * @module mm.addons.mod_workshop
@@ -976,17 +1034,33 @@ angular.module('mm.addons.mod_workshop')
 
             return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then(function(response) {
                 if (response) {
-                    var fields = [],
-                        options = {};
+                    var fields = [];
+
                     angular.forEach(response.fields, function(field) {
                         var args = field.name.split('_'),
                             name = args[0],
-                            idx = args[3];
+                            idx = args[3],
+                            idy = args[6] || false;
                         if (parseInt(idx, 10) == idx) {
                             if (!fields[idx]) {
-                                fields[idx] = {};
+                                fields[idx] = {
+                                    number: parseInt(idx, 10) + 1
+                                };
                             }
-                            fields[idx][name] = field.value;
+
+                            if (idy && parseInt(idy, 10) == idy) {
+                                if (!fields[idx].fields) {
+                                    fields[idx].fields = [];
+                                }
+                                if (!fields[idx].fields[idy]) {
+                                    fields[idx].fields[idy] = {
+                                        number: parseInt(idy, 10) + 1
+                                    };
+                                }
+                                fields[idx].fields[idy][name] = field.value;
+                            } else {
+                                fields[idx][name] = field.value;
+                            }
                         }
                     });
                     response.fields = fields;

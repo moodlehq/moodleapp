@@ -11,7 +11,7 @@
                 <a ng-if="submission.deleted && canDelete" class="button button-block icon-left ion-reply" ng-click="undoDeleteSubmission()">{{ 'mm.core.restore' | translate }}</a>
             </div>
 
-            <h3 class="padding" ng-if="assessment">{{ 'mma.mod_workshop.assessmentform' | translate }}</h3>
+            <mma-mod-workshop-assessment-strategy ng-if="assessment" assessment="assessment" strategy="strategy"></mma-mod-workshop-assessment-strategy>
         </mm-loading>
     </ion-content>
 </ion-view>

@@ -156,6 +156,31 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
+     * Return a particular assesment. It will use prefetched data if fetch fails.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getReviewerAssessmentById
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   assessmentId Assessment ID.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Resolved with the assessment.
+     */
+    self.getReviewerAssessmentById = function(workshopId, assessmentId, siteId) {
+        return $mmaModWorkshop.getAssessment(workshopId, assessmentId, siteId).catch(function() {
+            return $mmaModWorkshop.getReviewerAssessments(workshopId, userId, undefined, undefined, siteId)
+                    .then(function(assessments) {
+                for (var x in assessments) {
+                    if (assessments[x].id == assessmentId) {
+                        return assessments[x];
+                    }
+                }
+                return false;
+            });
+        });
+    };
+
+    /**
      * Retrieves the assessment of the given user and all the related data.
      *
      * @module mm.addons.mod_workshop

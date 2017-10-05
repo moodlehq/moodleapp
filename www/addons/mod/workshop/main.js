@@ -19,6 +19,8 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
 .constant('mmaModWorkshopPerPage', 10)
 .constant('mmaModWorkshopEventAutomSynced', 'mma_mod_workshop_autom_synced')
 .constant('mmaModWorkshopEventManualSynced', 'mma_mod_workshop_manual_synced')
+.constant('mmaModWorkshopAssessmentInvalidatedEvent', 'mma_mod_workshop_assessment_invalidated')
+.constant('mmaModWorkshopAssessmentRefreshedEvent', 'mma_mod_workshop_assessment_refreshed')
 .constant('mmaModWorkshopSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
