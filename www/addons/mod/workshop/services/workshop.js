@@ -1034,7 +1034,8 @@ angular.module('mm.addons.mod_workshop')
 
             return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then(function(response) {
                 if (response) {
-                    var fields = [];
+                    var fields = [],
+                        current = [];
 
                     angular.forEach(response.fields, function(field) {
                         var args = field.name.split('_'),
@@ -1065,7 +1066,22 @@ angular.module('mm.addons.mod_workshop')
                     });
                     response.fields = fields;
                     response.options = $mmUtil.objectToKeyValueMap(response.options, 'name', 'value');
-                    response.current = $mmUtil.objectToKeyValueMap(response.current, 'name', 'value');
+
+                    angular.forEach(response.current, function(field) {
+                        var args = field.name.split('_'),
+                            name = args[0],
+                            idx = args[3];
+                        if (parseInt(idx, 10) == idx) {
+                            if (!current[idx]) {
+                                current[idx] = {
+                                    number: parseInt(idx, 10) + 1
+                                };
+                            }
+
+                            current[idx][name] = field.value;
+                        }
+                    });
+                    response.current = current;
                     return response;
                 }
                 return $q.reject();

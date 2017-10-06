@@ -1,0 +1,9 @@
+<div ng-repeat="(n, field) in form.fields" class="list card">
+    <div class="item item-text-wrap">
+        <h2>{{ field.dimtitle }}</h2>
+        <mm-format-text watch="true">{{field.description}}</mm-format-text>
+    </div>
+    <ion-radio ng-repeat="subfield in field.fields" ng-model="form.current[n].chosenlevelid" ng-value="subfield.levelid" name="{{n}}">
+        <p><mm-format-text watch="true">{{subfield.definition}}</mm-format-text></p>
+    </ion-radio>
+</div>

@@ -1,0 +1,18 @@
+<div ng-repeat="(n, field) in form.fields" class="list card">
+    <div class="item item-text-wrap">
+        <h2>{{ field.dimtitle }}</h2>
+        <mm-format-text watch="true">{{field.description}}</mm-format-text>
+    </div>
+    <label class="item item-input item-stacked-label">
+        <h2 mm-mark-required="true">{{ 'mma.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a': field.dimtitle } }}</h2>
+        <div class="item-select item-input-wrapper" ng-if="field.grades">
+            <select ng-model="form.current[n].grade" ng-options="field.grades.indexOf(option) as option for option in field.grades | orderBy:'$index':true" mm-ios-select-fix ng-required="true"></select>
+        </div>
+    </label>
+    <label class="item item-input item-stacked-label">
+        <h2>{{ 'mma.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+        <div class="item-input-wrapper">
+            <textarea class="mm-textarea" aria-multiline="true" ng-model="form.current[n].peercomment" mm-auto-rows></textarea>
+        </div>
+    </label>
+</div>

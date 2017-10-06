@@ -21,7 +21,7 @@ angular.module('mm.core.grades')
  * @ngdoc service
  * @name $mmGradesHelper
  */
-.factory('$mmGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce) {
+.factory('$mmGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce, $mmUtil) {
 
     var self = {};
 
@@ -299,6 +299,51 @@ angular.module('mm.core.grades')
             };
         });
     };
+
+    /**
+     * Creates an array that represents all the current grades that can be chosen using the given grading type.
+     * Negative numbers are scales, zero is no grade, and positive numbers are maximum grades.
+     *
+     * Taken from make_grades_menu on moodlelib.php
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGradesHelper#makeGradesMenu
+     * @param  {Number} gradingType     If positive, max grade you can provide. If negative, scale Id.
+     * @param  {Number} moduleId        Module Id needed to retrieve the scale.
+     * @param  {String} [defaultOption] Element that will become option 0.
+     * @param  {String} [scale]         Scale csv list String. If not provided, it will take it from the module grade info.
+     * @return {Promise}                Array with value => label to create a propper HTML select.
+     */
+    self.makeGradesMenu = function(gradingType, moduleId, defaultOption, scale) {
+        gradingType = parseInt(gradingType, 10);
+        defaultOption = defaultOption || '';
+
+        if (gradingType < 0) {
+            if (scale) {
+                return $q.when($mmUtil.makeMenuFromList(scale, defaultOption));
+            } else {
+                return $mmCourse.getModuleBasicGradeInfo(moduleId).then(function(gradeInfo) {
+                    if (gradeInfo.scale) {
+                        return $mmUtil.makeMenuFromList(gradeInfo.scale, defaultOption);
+                    }
+                    return [];
+                });
+            }
+        }
+
+        if (gradingType > 0) {
+            var grades = [];
+            grades[-1] = defaultOption;
+            for (var i = gradingType; i >= 0; i--) {
+                grades[i] = i +' / '+ gradingType;
+            }
+            return $q.when(grades);
+        }
+
+        return $q.when([]);
+    };
+
 
     return self;
 });

@@ -1,0 +1,21 @@
+<div ng-repeat="(n, field) in form.fields" class="list card">
+    <div class="item item-text-wrap">
+        <h2>{{ field.dimtitle }}</h2>
+        <mm-format-text watch="true">{{field.description}}</mm-format-text>
+    </div>
+    <label class="item item-input item-stacked-label" mm-mark-required="true">
+        <h2>{{ 'mma.mod_workshop.yourassessmentfor' | translate : {'$a': field.dimtitle } }}</h2>
+    </label>
+    <ion-radio ng-model="form.current[n].grade" ng-value="-1" name="{{n}}">
+        <p><mm-format-text watch="true">{{field.grade0}}</mm-format-text></p>
+    </ion-radio>
+    <ion-radio ng-model="form.current[n].grade" ng-value="1" name="{{n}}">
+        <p><mm-format-text watch="true">{{field.grade1}}</mm-format-text></p>
+    </ion-radio>
+    <label class="item item-input item-stacked-label">
+        <h2>{{ 'mma.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+        <div class="item-input-wrapper">
+            <textarea class="mm-textarea" aria-multiline="true" ng-model="form.current[n].peercomment" mm-auto-rows></textarea>
+        </div>
+    </label>
+</div>
