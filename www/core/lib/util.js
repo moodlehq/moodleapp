@@ -1997,6 +1997,29 @@ angular.module('mm.core')
         };
 
         /**
+         * Given a list (eg a,b,c,d,e) this function returns an array of 1->a, 2->b, 3->c etc.
+         *
+         * Taken from make_menu_from_list on moodlelib.php (not the same but similar).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#makeMenuFromList
+         * @param  {String} list            The string to explode into array bits
+         * @param  {String} [defaultOption] Element that will become option 0.
+         * @param  {String} [separator]     The separator used within the list string. Default ','.
+         * @return {Arrray}                 The now assembled array
+         */
+        self.makeMenuFromList = function(list, defaultOption, separator) {
+            separator = separator || ',';
+            defaultOption = defaultOption || '';
+
+            list = list.split(separator);
+            list = list.map(function (value) {return value.trim();});
+            list.unshift(defaultOption);
+            return list;
+        }
+
+        /**
          * Converts an object into an array of objects, where each entry is an object containing
          * the key and value of the original object.
          * For example, it can convert {size: 2} into [{name: 'size', value: 2}].

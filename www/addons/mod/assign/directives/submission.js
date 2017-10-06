@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_assign')
                 scope.canSaveGrades = scope.grade.method == 'simple';
 
                 if (scope.gradeInfo.scale) {
-                    scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
+                    scope.grade.scale = $mmUtil.makeMenuFromList(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
                 } else {
                     // Get current language to format grade input field.
                     $mmLang.getCurrentLanguage().then(function(lang) {
@@ -172,7 +172,7 @@ angular.module('mm.addons.mod_assign')
                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                         if (outcome.scale) {
                             outcome.options =
-                                formatScaleOptions(outcome.scale, $translate.instant('mm.grades.nooutcome'));
+                                $mmUtil.makeMenuFromList(outcome.scale, $translate.instant('mm.grades.nooutcome'));
                         }
                         outcome.selectedId = 0;
                         originalGrades.outcomes[outcome.id] = outcome.selectedId;
@@ -278,14 +278,6 @@ angular.module('mm.addons.mod_assign')
                 }
             });
         });
-    }
-
-    // Convenience function to format scale selectors options.
-    function formatScaleOptions(options, defaultOption) {
-        options = options.split(",");
-        options = options.map(function (value) {return value.trim();});
-        options.unshift(defaultOption);
-        return options;
     }
 
     // Convenience function to get scale selected option.
