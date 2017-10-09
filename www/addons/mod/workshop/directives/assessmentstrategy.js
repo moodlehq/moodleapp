@@ -29,10 +29,13 @@ angular.module('mm.addons.mod_workshop')
  *
  * @param {Object}  assessment      The assessment info.
  * @param {String}  strategy        The assessment strategy name.
+ * @param {Object}  workshop        The workshop activity data.
+ * @param {Object}  access          The access data to the activity.
  *
  */
 .directive('mmaModWorkshopAssessmentStrategy', function($compile, $mmaModWorkshop, $mmaModWorkshopAssessmentStrategyDelegate, $q,
-        mmaModWorkshopAssessmentInvalidatedEvent, $mmaModWorkshopHelper, $mmEvents, mmaModWorkshopAssessmentRefreshedEvent) {
+        mmaModWorkshopAssessmentInvalidatedEvent, $mmaModWorkshopHelper, $mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        mmaModWorkshopComponent) {
 
     function load(scope, assessment, workshopId, refresh) {
          var promises = [];
@@ -57,7 +60,9 @@ angular.module('mm.addons.mod_workshop')
         restrict: 'E',
         scope: {
             assessment: '=',
-            strategy: '='
+            strategy: '=',
+            workshop: '=',
+            access: '='
         },
         templateUrl: 'addons/mod/workshop/templates/assessmentstrategy.html',
         link: function(scope, element) {
@@ -73,7 +78,25 @@ angular.module('mm.addons.mod_workshop')
                 return;
             }
 
-            scope.workshopId = assessment.submission.workshopid,
+            scope.feedback = {};
+            scope.workshopId = scope.workshop.id;
+            scope.overallFeedkback = !!scope.workshop.overallfeedbackmode;
+            scope.overallFeedkbackRequired = scope.workshop.overallfeedbackmode == 2;
+            scope.component = mmaModWorkshopComponent;
+            scope.componentId = scope.workshop.cmid;
+
+            if (scope.access.canallocate) {
+                scope.weights = [];
+                for (var i = 16; i >= 0; i--) {
+                    scope.weights[i] = i;
+                }
+                 scope.weight = 1;
+            }
+
+            // Text changed in first render.
+            scope.firstRender = function() {
+                scope.feedback.text = scope.assessment.feedbackauthor;
+            };
 
             // Check if the strategy has defined its own directive to render itself.
             directive = $mmaModWorkshopAssessmentStrategyDelegate.getDirectiveForPlugin(strategy);
@@ -88,8 +111,9 @@ angular.module('mm.addons.mod_workshop')
                     return $q.all(promises).finally(function() {
                         return load(scope, assessment, scope.workshopId, true);
                     }).finally(function() {
+                        console.error(scope.assessment, scope.form, scope.workshop, scope.access);
                         $mmEvents.trigger(mmaModWorkshopAssessmentRefreshedEvent);
-                    });;
+                    });
                 });
 
                 load(scope, assessment, scope.workshopId).then(function() {
@@ -98,6 +122,7 @@ angular.module('mm.addons.mod_workshop')
                     // Compile the new directive.
                     $compile(container)(scope);
                 }).finally(function() {
+                    console.error(scope.assessment, scope.form, scope.workshop, scope.access);
                     scope.assessmentLoaded = true;
                 });
             } else {

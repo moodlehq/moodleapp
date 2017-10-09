@@ -9,10 +9,21 @@
     </mm-loading>
 </span>
 
-<div class="list card">
+<div class="list card" ng-if="overallFeedkback">
     <div class="item item-text-wrap">
         <h2>{{ 'mma.mod_workshop.overallfeedback' | translate }}</h2>
     </div>
+    <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor">
+        <ion-label mm-mark-required="overallFeedkbackRequired">{{ 'mma.mod_workshop.feedbackauthor' | translate }}</ion-label>
+        <mm-rich-text-editor model="feedback" scroll-handle="mmaModWorkshopSubmissionScroll" name="mod_workshop_feedback" first-render="firstRender()"></mm-rich-text-editor>
+    </ion-input>
+    <mm-attachments ng-if="workshop.overallfeedbackfiles > 0" files="assessment.feedbackattachmentfiles" max-size="{{workshop.overallfeedbackmaxbytes}}" max-submissions="{{workshop.overallfeedbackfiles}}" component="{{component}}" component-id="{{componentId}}" allow-offline="true"></mm-attachments>
+    <label class="item item-input item-stacked-label" ng-if="access.canallocate">
+        <h2>{{ 'mma.mod_workshop.assessmentweight' | translate }}</h2>
+        <div class="item-select item-input-wrapper">
+            <select ng-model="weight" ng-options="weights.indexOf(option) as option for option in weights | orderBy:'$index':true" mm-ios-select-fix></select>
+        </div>
+    </label>
 </div>
 
 

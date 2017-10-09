@@ -47,6 +47,7 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
         url: '/mod_workshop-submission',
         params: {
             module: null,
+            workshop: null,
             access: null,
             courseid: null,
             profile: null,

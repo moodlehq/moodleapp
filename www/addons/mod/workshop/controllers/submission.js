@@ -28,7 +28,6 @@ angular.module('mm.addons.mod_workshop')
     var submission = $stateParams.submission || {},
         module = $stateParams.module,
         workshopId = module.instance,
-        access = $stateParams.access,
         userId = $mmSite.getUserId(),
         submissionId = submission.submissionid || submission.id;
 
@@ -37,6 +36,9 @@ angular.module('mm.addons.mod_workshop')
     $scope.assessment = $stateParams.assessment || false;
     $scope.submissionLoaded = false;
     $scope.module = module;
+    $scope.workshop = $stateParams.workshop;
+    $scope.access = $stateParams.access;
+
     $scope.strategy = $scope.assessment ? $scope.assessment.strategy : false;
 
     function fetchSubmissionData() {
@@ -44,8 +46,8 @@ angular.module('mm.addons.mod_workshop')
             var promises = [];
 
             $scope.submission = submissionData;
-            $scope.canEdit = (userId == submissionData.authorid && access.cansubmit && access.modifyingsubmissionallowed);
-            $scope.canDelete = access.candeletesubmissions;
+            $scope.canEdit = (userId == submissionData.authorid && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed);
+            $scope.canDelete = $scope.access.candeletesubmissions;
             if (!$scope.canDelete && userId == submissionData.authorid && $scope.canEdit) {
                 // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
                 promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(assessments) {
@@ -70,7 +72,7 @@ angular.module('mm.addons.mod_workshop')
     $scope.editSubmission = function() {
         var stateParams = {
             module: module,
-            access: access,
+            access: $scope.access,
             courseid: $scope.courseId,
             submission: $scope.submission,
             submissionid: submissionId

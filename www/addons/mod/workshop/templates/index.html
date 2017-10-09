@@ -99,7 +99,7 @@
                         <div class="item item-text-wrap">
                             <h2>{{ 'mma.mod_workshop.submissionsreport' | translate }}</h2>
                         </div>
-                        <mma-mod-workshop-submission ng-repeat="submission in grades" submission="submission" courseid="workshop.course" module="module" access="access" summary="true">
+                        <mma-mod-workshop-submission ng-repeat="submission in grades" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
                         </mma-mod-workshop-submission>
                         <div ng-if="page > 0 || hasNextPage" class="item item-text-wrap row-buttons responsive-sm">
                             <button ng-if="page > 0" class="button button-block icon-left ion-chevron-left" ng-click="gotoSubmissionsPage(page - 1)">
@@ -117,7 +117,7 @@
                         <div class="item item-text-wrap">
                             <h2>{{ 'mma.mod_workshop.assignedassessments' | translate }}</h2>
                         </div>
-                        <mma-mod-workshop-submission ng-repeat="assessment in assessments" submission="assessment.submission" assessment="assessment" courseid="workshop.course" module="module" access="access" summary="true">
+                        <mma-mod-workshop-submission ng-repeat="assessment in assessments" submission="assessment.submission" assessment="assessment" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
                         </mma-mod-workshop-submission>
                         <div ng-if="page > 0 || hasNextPage" class="item item-text-wrap row-buttons responsive-sm">
                             <button ng-if="page > 0" class="button button-block icon-left ion-chevron-left" ng-click="gotoSubmissionsPage(page - 1)">

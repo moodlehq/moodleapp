@@ -29,6 +29,7 @@ angular.module('mm.addons.mod_workshop')
             submission: '=',
             assessment: '=?',
             module: '=',
+            workshop: '=?',
             access: '=?',
             summary: '=?',
             courseid: '='
@@ -48,6 +49,7 @@ angular.module('mm.addons.mod_workshop')
                 if (scope.submission.timemodified) {
                     var stateParams = {
                         module: scope.module,
+                        workshop: scope.workshop,
                         access: scope.access,
                         courseid: scope.courseid,
                         profile: scope.profile,
