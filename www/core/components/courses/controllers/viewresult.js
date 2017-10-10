@@ -131,30 +131,8 @@ angular.module('mm.core.courses')
 
     // Load course nav handlers.
     function loadCourseNavHandlers(refresh, guest) {
-        var promises = [],
-            navOptions,
-            admOptions;
-
-        // Get user navigation and administration options to speed up handlers loading.
-        promises.push($mmCourses.getUserNavigationOptions([course.id]).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            navOptions = options;
-        }));
-
-        promises.push($mmCourses.getUserAdministrationOptions([course.id]).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            admOptions = options;
-        }));
-
-        return $q.all(promises).then(function() {
-            // Get the handlers to be shown.
-            return $mmCoursesDelegate.getNavHandlersToDisplay(
-                    course, refresh, guest, true, navOptions[course.id], admOptions[course.id]);
-        }).then(function(handlers) {
+        // Get the handlers to be shown.
+        return $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, guest, true).then(function(handlers) {
             course._handlers = handlers;
             $scope.handlersShouldBeShown = true;
         });

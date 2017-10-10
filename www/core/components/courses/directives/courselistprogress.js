@@ -30,8 +30,7 @@ angular.module('mm.core.courses')
  *
  * <mm-course-list-progress course="course" round-progress="true" show-summary="true"></mm-course-list-progress>
  */
-.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $mmEvents, $q,
-        mmCoursesEventCourseOptionsInvalidated) {
+.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $q) {
 
     /**
      * Check if the actions button should be shown.
@@ -63,7 +62,7 @@ angular.module('mm.core.courses')
             showSummary: "=?"
         },
         link: function(scope) {
-            var buttons, invObserver;
+            var buttons;
 
             shouldShowActions(scope, false);
 
@@ -115,14 +114,6 @@ angular.module('mm.core.courses')
                     });
                 });
             };
-
-            invObserver = $mmEvents.on(mmCoursesEventCourseOptionsInvalidated, function() {
-                shouldShowActions(scope, true);
-            });
-
-            scope.$on('$destroy', function() {
-                invObserver && invObserver.off && invObserver.off();
-            });
         }
     };
 });

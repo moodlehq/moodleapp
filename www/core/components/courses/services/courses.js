@@ -384,16 +384,47 @@ angular.module('mm.core.courses')
      */
     self.getCoursesOptions = function(courseIds, siteId) {
         var promises = [],
+            promise,
             navOptions,
             admOptions;
 
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            // Add always the site id course.
-            courseIds.push(site.getSiteHomeId());
+        if (courseIds.length == 1) {
+            // Only 1 course, check if it belongs to the user courses. If so, retrieve the options for all courses.
+            promise = self.getUserCourses(true, siteId).then(function(courses) {
+                var courseId = courseIds[0],
+                    isEnrolled = false;
+
+                for (var i = 0; i < courses.length; i++) {
+                    if (courses[i].id == courseId) {
+                        isEnrolled = true;
+                        break;
+                    }
+                }
+
+                if (isEnrolled) {
+                    // User is enrolled, retrieve all the courses.
+                    courseIds = courses.map(function(course) {
+                        return course.id;
+                    });
+                }
+            }).catch(function() {
+                // Ignore errors.
+            });
+        } else {
+            promise = $q.when();
+        }
+
+        return promise.then(function() {
+            return $mmSitesManager.getSite(siteId);
+        }).then(function(site) {
+            // Add always the site home course.
+            if (courseIds.indexOf(site.getSiteHomeId()) == -1) {
+                courseIds.push(site.getSiteHomeId());
+            }
 
             siteId = siteId || site.getId();
 
-            // Get user navigation and administration options to speed up handlers loading.
+            // Get user navigation and administration options.
             promises.push(self.getUserNavigationOptions(courseIds, siteId).catch(function() {
                 // Couldn't get it, return empty options.
                 return {};

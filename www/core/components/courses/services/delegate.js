@@ -65,7 +65,7 @@ angular.module('mm.core.courses')
     };
 
     self.$get = function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods, $mmCourses, $mmEvents,
-            mmCoursesEventCourseOptionsInvalidated, mmCoursesEventMyCoursesRefreshed) {
+            mmCoursesEventMyCoursesRefreshed) {
         var enabledNavHandlers = {},
             coursesHandlers = {},
             self = {},
@@ -126,9 +126,10 @@ angular.module('mm.core.courses')
 
             self.clearCoursesHandlers(courseId);
 
-            return $q.all(promises).finally(function() {
-                $mmEvents.trigger(mmCoursesEventCourseOptionsInvalidated);
-            });
+            // In the past, mmCoursesEventCourseOptionsInvalidated was triggered here. This caused a lot of WS calls to be
+            // performed, so it was removed to decrease the amount of WS calls. The downside is that calling this function
+            // in a certain view will not affect other views.
+            return $q.all(promises);
         };
 
         /**
@@ -269,7 +270,7 @@ angular.module('mm.core.courses')
                 course.admOptions = admOptions;
             }
 
-            return loadCourseOptions(course).then(function() {
+            return loadCourseOptions(course, refresh).then(function() {
                 // Call getNavHandlersForAccess to make sure the handlers have been loaded.
                 return getNavHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions, waitForPromise);
             }).then(function() {
