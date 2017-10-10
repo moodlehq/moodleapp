@@ -37,16 +37,18 @@ angular.module('mm.addons.mod_workshop')
                 angular.forEach(scope.form.fields, function(field, n) {
                     field.dimtitle = $translate.instant('mma.mod_workshop_assessment_accumulative.dimensionnumber',
                         {'$a': field.number});
-                    console.error(scope.form.dimensionsinfo[n]);
                     var scale = parseInt(field.grade, 10) < 0 ? scope.form.dimensionsinfo[n].scale : null;
-
-                    $mmGradesHelper.makeGradesMenu(field.grade, scope.workshopId, null, scale).then(function(grades) {
-                        field.grades = grades;
-                    });
 
                     if (scope.form.current[n] && scope.form.current[n].grade) {
                         scope.form.current[n].grade = parseInt(scope.form.current[n].grade, 10);
                     }
+
+                    $mmGradesHelper.makeGradesMenu(field.grade, scope.workshopId, null, scale).then(function(grades) {
+                        field.grades = grades;
+                        if (field.grades && scope.form.current[n] && scope.form.current[n].grade) {
+                            scope.form.current[n].gradeText = field.grades[scope.form.current[n].grade] || "";
+                        }
+                    });
                 });
             };
 

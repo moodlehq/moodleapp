@@ -163,10 +163,11 @@ angular.module('mm.addons.mod_workshop')
      * @name $mmaModWorkshopHelper#getReviewerAssessmentById
      * @param  {Number}   workshopId   Workshop ID.
      * @param  {Number}   assessmentId Assessment ID.
+     * @param   {Number}  [userId]     User ID. If not defined, current user.
      * @param  {String}   [siteId]     Site ID. If not defined, current site.
      * @return {Promise}               Resolved with the assessment.
      */
-    self.getReviewerAssessmentById = function(workshopId, assessmentId, siteId) {
+    self.getReviewerAssessmentById = function(workshopId, assessmentId, userId, siteId) {
         return $mmaModWorkshop.getAssessment(workshopId, assessmentId, siteId).catch(function() {
             return $mmaModWorkshop.getReviewerAssessments(workshopId, userId, undefined, undefined, siteId)
                     .then(function(assessments) {

@@ -30,6 +30,8 @@
         <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
         <h2>{{submission.title}}</h2>
         <p ng-if="profile.fullname">{{profile.fullname}}</p>
+        <p ng-if="submission.reviewedby.length">{{ 'mma.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbycount}} / {{submission.reviewedby.length}}</p>
+        <p ng-if="submission.reviewerof.length">{{ 'mma.mod_workshop.givengrades' | translate }}: {{submission.reviewerofcount}} / {{submission.reviewerof.length}}</p>
         <p ng-if="assessment && assessment.grade" class="badge badge-inline text-center badge-energized">{{ 'mma.mod_workshop.alreadygraded' | translate }}</p>
         <p ng-if="assessment && !assessment.grade" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.nogradeyet' | translate }}</p>
         <div class="item-note text-right" ng-if="submission.timemodified">

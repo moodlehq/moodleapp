@@ -37,17 +37,16 @@ angular.module('mm.addons.mod_workshop')
         mmaModWorkshopAssessmentInvalidatedEvent, $mmaModWorkshopHelper, $mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
         mmaModWorkshopComponent) {
 
-    function load(scope, assessment, workshopId, refresh) {
+    function load(scope, assessment, workshopId, userId, refresh) {
          var promises = [];
 
         if (refresh) {
-            promises.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, assessment.id)
+            promises.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, assessment.id, userId)
                     .then(function(assessmentData) {
                 assessment = assessmentData;
                 scope.assessment = assessmentData;
             }));
         }
-
         promises.push($mmaModWorkshop.getAssessmentForm(workshopId, assessment.id)
                 .then(function(assessmentForm) {
             scope.form = assessmentForm;
@@ -62,7 +61,8 @@ angular.module('mm.addons.mod_workshop')
             assessment: '=',
             strategy: '=',
             workshop: '=',
-            access: '='
+            access: '=',
+            edit: '=?'
         },
         templateUrl: 'addons/mod/workshop/templates/assessmentstrategy.html',
         link: function(scope, element) {
@@ -74,9 +74,11 @@ angular.module('mm.addons.mod_workshop')
                 obsInvalidated;
 
             if (!assessment || !container || !strategy) {
-                scope.assessmentLoaded = true;
+                scope.assessmentStrategyLoaded = true;
                 return;
             }
+
+            var userId = assessment.reviewerid;
 
             scope.feedback = {};
             scope.workshopId = scope.workshop.id;
@@ -102,33 +104,31 @@ angular.module('mm.addons.mod_workshop')
             directive = $mmaModWorkshopAssessmentStrategyDelegate.getDirectiveForPlugin(strategy);
             if (directive) {
                 obsInvalidated = $mmEvents.on(mmaModWorkshopAssessmentInvalidatedEvent, function() {
-                    scope.assessmentLoaded = false;
+                    scope.assessmentStrategyLoaded = false;
                     // Invalidate and refresh data.
                     var promises = [];
                     promises.push($mmaModWorkshop.invalidateAssessmentFormData(scope.workshopId, assessment.id));
                     promises.push($mmaModWorkshop.invalidateAssessmentData(scope.workshopId, assessment.id));
 
                     return $q.all(promises).finally(function() {
-                        return load(scope, assessment, scope.workshopId, true);
+                        return load(scope, assessment, scope.workshopId, userId, true);
                     }).finally(function() {
-                        console.error(scope.assessment, scope.form, scope.workshop, scope.access);
                         $mmEvents.trigger(mmaModWorkshopAssessmentRefreshedEvent);
                     });
                 });
 
-                load(scope, assessment, scope.workshopId).then(function() {
+                load(scope, assessment, scope.workshopId, userId).then(function() {
                     // Add the directive to the element.
                     container.setAttribute(directive, '');
                     // Compile the new directive.
                     $compile(container)(scope);
                 }).finally(function() {
-                    console.error(scope.assessment, scope.form, scope.workshop, scope.access);
-                    scope.assessmentLoaded = true;
+                    scope.assessmentStrategyLoaded = true;
                 });
             } else {
                 // Helper data and fallback.
                 scope.notSupported = !$mmaModWorkshopAssessmentStrategyDelegate.isPluginSupported(strategy);
-                scope.assessmentLoaded = true;
+                scope.assessmentStrategyLoaded = true;
             }
 
             scope.$on('$destroy', function() {

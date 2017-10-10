@@ -331,10 +331,8 @@ angular.module('mm.addons.mod_workshop')
                 }));
             }
 
-            if ($scope.workshop.phase == $mmaModWorkshop.PHASE_SUBMISSION) {
-                if ($scope.access.canviewallsubmissions) {
-                    promises.push($scope.gotoSubmissionsPage($scope.page));
-                }
+            if ($scope.access.canviewallsubmissions) {
+                promises.push($scope.gotoSubmissionsPage($scope.page));
             }
 
             if ($scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
@@ -346,10 +344,6 @@ angular.module('mm.addons.mod_workshop')
                             return assessment;
                         });
                     }));
-                }
-
-                if ($scope.access.canviewallassessments) {
-                    //promises.push($scope.gotoSubmissionsPage($scope.page));
                 }
             }
 

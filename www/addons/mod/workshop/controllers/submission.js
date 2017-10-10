@@ -23,13 +23,15 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
         $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline,
-        mmaModWorkshopAssessmentInvalidatedEvent) {
+        mmaModWorkshopAssessmentInvalidatedEvent, $mmUser) {
 
-    var submission = $stateParams.submission || {},
-        module = $stateParams.module,
+    $scope.submissionInfo = $stateParams.submission || {};
+
+    var module = $stateParams.module,
         workshopId = module.instance,
-        userId = $mmSite.getUserId(),
-        submissionId = submission.submissionid || submission.id;
+        currentUserId = $mmSite.getUserId(),
+        submissionId = $scope.submissionInfo.submissionid || $scope.submissionInfo.id,
+        userId = $scope.submissionInfo.userid || false;
 
     $scope.title = module.name;
     $scope.courseId = $stateParams.courseid;
@@ -38,20 +40,43 @@ angular.module('mm.addons.mod_workshop')
     $scope.module = module;
     $scope.workshop = $stateParams.workshop;
     $scope.access = $stateParams.access;
+    $scope.ownAssessment = false;
 
-    $scope.strategy = $scope.assessment ? $scope.assessment.strategy : false;
+    $scope.strategy = ($scope.assessment && $scope.assessment.strategy) || ($scope.workshop && $scope.workshop.strategy);
 
     function fetchSubmissionData() {
         return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
             var promises = [];
 
             $scope.submission = submissionData;
-            $scope.canEdit = (userId == submissionData.authorid && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed);
+            userId = submissionData.authorid || userId;
+            $scope.canEdit = (currentUserId == userId && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed);
             $scope.canDelete = $scope.access.candeletesubmissions;
-            if (!$scope.canDelete && userId == submissionData.authorid && $scope.canEdit) {
+            if ($scope.canDelete && currentUserId == userId && $scope.canEdit) {
                 // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
                 promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(assessments) {
                     $scope.canDelete = !assessments.length;
+                }));
+            }
+
+            for (var x in $scope.submissionInfo.reviewedby) {
+                if (currentUserId == $scope.submissionInfo.reviewedby[x].userid) {
+                    $scope.ownAssessment = $scope.submissionInfo.reviewedby[x];
+                    $scope.submissionInfo.reviewedby[x].ownAssessment = true;
+                    break;
+                }
+            }
+
+            if ($scope.submissionInfo.reviewedby || $scope.submissionInfo.reviewerof) {
+                promises.push($mmCourse.getModuleBasicGradeInfo(module.id).then(function(gradeInfo) {
+                    $scope.maxGrade = gradeInfo.grade;
+                }));
+            }
+
+            if ($scope.assessment && $scope.assessment.assessmentid) {
+                promises.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, $scope.assessment.assessmentid,
+                        $scope.assessment.userid).then(function(assessmentData) {
+                    $scope.assessment = assessmentData;
                 }));
             }
 

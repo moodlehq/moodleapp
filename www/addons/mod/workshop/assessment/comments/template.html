@@ -3,10 +3,13 @@
         <h2>{{ field.dimtitle }}</h2>
         <mm-format-text watch="true">{{field.description}}</mm-format-text>
     </div>
-    <label class="item item-input item-stacked-label">
+    <label class="item" ng-class="{'item-input item-stacked-label': edit}">
         <h2>{{ 'mma.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
-        <div class="item-input-wrapper" mm-mark-required="true">
+        <div class="item-input-wrapper" mm-mark-required="true" ng-if="edit">
             <textarea class="mm-textarea" aria-multiline="true" ng-model="form.current[n].peercomment" mm-auto-rows ng-required="true"></textarea>
         </div>
+        <p class="item-text-wrap" ng-if="!edit">
+            <mm-format-text watch="true">{{form.current[n].peercomment}}</mm-format-text>
+        </p>
     </label>
 </div>
