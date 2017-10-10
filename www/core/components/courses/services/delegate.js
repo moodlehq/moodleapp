@@ -34,7 +34,7 @@ angular.module('mm.core.courses')
      * @param {String} addon The addon's name (mmaLabel, mmaForum, ...)
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
-     *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
+     *                             - isEnabled() (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
      *                             - isEnabledForCourse(courseid, accessData, navOptions, admOptions) (Boolean|Promise) Whether or
      *                                               not the handler is enabled on a course level. When using a promise, it should
@@ -48,6 +48,8 @@ angular.module('mm.core.courses')
      *                             - getController(courseid) (Object) Returns the object that will act as controller.
      *                                                                See core/components/courses/templates/list.html
      *                                                                for the list of scope variables expected.
+     *                             - invalidateEnabledForCourse(courseId, navOptions, admOptions) (Promise) Optional. Should
+     *                                               invalidate data to determine if handler is enabled for a certain course.
      */
     self.registerNavHandler = function(addon, handler, priority) {
         if (typeof navHandlers[addon] !== 'undefined') {
@@ -123,6 +125,15 @@ angular.module('mm.core.courses')
 
             promises.push($mmCourses.invalidateUserNavigationOptions());
             promises.push($mmCourses.invalidateUserAdministrationOptions());
+
+            // Invalidate course enabled data for the handlers that are enabled at site level.
+            if (courseId) {
+                promises.push(self.invalidateCourseHandlers(courseId));
+            } else {
+                for (var cId in coursesHandlers) {
+                    promises.push(self.invalidateCourseHandlers(cId));
+                }
+            }
 
             self.clearCoursesHandlers(courseId);
 
@@ -301,6 +312,33 @@ angular.module('mm.core.courses')
                     return handlersToDisplay;
                 });
             });
+        };
+
+        /**
+         * Invalidate the data to be able to determine if handlers are enabled for a certain course.
+         *
+         * @module mm.core.courses
+         * @ngdoc method
+         * @name $mmCoursesDelegate#invalidateCourseHandlers
+         * @param  {Number} courseId Course ID.
+         * @return {Promise}         Promise resolved when done.
+         */
+        self.invalidateCourseHandlers = function(courseId) {
+            var promises = [],
+                courseData = coursesHandlers[courseId];
+
+            if (!courseData) {
+                return $q.when();
+            }
+
+            angular.forEach(courseData.enabledHandlers, function(handler) {
+                if (handler && handler.instance && handler.instance.invalidateEnabledForCourse) {
+                    promises.push($q.when(
+                            handler.instance.invalidateEnabledForCourse(courseId, courseData.navOptions, courseData.admOptions)));
+                }
+            });
+
+            return $mmUtil.allPromises(promises);
         };
 
         /**
