@@ -1,6 +1,5 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var bower = require('bower');
 var concat = require('gulp-concat');
 var insert = require('gulp-insert');
 var stripComments = require('gulp-strip-comments');
@@ -376,11 +375,15 @@ var paths = {
 };
 
 var remoteAddonPaths = {
-  all: [
+  copy: [
     '*',
     '**/*',
-    '!e2e/*',
-    '!**/e2e/*',
+    '!*.js',
+    '!**/*.js',
+    '!lang/*',
+    '!**/lang/*',
+    '!*.scss',
+    '!**/*.scss',
   ],
   js: [ // Treat main.js files first.
     '*/main.js',
@@ -740,7 +743,7 @@ gulp.task('remoteaddon-copy', function(done) {
 
   path = newYargs.argv.path || '';
   destFolder = npmPath.join(path, remoteAddonPackageFolder);
-  sources = getRemoteAddonPaths(remoteAddonPaths.all, path);
+  sources = getRemoteAddonPaths(remoteAddonPaths.copy, path);
   sources.push('!' + destFolder); // Don't copy dest folder.
 
   gulp.src(sources)
