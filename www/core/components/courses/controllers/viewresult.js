@@ -23,7 +23,7 @@ angular.module('mm.core.courses')
  */
 .controller('mmCoursesViewResultCtrl', function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
             $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated,
-            $timeout) {
+            $timeout, $mmFS, $rootScope) {
 
     var course = angular.copy($stateParams.course || {}), // Copy the object to prevent modifying the one from the previous view.
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
@@ -31,7 +31,12 @@ angular.module('mm.core.courses')
         isGuestEnabled = false,
         guestInstanceId,
         enrollmentMethods,
-        waitStart = 0;
+        waitStart = 0,
+        enrolUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/index.php?id=' + course.id),
+        courseUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'course/view.php?id=' + course.id),
+        paypalReturnUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/paypal/return.php'),
+        inAppLoadListener,
+        inAppExitListener;
 
     $scope.course = course;
     $scope.component = mmCoursesSearchComponent;
@@ -49,6 +54,7 @@ angular.module('mm.core.courses')
     // Convenience function to get course. We use this to determine if a user can see the course or not.
     function getCourse(refresh) {
         var promise;
+
         if (selfEnrolWSAvailable || guestWSAvailable) {
             // Get course enrolment methods.
             $scope.selfEnrolInstances = [];
@@ -256,5 +262,39 @@ angular.module('mm.core.courses')
                 }, 5000);
             });
         }
+    }
+
+    if (course.enrollmentmethods && course.enrollmentmethods.indexOf('paypal') > -1) {
+        $scope.paypalEnabled = true;
+
+        $scope.paypalEnrol = function() {
+            var hasReturnedFromPaypal = false;
+
+            // Stop previous listeners if any.
+            inAppLoadListener && inAppLoadListener();
+            inAppExitListener && inAppExitListener();
+
+            // Open the enrolment page in InAppBrowser.
+            $mmSite.openInAppWithAutoLogin(enrolUrl);
+
+            // Observe loaded pages in the InAppBrowser to check if the enrol process has ended.
+            inAppLoadListener = $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+                if (event.url.indexOf(paypalReturnUrl) != -1) {
+                    hasReturnedFromPaypal = true;
+                } else if (event.url.indexOf(courseUrl) != -1 && hasReturnedFromPaypal) {
+                    // User reached the course index page after returning from PayPal, close the InAppBrowser.
+                    $mmUtil.closeInAppBrowser();
+                }
+            });
+
+            // Observe InAppBrowser closed events.
+            inAppExitListener = $rootScope.$on('$cordovaInAppBrowser:exit', function() {
+                // InAppBrowser closed, refresh data just in case.
+                inAppLoadListener();
+                inAppExitListener();
+                $scope.courseLoaded = false;
+                refreshData();
+            });
+        };
     }
 });
