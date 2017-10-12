@@ -3,9 +3,6 @@
     "answersaved": "Besvaret",
     "complete": "Gennemført",
     "correct": "Rigtigt",
-    "errorattachmentsnotsupported": "Programmet understøtter endnu ikke bilag til svar.",
-    "errorinlinefilesnotsupported": "Programmet understøtter endnu ikke redigering af filer inline.",
-    "errorquestionnotsupported": "Appen understøtter ikke denne type spørgsmål: {{$a}}.",
     "feedback": "Feedback",
     "incorrect": "Forkert",
     "information": "Information",
@@ -13,8 +10,7 @@
     "notanswered": "Ikke besvaret",
     "notyetanswered": "Ikke besvaret",
     "partiallycorrect": "Delvis rigtigt",
-    "questionmessage": "Spørgsmål {{$a}}: {{$b}}",
     "questionno": "Spørgsmål {{$a}}",
     "requiresgrading": "Kræver bedømmelse",
-    "unknown": "Kan ikke bestemme status"
+    "unknown": "Ukendt"
 }

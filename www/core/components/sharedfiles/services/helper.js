@@ -15,12 +15,13 @@
 angular.module('mm.core.sharedfiles')
 
 .factory('$mmSharedFilesHelper', function($mmSharedFiles, $mmUtil, $log, $mmApp, $mmSitesManager, $mmFS, $rootScope, $q,
-            $ionicModal, $state, $translate, $mmSite, $mmFileUploaderHelper) {
+            $ionicModal, $state, $translate, $mmSite) {
 
     $log = $log.getInstance('$mmSharedFilesHelper');
 
     var self = {},
         filePickerDeferred,
+        fileListModal,
         fileListScope;
 
     /**
@@ -75,12 +76,11 @@ angular.module('mm.core.sharedfiles')
      * @module mm.core.sharedfiles
      * @ngdoc method
      * @name $mmSharedFilesHelper#filePickerClosed
-     * @param  {String} [error] The error message if any.
      * @return {Void}
      */
-    self.filePickerClosed = function(error) {
+    self.filePickerClosed = function() {
         if (filePickerDeferred) {
-            filePickerDeferred.reject(error);
+            filePickerDeferred.reject();
             filePickerDeferred = undefined;
         }
     };
@@ -114,9 +114,6 @@ angular.module('mm.core.sharedfiles')
      * @return {Promise}         Promise resolved when state changed.
      */
     self.goToChooseSite = function(filePath) {
-        // If the modal is shown, close it.
-        fileListScope && fileListScope.closeModal && fileListScope.closeModal();
-
         var parentState = $state.$current.name.split('.')[0];
         return $state.go(parentState + '.sharedfiles-choose-site', {filepath: filePath});
     };
@@ -130,12 +127,14 @@ angular.module('mm.core.sharedfiles')
      * @return {Promise} Promise resolved when the modal is initialized.
      */
     self.initFileListModal = function() {
-        if (fileListScope && fileListScope.modal) {
+        if (fileListModal) {
             // Already initialized.
             return $q.when();
         }
 
-        fileListScope = $rootScope.$new();
+        if (!fileListScope) {
+            fileListScope = $rootScope.$new();
+        }
 
         return $ionicModal.fromTemplateUrl('core/components/sharedfiles/templates/listmodal.html', {
             scope: fileListScope,
@@ -151,10 +150,9 @@ angular.module('mm.core.sharedfiles')
      * @module mm.core.sharedfiles
      * @ngdoc method
      * @name $mmSharedFilesHelper#pickSharedFile
-     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      * @return {Promise} Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
-    self.pickSharedFile = function(mimetypes) {
+    self.pickSharedFile = function() {
         var path = '',
             siteId = $mmSite.getId();
 
@@ -162,7 +160,6 @@ angular.module('mm.core.sharedfiles')
 
         self.initFileListModal().then(function() {
             fileListScope.filesLoaded = false;
-            // fileListScope.mimetypes = mimetypes;
             if (path) {
                 fileListScope.title = $mmFS.getFileAndDirectoryFromPath(path).name;
             } else {
@@ -202,15 +199,8 @@ angular.module('mm.core.sharedfiles')
 
                 // File picked.
                 fileListScope.filePicked = function(file) {
-                    fileListScope.modal.hide();
-
-                    var error = $mmFileUploaderHelper.isInvalidMimetype(mimetypes, file.fullPath);
-                    if (error) {
-                        self.filePickerClosed(error);
-                        return;
-                    }
-
                     self.filePicked(file.fullPath);
+                    fileListScope.modal.hide();
                 };
             });
 
@@ -222,7 +212,7 @@ angular.module('mm.core.sharedfiles')
         return filePickerDeferred.promise;
 
         function loadFiles() {
-            return $mmSharedFiles.getSiteSharedFiles(siteId, path, mimetypes).then(function(files) {
+            return $mmSharedFiles.getSiteSharedFiles(siteId, path).then(function(files) {
                 fileListScope.files = files;
                 fileListScope.filesLoaded = true;
             });

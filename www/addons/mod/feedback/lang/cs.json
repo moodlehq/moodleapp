@@ -3,7 +3,7 @@
     "anonymous": "Anonymní",
     "anonymous_entries": "Anonymní záznamy",
     "average": "Průměr",
-    "captchaofflinewarning": "Dotazník se souborem captcha nemůže být  v režinu offline dokončen, pokud není nakonfigurován režim offline nebo server je vypnutý.",
+    "captchaofflinewarning": "Dotazník se souborem captcha nemůže být dokončen, pokud není nakonfigurován režim offline nebo s vypnutým serverem.",
     "complete_the_form": "Klikněte zde a odpovězte na otázky...",
     "completed_feedbacks": "Odevzdané odpovědi",
     "continue_the_form": "Pokračovat v zodpovídání otázek ...",

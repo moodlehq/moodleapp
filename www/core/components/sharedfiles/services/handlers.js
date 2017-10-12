@@ -57,22 +57,12 @@ angular.module('mm.core.sharedfiles')
                 title: 'mm.sharedfiles.sharedfiles',
                 class: 'mm-sharedfiles-filepicker-handler',
                 icon: 'ion-folder',
-                action: function(maxSize, upload, allowOffline, mimetypes) {
+                action: function(maxSize, upload, allowOffline) {
                     // We don't use the params because we aren't uploading the file ourselves, we return
                     // the file to upload to the fileuploader.
-                    return $mmSharedFilesHelper.pickSharedFile(mimetypes);
+                    return $mmSharedFilesHelper.pickSharedFile();
                 }
             };
-        };
-
-        /**
-         * Given a list of mimetypes, return the ones supported by this handler.
-         *
-         * @param  {String[]} mimetypes List of mimetypes.
-         * @return {String[]}           Supported mimetypes.
-         */
-        self.getSupportedMimeTypes = function(mimetypes) {
-            return mimetypes;
         };
 
         return self;

@@ -29,7 +29,7 @@ angular.module('mm.core.login')
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
             md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
-            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS, $mmApp, $mmEmulatorHelper) {
+            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -324,11 +324,6 @@ angular.module('mm.core.login')
      * @return {Boolean}      True if embedded browser, false othwerise.
      */
     self.isSSOEmbeddedBrowser = function(code) {
-        if ($mmApp.isDesktop() && $mmEmulatorHelper.isLinux()) {
-            // In Linux desktop apps, always use embedded browser.
-            return true;
-        }
-
         return code == mmLoginSSOInAppCode;
     };
 
@@ -374,15 +369,10 @@ angular.module('mm.core.login')
 
         loginUrl += '&oauthsso=' + params.id;
 
-        if ($mmApp.isDesktop() && $mmEmulatorHelper.isLinux()) {
-            // In Linux desktop apps, always use embedded browser.
-            $mmUtil.openInApp(loginUrl);
-        } else {
-            // Always open it in browser because the user might have the session stored in there.
-            $mmUtil.openInBrowser(loginUrl);
-            if (navigator.app) {
-                navigator.app.exitApp();
-            }
+        // Always open it in browser because the user might have the session stored in there.
+        $mmUtil.openInBrowser(loginUrl);
+        if (navigator.app) {
+            navigator.app.exitApp();
         }
 
         return true;

@@ -25,7 +25,6 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreSecondsHour', 3600)
 .constant('mmCoreSecondsMinute', 60)
 .constant('mmCoreDontShowError', 'mmCoreDontShowError') // Pass it to reject functions to indicate that no error should be shown.
-.constant('mmCoreNoSiteId', 'NoSite')
 
 // States for downloading files/modules.
 .constant('mmCoreDownloaded', 'downloaded')
@@ -97,24 +96,19 @@ angular.module('mm.core', ['pascalprecht.translate'])
             cache: false,
             template: '<ion-view><ion-content mm-state-class><mm-loading class="mm-loading-center"></mm-loading></ion-content></ion-view>',
             controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp,
-                        $mmLoginHelper, mmCoreNoSiteId) {
+                        $mmLoginHelper) {
 
                 $ionicHistory.nextViewOptions({disableBack: true});
 
                 function loadSiteAndGo() {
-                    if ($stateParams.siteid == mmCoreNoSiteId) {
-                        // No site to load, just go to the state.
-                        $state.go($stateParams.state, $stateParams.params);
-                    } else {
-                        $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                            if (!$mmLoginHelper.isSiteLoggedOut($stateParams.state, $stateParams.params)) {
-                                $state.go($stateParams.state, $stateParams.params);
-                            }
-                        }, function() {
-                            // Site doesn't exist.
-                            $state.go('mm_login.sites');
-                        });
-                    }
+                    $mmSitesManager.loadSite($stateParams.siteid).then(function() {
+                        if (!$mmLoginHelper.isSiteLoggedOut($stateParams.state, $stateParams.params)) {
+                            $state.go($stateParams.state, $stateParams.params);
+                        }
+                    }, function() {
+                        // Site doesn't exist.
+                        $state.go('mm_login.sites');
+                    });
                 }
 
                 $scope.$on('$ionicView.enter', function() {

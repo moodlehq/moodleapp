@@ -12,76 +12,76 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course assign', function () {
+describe('User can manage course assign', function() {
 
     it('View course assign windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses');
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Group work and assessment');
+            return MM.clickOn('Analysis');
         }).then(function () {
-            return MM.clickOn('Assignment 1 (Text)');
-        }).then(function () {
-            expect(MM.getView().getText()).toMatch('Keep it short!');
-        }).then(function () {
+            return MM.clickOn('From Concept to Reality: Trauma and Film');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('The screening of trauma transcends the narrative');
+        }).then(function() {
             done();
         });
     });
 
     it('Click description tab', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses');
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Group work and assessment');
+            return MM.clickOn('Analysis');
         }).then(function () {
-            return MM.clickOn('Assignment 1 (Text)');
+            return MM.clickOn('From Concept to Reality: Trauma and Film');
         }).then(function () {
-            return MM.clickOn('Keep it short!');
+            return MM.clickOn('The screening of trauma transcends the narrative');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('The screening of trauma transcends the narrative');
         }).then(function () {
-            expect(MM.getView().getText()).toMatch('Keep it short!');
-        }).then(function () {
+            return MM.goBack();
+        }).then(function() {
             done();
         });
     });
 
-    it('Add text submission', function (done) {
+    it('Click PDF file tab', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses');
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Group work and assessment');
+            return MM.clickOn('Analysis');
         }).then(function () {
-            return MM.clickOn('Assignment 1 (Text)');
+            return MM.clickOn('From Concept to Reality: Trauma and Film');
         }).then(function () {
-            return MM.clickOn('Add submission');
-        }).then(function () {
-            browser.sleep(10000);
-            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('Hello'));
-        }).then(function () {
-            return MM.clickOnElement($('a[ng-click="save()"]'));
-        }).then(function () {
+            return MM.clickOn('ExampleEssay.pdf');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('The screening of trauma transcends the narrative');
+        }).then(function() {
             done();
         });
     });
 
-    it('Click Add file submission button', function (done) {
+    it('Click Add submission button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses');
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Group work and assessment');
+            return MM.clickOn('Analysis');
         }).then(function () {
-            return MM.clickOn('Assignment 2 (Upload)');
-        }).then(function () {
+            return MM.clickOn('From Concept to Reality: Trauma and Film');
+        }).then(function() {
             return MM.clickOn('Add submission');
-        }).then(function () {
-            return MM.clickOn('Add file');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('The screening of trauma transcends the narrative');
+            expect(MM.getView().getText()).toMatch('ExampleEssay.pdf');
         }).then(function () {
             done();
         });
@@ -89,22 +89,21 @@ describe('User can manage course assign', function () {
 
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses');
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Group work and assessment');
+            return MM.clickOn('Analysis');
         }).then(function () {
-            return MM.clickOn('Assignment 1 (Text)');
+            return MM.clickOn('From Concept to Reality: Trauma and Film');
         }).then(function () {
-            browser.sleep(7500); // Wait for button css to render.
             return $('.secondary-buttons').click();
-        }).then(function () {
-            browser.sleep(5000); // Wait for button css to render.
-            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('The screening of trauma transcends the narrative');
         }).then(function () {
             done();
         });
     });
 
 });
+

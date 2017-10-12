@@ -13,8 +13,6 @@
     "emptyaddform": "Não preencheu nenhum campo!",
     "entrieslefttoadd": "Tem que adicionar mais {{$a.entriesleft}} registo(s) para completar esta atividade",
     "entrieslefttoaddtoview": "Tem que adicionar mais {{$a.entrieslefttoview}} registos para conseguir visualizar as entradas dos outros participantes.",
-    "errorapproving": "Erro ao aprovar ou desaprovar uma entrada.",
-    "errordeleting": "Erro ao apagar a entrada.",
     "errormustsupplyvalue": "Indique aqui um valor.",
     "expired": "A atividade terminou em <b>{{$a}}</b> e não se encontra disponível",
     "fields": "Campos",

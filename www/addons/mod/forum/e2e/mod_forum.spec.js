@@ -12,88 +12,195 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course forum', function () {
+describe('User can manage course forum', function() {
+
+    it('Click All sections course forum tabs', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses');
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('All sections');
+        }).then(function () {
+            return MM.clickOn('Announcements from your tutor');
+        }).then(function () {
+            return MM.goBack();
+        }).then(function() {
+            done();
+        });
+    });
 
     it('View course forum windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses')
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Background reading');
+            return MM.clickOn('Course welcome');
         }).then(function () {
-            return MM.clickOn('Join the digital literacy discussions');
+            return MM.clickOn('Announcements from your tutor');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('General news and announcements');
+            expect(MM.getView().getText()).toMatch('Group Project');
         }).then(function () {
-            browser.sleep(5000); // Wait for  css to render.
-            expect(MM.getView().getText()).toContain('Share your thoughts');
-            expect(MM.getView().getText()).toContain('How to use this space');
+            return MM.clickOn('General news and announcements');
         }).then(function () {
+            expect(MM.getView().getText()).toMatch('General news and announcements');
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
+            done();
+        });
+    });
+
+    it('View course Forum grade test windows', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses')
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('Course welcome');
+        }).then(function () {
+            return MM.clickOn('Forum grade test');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('Add a new discussion topic');
+            expect(MM.getView().getText()).toMatch('Forum grade test');
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
             done();
         });
     });
 
     it('Add a new discussion topic', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses')
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Background reading');
+            return MM.clickOn('Course welcome');
         }).then(function () {
-            return MM.clickOn('Join the digital literacy discussions');
+            return MM.clickOn('Forum grade test');
         }).then(function () {
             return MM.clickOn('Add a new discussion topic');
+        }).then(function() {
+            return $('[ng-model="newdiscussion.subject"]').sendKeys('Test Discussion Subject');
+        }).then(function() {
+            return $('[ng-model="newdiscussion.message"]').sendKeys('Test Discussion Message');
+        }).then(function() {
+            return $('[ng-click="add()"]').click();
         }).then(function () {
-            browser.sleep(5000); // Wait for css to render.
-            $('[ng-model="newDiscussion.subject"]').sendKeys('Test Subject');
-            browser.sleep(5000); // Wait for css to render.
-            return browser.switchTo().frame($('#cke_1_contents iframe').click().sendKeys('Test Message'));
+            return MM.goBack()
+        }).then(function() {
+            done();
+        });
+    });
+
+    it('Add a new Course discussion', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses')
         }).then(function () {
-            return browser.sleep(5000); // Wait for css to render.
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.goToBottomAndClick('Post to forum');
+            return MM.clickOn('Analysis');
         }).then(function () {
+            return MM.clickOn('Course discussion');
+        }).then(function () {
+            return MM.clickOn('Add a new discussion topic');
+        }).then(function() {
+            return $('[ng-model="newdiscussion.subject"]').sendKeys('Test Subject');
+        }).then(function() {
+            return $('[ng-model="newdiscussion.message"]').sendKeys('Test Message');
+        }).then(function() {
+            return $('[ng-click="add()"]').click();
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
+            done();
+        });
+    });
+
+    it('Discussions about your group projects', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses')
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('Group Projects and Individual tasks');
+        }).then(function () {
+            return MM.clickOn('Discussions about your group projects');
+        }).then(function () {
+            return MM.clickOn('Add a new discussion topic');
+        }).then(function() {
+            return $('[ng-model="newdiscussion.subject"]').sendKeys('Test Group Projects Subject');
+        }).then(function() {
+            return $('[ng-model="newdiscussion.message"]').sendKeys('Test Group Projects Message');
+        }).then(function() {
+            return $('[ng-click="add()"]').click();
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
             done();
         });
     });
 
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses')
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Background reading');
+            return MM.clickOn('Course welcome');
         }).then(function () {
-            return MM.clickOn('Join the digital literacy discussions');
+            return MM.clickOn('Announcements from your tutor');
         }).then(function () {
-            browser.sleep(5000); // Wait for css to render.
             return $('.secondary-buttons').click();
-        }).then(function () {
-           browser.sleep(5000); // Wait for css to render.
-           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function() {
+            return MM.goBack();
         }).then(function () {
             done();
         });
     });
 
-    it('Check that the new forum post was successfully created', function (done) {
+    it('Check that the Course discussion post was successfully created', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('Course overview');
+            return MM.clickOnInSideMenu('My courses')
         }).then(function () {
-            return MM.clickOn('Digital Literacy');
+            return MM.clickOn('Psychology in Cinema');
         }).then(function () {
-            return MM.clickOn('Background reading');
+            return MM.clickOn('Analysis');
         }).then(function () {
-            return MM.clickOn('Join the digital literacy discussions');
+            return MM.clickOn('Course discussion');
         }).then(function () {
-            browser.sleep(5000); // Wait for css to render.
-            expect(MM.getView().getText()).toContain('Test Subject');
-            expect(MM.getView().getText()).toContain('Test Message');
-            expect(MM.getView().getText()).toContain('Barbara Gardner');
+            expect(MM.getView().getText()).toMatch('Test Subject');
+            expect(MM.getView().getText()).toMatch('Test Message');
+            expect(MM.getView().getText()).toMatch('Barbara Gardner');
         }).then(function () {
+            return MM.goBack()
+        }).then(function() {
+            done();
+        });
+    });
+
+    it('Check that the discussions about group projects was successfully created', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses')
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('Group Projects and Individual tasks');
+        }).then(function () {
+            return MM.clickOn('Discussions about your group projects');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('Test Group Projects Subject');
+            expect(MM.getView().getText()).toMatch('Test Group Projects Message');
+            expect(MM.getView().getText()).toMatch('Barbara Gardner');
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
             done();
         });
     });
 
 });
+

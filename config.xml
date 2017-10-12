@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.3.2">
-  <name>Moodle Mobile</name>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.novin.novinblend" version="1.0.0">
+  <name>Novin Academy</name>
   <description>
-        Moodle Mobile official app
+        Novin Academy's Official LMS App
     </description>
-  <author href="http://moodle.com" email="mobile@moodle.com">
-        Moodle Mobile team
+  <author href="http://kohandani.com" email="kohandani@gmail.com">
+        Mohammadreza Kohandani
     </author>
   <content src="index.html"/>
   <access origin="*"/>

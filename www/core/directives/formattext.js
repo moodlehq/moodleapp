@@ -276,10 +276,6 @@ angular.module('mm.core')
 
             angular.forEach(dom.find('audio'), function(el) {
                 treatMedia(el, component, componentId, siteId);
-                if (ionic.Platform.isIOS()) {
-                    // Set data-tap-disabled="true" to make slider work in iOS.
-                    el.setAttribute('data-tap-disabled', true);
-                }
             });
             angular.forEach(dom.find('video'), function(el) {
                 treatVideoFilters(el);

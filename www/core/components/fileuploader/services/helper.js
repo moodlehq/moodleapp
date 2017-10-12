@@ -229,39 +229,6 @@ angular.module('mm.core.fileuploader')
     };
 
     /**
-     * Check if a file's mimetype is invalid based on the list of accepted mimetypes. This function needs either the file's
-     * mimetype or the file's path/name.
-     *
-     * @module mm.core.fileuploader
-     * @ngdoc method
-     * @name $mmFileUploaderHelper#isInvalidMimetype
-     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
-     * @param  {String} [path]        File's path or name.
-     * @param  {String} [mimetype]    File's mimetype.
-     * @return {Mixed}                False if file is valid, error message if file is invalid.
-     */
-    self.isInvalidMimetype = function(mimetypes, path, mimetype) {
-        var extension;
-
-        if (mimetypes) {
-            // Verify that the mimetype of the file is supported.
-            if (mimetype) {
-                extension = $mmFS.getExtension(mimetype);
-            } else {
-                extension = $mmFS.getFileExtension(path);
-                mimetype = $mmFS.getMimeType(extension);
-            }
-
-            if (mimetype && mimetypes.indexOf(mimetype) == -1) {
-                extension = extension || $translate.instant('mm.core.unknown');
-                return $translate.instant('mm.fileuploader.invalidfiletype', {$a: extension});
-            }
-        }
-
-        return false;
-    };
-
-    /**
      * Mark files as offline.
      *
      * @module mm.core.fileuploader
@@ -285,15 +252,14 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#selectAndUploadFile
-     * @param  {Number} [maxSize]       Max size of the file to upload. If not defined or -1, no max size.
-     * @param  {String} [title]         File picker page title
-     * @param  {Array}  [filterMethods] File picker available methods
-     * @param  {String[]} [mimetypes]   List of supported mimetypes. If undefined, all mimetypes supported.
+     * @param  {Number} [maxSize] Max size of the file to upload. If not defined or -1, no max size.
+     * @param  {String} [title]   File picker page title
+     * @param  {Array}  [filterMethods]   File picker available methods
      * @return {Promise} Promise resolved when a file is uploaded, rejected if file picker is closed without a file uploaded.
      *                   The resolve value should be the response of the upload request.
      */
-    self.selectAndUploadFile = function(maxSize, title, filterMethods, mimetypes) {
-        return selectFile(maxSize, false, title, filterMethods, true, mimetypes);
+    self.selectAndUploadFile = function(maxSize, title, filterMethods) {
+        return selectFile(maxSize, false, title, filterMethods, true);
     };
 
     /**
@@ -302,38 +268,36 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#selectFile
-     * @param  {Number} [maxSize]       Max size of the file. If not defined or -1, no max size.
-     * @param  {Boolean} [allowOffline] True to allow selecting in offline, false to require connection.
-     * @param  {String} [title]         File picker page title
-     * @param  {Array}  [filterMethods] File picker available methodss
-     * @param  {String[]} [mimetypes]   List of supported mimetypes. If undefined, all mimetypes supported.
+     * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
+     * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @param  {String} [title]   File picker page title
+     * @param  {Array}  [filterMethods]   File picker available methods
      * @return {Promise} Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
      *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
-    self.selectFile = function(maxSize, allowOffline, title, filterMethods, mimetypes) {
-        return selectFile(maxSize, allowOffline, title, filterMethods, false, mimetypes);
+    self.selectFile = function(maxSize, allowOffline, title, filterMethods) {
+        return selectFile(maxSize, allowOffline, title, filterMethods, false);
     };
 
     /**
      * Open the view to select a file and maybe uploading it.
      *
      * @param  {Number} [maxSize]       Max size of the file. If not defined or -1, no max size.
-     * @param  {Boolean} [allowOffline] True to allow selecting in offline, false to require connection.
+     * @param  {Boolean} allowOffline   True to allow selecting in offline, false to require connection.
      * @param  {String} [title]         File picker title.
      * @param  {Array}  [filterMethods] File picker available methods.
-     * @param  {Boolean} [upload]       True if the file should be uploaded, false if only picked.
-     * @param  {String[]} [mimetypes]   List of supported mimetypes. If undefined, all mimetypes supported.
+     * @param  {Boolean} upload         True if the file should be uploaded, false if only picked.
      * @return {Promise} Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
      *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
-    function selectFile(maxSize, allowOffline, title, filterMethods, upload, mimetypes) {
+    function selectFile(maxSize, allowOffline, title, filterMethods, upload) {
         var buttons = [],
             handlers;
 
         filePickerDeferred = $q.defer();
 
         // Add buttons for handlers.
-        handlers = $mmFileUploaderDelegate.getHandlers(mimetypes);
+        handlers = $mmFileUploaderDelegate.getHandlers();
         handlers.sort(function(a, b) {
             return a.priority <= b.priority ? 1 : -1;
         });
@@ -348,8 +312,7 @@ angular.module('mm.core.fileuploader')
                 text: (handler.icon ? '<i class="icon ' + handler.icon + '"></i>' : '') + $translate.instant(handler.title),
                 action: handler.action,
                 className: handler.class,
-                afterRender: handler.afterRender,
-                mimetypes: handler.mimetypes
+                afterRender: handler.afterRender
             });
         });
 
@@ -366,7 +329,7 @@ angular.module('mm.core.fileuploader')
                     }
 
                     // Execute the action and close the action sheet.
-                    buttons[index].action(maxSize, upload, allowOffline, buttons[index].mimetypes).then(function(data) {
+                    buttons[index].action(maxSize, upload, allowOffline).then(function(data) {
                         if (data.uploaded) {
                             // The handler already uploaded the file. Return the result.
                             return data.result;
@@ -414,7 +377,7 @@ angular.module('mm.core.fileuploader')
         $timeout(function() {
             angular.forEach(buttons, function(button) {
                 if (angular.isFunction(button.afterRender)) {
-                    button.afterRender(maxSize, upload, allowOffline, button.mimetypes);
+                    button.afterRender(maxSize, upload, allowOffline);
                 }
             });
         }, 500);
@@ -457,27 +420,19 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#uploadAudioOrVideo
-     * @param  {Boolean} isAudio      True if uploading an audio, false if it's a video.
-     * @param  {Number} maxSize       Max size of the upload. -1 for no max size.
-     * @param  {Boolean} upload       True if the file should be uploaded, false to return the picked file.
-     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return {Promise}              The reject contains the error message, if there is no error message
-     *                                then we can consider that this is a silent fail.
+     * @param  {Boolean} isAudio True if uploading an audio, false if it's a video.
+     * @param  {Number} maxSize  Max size of the upload. -1 for no max size.
+     * @param  {Boolean} upload  True if the file should be uploaded, false to return the picked file.
+     * @return {Promise}         The reject contains the error message, if there is no error message
+     *                           then we can consider that this is a silent fail.
      */
-    self.uploadAudioOrVideo = function(isAudio, maxSize, upload, mimetypes) {
+    self.uploadAudioOrVideo = function(isAudio, maxSize, upload) {
         $log.debug('Trying to record a video file');
         var fn = isAudio ? $cordovaCapture.captureAudio : $cordovaCapture.captureVideo;
-
-        // The mimetypes param is only for desktop apps, the Cordova plugin doesn't support it.
-        return fn({limit: 1, mimetypes: mimetypes}).then(function(medias) {
+        return fn({limit: 1}).then(function(medias) {
             // We used limit 1, we only want 1 media.
             var media = medias[0],
-                path = media.localURL || media.toURL(),
-                error = self.isInvalidMimetype(mimetypes, path); // Verify that the mimetype of the file is supported.
-
-            if (error) {
-                return $q.reject(error);
-            }
+                path = media.localURL || media.toURL();
 
             if (upload) {
                 return uploadFile(true, path, maxSize, true, $mmFileUploader.uploadMedia, media);
@@ -517,14 +472,13 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#uploadImage
-     * @param  {Boolean} fromAlbum    True if the image should be selected from album, false if it should be taken with camera.
-     * @param  {Number} maxSize       Max size of the upload. -1 for no max size.
-     * @param  {Boolean} upload       True if the image should be uploaded, false to return the picked file.
-     * @param  {String[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return {Promise}              The reject contains the error message, if there is no error message
-     *                                then we can consider that this is a silent fail.
+     * @param  {Boolean} fromAlbum True if the image should be selected from album, false if it should be taken with camera.
+     * @param  {Number} maxSize    Max size of the upload. -1 for no max size.
+     * @param  {Boolean} upload    True if the image should be uploaded, false to return the picked file.
+     * @return {Promise}           The reject contains the error message, if there is no error message
+     *                             then we can consider that this is a silent fail.
      */
-    self.uploadImage = function(fromAlbum, maxSize, upload, mimetypes) {
+    self.uploadImage = function(fromAlbum, maxSize, upload) {
         $log.debug('Trying to capture an image with camera');
         var options = {
             quality: 50,
@@ -533,36 +487,16 @@ angular.module('mm.core.fileuploader')
         };
 
         if (fromAlbum) {
-            var imageSupported = !mimetypes || $mmUtil.indexOfRegexp(mimetypes, /^image\//) > -1,
-                videoSupported = !mimetypes || $mmUtil.indexOfRegexp(mimetypes, /^video\//) > -1;
-
             options.sourceType = navigator.camera.PictureSourceType.PHOTOLIBRARY;
             options.popoverOptions = new CameraPopoverOptions(10, 10, $window.innerWidth  - 200, $window.innerHeight - 200,
                                             Camera.PopoverArrowDirection.ARROW_ANY);
-
-            // Determine the mediaType based on the mimetypes.
-            if (imageSupported && !videoSupported) {
-                options.mediaType = Camera.MediaType.PICTURE;
-            } else if (!imageSupported && videoSupported) {
-                options.mediaType = Camera.MediaType.VIDEO;
-            } else if (ionic.Platform.isIOS()) {
+            if (ionic.Platform.isIOS()) {
                 // Only get all media in iOS because in Android using this option allows uploading any kind of file.
                 options.mediaType = Camera.MediaType.ALLMEDIA;
-            }
-        } else if (mimetypes) {
-            if (mimetypes.indexOf('image/jpeg') > -1) {
-                options.encodingType = Camera.EncodingType.JPEG;
-            } else if (mimetypes.indexOf('image/png') > -1) {
-                options.encodingType = Camera.EncodingType.PNG;
             }
         }
 
         return $cordovaCamera.getPicture(options).then(function(path) {
-            var error = self.isInvalidMimetype(mimetypes, path); // Verify that the mimetype of the file is supported.
-            if (error) {
-                return $q.reject(error);
-            }
-
             if (upload) {
                 return uploadFile(!fromAlbum, path, maxSize, true, $mmFileUploader.uploadImage, path, fromAlbum);
             } else {

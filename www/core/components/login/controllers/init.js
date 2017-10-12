@@ -21,8 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginInitCtrl
  */
-.controller('mmLoginInitCtrl', function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmApp, $mmLoginHelper,
-            mmCoreNoSiteId) {
+.controller('mmLoginInitCtrl', function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmApp, $mmLoginHelper) {
 
     $log = $log.getInstance('mmLoginInitCtrl');
 
@@ -42,20 +41,14 @@ angular.module('mm.core.login')
 
             // Only accept the redirect if it was stored less than 20 seconds ago.
             if (new Date().getTime() - redirectData.timemodified < 20000) {
-                if (redirectData.siteid != mmCoreNoSiteId) {
-                    // The redirect is pointing to a site, load it.
-                    return $mmSitesManager.loadSite(redirectData.siteid).then(function() {
-                        if (!$mmLoginHelper.isSiteLoggedOut(redirectData.state, redirectData.params)) {
-                            $state.go(redirectData.state, redirectData.params);
-                        }
-                    }).catch(function() {
-                        // Site doesn't exist.
-                        loadCurrent();
-                    });
-                } else {
-                    // No site to load, just open the state.
-                    return $state.go(redirectData.state, redirectData.params);
-                }
+                return $mmSitesManager.loadSite(redirectData.siteid).then(function() {
+                    if (!$mmLoginHelper.isSiteLoggedOut(redirectData.state, redirectData.params)) {
+                        $state.go(redirectData.state, redirectData.params);
+                    }
+                }).catch(function() {
+                    // Site doesn't exist.
+                    loadCurrent();
+                });
             }
         }
 

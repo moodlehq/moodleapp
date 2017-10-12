@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $timeout, $mmSite, $state,
             mmaModFeedbackComponent, $mmEvents, $mmApp, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper, $ionicScrollDelegate,
-            $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate, $mmaModFeedbackSync, $mmCourse) {
+            $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate, $mmaModFeedbackSync) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -249,16 +249,12 @@ angular.module('mm.addons.mod_feedback')
     };
 
     // Function to link implemented features.
-    $scope.showAnalysis = function() {
+    $scope.showAnalysis = function(feature) {
         submitted = 'analysis';
         $mmaModFeedbackHelper.openFeature('analysis', module, courseId);
     };
 
-    fetchFeedbackFormData().then(function() {
-        $mmaModFeedback.logView(feedback.id, true).then(function() {
-            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
-        });
-    });
+    fetchFeedbackFormData();
 
     function scrollTop() {
         if (!scrollView) {

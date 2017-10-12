@@ -136,40 +136,6 @@ angular.module('mm.core.emulator')
     };
 
     /**
-     * Check if the app is running in a Linux environment.
-     *
-     * @module mm.core.emulator
-     * @ngdoc method
-     * @name $mmEmulatorHelper#isLinux
-     * @return {Boolean} Whether it's running in a Linux environment.
-     */
-    self.isLinux = function() {
-        try {
-            var os = require('os');
-            return os.platform().indexOf('linux') === 0;
-        } catch(ex) {
-            return false;
-        }
-    };
-
-    /**
-     * Check if the app is running in a Mac OS environment.
-     *
-     * @module mm.core.emulator
-     * @ngdoc method
-     * @name $mmEmulatorHelper#isMac
-     * @return {Boolean} Whether it's running in a Mac OS environment.
-     */
-    self.isMac = function() {
-        try {
-            var os = require('os');
-            return os.platform().indexOf('darwin') === 0;
-        } catch(ex) {
-            return false;
-        }
-    };
-
-    /**
      * Check if the app is running in a Windows environment.
      *
      * @module mm.core.emulator

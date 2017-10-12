@@ -48,8 +48,6 @@ $mm-input-required-asterisk-color: $red !default;
 // Item padding.
 $item-input-padding: 16px !default;
 
-$mm-progress-bar-height: 5px !default;
-
 /**
  * App Branding
  */
@@ -1038,53 +1036,6 @@ mm-multiple-select {
   border-radius: 0;
 }
 
-.item-radio .radio-icon {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  display: block;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  -webkit-appearance: none;
-  top: 14px;
-  right: 14px;
-  visibility: visible;
-
-  &:before {
-    border: 1px solid #ddd;
-    display: table;
-    width: 100%;
-    height: 100%;
-    border-radius: 28px;
-    background: white;
-    -webkit-transition: background-color 20ms ease-in-out;
-    transition: background-color 20ms ease-in-out;
-    content: ' ';
-  }
-
-  &:after {
-    @include transition(opacity .05s ease-in-out);
-    @include rotate(-45deg);
-    position: absolute;
-    top: 33%;
-    left: 25%;
-    display: table;
-    width: ($checkbox-width / 2);
-    height: ($checkbox-width / 4) - 1;
-    border: $checkbox-check-width solid $checkbox-check-color;
-    border-top: 0;
-    border-right: 0;
-    content: ' ';
-  }
-}
-
-.item-radio input:checked + .radio-content .radio-icon:before {
-    background: $checkbox-on-bg-positive;
-    border-color: $checkbox-off-border-positive;
-}
-
-
 input[type="radio"].mm-radio {
   position: relative;
   width: $checkbox-width;
@@ -1626,36 +1577,22 @@ i, cite, em, var, address, dfn {
 progress {
   -webkit-appearance: none;
   appearance: none;
-  height: $mm-progress-bar-height;
+  height: 5px;
   margin: 15px 0;
   padding: 0;
-  display: block;
 
-  .progress-bar-fallback,
   &[value]::-webkit-progress-bar {
     background-color: $gray-light;
     border-radius: 2px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
   }
 
-  .progress-bar-fallback span,
   &[value]::-webkit-progress-value {
     background-color: $mm-color-light;
     border-radius: 2px;
   }
-
-  .progress-bar-fallback {
-      width: 100%;
-      height: $mm-progress-bar-height;
-      display: block;
-      position: relative;
-
-      span {
-          height: $mm-progress-bar-height;
-          display: block;
-      }
-  }
 }
+
 
 mm-progress-bar {
   padding-right: 55px;
@@ -1749,13 +1686,4 @@ h2.invert {
 
 *[ng-click] {
   cursor: pointer;
-}
-
-::-webkit-media-controls {
-  max-width: 100%;
-}
-
-ol.list-with-style, ul.list-with-style {
-  list-style: initial;
-  padding-left: 40px;
 }

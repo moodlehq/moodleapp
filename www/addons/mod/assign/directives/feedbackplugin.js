@@ -58,13 +58,11 @@ angular.module('mm.addons.mod_assign')
                 directive;
 
             if (!plugin || !container) {
-                scope.pluginLoaded = true;
                 return;
             }
 
             plugin.name = $mmaModAssignFeedbackDelegate.getPluginName(plugin);
             if (!plugin.name) {
-                scope.pluginLoaded = true;
                 return;
             }
 
