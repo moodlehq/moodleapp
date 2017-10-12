@@ -23,7 +23,7 @@ angular.module('mm.core.courses')
  */
 .controller('mmCoursesViewResultCtrl', function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
             $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated,
-            $timeout, $mmFS, $rootScope) {
+            $timeout, $mmFS, $rootScope, $mmApp, $ionicPlatform) {
 
     var course = angular.copy($stateParams.course || {}), // Copy the object to prevent modifying the one from the previous view.
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
@@ -36,7 +36,9 @@ angular.module('mm.core.courses')
         courseUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'course/view.php?id=' + course.id),
         paypalReturnUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/paypal/return.php'),
         inAppLoadListener,
-        inAppExitListener;
+        inAppFinishListener,
+        inAppExitListener,
+        appResumeListener;
 
     $scope.course = course;
     $scope.component = mmCoursesSearchComponent;
@@ -271,30 +273,58 @@ angular.module('mm.core.courses')
             var hasReturnedFromPaypal = false;
 
             // Stop previous listeners if any.
-            inAppLoadListener && inAppLoadListener();
-            inAppExitListener && inAppExitListener();
+            stopListeners();
 
             // Open the enrolment page in InAppBrowser.
             $mmSite.openInAppWithAutoLogin(enrolUrl);
 
             // Observe loaded pages in the InAppBrowser to check if the enrol process has ended.
-            inAppLoadListener = $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+            inAppLoadListener = $rootScope.$on('$cordovaInAppBrowser:loadstart', urlLoaded);
+
+            if (!$mmApp.isDevice()) {
+                // In desktop, also observe stop loading since some pages don't throw the loadstart event.
+                inAppFinishListener = $rootScope.$on('$cordovaInAppBrowser:loadstop', urlLoaded);
+
+                // Since the user can switch windows, reload the data if he comes back to the app.
+                appResumeListener = $ionicPlatform.on('resume', function() {
+                    if (!$scope.courseLoaded) {
+                        return;
+                    }
+                    $scope.courseLoaded = false;
+                    refreshData();
+                });
+            }
+
+            // Observe InAppBrowser closed events.
+            inAppExitListener = $rootScope.$on('$cordovaInAppBrowser:exit', inAppClosed);
+
+            function stopListeners() {
+                inAppLoadListener && inAppLoadListener();
+                inAppFinishListener && inAppFinishListener();
+                inAppExitListener && inAppExitListener();
+                appResumeListener && appResumeListener();
+            }
+
+            function urlLoaded(e, event) {
                 if (event.url.indexOf(paypalReturnUrl) != -1) {
                     hasReturnedFromPaypal = true;
                 } else if (event.url.indexOf(courseUrl) != -1 && hasReturnedFromPaypal) {
                     // User reached the course index page after returning from PayPal, close the InAppBrowser.
+                    inAppClosed();
                     $mmUtil.closeInAppBrowser();
                 }
-            });
+            }
 
-            // Observe InAppBrowser closed events.
-            inAppExitListener = $rootScope.$on('$cordovaInAppBrowser:exit', function() {
-                // InAppBrowser closed, refresh data just in case.
-                inAppLoadListener();
-                inAppExitListener();
+            function inAppClosed() {
+                // InAppBrowser closed, refresh data.
+                stopListeners();
+
+                if (!$scope.courseLoaded) {
+                    return;
+                }
                 $scope.courseLoaded = false;
                 refreshData();
-            });
+            }
         };
     }
 });
