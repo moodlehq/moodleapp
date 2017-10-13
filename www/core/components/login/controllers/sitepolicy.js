@@ -34,12 +34,8 @@ angular.module('mm.core.login')
 
     // Fetch the site policy URL.
     function fetchSitePolicy() {
-        return $mmWS.callAjax('auth_email_get_signup_settings', {}, {siteurl: $mmSite.getURL()}).then(function(settings) {
-            if (!settings.sitepolicy) {
-                return $q.reject();
-            }
-
-            $scope.sitePolicy = settings.sitepolicy;
+        return $mmLoginHelper.getSitePolicy(siteId).then(function(sitePolicy) {
+            $scope.sitePolicy = sitePolicy;
 
             // Try to get the mime type.
             return $mmUtil.getMimeTypeFromUrl($scope.sitePolicy).then(function(mimeType) {
@@ -47,7 +43,7 @@ angular.module('mm.core.login')
                 $scope.showInline = extension == 'html' || extension == 'html';
 
                 if ($scope.showInline) {
-                    $scope.trustedSitePolicy = $sce.trustAsResourceUrl(settings.sitepolicy);
+                    $scope.trustedSitePolicy = $sce.trustAsResourceUrl($scope.sitePolicy);
                 }
             }).catch(function() {
                 // Unable to get mime type, assume it's not supported.
