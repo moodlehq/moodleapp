@@ -24,7 +24,9 @@ angular.module('mm.core.login')
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $ionicModal, $ionicPopup,
         $mmLoginHelper, $q) {
 
-    $scope.siteurl = '';
+    $scope.loginData = {
+        siteurl: ''
+    };
 
     $scope.connect = function(url) {
 
@@ -82,6 +84,12 @@ angular.module('mm.core.login')
         }
     };
 
+    // Load fixed sites if they're set.
+    if ($mmLoginHelper.hasSeveralFixedSites()) {
+        $scope.fixedSites = $mmLoginHelper.getFixedSites();
+        $scope.loginData.siteurl = $scope.fixedSites[0].url;
+    }
+
     // Get docs URL for help modal.
     $mmUtil.getDocsUrl().then(function(docsurl) {
         $scope.docsurl = docsurl;
@@ -89,7 +97,7 @@ angular.module('mm.core.login')
 
     // Show an error that aims people to solve the issue.
     function showLoginIssue(siteurl, issue) {
-        $scope.siteurl = siteurl;
+        $scope.loginData.siteurl = siteurl;
         $scope.issue = issue;
         var popup = $ionicPopup.show({
             templateUrl:  'core/components/login/templates/login-issue.html',
