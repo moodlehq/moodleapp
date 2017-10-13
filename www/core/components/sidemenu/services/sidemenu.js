@@ -98,10 +98,22 @@ angular.module('mm.core.sidemenu')
 
                 // Get the right label for each entry and add it to the result.
                 angular.forEach(map, function(entry) {
-                    var data = entry.labels[currentLang] || entry.labels.none || entry.labels[fallbackLang];
+                    var data = entry.labels[currentLang] || entry.labels[currentLang + '_only'] ||
+                            entry.labels.none || entry.labels[fallbackLang];
+
                     if (!data) {
-                        // No valid label found, get the first one.
-                        data = entry.labels[Object.keys(entry.labels)[0]];
+                        // No valid label found, get the first one that is not "_only".
+                        for (var lang in entry.labels) {
+                            if (lang.indexOf('_only') == -1) {
+                                data = entry.labels[lang];
+                                break;
+                            }
+                        }
+
+                        if (!data) {
+                            // No valid label, ignore this entry.
+                            return;
+                        }
                     }
 
                     result[entry.position] = {

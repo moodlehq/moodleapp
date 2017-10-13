@@ -39,7 +39,7 @@
                             <ion-spinner ng-if="loading" class="icon"></ion-spinner>
                         </a>
                     </li>
-                    <li ng-repeat="item in customItems" class="mm-sidemenu-customitem">
+                    <li ng-repeat="item in customItems track by $index" class="mm-sidemenu-customitem" ng-if="item">
                         <a ng-if="item.type != 'embedded'" menu-close class="item item-icon-left" ng-href="{{item.url}}" mm-link in-app="{{item.type == 'inappbrowser'}}" capture-link="{{item.type == 'app'}}" title="{{item.label}}">
                             <i class="icon {{item.icon}}"></i>{{item.label}}
                         </a>
