@@ -247,7 +247,7 @@ angular.module('mm.addons.mod_data')
                 });
 
                 return $q.all(promises).then(function(entries) {
-                    var entriesHTML = data.listtemplateheader;
+                    var entriesHTML = data.listtemplateheader || '';
 
                     angular.forEach(entries, function(entry) {
                         $scope.entries[entry.id] = entry;
@@ -256,7 +256,7 @@ angular.module('mm.addons.mod_data')
 
                         entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry, 'list', actions);
                     });
-                    entriesHTML += data.listtemplatefooter;
+                    entriesHTML += data.listtemplatefooter || '';
 
                     $scope.entriesRendered = entriesHTML;
                 });
