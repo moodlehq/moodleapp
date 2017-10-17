@@ -70,6 +70,56 @@ angular.module('mm.core.courses')
     }
 
     /**
+     * Given a list of course IDs to get course options, return the list of courseIds to use.
+     *
+     * @param  {Number[]} courseIds Course IDs.
+     * @param  {String} [siteId]    Site Id. If not defined, use current site.
+     * @return {Promise}            Promise resolved with the list of course IDs.
+     */
+    function getCourseIdsForOptions(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var siteHomeId = site.getSiteHomeId();
+
+            if (courseIds.length == 1) {
+                // Only 1 course, check if it belongs to the user courses. If so, use all user courses.
+                return self.getUserCourses(true, siteId).then(function(courses) {
+                    var courseId = courseIds[0],
+                        useAllCourses = false;
+
+                    if (courseId == siteHomeId) {
+                        // It's site home, use all courses.
+                        useAllCourses = true;
+                    } else {
+                        for (var i = 0; i < courses.length; i++) {
+                            if (courses[i].id == courseId) {
+                                useAllCourses = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (useAllCourses) {
+                        // User is enrolled, retrieve all the courses.
+                        courseIds = courses.map(function(course) {
+                            return course.id;
+                        });
+
+                        // Always add the site home ID.
+                        courseIds.push(siteHomeId);
+                    }
+
+                    return courseIds;
+                }).catch(function() {
+                    // Ignore errors.
+                    return courseIds;
+                });
+            } else {
+                return courseIds;
+            }
+        });
+    }
+
+    /**
      * Check if get cateogries WS is available.
      *
      * @module mm.core.courses
@@ -384,45 +434,11 @@ angular.module('mm.core.courses')
      */
     self.getCoursesOptions = function(courseIds, siteId) {
         var promises = [],
-            promise,
             navOptions,
             admOptions;
 
-        if (courseIds.length == 1) {
-            // Only 1 course, check if it belongs to the user courses. If so, retrieve the options for all courses.
-            promise = self.getUserCourses(true, siteId).then(function(courses) {
-                var courseId = courseIds[0],
-                    isEnrolled = false;
-
-                for (var i = 0; i < courses.length; i++) {
-                    if (courses[i].id == courseId) {
-                        isEnrolled = true;
-                        break;
-                    }
-                }
-
-                if (isEnrolled) {
-                    // User is enrolled, retrieve all the courses.
-                    courseIds = courses.map(function(course) {
-                        return course.id;
-                    });
-                }
-            }).catch(function() {
-                // Ignore errors.
-            });
-        } else {
-            promise = $q.when();
-        }
-
-        return promise.then(function() {
-            return $mmSitesManager.getSite(siteId);
-        }).then(function(site) {
-            // Add always the site home course.
-            if (courseIds.indexOf(site.getSiteHomeId()) == -1) {
-                courseIds.push(site.getSiteHomeId());
-            }
-
-            siteId = siteId || site.getId();
+        // Get the list of courseIds to use based on the param.
+        return getCourseIdsForOptions(courseIds, siteId).then(function(courseIds) {
 
             // Get user navigation and administration options.
             promises.push(self.getUserNavigationOptions(courseIds, siteId).catch(function() {
@@ -691,6 +707,27 @@ angular.module('mm.core.courses')
      */
     self.invalidateCourseGuestEnrolmentInfo = function(instanceId) {
         return $mmSite.invalidateWsCacheForKey(getCourseGuestEnrolmentInfoCacheKey(instanceId));
+    };
+
+    /**
+     * Invalidates the navigation and administration options for the given courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateCoursesOptions
+     * @param  {Number[]} courseIds IDs of courses to get.
+     * @param  {String} [siteId]    Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}            Promise resolved when the data is invalidated.
+     */
+    self.invalidateCoursesOptions = function(courseIds, siteId) {
+        return getCourseIdsForOptions(courseIds, siteId).then(function(ids) {
+            var promises = [];
+
+            promises.push(self.invalidateUserAdministrationOptionsForCourses(ids, siteId));
+            promises.push(self.invalidateUserNavigationOptionsForCourses(ids, siteId));
+
+            return $q.all(promises);
+        });
     };
 
     /**

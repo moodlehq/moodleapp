@@ -145,8 +145,7 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateCourse(course.id));
         promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
-        promises.push($mmCourses.invalidateUserNavigationOptionsForCourses([course.id]));
-        promises.push($mmCourses.invalidateUserAdministrationOptionsForCourses([course.id]));
+        promises.push($mmCourses.invalidateCoursesOptions([course.id]));
         if (guestInstanceId) {
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }
