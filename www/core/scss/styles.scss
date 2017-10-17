@@ -953,6 +953,18 @@ mm-timer {
   }
 }
 
+.item-select.mm-full-width {
+  select {
+    max-width: 100%;
+    background: transparent;
+    text-indent: 0;
+    padding: ($item-input-padding - 1) ($item-input-padding/2*5) ($item-input-padding - 1) $item-input-padding;
+    line-height: $font-size-base + 2;
+    border: 0;
+    position: relative;
+  }
+}
+
 .item-select .mm-select-fix {
   // Taken from .item-select select.
   position: absolute;
@@ -1758,4 +1770,8 @@ h2.invert {
 ol.list-with-style, ul.list-with-style {
   list-style: initial;
   padding-left: 40px;
+}
+
+.no-padding-bottom, .padding.no-padding-bottom {
+  padding-bottom: 0;
 }
