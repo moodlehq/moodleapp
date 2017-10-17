@@ -123,13 +123,16 @@ angular.module('mm.core.courses')
 
             $mmEvents.trigger(mmCoursesEventMyCoursesRefreshed);
 
-            promises.push($mmCourses.invalidateUserNavigationOptions());
-            promises.push($mmCourses.invalidateUserAdministrationOptions());
-
             // Invalidate course enabled data for the handlers that are enabled at site level.
             if (courseId) {
+                // Invalidate only options for this course.
+                promises.push($mmCourses.invalidateCoursesOptions([courseId]));
                 promises.push(self.invalidateCourseHandlers(courseId));
             } else {
+                // Invalidate all options.
+                promises.push($mmCourses.invalidateUserNavigationOptions());
+                promises.push($mmCourses.invalidateUserAdministrationOptions());
+
                 for (var cId in coursesHandlers) {
                     promises.push(self.invalidateCourseHandlers(cId));
                 }
