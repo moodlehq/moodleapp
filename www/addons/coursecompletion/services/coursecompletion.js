@@ -21,7 +21,7 @@ angular.module('mm.addons.coursecompletion')
  * @ngdoc service
  * @name $mmaCourseCompletion
  */
-.factory('$mmaCourseCompletion', function($mmSite, $log, $q, $mmCourses) {
+.factory('$mmaCourseCompletion', function($mmSite, $log, $q, $mmCourses, $mmUtil, $mmSitesManager) {
     $log = $log.getInstance('$mmaCourseCompletion');
 
     var self = {};
@@ -90,27 +90,32 @@ angular.module('mm.addons.coursecompletion')
      * @module mm.addons.coursecompletion
      * @ngdoc method
      * @name $mmaCourseCompletion#getCompletion
-     * @param {Number} courseid Course ID.
-     * @param {Number} [userid] User ID. If not defined, use current user.
-     * @return {Promise}        Promise to be resolved when the completion is retrieved.
+     * @param  {Number} courseId   Course ID.
+     * @param  {Number} [userId]   User ID. If not defined, use current user.
+     * @param  {Boolean} [preSets] Presets to use when calling the WebService.
+     * @param  {String} [siteId]   Site ID. If not defined, use current site.
+     * @return {Promise}           Promise to be resolved when the completion is retrieved.
      */
-    self.getCompletion = function(courseid, userid) {
-        userid = userid || $mmSite.getUserId();
+    self.getCompletion = function(courseId, userId, preSets, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            preSets = preSets || {};
 
-        $log.debug('Get completion for course ' + courseid + ' and user ' + userid);
+            $log.debug('Get completion for course ' + courseId + ' and user ' + userId);
 
-        var data = {
-                courseid : courseid,
-                userid: userid
-            },
-            preSets = {
-                cacheKey: getCompletionCacheKey(courseid, userid)
-            };
-        return $mmSite.read('core_completion_get_course_completion_status', data, preSets).then(function(data) {
-            if (data.completionstatus) {
-                return data.completionstatus;
-            }
-            return $q.reject();
+            var data = {
+                    courseid: courseId,
+                    userid: userId
+                };
+
+            preSets.cacheKey = getCompletionCacheKey(courseId, userId);
+
+            return site.read('core_completion_get_course_completion_status', data, preSets).then(function(data) {
+                if (data.completionstatus) {
+                    return data.completionstatus;
+                }
+                return $q.reject();
+            });
         });
     };
 
@@ -199,10 +204,26 @@ angular.module('mm.addons.coursecompletion')
      * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginViewEnabledForUser = function(courseId, userId) {
-        return self.getCompletion(courseId, userId).then(function() {
+        // Disable emergency cache to be able to detect that the plugin has been disabled (WS will fail).
+        var preSets = {
+            emergencyCache: 0
+        };
+
+        return self.getCompletion(courseId, userId, preSets).then(function() {
             return true;
-        }).catch(function() {
-            return false;
+        }).catch(function(error) {
+            if ($mmUtil.isWebServiceError(error)) {
+                // The WS returned an error, plugin is not enabled.
+                return false;
+            } else {
+                // Not a WS error. Check if we have a cached value.
+                preSets.omitExpires = true;
+                return self.getCompletion(courseId, userId, preSets).then(function() {
+                    return true;
+                }).catch(function() {
+                    return false;
+                });
+            }
         });
     };
 
