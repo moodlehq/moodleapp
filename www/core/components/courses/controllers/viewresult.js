@@ -131,28 +131,9 @@ angular.module('mm.core.courses')
 
     // Load course nav handlers.
     function loadCourseNavHandlers(refresh, guest) {
-        var promises = [],
-            navOptions,
-            admOptions;
-
-        // Get user navigation and administration options to speed up handlers loading.
-        promises.push($mmCourses.getUserNavigationOptions([course.id]).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            navOptions = options;
-        }));
-
-        promises.push($mmCourses.getUserAdministrationOptions([course.id]).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            admOptions = options;
-        }));
-
-        return $q.all(promises).then(function() {
-            var getHandlersFn = guest ? $mmCoursesDelegate.getNavHandlersForGuest : $mmCoursesDelegate.getNavHandlersFor;
-            course._handlers = getHandlersFn(course.id, refresh, navOptions[course.id], admOptions[course.id]);
+        // Get the handlers to be shown.
+        return $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, guest, true).then(function(handlers) {
+            course._handlers = handlers;
             $scope.handlersShouldBeShown = true;
         });
 
@@ -164,8 +145,7 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateCourse(course.id));
         promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
-        promises.push($mmCourses.invalidateUserNavigationOptionsForCourses([course.id]));
-        promises.push($mmCourses.invalidateUserAdministrationOptionsForCourses([course.id]));
+        promises.push($mmCourses.invalidateCoursesOptions([course.id]));
         if (guestInstanceId) {
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }
