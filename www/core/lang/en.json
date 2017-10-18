@@ -160,6 +160,7 @@
     "pictureof": "Picture of {{$a}}",
     "previous": "Previous",
     "pulltorefresh": "Pull to refresh",
+    "quotausage": "You have currently used {{$a.used}} of your {{$a.total}} limit.",
     "redirectingtosite": "You will be redirected to site.",
     "refresh": "Refresh",
     "required": "Required",

@@ -6,6 +6,7 @@
     <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
         <mm-loading hide-until="filesLoaded">
+            <p class="mm-info-card" ng-if="userQuota && filesInfo && filesInfo.filecount > 0">{{ 'mm.core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuota} } }}</p>
             <ul class="list" ng-if="count > 0">
                 <li ng-repeat="file in files">
                     <a ui-sref="site.files-list({path: file.link, title: file.filename})" class="item item-media" ng-if="file.isdir">

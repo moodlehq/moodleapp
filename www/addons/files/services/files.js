@@ -41,6 +41,18 @@ angular.module('mm.addons.files')
     };
 
     /**
+     * Check if core_user_get_private_files_info WS call is available.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#canGetPrivateFilesInfo
+     * @return {Boolean} True if WS is available, false otherwise.
+     */
+    self.canGetPrivateFilesInfo = function() {
+        return $mmSite.wsAvailable('core_user_get_private_files_info');
+    };
+
+    /**
      * Check if core_user_add_user_private_files WS call is available.
      *
      * @module mm.addons.files
@@ -165,6 +177,50 @@ angular.module('mm.addons.files')
     }
 
     /**
+     * Get the cache key for private files info WS calls.
+     *
+     * @param  {Number} userId User ID.
+     * @return {String}        Cache key.
+     */
+    function getPrivateFilesInfoCacheKey(userId) {
+        return getPrivateFilesInfoCommonCacheKey() + ':' + userId;
+    }
+
+    /**
+     * Get the common part of the cache keys for private files info WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getPrivateFilesInfoCommonCacheKey() {
+        return 'mmaFiles:privateInfo';
+    }
+
+    /**
+     * Get private files info.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#getPrivateFilesInfo
+     * @param  {Number} [userId] User ID. If not defined, current user in the site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the info.
+     */
+    self.getPrivateFilesInfo = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var params = {
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getPrivateFilesInfoCacheKey(userId)
+                };
+
+            return site.read('core_user_get_private_files_info', params, preSets);
+        });
+    };
+
+    /**
      * Get the site files.
      *
      * @module mm.addons.files
@@ -226,6 +282,39 @@ angular.module('mm.addons.files')
      */
     self.invalidateMyFiles = function() {
         return $mmSite.invalidateWsCacheForKeyStartingWith(getMyFilesListCommonCacheKey());
+    };
+
+    /**
+     * Invalidates private files info for all users.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidatePrivateFilesInfo
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePrivateFilesInfo = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getPrivateFilesInfoCommonCacheKey());
+        });
+    };
+
+    /**
+     * Invalidates private files info for a certain user.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidatePrivateFilesInfoForUser
+     * @param  {Number} [userId] User ID. If not defined, current user in the site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePrivateFilesInfoForUser = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(getPrivateFilesInfoCacheKey(userId));
+        });
     };
 
     /**
