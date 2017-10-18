@@ -1,0 +1,8 @@
+{
+  "name": "moodlemobile",
+  "app_id": "com.moodle.moodlemobile",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
