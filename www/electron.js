@@ -54,6 +54,10 @@ function createWindow() {
         // Dereference the window object.
         mainWindow = null
     });
+
+    mainWindow.on('focus', () => {
+        mainWindow.webContents.send('mmAppFocused'); // Send an event to the main window.
+    });
 }
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.

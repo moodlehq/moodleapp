@@ -19,9 +19,12 @@
 	"notenrollable": "You can not enrol yourself in this course.",
 	"nocourses": "No course information to show.",
 	"password": "Enrolment key",
+	"paypalaccepted": "PayPal payments accepted",
+	"paymentrequired": "This course requires a payment for entry.",
 	"search": "Search",
 	"searchcourses": "Search courses",
 	"searchcoursesadvice": "You can use the search courses button to access as guest or enrol yourself in courses that allow it.",
 	"selfenrolment": "Self-enrolment",
+	"sendpaymentbutton": "Send payment via PayPal",
 	"totalcoursesearchresults": "Total courses: {{$a}}"
 }

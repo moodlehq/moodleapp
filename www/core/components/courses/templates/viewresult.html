@@ -5,14 +5,14 @@
         <mm-loading hide-until="courseLoaded">
 
             <div ng-if="course" class="list">
-                <a class="item item-icon-left" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
+                <a class="item item-icon-left item-text-wrap" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
                     <i class="icon ion-ionic"></i>
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
                     <p ng-if="course.categoryname">{{course.categoryname}}</p>
                     <p ng-if="course.startdate">{{course.startdate * 1000 | mmFormatDate:"dfdaymonthyear"}} <span ng-if="course.enddate"> - {{course.enddate * 1000 | mmFormatDate:"dfdaymonthyear"}}</span></p>
                 </a>
 
-                <div class="item item-icon-left" ng-if="!handlersShouldBeShown">
+                <div class="item item-icon-left item-text-wrap" ng-if="!handlersShouldBeShown">
                     <i class="icon ion-ionic"></i>
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
                     <p ng-if="course.categoryname">{{course.categoryname}}</p>
@@ -23,16 +23,21 @@
                     <mm-format-text watch="true" max-height="120">{{course.summary}}</mm-format-text>
                 </div>
 
-                <div class="item" ng-if="course.contacts && course.contacts.length" mm-user-link userid="{{course.contacts[0].id}}" aria-label="{{ 'mm.core.viewprofile' | translate }}">
+                <div class="item item-text-wrap" ng-if="course.contacts && course.contacts.length" mm-user-link userid="{{course.contacts[0].id}}" aria-label="{{ 'mm.core.viewprofile' | translate }}">
                     <p class="item-heading">{{ 'mm.core.teachers' | translate }}</p>
                     <p ng-repeat="contact in course.contacts">{{contact.fullname}}</p>
                 </div>
                 <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file>
-                <div class="item" ng-if="!isEnrolled" ng-repeat="instance in selfEnrolInstances track by instance.id">
+                <div class="item item-text-wrap" ng-if="!isEnrolled" ng-repeat="instance in selfEnrolInstances track by instance.id">
                     <p class="item-heading">{{ instance.name }}</p>
                     <button class="button button-block" ng-click="enrol(instance.id, enroldata.password)">{{ 'mm.courses.enrolme' | translate }}</button>
                 </div>
-                <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length">
+                <div class="item item-text-wrap" ng-if="!isEnrolled && paypalEnabled">
+                    <p class="item-heading ">{{ 'mm.courses.paypalaccepted' | translate }}</p>
+                    <p>{{ 'mm.core.paymentinstant' | translate }}</p>
+                    <button class="button button-block" ng-click="paypalEnrol()">{{ 'mm.courses.sendpaymentbutton' | translate }}</button>
+                </div>
+                <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
                 <a class="item item-icon-left item-icon-right" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
