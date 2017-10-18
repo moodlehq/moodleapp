@@ -234,10 +234,19 @@ angular.module('mm.core')
     return self;
 })
 
+// Factory to handle errors loading language strings.
+.factory('$mmLangErrorHandler', function($q) {
+    return function() {
+        // A lang part failed to load, probably because a remote addon lacks a language file. Ignore errors.
+        return $q.when({});
+    };
+})
+
 .config(function($translateProvider, $translatePartialLoaderProvider, mmCoreConfigConstants) {
 
     $translateProvider.useLoader('$translatePartialLoader', {
-        urlTemplate: '{part}/{lang}.json'
+        urlTemplate: '{part}/{lang}.json',
+        loadFailureHandler: '$mmLangErrorHandler'
     });
 
     // Load the built language files from build/lang.
