@@ -22,7 +22,7 @@
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve",
+    "ionic:serve": "ionic-app-scripts serve"
   },
   "dependencies": {
     "@angular/common": "4.4.3",
@@ -35,6 +35,7 @@
     "@angular/platform-browser-dynamic": "4.4.3",
     "@ionic-native/core": "4.3.0",
     "@ionic-native/splash-screen": "4.3.0",
+    "@ionic-native/sqlite": "^4.3.2",
     "@ionic-native/status-bar": "4.3.0",
     "@ionic/storage": "2.0.1",
     "ionic-angular": "3.7.1",
