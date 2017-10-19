@@ -21,16 +21,16 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc controller
  * @name mmaModWorkshopAssessmentCtrl
  */
-.controller('mmaModWorkshopAssessmentCtrl', function($scope, $stateParams, $mmaModWorkshopHelper, $mmUtil, $mmEvents, $q, $mmSite,
-        $mmCourse, $mmaModWorkshop, mmaModWorkshopAssessmentInvalidatedEvent) {
+.controller('mmaModWorkshopAssessmentCtrl', function($scope, $stateParams, $mmUtil, $mmEvents, $q, $mmSite, $mmCourse,
+        $mmaModWorkshop, mmaModWorkshopAssessmentInvalidatedEvent) {
 
     $scope.assessment = $stateParams.assessment || {};
     $scope.submission = $stateParams.submission || {};
     $scope.profile = $stateParams.profile || {};
+    $scope.assessmentId = $scope.assessment && ($scope.assessment.assessmentid || $scope.assessment.id);
 
     var courseId = $stateParams.courseid || false,
         workshopId = $stateParams.submission.workshopid || false,
-        assessmentId = $stateParams.assessment.assessmentid || false,
         currentUser = $scope.profile.id == $mmSite.getUserId();
 
     function fetchAssessmentData() {
@@ -44,13 +44,6 @@ angular.module('mm.addons.mod_workshop')
             return $mmaModWorkshop.getWorkshopAccessInformation(workshopId);
         }).then(function(accessData) {
             $scope.access = accessData;
-            if (assessmentId && $scope.assessment.grade) {
-                return $mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, assessmentId, $scope.profile.id);
-            }
-        }).then(function(assessmentData) {
-            if (assessmentData) {
-                $scope.assessmentData = assessmentData;
-            }
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -66,7 +59,11 @@ angular.module('mm.addons.mod_workshop')
         promises.push($mmaModWorkshop.invalidateWorkshopData(courseId));
         promises.push($mmaModWorkshop.invalidateWorkshopAccessInformationData(workshopId));
         promises.push($mmaModWorkshop.invalidateReviewerAssesmentsData(workshopId));
-        promises.push($mmaModWorkshop.invalidateAssessmentData(workshopId, assessmentId));
+
+        if ($scope.assessmentId) {
+            promises.push($mmaModWorkshop.invalidateAssessmentFormData(workshopId, $scope.assessmentId));
+            promises.push($mmaModWorkshop.invalidateAssessmentData(workshopId, $scope.assessmentId));
+        }
 
         return $q.all(promises).finally(function() {
             $mmEvents.trigger(mmaModWorkshopAssessmentInvalidatedEvent);

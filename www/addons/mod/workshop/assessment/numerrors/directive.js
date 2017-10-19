@@ -21,27 +21,30 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc directive
  * @name mmaModWorkshopAssessmentStrategyNumErrors
  */
-.directive('mmaModWorkshopAssessmentStrategyNumErrors', function($translate, $mmEvents, mmaModWorkshopAssessmentRefreshedEvent) {
+.directive('mmaModWorkshopAssessmentStrategyNumErrors', function($mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        $mmaModWorkshopAssessmentStrategyNumErrorsHandler) {
 
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/mod/workshop/assessment/numerrors/template.html',
         link: function(scope) {
-            var load = function() {
-                if (!scope.assessment || !scope.form) {
-                    return;
-                }
+            var obsRefreshed,
+                load = function() {
+                    if (!scope.assessment || !scope.assessment.form) {
+                        return;
+                    }
 
-                angular.forEach(scope.form.fields, function(field) {
-                    field.dimtitle = $translate.instant('mma.mod_workshop_assessment_numerrors.dimensionnumber',
-                        {'$a': field.number});
-                });
-            };
+                    var originalValues = $mmaModWorkshopAssessmentStrategyNumErrorsHandler.getOriginalValues(
+                            scope.assessment.form, scope.workshopId);
+                    if (!scope.selectedValues) {
+                        scope.selectedValues = originalValues;
+                    }
+                };
 
             load();
 
-            var obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
+            obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
 
             scope.$on('$destroy', function() {
                 obsRefreshed && obsRefreshed.off && obsRefreshed.off();

@@ -5,10 +5,15 @@
     </ion-header-bar>
     <ion-content>
         <ion-list>
-            <ion-radio ng-repeat="phase in phases" ng-model="selectedPhase" ng-value="phase.code" ng-click="switchPhase(phase.code)">
-                {{ phase.title }}
-                <p class="item-text-wrap" ng-if="workshop.phase == phase.code">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
-            </ion-radio>
+            <div ng-repeat="phase in phases">
+                <ion-radio ng-model="selectedPhase" ng-value="phase.code" ng-click="switchPhase(phase.code)" ng-if="workshop.phase >= phase.code || phase.tasks.length || phase.switchUrl">
+                    {{ phase.title }}
+                    <p class="item-text-wrap" ng-if="workshop.phase == phase.code">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+                </ion-radio>
+                <ion-item ng-if="!(workshop.phase >= phase.code || phase.tasks.length || phase.switchUrl)">
+                    {{ phase.title }}
+                </ion-item>
+            </div>
         </ion-list>
     </ion-content>
 </ion-modal-view>

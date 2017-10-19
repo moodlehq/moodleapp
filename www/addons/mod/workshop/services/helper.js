@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_workshop')
  * @name $mmaModWorkshopHelper
  */
 .factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q,
-        $mmaModWorkshopOffline) {
+        $mmaModWorkshopOffline, $mmaModWorkshopAssessmentStrategyDelegate, $translate, $mmFileUploaderHelper) {
 
     var self = {},
         examples = {
@@ -156,7 +156,7 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
-     * Return a particular assesment. It will use prefetched data if fetch fails.
+     * Return a particular assesment. It will use prefetched data if fetch fails. It will add assessment form data.
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
@@ -173,10 +173,20 @@ angular.module('mm.addons.mod_workshop')
                     .then(function(assessments) {
                 for (var x in assessments) {
                     if (assessments[x].id == assessmentId) {
-                        return assessments[x];
+                        return $q.when(assessments[x]);
                     }
                 }
+                return $q.when(false);
+            });
+        }).then(function(assessment) {
+            if (!assessment) {
                 return false;
+            }
+
+            return $mmaModWorkshop.getAssessmentForm(workshopId, assessmentId, undefined, undefined, undefined, siteId)
+                    .then(function(assessmentForm) {
+                assessment.form = assessmentForm;
+                return assessment;
             });
         });
     };
@@ -276,18 +286,135 @@ angular.module('mm.addons.mod_workshop')
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
-     * @name $mmaModWorkshopHelper#getStoredFiles
+     * @name $mmaModWorkshopHelper#getStoredSubmissionFiles
      * @param  {Number}   workshopId   Workshop ID.
      * @param  {Number}   submissionId If not editing, it will refer to timecreated.
+     * @param  {Boolean}  editing      If the submission is being edited or added otherwise.
      * @param  {String}   [siteId]     Site ID. If not defined, current site.
      * @return {Promise}               Promise resolved with the files.
      */
-    self.getStoredFiles = function(workshopId, submissionId, editing, siteId) {
+    self.getStoredSubmissionFiles = function(workshopId, submissionId, editing, siteId) {
         return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
             return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function() {
                 // Ignore not found files.
                 return [];
             });
+        });
+    };
+
+
+    /**
+     * Get a list of stored attachment files for a submission and online files also. See $mmaModWorkshopHelper#storeFiles.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getSubmissionFilesFromOfflineFilesObject
+     * @param  {object}   filesObject  Files object combining offline and online information.
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   submissionId If not editing, it will refer to timecreated.
+     * @param  {Boolean}  editing      If the submission is being edited or added otherwise.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the files.
+     */
+    self.getSubmissionFilesFromOfflineFilesObject = function(filesObject, workshopId, submissionId, editing, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFilesFromOfflineFilesObject(filesObject, folderPath);
+        });
+    };
+
+    /**
+     * Delete stored attachment files for an assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#deleteAssessmentStoredFiles
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @param  {String}  [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when deleted.
+     */
+    self.deleteAssessmentStoredFiles = function(workshopId, assessmentId, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFS.removeDir(folderPath);
+        });
+    };
+
+    /**
+     * Given a list of files (either online files or local files), store the local files in a local folder
+     * to be submitted later.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#storeAssessmentFiles
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   assessmentId Assessment ID.
+     * @param  {Object[]} files        List of files.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved if success, rejected otherwise.
+     */
+    self.storeAssessmentFiles = function(workshopId, assessmentId, files, siteId) {
+        // Get the folder where to store the files.
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
+        });
+    };
+
+    /**
+     * Upload or store some files for an assessment, depending if the user is offline or not.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#uploadOrStoreAssessmentFiles
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   assessmentIdAssessment ID.
+     * @param  {Object[]} files        List of files.
+     * @param  {Boolean}  offline      True if files sould be stored for offline, false to upload them.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved if success.
+     */
+    self.uploadOrStoreAssessmentFiles = function(workshopId, assessmentId, files, offline, siteId) {
+        if (offline) {
+            return self.storeAssessmentFiles(workshopId, assessmentId, files, siteId);
+        } else {
+            return $mmFileUploader.uploadOrReuploadFiles(files, mmaModWorkshopComponent, workshopId, siteId);
+        }
+    };
+
+    /**
+     * Get a list of stored attachment files for an assessment. See $mmaModWorkshopHelper#storeFiles.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getStoredAssessmentFiles
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   assessmentId Assessment ID.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the files.
+     */
+    self.getStoredAssessmentFiles = function(workshopId, assessmentId, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function() {
+                // Ignore not found files.
+                return [];
+            });
+        });
+    };
+
+    /**
+     * Get a list of stored attachment files for an assessment and online files also. See $mmaModWorkshopHelper#storeFiles.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#getAssessmentFilesFromOfflineFilesObject
+     * @param  {object}   filesObject  Files object combining offline and online information.
+     * @param  {Number}   workshopId   Workshop ID.
+     * @param  {Number}   assessmentId Assessment ID.
+     * @param  {String}   [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the files.
+     */
+    self.getAssessmentFilesFromOfflineFilesObject = function(filesObject, workshopId, assessmentId, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFilesFromOfflineFilesObject(filesObject, folderPath);
         });
     };
 
@@ -325,10 +452,15 @@ angular.module('mm.addons.mod_workshop')
         if (actions.length && !submission) {
             submission = {};
         }
+
+        var editing = true,
+            attachmentsid = false;
+
         angular.forEach(actions, function(action) {
             switch (action.action) {
                 case 'add':
                     submission.id = action.submissionid;
+                    editing = false;
                 case 'update':
                     submission.title = action.title;
                     submission.content = action.content;
@@ -336,6 +468,7 @@ angular.module('mm.addons.mod_workshop')
                     submission.courseid = action.courseid;
                     submission.submissionmodified = parseInt(action.timemodified / 1000, 10);
                     submission.offline = true;
+                    attachmentsid = action.attachmentsid;
                     break;
                 case 'delete':
                     submission.deleted = true;
@@ -343,7 +476,42 @@ angular.module('mm.addons.mod_workshop')
                     break;
             }
         });
-        return submission;
+
+        // Check offline files for latest attachmentsid.
+        if (attachmentsid) {
+            return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, submission.workshopid, submission.id, editing)
+                    .then(function(files) {
+                submission.attachmentfiles = files;
+                return submission;
+            });
+        }
+        return $q.when(submission);
+    };
+
+    /**
+     * Prepare assessment data to be sent to the server.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#prepareAssessmentData
+     * @param {Object}  workshop            Workshop object.
+     * @param {Object}  inputData           Assessment data.
+     * @param {Object}  form                Assessment form original data.
+     * @param {Number}  [attachmentsId]     The draft file area id for attachments.
+     * @return {Promise}                    Promise resolved with the data to be sent. Or rejected with the input errors object.
+     */
+    self.prepareAssessmentData = function(workshop, inputData, form, attachmentsId) {
+        delete inputData.files;
+        if (attachmentsId) {
+            inputData.feedbackauthorattachmentsid = attachmentsId;
+        }
+        inputData.nodims = form.dimenssionscount;
+
+        if (workshop.overallfeedbackmode == 2 && (!inputData.feedbackauthor || inputData.feedbackauthor.length == 0)) {
+            return $q.reject({'feedbackauthor': $translate.instant('mm.core.err_required')});
+        }
+
+        return $mmaModWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy, inputData, form);
     };
 
     return self;

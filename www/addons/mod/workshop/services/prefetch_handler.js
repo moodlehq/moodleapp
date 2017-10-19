@@ -353,7 +353,7 @@ angular.module('mm.addons.mod_workshop')
 
                     // Get submission phase info.
                     var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
-                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks)
+                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
                         promises2 = [];
 
                     if (canSubmit) {

@@ -23,26 +23,26 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
         $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline,
-        mmaModWorkshopAssessmentInvalidatedEvent, $mmUser) {
+        mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentSaveEvent) {
 
+    $scope.title = $stateParams.module.name;
+    $scope.courseId = $stateParams.courseid;
+    $scope.assessment = $stateParams.assessment || false;
+    $scope.submissionLoaded = false;
+    $scope.module = $stateParams.module;
+    $scope.workshop = $stateParams.workshop;
+    $scope.access = $stateParams.access;
+    $scope.ownAssessment = false;
     $scope.submissionInfo = $stateParams.submission || {};
+    $scope.strategy = ($scope.assessment && $scope.assessment.strategy) || ($scope.workshop && $scope.workshop.strategy);
+    $scope.assessmentId = $scope.assessment && ($scope.assessment.assessmentid || $scope.assessment.id);
+    $scope.assessmentUserId = $scope.assessment.reviewerid || $scope.assessment.userid;
 
-    var module = $stateParams.module,
+    var module = $scope.module,
         workshopId = module.instance,
         currentUserId = $mmSite.getUserId(),
         submissionId = $scope.submissionInfo.submissionid || $scope.submissionInfo.id,
         userId = $scope.submissionInfo.userid || false;
-
-    $scope.title = module.name;
-    $scope.courseId = $stateParams.courseid;
-    $scope.assessment = $stateParams.assessment || false;
-    $scope.submissionLoaded = false;
-    $scope.module = module;
-    $scope.workshop = $stateParams.workshop;
-    $scope.access = $stateParams.access;
-    $scope.ownAssessment = false;
-
-    $scope.strategy = ($scope.assessment && $scope.assessment.strategy) || ($scope.workshop && $scope.workshop.strategy);
 
     function fetchSubmissionData() {
         return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
@@ -73,18 +73,13 @@ angular.module('mm.addons.mod_workshop')
                 }));
             }
 
-            if ($scope.assessment && $scope.assessment.assessmentid) {
-                promises.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, $scope.assessment.assessmentid,
-                        $scope.assessment.userid).then(function(assessmentData) {
-                    $scope.assessment = assessmentData;
-                }));
-            }
-
             return $q.all(promises);
         }).then(function() {
             return $mmaModWorkshopOffline.getSubmissions(workshopId).then(function(submissionsActions) {
                 var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, submissionId);
-                $scope.submission = $mmaModWorkshopHelper.applyOfflineData($scope.submission, actions);
+                return $mmaModWorkshopHelper.applyOfflineData($scope.submission, actions).then(function(submission) {
+                    $scope.submission = submission;
+                });
             });
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
@@ -145,6 +140,12 @@ angular.module('mm.addons.mod_workshop')
         });
     };
 
+    // Save the assessment.
+    $scope.saveAssessment = function() {
+        // Call trigger to save.
+        $mmEvents.trigger(mmaModWorkshopAssessmentSaveEvent);
+    };
+
     // Convenience function to refresh all the data.
     function refreshAllData() {
         var promises = [];
@@ -152,6 +153,11 @@ angular.module('mm.addons.mod_workshop')
         promises.push($mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId));
         promises.push($mmaModWorkshop.invalidateSubmissionsData(workshopId));
         promises.push($mmaModWorkshop.invalidateSubmissionAssesmentsData(workshopId, submissionId));
+
+        if ($scope.assessmentId) {
+            promises.push($mmaModWorkshop.invalidateAssessmentFormData(workshopId, $scope.assessmentId));
+            promises.push($mmaModWorkshop.invalidateAssessmentData(workshopId, $scope.assessmentId));
+        }
 
         return $q.all(promises).finally(function() {
             $mmEvents.trigger(mmaModWorkshopAssessmentInvalidatedEvent);

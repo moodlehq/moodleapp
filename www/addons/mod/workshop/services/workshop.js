@@ -899,7 +899,7 @@ angular.module('mm.addons.mod_workshop')
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
-     * @name $mmaModWorkshopHelper#getReviewerAssessments
+     * @name $mmaModWorkshop#getReviewerAssessments
      *
      * @param   {Number}    workshopId      Workshop ID.
      * @param   {Number}    [userId]        User ID. If not defined, current user.
@@ -959,7 +959,7 @@ angular.module('mm.addons.mod_workshop')
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
-     * @name $mmaModWorkshopHelper#getAssessment
+     * @name $mmaModWorkshop#getAssessment
      *
      * @param   {Number}    workshopId      Workshop ID.
      * @param   {Number}    assessmentId    Assessment ID.
@@ -1006,7 +1006,7 @@ angular.module('mm.addons.mod_workshop')
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
-     * @name $mmaModWorkshopHelper#getAssessmentForm
+     * @name $mmaModWorkshop#getAssessmentForm
      * @param   {Number}    workshopId      Workshop ID.
      * @param   {Number}    assessmentId    Assessment ID.
      * @param   {String}    [mode]          Mode assessment (default) or preview.
@@ -1034,59 +1034,56 @@ angular.module('mm.addons.mod_workshop')
 
             return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then(function(response) {
                 if (response) {
-                    var fields = [],
-                        current = [];
-
-                    angular.forEach(response.fields, function(field) {
-                        var args = field.name.split('_'),
-                            name = args[0],
-                            idx = args[3],
-                            idy = args[6] || false;
-                        if (parseInt(idx, 10) == idx) {
-                            if (!fields[idx]) {
-                                fields[idx] = {
-                                    number: parseInt(idx, 10) + 1
-                                };
-                            }
-
-                            if (idy && parseInt(idy, 10) == idy) {
-                                if (!fields[idx].fields) {
-                                    fields[idx].fields = [];
-                                }
-                                if (!fields[idx].fields[idy]) {
-                                    fields[idx].fields[idy] = {
-                                        number: parseInt(idy, 10) + 1
-                                    };
-                                }
-                                fields[idx].fields[idy][name] = field.value;
-                            } else {
-                                fields[idx][name] = field.value;
-                            }
-                        }
-                    });
-                    response.fields = fields;
+                    response.fields = self.parseFields(response.fields);
                     response.options = $mmUtil.objectToKeyValueMap(response.options, 'name', 'value');
-
-                    angular.forEach(response.current, function(field) {
-                        var args = field.name.split('_'),
-                            name = args[0],
-                            idx = args[3];
-                        if (parseInt(idx, 10) == idx) {
-                            if (!current[idx]) {
-                                current[idx] = {
-                                    number: parseInt(idx, 10) + 1
-                                };
-                            }
-
-                            current[idx][name] = field.value;
-                        }
-                    });
-                    response.current = current;
+                    response.current = self.parseFields(response.current);
                     return response;
                 }
                 return $q.reject();
             });
         });
+    };
+
+    /**
+     * Parse fieldes into a more handful format.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#parseFields
+     * @param   {Array}    fields      Fields to parse
+     * @return  {Array}                Parsed fields
+     */
+    self.parseFields = function(fields) {
+        var parsedFields = [];
+
+        angular.forEach(fields, function(field) {
+            var args = field.name.split('_'),
+                name = args[0],
+                idx = args[3],
+                idy = args[6] || false;
+            if (parseInt(idx, 10) == idx) {
+                if (!parsedFields[idx]) {
+                    parsedFields[idx] = {
+                        number: parseInt(idx, 10) + 1
+                    };
+                }
+
+                if (idy && parseInt(idy, 10) == idy) {
+                    if (!parsedFields[idx].fields) {
+                        parsedFields[idx].fields = [];
+                    }
+                    if (!parsedFields[idx].fields[idy]) {
+                        parsedFields[idx].fields[idy] = {
+                            number: parseInt(idy, 10) + 1
+                        };
+                    }
+                    parsedFields[idx].fields[idy][name] = field.value;
+                } else {
+                    parsedFields[idx][name] = field.value;
+                }
+            }
+        });
+        return parsedFields;
     };
 
     /**
@@ -1104,6 +1101,87 @@ angular.module('mm.addons.mod_workshop')
     self.invalidateAssessmentFormData = function(workshopId, assessmentId, mode, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAssessmentFormDataCacheKey(workshopId, assessmentId, mode));
+        });
+    };
+
+    /**
+     * Updates the given assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#updateAssessment
+     * @param {Number}  workshopId      Workshop ID.
+     * @param {Number}  assessmentId    Assessment ID.
+     * @param {Number}  courseId        Course ID the workshop belongs to.
+     * @param {Object}  inputData       Assessment data.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
+     * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
+     */
+    self.updateAssessment = function(workshopId, assessmentId, courseId, inputData, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        return $mmaModWorkshopOffline.deleteAssessment(workshopId, assessmentId, siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.updateAssessmentOnline(assessmentId, inputData, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveAssessment(workshopId, assessmentId, courseId, inputData, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Updates the given assessment. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#updateAssessmentOnline
+     * @param  {Number} assessmentId    Assessment ID.
+     * @param  {Object} inputData       Assessment data.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the grade of the submission.
+     */
+    self.updateAssessmentOnline = function(assessmentId, inputData, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assessmentid: assessmentId,
+                data: inputData
+            };
+
+            params.data = $mmUtil.objectToArrayOfObjects(inputData, 'name', 'value');
+
+            return site.write('mod_workshop_update_assessment', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Return rawgrade for submission
+                return response.rawgrade;
+            });
         });
     };
 

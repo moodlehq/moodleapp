@@ -54,7 +54,7 @@
                 {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
             </div>
 
-            <div ng-if="workshop.phase == selectedPhase">
+            <div ng-if="workshop.phase >= selectedPhase">
                 <div ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">
                     <div class="card" ng-if="workshop.instructauthors">
                         <div class="item item-text-wrap">

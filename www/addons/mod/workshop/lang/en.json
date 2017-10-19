@@ -3,6 +3,7 @@
     "areainstructauthors": "Instructions for submission",
     "areainstructreviewers": "Instructions for assessment",
     "assess": "Assess",
+    "assessedsubmission": "Assessed submission",
     "assessmentform": "Assessment form",
     "assessmentstrategynotsupported": "Assessment strategy {{$a}} not supported",
     "assessmentweight": "Assessment weight",

@@ -2005,19 +2005,30 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#makeMenuFromList
          * @param  {String} list            The string to explode into array bits
-         * @param  {String} [defaultOption] Element that will become option 0.
+         * @param  {String} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
          * @param  {String} [separator]     The separator used within the list string. Default ','.
+         * @param  {Mixed}  [defaultValue]  Element that will become default option value. Default 0.
          * @return {Arrray}                 The now assembled array
          */
-        self.makeMenuFromList = function(list, defaultOption, separator) {
+        self.makeMenuFromList = function(list, defaultLabel, separator, defaultValue) {
             separator = separator || ',';
-            defaultOption = defaultOption || '';
-
             list = list.split(separator);
-            list = list.map(function (value) {return value.trim();});
-            list.unshift(defaultOption);
+
+            list = list.map(function (label, index) {
+                return {
+                    label: label.trim(),
+                    value: index + 1
+                };
+            });
+
+            if (defaultLabel) {
+                list.unshift({
+                    label: defaultLabel,
+                    value: defaultValue || 0
+                });
+            }
             return list;
-        }
+        };
 
         /**
          * Converts an object into an array of objects, where each entry is an object containing
@@ -2642,6 +2653,53 @@ angular.module('mm.core')
                 var matches = entry.match(regex);
                 return matches && matches.length;
             });
+        };
+
+
+        /**
+         * Retrieve the information entered in a form.
+         * We don't use ng-model because it doesn't detect changes done by JavaScript.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getInfoValuesFromForm
+         * @param  {Object} form Form (DOM element).
+         * @return {Object}      Object with the info values.
+         */
+        self.getInfoValuesFromForm = function(form) {
+            if (!form || !form.elements) {
+                return {};
+            }
+
+            var formData = {};
+
+            angular.forEach(form.elements, function(element) {
+                var name = element.name || '';
+                // Ignore flag and submit inputs.
+                if (element.type == 'submit' || element.tagName == 'BUTTON') {
+                    return;
+                }
+                if (!name) {
+                    $log.debug('Form element without name.', element);
+                    return;
+                }
+
+                // Get the value.
+                switch (element.type) {
+                    case 'checkbox':
+                        formData[name] = !!element.checked;
+                        break;
+                    case 'radio':
+                        if (element.checked) {
+                            formData[name] = element.value;
+                        }
+                        break;
+                    default:
+                        formData[name] = element.value;
+                }
+            });
+
+            return formData;
         };
 
         return self;

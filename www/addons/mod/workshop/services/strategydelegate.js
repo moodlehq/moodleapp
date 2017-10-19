@@ -109,7 +109,13 @@ angular.module('mm.addons.mod_workshop')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
-     *                             - getDirectiveName() (String) Optional. Returns the name of the directive to render the plugin.
+     *                             - getDirectiveName (String) Optional. Returns the name of the directive to render the plugin.
+     *                             - hasDataChanged(originalData, inputData) (Boolean) Optional.
+     *                                                           Check if the strategy data has changed for this plugin.
+     *                             - prepareAssessmentData(inputData, form)  (Promise) Optional.
+     *                                                           Prepare plugin data to be sent.
+     *                             - getOriginalValues(form, workshopId) (Promise) Prepare original values to be shown and compared
+     *                                                           depending on the strategy selected.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {
@@ -145,6 +151,63 @@ angular.module('mm.addons.mod_workshop')
             return true;
         }
         return time == lastUpdateHandlersStart;
+    };
+
+    /**
+     * Check if the assessment data has changed for a certain submission and workshop for a certain plugin.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopAssessmentStrategyDelegate#hasPluginDataChanged
+     * @param  {Object} workshop      Workshop.
+     * @param  {Object} originalData  Original data of the form.
+     * @param  {Object} inputData     Data entered in the assessment form.
+     * @return {Boolean}              True if data has changed, false otherwise.
+     */
+    self.hasPluginDataChanged = function(workshop, originalData, inputData) {
+        var handler = self.getPluginHandler(workshop.strategy);
+        if (handler && handler.hasDataChanged) {
+            return handler.hasDataChanged(originalData, inputData);
+        }
+        return false;
+    };
+
+    /**
+     * Prepare original values to be shown and compared depending on the strategy selected.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopAssessmentStrategyDelegate#getOriginalValues
+     * @param  {String} workshopStrategy   Workshop strategy.
+     * @param  {Object} form               Original data of the form.
+     * @param  {Number} workshopId         Workshop ID.
+     * @return {Promise}                   Resolved with original values sorted.
+     */
+    self.getOriginalValues = function(workshopStrategy, form, workshopId) {
+        var handler = self.getPluginHandler(workshopStrategy);
+        if (handler && handler.getOriginalValues) {
+            return $q.when(handler.getOriginalValues(form, workshopId));
+        }
+        return $q.when(false);
+    };
+
+    /**
+     * Prepare assessment data to be sent to the server depending on the strategy selected.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopAssessmentStrategyDelegate#prepareAssessmentData
+     * @param {String}  workshopStrategy    Workshop strategy to follow.
+     * @param {Object}  inputData           Assessment data.
+     * @param {Object}  form                Assessment form data.
+     * @return {Promise}                    Promise resolved with the data to be sent. Or rejected with the input errors object.
+     */
+    self.prepareAssessmentData = function(workshopStrategy, inputData, form) {
+        var handler = self.getPluginHandler(workshopStrategy);
+        if (handler && handler.prepareAssessmentData) {
+            return $q.when(handler.prepareAssessmentData(inputData, form));
+        }
+        return $q.when(inputData);
     };
 
     /**

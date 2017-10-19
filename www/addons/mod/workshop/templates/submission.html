@@ -32,12 +32,16 @@
         <p ng-if="profile.fullname">{{profile.fullname}}</p>
         <p ng-if="submission.reviewedby.length">{{ 'mma.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbycount}} / {{submission.reviewedby.length}}</p>
         <p ng-if="submission.reviewerof.length">{{ 'mma.mod_workshop.givengrades' | translate }}: {{submission.reviewerofcount}} / {{submission.reviewerof.length}}</p>
-        <p ng-if="assessment && assessment.grade" class="badge badge-inline text-center badge-energized">{{ 'mma.mod_workshop.alreadygraded' | translate }}</p>
-        <p ng-if="assessment && !assessment.grade" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.nogradeyet' | translate }}</p>
-        <div class="item-note text-right" ng-if="submission.timemodified">
+        <p ng-if="assessment && (assessment.grade != null || assessment.offline)" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_workshop.assessedsubmission' | translate }}</p>
+        <p ng-if="assessment && assessment.grade == null && !assessment.offline" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
+        <div class="item-note text-right" ng-if="!assessment && submission.timemodified">
             {{submission.timemodified | mmDateDayOrTime}}
             <div ng-if="submission.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
             <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
+        </div>
+        <div class="item-note text-right" ng-if="assessment && assessment.timemodified">
+            {{assessment.timemodified | mmDateDayOrTime}}
+            <div ng-if="assessment.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
         </div>
         <i ng-if="submission.timemodified" class="icon icon-accessory ion-chevron-right"></i>
     </a>

@@ -311,21 +311,22 @@ angular.module('mm.core.grades')
      * @name $mmGradesHelper#makeGradesMenu
      * @param  {Number} gradingType     If positive, max grade you can provide. If negative, scale Id.
      * @param  {Number} moduleId        Module Id needed to retrieve the scale.
-     * @param  {String} [defaultOption] Element that will become option 0.
+     * @param  {String} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
+     * @param  {Mixed}  [defaultValue]  Element that will become default option value. Default ''.
      * @param  {String} [scale]         Scale csv list String. If not provided, it will take it from the module grade info.
-     * @return {Promise}                Array with value => label to create a propper HTML select.
+     * @return {Promise}                Array with objects with value and label to create a propper HTML select.
      */
-    self.makeGradesMenu = function(gradingType, moduleId, defaultOption, scale) {
+    self.makeGradesMenu = function(gradingType, moduleId, defaultLabel, defaultValue, scale) {
         gradingType = parseInt(gradingType, 10);
-        defaultOption = defaultOption || '';
+        defaultValue = defaultValue || '';
 
         if (gradingType < 0) {
             if (scale) {
-                return $q.when($mmUtil.makeMenuFromList(scale, defaultOption));
+                return $q.when($mmUtil.makeMenuFromList(scale, defaultLabel, false, defaultValue));
             } else {
                 return $mmCourse.getModuleBasicGradeInfo(moduleId).then(function(gradeInfo) {
                     if (gradeInfo.scale) {
-                        return $mmUtil.makeMenuFromList(gradeInfo.scale, defaultOption);
+                        return $mmUtil.makeMenuFromList(gradeInfo.scale, defaultLabel, false,  defaultValue);
                     }
                     return [];
                 });
@@ -334,14 +335,73 @@ angular.module('mm.core.grades')
 
         if (gradingType > 0) {
             var grades = [];
-            grades[-1] = defaultOption;
+            if (defaultLabel) {
+                // Key as string to avoid resorting of the object.
+                grades.push({
+                    label: defaultLabel,
+                    value: defaultValue
+                });
+            }
             for (var i = gradingType; i >= 0; i--) {
-                grades[i] = i +' / '+ gradingType;
+                 grades.push({
+                    label: i +' / '+ gradingType,
+                    value: i
+                });
             }
             return $q.when(grades);
         }
 
         return $q.when([]);
+    };
+
+    /**
+     * Returns the label of the selected grade.
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGradesHelper#getGradeLabelFromValue
+     * @param  {Array}  grades          Array with objects with value and label.
+     * @param  {Number} selectedGrade   Selected grade value.
+     * @return {String}                 Selected grade label.
+     */
+    self.getGradeLabelFromValue = function(grades, selectedGrade) {
+        selectedGrade = parseInt(selectedGrade, 10);
+
+        if (!grades || !selectedGrade || selectedGrade <= 0) {
+            return "";
+        }
+
+        for (var x in grades) {
+            if (grades[x].value == selectedGrade) {
+                return grades[x].label;
+            }
+        }
+
+        return "";
+    };
+
+    /**
+     * Returns the value of the selected grade.
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGradesHelper#getGradeLabelFromValue
+     * @param  {Array}  grades          Array with objects with value and label.
+     * @param  {Number} selectedGrade   Selected grade label.
+     * @return {Number}                 Selected grade value.
+     */
+    self.getGradeValueFromLabel = function(grades, selectedGrade) {
+        if (!grades || !selectedGrade) {
+            return 0;
+        }
+
+        for (var x in grades) {
+            if (grades[x].label == selectedGrade) {
+                return grades[x].value < 0 ? 0 : grades[x].value;
+            }
+        }
+
+        return 0;
     };
 
 

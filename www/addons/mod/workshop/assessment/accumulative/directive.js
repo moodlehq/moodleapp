@@ -21,40 +21,31 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc directive
  * @name mmaModWorkshopAssessmentStrategyAccumulative
  */
-.directive('mmaModWorkshopAssessmentStrategyAccumulative', function($translate, $mmGradesHelper, $mmEvents,
-        mmaModWorkshopAssessmentRefreshedEvent) {
+.directive('mmaModWorkshopAssessmentStrategyAccumulative', function($mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        $mmaModWorkshopAssessmentStrategyAccumulativeHandler) {
 
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/mod/workshop/assessment/accumulative/template.html',
         link: function(scope) {
-            var load = function() {
-                if (!scope.assessment || !scope.form) {
-                    return;
-                }
-
-                angular.forEach(scope.form.fields, function(field, n) {
-                    field.dimtitle = $translate.instant('mma.mod_workshop_assessment_accumulative.dimensionnumber',
-                        {'$a': field.number});
-                    var scale = parseInt(field.grade, 10) < 0 ? scope.form.dimensionsinfo[n].scale : null;
-
-                    if (scope.form.current[n] && scope.form.current[n].grade) {
-                        scope.form.current[n].grade = parseInt(scope.form.current[n].grade, 10);
+            var obsRefreshed,
+                load = function() {
+                    if (!scope.assessment || !scope.assessment.form) {
+                        return;
                     }
 
-                    $mmGradesHelper.makeGradesMenu(field.grade, scope.workshopId, null, scale).then(function(grades) {
-                        field.grades = grades;
-                        if (field.grades && scope.form.current[n] && scope.form.current[n].grade) {
-                            scope.form.current[n].gradeText = field.grades[scope.form.current[n].grade] || "";
+                    $mmaModWorkshopAssessmentStrategyAccumulativeHandler.getOriginalValues(scope.assessment.form, scope.workshopId)
+                            .then(function(originalValues) {
+                        if (!scope.selectedValues) {
+                            scope.selectedValues = originalValues;
                         }
                     });
-                });
-            };
+                };
 
             load();
 
-            var obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
+            obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
 
             scope.$on('$destroy', function() {
                 obsRefreshed && obsRefreshed.off && obsRefreshed.off();

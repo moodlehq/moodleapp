@@ -24,7 +24,8 @@ angular.module('mm.addons.mod_workshop')
 .controller('mmaModWorkshopIndexCtrl', function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
         $mmCourseHelper, $q, $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $ionicModal,
         $mmGroups, $ionicPlatform, $mmaModWorkshopHelper, mmaModWorkshopPerPage, $state, mmaModWorkshopSubmissionChangedEvent,
-        $ionicScrollDelegate, $mmaModWorkshopSync, mmaModWorkshopEventAutomSynced, $mmSite, $mmaModWorkshopOffline) {
+        $ionicScrollDelegate, $mmaModWorkshopSync, mmaModWorkshopEventAutomSynced, $mmSite, $mmaModWorkshopOffline,
+        mmaModWorkshopAssessmentSavedEvent) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -307,6 +308,9 @@ angular.module('mm.addons.mod_workshop')
             angular.forEach($scope.grades, function(submission) {
                 var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.submissionid || false);
                 submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
+                return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(offlineSubmission) {
+                    submission = offlineSubmission;
+                });
             });
         });
     };
@@ -327,7 +331,9 @@ angular.module('mm.addons.mod_workshop')
             if ($scope.canSubmit) {
                 promises.push($mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
                     var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
-                    $scope.submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
+                    return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(submission) {
+                        $scope.submission = submission;
+                    });
                 }));
             }
 
@@ -339,9 +345,20 @@ angular.module('mm.addons.mod_workshop')
                 $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
                 if ($scope.canAssess) {
                     promises.push($mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
-                        $scope.assessments = assessments.map(function(assessment) {
+                        var p2 = [];
+                        angular.forEach(assessments, function(assessment) {
                             assessment.strategy = $scope.workshop.strategy;
-                            return assessment;
+
+                            p2.push($mmaModWorkshopOffline.getAssessment($scope.workshop.id, assessment.id)
+                                .then(function(offlineAssessment) {
+                                    assessment.offline = true;
+                                    assessment.timemodified = parseInt(offlineAssessment.timemodified / 1000, 10);
+                            }).catch(function() {
+                                // Ignore errors.
+                            }));
+                        });
+                        return $q.all(p2).then(function() {
+                            $scope.assessments = assessments;
                         });
                     }));
                 }
@@ -370,8 +387,9 @@ angular.module('mm.addons.mod_workshop')
         }
     }
 
-    // Listen for submission changes.
+    // Listen for submission and assessment changes.
     obsSubmissionChanged = $mmEvents.on(mmaModWorkshopSubmissionChangedEvent, eventReceived);
+    obsAssessmentSaved = $mmEvents.on(mmaModWorkshopAssessmentSavedEvent, eventReceived);
 
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
@@ -399,6 +417,7 @@ angular.module('mm.addons.mod_workshop')
         onlineObserver && onlineObserver.off && onlineObserver.off();
         obsSubmissionChanged && obsSubmissionChanged.off && obsSubmissionChanged.off();
         syncObserver && syncObserver.off && syncObserver.off();
+        obsAssessmentSaved && obsAssessmentSaved.off && obsAssessmentSaved.off();
         resumeObserver && resumeObserver();
     });
 });

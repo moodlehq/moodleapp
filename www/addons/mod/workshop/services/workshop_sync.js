@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_workshop')
  */
 .factory('$mmaModWorkshopSync', function($log, $mmaModWorkshop, $mmSite, $mmSitesManager, $q, $mmaModWorkshopOffline, $mmCourse,
             $mmApp, $mmEvents, $translate, mmaModWorkshopSyncTime, $mmSync, mmaModWorkshopEventAutomSynced, mmaModWorkshopComponent,
-            $mmSyncBlock, $mmLang) {
+            $mmSyncBlock, $mmLang, $mmaModWorkshopHelper) {
 
     $log = $log.getInstance('$mmaModWorkshopSync');
 
@@ -258,8 +258,8 @@ angular.module('mm.addons.mod_workshop')
 
                 // Upload attachments first if any.
                 if (action.attachmentsid) {
-                    fileProm = $mmaModWorkshopHelper.getStoredFiles(workshop.id, submissionId, editing, siteId)
-                            .then(function(files) {
+                    fileProm = $mmaModWorkshopHelper.getSubmissionFilesFromOfflineFilesObject(action.attachmentsid, workshop.id,
+                            submissionId, editing, siteId).then(function(files) {
                         return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshop.id, submissionId, files, editing, false,
                                 siteId);
                     });

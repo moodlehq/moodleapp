@@ -71,14 +71,13 @@ angular.module('mm.addons.mod_workshop')
             };
 
             var canAssess = scope.access && scope.access.assessingallowed,
-                currentUser;
+                currentUser = scope.assessment.userid == $mmSite.getUserId();
+
+            scope.canViewAssessment = scope.submission && scope.assessment.grade && !currentUser;
+            scope.canSelfAssess = canAssess && currentUser;
 
             return $mmUser.getProfile(scope.assessment.userid, scope.courseid, true).then(function(profile) {
                 scope.profile = profile;
-                currentUser = scope.profile.id == $mmSite.getUserId();
-
-                scope.canViewAssessment = scope.submission && (scope.assessment.grade || canAssess) && !currentUser;
-                scope.canSelfAssess = canAssess && currentUser;
             }).finally(function() {
                 scope.loaded = true;
             });

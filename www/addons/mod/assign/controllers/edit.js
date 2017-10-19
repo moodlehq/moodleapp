@@ -106,7 +106,7 @@ angular.module('mm.addons.mod_assign')
 
     // Get the input data.
     function getInputData() {
-        return $mmaModAssignHelper.getAnswersFromForm(document.forms['mma-mod_assign-edit-form']);
+        return $mmUtil.getInfoValuesFromForm(document.forms['mma-mod_assign-edit-form']);
     }
 
     // Get submission data.
@@ -125,6 +125,9 @@ angular.module('mm.addons.mod_assign')
 
     // Check if data has changed.
     function hasDataChanged() {
+        if (!scope.assessment) {
+            return $q.when(false);
+        }
         return $mmaModAssignHelper.hasSubmissionDataChanged($scope.assign, $scope.userSubmission, getInputData());
     }
 

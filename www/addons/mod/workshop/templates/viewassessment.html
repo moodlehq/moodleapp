@@ -14,7 +14,7 @@
                 <p ng-if="!assessment.grade" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
             </div>
 
-            <mma-mod-workshop-assessment-strategy ng-if="assessmentData" workshop="workshop" access="access" assessment="assessmentData" strategy="strategy"></mma-mod-workshop-assessment-strategy>
+            <mma-mod-workshop-assessment-strategy ng-if="assessmentId && assessment.grade" workshop="workshop" access="access" assessment-id="assessmentId" user-id="profile.id" strategy="strategy"></mma-mod-workshop-assessment-strategy>
         </mm-loading>
     </ion-content>
 </ion-view>

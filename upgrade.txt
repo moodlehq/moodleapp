@@ -9,6 +9,7 @@ information provided here is intended especially for developers.
     - All the functions getNavHandlersFor* should be used only to check if there is any handler enabled, not to get the list of handlers to display. If you want to display the list of handlers for a course, please use $mmCoursesDelegate#getNavHandlersToDisplay.
  * mmCoursesEventCourseOptionsInvalidated has been deprecated, it will no longer be triggered.
  * Now the "siteurl" in config.json accepts an array of sites. Each site must have "url" and "name".
+ * $mmaModAssignHelper#getAnswersFromForm deprecated, use $mmUtil#getInfoValuesFromForm instead.
 
 === 3.3.2 ===
 
