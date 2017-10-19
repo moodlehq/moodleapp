@@ -1,0 +1,30 @@
+<ion-modal-view>
+    <ion-header-bar>
+        <button class="button button-icon ion-close-round" ng-click="closeModal();"></button>
+        <h1 class="title">{{ 'mma.mod_workshop.selectphase' | translate }}</h1>
+    </ion-header-bar>
+    <ion-content>
+        <ion-list>
+            <ion-radio ng-model="selectedPhase" ng-value="phases.PHASE_SETUP" ng-click="switchPhase(phases.PHASE_SETUP)">
+                {{ 'mma.mod_workshop.phasesetup' | translate }}
+                <p class="item-text-wrap" ng-if="workshop.phase == phases.PHASE_SETUP">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+            </ion-radio>
+            <ion-radio ng-model="selectedPhase" ng-value="phases.PHASE_SUBMISSION" ng-click="switchPhase(phases.PHASE_SUBMISSION)">
+                {{ 'mma.mod_workshop.phasesubmission' | translate }}
+                <p class="item-text-wrap" ng-if="workshop.phase == phases.PHASE_SUBMISSION">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+            </ion-radio>
+            <ion-radio ng-model="selectedPhase" ng-value="phases.PHASE_ASSESSMENT" ng-click="switchPhase(phases.PHASE_ASSESSMENT)">
+                {{ 'mma.mod_workshop.phaseassessment' | translate }}
+                <p class="item-text-wrap" ng-if="workshop.phase == phases.PHASE_ASSESSMENT">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+            </ion-radio>
+            <ion-radio ng-model="selectedPhase" ng-value="phases.PHASE_EVALUATION" ng-click="switchPhase(phases.PHASE_EVALUATION)">
+                {{ 'mma.mod_workshop.phaseevaluation' | translate }}
+                <p class="item-text-wrap" ng-if="workshop.phase == phases.PHASE_EVALUATION">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+            </ion-radio>
+            <ion-radio ng-model="selectedPhase" ng-value="phases.PHASE_CLOSED" ng-click="switchPhase(phases.PHASE_CLOSED)">
+                {{ 'mma.mod_workshop.phaseclosed' | translate }}
+                <p class="item-text-wrap" ng-if="workshop.phase == phases.PHASE_CLOSED">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+            </ion-radio>
+        </ion-list>
+    </ion-content>
+</ion-modal-view>
