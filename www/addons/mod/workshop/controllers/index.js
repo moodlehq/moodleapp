@@ -23,11 +23,13 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopIndexCtrl', function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
         $mmCourseHelper, $q, $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $ionicModal,
-        $mmGroups) {
+        $mmGroups, $ionicPlatform) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
-        onlineObserver;
+        onlineObserver,
+        resumeObserver,
+        supportedTasks = {}; // Add here native supported tasks.
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -38,13 +40,6 @@ angular.module('mm.addons.mod_workshop')
     $scope.component = mmaModWorkshopComponent;
     $scope.workshopLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
-    $scope.phases = {
-        PHASE_SETUP: $mmaModWorkshop.PHASE_SETUP,
-        PHASE_SUBMISSION: $mmaModWorkshop.PHASE_SUBMISSION,
-        PHASE_ASSESSMENT: $mmaModWorkshop.PHASE_ASSESSMENT,
-        PHASE_EVALUATION: $mmaModWorkshop.PHASE_EVALUATION,
-        PHASE_CLOSED: $mmaModWorkshop.PHASE_CLOSED
-    };
 
     function fetchWorkshopData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
@@ -76,8 +71,26 @@ angular.module('mm.addons.mod_workshop')
                         $scope.selectedGroup = groupInfo.groups[0].id;
                     }
                 }
+
+                return $mmaModWorkshop.getUserPlanPhases($scope.workshop.id);
             });
-        }).then(function() {
+        }).then(function(phases) {
+            $scope.phases = phases;
+            angular.forEach(phases, function(phase) {
+                angular.forEach(phase.tasks, function(task) {
+                    if (task.link && typeof supportedTasks[task.code] !== 'undefined') {
+                        task.support = true;
+                    }
+                });
+                phase.switchUrl = "";
+                for (var x in phase.actions) {
+                    if (phase.actions[x].url && phase.actions[x].type == "switchphase") {
+                        phase.switchUrl = phase.actions[x].url;
+                        break;
+                    }
+                }
+            });
+
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModWorkshopComponent);
         }).catch(function(message) {
@@ -106,6 +119,7 @@ angular.module('mm.addons.mod_workshop')
         promises.push($mmaModWorkshop.invalidateWorkshopData(courseId));
         if ($scope.workshop) {
             promises.push($mmaModWorkshop.invalidateWorkshopAccessInformationData($scope.workshop.id));
+            promises.push($mmaModWorkshop.invalidateUserPlanPhasesData($scope.workshop.id));
             promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
         }
 
@@ -126,12 +140,14 @@ angular.module('mm.addons.mod_workshop')
 
     // Initializes the phase modal.
     function initPhaseSelector() {
-        return $ionicModal.fromTemplateUrl('addons/mod/workshop/templates/phaseselect.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function(m) {
-            $scope.phaseModal = m;
-        });
+        if ($scope.phases) {
+            return $ionicModal.fromTemplateUrl('addons/mod/workshop/templates/phaseselect.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            }).then(function(m) {
+                $scope.phaseModal = m;
+            });
+        }
     }
 
     // Select Phase to be shown.
@@ -154,6 +170,15 @@ angular.module('mm.addons.mod_workshop')
     // Just close the modal.
     $scope.closeModal = function(phase) {
         $scope.phaseModal.hide();
+    };
+
+    // Open task.
+    $scope.runTask = function(task) {
+        if (task.support) {
+            // TODO: Add support depending on task.code.
+        } else if (task.link) {
+            $mmUtil.openInBrowser(task.link);
+        }
     };
 
     // Confirm and Remove action.
@@ -189,8 +214,14 @@ angular.module('mm.addons.mod_workshop')
         $scope.isOnline = online;
     });
 
+    // Since most actions will take the user out of the app, we should refresh the view when the app is resumed.
+    resumeObserver = $ionicPlatform.on('resume', function() {
+        $scope.workshopLoaded = false;
+        return refreshAllData(true, false);
+    });
 
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
+        resumeObserver && resumeObserver();
     });
 });

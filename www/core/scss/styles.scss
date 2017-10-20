@@ -719,6 +719,13 @@ mm-navigation-bar {
   }
 }
 
+.item-icon-left, .item-icon-right {
+  &.item-icon-top .icon {
+    align-items: flex-start;
+    top: 11px;
+  }
+}
+
 // These will need item-icon-left as well.
 @mixin mm-message-item($color) {
   border-bottom: 3px solid $color !important;

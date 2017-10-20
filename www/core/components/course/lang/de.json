@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Für diese Website ist die Aktivität in der App deaktiviert.",
-    "activitynotyetviewableinapp": "Wir arbeiten daran, die Aktivität {{$a}} zu unterstützen.",
     "activitynotyetviewableremoteaddon": "Für die Website ist ein Plugin installiert, das bisher nicht unterstützt wird.",
     "activitynotyetviewablesiteupgradeneeded": "Diese Website muss aktualisiert werden.",
     "allsections": "Alle Abschnitte",

@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Vaše organizace zakázal tuto činnost v mobilní aplikaci.",
-    "activitynotyetviewableinapp": "Pracujeme na úpravě aktivity {{$a}}.",
     "activitynotyetviewableremoteaddon": "Tato aktivita je doplněk třetí strany, který ještě není aplikací podporován.",
     "activitynotyetviewablesiteupgradeneeded": "Instalace Moodle vaší organizace je třeba aktualizovat.",
     "allsections": "Všechny sekce",

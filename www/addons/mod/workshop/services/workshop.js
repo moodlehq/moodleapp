@@ -61,6 +61,16 @@ angular.module('mm.addons.mod_workshop')
     }
 
     /**
+     * Get cache key for workshop user plan data WS calls.
+     *
+     * @param {Number} workshopId   Workshop ID.
+     * @return {String}         Cache key.
+     */
+    function getUserPlanDataCacheKey(workshopId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':userplan';
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the workshop WS are available.
      *
      * @module mm.addons.mod_workshop
@@ -222,6 +232,63 @@ angular.module('mm.addons.mod_workshop')
     self.invalidateWorkshopAccessInformationData = function(workshopId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getWorkshopAccessInformationDataCacheKey(workshopId));
+        });
+    };
+
+    /**
+     * Return the planner information for the given user.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#getUserPlanPhases
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getUserPlanPhases = function(workshopId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getUserPlanDataCacheKey(workshopId)
+                };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_workshop_get_user_plan', params, preSets).then(function(response) {
+                if (response && response.userplan && response.userplan.phases) {
+                    var phases = {};
+                    angular.forEach(response.userplan.phases, function(phase) {
+                        phases[phase.code] = phase;
+                    });
+                    return phases;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates workshop user plan data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateUserPlanPhasesData
+     * @param {Number} workshopId   Workshop ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserPlanPhasesData = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getUserPlanDataCacheKey(workshopId));
         });
     };
 

@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Ваша організація відключила цю активність в мобільному додатку.",
-    "activitynotyetviewableinapp": "Ми працюємо на підтримку діяльності {{$a}}.",
     "activitynotyetviewableremoteaddon": "Ваша організація встановила плагін, який ще не підтримується.",
     "activitynotyetviewablesiteupgradeneeded": "Установка версія Moodle вашої організації повинна бути оновлена.",
     "allsections": "Всі секції",
