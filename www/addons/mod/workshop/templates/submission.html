@@ -1,0 +1,40 @@
+<mm-loading hide-until="loaded" class="mm-loading-noheight">
+    <div ng-if="!summary">
+        <div class="item item-heading item-text-wrap item-avatar clearfix">
+            <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+            <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+            <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
+            <h2>{{submission.title}}</h2>
+            <p ng-if="profile.fullname">{{profile.fullname}}</p>
+            <div class="item-note" ng-if="!submission.timemodified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+            <div class="item-note text-right" ng-if="submission.timemodified">
+                {{submission.timemodified | mmDateDayOrTime}}
+                <div ng-if="submission.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+                <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
+            </div>
+        </div>
+        <div class="item item-body">
+            <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{submission.content}}</mm-format-text>
+        </div>
+        <div class="item" ng-repeat="attachment in submission.attachmentfiles">
+            <!-- Files already attached to the submission. -->
+            <mm-file ng-if="!attachment.name" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
+            <!-- Files stored in offline to be sent later. -->
+            <mm-local-file ng-if="attachment.name" file="attachment"></mm-local-file>
+        </div>
+    </div>
+
+    <a class="item item-text-wrap item-avatar item-border clearfix" ng-if="summary" ng-class="{'item-icon-right': submission.submissionmodified}" ng-click="gotoSubmission()">
+        <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+        <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+        <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
+        <h2>{{submission.submissiontitle}}</h2>
+        <p ng-if="profile.fullname">{{profile.fullname}}</p>
+        <div class="item-note text-right" ng-if="submission.submissionmodified">
+            {{submission.submissionmodified | mmDateDayOrTime}}
+            <div ng-if="submission.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+            <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
+        </div>
+        <i ng-if="submission.submissionmodified" class="icon icon-accessory ion-chevron-right"></i>
+    </a>
+</mm-loading>

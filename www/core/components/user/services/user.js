@@ -117,36 +117,30 @@ angular.module('mm.core.user')
      * @module mm.core.user
      * @ngdoc method
      * @name $mmUser#getProfile
-     * @param  {Number} userid      User's ID.
-     * @param  {Number} [courseid]  Course ID to get course profile, undefined or 0 to get site profile.
+     * @param  {Number} userId      User's ID.
+     * @param  {Number} [courseId]  Course ID to get course profile, undefined or 0 to get site profile.
      * @param  {Boolean} forceLocal True to retrieve the user data from local DB, false to retrieve it from WS.
      * @return {Promise}            Promise resolved with the user data.
      */
-    self.getProfile = function(userid, courseid, forceLocal) {
-
-        var deferred = $q.defer();
-
+    self.getProfile = function(userId, courseId, forceLocal) {
         if (forceLocal) {
-            self.getUserFromLocal(userid).then(deferred.resolve, function() {
-                self.getUserFromWS(userid, courseid).then(deferred.resolve, deferred.reject);
-            });
-        } else {
-            self.getUserFromWS(userid, courseid).then(deferred.resolve, function() {
-                self.getUserFromLocal(userid).then(deferred.resolve, deferred.reject);
+            return self.getUserFromLocal(userId).catch(function() {
+                return self.getUserFromWS(userId, courseId);
             });
         }
-
-        return deferred.promise;
+        return self.getUserFromWS(userId, courseId).catch(function() {
+            return self.getUserFromLocal(userId);
+        });
     };
 
     /**
      * Invalidates user WS calls.
      *
-     * @param  {Number} userid User ID.
+     * @param  {Number} userId User ID.
      * @return {String}        Cache key.
      */
-    function getUserCacheKey(userid) {
-        return 'mmUser:data:'+userid;
+    function getUserCacheKey(userId) {
+        return 'mmUser:data:' + userId;
     }
 
     /**

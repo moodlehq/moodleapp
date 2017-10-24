@@ -450,6 +450,20 @@ button.item.item-button-right {
   }
 }
 
+.item-icon-right .item-note .icon {
+  display: inline;
+  align-items: normal;
+  position: relative;
+  top: auto;
+  right: auto;
+  height: auto;
+  font-size: 14px;
+  &:before {
+    display: inline;
+    width: auto;
+  }
+}
+
 /**
  * Core directives.
  */

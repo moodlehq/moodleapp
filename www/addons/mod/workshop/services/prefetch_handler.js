@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopPrefetchHandler
  */
-.factory('$mmaModWorkshopPrefetchHandler', function($mmaModWorkshop, mmaModWorkshopComponent, $mmFilepool, $q, $mmUtil,
-        $mmPrefetchFactory, $mmSite, $mmGroups, $mmCourse) {
+.factory('$mmaModWorkshopPrefetchHandler', function($mmaModWorkshop, mmaModWorkshopComponent, $mmFilepool, $q, $mmPrefetchFactory,
+        $mmSite, $mmGroups, $mmCourse, $mmaModWorkshopHelper, $mmSitesManager, $mmUser) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModWorkshopComponent);
 
@@ -81,6 +81,7 @@ angular.module('mm.addons.mod_workshop')
 
         return $mmaModWorkshop.getWorkshop(courseId, module.id, siteId, forceCache).then(function(data) {
             files = self.getIntroFilesFromInstance(module, data);
+            files = files.concat(data.instructauthorsfiles).concat(data.instructreviewersfiles);
 
             workshop = data;
             return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
@@ -88,12 +89,34 @@ angular.module('mm.addons.mod_workshop')
                     groupInfo.groups = [{id: 0}];
                 }
                 groups = groupInfo.groups;
-                return {
-                    workshop: workshop,
-                    groups: groups,
-                    files: files
-                };
             });
+
+        }).then(function() {
+            return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
+                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+
+                    // Get submission phase info.
+                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks);
+
+                    if (canSubmit) {
+                        return $mmSitesManager.getSite(siteId).then(function(site) {
+                            var userId = site.getUserId();
+                            return $mmaModWorkshopHelper.getUserSubmission(workshop.id, userId);
+                        }).then(function(submission) {
+                            if (submission) {
+                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                            }
+                        });
+                    }
+                });
+            });
+        }).then(function() {
+            return {
+                workshop: workshop,
+                groups: groups,
+                files: files
+            };
         }).catch(function(message) {
             if (omitFail) {
                 // Any error, return the info we have.
@@ -151,12 +174,50 @@ angular.module('mm.addons.mod_workshop')
      * @return {Promise}         Promise resolved with timemodified.
      */
     self.getTimemodified = function(module, courseId) {
-        var siteId = $mmSite.getId();
+        var siteId = $mmSite.getId(),
+            timemodified = 0;
 
-        return $mmaModWorkshop.getWorkshop(courseId, module.id, siteId).then(function(workshop) {
-            var files = self.getIntroFilesFromInstance(module, workshop);
+        return getWorkshopInfoHelper(module, courseId, false, false, true, siteId).then(function(info) {
+            var workshop = info.workshop,
+                files = self.getIntroFilesFromInstance(module, workshop);
 
-            return Math.max(workshop.timemodified || 0, $mmFilepool.getTimemodifiedFromFileList(files));
+            timemodified = workshop.timemodified || 0;
+
+            return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
+                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+
+                    // Get submission phase info.
+                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
+                        promises = [];
+
+                    if (canSubmit) {
+                        promises.push($mmSitesManager.getSite(siteId).then(function(site) {
+                            var userId = site.getUserId();
+                            return $mmaModWorkshopHelper.getUserSubmission(workshop.id, userId);
+                        }).then(function(submission) {
+                            if (submission) {
+                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                                timemodified = Math.max(timemodified, submission.timemodified || 0);
+                            }
+                        }));
+                    }
+
+                    if (access.canviewallsubmissions) {
+                        promises.push(getAllGradesReport(workshop.id, info.groups).then(function(report) {
+                            angular.forEach(report.grades, function(grade) {
+                                timemodified = Math.max(timemodified, grade.submissionmodified || 0);
+                            });
+                        }));
+                    }
+
+                    timemodified = Math.max(timemodified, $mmFilepool.getTimemodifiedFromFileList(files));
+
+                    return $q.all(promises).then(function() {
+                        timemodified;
+                    });
+                });
+            });
         }).catch(function() {
             return 0;
         });
@@ -238,6 +299,36 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
+     * Retrieves all the grades reports for all the groups and then returns only unique grades.
+     *
+     * @param  {Number}  workshopId     Workshop ID.
+     * @param  {Array}   groups         Array of groups in the activity.
+     * @param  {Boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
+     * @param  {Boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String}  siteId         Site ID.
+     * @return {Promise}                All unique entries.
+     */
+    function getAllGradesReport(workshopId, groups, forceCache, ignoreCache, siteId) {
+        var promises = [];
+
+        angular.forEach(groups, function(group) {
+            promises.push($mmaModWorkshop.fetchAllGradeReports(workshopId, group.id, undefined, forceCache, ignoreCache, siteId));
+        });
+
+        return $q.all(promises).then(function(grades) {
+            var uniqueGrades = {};
+
+            angular.forEach(grades, function(groupGrades) {
+                angular.forEach(groupGrades, function(grade) {
+                    uniqueGrades[grade.submissionid] = grade;
+                });
+            });
+
+            return uniqueGrades;
+        });
+    }
+
+    /**
      * Prefetch a workshop.
      *
      * @param  {Object} module   The module object returned by WS.
@@ -247,6 +338,8 @@ angular.module('mm.addons.mod_workshop')
      * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
      */
     function prefetchWorkshop(module, courseId, single, siteId) {
+        var userIds = [];
+
         siteId = siteId || $mmSite.getId();
 
         // Prefetch the workshop data.
@@ -255,13 +348,41 @@ angular.module('mm.addons.mod_workshop')
                 promises = [];
 
             promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
-            promises.push($mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId));
-            promises.push($mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId));
+            promises.push($mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
+                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
 
+                    // Get submission phase info.
+                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks)
+                        promises2 = [];
+
+                    if (canSubmit) {
+                        promises2.push($mmaModWorkshop.getSubmissions(workshop.id).then(function() {
+                            // Add userId to the profiles to prefetch.
+                            return $mmSitesManager.getSite(siteId).then(function(site) {
+                                userIds.push(site.getUserId());
+                            });
+                        }));
+                    }
+
+                    if (access.canviewallsubmissions) {
+                        promises2.push(getAllGradesReport(workshop.id, info.groups).then(function(grades) {
+                            angular.forEach(grades, function(grade) {
+                                userIds.push(grade.userid);
+                            });
+                        }));
+                    }
+
+                    return $q.all(promises2);
+                });
+            }));
             // Add Basic Info to manage links.
             promises.push($mmCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
 
             return $q.all(promises);
+        }).then(function() {
+            // Prefetch user profiles.
+            return $mmUser.prefetchProfiles(userIds, courseId, siteId);
         }).then(function() {
             // Get revision and timemodified.
 

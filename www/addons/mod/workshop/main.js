@@ -15,6 +15,11 @@
 angular.module('mm.addons.mod_workshop', ['mm.core'])
 
 .constant('mmaModWorkshopComponent', 'mmaModWorkshop')
+.constant('mmaModWorkshopSubmissionChangedEvent', 'mma-mod_workshop_submission_changed')
+.constant('mmaModWorkshopPerPage', 10)
+.constant('mmaModWorkshopEventAutomSynced', 'mma_mod_workshop_autom_synced')
+.constant('mmaModWorkshopEventManualSynced', 'mma_mod_workshop_manual_synced')
+.constant('mmaModWorkshopSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -34,6 +39,41 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
                 templateUrl: 'addons/mod/workshop/templates/index.html'
             }
         }
+    })
+
+    .state('site.mod_workshop-submission', {
+        url: '/mod_workshop-submission',
+        params: {
+            module: null,
+            access: null,
+            courseid: null,
+            profile: null,
+            submission: null,
+            submissionid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopSubmissionCtrl',
+                templateUrl: 'addons/mod/workshop/templates/viewsubmission.html'
+            }
+        }
+    })
+
+    .state('site.mod_workshop-edit-submission', {
+        url: '/mod_workshop-edit-submission',
+        params: {
+            module: null,
+            access: null,
+            courseid: null,
+            submission: null,
+            submissionid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopEditSubmissionCtrl',
+                templateUrl: 'addons/mod/workshop/templates/editsubmission.html'
+            }
+        }
     });
 })
 
@@ -41,4 +81,9 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModWorkshop', 'workshop', '$mmaModWorkshopHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModWorkshop', 'workshop', '$mmaModWorkshopPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWorkshop:index', '$mmaModWorkshopHandlers.indexLinksHandler');
+})
+
+.run(function($mmCronDelegate) {
+    // Register sync handler.
+    $mmCronDelegate.register('mmaModWorkshop', '$mmaModWorkshopHandlers.syncHandler');
 });
