@@ -872,7 +872,8 @@ angular.module('mm.core.courses')
                 } else if (response.warnings && response.warnings.length) {
                     var message;
                     angular.forEach(response.warnings, function(warning) {
-                        if (warning.warningcode == '2' || warning.warningcode == '4') { // Invalid password warnings.
+                        // Invalid password warnings.
+                        if (warning.warningcode == '2' || warning.warningcode == '3' || warning.warningcode == '4') {
                             message = warning.message;
                         }
                     });
