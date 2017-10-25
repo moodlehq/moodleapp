@@ -3,9 +3,11 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { SQLite } from '@ionic-native/sqlite';
 
 import { MyApp } from './app.component';
 import { CoreLoggerProvider } from '../providers/logger';
+import { CoreDbProvider } from '../providers/db';
 
 @NgModule({
   declarations: [
@@ -22,8 +24,10 @@ import { CoreLoggerProvider } from '../providers/logger';
   providers: [
     StatusBar,
     SplashScreen,
+    SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    CoreLoggerProvider
+    CoreLoggerProvider,
+    CoreDbProvider
   ]
 })
 export class AppModule {}
