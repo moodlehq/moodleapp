@@ -36,7 +36,7 @@ export class CoreDbProvider {
      * @param {boolean} forceNew True if it should always create a new instance.
      * @return {SQLiteDB} DB.
      */
-    getDB(name: string, forceNew: boolean) : SQLiteDB {
+    getDB(name: string, forceNew?: boolean) : SQLiteDB {
         if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
             this.dbInstances[name] = new SQLiteDB(name, this.sqlite, this.platform);
         }
