@@ -15,6 +15,7 @@ import { MyApp } from './app.component';
 import { CoreLoggerProvider } from '../providers/logger';
 import { CoreDbProvider } from '../providers/db';
 import { CoreAppProvider } from '../providers/app';
+import { CoreConfigProvider } from '../providers/config';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -50,6 +51,7 @@ export function createTranslateLoader(http: HttpClient) {
         CoreLoggerProvider,
         CoreDbProvider,
         CoreAppProvider,
+        CoreConfigProvider,
     ]
 })
 export class AppModule {}
