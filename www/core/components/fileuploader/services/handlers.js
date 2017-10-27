@@ -297,7 +297,8 @@ angular.module('mm.core.fileuploader')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return ionic.Platform.isAndroid() || !$mmApp.isDevice();
+            return ionic.Platform.isAndroid() || !$mmApp.isDevice() ||
+                    (ionic.Platform.isIOS() && parseInt(ionic.Platform.version(), 10) >= 9);
         };
 
         /**
@@ -306,11 +307,13 @@ angular.module('mm.core.fileuploader')
          * @return {Object} Data.
          */
         self.getData = function() {
+            var isIOS = ionic.Platform.isIOS();
+
             return {
                 name: 'file',
-                title: 'mm.fileuploader.file',
+                title: isIOS ? 'mm.fileuploader.more' : 'mm.fileuploader.file',
                 class: 'mm-fileuploader-file-handler',
-                icon: 'ion-folder',
+                icon: isIOS ? 'ion-more' : 'ion-folder',
                 afterRender: function(maxSize, upload, allowOffline, mimetypes) {
                     // Add an invisible file input in the file handler.
                     // It needs to be done like this because button text doesn't accept inputs.
@@ -328,8 +331,9 @@ angular.module('mm.core.fileuploader')
                         }
 
                         uploadFileScope.filePicked = function(evt) {
-                            var input = evt.srcElement;
-                            var file = input.files[0];
+                            var input = evt.srcElement,
+                                file = input.files[0],
+                                fileName;
                             input.value = ''; // Unset input.
                             if (!file) {
                                 return;
@@ -342,8 +346,18 @@ angular.module('mm.core.fileuploader')
                                 return;
                             }
 
+                            fileName = file.name;
+                            if (isIOS) {
+                                // Check the name of the file and add a timestamp if needed (take picture).
+                                var matches = fileName.match(/image\.(jpe?g|png)/);
+                                if (matches) {
+                                    fileName = 'image_' + $mmUtil.readableTimestamp() + '.' + matches[1];
+                                }
+                            }
+
                             // Upload the picked file.
-                            $mmFileUploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
+                            $mmFileUploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline, fileName)
+                                    .then(function(result) {
                                 $mmFileUploaderHelper.fileUploaded(result);
                             }).catch(function(error) {
                                 if (error) {

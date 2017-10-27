@@ -122,9 +122,12 @@ angular.module('mm.core.fileuploader')
      * @name $mmFileUploaderHelper#copyAndUploadFile
      * @param  {Object} file    File to copy and upload.
      * @param  {Boolean} upload True if the file should be uploaded, false to return the picked file.
+     * @param  {String}  [name] Name to use when uploading the file. If not defined, use the file's name.
      * @return {Promise}        Promise resolved when the file is uploaded.
      */
-    self.copyAndUploadFile = function(file, upload) {
+    self.copyAndUploadFile = function(file, upload, name) {
+        name = name || file.name;
+
         var modal = $mmUtil.showModalLoading('mm.fileuploader.readingfile', true),
             fileData;
 
@@ -133,7 +136,7 @@ angular.module('mm.core.fileuploader')
             fileData = data;
 
             // Get unique name for the copy.
-            return $mmFS.getUniqueNameInFolder($mmFS.getTmpFolder(), file.name);
+            return $mmFS.getUniqueNameInFolder($mmFS.getTmpFolder(), name);
         }).then(function(newName) {
             var filepath = $mmFS.concatenatePaths($mmFS.getTmpFolder(), newName);
 
@@ -147,7 +150,7 @@ angular.module('mm.core.fileuploader')
 
             if (upload) {
                 // Pass true to delete the copy after the upload.
-                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, true);
+                return self.uploadGenericFile(fileEntry.toURL(), name, file.type, true);
             } else {
                 return fileEntry;
             }
@@ -586,11 +589,12 @@ angular.module('mm.core.fileuploader')
      * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
      * @param  {Boolean} upload       True if the file should be uploaded, false to return the picked file.
      * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @param  {String}  [name]       Name to use when uploading the file. If not defined, use the file's name.
      * @return {Promise}              Promise resolved when done.
      */
-    self.uploadFileEntry = function(fileEntry, deleteAfter, maxSize, upload, allowOffline) {
+    self.uploadFileEntry = function(fileEntry, deleteAfter, maxSize, upload, allowOffline, name) {
         return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
-            return self.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
+            return self.uploadFileObject(file, maxSize, upload, allowOffline, name).then(function(result) {
                 if (deleteAfter) {
                     // We have uploaded and deleted a copy of the file. Now delete the original one.
                     $mmFS.removeFileByFileEntry(fileEntry);
@@ -610,16 +614,17 @@ angular.module('mm.core.fileuploader')
      * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
      * @param  {Boolean} upload       True if the file should be uploaded, false to return the picked file.
      * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @param  {String}  [name]       Name to use when uploading the file. If not defined, use the file's name.
      * @return {Promise}              Promise resolved when done.
      */
-    self.uploadFileObject = function(file, maxSize, upload, allowOffline) {
+    self.uploadFileObject = function(file, maxSize, upload, allowOffline, name) {
         if (maxSize != -1 && file.size > maxSize) {
             return self.errorMaxBytes(maxSize, file.name);
         }
 
         return self.confirmUploadFile(file.size, false, allowOffline).then(function() {
             // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-            return self.copyAndUploadFile(file, upload);
+            return self.copyAndUploadFile(file, upload, name);
         });
     };
 
