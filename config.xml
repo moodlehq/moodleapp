@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.3.2">
-  <name>Moodle Mobile</name>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="in.k-12systems" version="3.3.2">
+  <name>ROBOIOTIC</name>
   <description>
-        Moodle Mobile official app
+        K-12 Robo Lab learning APP
     </description>
-  <author href="http://moodle.com" email="mobile@moodle.com">
-        Moodle Mobile team
+  <author href="http://k-12systems.in" email="manish@k-12systems.in">
+        Manish Kumar
     </author>
   <content src="index.html"/>
   <access origin="*"/>
