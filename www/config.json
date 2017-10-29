@@ -1,6 +1,6 @@
 {
-    "app_id" : "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id" : "in.k-12systems",
+    "appname": "ROBOIOTIC",
     "desktopappname": "Moodle Desktop",
     "versioncode" : "2020",
     "versionname" : "3.3.2",
@@ -12,7 +12,7 @@
     "demo_sites": {"student": {"url": "http://school.demo.moodle.net", "username": "student", "password": "moodle"}, "teacher": {"url": "http://school.demo.moodle.net", "username": "teacher", "password": "moodle"}, "cva": {"url": "http://mm.cvaconsulting.com/moodle", "username": "student", "password": "student"}},
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
+    "siteurl": "www,k-12systems.in/LMS",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
     "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
