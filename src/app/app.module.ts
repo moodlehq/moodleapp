@@ -1,13 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SQLite } from '@ionic-native/sqlite';
 import { Keyboard } from '@ionic-native/keyboard';
-import { Network } from '@ionic-native/network';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
@@ -16,6 +15,7 @@ import { CoreLoggerProvider } from '../providers/logger';
 import { CoreDbProvider } from '../providers/db';
 import { CoreAppProvider } from '../providers/app';
 import { CoreConfigProvider } from '../providers/config';
+import { CoreEmulatorModule } from '../core/emulator/emulator.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -28,6 +28,7 @@ export function createTranslateLoader(http: HttpClient) {
     ],
     imports: [
         BrowserModule,
+        HttpClientModule,
         IonicModule.forRoot(MyApp),
         TranslateModule.forRoot({
             loader: {
@@ -35,7 +36,8 @@ export function createTranslateLoader(http: HttpClient) {
                 useFactory: (createTranslateLoader),
                 deps: [HttpClient]
             }
-        })
+        }),
+        CoreEmulatorModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -46,12 +48,11 @@ export function createTranslateLoader(http: HttpClient) {
         SplashScreen,
         SQLite,
         Keyboard,
-        Network,
         {provide: ErrorHandler, useClass: IonicErrorHandler},
         CoreLoggerProvider,
         CoreDbProvider,
         CoreAppProvider,
-        CoreConfigProvider,
+        CoreConfigProvider
     ]
 })
 export class AppModule {}

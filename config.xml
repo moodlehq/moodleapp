@@ -116,10 +116,10 @@
     <plugin name="phonegap-plugin-push" spec="~1.10.5">
         <variable name="SENDER_ID" value="694767596569" />
     </plugin>
-    <plugin name="cordova-universal-clipboard" spec="~0.1.0" />
     <plugin name="nl.kingsquare.cordova.background-audio" spec="~1.0.1" />
     <plugin name="ch.ti8m.documenthandler" spec="https://github.com/ti8m/DocumentHandler" />
     <plugin name="net.tunts.webintent" spec="https://github.com/Tunts/WebIntent" />
     <plugin name="cordova-sqlite-storage" spec="~2.0.4" />
     <plugin name="cordova-plugin-ionic-webview" spec="~1.1.16" />
+    <plugin name="cordova-clipboard" spec="~1.1.0" />
 </widget>

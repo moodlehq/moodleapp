@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { SQLite } from '@ionic-native/sqlite';
 import { Platform } from 'ionic-angular';
 import { SQLiteDB } from '../classes/sqlitedb';
+import { SQLiteDBMock } from '../core/emulator/classes/sqlitedb';
 
 /**
  * This service allows interacting with the local database to store and retrieve data.
@@ -38,7 +39,11 @@ export class CoreDbProvider {
      */
     getDB(name: string, forceNew?: boolean) : SQLiteDB {
         if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
-            this.dbInstances[name] = new SQLiteDB(name, this.sqlite, this.platform);
+            if (this.platform.is('cordova')) {
+                this.dbInstances[name] = new SQLiteDB(name, this.sqlite, this.platform);
+            } else {
+                this.dbInstances[name] = new SQLiteDBMock(name);
+            }
         }
         return this.dbInstances[name];
     }
@@ -60,15 +65,18 @@ export class CoreDbProvider {
         }
 
         return promise.then(() => {
+            let db = this.dbInstances[name];
             delete this.dbInstances[name];
 
-            return this.sqlite.deleteDatabase({
-                name: name,
-                location: 'default'
-            });
+            if (this.platform.is('cordova')) {
+                return this.sqlite.deleteDatabase({
+                    name: name,
+                    location: 'default'
+                });
+            } else {
+                // In WebSQL we cannot delete the database, just empty it.
+                return db.emptyDatabase();
+            }
         });
     }
 }
-
-
-
