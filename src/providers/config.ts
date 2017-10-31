@@ -47,8 +47,8 @@ export class CoreConfigProvider {
     /**
      * Deletes an app setting.
      *
-     * @param name The config name.
-     * @return Promise resolved when done.
+     * @param {string} name The config name.
+     * @return {Promise<any>} Promise resolved when done.
      */
     delete(name: string) : Promise<any> {
         return this.appDB.deleteRecords(this.TABLE_NAME, {name: name});
@@ -57,9 +57,9 @@ export class CoreConfigProvider {
     /**
      * Get an app setting.
      *
-     * @param name The config name.
-     * @param [defaultValue] Default value to use if the entry is not found.
-     * @return Resolves upon success along with the config data. Reject on failure.
+     * @param {string} name The config name.
+     * @param {any} [defaultValue] Default value to use if the entry is not found.
+     * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
      */
     get(name: string, defaultValue?: any) : Promise<any> {
         return this.appDB.getRecord(this.TABLE_NAME, {name: name}).then((entry) => {
@@ -76,9 +76,9 @@ export class CoreConfigProvider {
     /**
      * Set an app setting.
      *
-     * @param name The config name.
-     * @param value The config value. Can only store primitive values, not objects.
-     * @return Promise resolved when done.
+     * @param {string} name The config name.
+     * @param {any} value The config value. Can only store primitive values, not objects.
+     * @return {Promise<any>} Promise resolved when done.
      */
     set(name: string, value: any) : Promise<any> {
         return this.appDB.insertOrUpdateRecord(this.TABLE_NAME, {name: name, value: value}, {name: name});

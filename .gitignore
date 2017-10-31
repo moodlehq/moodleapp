@@ -37,3 +37,5 @@ UserInterfaceState.xcuserstate
 e2e/build
 /desktop/*
 !/desktop/assets/
+src/configconstants.ts
+src/assets/lang
