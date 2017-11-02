@@ -16,10 +16,11 @@ import { CoreDbProvider } from '../providers/db';
 import { CoreAppProvider } from '../providers/app';
 import { CoreConfigProvider } from '../providers/config';
 import { CoreEmulatorModule } from '../core/emulator/emulator.module';
+import { CoreLangProvider } from '../providers/lang';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
-    return new TranslateHttpLoader(http, './build/lang/', '.json');
+    return new TranslateHttpLoader(http, './assets/lang/', '.json');
 }
 
 @NgModule({
@@ -52,7 +53,8 @@ export function createTranslateLoader(http: HttpClient) {
         CoreLoggerProvider,
         CoreDbProvider,
         CoreAppProvider,
-        CoreConfigProvider
+        CoreConfigProvider,
+        CoreLangProvider
     ]
 })
 export class AppModule {}
