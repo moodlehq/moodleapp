@@ -2675,7 +2675,7 @@ angular.module('mm.core')
 
             angular.forEach(form.elements, function(element) {
                 var name = element.name || '';
-                // Ignore flag and submit inputs.
+                // Ignore submit inputs.
                 if (element.type == 'submit' || element.tagName == 'BUTTON') {
                     return;
                 }

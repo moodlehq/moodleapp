@@ -173,10 +173,10 @@ angular.module('mm.addons.mod_workshop')
                     .then(function(assessments) {
                 for (var x in assessments) {
                     if (assessments[x].id == assessmentId) {
-                        return $q.when(assessments[x]);
+                        return assessments[x];
                     }
                 }
-                return $q.when(false);
+                return false;
             });
         }).then(function(assessment) {
             if (!assessment) {

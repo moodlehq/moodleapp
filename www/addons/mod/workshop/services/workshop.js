@@ -942,7 +942,7 @@ angular.module('mm.addons.mod_workshop')
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
-     * @name $mmaModWorkshop#invalidateUserAssesmentsData
+     * @name $mmaModWorkshop#invalidateReviewerAssesmentsData
      * @param  {Number} workshopId   Workshop ID.
      * @param  {Number} [userId]     User ID. If not defined, current user.
      * @param  {String} [siteId]     Site ID. If not defined, current site.

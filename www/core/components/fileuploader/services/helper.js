@@ -229,7 +229,7 @@ angular.module('mm.core.fileuploader')
     };
 
     /**
-     * Get stored fils from combined online and offline file object.
+     * Get stored files from combined online and offline file object.
      *
      * @module mm.core.fileuploader
      * @ngdoc method

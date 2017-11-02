@@ -126,7 +126,6 @@ angular.module('mm.addons.mod_workshop')
                                     });
                                 }
 
-                                return $q.when();
                             }).catch(function() {
                                 // Ignore errors.
                             }).finally(function() {
@@ -138,8 +137,6 @@ angular.module('mm.addons.mod_workshop')
                             });
                         });
                     }
-
-                    return $q.when();
                 }).then(function() {
                     $mmEvents.trigger(mmaModWorkshopAssessmentRefreshedEvent);
                 });

@@ -30,8 +30,7 @@ angular.module('mm.addons.mod_workshop')
     $scope.assessmentId = $scope.assessment && ($scope.assessment.assessmentid || $scope.assessment.id);
 
     var courseId = $stateParams.courseid || false,
-        workshopId = $stateParams.submission.workshopid || false,
-        currentUser = $scope.profile.id == $mmSite.getUserId();
+        workshopId = $stateParams.submission.workshopid || false;
 
     function fetchAssessmentData() {
         return $mmaModWorkshop.getWorkshopById(courseId, workshopId).then(function(workshopData) {

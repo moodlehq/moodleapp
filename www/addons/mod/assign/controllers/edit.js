@@ -125,9 +125,6 @@ angular.module('mm.addons.mod_assign')
 
     // Check if data has changed.
     function hasDataChanged() {
-        if (!scope.assessment) {
-            return $q.when(false);
-        }
         return $mmaModAssignHelper.hasSubmissionDataChanged($scope.assign, $scope.userSubmission, getInputData());
     }
 
