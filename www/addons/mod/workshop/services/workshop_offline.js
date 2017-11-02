@@ -69,7 +69,7 @@ angular.module('mm.addons.mod_workshop')
  * @name $mmaModWorkshopOffline
  */
 .factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore,
-        $mmSitesManager, $mmFS, $q) {
+        $mmSitesManager, $mmFS, $q, $mmUtil) {
 
     $log = $log.getInstance('$mmaModWorkshopOffline');
 
@@ -90,11 +90,13 @@ angular.module('mm.addons.mod_workshop')
         promises.push(self.getAllAssessments(siteId));
         // TODO: Add other objects.
 
-        return $q.all(promises).then(function(objects) {
+        return $q.all(promises).then(function(promiseResults) {
             var workshopIds = {};
-            angular.forEach(objects, function(submissions) {
-                angular.forEach(submissions, function(submission) {
-                    workshopIds[submission.workshopid] = true;
+
+            // Get workshops from any offline object all should have workshopid.
+            angular.forEach(promiseResults, function(offlineObjects) {
+                angular.forEach(offlineObjects, function(offlineObject) {
+                    workshopIds[offlineObject.workshopid] = true;
                 });
             });
             return Object.keys(workshopIds);
@@ -256,7 +258,7 @@ angular.module('mm.addons.mod_workshop')
     self.saveSubmission = function(workshopId, courseId, title, content, attachmentsId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
-                timemodified = new Date().getTime(),
+                timemodified = $mmUtil.timestamp(),
                 submission = {
                     workshopid: workshopId,
                     courseid: courseId,
@@ -353,7 +355,7 @@ angular.module('mm.addons.mod_workshop')
     self.saveAssessment = function(workshopId, assessmentId, courseId, inputData, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
-                timemodified = new Date().getTime(),
+                timemodified = $mmUtil.timestamp(),
                 assessment = {
                     workshopid: workshopId,
                     courseid: courseId,

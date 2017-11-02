@@ -36,6 +36,8 @@
     "switchphase40": "Switch to the evaluation phase",
     "switchphase50": "Close workshop",
     "userplancurrentphase": "Current phase",
+    "warningassessmentmodified": "The user submission was modified in the site.",
+    "warningsubmissionmodified": "The user assessment was modified in the site.",
     "weightinfo": "Weight: {{$a}}",
     "yourassessment": "Your assessment",
     "yourassessmentfor": "Your assessment for {{$a}}",

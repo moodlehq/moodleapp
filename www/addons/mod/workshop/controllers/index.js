@@ -30,7 +30,7 @@ angular.module('mm.addons.mod_workshop')
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
-        offlineSubmissions,
+        offlineSubmissions = [],
         obsSubmissionChanged,
         onlineObserver,
         resumeObserver,
@@ -121,9 +121,15 @@ angular.module('mm.addons.mod_workshop')
             });
 
             // Check if there are info stored in offline.
-            return $mmaModWorkshopOffline.getSubmissions($scope.workshop.id).then(function(submissionsActions) {
-                $scope.hasOffline = !!submissionsActions.length;
-                offlineSubmissions = submissionsActions;
+            return $mmaModWorkshopOffline.hasWorkshopOfflineData($scope.workshop.id).then(function(hasOffline) {
+                $scope.hasOffline = hasOffline;
+                if (hasOffline) {
+                    return $mmaModWorkshopOffline.getSubmissions($scope.workshop.id).then(function(submissionsActions) {
+                        offlineSubmissions = submissionsActions;
+                    });
+                } else {
+                    offlineSubmissions = [];
+                }
             });
         }).then(function() {
             return setPhaseInfo();
@@ -348,14 +354,15 @@ angular.module('mm.addons.mod_workshop')
                         var p2 = [];
                         angular.forEach(assessments, function(assessment) {
                             assessment.strategy = $scope.workshop.strategy;
-
-                            p2.push($mmaModWorkshopOffline.getAssessment($scope.workshop.id, assessment.id)
-                                .then(function(offlineAssessment) {
-                                    assessment.offline = true;
-                                    assessment.timemodified = parseInt(offlineAssessment.timemodified / 1000, 10);
-                            }).catch(function() {
-                                // Ignore errors.
-                            }));
+                            if ($scope.hasOffline) {
+                                p2.push($mmaModWorkshopOffline.getAssessment($scope.workshop.id, assessment.id)
+                                    .then(function(offlineAssessment) {
+                                        assessment.offline = true;
+                                        assessment.timemodified = parseInt(offlineAssessment.timemodified / 1000, 10);
+                                }).catch(function() {
+                                    // Ignore errors.
+                                }));
+                            }
                         });
                         return $q.all(p2).then(function() {
                             $scope.assessments = assessments;
