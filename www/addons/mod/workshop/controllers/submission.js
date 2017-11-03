@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
         $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline,
-        mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentSaveEvent) {
+        mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentSaveEvent, $mmGradesHelper) {
 
     $scope.title = $stateParams.module.name;
     $scope.courseId = $stateParams.courseid;
@@ -42,13 +42,17 @@ angular.module('mm.addons.mod_workshop')
         workshopId = module.instance,
         currentUserId = $mmSite.getUserId(),
         submissionId = $scope.submissionInfo.submissionid || $scope.submissionInfo.id,
-        userId = $scope.submissionInfo.userid || false;
+        userId = $scope.submissionInfo.userid || false,
+        originalEvaluation = {},
+        blockData;
 
     function fetchSubmissionData() {
         return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
             var promises = [];
 
             $scope.submission = submissionData;
+            $scope.submission.submissiongrade = $scope.submissionInfo && $scope.submissionInfo.submissiongrade;
+            $scope.submission.gradinggrade = $scope.submissionInfo && $scope.submissionInfo.gradinggrade;
             userId = submissionData.authorid || userId;
             $scope.canEdit = (currentUserId == userId && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed);
             $scope.canDelete = $scope.access.candeletesubmissions;
@@ -70,6 +74,42 @@ angular.module('mm.addons.mod_workshop')
             if ($scope.submissionInfo.reviewedby || $scope.submissionInfo.reviewerof) {
                 promises.push($mmCourse.getModuleBasicGradeInfo(module.id).then(function(gradeInfo) {
                     $scope.maxGrade = gradeInfo.grade;
+                }));
+            }
+
+            if ($scope.access.canoverridegrades) {
+                // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+                blockData = $mmUtil.blockLeaveView($scope, leaveView);
+
+                $scope.evaluate = {
+                    published: submissionData.published,
+                    text: submissionData.feedbackauthor || ""
+                };
+
+                originalEvaluation.published = $scope.evaluate.published;
+                originalEvaluation.text = $scope.evaluate.text;
+
+                var defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
+
+                promises.push($mmGradesHelper.makeGradesMenu($scope.workshop.grade, workshopId, defaultGrade, -1).then(function(grades) {
+                    $scope.evaluationGrades = grades;
+
+                    $scope.evaluate.grade = {
+                        label: $mmGradesHelper.getGradeLabelFromValue(grades, $scope.submissionInfo.submissiongradeover) || defaultGrade,
+                        value: $scope.submissionInfo.submissiongradeover || -1
+                    };
+                    originalEvaluation.grade = $scope.submissionInfo.submissiongradeover;
+
+                    return $mmaModWorkshopOffline.getEvaluateSubmission(workshopId, submissionId).then(function(offlineSubmission) {
+                        $scope.evaluate.published = offlineSubmission.published;
+                        $scope.evaluate.text = offlineSubmission.feedbacktext;
+                        $scope.evaluate.grade = {
+                            label: $mmGradesHelper.getGradeLabelFromValue(grades, offlineSubmission.gradeover) || defaultGrade,
+                            value: offlineSubmission.gradeover || -1
+                        };
+                    }).catch(function() {
+                        // Ignore errors.
+                    });
                 }));
             }
 
@@ -140,11 +180,96 @@ angular.module('mm.addons.mod_workshop')
         });
     };
 
+    // Content changed in first render.
+    $scope.firstRenderFeedbackAuthor = function() {
+        originalEvaluation.text = $scope.evaluate.text;
+    };
+
     // Save the assessment.
     $scope.saveAssessment = function() {
         // Call trigger to save.
         $mmEvents.trigger(mmaModWorkshopAssessmentSaveEvent);
     };
+
+    // Check if data has changed.
+    function hasEvaluationChanged() {
+        if (!$scope.access.canoverridegrades) {
+            return false;
+        }
+
+        if (originalEvaluation.published != $scope.evaluate.published) {
+            return true;
+        }
+
+        if (originalEvaluation.text != $scope.evaluate.text) {
+            return true;
+        }
+
+        if (originalEvaluation.grade != $scope.evaluate.grade.value) {
+            return true;
+        }
+    }
+
+    function saveEvaluation() {
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
+        // Check if rich text editor is enabled or not.
+        return $mmUtil.isRichTextEditorEnabled().then(function(rteEnabled) {
+            var text = $scope.evaluate.text,
+                grade = $scope.evaluate.grade.value >= 0 ? $scope.evaluate.grade.value : "";
+            if (!rteEnabled) {
+                // Rich text editor not enabled, add some HTML to the message if needed.
+                text = $mmText.formatHtmlLines(text);
+            }
+
+            // Try to send it to server.
+            return $mmaModWorkshop.evaluateSubmission(workshopId, submissionId, $scope.courseId, text, $scope.evaluate.published,
+                grade);
+        }).then(function() {
+            var data = {
+                workshopid: workshopId,
+                cmid: module.cmid,
+                submissionid: submissionId
+            };
+
+            return $mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId).finally(function() {
+                $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
+            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModal(message, 'Cannot save submission evaluation');
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
+    // Save the submission evaluation.
+    $scope.saveEvaluation = function() {
+        // Check if data has changed.
+        if (hasEvaluationChanged()) {
+            saveEvaluation().then(function() {
+                blockData && blockData.back();
+            });
+        } else {
+            // Nothing to save, just go back.
+            blockData && blockData.back();
+        }
+    };
+
+    // Ask to confirm if there are changes.
+    function leaveView() {
+        var promise;
+
+        if (!hasEvaluationChanged()) {
+            promise = $q.when();
+        } else {
+            // Show confirmation if some data has been modified.
+            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+        }
+
+        return promise.then(function() {
+            $mmaModWorkshopOffline.deleteEvaluateSubmission(workshopId, submissionId);
+        });
+    }
 
     // Convenience function to refresh all the data.
     function refreshAllData() {

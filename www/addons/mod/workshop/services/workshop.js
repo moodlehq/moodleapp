@@ -1199,22 +1199,21 @@ angular.module('mm.addons.mod_workshop')
      * @param  {Boolean} published       Whether to publish the submission for other users.
      * @param  {Mixed}   gradeOver       The new submission grade (empty for no overriding the grade).
      * @param  {String}  [siteId]        Site ID. If not defined, current site.
-     * @param  {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
      * @return {Promise}                 Promise resolved when submission is evaluated if sent online,
      *                                           resolved with false if stored offline.
      */
-    self.evaluateSubmission = function(workshopId, submissionId, courseId, feedbackText, published, gradeOver, siteId, allowOffline) {
+    self.evaluateSubmission = function(workshopId, submissionId, courseId, feedbackText, published, gradeOver, siteId) {
         siteId = siteId || $mmSite.getId();
 
         // If we are editing an offline discussion, discard previous first.
         return $mmaModWorkshopOffline.deleteEvaluateSubmission(workshopId, submissionId, siteId).then(function() {
-            if (!$mmApp.isOnline() && allowOffline) {
+            if (!$mmApp.isOnline()) {
                 // App is offline, store the action.
                 return storeOffline();
             }
 
             return self.evaluateSubmissionOnline(submissionId, feedbackText, published, gradeOver, siteId).catch(function(error) {
-                if (allowOffline && error && !error.wserror) {
+                if (error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
                 } else {
@@ -1287,21 +1286,20 @@ angular.module('mm.addons.mod_workshop')
      * @param  {Boolean} weight             The new weight for the assessment.
      * @param  {Mixed}   gradingGradeOver   The new grading grade (empty for no overriding the grade).
      * @param  {String}  [siteId]           Site ID. If not defined, current site.
-     * @param  {Boolean} allowOffline       True if it can be stored in offline, false otherwise.
      * @return {Promise}                    Promise resolved when assessment is evaluated if sent online,
      *                                           resolved with false if stored offline.     */
-    self.evaluateAssessment = function(workshopId, assessmentId, courseId, feedbackText, weight, gradingGradeOver, siteId, allowOffline) {
+    self.evaluateAssessment = function(workshopId, assessmentId, courseId, feedbackText, weight, gradingGradeOver, siteId) {
         siteId = siteId || $mmSite.getId();
 
         // If we are editing an offline discussion, discard previous first.
         return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshopId, assessmentId, siteId).then(function() {
-            if (!$mmApp.isOnline() && allowOffline) {
+            if (!$mmApp.isOnline()) {
                 // App is offline, store the action.
                 return storeOffline();
             }
 
             return self.evaluateAssessmentOnline(assessmentId, feedbackText, weight, gradingGradeOver, siteId).catch(function(error) {
-                if (allowOffline && error && !error.wserror) {
+                if (error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
                 } else {
