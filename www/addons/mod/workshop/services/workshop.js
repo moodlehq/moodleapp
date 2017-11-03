@@ -1116,7 +1116,8 @@ angular.module('mm.addons.mod_workshop')
      * @param {Object}  inputData       Assessment data.
      * @param {String}  [siteId]        Site ID. If not defined, current site.
      * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
-     * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
+     * @return {Promise}                Promise resolved with the grade of the submission if sent online,
+     *                                          resolved with false if stored offline.
      */
     self.updateAssessment = function(workshopId, assessmentId, courseId, inputData, siteId, allowOffline) {
         siteId = siteId || $mmSite.getId();
@@ -1156,7 +1157,7 @@ angular.module('mm.addons.mod_workshop')
      * @param  {Number} assessmentId    Assessment ID.
      * @param  {Object} inputData       Assessment data.
      * @param  {String} [siteId]        Site ID. If not defined, current site.
-     * @return {Promise}                Promise resolved when the grade of the submission.
+     * @return {Promise}                Promise resolved with the grade of the submission.
      */
     self.updateAssessmentOnline = function(assessmentId, inputData, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -1181,6 +1182,180 @@ angular.module('mm.addons.mod_workshop')
                 }
                 // Return rawgrade for submission
                 return response.rawgrade;
+            });
+        });
+    };
+
+    /**
+     * Evaluates a submission (used by teachers for provide feedback or override the submission grade).
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#evaluateSubmission
+     * @param  {Number}  workshopId      Workshop ID.
+     * @param  {Number}  submissionId    The submission id.
+     * @param  {Number}  courseId        Course ID the workshop belongs to.
+     * @param  {String}  feedbackText    The feedback for the author.
+     * @param  {Boolean} published       Whether to publish the submission for other users.
+     * @param  {Mixed}   gradeOver       The new submission grade (empty for no overriding the grade).
+     * @param  {String}  [siteId]        Site ID. If not defined, current site.
+     * @param  {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
+     * @return {Promise}                 Promise resolved when submission is evaluated if sent online,
+     *                                           resolved with false if stored offline.
+     */
+    self.evaluateSubmission = function(workshopId, submissionId, courseId, feedbackText, published, gradeOver, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        return $mmaModWorkshopOffline.deleteEvaluateSubmission(workshopId, submissionId, siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.evaluateSubmissionOnline(submissionId, feedbackText, published, gradeOver, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveEvaluateSubmission(workshopId, submissionId, courseId, feedbackText, published,
+                    gradeOver, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Evaluates a submission (used by teachers for provide feedback or override the submission grade).
+     *     It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#evaluateSubmissionOnline
+     * @param  {Number}  submissionId        The submission id.
+     * @param  {String}  feedbackText        The feedback for the author.
+     * @param  {Boolean} published           Whether to publish the submission for other users.
+     * @param  {Mixed}   gradeOver           The new submission grade (empty for no overriding the grade).
+     * @param  {String}  [siteId]            Site ID. If not defined, current site.
+     * @return {Promise}                     Promise resolved when the submission is evaluated.
+     */
+    self.evaluateSubmissionOnline = function(submissionId, feedbackText, published, gradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: submissionId,
+                feedbacktext: feedbackText || "",
+                published: published ? 1 : 0,
+                gradeover: gradeOver
+            };
+
+            return site.write('mod_workshop_evaluate_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Return if worked.
+                return true;
+            });
+        });
+    };
+
+    /**
+     * Evaluates an assessment (used by teachers for provide feedback to the reviewer).
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#evaluateAssessment
+     * @param  {Number}  workshopId         Workshop ID.
+     * @param  {Number}  assessmentId       The assessment id.
+     * @param  {Number}  courseId           Course ID the workshop belongs to.
+     * @param  {String}  feedbackText       The feedback for the reviewer.
+     * @param  {Boolean} weight             The new weight for the assessment.
+     * @param  {Mixed}   gradingGradeOver   The new grading grade (empty for no overriding the grade).
+     * @param  {String}  [siteId]           Site ID. If not defined, current site.
+     * @param  {Boolean} allowOffline       True if it can be stored in offline, false otherwise.
+     * @return {Promise}                    Promise resolved when assessment is evaluated if sent online,
+     *                                           resolved with false if stored offline.     */
+    self.evaluateAssessment = function(workshopId, assessmentId, courseId, feedbackText, weight, gradingGradeOver, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshopId, assessmentId, siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.evaluateAssessmentOnline(assessmentId, feedbackText, weight, gradingGradeOver, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveEvaluateAssessment(workshopId, assessmentId, courseId, feedbackText, weight,
+                    gradingGradeOver, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Evaluates an assessment (used by teachers for provide feedback to the reviewer). It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#evaluateAssessmentOnline
+     * @param  {Number}  assessmentId        The assessment id.
+     * @param  {String}  feedbackText        The feedback for the reviewer.
+     * @param  {Boolean} weight              The new weight for the assessment.
+     * @param  {Mixed}   gradingGradeOver    The new grading grade (empty for no overriding the grade).
+     * @param  {String}  [siteId]            Site ID. If not defined, current site.
+     * @return {Promise}                     Promise resolved when the assessment is evaluated.
+     */
+    self.evaluateAssessmentOnline = function(assessmentId, feedbackText, weight, gradingGradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assessmentid: assessmentId,
+                feedbacktext: feedbackText || "",
+                weight: weight,
+                gradinggradeover: gradingGradeOver
+            };
+
+            return site.write('mod_workshop_evaluate_assessment', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Return if worked.
+                return true;
             });
         });
     };
