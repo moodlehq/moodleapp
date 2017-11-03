@@ -411,8 +411,8 @@ angular.module('mm.addons.mod_quiz')
             promises.push($mmaModQuiz.getCombinedReviewOptions(quiz.id, true, siteId));
             promises.push($mmaModQuiz.getUserBestGrade(quiz.id, true, siteId));
             promises.push($mmaModQuiz.getGradeFromGradebook(courseId, module.id, true, siteId).then(function(gradebookData) {
-                if (typeof gradebookData.grade != 'undefined') {
-                    return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                if (typeof gradebookData.graderaw != 'undefined') {
+                    return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
                 }
             }).catch(function() {
                 // Ignore failures.
@@ -559,7 +559,7 @@ angular.module('mm.addons.mod_quiz')
         }));
         promises.push($mmaModQuiz.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId).then(function(gradebookData) {
             if (typeof gradebookData.grade != 'undefined') {
-                return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
             }
         }));
         promises.push($mmaModQuiz.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.
