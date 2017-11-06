@@ -17,6 +17,12 @@ import { CoreAppProvider } from '../providers/app';
 import { CoreConfigProvider } from '../providers/config';
 import { CoreEmulatorModule } from '../core/emulator/emulator.module';
 import { CoreLangProvider } from '../providers/lang';
+import { CoreTextUtilsProvider } from '../providers/utils/text';
+import { CoreDomUtilsProvider } from '../providers/utils/dom';
+import { CoreTimeUtilsProvider } from '../providers/utils/time';
+import { CoreUrlUtilsProvider } from '../providers/utils/url';
+import { CoreUtilsProvider } from '../providers/utils/utils';
+import { CoreMimetypeUtilsProvider } from '../providers/utils/mimetype';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -54,7 +60,13 @@ export function createTranslateLoader(http: HttpClient) {
         CoreDbProvider,
         CoreAppProvider,
         CoreConfigProvider,
-        CoreLangProvider
+        CoreLangProvider,
+        CoreTextUtilsProvider,
+        CoreDomUtilsProvider,
+        CoreTimeUtilsProvider,
+        CoreUrlUtilsProvider,
+        CoreUtilsProvider,
+        CoreMimetypeUtilsProvider
     ]
 })
 export class AppModule {}

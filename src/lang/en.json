@@ -150,6 +150,7 @@
     "now" : "now",
     "numwords": "{{$a}} words",
     "offline": "Offline",
+    "ok": "OK",
     "online": "Online",
     "openfullimage": "Click here to display the image at full size",
     "openinbrowser": "Open in browser",

@@ -22,6 +22,7 @@ import { Network } from '@ionic-native/network';
 import { ClipboardMock } from './providers/clipboard';
 import { GlobalizationMock } from './providers/globalization';
 import { NetworkMock } from './providers/network';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @NgModule({
     declarations: [
@@ -52,7 +53,8 @@ import { NetworkMock } from './providers/network';
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return platform.is('cordova') ? new Network() : new NetworkMock();
             }
-        }
+        },
+        InAppBrowser
     ]
 })
 export class CoreEmulatorModule {
