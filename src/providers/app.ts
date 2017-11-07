@@ -92,22 +92,6 @@ export class CoreAppProvider {
     };
 
     /**
-     * Core init process for the app.
-     *
-     * @description
-     * This should be the first init process of all, no other process should run until we are certain that the cordova plugins
-     *  are loaded, which is what platform.ready tells us.
-     *
-     * Reserved for core use, do not call directly.
-     *
-     * @protected
-     * @return Promise resolved when ready.
-     */
-    initProcess() : Promise<any> {
-        return this.platform.ready();
-    };
-
-    /**
      * Checks if the app is running in a desktop environment (not browser).
      *
      * @return {boolean} Whether the app is running in a desktop environment (not browser).
@@ -166,19 +150,6 @@ export class CoreAppProvider {
     };
 
     /**
-     * Instantly returns if the app is ready.
-     *
-     * To be notified when the app is ready, refer to {@link $mmApp#ready}.
-     *
-     * @return {Boolean} True when it is, false when not.
-     * @todo
-     */
-    isReady() {
-        // var promise = $injector.get('$mmInitDelegate').ready();
-        // return promise.$$state.status === 1;
-    };
-
-    /**
      * Open the keyboard.
      */
     openKeyboard() : void {
@@ -186,23 +157,6 @@ export class CoreAppProvider {
         if (this.isMobile() && !this.platform.is('ios')) {
             this.keyboard.show();
         }
-    };
-
-    /**
-     * Resolves when the app is ready.
-     *
-     * Usage:
-     *
-     *    $mmApp.ready().then(function() {
-     *        // What you want to do.
-     *    });
-     *
-     * @return {Promise} Resolved when the app is initialised. Never rejected.
-     * @todo
-     */
-    ready() {
-        // Injects to prevent circular dependencies.
-        // return $injector.get('$mmInitDelegate').ready();
     };
 
     /**

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, Platform } from 'ionic-angular';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -23,6 +23,7 @@ import { CoreTimeUtilsProvider } from '../providers/utils/time';
 import { CoreUrlUtilsProvider } from '../providers/utils/url';
 import { CoreUtilsProvider } from '../providers/utils/utils';
 import { CoreMimetypeUtilsProvider } from '../providers/utils/mimetype';
+import { CoreInitDelegate } from '../providers/init';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -66,7 +67,22 @@ export function createTranslateLoader(http: HttpClient) {
         CoreTimeUtilsProvider,
         CoreUrlUtilsProvider,
         CoreUtilsProvider,
-        CoreMimetypeUtilsProvider
+        CoreMimetypeUtilsProvider,
+        CoreInitDelegate
     ]
 })
-export class AppModule {}
+export class AppModule {
+    constructor(platform: Platform, initDelegate: CoreInitDelegate) {
+        // Create a handler for platform ready and register it in the init delegate.
+        let handler = {
+            name: 'CorePlatformReady',
+            priority: initDelegate.MAX_RECOMMENDED_PRIORITY + 400,
+            blocking: true,
+            load: platform.ready
+        };
+        initDelegate.registerProcess(handler);
+
+        // Execute the init processes.
+        initDelegate.executeInitProcesses();
+    }
+}

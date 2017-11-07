@@ -917,6 +917,20 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Similar to AngularJS $q.defer(). It will return an object containing the promise, and the resolve and reject functions.
+     *
+     * @return {any} Object containing the promise, and the resolve and reject functions.
+     */
+    promiseDefer() : any {
+        let deferred: any = {};
+        deferred.promise = new Promise((resolve, reject) => {
+            deferred.resolve = resolve;
+            deferred.reject = reject;
+        });
+        return deferred;
+    }
+
+    /**
      * Given a promise, returns true if it's rejected or false if it's resolved.
      *
      * @param {Promise<any>} promise Promise to check
