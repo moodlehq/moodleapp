@@ -60,6 +60,23 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Check if a site allows requesting a password reset through the app.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#canRequestPasswordReset
+     * @param  {String} siteUrl URL of the site.
+     * @return {Promise}        Promise resolved with boolean: whether can be done through the app.
+     */
+    self.canRequestPasswordReset = function(siteUrl) {
+        return self.requestPasswordReset(siteUrl).then(function() {
+            return true;
+        }).catch(function(error) {
+            return error.available == 1 || error.errorcode != 'invalidrecord';
+        });
+    };
+
+    /**
      * Show a confirm modal if needed and open a browser to perform SSO login.
      *
      * @module mm.core.login
@@ -472,6 +489,19 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Open forgotten password in inappbrowser.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#openForgottenPassword
+     * @param  {String} siteUrl URL of the site.
+     * @return {Void}
+     */
+    self.openForgottenPassword = function(siteUrl) {
+        $mmUtil.openInApp(siteUrl + '/login/forgot_password.php');
+    };
+
+    /**
      * Prepare the app to perform SSO login.
      *
      * @module mm.core.login
@@ -504,6 +534,31 @@ angular.module('mm.core.login')
         });
 
         return loginUrl;
+    };
+
+    /**
+     * Request a password reset.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#requestPasswordReset
+     * @param  {String} siteUrl    URL of the site.
+     * @param  {String} [username] Username to search.
+     * @param  {String} [email]    Email to search.
+     * @return {Promise}           Promise resolved when done.
+     */
+    self.requestPasswordReset = function(siteUrl, username, email) {
+        var params = {};
+
+        if (username) {
+            params.username = username;
+        }
+
+        if (email) {
+            params.email = email;
+        }
+
+        return $mmWS.callAjax('core_auth_request_password_reset', params, {siteurl: siteUrl});
     };
 
     /**
