@@ -171,6 +171,12 @@ angular.module('mm.addons.mod_workshop')
             return [];
         }));
 
+        // Get offline assessment evaluations to be sent.
+        syncPromises.push($mmaModWorkshopOffline.getEvaluateAssessments(workshopId, siteId).catch(function() {
+            // No offline data found, return empty array.
+            return [];
+        }));
+
         // Get offline submissions to be sent.
         syncPromise = $q.all(syncPromises).then(function(syncs) {
             // Get courseId from the first object
@@ -192,8 +198,8 @@ angular.module('mm.addons.mod_workshop')
             return $mmaModWorkshop.getWorkshopById(courseId, workshopId, siteId).then(function(workshopData) {
                 var submissionsActions = syncs[0],
                     assessments = syncs[1],
-                    submissionEvaluations = syncs[2];
-
+                    submissionEvaluations = syncs[2],
+                    assessmentEvaluations = syncs[3];
                 workshop = workshopData;
 
                 var promises = [],
@@ -220,6 +226,12 @@ angular.module('mm.addons.mod_workshop')
 
                 angular.forEach(submissionEvaluations, function(evaluation) {
                     promises.push(syncEvaluateSubmission(workshop, evaluation, result, siteId).then(function() {
+                        result.updated = true;
+                    }));
+                });
+
+                angular.forEach(assessmentEvaluations, function(evaluation) {
+                    promises.push(syncEvaluateAssessment(workshop, evaluation, result, siteId).then(function() {
                         result.updated = true;
                     }));
                 });
@@ -471,6 +483,64 @@ angular.module('mm.addons.mod_workshop')
                 // Delete the offline data.
                 result.updated = true;
                 return $mmaModWorkshopOffline.deleteEvaluateSubmission(workshop.id, submissionId, siteId);
+            });
+        }).then(function() {
+            if (discardError) {
+                // Assessment was discarded, add a warning.
+                var message = $translate.instant('mm.core.warningofflinedatadeleted', {
+                    component: $mmCourse.translateModuleName('workshop'),
+                    name: workshop.name,
+                    error: discardError
+                });
+
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
+                }
+            }
+        });
+    }
+
+    /**
+     * Synchronize a assessment evaluation.
+     *
+     * @param  {Object}   workshop          Workshop.
+     * @param  {Object}   evaluate          Assessment evaluation offline data.
+     * @param  {Object}   result            Object with the result of the sync.
+     * @param  {String}   [siteId]          Site ID. If not defined, current site.
+     * @return {Promise}                    Promise resolved if success, rejected otherwise.
+     */
+    function syncEvaluateAssessment(workshop, evaluate, result, siteId) {
+        var discardError,
+            timePromise,
+            assessmentId = evaluate.assessmentid;
+
+        timePromise = $mmaModWorkshop.getAssessment(workshop.id, assessmentId, siteId).then(function(assessment) {
+            return assessment.timemodified;
+        }).catch(function() {
+            return -1;
+        });
+
+        return timePromise.then(function(timemodified) {
+            if (timemodified < 0 || timemodified >= evaluate.timemodified) {
+                // The entry was not found in Moodle or the entry has been modified, discard the action.
+                result.updated = true;
+                discardError = $translate.instant('mma.mod_workshop.warningassessmentmodified');
+                return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshop.id, assessmentId, siteId);
+            }
+
+            return $mmaModWorkshop.evaluateAssessmentOnline(assessmentId, evaluate.feedbacktext, evaluate.weight,
+                evaluate.gradinggradeover, siteId).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means it cannot be performed. Discard.
+                    discardError = error.error;
+                } else {
+                    // Couldn't connect to server, reject.
+                    return $q.reject(error && error.error);
+                }
+            }).then(function() {
+                // Delete the offline data.
+                result.updated = true;
+                return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshop.id, assessmentId, siteId);
             });
         }).then(function() {
             if (discardError) {
