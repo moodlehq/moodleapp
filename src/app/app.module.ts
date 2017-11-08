@@ -24,6 +24,7 @@ import { CoreUrlUtilsProvider } from '../providers/utils/url';
 import { CoreUtilsProvider } from '../providers/utils/utils';
 import { CoreMimetypeUtilsProvider } from '../providers/utils/mimetype';
 import { CoreInitDelegate } from '../providers/init';
+import { CoreFileProvider } from '../providers/file';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -68,7 +69,8 @@ export function createTranslateLoader(http: HttpClient) {
         CoreUrlUtilsProvider,
         CoreUtilsProvider,
         CoreMimetypeUtilsProvider,
-        CoreInitDelegate
+        CoreInitDelegate,
+        CoreFileProvider
     ]
 })
 export class AppModule {
