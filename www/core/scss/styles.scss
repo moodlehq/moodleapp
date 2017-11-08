@@ -170,6 +170,11 @@ p.item-text-wrap {
   width: 40%;
 }
 
+.item-avatar > img:first-child {
+  text-indent: -99999px;
+  background-color: $gray-light;
+}
+
 // Media item, ideal for icons.
 .item-media {
   @extend .item-avatar;
@@ -179,6 +184,7 @@ p.item-text-wrap {
     max-width: $item-media-width;
     max-height: $item-media-height;
     border-radius: 0;
+    background-color: transparent;
   }
   p {
     margin: 0px;

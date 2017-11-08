@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopEditSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $q, $mmUtil, $mmaModWorkshopHelper,
         $mmSite, mmaModWorkshopComponent, $mmFileUploaderHelper, $translate, $mmText, $mmEvents, $mmFileSession,
-        mmaModWorkshopSubmissionChangedEvent, $mmaModWorkshopOffline) {
+        mmaModWorkshopSubmissionChangedEvent, $mmaModWorkshopOffline, $mmSyncBlock) {
 
     var submission = $stateParams.submission || {},
         module = $stateParams.module,
@@ -47,6 +47,11 @@ angular.module('mm.addons.mod_workshop')
 
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     blockData = $mmUtil.blockLeaveView($scope, leaveView);
+
+    if (!$scope.$$destroyed) {
+        // Block the workshop.
+        $mmSyncBlock.blockOperation(mmaModWorkshopComponent, workshopId);
+    }
 
     function fetchSubmissionData() {
         return $mmaModWorkshop.getWorkshop($scope.courseId, module.id).then(function(workshopData) {
@@ -296,4 +301,9 @@ angular.module('mm.addons.mod_workshop')
             });
         }
     };
+
+    $scope.$on('$destroy', function() {
+        // Restore original back functions.
+        $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, workshopId);
+    });
 });

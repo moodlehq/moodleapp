@@ -21,14 +21,21 @@
                 <div class="item item-text-wrap">
                     <h2>{{ 'mma.mod_workshop.yourassessment' | translate }}</h2>
                 </div>
-                <mma-mod-workshop-assessment submission="submission" assessment="ownAssessment" courseid="courseId" summary="true" maxgrade="maxGrade" access="access" module="module" workshop="workshop"></mma-mod-workshop-assessment>
+                <mma-mod-workshop-assessment submission="submission" assessment="ownAssessment" courseid="courseId" summary="true" access="access" module="module" workshop="workshop"></mma-mod-workshop-assessment>
             </div>
 
             <div class="list" ng-if="submissionInfo.reviewedby.length && !assessment">
                 <div class="item item-text-wrap">
                     <h2>{{ 'mma.mod_workshop.receivedgrades' | translate }}</h2>
                 </div>
-                <mma-mod-workshop-assessment ng-repeat="reviewer in submissionInfo.reviewedby" ng-if="!reviewer.ownAssessment" submission="submission" assessment="reviewer" courseid="courseId" summary="true" maxgrade="maxGrade" access="access"></mma-mod-workshop-assessment>
+                <mma-mod-workshop-assessment ng-repeat="reviewer in submissionInfo.reviewedby" ng-if="!reviewer.ownAssessment" submission="submission" assessment="reviewer" courseid="courseId" summary="true" access="access" workshop="workshop"></mma-mod-workshop-assessment>
+            </div>
+
+            <div class="list" ng-if="submissionInfo.reviewerof.length && !assessment">
+                <div class="item item-text-wrap">
+                    <h2>{{ 'mma.mod_workshop.givengrades' | translate }}</h2>
+                </div>
+                <mma-mod-workshop-assessment ng-repeat="reviewer in submissionInfo.reviewerof" assessment="reviewer" courseid="courseId" summary="true" workshop="workshop"></mma-mod-workshop-assessment>
             </div>
 
             <div class="list" ng-if="!assessmentId && access.canoverridegrades">
@@ -56,14 +63,7 @@
                 </ion-input>
             </div>
 
-            <div class="list" ng-if="submissionInfo.reviewerof.length && !assessment">
-                <div class="item item-text-wrap">
-                    <h2>{{ 'mma.mod_workshop.givengrades' | translate }}</h2>
-                </div>
-                <mma-mod-workshop-assessment ng-repeat="reviewer in submissionInfo.reviewerof" assessment="reviewer" courseid="courseId" summary="true" maxgrade="maxGrade"></mma-mod-workshop-assessment>
-            </div>
-
-            <mma-mod-workshop-assessment-strategy ng-if="assessmentId" workshop="workshop" access="access" assessment-id="assessmentId" user-id="assessmentUserId" strategy="strategy" edit="true"></mma-mod-workshop-assessment-strategy>
+            <mma-mod-workshop-assessment-strategy ng-if="assessmentId" workshop="workshop" access="access" assessment-id="assessmentId" user-id="assessmentUserId" strategy="strategy" edit="access.assessingallowed"></mma-mod-workshop-assessment-strategy>
         </mm-loading>
     </ion-content>
 </ion-view>

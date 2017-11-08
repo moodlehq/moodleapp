@@ -80,7 +80,6 @@ angular.module('mm.addons.mod_workshop')
             return $mmaModWorkshop.getWorkshopAccessInformation($scope.workshop.id);
         }).then(function(accessData) {
             $scope.access = accessData;
-
             return $mmGroups.getActivityGroupInfo($scope.workshop.coursemodule, accessData.canswitchphase).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
 
@@ -345,7 +344,7 @@ angular.module('mm.addons.mod_workshop')
             promises.push($scope.gotoSubmissionsPage($scope.page));
         }
 
-        if ($scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
+        if ($scope.workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT) {
             $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
             if ($scope.canAssess) {
                 promises.push($mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {

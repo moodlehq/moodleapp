@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopHelper
  */
-.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q,
+.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q, $mmUtil,
         $mmaModWorkshopOffline, $mmaModWorkshopAssessmentStrategyDelegate, $translate, $mmFileUploaderHelper) {
 
     var self = {},
@@ -512,6 +512,27 @@ angular.module('mm.addons.mod_workshop')
         }
 
         return $mmaModWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy, inputData, form);
+    };
+
+    /**
+     * Calculates the real value of a grade based on real_grade_value.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#realGradeValue
+     * @param {Number} value  Percentual value from 0 to 100.
+     * @param {Number} max    The maximal grade.
+     * @return {String}
+     */
+    self.realGradeValue = function(value, max, decimals) {
+        if (value == null || value === "") {
+            return null;
+        } else if (max == 0) {
+            return 0;
+        } else {
+            value = $mmUtil.roundToDecimals(parseFloat(max * value / 100), decimals);
+            return $mmUtil.formatFloat(value);
+        }
     };
 
     return self;

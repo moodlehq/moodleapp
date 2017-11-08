@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_workshop')
 .directive('mmaModWorkshopAssessmentStrategy', function($compile, $mmaModWorkshopAssessmentStrategyDelegate, $mmEvents, $mmText,
         mmaModWorkshopComponent, mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentRefreshedEvent, $translate, $q,
         $mmaModWorkshopHelper, $mmUtil, mmaModWorkshopAssessmentSaveEvent, $mmFileSession, $mmFileUploaderHelper, $mmaModWorkshop,
-        mmaModWorkshopAssessmentSavedEvent, $mmSite, $mmaModWorkshopOffline) {
+        mmaModWorkshopAssessmentSavedEvent, $mmSite, $mmaModWorkshopOffline, $mmSyncBlock) {
 
     var originalData = {
         text: '',
@@ -53,7 +53,7 @@ angular.module('mm.addons.mod_workshop')
             strategy: '=',
             workshop: '=',
             access: '=',
-            edit: '@?'
+            edit: '=?'
         },
         templateUrl: 'addons/mod/workshop/templates/assessmentstrategy.html',
         link: function(scope, element) {
@@ -164,6 +164,10 @@ angular.module('mm.addons.mod_workshop')
                 if (edit) {
                     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
                     blockData = $mmUtil.blockLeaveView(scope, cancel);
+                    if (!scope.$$destroyed) {
+                        // Block the workshop.
+                        $mmSyncBlock.blockOperation(mmaModWorkshopComponent, scope.workshopId);
+                    }
 
                     promise = $mmUtil.isRichTextEditorEnabled();
                 } else {
@@ -349,11 +353,11 @@ angular.module('mm.addons.mod_workshop')
                 });
             }
 
-
-
             scope.$on('$destroy', function() {
                 obsInvalidated && obsInvalidated.off && obsInvalidated.off();
                 obsSaveAssessment && obsSaveAssessment.off && obsSaveAssessment.off();
+                // Restore original back functions.
+                $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, scope.workshopId);
             });
         }
     };

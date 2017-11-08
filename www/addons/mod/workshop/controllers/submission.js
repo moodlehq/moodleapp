@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopSubmissionCtrl', function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
         $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline,
-        mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentSaveEvent, $mmGradesHelper) {
+        mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentSaveEvent, $mmGradesHelper, $ionicScrollDelegate,
+        mmaModWorkshopAssessmentSavedEvent, mmaModWorkshopEventAutomSynced, $mmSyncBlock, mmaModWorkshopComponent) {
 
     $scope.title = $stateParams.module.name;
     $scope.courseId = $stateParams.courseid;
@@ -44,42 +45,70 @@ angular.module('mm.addons.mod_workshop')
         submissionId = $scope.submissionInfo.submissionid || $scope.submissionInfo.id,
         userId = $scope.submissionInfo.userid || false,
         originalEvaluation = {},
-        blockData;
+        blockData,
+        siteId = $mmSite.getId(),
+        scrollView,
+        obsAssessmentSaved,
+        syncObserver;
 
-    function fetchSubmissionData() {
+    function fetchSubmissionData(refresh) {
         return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
             var promises = [];
 
             $scope.submission = submissionData;
             $scope.submission.submissiongrade = $scope.submissionInfo && $scope.submissionInfo.submissiongrade;
             $scope.submission.gradinggrade = $scope.submissionInfo && $scope.submissionInfo.gradinggrade;
+            $scope.submission.submissiongradeover = $scope.submissionInfo && $scope.submissionInfo.submissiongradeover;
             userId = submissionData.authorid || userId;
-            $scope.canEdit = (currentUserId == userId && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed);
+            $scope.canEdit = currentUserId == userId && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed;
             $scope.canDelete = $scope.access.candeletesubmissions;
-            if ($scope.canDelete && currentUserId == userId && $scope.canEdit) {
-                // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
-                promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(assessments) {
-                    $scope.canDelete = !assessments.length;
-                }));
-            }
+            $scope.ownAssessment = false;
 
-            for (var x in $scope.submissionInfo.reviewedby) {
-                if (currentUserId == $scope.submissionInfo.reviewedby[x].userid) {
-                    $scope.ownAssessment = $scope.submissionInfo.reviewedby[x];
-                    $scope.submissionInfo.reviewedby[x].ownAssessment = true;
-                    break;
+            if ((refresh && $scope.access.canviewallassessments) || ($scope.canDelete && $scope.canEdit)) {
+                // Get new data, different that came from stateParams.
+                promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(subAssessments) {
+                    // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
+                    if($scope.canDelete && $scope.canEdit) {
+                        $scope.canDelete = !assessments.length;
+                    }
+
+                    $scope.submissionInfo.reviewedby = subAssessments;
+                    var decimals = $scope.workshop.gradedecimals,
+                        maxGrade = $scope.workshop.grade,
+                        maxGradingGrade = $scope.workshop.gradinggrade;
+
+                    angular.forEach($scope.submissionInfo.reviewedby, function(assessment) {
+                        assessment.userid = assessment.reviewerid;
+                        assessment.grade = $mmaModWorkshopHelper.realGradeValue(assessment.grade, maxGrade, decimals);
+                        assessment.gradinggrade = $mmaModWorkshopHelper.realGradeValue(assessment.gradinggrade, maxGradingGrade,
+                            decimals);
+                        assessment.gradinggradeover = $mmaModWorkshopHelper.realGradeValue(assessment.gradinggradeover,
+                            maxGradingGrade, decimals);
+
+                        if (currentUserId ==assessment.userid) {
+                            $scope.ownAssessment = assessment;
+                            assessment.ownAssessment = true;
+                        }
+                    });
+                }));
+            } else {
+                for (var x in $scope.submissionInfo.reviewedby) {
+                    if (currentUserId == $scope.submissionInfo.reviewedby[x].userid) {
+                        $scope.ownAssessment = $scope.submissionInfo.reviewedby[x];
+                        $scope.submissionInfo.reviewedby[x].ownAssessment = true;
+                        break;
+                    }
                 }
-            }
-
-            if ($scope.submissionInfo.reviewedby || $scope.submissionInfo.reviewerof) {
-                promises.push($mmCourse.getModuleBasicGradeInfo(module.id).then(function(gradeInfo) {
-                    $scope.maxGrade = gradeInfo.grade;
-                }));
             }
 
             if ($scope.access.canoverridegrades) {
                 // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
                 blockData = $mmUtil.blockLeaveView($scope, leaveView);
+
+                if (!$scope.$$destroyed) {
+                    // Block the workshop.
+                    $mmSyncBlock.blockOperation(mmaModWorkshopComponent, workshopId);
+                }
 
                 $scope.evaluate = {
                     published: submissionData.published,
@@ -98,7 +127,7 @@ angular.module('mm.addons.mod_workshop')
                         label: $mmGradesHelper.getGradeLabelFromValue(grades, $scope.submissionInfo.submissiongradeover) || defaultGrade,
                         value: $scope.submissionInfo.submissiongradeover || -1
                     };
-                    originalEvaluation.grade = $scope.submissionInfo.submissiongradeover;
+                    originalEvaluation.grade = $scope.evaluate.grade.value;
 
                     return $mmaModWorkshopOffline.getEvaluateSubmission(workshopId, submissionId).then(function(offlineSubmission) {
                         $scope.evaluate.published = offlineSubmission.published;
@@ -286,14 +315,42 @@ angular.module('mm.addons.mod_workshop')
 
         return $q.all(promises).finally(function() {
             $mmEvents.trigger(mmaModWorkshopAssessmentInvalidatedEvent);
-            return fetchSubmissionData();
+            return fetchSubmissionData(true);
         });
+    }
+
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModWorkshopSubmissionScroll');
+        }
+        scrollView && scrollView.scrollTop && scrollView.scrollTop();
+    }
+
+    // Function called when we receive an event of submission changes.
+    function eventReceived(data) {
+        if (workshopId === data.workshopid) {
+            scrollTop();
+
+            $scope.submissionLoaded = false;
+            refreshAllData();
+        }
     }
 
     fetchSubmissionData().then(function() {
         $mmaModWorkshop.logViewSubmission(submissionId).then(function() {
             $mmCourse.checkModuleCompletion($scope.courseId, module.completionstatus);
         });
+    });
+
+    obsAssessmentSaved = $mmEvents.on(mmaModWorkshopAssessmentSavedEvent, eventReceived);
+
+    // Refresh workshop on sync.
+    syncObserver = $mmEvents.on(mmaModWorkshopEventAutomSynced, function(eventData) {
+        // Update just when all database is synced.
+        if (workshopId == eventData.workshopid && siteId == eventData.siteid) {
+            $scope.submissionLoaded = false;
+            refreshAllData();
+        }
     });
 
     // Pull to refresh.
@@ -304,4 +361,11 @@ angular.module('mm.addons.mod_workshop')
             });
         }
     };
+
+    $scope.$on('$destroy', function() {
+        syncObserver && syncObserver.off && syncObserver.off();
+        obsAssessmentSaved && obsAssessmentSaved.off && obsAssessmentSaved.off();
+        // Restore original back functions.
+        $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, workshopId);
+    });
 });
