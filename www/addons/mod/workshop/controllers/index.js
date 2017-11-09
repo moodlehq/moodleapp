@@ -171,6 +171,7 @@ angular.module('mm.addons.mod_workshop')
             if ($scope.canAssess) {
                 promises.push($mmaModWorkshop.invalidateReviewerAssesmentsData($scope.workshop.id));
             }
+            promises.push($mmaModWorkshop.invalidateGradesData($scope.workshop.id));
 
             promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
         }
@@ -326,6 +327,7 @@ angular.module('mm.addons.mod_workshop')
         $scope.submission = false;
         $scope.canAssess = false;
         $scope.assessments = false;
+        $scope.userGrades = false;
 
         var promises = [];
 
@@ -366,9 +368,15 @@ angular.module('mm.addons.mod_workshop')
                     });
                 }));
             }
-
-            return $q.all(promises);
         }
+
+        if ($scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+            promises.push($mmaModWorkshop.getGrades($scope.workshop.id).then(function(grades) {
+                $scope.userGrades = grades.submissionlongstrgrade || grades.assessmentlongstrgrade ? grades : false;
+            }));
+        }
+
+        return $q.all(promises);
     }
 
     function scrollTop() {

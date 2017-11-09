@@ -102,6 +102,30 @@
                     </div>
                 </div>
 
+                <!-- CLOSED PHASE -->
+                <div ng-if="selectedPhase == workshopPhases.PHASE_CLOSED">
+                    <div class="card" ng-if="workshop.conclusion">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.conclusion' | translate }}</h2>
+                            <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.conclusion }}</mm-format-text>
+                        </div>
+                    </div>
+
+                    <div class="card" ng-if="userGrades">
+                        <div class="item item-header item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.yourgrades' | translate }}</h2>
+                        </div>
+                        <div class="item item-text-wrap" ng-if="userGrades.submissionlongstrgrade">
+                            <h2>{{ 'mma.mod_workshop.submissiongrade' | translate }}</h2>
+                            <mm-format-text>{{ userGrades.submissionlongstrgrade }}</mm-format-text>
+                        </div>
+                        <div class="item item-text-wrap" ng-if="userGrades.assessmentlongstrgrade">
+                            <h2>{{ 'mma.mod_workshop.gradinggrade' | translate }}</h2>
+                            <mm-format-text>{{ userGrades.assessmentlongstrgrade }}</mm-format-text>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
                 <div class="card" ng-if="workshop.phase == selectedPhase && access.canviewallsubmissions && selectedPhase >= workshopPhases.PHASE_SUBMISSION && grades.length">
                     <div class="item item-text-wrap" ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">

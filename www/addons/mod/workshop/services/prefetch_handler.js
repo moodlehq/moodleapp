@@ -405,8 +405,11 @@ angular.module('mm.addons.mod_workshop')
                                 });
                             });
                         }
-
                         promises2.push(reportPromise);
+
+                        if (workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+                            promises2.push($mmaModWorkshop.getGrades(workshop.id));
+                        }
 
                         return $q.all(promises2);
                     });
