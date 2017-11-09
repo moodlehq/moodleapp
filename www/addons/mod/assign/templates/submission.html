@@ -166,14 +166,14 @@
             </div>
             <h2 ng-if="grade.scale">{{ 'mma.mod_assign.grade' | translate }}</h2>
             <div class="item-select item-input-wrapper" ng-if="grade.scale">
-                <select ng-model="grade.grade" ng-options="grade.scale.indexOf(option) as option for option in grade.scale | orderBy:'$index':true" mm-ios-select-fix></select>
+                <select ng-model="grade.grade" ng-options="grade.value as grade.label for grade in grade.scale" mm-ios-select-fix></select>
             </div>
         </label>
 
         <div ng-repeat="outcome in gradeInfo.outcomes" class="item" ng-class="{ 'item-input item-stacked-label': outcome.options }">
             <h2>{{ outcome.name }}</h2>
             <div class="item-select item-input-wrapper" ng-if="canSaveGrades && outcome.itemNumber">
-                <select ng-model="outcome.selectedId" ng-options="outcome.options.indexOf(option) as option for option in outcome.options | orderBy:'$index':true" mm-ios-select-fix></select>
+                <select ng-model="outcome.selectedId" ng-options="grade.value as grade.label for grade in outcome.options" mm-ios-select-fix></select>
             </div>
             <div ng-if="!canSaveGrades || !outcome.itemNumber">
                 <p>{{ outcome.selected }}</p>

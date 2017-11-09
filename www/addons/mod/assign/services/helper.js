@@ -137,34 +137,10 @@ angular.module('mm.addons.mod_assign')
      * @name $mmaModAssignHelper#getAnswersFromForm
      * @param  {Object} form Form (DOM element).
      * @return {Object}      Object with the answers.
+     * @deprecated since v3.4 Please use $mmUtil#getInfoValuesFromForm instead.
      */
     self.getAnswersFromForm = function(form) {
-        if (!form || !form.elements) {
-            return {};
-        }
-
-        var answers = {};
-
-        angular.forEach(form.elements, function(element) {
-            var name = element.name || '';
-            // Ignore flag and submit inputs.
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
-            }
-
-            // Get the value.
-            if (element.type == 'checkbox') {
-                answers[name] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    answers[name] = element.value;
-                }
-            } else {
-                answers[name] = element.value;
-            }
-        });
-
-        return answers;
+        return $mmUtil.getInfoValuesFromForm(form);
     };
 
     /**

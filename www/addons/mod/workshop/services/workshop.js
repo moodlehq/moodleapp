@@ -121,6 +121,42 @@ angular.module('mm.addons.mod_workshop')
     }
 
     /**
+     * Get cache key for workshop reviewer assessments data WS calls.
+     *
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  userId        User ID or current user.
+     * @return {String}                Cache key.
+     */
+    function getReviewerAssessmentsDataCacheKey(workshopId, userId) {
+        userId = userId || 0;
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':reviewerassessments:' + userId;
+    }
+
+    /**
+     * Get cache key for a workshop assessment data WS calls.
+     *
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @return {String}                Cache key.
+     */
+    function getAssessmentDataCacheKey(workshopId, assessmentId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessment:' + assessmentId;
+    }
+
+    /**
+     * Get cache key for workshop assessment form data WS calls.
+     *
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @param  {String}  [mode]        Mode assessment (default) or preview.
+     * @return {String}                Cache key.
+     */
+    function getAssessmentFormDataCacheKey(workshopId, assessmentId, mode) {
+        mode = mode || 'assessment';
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessmentsform:' + assessmentId + ':' + mode;
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the workshop WS are available.
      *
      * @module mm.addons.mod_workshop
@@ -854,6 +890,297 @@ angular.module('mm.addons.mod_workshop')
                 }
                 // Return submissionId to be consistent with addSubmission.
                 return submissionId;
+            });
+        });
+    };
+
+    /**
+     * Retrieves all the assessments reviewed by the given user.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#getReviewerAssessments
+     *
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    [userId]        User ID. If not defined, current user.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getReviewerAssessments = function(workshopId, userId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getReviewerAssessmentsDataCacheKey(workshopId, userId)
+                };
+
+            if (userId) {
+                params.userid = userId;
+            }
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_workshop_get_reviewer_assessments', params, preSets).then(function(response) {
+                if (response && response.assessments) {
+                    return response.assessments;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates workshop user assessments data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateReviewerAssesmentsData
+     * @param  {Number} workshopId   Workshop ID.
+     * @param  {Number} [userId]     User ID. If not defined, current user.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateReviewerAssesmentsData = function(workshopId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getReviewerAssessmentsDataCacheKey(workshopId, userId));
+        });
+    };
+
+    /**
+     * Retrieves the given assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#getAssessment
+     *
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    assessmentId    Assessment ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    assessmentid: assessmentId
+                },
+                preSets = {
+                    cacheKey: getAssessmentDataCacheKey(workshopId, assessmentId)
+                };
+
+            return site.read('mod_workshop_get_assessment', params, preSets).then(function(response) {
+                if (response && response.assessment) {
+                    return response.assessment;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates workshop assessment data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateAssessmentData
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {Number}  assessmentId  Assessment ID.
+     * @param  {String}  [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when the data is invalidated.
+     */
+    self.invalidateAssessmentData = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getAssessmentDataCacheKey(workshopId, assessmentId));
+        });
+    };
+
+    /**
+     * Retrieves the assessment form definition (data required to be able to display the assessment form).
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#getAssessmentForm
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    assessmentId    Assessment ID.
+     * @param   {String}    [mode]          Mode assessment (default) or preview.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop data is retrieved.
+     */
+    self.getAssessmentForm = function(workshopId, assessmentId, mode, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    assessmentid: assessmentId,
+                    mode: mode || 'assessment'
+                },
+                preSets = {
+                    cacheKey: getAssessmentFormDataCacheKey(workshopId, assessmentId, mode)
+                };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then(function(response) {
+                if (response) {
+                    response.fields = self.parseFields(response.fields);
+                    response.options = $mmUtil.objectToKeyValueMap(response.options, 'name', 'value');
+                    response.current = self.parseFields(response.current);
+                    return response;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Parse fieldes into a more handful format.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#parseFields
+     * @param   {Array}    fields      Fields to parse
+     * @return  {Array}                Parsed fields
+     */
+    self.parseFields = function(fields) {
+        var parsedFields = [];
+
+        angular.forEach(fields, function(field) {
+            var args = field.name.split('_'),
+                name = args[0],
+                idx = args[3],
+                idy = args[6] || false;
+            if (parseInt(idx, 10) == idx) {
+                if (!parsedFields[idx]) {
+                    parsedFields[idx] = {
+                        number: parseInt(idx, 10) + 1
+                    };
+                }
+
+                if (idy && parseInt(idy, 10) == idy) {
+                    if (!parsedFields[idx].fields) {
+                        parsedFields[idx].fields = [];
+                    }
+                    if (!parsedFields[idx].fields[idy]) {
+                        parsedFields[idx].fields[idy] = {
+                            number: parseInt(idy, 10) + 1
+                        };
+                    }
+                    parsedFields[idx].fields[idy][name] = field.value;
+                } else {
+                    parsedFields[idx][name] = field.value;
+                }
+            }
+        });
+        return parsedFields;
+    };
+
+    /**
+     * Invalidates workshop assessments form data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateAssessmentFormData
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {Number}    assessmentId    Assessment ID.
+     * @param   {String}    [mode]          Mode assessment (default) or preview.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the data is invalidated.
+     */
+    self.invalidateAssessmentFormData = function(workshopId, assessmentId, mode, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getAssessmentFormDataCacheKey(workshopId, assessmentId, mode));
+        });
+    };
+
+    /**
+     * Updates the given assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#updateAssessment
+     * @param {Number}  workshopId      Workshop ID.
+     * @param {Number}  assessmentId    Assessment ID.
+     * @param {Number}  courseId        Course ID the workshop belongs to.
+     * @param {Object}  inputData       Assessment data.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Boolean} allowOffline    True if it can be stored in offline, false otherwise.
+     * @return {Promise}                Promise resolved with submission ID if sent online, resolved with false if stored offline.
+     */
+    self.updateAssessment = function(workshopId, assessmentId, courseId, inputData, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+
+        // If we are editing an offline discussion, discard previous first.
+        return $mmaModWorkshopOffline.deleteAssessment(workshopId, assessmentId, siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
+            return self.updateAssessmentOnline(assessmentId, inputData, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveAssessment(workshopId, assessmentId, courseId, inputData, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Updates the given assessment. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#updateAssessmentOnline
+     * @param  {Number} assessmentId    Assessment ID.
+     * @param  {Object} inputData       Assessment data.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the grade of the submission.
+     */
+    self.updateAssessmentOnline = function(assessmentId, inputData, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assessmentid: assessmentId,
+                data: inputData
+            };
+
+            params.data = $mmUtil.objectToArrayOfObjects(inputData, 'name', 'value');
+
+            return site.write('mod_workshop_update_assessment', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                // Return rawgrade for submission
+                return response.rawgrade;
             });
         });
     };

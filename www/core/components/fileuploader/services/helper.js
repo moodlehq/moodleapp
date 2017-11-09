@@ -47,7 +47,7 @@ angular.module('mm.core.fileuploader')
         // Currently we are going to compare the order of the files as well.
         // This function can be improved comparing more fields or not comparing the order.
         for (var i = 0; i < a.length; i++) {
-            if (a[i].name != b[i].name) {
+            if ((a[i].name || a[i].filename) != (b[i].name || b[i].filename)) {
                 return true;
             }
         }
@@ -229,6 +229,36 @@ angular.module('mm.core.fileuploader')
         return $mmFS.getDirectoryContents(folderPath).then(function(files) {
             return self.markOfflineFiles(files);
         });
+    };
+
+    /**
+     * Get stored files from combined online and offline file object.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#getStoredFilesFromOfflineFilesObject
+     * @param  {Object} filesObject  The combined offline and online files object.
+     * @param  {String} folderPath   Folder path to get files from.
+     * @return {Promise}             Promise resolved with files when done.
+     */
+    self.getStoredFilesFromOfflineFilesObject = function(filesObject, folderPath) {
+        var files = [];
+
+        if (filesObject) {
+            if (filesObject.online && filesObject.online.length > 0) {
+                files = angular.copy(filesObject.online);
+            }
+
+            if (filesObject.offline > 0) {
+                return self.getStoredFiles(folderPath).then(function(offlineFiles) {
+                    return files.concat(offlineFiles);
+                }).catch(function() {
+                    // Ignore not found files.
+                    return files;
+                });
+            }
+        }
+        return $q.when(files);
     };
 
     /**

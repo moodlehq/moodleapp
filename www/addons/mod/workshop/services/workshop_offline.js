@@ -15,9 +15,10 @@
 angular.module('mm.addons.mod_workshop')
 
 .constant('mmaModWorkshopOfflineSubmissionStore', 'mma_mod_workshop_offline_submissions')
+.constant('mmaModWorkshopOfflineAssessmentsStore', 'mma_mod_workshop_offline_assessments')
 
 
-.config(function($mmSitesFactoryProvider, mmaModWorkshopOfflineSubmissionStore) {
+.config(function($mmSitesFactoryProvider, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore) {
     var stores = [
         {
             name: mmaModWorkshopOfflineSubmissionStore,
@@ -40,6 +41,21 @@ angular.module('mm.addons.mod_workshop')
                     keyPath: ['workshopid', 'submissionid']
                 }
             ]
+        },
+        {
+            name: mmaModWorkshopOfflineAssessmentsStore,
+            keyPath: ['workshopid', 'assessmentid'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'assessmentid'
+                }
+            ]
         }
     ];
     $mmSitesFactoryProvider.registerStores(stores);
@@ -52,7 +68,8 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopOffline
  */
-.factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, $mmSitesManager, $mmFS, $q) {
+.factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore,
+        $mmSitesManager, $mmFS, $q, $mmUtil) {
 
     $log = $log.getInstance('$mmaModWorkshopOffline');
 
@@ -69,14 +86,17 @@ angular.module('mm.addons.mod_workshop')
      */
     self.getAllWorkshops = function(siteId) {
         var promises = [];
-        promises.push(self.getSubmissions(siteId));
+        promises.push(self.getAllSubmissions(siteId));
+        promises.push(self.getAllAssessments(siteId));
         // TODO: Add other objects.
 
-        return $q.all(promises).then(function(objects) {
+        return $q.all(promises).then(function(promiseResults) {
             var workshopIds = {};
-            angular.forEach(objects, function(submissions) {
-                angular.forEach(submissions, function(submission) {
-                    workshopIds[submission.workshopid] = true;
+
+            // Get workshops from any offline object all should have workshopid.
+            angular.forEach(promiseResults, function(offlineObjects) {
+                angular.forEach(offlineObjects, function(offlineObject) {
+                    workshopIds[offlineObject.workshopid] = true;
                 });
             });
             return Object.keys(workshopIds);
@@ -96,6 +116,7 @@ angular.module('mm.addons.mod_workshop')
     self.hasWorkshopOfflineData = function(workshopId, siteId) {
         var promises = [];
         promises.push(self.getSubmissions(workshopId, siteId));
+        promises.push(self.getAssessments(workshopId, siteId));
         // TODO: Add other objects.
 
         return $q.all(promises).then(function(objects) {
@@ -152,6 +173,21 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
+     * Get the all the submissions to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAllSubmissions
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the objects to be synced.
+     */
+    self.getAllSubmissions = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineSubmissionStore);
+        });
+    };
+
+    /**
      * Get the submissions of a workshop to be synced.
      *
      * @module mm.addons.mod_workshop
@@ -198,7 +234,7 @@ angular.module('mm.addons.mod_workshop')
      */
     self.getSubmissionAction = function(workshopId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().where(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
+            return site.getDb().get(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
         });
     };
 
@@ -213,7 +249,7 @@ angular.module('mm.addons.mod_workshop')
      * @param  {String} title           The submission title.
      * @param  {String} content         The submission text content.
      * @param  {Number} [attachmentsId] The draft file area id for attachments.
-     * @param  {Number} [submissionId]  SubmissionId, if action is add, the time the submission was created.
+     * @param  {Number} [submissionId]  Submission Id, if action is add, the time the submission was created.
      *                                  If not defined, current time.
      * @param  {String} action          Action to be done. ['add', 'update', 'delete']
      * @param  {String} [siteId]        Site ID. If not defined, current site.
@@ -222,7 +258,7 @@ angular.module('mm.addons.mod_workshop')
     self.saveSubmission = function(workshopId, courseId, title, content, attachmentsId, submissionId, action, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
-                timemodified = new Date().getTime(),
+                timemodified = $mmUtil.timestamp(),
                 submission = {
                     workshopid: workshopId,
                     courseid: courseId,
@@ -235,6 +271,100 @@ angular.module('mm.addons.mod_workshop')
                 };
 
             return db.insert(mmaModWorkshopOfflineSubmissionStore, submission);
+        });
+    };
+
+    /**
+     * Delete workshop assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#deleteAssessment
+     * @param  {Number} workshopId   Workshop ID.
+     * @param  {Number} assessmentId Assessment ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved if stored, rejected if failure.
+     */
+    self.deleteAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+
+    /**
+     * Get the all the assessments to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAllAssessments
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the objects to be synced.
+     */
+    self.getAllAssessments = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineAssessmentsStore);
+        });
+    };
+
+    /**
+     * Get the assessments of a workshop to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAssessments
+     * @param  {Number} workshopId      ID of the workshop.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the object to be synced.
+     */
+    self.getAssessments = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineAssessmentsStore, 'workshopid', workshopId);
+        });
+    };
+
+    /**
+     * Get an specific aassessment of a workshop to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAssessment
+     * @param  {Number} workshopId      ID of the workshop.
+     * @param  {Number} assessmentId    Assessment ID.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the object to be synced.
+     */
+    self.getAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+
+    /**
+     * Offline version for adding an assessment to a workshop.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#saveAssessment
+     * @param  {Number} workshopId      Workshop ID.
+     * @param  {Number} assessmentId    Assessment ID.
+     * @param  {Number} courseId        Course ID the workshop belongs to.
+     * @param  {Object} inputData       Assessment data.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when assessment is successfully saved.
+     */
+    self.saveAssessment = function(workshopId, assessmentId, courseId, inputData, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                assessment = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    inputdata: inputData,
+                    assessmentid: assessmentId,
+                    timemodified: timemodified
+                };
+
+            return db.insert(mmaModWorkshopOfflineAssessmentsStore, assessment);
         });
     };
 
@@ -252,7 +382,7 @@ angular.module('mm.addons.mod_workshop')
         return $mmSitesManager.getSite(siteId).then(function(site) {
 
             var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
-                workshopFolderPath = 'offlineworkshop/' + workshopId;
+                workshopFolderPath = 'offlineworkshop/' + workshopId + '/';
 
             return $mmFS.concatenatePaths(siteFolderPath, workshopFolderPath);
         });
@@ -272,8 +402,27 @@ angular.module('mm.addons.mod_workshop')
      */
     self.getSubmissionFolder = function(workshopId, submissionId, editing, siteId) {
         return self.getWorkshopFolder(workshopId, siteId).then(function(folderPath) {
+            folderPath += 'submission/';
             var prefix = editing ? 'update_' : 'add_';
             return $mmFS.concatenatePaths(folderPath, prefix + submissionId);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for offline assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAssessmentFolder
+     * @param  {Number}  workshopId   Workshop ID.
+     * @param  {Number}  assessmentId Assessment ID.
+     * @param  {String}  [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with the path.
+     */
+    self.getAssessmentFolder = function(workshopId, assessmentId, siteId) {
+        return self.getWorkshopFolder(workshopId, siteId).then(function(folderPath) {
+            folderPath += 'assessment/';
+            return $mmFS.concatenatePaths(folderPath, assessmentId + '');
         });
     };
 

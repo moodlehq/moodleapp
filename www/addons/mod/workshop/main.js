@@ -19,6 +19,10 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
 .constant('mmaModWorkshopPerPage', 10)
 .constant('mmaModWorkshopEventAutomSynced', 'mma_mod_workshop_autom_synced')
 .constant('mmaModWorkshopEventManualSynced', 'mma_mod_workshop_manual_synced')
+.constant('mmaModWorkshopAssessmentRefreshedEvent', 'mma_mod_workshop_assessment_refreshed')
+.constant('mmaModWorkshopAssessmentInvalidatedEvent', 'mma_mod_workshop_assessment_invalidated')
+.constant('mmaModWorkshopAssessmentSaveEvent', 'mma_mod_workshop_assessment_save')
+.constant('mmaModWorkshopAssessmentSavedEvent', 'mma_mod_workshop_assessment_saved')
 .constant('mmaModWorkshopSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
@@ -45,10 +49,12 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
         url: '/mod_workshop-submission',
         params: {
             module: null,
+            workshop: null,
             access: null,
             courseid: null,
             profile: null,
             submission: null,
+            assessment: null,
             submissionid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
         },
         views: {
@@ -72,6 +78,24 @@ angular.module('mm.addons.mod_workshop', ['mm.core'])
             'site': {
                 controller: 'mmaModWorkshopEditSubmissionCtrl',
                 templateUrl: 'addons/mod/workshop/templates/editsubmission.html'
+            }
+        }
+    })
+
+    .state('site.mod_workshop-assessment', {
+        url: '/mod_workshop-assessment',
+        params: {
+            assessment: null,
+            courseid: null,
+            submission: null,
+            profile: null,
+            submissionid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+            assessmentid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopAssessmentCtrl',
+                templateUrl: 'addons/mod/workshop/templates/viewassessment.html'
             }
         }
     });

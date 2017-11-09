@@ -27,7 +27,7 @@ angular.module('mm.addons.mod_workshop')
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModWorkshopComponent);
 
     // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
-    //self.updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
+    self.updatesNames = /^configuration$|^.*files$|^completion|^gradeitems$|^outcomes$|^submissions$|^assessments$|^assessmentgrades$|^usersubmissions$|^userassessments$|^userassessmentgrades$|^userassessmentgrades$/;
 
     /**
      * Download the module.
@@ -79,36 +79,74 @@ angular.module('mm.addons.mod_workshop')
             groups = [],
             files = [];
 
-        return $mmaModWorkshop.getWorkshop(courseId, module.id, siteId, forceCache).then(function(data) {
-            files = self.getIntroFilesFromInstance(module, data);
-            files = files.concat(data.instructauthorsfiles).concat(data.instructreviewersfiles);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var userId = site.getUserId();
 
-            workshop = data;
-            return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
-                if (!groupInfo.groups || groupInfo.groups.length == 0) {
-                    groupInfo.groups = [{id: 0}];
-                }
-                groups = groupInfo.groups;
-            });
+            return $mmaModWorkshop.getWorkshop(courseId, module.id, siteId, forceCache).then(function(data) {
+                files = self.getIntroFilesFromInstance(module, data);
+                files = files.concat(data.instructauthorsfiles).concat(data.instructreviewersfiles);
 
-        }).then(function() {
-            return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
-                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
-
-                    // Get submission phase info.
-                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
-                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks);
-
-                    if (canSubmit) {
-                        return $mmSitesManager.getSite(siteId).then(function(site) {
-                            var userId = site.getUserId();
-                            return $mmaModWorkshopHelper.getUserSubmission(workshop.id, userId);
-                        }).then(function(submission) {
-                            if (submission) {
-                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
-                            }
-                        });
+                workshop = data;
+                return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
+                    if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                        groupInfo.groups = [{id: 0}];
                     }
+                    groups = groupInfo.groups;
+                });
+
+            }).then(function() {
+                return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
+                    return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+                        // Get submission phase info.
+                        var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                            canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
+                            canAssess = $mmaModWorkshopHelper.canAssess(workshop, access),
+                            promises = [];
+
+                        if (canSubmit) {
+                            promises.push($mmaModWorkshopHelper.getUserSubmission(workshop.id, userId).then(function(submission) {
+                                if (submission) {
+                                    files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                                }
+                            }));
+                        }
+
+                        // Get assessment files.
+                        if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
+                            promises.push($mmaModWorkshopHelper.getReviewerAssessments(workshop.id).then(function(assessments) {
+                                angular.forEach(assessments, function(assessment) {
+                                    files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                                });
+                            }));
+
+                            if (access.canviewallsubmissions) {
+                                promises.push(getAllGradesReport(workshop.id, groups).then(function(grades) {
+                                    var promises2 = [];
+
+                                    angular.forEach(grades, function(grade) {
+                                        angular.forEach(grade.reviewedby, function(assessment) {
+                                            promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
+                                                assessment.assessmentid, assessment.userid));
+                                        });
+
+                                        angular.forEach(grade.reviewerof, function(assessment) {
+                                            // Get the assessments and submissions if needed.
+                                            promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
+                                                assessment.assessmentid, assessment.userid));
+                                        });
+                                    });
+
+                                    return $q.all(promises2).then(function(assessments) {
+                                        angular.forEach(assessments, function(assessment) {
+                                            files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                                        });
+                                    });
+                                }));
+                            }
+                        }
+
+                        return $q.all(promises);
+                    });
                 });
             });
         }).then(function() {
@@ -174,53 +212,9 @@ angular.module('mm.addons.mod_workshop')
      * @return {Promise}         Promise resolved with timemodified.
      */
     self.getTimemodified = function(module, courseId) {
-        var siteId = $mmSite.getId(),
-            timemodified = 0;
-
-        return getWorkshopInfoHelper(module, courseId, false, false, true, siteId).then(function(info) {
-            var workshop = info.workshop,
-                files = self.getIntroFilesFromInstance(module, workshop);
-
-            timemodified = workshop.timemodified || 0;
-
-            return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
-                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
-
-                    // Get submission phase info.
-                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
-                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
-                        promises = [];
-
-                    if (canSubmit) {
-                        promises.push($mmSitesManager.getSite(siteId).then(function(site) {
-                            var userId = site.getUserId();
-                            return $mmaModWorkshopHelper.getUserSubmission(workshop.id, userId);
-                        }).then(function(submission) {
-                            if (submission) {
-                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
-                                timemodified = Math.max(timemodified, submission.timemodified || 0);
-                            }
-                        }));
-                    }
-
-                    if (access.canviewallsubmissions) {
-                        promises.push(getAllGradesReport(workshop.id, info.groups).then(function(report) {
-                            angular.forEach(report.grades, function(grade) {
-                                timemodified = Math.max(timemodified, grade.submissionmodified || 0);
-                            });
-                        }));
-                    }
-
-                    timemodified = Math.max(timemodified, $mmFilepool.getTimemodifiedFromFileList(files));
-
-                    return $q.all(promises).then(function() {
-                        timemodified;
-                    });
-                });
-            });
-        }).catch(function() {
-            return 0;
-        });
+        // Return always 0 because calculation requires too many WS calls.
+        // Return a fake timemodified since it won't be used. This will be improved in the future.
+        return 0;
     };
 
     /**
@@ -320,7 +314,9 @@ angular.module('mm.addons.mod_workshop')
 
             angular.forEach(grades, function(groupGrades) {
                 angular.forEach(groupGrades, function(grade) {
-                    uniqueGrades[grade.submissionid] = grade;
+                    if (grade.submissionid) {
+                        uniqueGrades[grade.submissionid] = grade;
+                    }
                 });
             });
 
@@ -342,44 +338,84 @@ angular.module('mm.addons.mod_workshop')
 
         siteId = siteId || $mmSite.getId();
 
-        // Prefetch the workshop data.
-        return getWorkshopInfoHelper(module, courseId, false, false, true, siteId).then(function(info) {
-            var workshop = info.workshop,
-                promises = [];
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var currentUserId = site.getUserId();
+             // Prefetch the workshop data.
+            return getWorkshopInfoHelper(module, courseId, false, false, true, siteId).then(function(info) {
+                var workshop = info.workshop,
+                    promises = [],
+                    assessments = [];
 
-            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
-            promises.push($mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
-                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+                promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
+                promises.push($mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
+                    return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
 
-                    // Get submission phase info.
-                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
-                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks)
-                        promises2 = [];
+                        // Get submission phase info.
+                        var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                            canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
+                            canAssess = $mmaModWorkshopHelper.canAssess(workshop, access),
+                            promises2 = [];
 
-                    if (canSubmit) {
-                        promises2.push($mmaModWorkshop.getSubmissions(workshop.id).then(function() {
+                        if (canSubmit) {
+                            promises2.push($mmaModWorkshop.getSubmissions(workshop.id));
                             // Add userId to the profiles to prefetch.
-                            return $mmSitesManager.getSite(siteId).then(function(site) {
-                                userIds.push(site.getUserId());
+                            userIds.push(currentUserId);
+                        }
+
+                        var reportPromise = $q.when();
+                        if (access.canviewallsubmissions) {
+                            reportPromise = getAllGradesReport(workshop.id, info.groups).then(function(grades) {
+                                angular.forEach(grades, function(grade) {
+                                    userIds.push(grade.userid);
+
+                                    angular.forEach(grade.reviewedby, function(assessment) {
+                                        userIds.push(assessment.userid);
+                                        assessments[assessment.assessmentid] = assessment;
+                                    });
+
+                                    angular.forEach(grade.reviewerof, function(assessment) {
+                                        userIds.push(assessment.userid);
+                                        assessments[assessment.assessmentid] = assessment;
+                                    });
+                                });
                             });
-                        }));
-                    }
+                        }
 
-                    if (access.canviewallsubmissions) {
-                        promises2.push(getAllGradesReport(workshop.id, info.groups).then(function(grades) {
-                            angular.forEach(grades, function(grade) {
-                                userIds.push(grade.userid);
+                        if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
+                            // Wait the report promise to finish to ovverride assessments array if needed.
+                            reportPromise = reportPromise.finally(function() {
+                                return $mmaModWorkshopHelper.getReviewerAssessments(workshop.id, currentUserId, undefined,
+                                        undefined, siteId).then(function(revAssessments) {
+                                    angular.forEach(revAssessments, function(assessment) {
+                                        userIds.push(assessment.reviewerid);
+                                        assessments[assessment.id] = assessment;
+                                    });
+                                }).finally(function() {
+                                    var promises3 = [];
+                                    angular.forEach(assessments, function(assessment, id) {
+                                        // Get the assessments and submissions if needed.
+                                        if (!assessment.reviewerid) {
+                                            promises3.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id, id, assessment.userid));
+                                        } else {
+                                            promises3.push($mmaModWorkshop.getAssessmentForm(workshop.id, id, undefined, undefined,
+                                                undefined, siteId));
+                                        }
+                                    });
+                                    return $q.all(promises3);
+                                });
                             });
-                        }));
-                    }
+                        }
 
-                    return $q.all(promises2);
-                });
-            }));
-            // Add Basic Info to manage links.
-            promises.push($mmCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
+                        promises2.push(reportPromise);
 
-            return $q.all(promises);
+                        return $q.all(promises2);
+                    });
+                }));
+                // Add Basic Info to manage links.
+                promises.push($mmCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
+
+                return $q.all(promises);
+            });
         }).then(function() {
             // Prefetch user profiles.
             return $mmUser.prefetchProfiles(userIds, courseId, siteId);

@@ -106,7 +106,7 @@ angular.module('mm.addons.mod_assign')
 
     // Get the input data.
     function getInputData() {
-        return $mmaModAssignHelper.getAnswersFromForm(document.forms['mma-mod_assign-edit-form']);
+        return $mmUtil.getInfoValuesFromForm(document.forms['mma-mod_assign-edit-form']);
     }
 
     // Get submission data.

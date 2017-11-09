@@ -27,28 +27,47 @@ angular.module('mm.addons.mod_workshop')
     return {
         scope: {
             submission: '=',
+            assessment: '=?',
             module: '=',
+            workshop: '=?',
             access: '=?',
             summary: '=?',
             courseid: '='
         },
         restrict: 'E',
         templateUrl: 'addons/mod/workshop/templates/submission.html',
-        link: function(scope, element, attributes) {
+        link: function(scope) {
             scope.component = mmaModWorkshopComponent;
             scope.componentId = scope.module.instance;
 
             scope.userId = scope.submission.authorid || scope.submission.userid || $mmSite.getUserId();
+            scope.submission.title = scope.submission.title || scope.submission.submissiontitle;
+            scope.submission.timemodified = scope.submission.timemodified || scope.submission.submissionmodified;
+            scope.submission.id = scope.submission.id || scope.submission.submissionid;
+
+            if (scope.submission.reviewedby && scope.submission.reviewedby.length) {
+                scope.submission.reviewedbycount = scope.submission.reviewedby.reduce(function (a, b){
+                    return a + (b.grade ? 1 : 0);
+                }, 0);
+            }
+
+            if (scope.submission.reviewerof && scope.submission.reviewerof.length) {
+                scope.submission.reviewerofcount = scope.submission.reviewerof.reduce(function (a, b){
+                    return a + (b.grade ? 1 : 0);
+                }, 0);
+            }
 
             scope.gotoSubmission = function() {
-                if (scope.submission.submissionmodified) {
+                if (scope.submission.timemodified) {
                     var stateParams = {
                         module: scope.module,
+                        workshop: scope.workshop,
                         access: scope.access,
                         courseid: scope.courseid,
                         profile: scope.profile,
                         submission: scope.submission,
-                        submissionid: scope.submission.submissionid
+                        assessment: scope.assessment,
+                        submissionid: scope.submission.id
                     };
 
                     $state.go('site.mod_workshop-submission', stateParams);

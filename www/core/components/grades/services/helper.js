@@ -21,7 +21,7 @@ angular.module('mm.core.grades')
  * @ngdoc service
  * @name $mmGradesHelper
  */
-.factory('$mmGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce) {
+.factory('$mmGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce, $mmUtil) {
 
     var self = {};
 
@@ -299,6 +299,111 @@ angular.module('mm.core.grades')
             };
         });
     };
+
+    /**
+     * Creates an array that represents all the current grades that can be chosen using the given grading type.
+     * Negative numbers are scales, zero is no grade, and positive numbers are maximum grades.
+     *
+     * Taken from make_grades_menu on moodlelib.php
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGradesHelper#makeGradesMenu
+     * @param  {Number} gradingType     If positive, max grade you can provide. If negative, scale Id.
+     * @param  {Number} moduleId        Module Id needed to retrieve the scale.
+     * @param  {String} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
+     * @param  {Mixed}  [defaultValue]  Element that will become default option value. Default ''.
+     * @param  {String} [scale]         Scale csv list String. If not provided, it will take it from the module grade info.
+     * @return {Promise}                Array with objects with value and label to create a propper HTML select.
+     */
+    self.makeGradesMenu = function(gradingType, moduleId, defaultLabel, defaultValue, scale) {
+        gradingType = parseInt(gradingType, 10);
+        defaultValue = defaultValue || '';
+
+        if (gradingType < 0) {
+            if (scale) {
+                return $q.when($mmUtil.makeMenuFromList(scale, defaultLabel, false, defaultValue));
+            } else {
+                return $mmCourse.getModuleBasicGradeInfo(moduleId).then(function(gradeInfo) {
+                    if (gradeInfo.scale) {
+                        return $mmUtil.makeMenuFromList(gradeInfo.scale, defaultLabel, false,  defaultValue);
+                    }
+                    return [];
+                });
+            }
+        }
+
+        if (gradingType > 0) {
+            var grades = [];
+            if (defaultLabel) {
+                // Key as string to avoid resorting of the object.
+                grades.push({
+                    label: defaultLabel,
+                    value: defaultValue
+                });
+            }
+            for (var i = gradingType; i >= 0; i--) {
+                 grades.push({
+                    label: i +' / '+ gradingType,
+                    value: i
+                });
+            }
+            return $q.when(grades);
+        }
+
+        return $q.when([]);
+    };
+
+    /**
+     * Returns the label of the selected grade.
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGradesHelper#getGradeLabelFromValue
+     * @param  {Array}  grades          Array with objects with value and label.
+     * @param  {Number} selectedGrade   Selected grade value.
+     * @return {String}                 Selected grade label.
+     */
+    self.getGradeLabelFromValue = function(grades, selectedGrade) {
+        selectedGrade = parseInt(selectedGrade, 10);
+
+        if (!grades || !selectedGrade || selectedGrade <= 0) {
+            return "";
+        }
+
+        for (var x in grades) {
+            if (grades[x].value == selectedGrade) {
+                return grades[x].label;
+            }
+        }
+
+        return "";
+    };
+
+    /**
+     * Returns the value of the selected grade.
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGradesHelper#getGradeLabelFromValue
+     * @param  {Array}  grades          Array with objects with value and label.
+     * @param  {Number} selectedGrade   Selected grade label.
+     * @return {Number}                 Selected grade value.
+     */
+    self.getGradeValueFromLabel = function(grades, selectedGrade) {
+        if (!grades || !selectedGrade) {
+            return 0;
+        }
+
+        for (var x in grades) {
+            if (grades[x].label == selectedGrade) {
+                return grades[x].value < 0 ? 0 : grades[x].value;
+            }
+        }
+
+        return 0;
+    };
+
 
     return self;
 });

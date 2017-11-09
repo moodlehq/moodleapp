@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_workshop')
  */
 .factory('$mmaModWorkshopSync', function($log, $mmaModWorkshop, $mmSite, $mmSitesManager, $q, $mmaModWorkshopOffline, $mmCourse,
             $mmApp, $mmEvents, $translate, mmaModWorkshopSyncTime, $mmSync, mmaModWorkshopEventAutomSynced, mmaModWorkshopComponent,
-            $mmSyncBlock, $mmLang) {
+            $mmSyncBlock, $mmLang, $mmaModWorkshopHelper) {
 
     $log = $log.getInstance('$mmaModWorkshopSync');
 
@@ -131,6 +131,7 @@ angular.module('mm.addons.mod_workshop')
         siteId = siteId || $mmSite.getId();
 
         var syncPromise,
+            syncPromises = [],
             workshop,
             courseId,
             result = {
@@ -153,11 +154,23 @@ angular.module('mm.addons.mod_workshop')
         $log.debug('Try to sync workshop ' + workshopId);
 
         // Get offline submissions to be sent.
-        syncPromise = $mmaModWorkshopOffline.getSubmissions(workshopId, siteId).catch(function() {
+        syncPromises.push($mmaModWorkshopOffline.getSubmissions(workshopId, siteId).catch(function() {
             // No offline data found, return empty array.
             return [];
-        }).then(function(submissionsActions) {
-            if (!submissionsActions.length) {
+        }));
+
+        // Get offline submission grades to be sent.
+        syncPromises.push($mmaModWorkshopOffline.getAssessments(workshopId, siteId).catch(function() {
+            // No offline data found, return empty array.
+            return [];
+        }));
+
+        // Get offline submissions to be sent.
+        syncPromise = $q.all(syncPromises).then(function(syncs) {
+            var submissionsActions = syncs[0],
+                assessments = syncs[1];
+
+            if (!submissionsActions.length && !assessments.length) {
                 // Nothing to sync.
                 return;
             } else if (!$mmApp.isOnline()) {
@@ -165,7 +178,7 @@ angular.module('mm.addons.mod_workshop')
                 return $q.reject();
             }
 
-            courseId = submissionsActions[0].courseid;
+            courseId = submissionsActions.length > 0 ? submissionsActions[0].courseid : assessments[0].courseid;
 
             return $mmaModWorkshop.getWorkshopById(courseId, workshopId, siteId).then(function(workshopData) {
                 workshop = workshopData;
@@ -182,6 +195,12 @@ angular.module('mm.addons.mod_workshop')
 
                 angular.forEach(offlineSubmissions, function(submissionActions) {
                     promises.push(syncSubmission(workshop, submissionActions, result, siteId).then(function() {
+                        result.updated = true;
+                    }));
+                });
+
+                angular.forEach(assessments, function(assessment) {
+                    promises.push(syncAssessment(workshop, assessment, result, siteId).then(function() {
                         result.updated = true;
                     }));
                 });
@@ -258,8 +277,8 @@ angular.module('mm.addons.mod_workshop')
 
                 // Upload attachments first if any.
                 if (action.attachmentsid) {
-                    fileProm = $mmaModWorkshopHelper.getStoredFiles(workshop.id, submissionId, editing, siteId)
-                            .then(function(files) {
+                    fileProm = $mmaModWorkshopHelper.getSubmissionFilesFromOfflineFilesObject(action.attachmentsid, workshop.id,
+                            submissionId, editing, siteId).then(function(files) {
                         return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshop.id, submissionId, files, editing, false,
                                 siteId);
                     });
@@ -314,17 +333,84 @@ angular.module('mm.addons.mod_workshop')
                     result.warnings.push(message);
                 }
             }
-
-            // Sync done. Send event.
-            $mmEvents.trigger(mmaModWorkshopEventAutomSynced, {
-                siteid: siteId,
-                workshopid: workshop.id,
-                submissionid: submissionId,
-                warnings: result.warnings,
-                deleted: deleted
-            });
         });
     }
+
+    /**
+     * Synchronize an assessment.
+     *
+     * @param  {Object}   workshop          Workshop.
+     * @param  {Object}   assessment        Assessment offline data.
+     * @param  {Object}   result            Object with the result of the sync.
+     * @param  {String}   [siteId]          Site ID. If not defined, current site.
+     * @return {Promise}                    Promise resolved if success, rejected otherwise.
+     */
+    function syncAssessment(workshop, assessmentData, result, siteId) {
+        var discardError,
+            timePromise,
+            assessmentId = assessmentData.assessmentid;
+
+        timePromise = $mmaModWorkshop.getAssessment(workshop.id, assessmentId, siteId).then(function(assessment) {
+            return assessment.timemodified;
+        }).catch(function() {
+            return -1;
+        });
+
+        return timePromise.then(function(timemodified) {
+            if (timemodified < 0 || timemodified >= assessmentData.timemodified) {
+                // The entry was not found in Moodle or the entry has been modified, discard the action.
+                result.updated = true;
+                discardError = $translate.instant('mma.mod_workshop.warningassessmentmodified');
+                return $mmaModWorkshopOffline.deleteAssessment(workshop.id, assessmentId, siteId);
+            }
+
+            var fileProm,
+                inputData = assessmentData.inputdata;
+
+            // Upload attachments first if any.
+            if (inputData.feedbackauthorattachmentsid) {
+                fileProm = $mmaModWorkshopHelper.getAssessmentFilesFromOfflineFilesObject(inputData.feedbackauthorattachmentsid,
+                        workshop.id, assessmentId, siteId).then(function(files) {
+                    return $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(workshop.id, assessmentId, files, false, siteId);
+                });
+            } else {
+                fileProm = $q.when();
+            }
+
+            return fileProm.then(function(attachmentsId) {
+                if (attachmentsId) {
+                    inputData.feedbackauthorattachmentsid = attachmentsId;
+                }
+                return $mmaModWorkshop.updateAssessmentOnline(assessmentId, inputData, siteId);
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means it cannot be performed. Discard.
+                    discardError = error.error;
+                } else {
+                    // Couldn't connect to server, reject.
+                    return $q.reject(error && error.error);
+                }
+            }).then(function() {
+                // Delete the offline data.
+                result.updated = true;
+                return $mmaModWorkshopOffline.deleteAssessment(workshop.id, assessmentId, siteId);
+            });
+        }).then(function() {
+            if (discardError) {
+                // Assessment was discarded, add a warning.
+                var message = $translate.instant('mm.core.warningofflinedatadeleted', {
+                    component: $mmCourse.translateModuleName('workshop'),
+                    name: workshop.name,
+                    error: discardError
+                });
+
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
+                }
+            }
+        });
+    }
+
 
     return self;
 });

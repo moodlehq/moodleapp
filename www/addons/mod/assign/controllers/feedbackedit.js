@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignFeedbackEditCtrl
  */
-.controller('mmaModAssignFeedbackEditCtrl', function($scope, $stateParams, $mmaModAssignHelper, $q, $mmUtil, $translate, $mmSite,
+.controller('mmaModAssignFeedbackEditCtrl', function($scope, $stateParams, $q, $mmUtil, $translate, $mmSite,
         $mmaModAssignFeedbackDelegate, $mmEvents, mmaModAssignFeedbackSavedEvent) {
 
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_assign')
 
     // Get the input data.
     function getInputData() {
-        return $mmaModAssignHelper.getAnswersFromForm(document.forms['mma-mod_assign-edit-form']);
+        return $mmUtil.getInfoValuesFromForm(document.forms['mma-mod_assign-edit-form']);
     }
 
     // Check if data has changed.
