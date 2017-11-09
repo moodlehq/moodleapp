@@ -17,11 +17,14 @@ import { Platform } from 'ionic-angular';
 
 import { Clipboard } from '@ionic-native/clipboard';
 import { File } from '@ionic-native/file';
+import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
 import { Network } from '@ionic-native/network';
 import { Zip } from '@ionic-native/zip';
+
 import { ClipboardMock } from './providers/clipboard';
-import { FileMock} from './providers/file';
+import { FileMock } from './providers/file';
+import { FileTransferMock } from './providers/file-transfer';
 import { GlobalizationMock } from './providers/globalization';
 import { NetworkMock } from './providers/network';
 import { ZipMock } from './providers/zip';
@@ -29,6 +32,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { CoreEmulatorHelper } from './providers/helper';
 import { CoreAppProvider } from '../../providers/app';
+import { CoreFileProvider } from '../../providers/file';
 import { CoreTextUtilsProvider } from '../../providers/utils/text';
 import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
 import { CoreInitDelegate } from '../../providers/init';
@@ -55,6 +59,14 @@ import { CoreInitDelegate } from '../../providers/init';
             useFactory: (appProvider: CoreAppProvider, textUtils: CoreTextUtilsProvider) => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new File() : new FileMock(appProvider, textUtils);
+            }
+        },
+        {
+            provide: FileTransfer,
+            deps: [CoreAppProvider, CoreFileProvider],
+            useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider) => {
+                // Use platform instead of CoreAppProvider to prevent circular dependencies.
+                return appProvider.isMobile() ? new FileTransfer() : new FileTransferMock(appProvider, fileProvider);
             }
         },
         {

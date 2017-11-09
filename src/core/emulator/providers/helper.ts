@@ -17,6 +17,7 @@ import { CoreFileProvider } from '../../../providers/file';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { File } from '@ionic-native/file';
 import { CoreInitDelegate, CoreInitHandler } from '../../../providers/init';
+import { FileTransferErrorMock } from './file-transfer';
 
 /**
  * Emulates the Cordova Zip plugin in desktop apps and in browser.
@@ -43,6 +44,7 @@ export class CoreEmulatorHelper implements CoreInitHandler {
         promises.push((<any>this.file).load().then((basePath: string) => {
             this.fileProvider.setHTMLBasePath(basePath);
         }));
+        (<any>window).FileTransferError = FileTransferErrorMock;
 
         return this.utils.allPromises(promises);
     }

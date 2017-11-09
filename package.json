@@ -37,6 +37,7 @@
     "@ionic-native/clipboard": "^4.3.2",
     "@ionic-native/core": "4.3.0",
     "@ionic-native/file": "^4.3.3",
+    "@ionic-native/file-transfer": "^4.3.3",
     "@ionic-native/globalization": "^4.3.2",
     "@ionic-native/in-app-browser": "^4.3.3",
     "@ionic-native/keyboard": "^4.3.2",
@@ -63,6 +64,7 @@
     "promise.prototype.finally": "^3.0.1",
     "rxjs": "5.4.3",
     "sw-toolbox": "3.6.0",
+    "ts-md5": "^1.2.2",
     "zone.js": "0.8.18"
   },
   "devDependencies": {

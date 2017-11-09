@@ -24,4 +24,5 @@ export class CoreConstants {
     public static downloadThreshold = 10485760; // 10MB.
     public static dontShowError = 'CoreDontShowError';
     public static settingsRichTextEditor = 'CoreSettingsRichTextEditor';
+    public static wsTimeout = 30000;
 }
