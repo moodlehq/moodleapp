@@ -665,7 +665,6 @@ angular.module('mm.addons.mod_quiz')
      */
     self.getFeedbackForGrade = function(quizId, grade, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-
             var params = {
                     quizid: quizId,
                     grade: grade

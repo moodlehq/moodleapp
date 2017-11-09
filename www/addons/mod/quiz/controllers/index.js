@@ -194,7 +194,7 @@ angular.module('mm.addons.mod_quiz')
             // Get gradebook grade.
             return $mmaModQuiz.getGradeFromGradebook(courseId, module.id).then(function(data) {
                 gradebookData = {
-                    grade: data.gradeformatted,
+                    grade: data.graderaw,
                     feedback: data.feedback
                 };
             }).catch(function() {
