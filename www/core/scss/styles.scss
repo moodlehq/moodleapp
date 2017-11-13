@@ -975,14 +975,24 @@ mm-timer {
 }
 
 .item-select.mm-full-width {
+  margin-top: ($item-input-padding / 2);
+  margin-bottom: $item-input-padding - 1;
+  border: 0;
+
   select {
     max-width: 100%;
+    width: 100%;
     background: transparent;
     text-indent: 0;
-    padding: ($item-input-padding - 1) ($item-input-padding/2*5) ($item-input-padding - 1) $item-input-padding;
     line-height: $font-size-base + 2;
     border: 0;
     position: relative;
+  }
+
+  &.select-align-left {
+    select {
+      direction: ltr;
+    }
   }
 }
 

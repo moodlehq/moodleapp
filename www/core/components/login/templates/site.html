@@ -19,9 +19,9 @@
 
         <!-- Selector to pick the site from a list of fixed sites. -->
         <div ng-if="fixedSites" class="item-text-wrap">
-          <p class="padding no-padding-bottom">{{ 'mm.login.selectsite' | translate }}</p>
-          <div class="item-select mm-full-width">
-            <select ng-model="loginData.siteurl" ng-options="site.url as site.name for site in fixedSites" mm-ios-select-fix></select>
+          <label for="siteSelect" class="padding no-padding-bottom">{{ 'mm.login.selectsite' | translate }}</label>
+          <div class="item item-input item-select mm-full-width select-align-left">
+            <select ng-model="loginData.siteurl" ng-options="site.url as site.name for site in fixedSites" mm-ios-select-fix id="siteSelect"></select>
           </div>
         </div>
 
