@@ -367,14 +367,17 @@ angular.module('mm.addons.mod_workshop')
                             reportPromise = getAllGradesReport(workshop.id, info.groups).then(function(grades) {
                                 angular.forEach(grades, function(grade) {
                                     userIds.push(grade.userid);
+                                    userIds.push(grade.gradeoverby);
 
                                     angular.forEach(grade.reviewedby, function(assessment) {
                                         userIds.push(assessment.userid);
+                                        userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.assessmentid] = assessment;
                                     });
 
                                     angular.forEach(grade.reviewerof, function(assessment) {
                                         userIds.push(assessment.userid);
+                                        userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.assessmentid] = assessment;
                                     });
                                 });
@@ -388,6 +391,7 @@ angular.module('mm.addons.mod_workshop')
                                         undefined, siteId).then(function(revAssessments) {
                                     angular.forEach(revAssessments, function(assessment) {
                                         userIds.push(assessment.reviewerid);
+                                        userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.id] = assessment;
                                     });
                                 }).finally(function() {
@@ -409,6 +413,9 @@ angular.module('mm.addons.mod_workshop')
 
                         if (workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
                             promises2.push($mmaModWorkshop.getGrades(workshop.id));
+                            if (access.canviewpublishedsubmissions) {
+                                promises2.push($mmaModWorkshop.getSubmissions(workshop.id));
+                            }
                         }
 
                         return $q.all(promises2);

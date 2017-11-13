@@ -23,15 +23,16 @@ angular.module('mm.addons.mod_workshop')
  */
 .controller('mmaModWorkshopAssessmentCtrl', function($scope, $stateParams, $mmUtil, $mmEvents, $q, $mmSite, $mmaModWorkshopOffline,
         $mmCourse, $mmaModWorkshop, mmaModWorkshopAssessmentInvalidatedEvent, $mmGradesHelper, mmaModWorkshopAssessmentSavedEvent,
-        $translate, $mmaModWorkshopHelper, $mmSyncBlock, mmaModWorkshopComponent, mmaModWorkshopEventAutomSynced) {
+        $translate, $mmaModWorkshopHelper, $mmSyncBlock, mmaModWorkshopComponent, mmaModWorkshopEventAutomSynced, $mmUser) {
 
     $scope.assessment = $stateParams.assessment || {};
     $scope.submission = $stateParams.submission || {};
     $scope.profile = $stateParams.profile || {};
     $scope.assessmentId = $scope.assessment && ($scope.assessment.assessmentid || $scope.assessment.id);
     $scope.evaluating = false;
+    $scope.courseId = $stateParams.courseid || false;
 
-    var courseId = $stateParams.courseid || false,
+    var courseId = $scope.courseId,
         workshopId = $stateParams.submission.workshopid || false,
         blockData,
         originalEvaluation = {},
@@ -61,71 +62,77 @@ angular.module('mm.addons.mod_workshop')
                     // Block the workshop.
                     $mmSyncBlock.blockOperation(mmaModWorkshopComponent, workshopId);
                 }
+
                 $scope.evaluating = true;
+            } else {
+                $scope.evaluating = false;
+            }
+
+            if ($scope.evaluating || $scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
                 // Get all info of the assessment.
                 return $mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, assessmentId, $scope.profile.id)
                         .then(function(assessment) {
 
                     var defaultGrade, promise;
 
-                    $scope.assessment = assessment;
-
-                    $scope.assessment.grade = $mmaModWorkshopHelper.realGradeValue(assessment.grade, $scope.workshop.grade,
-                        $scope.workshop.gradedecimals);
-                    $scope.assessment.gradinggrade = $mmaModWorkshopHelper.realGradeValue(assessment.gradinggrade,
-                        $scope.workshop.gradinggrade, $scope.workshop.gradedecimals);
-                    $scope.assessment.gradinggradeover = $mmaModWorkshopHelper.realGradeValue(assessment.gradinggradeover,
-                        $scope.workshop.gradinggrade, $scope.workshop.gradedecimals);
+                    $scope.assessment = $mmaModWorkshopHelper.realGradeValue($scope.workshop, assessment);
                     $scope.evaluate = {
-                        weight: $scope.assessment.weight
+                        weight: $scope.assessment.weight,
+                        text: $scope.assessment.feedbackreviewer
                     };
 
-                    if (accessData.canallocate) {
-                        $scope.weights = [];
-                        for (var i = 16; i >= 0; i--) {
-                            $scope.weights[i] = i;
-                        }
-                    }
-
-                    if (accessData.canoverridegrades) {
-                        defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
-                        promise = $mmGradesHelper.makeGradesMenu($scope.workshop.gradinggrade, workshopId, defaultGrade, -1).then(function(grades) {
-                            $scope.evaluationGrades = grades;
-                        });
-                    } else {
-                        promise = $q.when();
-                    }
-
-                    return promise.then(function() {
-                        return $mmaModWorkshopOffline.getEvaluateAssessment(workshopId, assessmentId).then(function(offlineAssess) {
-                            hasOffline = true;
-                            $scope.evaluate.weight = offlineAssess.weight;
-                            if (accessData.canoverridegrades) {
-                                $scope.evaluate.text = offlineAssess.feedbacktext;
-                                $scope.evaluate.grade = {
-                                    label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, offlineAssess.gradinggradeover) || defaultGrade,
-                                    value: offlineAssess.gradinggradeover || -1
-                                };
+                    if ($scope.evaluating) {
+                        if (accessData.canallocate) {
+                            $scope.weights = [];
+                            for (var i = 16; i >= 0; i--) {
+                                $scope.weights[i] = i;
                             }
-                        }).catch(function() {
-                            hasOffline = false;
-                            // No offline, load online.
-                            if (accessData.canoverridegrades) {
-                                $scope.evaluate.text = $scope.assessment.feedbackreviewer;
+                        }
 
-                                $scope.evaluate.grade = {
-                                    label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, $scope.assessment.gradinggradeover) || defaultGrade,
-                                    value: $scope.assessment.gradinggradeover || -1
-                                };
+                        if (accessData.canoverridegrades && $scope.evaluating) {
+                            defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
+                            promise = $mmGradesHelper.makeGradesMenu($scope.workshop.gradinggrade, workshopId, defaultGrade, -1).then(function(grades) {
+                                $scope.evaluationGrades = grades;
+                            });
+                        } else {
+                            promise = $q.when();
+                        }
+
+                        return promise.then(function() {
+                            return $mmaModWorkshopOffline.getEvaluateAssessment(workshopId, assessmentId).then(function(offlineAssess) {
+                                hasOffline = true;
+                                $scope.evaluate.weight = offlineAssess.weight;
+                                if (accessData.canoverridegrades) {
+                                    $scope.evaluate.text = offlineAssess.feedbacktext;
+                                    $scope.evaluate.grade = {
+                                        label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, offlineAssess.gradinggradeover) || defaultGrade,
+                                        value: offlineAssess.gradinggradeover || -1
+                                    };
+                                }
+                            }).catch(function() {
+                                hasOffline = false;
+                                // No offline, load online.
+                                if (accessData.canoverridegrades) {
+                                    $scope.evaluate.text = $scope.assessment.feedbackreviewer;
+
+                                    $scope.evaluate.grade = {
+                                        label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, $scope.assessment.gradinggradeover) || defaultGrade,
+                                        value: $scope.assessment.gradinggradeover || -1
+                                    };
+                                }
+                            });
+                        }).finally(function() {
+                            originalEvaluation.weight = $scope.evaluate.weight;
+                            if (accessData.canoverridegrades) {
+                                originalEvaluation.text = $scope.evaluate.text;
+                                originalEvaluation.grade = $scope.evaluate.grade.value;
                             }
                         });
-                    }).finally(function() {
-                        originalEvaluation.weight = $scope.evaluate.weight;
-                        if (accessData.canoverridegrades) {
-                            originalEvaluation.text = $scope.evaluate.text;
-                            originalEvaluation.grade = $scope.evaluate.grade.value;
-                        }
-                    });
+                    } else if ($scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED && $scope.assessment.gradinggradeoverby) {
+                        return $mmUser.getProfile($scope.assessment.gradinggradeoverby, courseId, true).then(function(profile) {
+                            $scope.evaluateByProfile = profile;
+                        });
+                    }
                 });
             }
         }).catch(function(message) {

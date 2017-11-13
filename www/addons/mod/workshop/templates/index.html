@@ -71,7 +71,7 @@
                             <p>{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
                         </div>
 
-                        <mma-mod-workshop-submission ng-if="submission" submission="submission" courseid="workshop.course" module="module" workshop="workshop">
+                        <mma-mod-workshop-submission ng-if="submission" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="workshop.phase == workshopPhases.PHASE_CLOSED">
                         </mma-mod-workshop-submission>
                     </div>
 
@@ -115,14 +115,24 @@
                         <div class="item item-header item-text-wrap">
                             <h2>{{ 'mma.mod_workshop.yourgrades' | translate }}</h2>
                         </div>
-                        <div class="item item-text-wrap" ng-if="userGrades.submissionlongstrgrade">
+                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.submissionlongstrgrade" ng-click="switchPhase(workshopPhases.PHASE_SUBMISSION)">
                             <h2>{{ 'mma.mod_workshop.submissiongrade' | translate }}</h2>
                             <mm-format-text>{{ userGrades.submissionlongstrgrade }}</mm-format-text>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
                         </div>
-                        <div class="item item-text-wrap" ng-if="userGrades.assessmentlongstrgrade">
+                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.assessmentlongstrgrade"  ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
                             <h2>{{ 'mma.mod_workshop.gradinggrade' | translate }}</h2>
                             <mm-format-text>{{ userGrades.assessmentlongstrgrade }}</mm-format-text>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
                         </div>
+                    </div>
+
+                    <div class="card" ng-if="publishedSubmissions.length">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.publishedsubmissions' | translate }}</h2>
+                        </div>
+                        <mma-mod-workshop-submission ng-repeat="submission in publishedSubmissions" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
+                        </mma-mod-workshop-submission>
                     </div>
                 </div>
 

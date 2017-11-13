@@ -328,8 +328,10 @@ angular.module('mm.addons.mod_workshop')
         $scope.canAssess = false;
         $scope.assessments = false;
         $scope.userGrades = false;
+        $scope.publishedSubmissions = false;
 
-        var promises = [];
+        var promises = [],
+            assessPromise = $q.when();
 
         $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access,
             $scope.phases[$mmaModWorkshop.PHASE_SUBMISSION].tasks);
@@ -349,7 +351,7 @@ angular.module('mm.addons.mod_workshop')
         if ($scope.workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT) {
             $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
             if ($scope.canAssess) {
-                promises.push($mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
+                assessPromise = $mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
                     var p2 = [];
                     angular.forEach(assessments, function(assessment) {
                         assessment.strategy = $scope.workshop.strategy;
@@ -366,7 +368,8 @@ angular.module('mm.addons.mod_workshop')
                     return $q.all(p2).then(function() {
                         $scope.assessments = assessments;
                     });
-                }));
+                });
+                promises.push(assessPromise);
             }
         }
 
@@ -374,6 +377,25 @@ angular.module('mm.addons.mod_workshop')
             promises.push($mmaModWorkshop.getGrades($scope.workshop.id).then(function(grades) {
                 $scope.userGrades = grades.submissionlongstrgrade || grades.assessmentlongstrgrade ? grades : false;
             }));
+
+            if ($scope.access.canviewpublishedsubmissions) {
+                promises.push(assessPromise.then(function() {
+                    $mmaModWorkshop.getSubmissions($scope.workshop.id).then(function(submissions) {
+                        $scope.publishedSubmissions = submissions.filter(function(submission) {
+                            if (submission.published) {
+                                for (var x in $scope.assessments) {
+                                    submission.reviewedby = [];
+                                    if ($scope.assessments[x].submissionid == submission.id) {
+                                        submission.reviewedby.push($mmaModWorkshopHelper.realGradeValue($scope.workshop, $scope.assessments[x]));
+                                    }
+                                }
+                                return true;
+                            }
+                            return false;
+                        });
+                    });
+                }));
+            }
         }
 
         return $q.all(promises);

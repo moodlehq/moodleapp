@@ -31,7 +31,7 @@ angular.module('mm.addons.mod_workshop')
             assessment: '=?',
             module: '=',
             workshop: '=',
-            access: '=?',
+            access: '=',
             summary: '=?',
             courseid: '='
         },
