@@ -25,4 +25,5 @@ export class CoreConstants {
     public static dontShowError = 'CoreDontShowError';
     public static settingsRichTextEditor = 'CoreSettingsRichTextEditor';
     public static wsTimeout = 30000;
+    public static wsPrefix = 'local_mobile_';
 }

@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
+import { Observable } from 'rxjs';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { CoreAppProvider } from '../app';
@@ -347,6 +348,34 @@ export class CoreUtilsProvider {
 
         // Return when all promises are done.
         return this.allPromises(promises);
+    }
+
+    /**
+     * Flatten an object, moving subobjects' properties to the first level using dot notation. E.g.:
+     * {a: {b: 1, c: 2}, d: 3} -> {'a.b': 1, 'a.c': 2, d: 3}
+     *
+     * @param {object} obj Object to flatten.
+     * @return {object} Flatten object.
+     */
+    flattenObject(obj: object) : object {
+        let toReturn = {};
+
+        for (let name in obj) {
+            if (!obj.hasOwnProperty(name)) continue;
+
+            if (typeof obj[name] == 'object') {
+                let flatObject = this.flattenObject(obj[name]);
+                for (let subName in flatObject) {
+                    if (!flatObject.hasOwnProperty(subName)) continue;
+
+                    toReturn[name + '.' + subName] = flatObject[subName];
+                }
+            } else {
+                toReturn[name] = obj[name];
+            }
+        }
+
+        return toReturn;
     }
 
     /**
@@ -917,6 +946,18 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Given an observable, convert it to a Promise that will resolve with the first received value.
+     *
+     * @param {Observable<any>} obs The observable to convert.
+     * @return {Promise<any>} Promise.
+     */
+    observableToPromise(obs: Observable<any>) : Promise<any> {
+        return new Promise((resolve, reject) => {
+            obs.subscribe(resolve, reject);
+        });
+    }
+
+    /**
      * Similar to AngularJS $q.defer(). It will return an object containing the promise, and the resolve and reject functions.
      *
      * @return {any} Object containing the promise, and the resolve and reject functions.
@@ -1019,6 +1060,17 @@ export class CoreUtilsProvider {
         }
 
         return query.length ? query.substr(0, query.length - 1) : query;
+    }
+
+    /**
+     * Stringify an object, sorting the properties. It doesn't sort arrays, only object properties. E.g.:
+     * {b: 2, a: 1} -> '{"a":1,"b":2}'
+     *
+     * @param {object} obj Object to stringify.
+     * @return {string} Stringified object.
+     */
+    sortAndStringify(obj: object) : string {
+        return JSON.stringify(obj, Object.keys(this.flattenObject(obj)).sort());
     }
 
     /**

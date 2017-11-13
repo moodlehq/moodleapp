@@ -104,7 +104,7 @@ export class CoreWSProvider {
      * A wrapper function for a moodle WebService call.
      *
      * @param {string} method The WebService method to be called.
-     * @param {any} data Arguments to pass to the method.
+     * @param {any} data Arguments to pass to the method. It's recommended to call convertValuesToString before passing the data.
      * @param {CoreWSPreSets} preSets Extra settings and information.
      * @return {Promise} Promise resolved with the response data in success and rejected with the error message if it fails.
      */
@@ -121,13 +121,6 @@ export class CoreWSProvider {
         preSets.typeExpected = preSets.typeExpected || 'object';
         if (typeof preSets.responseExpected == 'undefined') {
             preSets.responseExpected = true;
-        }
-
-        try {
-            data = this.convertValuesToString(data, preSets.cleanUnicode);
-        } catch (e) {
-            // Empty cleaned text found.
-            return Promise.reject(this.createFakeWSError('mm.core.unicodenotsupportedcleanerror', true));
         }
 
         data.wsfunction = method;
@@ -182,33 +175,32 @@ export class CoreWSProvider {
 
         siteUrl = preSets.siteUrl + '/lib/ajax/service.php';
 
-        return new Promise((resolve, reject) => {
-            this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.wsTimeout).subscribe((data: any) => {
-                // Some moodle web services return null. If the responseExpected value is set then so long as no data
-                // is returned, we create a blank object.
-                if (!data && !preSets.responseExpected) {
-                    data = [{}];
-                }
+        let observable = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.wsTimeout);
+        return this.utils.observableToPromise(observable).then((data: any) => {
+            // Some moodle web services return null. If the responseExpected value is set then so long as no data
+            // is returned, we create a blank object.
+            if (!data && !preSets.responseExpected) {
+                data = [{}];
+            }
 
-                // Check if error. Ajax layer should always return an object (if error) or an array (if success).
-                if (!data || typeof data != 'object') {
-                    return rejectWithError(this.translate.instant('mm.core.serverconnection'));
-                } else if (data.error) {
-                    return rejectWithError(data.error, data.errorcode);
-                }
+            // Check if error. Ajax layer should always return an object (if error) or an array (if success).
+            if (!data || typeof data != 'object') {
+                return rejectWithError(this.translate.instant('mm.core.serverconnection'));
+            } else if (data.error) {
+                return rejectWithError(data.error, data.errorcode);
+            }
 
-                // Get the first response since only one request was done.
-                data = data[0];
+            // Get the first response since only one request was done.
+            data = data[0];
 
-                if (data.error) {
-                    return rejectWithError(data.exception.message, data.exception.errorcode);
-                }
+            if (data.error) {
+                return rejectWithError(data.exception.message, data.exception.errorcode);
+            }
 
-                return data.data;
-            }, (data) => {
-                let available = data.status == 404 ? -1 : 0;
-                return rejectWithError(this.translate.instant('mm.core.serverconnection'), '', available);
-            });
+            return data.data;
+        }, (data) => {
+            let available = data.status == 404 ? -1 : 0;
+            return rejectWithError(this.translate.instant('mm.core.serverconnection'), '', available);
         });
 
         // Convenience function to return an error.
@@ -237,7 +229,7 @@ export class CoreWSProvider {
      * @param {boolean} [stripUnicode] If Unicode long chars need to be stripped.
      * @return {object} The cleaned object, with multilevel array and objects preserved.
      */
-    protected convertValuesToString(data: object, stripUnicode?: boolean) : object {
+    convertValuesToString(data: object, stripUnicode?: boolean) : object {
         let result;
         if (!Array.isArray(data) && typeof data == 'object') {
             result = {};
@@ -435,10 +427,7 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = new Promise((resolve, reject) => {
-                this.http.head(url).timeout(CoreConstants.wsTimeout).subscribe(resolve, reject);
-            });
-
+            promise = this.utils.observableToPromise(this.http.head(url).timeout(CoreConstants.wsTimeout));
             this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -455,58 +444,58 @@ export class CoreWSProvider {
      * @return {Promise<any>} Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
     performPost(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets) : Promise<any> {
-        // Create the promise for the request.
-        let promise = new Promise((resolve, reject) => {
+        // Perform the post request.
+        let observable = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.wsTimeout),
+            promise;
 
-            this.http.post(siteUrl, ajaxData).timeout(CoreConstants.wsTimeout).subscribe((data: any) => {
-                // Some moodle web services return null.
-                // If the responseExpected value is set to false, we create a blank object if the response is null.
-                if (!data && !preSets.responseExpected) {
-                    data = {};
-                }
+        promise = this.utils.observableToPromise(observable).then((data: any) => {
+            // Some moodle web services return null.
+            // If the responseExpected value is set to false, we create a blank object if the response is null.
+            if (!data && !preSets.responseExpected) {
+                data = {};
+            }
 
-                if (!data) {
-                    return Promise.reject(this.createFakeWSError('mm.core.serverconnection', true));
-                } else if (typeof data != preSets.typeExpected) {
-                    this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
-                    return Promise.reject(this.createFakeWSError('mm.core.errorinvalidresponse', true));
-                }
-
-                if (typeof data.exception !== 'undefined') {
-                    return Promise.reject(data);
-                }
-
-                if (typeof data.debuginfo != 'undefined') {
-                    return Promise.reject(this.createFakeWSError('Error. ' + data.message));
-                }
-
-                return data;
-            }, (error) => {
-                // If server has heavy load, retry after some seconds.
-                if (error.status == 429) {
-                    let retryPromise = this.addToRetryQueue(method, siteUrl, ajaxData, preSets);
-
-                    // Only process the queue one time.
-                    if (this.retryTimeout == 0) {
-                        this.retryTimeout = parseInt(error.headers('Retry-After'), 10) || 5;
-                        this.logger.warn(`${error.statusText}. Retrying in ${this.retryTimeout} seconds. ` +
-                                        `${this.retryCalls.length} calls left.`);
-
-                        setTimeout(() => {
-                            this.logger.warn(`Retrying now with ${this.retryCalls.length} calls to process.`);
-                            // Finish timeout.
-                            this.retryTimeout = 0;
-                            this.processRetryQueue();
-                        }, this.retryTimeout * 1000);
-                    } else {
-                        this.logger.warn('Calls locked, trying later...');
-                    }
-
-                    return retryPromise;
-                }
-
+            if (!data) {
                 return Promise.reject(this.createFakeWSError('mm.core.serverconnection', true));
-            });
+            } else if (typeof data != preSets.typeExpected) {
+                this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
+                return Promise.reject(this.createFakeWSError('mm.core.errorinvalidresponse', true));
+            }
+
+            if (typeof data.exception !== 'undefined') {
+                return Promise.reject(data);
+            }
+
+            if (typeof data.debuginfo != 'undefined') {
+                return Promise.reject(this.createFakeWSError('Error. ' + data.message));
+            }
+
+            return data;
+        }, (error) => {
+            // If server has heavy load, retry after some seconds.
+            if (error.status == 429) {
+                let retryPromise = this.addToRetryQueue(method, siteUrl, ajaxData, preSets);
+
+                // Only process the queue one time.
+                if (this.retryTimeout == 0) {
+                    this.retryTimeout = parseInt(error.headers('Retry-After'), 10) || 5;
+                    this.logger.warn(`${error.statusText}. Retrying in ${this.retryTimeout} seconds. ` +
+                                    `${this.retryCalls.length} calls left.`);
+
+                    setTimeout(() => {
+                        this.logger.warn(`Retrying now with ${this.retryCalls.length} calls to process.`);
+                        // Finish timeout.
+                        this.retryTimeout = 0;
+                        this.processRetryQueue();
+                    }, this.retryTimeout * 1000);
+                } else {
+                    this.logger.warn('Calls locked, trying later...');
+                }
+
+                return retryPromise;
+            }
+
+            return Promise.reject(this.createFakeWSError('mm.core.serverconnection', true));
         });
 
         this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);

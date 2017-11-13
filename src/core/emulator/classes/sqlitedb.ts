@@ -78,12 +78,14 @@ export class SQLiteDBMock extends SQLiteDB {
 
     /**
      * Execute a SQL query.
+     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
+     * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
      * @param {string} sql SQL query to execute.
      * @param {any[]} params Query parameters.
      * @return {Promise<any>} Promise resolved with the result.
      */
-    protected execute(sql: string, params?: any[]) : Promise<any> {
+    execute(sql: string, params?: any[]) : Promise<any> {
         return new Promise((resolve, reject) => {
             // With WebSQL, all queries must be run in a transaction.
             this.db.transaction((tx) => {
@@ -96,11 +98,13 @@ export class SQLiteDBMock extends SQLiteDB {
 
     /**
      * Execute a set of SQL queries. This operation is atomic.
+     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
+     * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
      * @param {any[]} sqlStatements SQL statements to execute.
      * @return {Promise<any>} Promise resolved with the result.
      */
-    protected executeBatch(sqlStatements: any[]) : Promise<any> {
+    executeBatch(sqlStatements: any[]) : Promise<any> {
         return new Promise((resolve, reject) => {
             // Create a transaction to execute the queries.
             this.db.transaction((tx) => {

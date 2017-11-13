@@ -303,12 +303,14 @@ export class SQLiteDB {
 
     /**
      * Execute a SQL query.
+     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
+     * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
      * @param {string} sql SQL query to execute.
      * @param {any[]} params Query parameters.
      * @return {Promise<any>} Promise resolved with the result.
      */
-    protected execute(sql: string, params?: any[]) : Promise<any> {
+    execute(sql: string, params?: any[]) : Promise<any> {
         return this.ready().then(() => {
             return this.db.executeSql(sql, params);
         });
@@ -316,14 +318,26 @@ export class SQLiteDB {
 
     /**
      * Execute a set of SQL queries. This operation is atomic.
+     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
+     * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
      * @param {any[]} sqlStatements SQL statements to execute.
      * @return {Promise<any>} Promise resolved with the result.
      */
-    protected executeBatch(sqlStatements: any[]) : Promise<any> {
+    executeBatch(sqlStatements: any[]) : Promise<any> {
         return this.ready().then(() => {
             return this.db.sqlBatch(sqlStatements);
         });
+    }
+
+    /**
+     * Get all the records from a table.
+     *
+     * @param {string} table The table to query.
+     * @return {Promise<any>} Promise resolved with the records.
+     */
+    getAllRecords(table: string) : Promise<any> {
+        return this.getRecords(table);
     }
 
     /**

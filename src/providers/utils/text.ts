@@ -26,25 +26,6 @@ export class CoreTextUtilsProvider {
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider) {}
 
     /**
-     * Add or remove 'www' from a URL. The url needs to have http or https protocol.
-     *
-     * @param {string} url URL to modify.
-     * @return {string} Modified URL.
-     */
-    addOrRemoveWWW(url: string) : string {
-        if (url) {
-            if (url.match(/http(s)?:\/\/www\./)) {
-                // Already has www. Remove it.
-                url = url.replace('www.', '');
-            } else {
-                url = url.replace('https://', 'https://www.');
-                url = url.replace('http://', 'http://www.');
-            }
-        }
-        return url;
-    }
-
-    /**
      * Given a list of sentences, build a message with all of them wrapped in <p>.
      *
      * @param {string[]} messages Messages to show.
@@ -327,47 +308,6 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * Formats a URL, trim, lowercase, etc...
-     *
-     * @param {string} url The url to be formatted.
-     * @return {string} Fromatted url.
-     */
-    formatURL(url: string) : string {
-        url = url.trim();
-
-        // Check if the URL starts by http or https.
-        if (! /^http(s)?\:\/\/.*/i.test(url)) {
-            // Test first allways https.
-            url = 'https://' + url;
-        }
-
-        // http allways in lowercase.
-        url = url.replace(/^http/i, 'http');
-        url = url.replace(/^https/i, 'https');
-
-        // Replace last slash.
-        url = url.replace(/\/$/, "");
-
-        return url;
-    }
-
-    /**
-     * Given a URL, returns what's after the last '/' without params.
-     * Example:
-     * http://mysite.com/a/course.html?id=1 -> course.html
-     *
-     * @param {string} url URL to treat.
-     * @return {string} Last file without params.
-     */
-    getLastFileWithoutParams(url: string) : string {
-        let filename = url.substr(url.lastIndexOf('/') + 1);
-        if (filename.indexOf('?') != -1) {
-            filename = filename.substr(0, filename.indexOf('?'));
-        }
-        return filename;
-    }
-
-    /**
      * Get the pluginfile URL to replace @@PLUGINFILE@@ wildcards.
      *
      * @param {any[]} files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
@@ -381,61 +321,6 @@ export class CoreTextUtilsProvider {
         }
 
         return undefined;
-    }
-
-    /**
-     * Get the protocol from a URL.
-     * E.g. http://www.google.com returns 'http'.
-     *
-     * @param {string} url URL to treat.
-     * @return {string} Protocol, undefined if no protocol found.
-     */
-    getUrlProtocol(url: string) : string {
-        if (!url) {
-            return;
-        }
-
-        let matches = url.match(/^([^\/:\.\?]*):\/\//);
-        if (matches && matches[1]) {
-            return matches[1];
-        }
-    }
-
-    /**
-     * Get the scheme from a URL. Please notice that, if a URL has protocol, it will return the protocol.
-     * E.g. javascript:doSomething() returns 'javascript'.
-     *
-     * @param {string} url URL to treat.
-     * @return {string} Scheme, undefined if no scheme found.
-     */
-    getUrlScheme(url: string) : string {
-        if (!url) {
-            return;
-        }
-
-        let matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
-        if (matches && matches[1]) {
-            return matches[1];
-        }
-    }
-
-    /*
-     * Gets a username from a URL like: user@mysite.com.
-     *
-     * @param {string} url URL to treat.
-     * @return {string} Username. Undefined if no username found.
-     */
-    getUsernameFromUrl(url: string) : string {
-        if (url.indexOf('@') > -1) {
-            // Get URL without protocol.
-            let withoutProtocol = url.replace(/.*?:\/\//, ''),
-                matches = withoutProtocol.match(/[^@]*/);
-
-            // Make sure that @ is at the start of the URL, not in a param at the end.
-            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
-                return matches[0];
-            }
-        }
     }
 
     /**
@@ -496,20 +381,6 @@ export class CoreTextUtilsProvider {
             // Error, use the json text.
         }
         return json;
-    }
-
-    /**
-     * Remove protocol and www from a URL.
-     *
-     * @param {string} url URL to treat.
-     * @return {string} Treated URL.
-     */
-    removeProtocolAndWWW(url: string) : string {
-        // Remove protocol.
-        url = url.replace(/.*?:\/\//g, '');
-        // Remove www.
-        url = url.replace(/^www./, '');
-        return url;
     }
 
     /**

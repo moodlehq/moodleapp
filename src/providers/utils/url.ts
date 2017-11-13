@@ -24,6 +24,25 @@ export class CoreUrlUtilsProvider {
     constructor(private langProvider: CoreLangProvider) {}
 
     /**
+     * Add or remove 'www' from a URL. The url needs to have http or https protocol.
+     *
+     * @param {string} url URL to modify.
+     * @return {string} Modified URL.
+     */
+    addOrRemoveWWW(url: string) : string {
+        if (url) {
+            if (url.match(/http(s)?:\/\/www\./)) {
+                // Already has www. Remove it.
+                url = url.replace('www.', '');
+            } else {
+                url = url.replace('https://', 'https://www.');
+                url = url.replace('http://', 'http://www.');
+            }
+        }
+        return url;
+    }
+
+    /**
      * Extracts the parameters from a URL and stores them in an object.
      *
      * @param {string} url URL to treat.
@@ -39,6 +58,71 @@ export class CoreUrlUtilsProvider {
         });
 
         return params;
+    }
+
+    /**
+     * Generic function for adding the wstoken to Moodle urls and for pointing to the correct script.
+     * For download remote files from Moodle we need to use the special /webservice/pluginfile passing
+     * the ws token as a get parameter.
+     *
+     * @param {string} url The url to be fixed.
+     * @param {string} token Token to use.
+     * @return {string} Fixed URL.
+     */
+    fixPluginfileURL(url: string, token: string) : string {
+        if (!url || !token) {
+            return '';
+        }
+
+        // First check if we need to fix this url or is already fixed.
+        if (url.indexOf('token=') != -1) {
+            return url;
+        }
+
+        // Check if is a valid URL (contains the pluginfile endpoint).
+        if (!this.isPluginFileUrl(url)) {
+            return url;
+        }
+
+        // In which way the server is serving the files? Are we using slash parameters?
+        if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1 || url.indexOf('?rev=') != -1) {
+            url += '&';
+        } else {
+            url += '?';
+        }
+        // Always send offline=1 (for external repositories). It shouldn't cause problems for local files or old Moodles.
+        url += 'token=' + token + '&offline=1';
+
+        // Some webservices returns directly the correct download url, others not.
+        if (url.indexOf('/webservice/pluginfile') == -1) {
+            url = url.replace('/pluginfile', '/webservice/pluginfile');
+        }
+        return url;
+    }
+
+    /**
+     * Formats a URL, trim, lowercase, etc...
+     *
+     * @param {string} url The url to be formatted.
+     * @return {string} Fromatted url.
+     */
+    formatURL(url: string) : string {
+        url = url.trim();
+
+        // Check if the URL starts by http or https.
+        if (! /^http(s)?\:\/\/.*/i.test(url)) {
+            // Test first allways https.
+            url = 'https://' + url;
+        }
+
+        // http allways in lowercase.
+        url = url.replace(/^http/i, 'http');
+        url = url.replace(/^https/i, 'https');
+
+        // Replace last slash.
+        url = url.replace(/\/$/, "");
+
+        return url;
     }
 
     /**
@@ -65,6 +149,77 @@ export class CoreUrlUtilsProvider {
         }).catch(() => {
             return docsUrl;
         });
+    }
+
+    /**
+     * Given a URL, returns what's after the last '/' without params.
+     * Example:
+     * http://mysite.com/a/course.html?id=1 -> course.html
+     *
+     * @param {string} url URL to treat.
+     * @return {string} Last file without params.
+     */
+    getLastFileWithoutParams(url: string) : string {
+        let filename = url.substr(url.lastIndexOf('/') + 1);
+        if (filename.indexOf('?') != -1) {
+            filename = filename.substr(0, filename.indexOf('?'));
+        }
+        return filename;
+    }
+
+    /**
+     * Get the protocol from a URL.
+     * E.g. http://www.google.com returns 'http'.
+     *
+     * @param {string} url URL to treat.
+     * @return {string} Protocol, undefined if no protocol found.
+     */
+    getUrlProtocol(url: string) : string {
+        if (!url) {
+            return;
+        }
+
+        let matches = url.match(/^([^\/:\.\?]*):\/\//);
+        if (matches && matches[1]) {
+            return matches[1];
+        }
+    }
+
+    /**
+     * Get the scheme from a URL. Please notice that, if a URL has protocol, it will return the protocol.
+     * E.g. javascript:doSomething() returns 'javascript'.
+     *
+     * @param {string} url URL to treat.
+     * @return {string} Scheme, undefined if no scheme found.
+     */
+    getUrlScheme(url: string) : string {
+        if (!url) {
+            return;
+        }
+
+        let matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
+        if (matches && matches[1]) {
+            return matches[1];
+        }
+    }
+
+    /*
+     * Gets a username from a URL like: user@mysite.com.
+     *
+     * @param {string} url URL to treat.
+     * @return {string} Username. Undefined if no username found.
+     */
+    getUsernameFromUrl(url: string) : string {
+        if (url.indexOf('@') > -1) {
+            // Get URL without protocol.
+            let withoutProtocol = url.replace(/.*?:\/\//, ''),
+                matches = withoutProtocol.match(/[^@]*/);
+
+            // Make sure that @ is at the start of the URL, not in a param at the end.
+            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
+                return matches[0];
+            }
+        }
     }
 
     /**
@@ -128,42 +283,16 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
-     * Generic function for adding the wstoken to Moodle urls and for pointing to the correct script.
-     * For download remote files from Moodle we need to use the special /webservice/pluginfile passing
-     * the ws token as a get parameter.
+     * Remove protocol and www from a URL.
      *
-     * @param {string} url The url to be fixed.
-     * @param {string} token Token to use.
-     * @return {string} Fixed URL.
+     * @param {string} url URL to treat.
+     * @return {string} Treated URL.
      */
-    fixPluginfileURL(url: string, token: string) : string {
-        if (!url || !token) {
-            return '';
-        }
-
-        // First check if we need to fix this url or is already fixed.
-        if (url.indexOf('token=') != -1) {
-            return url;
-        }
-
-        // Check if is a valid URL (contains the pluginfile endpoint).
-        if (!this.isPluginFileUrl(url)) {
-            return url;
-        }
-
-        // In which way the server is serving the files? Are we using slash parameters?
-        if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1 || url.indexOf('?rev=') != -1) {
-            url += '&';
-        } else {
-            url += '?';
-        }
-        // Always send offline=1 (for external repositories). It shouldn't cause problems for local files or old Moodles.
-        url += 'token=' + token + '&offline=1';
-
-        // Some webservices returns directly the correct download url, others not.
-        if (url.indexOf('/webservice/pluginfile') == -1) {
-            url = url.replace('/pluginfile', '/webservice/pluginfile');
-        }
+    removeProtocolAndWWW(url: string) : string {
+        // Remove protocol.
+        url = url.replace(/.*?:\/\//g, '');
+        // Remove www.
+        url = url.replace(/^www./, '');
         return url;
     }
 
