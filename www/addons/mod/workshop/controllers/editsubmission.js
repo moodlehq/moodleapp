@@ -32,6 +32,7 @@ angular.module('mm.addons.mod_workshop')
         userId = $mmSite.getUserId(),
         originalData = {},
         blockData,
+        hasOffline,
         editing = false;
 
     $scope.title = module.name;
@@ -69,25 +70,6 @@ angular.module('mm.addons.mod_workshop')
                         blockData && blockData.back();
                         return;
                     }
-
-                    originalData.title = $scope.submission.title;
-                    originalData.text = $scope.submission.text;
-                    originalData.attachmentfiles = [];
-
-                    angular.forEach($scope.submission.attachmentfiles, function(file) {
-                        var filename;
-                        if (file.filename) {
-                            filename = file.filename;
-                        } else {
-                            // We don't have filename, extract it from the path.
-                            filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
-                        }
-
-                        originalData.attachmentfiles.push({
-                            'filename' : filename,
-                            'fileurl': file.fileurl
-                        });
-                    });
                 });
             } else if (!access.cansubmit || !access.creatingsubmissionallowed) {
                 // Should not happen, but go back if does.
@@ -98,6 +80,7 @@ angular.module('mm.addons.mod_workshop')
         }).then(function() {
             return $mmaModWorkshopOffline.getSubmissions(workshopId).then(function(submissionsActions) {
                 if (submissionsActions && submissionsActions.length) {
+                    hasOffline = true;
                     var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, editing ? submission.id : false);
 
                     return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(offlineSubmission) {
@@ -105,7 +88,28 @@ angular.module('mm.addons.mod_workshop')
                         $scope.submission.text = offlineSubmission.content;
                         $scope.submission.attachmentfiles = offlineSubmission.attachmentfiles;
                     });
+                } else {
+                    hasOffline = false;
                 }
+            }).finally(function() {
+                originalData.title = $scope.submission.title;
+                originalData.text = $scope.submission.text;
+                originalData.attachmentfiles = [];
+
+                angular.forEach($scope.submission.attachmentfiles, function(file) {
+                    var filename;
+                    if (file.filename) {
+                        filename = file.filename;
+                    } else {
+                        // We don't have filename, extract it from the path.
+                        filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                    }
+
+                    originalData.attachmentfiles.push({
+                        'filename' : filename,
+                        'fileurl': file.fileurl
+                    });
+                });
             });
         }).then(function() {
             var submissionId = submission.id || 'newsub';
@@ -179,17 +183,15 @@ angular.module('mm.addons.mod_workshop')
             }
 
             // Upload attachments first if any.
-            if (inputData.attachmentfiles.length) {
-                allowOffline = false;
+            allowOffline = !inputData.attachmentfiles.length;
+            return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, inputData.attachmentfiles,
+                    editing, saveOffline).catch(function() {
+                // Cannot upload them in online, save them in offline.
+                saveOffline = true;
+                allowOffline = true;
                 return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, inputData.attachmentfiles,
-                        editing, saveOffline).catch(function() {
-                    // Cannot upload them in online, save them in offline.
-                    saveOffline = true;
-                    allowOffline = true;
-                    return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, inputData.attachmentfiles,
-                        editing, saveOffline);
-                });
-            }
+                    editing, saveOffline);
+            });
         }).then(function(attachmentsId) {
             if (editing) {
                 if (saveOffline) {
@@ -271,11 +273,10 @@ angular.module('mm.addons.mod_workshop')
         }
 
         return promise.then(function() {
-            $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, $scope.submission.id, editing ? 'update' : 'add');
-            $mmaModWorkshopHelper.deleteSubmissionStoredFiles(workshopId, $scope.submission.id, editing);
-
-            // Delete the local files from the tmp folder.
-            $mmFileUploaderHelper.clearTmpFiles($scope.submission.attachmentfiles);
+            if ($scope.submission.attachmentfiles) {
+                // Delete the local files from the tmp folder.
+                $mmFileUploaderHelper.clearTmpFiles($scope.submission.attachmentfiles);
+            }
         });
     }
 

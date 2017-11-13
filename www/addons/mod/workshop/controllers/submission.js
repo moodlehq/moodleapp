@@ -49,7 +49,8 @@ angular.module('mm.addons.mod_workshop')
         siteId = $mmSite.getId(),
         scrollView,
         obsAssessmentSaved,
-        syncObserver;
+        syncObserver,
+        hasOffline;
 
     function fetchSubmissionData(refresh) {
         return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
@@ -85,7 +86,7 @@ angular.module('mm.addons.mod_workshop')
                         assessment.gradinggradeover = $mmaModWorkshopHelper.realGradeValue(assessment.gradinggradeover,
                             maxGradingGrade, decimals);
 
-                        if (currentUserId ==assessment.userid) {
+                        if (currentUserId == assessment.userid) {
                             $scope.ownAssessment = assessment;
                             assessment.ownAssessment = true;
                         }
@@ -115,9 +116,6 @@ angular.module('mm.addons.mod_workshop')
                     text: submissionData.feedbackauthor || ""
                 };
 
-                originalEvaluation.published = $scope.evaluate.published;
-                originalEvaluation.text = $scope.evaluate.text;
-
                 var defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
 
                 promises.push($mmGradesHelper.makeGradesMenu($scope.workshop.grade, workshopId, defaultGrade, -1).then(function(grades) {
@@ -127,9 +125,9 @@ angular.module('mm.addons.mod_workshop')
                         label: $mmGradesHelper.getGradeLabelFromValue(grades, $scope.submissionInfo.submissiongradeover) || defaultGrade,
                         value: $scope.submissionInfo.submissiongradeover || -1
                     };
-                    originalEvaluation.grade = $scope.evaluate.grade.value;
 
                     return $mmaModWorkshopOffline.getEvaluateSubmission(workshopId, submissionId).then(function(offlineSubmission) {
+                        hasOffline = true;
                         $scope.evaluate.published = offlineSubmission.published;
                         $scope.evaluate.text = offlineSubmission.feedbacktext;
                         $scope.evaluate.grade = {
@@ -137,7 +135,12 @@ angular.module('mm.addons.mod_workshop')
                             value: offlineSubmission.gradeover || -1
                         };
                     }).catch(function() {
+                        hasOffline = false;
                         // Ignore errors.
+                    }).finally(function() {
+                        originalEvaluation.published = $scope.evaluate.published;
+                        originalEvaluation.text = $scope.evaluate.text;
+                        originalEvaluation.grade = $scope.evaluate.grade.value;
                     });
                 }));
             }
@@ -237,6 +240,8 @@ angular.module('mm.addons.mod_workshop')
         if (originalEvaluation.grade != $scope.evaluate.grade.value) {
             return true;
         }
+
+        return false;
     }
 
     function saveEvaluation() {
@@ -269,7 +274,7 @@ angular.module('mm.addons.mod_workshop')
         }).finally(function() {
             modal.dismiss();
         });
-    };
+    }
 
     // Save the submission evaluation.
     $scope.saveEvaluation = function() {
@@ -286,18 +291,11 @@ angular.module('mm.addons.mod_workshop')
 
     // Ask to confirm if there are changes.
     function leaveView() {
-        var promise;
-
         if (!hasEvaluationChanged()) {
-            promise = $q.when();
-        } else {
-            // Show confirmation if some data has been modified.
-            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            return $q.when();
         }
-
-        return promise.then(function() {
-            $mmaModWorkshopOffline.deleteEvaluateSubmission(workshopId, submissionId);
-        });
+        // Show confirmation if some data has been modified.
+        return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
     }
 
     // Convenience function to refresh all the data.

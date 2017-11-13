@@ -96,11 +96,21 @@ angular.module('mm.addons.mod_workshop')
                 scope.profile = profile;
             }));
 
-            promises.push($mmaModWorkshopOffline.getEvaluateAssessment(scope.workshop.id, assessmentId).then(function(offlineSubmission) {
-                scope.offline = true;
-                scope.assessment.gradinggradeover = offlineSubmission.gradinggradeover;
-                scope.assessment.weight = offlineSubmission.weight;
-            }).catch(function() {
+            var assessOffline;
+            if (currentUser) {
+                assessOffline = $mmaModWorkshopOffline.getAssessment(scope.workshop.id, assessmentId) .then(function(offlineAssess) {
+                    scope.offline = true;
+                    scope.assessment.weight = offlineAssess.inputdata.weight;
+                });
+            } else {
+                assessOffline = $mmaModWorkshopOffline.getEvaluateAssessment(scope.workshop.id, assessmentId).then(function(offlineAssess) {
+                    scope.offline = true;
+                    scope.assessment.gradinggradeover = offlineAssess.gradinggradeover;
+                    scope.assessment.weight = offlineAssess.weight;
+                });
+            }
+
+            promises.push(assessOffline.catch(function() {
                 scope.offline = false;
                 // Ignore errors.
             }));

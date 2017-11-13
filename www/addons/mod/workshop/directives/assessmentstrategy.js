@@ -64,6 +64,7 @@ angular.module('mm.addons.mod_workshop')
                 obsInvalidated,
                 obsSaveAssessment,
                 promise,
+                hasOffline,
                 edit = !!scope.edit,
                 rteEnabled = false;
 
@@ -78,59 +79,64 @@ angular.module('mm.addons.mod_workshop')
                     scope.assessment = assessmentData;
 
                     if (edit) {
-                        originalData.text = scope.assessment.feedbackauthor;
+                        return $mmaModWorkshopOffline.getAssessment(scope.workshopId, scope.assessmentId)
+                                .then(function(offlineAssessment) {
+                            var offlineData = offlineAssessment.inputdata;
 
-                        if (scope.access.canallocate) {
-                            originalData.weight = assessmentData.weight;
-                        }
+                            hasOffline = true;
 
-                        originalData.files = [];
-                        angular.forEach(assessmentData.feedbackattachmentfiles, function(file) {
-                            var filename;
-                            if (file.filename) {
-                                filename = file.filename;
-                            } else {
-                                // We don't have filename, extract it from the path.
-                                filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                            assessmentData.feedbackauthor = offlineData.feedbackauthor;
+
+                            if (scope.access.canallocate) {
+                                assessmentData.weight = offlineData.weight;
                             }
 
-                            originalData.files.push({
-                                'filename' : filename,
-                                'fileurl': file.fileurl
+                            // Override assessment plugins values.
+                            assessmentData.form.current = $mmaModWorkshop.parseFields(
+                                $mmUtil.objectToArrayOfObjects(offlineData, 'name', 'value'));
+
+                            // Override offline files.
+                            if (offlineData) {
+                                return $mmaModWorkshopHelper.getAssessmentFilesFromOfflineFilesObject(
+                                        offlineData.feedbackauthorattachmentsid, scope.workshopId, scope.assessmentId)
+                                        .then(function(files) {
+                                    assessmentData.feedbackattachmentfiles = files;
+                                });
+                            }
+                        }).catch(function() {
+                            hasOffline = false;
+                            // Ignore errors.
+                        }).finally(function() {
+                            scope.feedback.text = assessmentData.feedbackauthor;
+
+                            originalData.text = scope.assessment.feedbackauthor;
+
+                            if (scope.access.canallocate) {
+                                originalData.weight = assessmentData.weight;
+                            }
+
+                            originalData.files = [];
+                            angular.forEach(assessmentData.feedbackattachmentfiles, function(file) {
+                                var filename;
+                                if (file.filename) {
+                                    filename = file.filename;
+                                } else {
+                                    // We don't have filename, extract it from the path.
+                                    filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                                }
+
+                                originalData.files.push({
+                                    'filename' : filename,
+                                    'fileurl': file.fileurl
+                                });
                             });
-                        });
-                        return $mmaModWorkshopAssessmentStrategyDelegate.getOriginalValues(strategy, assessmentData.form,
-                                scope.workshopId).then(function(values) {
-                            originalData.assessment = values;
-                        }).then(function() {
-                            return $mmaModWorkshopOffline.getAssessment(scope.workshopId, scope.assessmentId)
-                                    .then(function(offlineAssessment) {
-                                var offlineData = offlineAssessment.inputdata;
 
-                                assessmentData.feedbackauthor = offlineData.feedbackauthor;
-
-                                if (scope.access.canallocate) {
-                                    assessmentData.weight = offlineData.weight;
-                                }
-
-                                // Override assessment plugins values.
-                                assessmentData.form.current = $mmaModWorkshop.parseFields(
-                                    $mmUtil.objectToArrayOfObjects(offlineData, 'name', 'value'));
-
-                                // Override offline files.
-                                if (offlineData) {
-                                    return $mmaModWorkshopHelper.getAssessmentFilesFromOfflineFilesObject(
-                                            offlineData.feedbackauthorattachmentsid, scope.workshopId, scope.assessmentId)
-                                            .then(function(files) {
-                                        assessmentData.feedbackattachmentfiles = files;
-                                    });
-                                }
-
-                            }).catch(function() {
-                                // Ignore errors.
+                            return $mmaModWorkshopAssessmentStrategyDelegate.getOriginalValues(strategy, assessmentData.form,
+                                    scope.workshopId).then(function(values) {
+                                originalData.assessment = values;
                             }).finally(function() {
-                                scope.feedback.text = assessmentData.feedbackauthor;
-                                $mmFileSession.setFiles(mmaModWorkshopComponent, scope.workshopId + '_' + scope.assessmentId, assessmentData.feedbackattachmentfiles);
+                                $mmFileSession.setFiles(mmaModWorkshopComponent, scope.workshopId + '_' + scope.assessmentId,
+                                    assessmentData.feedbackattachmentfiles);
                                 if (scope.access.canallocate) {
                                     scope.weight = assessmentData.weight;
                                 }
@@ -258,19 +264,15 @@ angular.module('mm.addons.mod_workshop')
                 scope.fieldErrors = false;
 
                 // Upload attachments first if any.
-                if (tempFiles.length) {
-                    allowOffline = false;
-                    filePromise = $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(scope.workshop.id, scope.assessmentId,
-                            tempFiles, saveOffline).catch(function() {
-                        // Cannot upload them in online, save them in offline.
-                        saveOffline = true;
-                        allowOffline = true;
-                        return $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(scope.workshop.id, scope.assessmentId,
-                            tempFiles, saveOffline);
-                    });
-                } else {
-                    filePromise = $q.when();
-                }
+                allowOffline = !tempFiles.length;
+                filePromise = $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(scope.workshop.id, scope.assessmentId,
+                        tempFiles, saveOffline).catch(function() {
+                    // Cannot upload them in online, save them in offline.
+                    saveOffline = true;
+                    allowOffline = true;
+                    return $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(scope.workshop.id, scope.assessmentId,
+                        tempFiles, saveOffline);
+                });
 
                 return filePromise.then(function(attachmentsId) {
                     return $mmaModWorkshopHelper.prepareAssessmentData(scope.workshop, inputData, scope.assessment.form,
@@ -301,7 +303,7 @@ angular.module('mm.addons.mod_workshop')
                         promises.push($mmaModWorkshop.invalidateAssessmentData(scope.workshop.id, scope.assessmentId));
                     }
 
-                    return $q.all(promises).catch(function(here) {
+                    return $q.all(promises).catch(function() {
                         // Ignore errors.
                     }).finally(function() {
                         $mmEvents.trigger(mmaModWorkshopAssessmentSavedEvent, {
@@ -336,16 +338,6 @@ angular.module('mm.addons.mod_workshop')
                 }
 
                 return promise.then(function() {
-                    $mmEvents.trigger(mmaModWorkshopAssessmentSavedEvent, {
-                        workshopid: scope.workshop.id,
-                        assessmentid: scope.assessmentId,
-                        userId: $mmSite.getUserId(),
-                        siteId: $mmSite.getId()
-                    });
-
-                    $mmaModWorkshopHelper.deleteAssessmentStoredFiles(scope.workshop.id, scope.assessmentId);
-                    $mmaModWorkshopOffline.deleteAssessment(scope.workshop.id, scope.assessmentId);
-
                     if (scope.assessment.feedbackattachmentfiles) {
                         // Delete the local files from the tmp folder.
                         $mmFileUploaderHelper.clearTmpFiles(scope.assessment.feedbackattachmentfiles);

@@ -134,7 +134,9 @@ angular.module('mm.addons.mod_workshop')
                     workshopIds[offlineObject.workshopid] = true;
                 });
             });
-            return Object.keys(workshopIds);
+            return Object.keys(workshopIds).map(function(workshopId) {
+                return parseInt(workshopId, 10);
+            });
         });
     };
 

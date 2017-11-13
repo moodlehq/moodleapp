@@ -37,7 +37,8 @@ angular.module('mm.addons.mod_workshop')
         originalEvaluation = {},
         assessmentId = $scope.assessmentId,
         syncObserver,
-        siteId = $mmSite.getId();
+        siteId = $mmSite.getId(),
+        hasOffline;
 
     function fetchAssessmentData() {
         return $mmaModWorkshop.getWorkshopById(courseId, workshopId).then(function(workshopData) {
@@ -65,6 +66,8 @@ angular.module('mm.addons.mod_workshop')
                 return $mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, assessmentId, $scope.profile.id)
                         .then(function(assessment) {
 
+                    var defaultGrade, promise;
+
                     $scope.assessment = assessment;
 
                     $scope.assessment.grade = $mmaModWorkshopHelper.realGradeValue(assessment.grade, $scope.workshop.grade,
@@ -74,12 +77,8 @@ angular.module('mm.addons.mod_workshop')
                     $scope.assessment.gradinggradeover = $mmaModWorkshopHelper.realGradeValue(assessment.gradinggradeover,
                         $scope.workshop.gradinggrade, $scope.workshop.gradedecimals);
                     $scope.evaluate = {
-                        weight: $scope.assessment.weight,
-                        text: $scope.assessment.feedbackreviewer
+                        weight: $scope.assessment.weight
                     };
-
-                    originalEvaluation.weight = $scope.evaluate.weight;
-                    originalEvaluation.text = $scope.evaluate.text;
 
                     if (accessData.canallocate) {
                         $scope.weights = [];
@@ -89,29 +88,44 @@ angular.module('mm.addons.mod_workshop')
                     }
 
                     if (accessData.canoverridegrades) {
-                        var defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
-
-                        return $mmGradesHelper.makeGradesMenu($scope.workshop.gradinggrade, workshopId, defaultGrade, -1).then(function(grades) {
+                        defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
+                        promise = $mmGradesHelper.makeGradesMenu($scope.workshop.gradinggrade, workshopId, defaultGrade, -1).then(function(grades) {
                             $scope.evaluationGrades = grades;
-
-                            $scope.evaluate.grade = {
-                                label: $mmGradesHelper.getGradeLabelFromValue(grades, $scope.assessment.gradinggradeover) || defaultGrade,
-                                value: $scope.assessment.gradinggradeover || -1
-                            };
-                            originalEvaluation.grade = $scope.evaluate.grade.value;
-
-                            return $mmaModWorkshopOffline.getEvaluateAssessment(workshopId, assessmentId).then(function(offlineSubmission) {
-                                $scope.evaluate.weight = offlineSubmission.weight;
-                                $scope.evaluate.text = offlineSubmission.feedbacktext;
-                                $scope.evaluate.grade = {
-                                    label: $mmGradesHelper.getGradeLabelFromValue(grades, offlineSubmission.gradinggradeover) || defaultGrade,
-                                    value: offlineSubmission.gradinggradeover || -1
-                                };
-                            }).catch(function() {
-                                // Ignore errors.
-                            });
                         });
+                    } else {
+                        promise = $q.when();
                     }
+
+                    return promise.then(function() {
+                        return $mmaModWorkshopOffline.getEvaluateAssessment(workshopId, assessmentId).then(function(offlineAssess) {
+                            hasOffline = true;
+                            $scope.evaluate.weight = offlineAssess.weight;
+                            if (accessData.canoverridegrades) {
+                                $scope.evaluate.text = offlineAssess.feedbacktext;
+                                $scope.evaluate.grade = {
+                                    label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, offlineAssess.gradinggradeover) || defaultGrade,
+                                    value: offlineAssess.gradinggradeover || -1
+                                };
+                            }
+                        }).catch(function() {
+                            hasOffline = false;
+                            // No offline, load online.
+                            if (accessData.canoverridegrades) {
+                                $scope.evaluate.text = $scope.assessment.feedbackreviewer;
+
+                                $scope.evaluate.grade = {
+                                    label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, $scope.assessment.gradinggradeover) || defaultGrade,
+                                    value: $scope.assessment.gradinggradeover || -1
+                                };
+                            }
+                        });
+                    }).finally(function() {
+                        originalEvaluation.weight = $scope.evaluate.weight;
+                        if (accessData.canoverridegrades) {
+                            originalEvaluation.text = $scope.evaluate.text;
+                            originalEvaluation.grade = $scope.evaluate.grade.value;
+                        }
+                    });
                 });
             }
         }).catch(function(message) {
@@ -156,13 +170,17 @@ angular.module('mm.addons.mod_workshop')
             return true;
         }
 
-        if (originalEvaluation.text != $scope.evaluate.text) {
-            return true;
+        if ($scope.access.canoverridegrades) {
+            if (originalEvaluation.text != $scope.evaluate.text) {
+                return true;
+            }
+
+            if (originalEvaluation.grade != $scope.evaluate.grade.value) {
+                return true;
+            }
         }
 
-        if (originalEvaluation.grade != $scope.evaluate.grade.value) {
-            return true;
-        }
+        return false;
     }
 
     function saveEvaluation() {
@@ -178,8 +196,7 @@ angular.module('mm.addons.mod_workshop')
             }
 
             // Try to send it to server.
-            return $mmaModWorkshop.evaluateAssessment(workshopId, assessmentId, courseId, text, $scope.evaluate.weight,
-                grade);
+            return $mmaModWorkshop.evaluateAssessment(workshopId, assessmentId, courseId, text, $scope.evaluate.weight, grade);
         }).then(function() {
             var data = {
                 workshopid: workshopId,
@@ -213,18 +230,11 @@ angular.module('mm.addons.mod_workshop')
 
     // Ask to confirm if there are changes.
     function leaveView() {
-        var promise;
-
         if (!hasEvaluationChanged()) {
-            promise = $q.when();
-        } else {
-            // Show confirmation if some data has been modified.
-            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            return $q.when();
         }
-
-        return promise.then(function() {
-            $mmaModWorkshopOffline.deleteEvaluateAssessment(workshopId, assessmentId);
-        });
+        // Show confirmation if some data has been modified.
+        return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
     }
 
     fetchAssessmentData();

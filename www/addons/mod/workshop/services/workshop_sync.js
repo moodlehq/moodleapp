@@ -195,12 +195,11 @@ angular.module('mm.addons.mod_workshop')
                 return $q.reject();
             }
 
-            return $mmaModWorkshop.getWorkshopById(courseId, workshopId, siteId).then(function(workshopData) {
+            return $mmaModWorkshop.getWorkshopById(courseId, workshopId, siteId).then(function(workshop) {
                 var submissionsActions = syncs[0],
                     assessments = syncs[1],
                     submissionEvaluations = syncs[2],
                     assessmentEvaluations = syncs[3];
-                workshop = workshopData;
 
                 var promises = [],
                     offlineSubmissions = {};
@@ -240,7 +239,7 @@ angular.module('mm.addons.mod_workshop')
             }).then(function() {
                 if (result.updated) {
                     // Data has been sent to server. Now invalidate the WS calls.
-                    return $mmaModWorkshop.invalidateContentById(workshop.id, courseId, siteId).catch(function() {
+                    return $mmaModWorkshop.invalidateContentById(workshopId, courseId, siteId).catch(function() {
                         // Ignore errors.
                     });
                 }
@@ -314,7 +313,9 @@ angular.module('mm.addons.mod_workshop')
                                 siteId);
                     });
                 } else {
-                    fileProm = $q.when();
+                    // Remove all files.
+                    fileProm = $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshop.id, submissionId, [], editing, false,
+                                siteId);
                 }
 
                 actionPromise = fileProm.then(function(attachmentsId) {
@@ -405,13 +406,12 @@ angular.module('mm.addons.mod_workshop')
                     return $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(workshop.id, assessmentId, files, false, siteId);
                 });
             } else {
-                fileProm = $q.when();
+                // Remove all files.
+                fileProm = $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(workshop.id, assessmentId, [], false, siteId);
             }
 
             return fileProm.then(function(attachmentsId) {
-                if (attachmentsId) {
-                    inputData.feedbackauthorattachmentsid = attachmentsId;
-                }
+                inputData.feedbackauthorattachmentsid = attachmentsId || 0;
                 return $mmaModWorkshop.updateAssessmentOnline(assessmentId, inputData, siteId);
             }).catch(function(error) {
                 if (error && error.wserror) {

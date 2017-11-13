@@ -10,7 +10,7 @@
         <p ng-if="!assessment.grade" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
         <button ng-if="canSelfAssess && assessment.grade == null" class="button button-block" ng-click="gotoOwnAssessment()">{{ 'mma.mod_workshop.assess' | translate }}</button>
         <button ng-if="canSelfAssess && assessment.grade != null" class="button button-block" ng-click="gotoOwnAssessment()">{{ 'mma.mod_workshop.reassess' | translate }}</button>
-        <div class="item-note text-right" ng-if="offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+        <div class="item-note text-right" ng-if="offline"><i class="icon ion-clock"></i>{{ 'mm.core.notsent' | translate }}</div>
         <i ng-if="canViewAssessment" class="icon icon-accessory ion-chevron-right"></i>
     </a>
 </mm-loading>

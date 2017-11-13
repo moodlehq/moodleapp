@@ -478,12 +478,16 @@ angular.module('mm.addons.mod_workshop')
         });
 
         // Check offline files for latest attachmentsid.
-        if (attachmentsid) {
-            return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, submission.workshopid, submission.id, editing)
-                    .then(function(files) {
-                submission.attachmentfiles = files;
-                return submission;
-            });
+        if (actions.length) {
+            if (attachmentsid) {
+                return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, submission.workshopid, submission.id, editing)
+                        .then(function(files) {
+                    submission.attachmentfiles = files;
+                    return submission;
+                });
+            } else {
+                submission.attachmentfiles = [];
+            }
         }
         return $q.when(submission);
     };
@@ -502,9 +506,7 @@ angular.module('mm.addons.mod_workshop')
      */
     self.prepareAssessmentData = function(workshop, inputData, form, attachmentsId) {
         delete inputData.files;
-        if (attachmentsId) {
-            inputData.feedbackauthorattachmentsid = attachmentsId;
-        }
+        inputData.feedbackauthorattachmentsid = attachmentsId || 0;
         inputData.nodims = form.dimenssionscount;
 
         if (workshop.overallfeedbackmode == 2 && (!inputData.feedbackauthor || inputData.feedbackauthor.length == 0)) {
