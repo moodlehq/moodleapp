@@ -102,7 +102,7 @@ angular.module('mm.addons.mod_workshop')
      * @param  {Number} workshopId  Workshop ID.
      * @return {String}             Cache key.
      */
-    function getGradesDataCacheKey(workshopId, groupId) {
+    function getGradesDataCacheKey(workshopId) {
         return getWorkshopDataPrefixCacheKey(workshopId) + ':grades';
     }
 

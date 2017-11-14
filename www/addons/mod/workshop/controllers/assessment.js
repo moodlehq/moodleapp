@@ -89,7 +89,7 @@ angular.module('mm.addons.mod_workshop')
                             }
                         }
 
-                        if (accessData.canoverridegrades && $scope.evaluating) {
+                        if (accessData.canoverridegrades) {
                             defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
                             promise = $mmGradesHelper.makeGradesMenu($scope.workshop.gradinggrade, workshopId, defaultGrade, -1).then(function(grades) {
                                 $scope.evaluationGrades = grades;

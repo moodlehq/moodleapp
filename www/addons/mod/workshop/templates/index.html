@@ -19,13 +19,6 @@
                 </div>
             </div>
 
-            <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
-                <ion-label id="mma-workshop-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
-                <ion-label id="mma-workshop-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
-                <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-workshop-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
-                </select>
-            </div>
-
             <div class="card">
                 <div class="item item-input item-stacked-label item-icon-right" ng-click="selectPhase()">
                     <ion-label class="item-text-wrap">{{ phases[selectedPhase].title }}</ion-label>
@@ -143,6 +136,12 @@
                     </div>
                     <div class="item item-text-wrap" ng-if="selectedPhase > workshopPhases.PHASE_SUBMISSION">
                         <h2>{{ 'mma.mod_workshop.gradesreport' | translate }}</h2>
+                    </div>
+                    <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                        <ion-label id="mma-workshop-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                        <ion-label id="mma-workshop-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                        <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-workshop-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                        </select>
                     </div>
                     <mma-mod-workshop-submission ng-repeat="submission in grades" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
                     </mma-mod-workshop-submission>

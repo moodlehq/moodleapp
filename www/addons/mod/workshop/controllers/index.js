@@ -80,23 +80,31 @@ angular.module('mm.addons.mod_workshop')
             return $mmaModWorkshop.getWorkshopAccessInformation($scope.workshop.id);
         }).then(function(accessData) {
             $scope.access = accessData;
-            return $mmGroups.getActivityGroupInfo($scope.workshop.coursemodule, accessData.canswitchphase).then(function(groupInfo) {
-                $scope.groupInfo = groupInfo;
+            var groupPromise;
 
-                // Check selected group is accessible.
-                if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
-                    var found = false;
-                    for (var x in groupInfo.groups) {
-                        if (groupInfo.groups[x].id == $scope.selectedGroup) {
-                            found = true;
-                            break;
+            if (accessData.canviewallsubmissions) {
+                groupPromise = $mmGroups.getActivityGroupInfo($scope.workshop.coursemodule, accessData.canviewallsubmissions).then(function(groupInfo) {
+                    $scope.groupInfo = groupInfo;
+
+                    // Check selected group is accessible.
+                    if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
+                        var found = false;
+                        for (var x in groupInfo.groups) {
+                            if (groupInfo.groups[x].id == $scope.selectedGroup) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            $scope.selectedGroup = groupInfo.groups[0].id;
                         }
                     }
-                    if (!found) {
-                        $scope.selectedGroup = groupInfo.groups[0].id;
-                    }
-                }
+                });
+            } else {
+                groupPromise = $q.when();
+            }
 
+            return groupPromise.then(function() {
                 return $mmaModWorkshop.getUserPlanPhases($scope.workshop.id);
             });
         }).then(function(phases) {
@@ -151,7 +159,7 @@ angular.module('mm.addons.mod_workshop')
     // Set group to see the workshop.
     $scope.setGroup = function(groupId) {
         $scope.selectedGroup = groupId;
-        return fetchWorkshopData();
+        return $scope.gotoSubmissionsPage(0);
     };
 
     // Convenience function to refresh all the data.
@@ -167,13 +175,12 @@ angular.module('mm.addons.mod_workshop')
             }
             if ($scope.access.canviewallsubmissions) {
                 promises.push($mmaModWorkshop.invalidateGradeReportData($scope.workshop.id));
+                promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
             }
             if ($scope.canAssess) {
                 promises.push($mmaModWorkshop.invalidateReviewerAssesmentsData($scope.workshop.id));
             }
             promises.push($mmaModWorkshop.invalidateGradesData($scope.workshop.id));
-
-            promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
         }
 
         return $q.all(promises).finally(function() {
@@ -305,7 +312,7 @@ angular.module('mm.addons.mod_workshop')
 
     // Retrieves and shows submissions grade page.
     $scope.gotoSubmissionsPage = function(page) {
-        return $mmaModWorkshop.getGradesReport($scope.workshop.id, undefined, page).then(function(report) {
+        return $mmaModWorkshop.getGradesReport($scope.workshop.id, $scope.selectedGroup, page).then(function(report) {
             var numEntries = (report && report.grades && report.grades.length) || 0;
             $scope.page = page;
             $scope.hasNextPage = numEntries >= mmaModWorkshopPerPage && (($scope.page  + 1) * mmaModWorkshopPerPage) < report.totalcount;
@@ -344,7 +351,7 @@ angular.module('mm.addons.mod_workshop')
             }));
         }
 
-        if ($scope.access.canviewallsubmissions) {
+        if ($scope.access.canviewallsubmissions && $scope.workshop.phase >= $mmaModWorkshop.PHASE_SUBMISSION) {
             promises.push($scope.gotoSubmissionsPage($scope.page));
         }
 
@@ -380,7 +387,7 @@ angular.module('mm.addons.mod_workshop')
 
             if ($scope.access.canviewpublishedsubmissions) {
                 promises.push(assessPromise.then(function() {
-                    $mmaModWorkshop.getSubmissions($scope.workshop.id).then(function(submissions) {
+                    return $mmaModWorkshop.getSubmissions($scope.workshop.id).then(function(submissions) {
                         $scope.publishedSubmissions = submissions.filter(function(submission) {
                             if (submission.published) {
                                 for (var x in $scope.assessments) {
