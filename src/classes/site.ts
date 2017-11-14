@@ -73,9 +73,9 @@ export class CoreSite {
     protected wsProvider;
 
     // Variables for the database.
-    protected WS_CACHE_STORE = 'wscache';
+    protected WS_CACHE_TABLE = 'wscache';
     protected tableSchema = {
-        name: this.WS_CACHE_STORE,
+        name: this.WS_CACHE_TABLE,
         columns: [
             {
                 name: 'id',
@@ -142,13 +142,13 @@ export class CoreSite {
      * @param {Injector} injector Angular injector to prevent having to pass all the required services.
      * @param {string} id Site ID.
      * @param {string} siteUrl Site URL.
-     * @param {string} token Site's WS token.
-     * @param {any} info Site info.
+     * @param {string} [token] Site's WS token.
+     * @param {any} [info] Site info.
      * @param {string} [privateToken] Private token.
      * @param {any} [config] Site public config.
      * @param {boolean} [loggedOut] Whether user is logged out.
      */
-    constructor(injector: Injector, public id: string, public siteUrl: string, public token: string, public infos: any,
+    constructor(injector: Injector, public id: string, public siteUrl: string, public token?: string, public infos?: any,
             public privateToken?: string, public config?: any, public loggedOut?: boolean) {
         // Inject the required services.
         let logger = injector.get(CoreLoggerProvider);
@@ -627,10 +627,10 @@ export class CoreSite {
         }
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            promise = this.db.getRecords(this.WS_CACHE_STORE, {key: preSets.cacheKey}).then((entries) => {
+            promise = this.db.getRecords(this.WS_CACHE_TABLE, {key: preSets.cacheKey}).then((entries) => {
                 if (!entries.length) {
                     // Cache key not found, get by params sent.
-                    return this.db.getRecord(this.WS_CACHE_STORE, {id: id});
+                    return this.db.getRecord(this.WS_CACHE_TABLE, {id: id});
                 } else if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
                     for (let i = 0, len = entries.length; i < len; i++) {
@@ -643,7 +643,7 @@ export class CoreSite {
                 return entries[0];
             });
         } else {
-            promise = this.db.getRecord(this.WS_CACHE_STORE, {id: id});
+            promise = this.db.getRecord(this.WS_CACHE_TABLE, {id: id});
         }
 
         return promise.then((entry) => {
@@ -704,7 +704,7 @@ export class CoreSite {
                 if (preSets.cacheKey) {
                     entry.key = preSets.cacheKey;
                 }
-                return this.db.insertOrUpdateRecord(this.WS_CACHE_STORE, entry, {id: id});
+                return this.db.insertOrUpdateRecord(this.WS_CACHE_TABLE, entry, {id: id});
             });
         }
     }
@@ -725,9 +725,9 @@ export class CoreSite {
             return Promise.reject(null);
         } else {
             if (allCacheKey) {
-                return this.db.deleteRecords(this.WS_CACHE_STORE, {key: preSets.cacheKey});
+                return this.db.deleteRecords(this.WS_CACHE_TABLE, {key: preSets.cacheKey});
             } else {
-                return this.db.deleteRecords(this.WS_CACHE_STORE, {id: id});
+                return this.db.deleteRecords(this.WS_CACHE_TABLE, {id: id});
             }
         }
     }
@@ -761,7 +761,7 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
-        return this.db.updateRecords(this.WS_CACHE_STORE, {expirationTime: 0});
+        return this.db.updateRecords(this.WS_CACHE_TABLE, {expirationTime: 0});
     }
 
     /**
@@ -779,7 +779,7 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate cache for key: ' + key);
-        return this.db.updateRecords(this.WS_CACHE_STORE, {expirationTime: 0}, {key: key});
+        return this.db.updateRecords(this.WS_CACHE_TABLE, {expirationTime: 0}, {key: key});
     }
 
     /**
@@ -821,7 +821,7 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
-        let sql = 'UPDATE ' + this.WS_CACHE_STORE + ' SET expirationTime=0 WHERE key LIKE ?%';
+        let sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?%';
         return this.db.execute(sql, [key]);
     }
 

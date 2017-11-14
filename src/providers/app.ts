@@ -19,6 +19,7 @@ import { Network } from '@ionic-native/network';
 
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
+import { SQLiteDB } from '../classes/sqlitedb';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -33,7 +34,7 @@ import { CoreLoggerProvider } from './logger';
 @Injectable()
 export class CoreAppProvider {
     DBNAME = 'MoodleMobile';
-    db;
+    db: SQLiteDB;
     logger;
     ssoAuthenticationPromise : Promise<any>;
     isKeyboardShown: boolean = false;
@@ -81,9 +82,9 @@ export class CoreAppProvider {
     /**
      * Get the application global database.
      *
-     * @return {any} App's DB.
+     * @return {SQLiteDB} App's DB.
      */
-    getDB() : any {
+    getDB() : SQLiteDB {
         if (typeof this.db == 'undefined') {
             this.db = this.dbProvider.getDB(this.DBNAME);
         }

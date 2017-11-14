@@ -414,7 +414,7 @@ export class CoreUtilsProvider {
         for (let i in siteIds) {
             let siteId = siteIds[i];
             if (checkAll || !promises.length) {
-                promises.push(Promise.resolve(isEnabledFn.apply(isEnabledFn, [siteId].concat(...args))).then((enabled) => {
+                promises.push(Promise.resolve(isEnabledFn.apply(isEnabledFn, [siteId].concat(args))).then((enabled) => {
                     if (enabled) {
                         enabledSites.push(siteId);
                     }
@@ -953,7 +953,15 @@ export class CoreUtilsProvider {
      */
     observableToPromise(obs: Observable<any>) : Promise<any> {
         return new Promise((resolve, reject) => {
-            obs.subscribe(resolve, reject);
+            let subscription = obs.subscribe((data) => {
+                // Data received, unsubscribe.
+                subscription.unsubscribe();
+                resolve(data);
+            }, (error) => {
+                // Data received, unsubscribe.
+                subscription.unsubscribe();
+                reject(error);
+            });
         });
     }
 

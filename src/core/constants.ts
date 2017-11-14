@@ -24,6 +24,13 @@ export class CoreConstants {
     public static downloadThreshold = 10485760; // 10MB.
     public static dontShowError = 'CoreDontShowError';
     public static settingsRichTextEditor = 'CoreSettingsRichTextEditor';
+
+    // WS constants.
     public static wsTimeout = 30000;
     public static wsPrefix = 'local_mobile_';
+
+    // Login constants.
+    public static loginSSOCode = 2; // SSO in browser window is required.
+    public static loginSSOInAppCode = 3; // SSO in embedded browser is required.
+    public static loginLaunchData = 'mmLoginLaunchData';
 }

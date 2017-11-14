@@ -28,8 +28,8 @@ export class CoreSitesFactoryProvider {
      *
      * @param {string} id Site ID.
      * @param {string} siteUrl Site URL.
-     * @param {string} token Site's WS token.
-     * @param {any} info Site info.
+     * @param {string} [token] Site's WS token.
+     * @param {any} [info] Site info.
      * @param {string} [privateToken] Private token.
      * @param {any} [config] Site public config.
      * @param {boolean} [loggedOut] Whether user is logged out.
@@ -37,7 +37,7 @@ export class CoreSitesFactoryProvider {
      * @description
      * This returns a site object.
      */
-    makeSite = function(id: string, siteUrl: string, token: string, info: any, privateToken?: string,
+    makeSite(id: string, siteUrl: string, token?: string, info?: any, privateToken?: string,
             config?: any, loggedOut?: boolean) : CoreSite {
         return new CoreSite(this.injector, id, siteUrl, token, info, privateToken, config, loggedOut);
     }
