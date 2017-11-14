@@ -19,6 +19,7 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { File } from '@ionic-native/file';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Network } from '@ionic-native/network';
 import { Zip } from '@ionic-native/zip';
 
@@ -26,6 +27,7 @@ import { ClipboardMock } from './providers/clipboard';
 import { FileMock } from './providers/file';
 import { FileTransferMock } from './providers/file-transfer';
 import { GlobalizationMock } from './providers/globalization';
+import { LocalNotificationsMock } from './providers/local-notifications';
 import { NetworkMock } from './providers/network';
 import { ZipMock } from './providers/zip';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -35,6 +37,7 @@ import { CoreAppProvider } from '../../providers/app';
 import { CoreFileProvider } from '../../providers/file';
 import { CoreTextUtilsProvider } from '../../providers/utils/text';
 import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
+import { CoreUtilsProvider } from '../../providers/utils/utils';
 import { CoreInitDelegate } from '../../providers/init';
 
 @NgModule({
@@ -44,8 +47,6 @@ import { CoreInitDelegate } from '../../providers/init';
     ],
     providers: [
         CoreEmulatorHelper,
-        ClipboardMock,
-        GlobalizationMock,
         {
             provide: Clipboard,
             deps: [CoreAppProvider],
@@ -74,6 +75,14 @@ import { CoreInitDelegate } from '../../providers/init';
             deps: [CoreAppProvider],
             useFactory: (appProvider: CoreAppProvider) => {
                 return appProvider.isMobile() ? new Globalization() : new GlobalizationMock(appProvider);
+            }
+        },
+        {
+            provide: LocalNotifications,
+            deps: [CoreAppProvider, CoreUtilsProvider],
+            useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider) => {
+                // Use platform instead of CoreAppProvider to prevent circular dependencies.
+                return appProvider.isMobile() ? new LocalNotifications() : new LocalNotificationsMock(appProvider, utils);
             }
         },
         {

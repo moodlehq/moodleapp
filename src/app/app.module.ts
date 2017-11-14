@@ -43,6 +43,7 @@ import { CoreWSProvider } from '../providers/ws';
 import { CoreEventsProvider } from '../providers/events';
 import { CoreSitesFactoryProvider } from '../providers/sites-factory';
 import { CoreSitesProvider } from '../providers/sites';
+import { CoreLocalNotificationsProvider } from '../providers/local-notifications';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -93,6 +94,7 @@ export function createTranslateLoader(http: HttpClient) {
         CoreEventsProvider,
         CoreSitesFactoryProvider,
         CoreSitesProvider,
+        CoreLocalNotificationsProvider,
     ]
 })
 export class AppModule {

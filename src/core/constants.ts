@@ -23,7 +23,10 @@ export class CoreConstants {
     public static wifiDownloadThreshold = 104857600; // 100MB.
     public static downloadThreshold = 10485760; // 10MB.
     public static dontShowError = 'CoreDontShowError';
+
+    // Settings constants.
     public static settingsRichTextEditor = 'CoreSettingsRichTextEditor';
+    public static settingsNotificationSound = 'CoreSettingsNotificationSound';
 
     // WS constants.
     public static wsTimeout = 30000;
