@@ -222,13 +222,15 @@ angular.module('mm.core')
      */
     function formatContents(scope, element, attrs, text) {
 
-        var siteId = scope.siteid,
+        var siteId = attrs.siteid,
             component = attrs.component,
             componentId = attrs.componentId,
             site;
 
         // Retrieve the site since it might be needed later.
-        return $mmSitesManager.getSite(siteId).then(function(siteInstance) {
+        return $mmSitesManager.getSite(siteId).catch(function() {
+            // Error getting the site. This probably means that there is no current site and no siteId was supplied.
+        }).then(function(siteInstance) {
             site = siteInstance;
 
             // Apply format text function.
@@ -238,7 +240,7 @@ angular.module('mm.core')
             var el = element[0],
                 dom = angular.element('<div>').html(formatted), // Convert the content into DOM.
                 images = dom.find('img'),
-                canTreatVimeo = site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
+                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without mm-link.
