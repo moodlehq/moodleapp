@@ -27,6 +27,7 @@ export class CoreConstants {
     // Settings constants.
     public static settingsRichTextEditor = 'CoreSettingsRichTextEditor';
     public static settingsNotificationSound = 'CoreSettingsNotificationSound';
+    public static settingsSyncOnlyOnWifi = 'mmCoreSyncOnlyOnWifi';
 
     // WS constants.
     public static wsTimeout = 30000;
