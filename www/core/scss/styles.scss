@@ -1796,3 +1796,11 @@ ol.list-with-style, ul.list-with-style {
 .no-padding-bottom, .padding.no-padding-bottom {
   padding-bottom: 0;
 }
+
+.text-success {
+  color: $mm-success-color;
+}
+
+.text-danger {
+  color: $mm-error-color;
+}
