@@ -557,6 +557,18 @@ export class CoreSitesProvider {
         return this.currentSite;
     }
 
+    /**
+     * Get current site ID.
+     *
+     * @return {string} Current site ID.
+     */
+    getCurrentSiteId() : string {
+        if (this.currentSite) {
+            return this.currentSite.getId();
+        } else {
+            return '';
+        }
+    }
 
     /**
      * Check if the user is logged in a site.
