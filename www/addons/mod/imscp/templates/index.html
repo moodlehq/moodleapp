@@ -1,0 +1,20 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-bookmark" ng-click="popover.show($event)" ng-if="items && items.length > 1">
+        </button>
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="externalUrl" href="externalUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" content="'mm.core.refresh' | translate" action="doRefresh()" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <mm-loading hide-until="loaded">
+            <mm-navigation-bar previous="previousItem" next="nextItem" action="loadItem" info="description" title="{{ 'mm.core.description' | translate }}" component="{{component}}" component-id="{{componentId}}"></mm-navigation-bar>
+            <mm-iframe src="src" ng-class='{"mm-has-navigation-bar": previousItem || nextItem || description}'></mm-iframe>
+        </mm-loading>
+    </ion-content>
+</ion-view>

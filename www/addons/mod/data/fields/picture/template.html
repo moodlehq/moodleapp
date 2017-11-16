@@ -1,0 +1,11 @@
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
+<input ng-if="mode == 'search'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}">
+<mm-attachments ng-if="mode == 'edit'" files="files" max-size="{{maxSizeBytes}}" max-submissions="1" component="{{component}}" component-id="{{componentId}}" allow-offline="true"></mm-attachments>
+<ion-input ng-if="mode == 'edit'" class="item item-input item-stacked-label item-text-wrap">
+    <ion-label>{{ 'mma.mod_data.alttext' | translate }}</ion-label>
+    <input type="text" name="f_{{field.id}}_alttext" placeholder="{{ 'mma.mod_data.alttext' | translate }}" ng-model="alttext">
+</ion-input>
+
+<span ng-if="mode == 'list' && imageUrl" ng-click="viewAction()"><img ng-src="{{imageUrl}}" alt="{{title}}" title="{{title}}" class="mm-media-adapt-width list_picture" mm-external-content/></span>
+<img ng-if="mode == 'show' && imageUrl" ng-src="{{imageUrl}}" alt="{{title}}" title="{{title}}" class="mm-media-adapt-width list_picture" width="{{width}}" height="{{height}}" mm-external-content/>

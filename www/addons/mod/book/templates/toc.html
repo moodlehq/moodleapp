@@ -1,0 +1,13 @@
+<ion-popover-view class="mma-mod_book-toc">
+    <ion-content>
+        <nav>
+            <ul class="list">
+                <li ng-repeat="el in toc">
+                    <a class="item" ng-click="loadChapter(el.id);">
+                        <span class="padding-left" ng-if="el.level == 1"></span>{{el.title}}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </ion-content>
+</ion-popover-view>

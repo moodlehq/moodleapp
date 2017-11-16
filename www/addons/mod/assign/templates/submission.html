@@ -1,0 +1,219 @@
+<mm-loading hide-until="loaded" class="mm-loading-noheight">
+
+    <a ng-if="!blindMarking && user" class="item item-avatar item-text-wrap" mm-user-link userid="{{submitId}}" courseid="{{courseId}}" title="{{user.fullname}}">
+        <img ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+        <h2>{{user.fullname}}</h2>
+        <p ng-if="assign.teamsubmission">
+            <span ng-if="lastAttempt.submissiongroup && lastAttempt.submissiongroupname">{{lastAttempt.submissiongroupname}}</span>
+            <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && !lastAttempt.usergroups">{{ 'mma.mod_assign.noteam' | translate }}</span>
+            <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
+            <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
+        </p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+    </a>
+    <div ng-if="blindMarking && !user" class="item item-text-wrap">
+        <h2>{{ 'mma.mod_assign.hiddenuser' | translate }}{{blindId}}</h2>
+        <p ng-if="assign.teamsubmission">
+            <span ng-if="lastAttempt.submissiongroup && lastAttempt.submissiongroupname">{{lastAttempt.submissiongroupname}}</span>
+            <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && !lastAttempt.usergroups">{{ 'mma.mod_assign.noteam' | translate }}</span>
+            <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
+            <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
+        </p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+    </div>
+    <div ng-if="(blindMarking && user) || (!blindMarking && !user)" class="item item-text-wrap">
+        <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
+        <p ng-if="assign.teamsubmission">
+            <span ng-if="lastAttempt.submissiongroup && lastAttempt.submissiongroupname">{{lastAttempt.submissiongroupname}}</span>
+            <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && !lastAttempt.usergroups">{{ 'mma.mod_assign.noteam' | translate }}</span>
+            <span ng-if="assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup && lastAttempt.usergroups">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
+            <span ng-if="!assign.preventsubmissionnotingroup && !lastAttempt.submissiongroup">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
+        </p>
+        <p ng-if="statusTranslated" class="badge badge-inline text-center {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline text-center {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+    </div>
+
+    <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="feedback || isGrading">
+        <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submission' | translate }}</a>
+        <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.grade' | translate }}</a>
+    </div>
+
+    <div ng-show="showSubmission">
+        <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin" scroll-handle="{{scrollHandle}}"></mma-mod-assign-submission-plugin>
+
+        <div ng-if="userSubmission && userSubmission.status != statusNew && userSubmission.timemodified" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.timemodified' | translate }}</h2>
+            <p>{{ userSubmission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+        </div>
+
+        <div ng-if="timeRemaining" class="item item-text-wrap {{timeRemainingClass}}">
+            <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2>
+            <p><mm-format-text watch="true">{{ timeRemaining }}</mm-format-text></p>
+        </div>
+
+        <div ng-if="fromDate && !isSubmittedForGrading" class="item item-text-wrap">
+            <mm-format-text watch="true" ng-if="assign.intro">
+                {{ 'mma.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate} }}
+            </mm-format-text>
+            <mm-format-text watch="true" ng-if="!assign.intro">
+                {{ 'mma.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate: {'$a': fromDate} }}
+            </mm-format-text>
+        </div>
+
+        <div ng-if="assign.duedate && !isSubmittedForGrading" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.duedate' | translate }}</h2>
+            <p ng-if="assign.duedate" >{{ assign.duedate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+            <p ng-if="!assign.duedate" >{{ 'mma.mod_assign.duedateno' | translate }}</p>
+        </div>
+
+        <div ng-if="assign.duedate && assign.cutoffdate && isSubmittedForGrading" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.cutoffdate' | translate }}</h2>
+            <p>{{ assign.cutoffdate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+        </div>
+
+        <div ng-if="assign.duedate && lastAttempt.extensionduedate && !isSubmittedForGrading" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.extensionduedate' | translate }}</h2>
+            <p>{{ lastAttempt.extensionduedate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+        </div>
+
+        <div ng-if="currentAttempt && !isGrading" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.attemptnumber' | translate }}</h2>
+            <p ng-if="assign.maxattempts == unlimitedAttempts">{{ 'mma.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}</p>
+            <p ng-if="assign.maxattempts != unlimitedAttempts">{{ 'mma.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}</p>
+        </div>
+
+        <div ng-if="canEdit" class="item item-text-wrap">
+            <!-- Add or edit submission. -->
+            <div ng-if="submitSupported && !unsupportedEditPlugins.length && !showErrorStatementEdit">
+                <!-- If has offline data, show edit. -->
+                <a ng-if="hasOffline" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+                <!-- If no submission or is new, show add submission. -->
+                <a ng-if="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
+                <!-- If reopened, show addfromprevious and addnewattempt. -->
+                <a ng-if="!hasOffline && userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="copyPrevious()">{{ 'mma.mod_assign.addnewattemptfromprevious' | translate }}</a>
+                <a ng-if="!hasOffline && userSubmission && userSubmission.status == statusReopened" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.addnewattempt' | translate }}</a>
+                <!-- Else show editsubmission. -->
+                <a ng-if="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block button-positive" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+            </div>
+            <div ng-if="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
+                <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
+                <p class="mma-mod-assign-warning" ng-repeat="name in unsupportedEditPlugins">{{ name }}</p>
+            </div>
+            <div ng-if="showErrorStatementEdit">
+                <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
+            </div>
+        </div>
+
+        <!-- Submit for grading form. -->
+        <div ng-if="canSubmit && submitSupported">
+            <ion-checkbox ng-if="submissionStatement" name="submissionstatement" ng-model="submitModel.submissionStatement" class="item-text-wrap item-checkbox-right">
+                <p><mm-format-text watch="true">{{submissionStatement}}</mm-format-text></p>
+            </ion-checkbox>
+            <!-- Submit button. -->
+            <div ng-if="!showErrorStatementSubmit" class="item item-text-wrap">
+                <a class="button button-block" ng-click="submitForGrading(submitModel.submissionStatement)">{{ 'mma.mod_assign.submitassignment' | translate }}</a>
+                <p>{{ 'mma.mod_assign.submitassignment_help' | translate }}</p>
+            </div>
+            <!-- Error because we lack submissions statement. -->
+            <div ng-if="showErrorStatementSubmit" class="item item-text-wrap">
+                <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.cannotsubmitduetostatementsubmission' | translate }}</p>
+            </div>
+
+        </div>
+
+        <div ng-if="membersToSubmit.length > 0" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.userswhoneedtosubmit' | translate }}</h2>
+            <span ng-repeat="user in membersToSubmit">
+                <a ng-if="user.fullname" class="user-with-avatar" ui-sref="{{userStateName}}({courseid: courseid, userid: user.id})">
+                    <img ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <h2>{{ user.fullname }}</h2>
+                </a>
+                <div ng-if="!user.fullname" class="item item-borderless">
+                    {{ 'mma.mod_assign.hiddenuser' | translate }} <mm-format-text watch="true">{{user}}</mm-format-text>
+                </div>
+            </span>
+        </div>
+
+        <div ng-if="lastAttempt.locked" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.submissionslocked' | translate }}</h2>
+        </div>
+
+        <div ng-if="lastAttempt && isSubmittedForGrading && lastAttempt.caneditowner !== undefined" class="item item-text-wrap" ng-class="{submissioneditable: lastAttempt.caneditowner , submissionnoteditable: !lastAttempt.caneditowner}">
+            <h2>{{ 'mma.mod_assign.editingstatus' | translate }}</h2>
+            <p ng-if="lastAttempt.caneditowner">{{ 'mma.mod_assign.submissioneditable' | translate }}</p>
+            <p ng-if="!lastAttempt.caneditowner">{{ 'mma.mod_assign.submissionnoteditable' | translate }}</p>
+        </div>
+    </div>
+
+    <div ng-show="!showSubmission" ng-if="feedback || isGrading">
+
+        <div ng-if="feedback.gradefordisplay && (!isGrading || grade.method != 'simple')" class="item item-text-wrap mm-grading-summary" ng-class="{'item-button-right': feedback.advancedgrade}">
+            <h2>{{ 'mma.mod_assign.currentgrade' | translate }}</h2>
+            <div>
+                <p><mm-format-text watch="true">{{ feedback.gradefordisplay }}</mm-format-text></p>
+            </div>
+            <button ng-if="feedback.advancedgrade" class="button" ng-click="showAdvancedGrade()">
+                <i class="icon ion-search"></i>
+            </button>
+        </div>
+
+        <label class="item item-input item-stacked-label" ng-if="grade.method == 'simple'">
+            <h2 ng-if="!grade.scale">{{ 'mma.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</h2>
+            <div class="item-input-wrapper" ng-if="!grade.scale">
+                <input type="number" ng-model="grade.grade" min="0" max="{{gradeInfo.grade}}" lang="{{grade.lang}}">
+            </div>
+            <h2 ng-if="grade.scale">{{ 'mma.mod_assign.grade' | translate }}</h2>
+            <div class="item-select item-input-wrapper" ng-if="grade.scale">
+                <select ng-model="grade.grade" ng-options="grade.scale.indexOf(option) as option for option in grade.scale | orderBy:'$index':true" mm-ios-select-fix></select>
+            </div>
+        </label>
+
+        <div ng-repeat="outcome in gradeInfo.outcomes" class="item" ng-class="{ 'item-input item-stacked-label': outcome.options }">
+            <h2>{{ outcome.name }}</h2>
+            <div class="item-select item-input-wrapper" ng-if="canSaveGrades && outcome.itemNumber">
+                <select ng-model="outcome.selectedId" ng-options="outcome.options.indexOf(option) as option for option in outcome.options | orderBy:'$index':true" mm-ios-select-fix></select>
+            </div>
+            <div ng-if="!canSaveGrades || !outcome.itemNumber">
+                <p>{{ outcome.selected }}</p>
+            </div>
+        </div>
+
+        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins" assign="assign" submission="userSubmission" userid="submitId" plugin="plugin" can-edit="canSaveGrades"></mma-mod-assign-feedback-plugin>
+
+        <div class="item" ng-if="workflowStatusTranslationId">
+            <h2>{{ 'mma.mod_assign.markingworkflowstate' | translate }}</h2>
+            <div>
+                <p>{{workflowStatusTranslationId | translate}}</p>
+            </div>
+        </div>
+
+        <div ng-if="assign.teamsubmission && canSaveGrades" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.groupsubmissionsettings' | translate }}</h2>
+            <ion-toggle ng-model="grade.applyToAll" class="item-borderless">{{ 'mma.mod_assign.applytoteam' | translate }}</ion-toggle>
+        </div>
+
+        <div ng-if="isGrading && assign.attemptreopenmethod != attemptReopenMethodNone" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.attemptsettings' | translate }}</h2>
+            <p ng-if="assign.maxattempts == unlimitedAttempts">{{ 'mma.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}</p>
+            <p ng-if="assign.maxattempts != unlimitedAttempts">{{ 'mma.mod_assign.outof' | translate : {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}</p>
+            <p>{{ 'mma.mod_assign.attemptreopenmethod' | translate }}: {{ 'mma.mod_assign.attemptreopenmethod_' + assign.attemptreopenmethod | translate }}</p>
+            <ion-toggle ng-if="canSaveGrades && allowAddAttempt" class="item-borderless" ng-model="grade.addAttempt">{{ 'mma.mod_assign.addattempt' | translate }}</ion-toggle>
+        </div>
+
+        <div ng-if="grader" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.gradedby' | translate }}</h2>
+            <a mm-user-link userid="{{grader.id}}" courseid="{{courseid}}" aria-label="{{ 'mm.user.viewprofile' | translate }}" class="user-with-avatar">
+                <img ng-src="{{grader.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: grader.fullname} }}" role="presentation" mm-external-content>
+                <h2>{{ grader.fullname }}</h2>
+                <p ng-if="feedback.gradeddate">{{ feedback.gradeddate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+            </a>
+        </div>
+
+        <div class="mm-warning-card-icon" ng-if="isGrading && !canSaveGrades">
+            <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.cannotgradefromapp' | translate:{$a: moduleName} }}
+            <a ng-if="gradeUrl" href="{{ gradeUrl }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.core.openinbrowser' | translate }}</a>
+        </div>
+    </div>
+</mm-loading>

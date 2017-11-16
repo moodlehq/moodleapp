@@ -1,0 +1,19 @@
+<ion-view can-swipe-back="false">
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()" aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModAssignEditScroll">
+        <mm-loading hide-until="assignmentLoaded">
+            <div class="list">
+                <!-- TODO: plagiarism_print_disclosure -->
+                <form name="mma-mod_assign-edit-form" ng-if="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
+                    <ion-checkbox ng-if="submissionStatement" name="submissionstatement" class="item-text-wrap item-checkbox-right">
+                        <p><mm-format-text watch="true">{{submissionStatement}}</mm-format-text></p>
+                    </ion-checkbox>
+                    <mma-mod-assign-submission-plugin ng-repeat="plugin in userSubmission.plugins" assign="assign" submission="userSubmission" plugin="plugin" edit="true" scroll-handle="mmaModAssignEditScroll" allow-offline="{{allowOffline}}"></mma-mod-assign-submission-plugin>
+                </form>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

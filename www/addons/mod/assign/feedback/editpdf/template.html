@@ -1,0 +1,4 @@
+<div class="item item-text-wrap" ng-if="files.length">
+    <h2>{{plugin.name}}</h2>
+    <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.cmid}}" always-download="true" no-border="true"></mm-file>
+</div>

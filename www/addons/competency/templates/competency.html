@@ -1,0 +1,91 @@
+<ion-view>
+    <ion-nav-title>{{ competency.competency.competency.shortname }} <small>{{ competency.competency.competency.idnumber }}</small></ion-nav-title>
+    <ion-content mm-state-class padding="true">
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="competencyLoaded"
+                       on-refresh="refreshCompetency()">
+        </ion-refresher>
+        <mm-loading hide-until="competencyLoaded">
+            <p ng-if="user" class="item item-avatar">
+                <img ng-if="user.profileimageurl && user.profileimageurl !== true" ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
+                <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
+                <mm-format-text>{{ user.fullname }}</mm-format-text>
+            </p>
+            <article>
+                <ul class="list card">
+                    <li class="item item-text-wrap" ng-if="competency.competency.competency.description">
+                        <mm-format-text watch="true">{{ competency.competency.competency.description }}</mm-format-text>
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.path' | translate }}</strong>
+                        {{ competency.competency.comppath.framework.name }}
+                        <span ng-repeat="ancestor in competency.competency.comppath.ancestors">
+                            &nbsp;/&nbsp;<a ui-sref="site.competencysummary({competencyid: ancestor.id})">{{ ancestor.name }}</a>
+                        </span>
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.crossreferencedcompetencies' | translate }}</strong>:
+                        <div ng-if="!competency.competency.hasrelatedcompetencies">{{ 'mma.competency.nocrossreferencedcompetencies' | translate }}</div>
+                        <ul ng-if="competency.competency.hasrelatedcompetencies">
+                            <li ng-repeat="relatedcomp in competency.competency.relatedcompetencies">
+                                <a ui-sref="site.competencysummary({competencyid: relatedcomp.id})">
+                                    {{ relatedcomp.shortname }} - {{ relatedcomp.idnumber }}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="item item-text-wrap" ng-if="coursemodules">
+                        <strong>{{ 'mma.competency.activities' | translate }}</strong>:
+                        <span ng-if="coursemodules.length == 0" class="positive">
+                            {{ 'mma.competency.noactivities' | translate }}
+                        </span>
+                        <ul ng-if="coursemodules.length > 0">
+                            <li ng-repeat="activity in coursemodules">
+                                <a mm-link capture-link="true" class="item item-text-wrap mm-course-module-handler item-media" href="{{ activity.url }}" title="{{ activity.name }}">
+                                    <img ng-src="{{ activity.iconurl }}" mm-external-content alt="" role="presentation" ng-if="activity.iconurl">
+                                    <mm-format-text watch="true">{{ activity.name }}</mm-format-text>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="item item-text-wrap" ng-if="competency.usercompetency.status">
+                        <strong>{{ 'mma.competency.reviewstatus' | translate }}</strong>:
+                        {{ competency.usercompetency.statusname }}
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.proficient' | translate }}</strong>:
+                        <span class="badge badge-inline text-center badge-balanced" ng-if="competency.usercompetency.proficiency">
+                            {{ 'mm.core.yes' | translate }}
+                        </span>
+                        <span class="badge badge-inline text-center badge-assertive" ng-if="!competency.usercompetency.proficiency">
+                            {{ 'mm.core.no' | translate }}
+                        </span>
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.rating' | translate }}</strong>:
+                        <span class="badge badge-inline text-center badge-dark">{{ competency.usercompetency.gradename }}</span>
+                    </li>
+                </ul>
+            </article>
+
+            <article>
+                <h3>{{ 'mma.competency.evidence' | translate }}</h3>
+                <span ng-if="competency.evidence.length == 0">
+                    {{ 'mma.competency.noevidence' | translate }}
+                </span>
+                <div class="list card" ng-repeat="evidence in competency.evidence">
+                    <a mm-link capture-link="true" ng-href="{{evidence.actionuser.profileurl}}" class="item item-avatar item-heading">
+                        <img ng-src="{{evidence.actionuser.profileimageurlsmall}}" alt="{{ 'mm.core.pictureof' | translate:{$a: evidence.actionuser.fullname} }}" role="presentation" mm-external-content>
+                        <h2>{{ evidence.actionuser.fullname }}</h2>
+                        <p>{{ evidence.timemodified | mmToLocaleString }}</p>
+                    </a>
+                    <div class="item item-body">
+                        <div><span class="badge badge-inline text-center badge-dark">{{ evidence.gradename }}</span></div>
+                        <p ng-if="evidence.description">{{ evidence.description }}</p>
+                        <blockquote ng-if="evidence.note"><mm-format-text watch="true">{{ evidence.note }}</mm-format-text></blockquote>
+                    </div>
+                </div>
+            </article>
+        </mm-loading>
+    </ion-content>
+</ion-view>

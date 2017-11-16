@@ -1,0 +1,56 @@
+<ion-view>
+    <ion-nav-title>{{plan.plan.name}}</ion-nav-title>
+    <ion-content mm-state-class padding="true">
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="planLoaded"
+                       on-refresh="refreshLearningPlan()">
+        </ion-refresher>
+        <mm-loading hide-until="planLoaded">
+            <p ng-if="user" class="item item-avatar">
+                <img ng-if="user.profileimageurl && user.profileimageurl !== true" ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
+                <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
+                <mm-format-text>{{ user.fullname }}</mm-format-text>
+            </p>
+            <article>
+                <ul class="list card">
+                    <li class="item item-text-wrap" ng-if="competency.usercompetencysummary.competency.competency.description">
+                        <mm-format-text watch="true">{{ competency.usercompetencysummary.competency.competency.description }}</mm-format-text>
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.status' | translate }}</strong>:
+                        {{ plan.plan.statusname }}
+                    </li>
+                    <li class="item item-text-wrap" ng-if="plan.plan.duedate > 0">
+                        <strong>{{ 'mma.competency.duedate' | translate }}</strong>:
+                        {{ plan.plan.duedate | mmToLocaleString }}
+                    </li>
+                    <li class="item item-text-wrap" ng-if="plan.plan.template">
+                        <strong>{{ 'mma.competency.template' | translate }}</strong>:
+                        {{ plan.plan.template.shortname }}
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.progress' | translate }}</strong>:
+                        {{ 'mma.competency.xcompetenciesproficientoutofy' | translate: {$a: {x: plan.proficientcompetencycount, y: plan.competencycount} } }}
+                        <mm-progress-bar progress="plan.proficientcompetencypercentage" text="plan.proficientcompetencypercentageformatted"></mm-progress-bar>
+                    </li>
+                </ul>
+            </article>
+
+            <article>
+                <ul class="list card">
+                    <li class="item item-text-wrap item-divider">
+                        <h2>{{ 'mma.competency.learningplancompetencies' | translate }}</h2>
+                    </li>
+                    <li ng-if="plan.competencycount == 0" class="item item-text-wrap">
+                        {{ 'mma.competency.nocompetencies' | translate }}
+                    </li>
+                    <a ng-repeat="competency in plan.competencies" class="item item-text-wrap clearfix" ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}">
+                        {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
+                        <span ng-class="{'badge-balanced': competency.usercompetency.proficiency, 'badge-assertive': !competency.usercompetency.proficiency}" class="badge badge-inline item-note text-center">{{ competency.usercompetency.gradename }}</span><br>
+
+                    </a>
+                </ul>
+            </article>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -1,8 +1,4 @@
 <ion-view view-title="{{ 'mma.messages.messages' | translate }}">
-    <ion-nav-buttons side="secondary">
-        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}"></button>
-    </ion-nav-buttons>
-
     <mm-split-view component="mmaMessagesIndex">
         <ion-tabs class="tabs-icon-top">
             <ion-tab title="{{ 'mma.messages.messages' | translate }}" icon="ion-chatbox">

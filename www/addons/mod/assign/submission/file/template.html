@@ -1,0 +1,24 @@
+<!-- Edit -->
+<div ng-if="edit">
+    <h2 class="item item-text-wrap item-divider">{{plugin.name}}</h2>
+    <mm-attachments files="files" max-size="{{configs.maxsubmissionsizebytes}}" max-submissions="{{configs.maxfilesubmissions}}" component="{{assignComponent}}" mimetypes="mimetypes" component-id="{{assign.cmid}}" allow-offline="{{allowOffline}}"></mm-attachments>
+    <div class="item item-text-wrap" ng-if="mimetypes && mimetypes.length">
+        <p>{{ 'mma.mod_assign_submission_file.filesofthesetypes' | translate }}</p>
+        <ul class="list-with-style">
+            <li ng-repeat="typeInfo in typesInfo">
+                <p ng-if="typeInfo.type == 'extension'">{{typeInfo.value}}</p>
+                <p ng-if="typeInfo.type != 'extension'" ng-bind-html="'mma.mod_assign_submission_file.filetypewithexts' | translate:{$a: typeInfo.value}"></p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="item item-text-wrap" ng-if="files.length && !edit">
+    <h2>{{plugin.name}}</h2>
+	<div ng-repeat="file in files">
+	    <!-- Files already attached to the submission. -->
+	    <mm-file ng-if="!file.name" file="file" component="{{assignComponent}}" component-id="{{assign.cmid}}" always-download="true" no-border="true"></mm-file>
+	    <!-- Files stored in offline to be sent later. -->
+	    <mm-local-file ng-if="file.name" file="file" no-border="true"></mm-local-file>
+	</div>
+</div>
