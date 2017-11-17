@@ -33,13 +33,14 @@ angular.module('mm.addons.mod_workshop')
             submission: '=',
             module: '=?',
             workshop: '=',
-            access: '=?'
+            access: '='
         },
         restrict: 'E',
         templateUrl: 'addons/mod/workshop/templates/assessment.html',
         link: function(scope) {
             var canAssess = scope.access && scope.access.assessingallowed,
-                currentUser = scope.assessment.userid == $mmSite.getUserId(),
+                userId = scope.assessment.userid || scope.assessment.reviewerid,
+                currentUser = userId == $mmSite.getUserId(),
                 promises = [];
                 assessmentId = scope.assessment.assessmentid || scope.assessment.id;
 
@@ -89,10 +90,10 @@ angular.module('mm.addons.mod_workshop')
                 }
             };
 
-            scope.canViewAssessment = scope.assessment.grade && !currentUser;
+            scope.canViewAssessment = scope.assessment.grade;
             scope.canSelfAssess = canAssess && currentUser;
 
-            promises.push($mmUser.getProfile(scope.assessment.userid, scope.courseid, true).then(function(profile) {
+            promises.push($mmUser.getProfile(userId, scope.courseid, true).then(function(profile) {
                 scope.profile = profile;
             }));
 

@@ -519,14 +519,11 @@ angular.module('mm.addons.mod_workshop')
     /**
      * Calculates the real value of a grade based on real_grade_value.
      *
-     * @module mm.addons.mod_workshop
-     * @ngdoc method
-     * @name $mmaModWorkshopHelper#realGradeValue
      * @param {Number} value  Percentual value from 0 to 100.
      * @param {Number} max    The maximal grade.
-     * @return {String}
+     * @return {String} Real grade formatted.
      */
-    self.realGradeValue = function(value, max, decimals) {
+    function realGradeValue(value, max, decimals) {
         if (value == null || value === "") {
             return null;
         } else if (max == 0) {
@@ -535,6 +532,24 @@ angular.module('mm.addons.mod_workshop')
             value = $mmUtil.roundToDecimals(parseFloat(max * value / 100), decimals);
             return $mmUtil.formatFloat(value);
         }
+    };
+
+    /**
+     * Calculates the real value of a grades of an assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#realGradeValue
+     * @param {Object}  workshop        Workshop object.
+     * @param {Object}  assessment      Assessment data.
+     * @return {Object} Assessment with real grades.
+     */
+    self.realGradeValue = function(workshop, assessment) {
+        assessment.grade = realGradeValue(assessment.grade, workshop.grade, workshop.gradedecimals);
+        assessment.gradinggrade = realGradeValue(assessment.gradinggrade, workshop.gradinggrade, workshop.gradedecimals);
+        assessment.gradinggradeover = realGradeValue(assessment.gradinggradeover, workshop.gradinggrade, workshop.gradedecimals);
+
+        return assessment;
     };
 
     return self;

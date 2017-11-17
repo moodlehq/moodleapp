@@ -97,10 +97,19 @@ angular.module('mm.addons.mod_workshop')
     }
 
     /**
+     * Get cache key for workshop grades data WS calls.
+     *
+     * @param  {Number} workshopId  Workshop ID.
+     * @return {String}             Cache key.
+     */
+    function getGradesDataCacheKey(workshopId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':grades';
+    }
+
+    /**
      * Get cache key for workshop grade report data WS calls.
      *
      * @param  {Number} workshopId  Workshop ID.
-     * @param  {Number} [userId]    User ID.
      * @param  {Number} [groupId]   Group ID.
      * @return {String}             Cache key.
      */
@@ -480,6 +489,45 @@ angular.module('mm.addons.mod_workshop')
     self.invalidateSubmissionData = function(workshopId, submissionId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getSubmissionDataCacheKey(workshopId, submissionId));
+        });
+    };
+
+    /**
+     * Returns the grades information for the given workshop and user.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#getGrades
+     * @param   {Number}    workshopId      Workshop ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the workshop grades data is retrieved.
+     */
+    self.getGrades = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getGradesDataCacheKey(workshopId)
+                };
+
+            return site.read('mod_workshop_get_grades', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidates workshop grades data.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshop#invalidateGradesData
+     * @param  {Number}  workshopId    Workshop ID.
+     * @param  {String}  [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when the data is invalidated.
+     */
+    self.invalidateGradesData = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getGradesDataCacheKey(workshopId));
         });
     };
 

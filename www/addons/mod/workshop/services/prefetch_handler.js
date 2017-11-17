@@ -77,7 +77,8 @@ angular.module('mm.addons.mod_workshop')
     function getWorkshopInfoHelper(module, courseId, omitFail, forceCache, ignoreCache, siteId) {
         var workshop,
             groups = [],
-            files = [];
+            files = [],
+            access;
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var userId = site.getUserId();
@@ -87,66 +88,68 @@ angular.module('mm.addons.mod_workshop')
                 files = files.concat(data.instructauthorsfiles).concat(data.instructreviewersfiles);
 
                 workshop = data;
-                return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
-                    if (!groupInfo.groups || groupInfo.groups.length == 0) {
-                        groupInfo.groups = [{id: 0}];
+                return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (accessData) {
+                    access = accessData;
+                    if (access.canviewallsubmissions) {
+                        return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
+                            if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                                groupInfo.groups = [{id: 0}];
+                            }
+                            groups = groupInfo.groups;
+                        });
                     }
-                    groups = groupInfo.groups;
                 });
-
             }).then(function() {
-                return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
-                    return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
-                        // Get submission phase info.
-                        var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
-                            canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
-                            canAssess = $mmaModWorkshopHelper.canAssess(workshop, access),
-                            promises = [];
+                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+                    // Get submission phase info.
+                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
+                        canAssess = $mmaModWorkshopHelper.canAssess(workshop, access),
+                        promises = [];
 
-                        if (canSubmit) {
-                            promises.push($mmaModWorkshopHelper.getUserSubmission(workshop.id, userId).then(function(submission) {
-                                if (submission) {
-                                    files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
-                                }
-                            }));
-                        }
+                    if (canSubmit) {
+                        promises.push($mmaModWorkshopHelper.getUserSubmission(workshop.id, userId).then(function(submission) {
+                            if (submission) {
+                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                            }
+                        }));
+                    }
 
-                        // Get assessment files.
-                        if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
-                            promises.push($mmaModWorkshopHelper.getReviewerAssessments(workshop.id).then(function(assessments) {
-                                angular.forEach(assessments, function(assessment) {
-                                    files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                    // Get assessment files.
+                    if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
+                        promises.push($mmaModWorkshopHelper.getReviewerAssessments(workshop.id).then(function(assessments) {
+                            angular.forEach(assessments, function(assessment) {
+                                files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                            });
+                        }));
+
+                        if (access.canviewallsubmissions) {
+                            promises.push(getAllGradesReport(workshop.id, groups).then(function(grades) {
+                                var promises2 = [];
+
+                                angular.forEach(grades, function(grade) {
+                                    angular.forEach(grade.reviewedby, function(assessment) {
+                                        promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
+                                            assessment.assessmentid, assessment.userid));
+                                    });
+
+                                    angular.forEach(grade.reviewerof, function(assessment) {
+                                        // Get the assessments and submissions if needed.
+                                        promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
+                                            assessment.assessmentid, assessment.userid));
+                                    });
+                                });
+
+                                return $q.all(promises2).then(function(assessments) {
+                                    angular.forEach(assessments, function(assessment) {
+                                        files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                                    });
                                 });
                             }));
-
-                            if (access.canviewallsubmissions) {
-                                promises.push(getAllGradesReport(workshop.id, groups).then(function(grades) {
-                                    var promises2 = [];
-
-                                    angular.forEach(grades, function(grade) {
-                                        angular.forEach(grade.reviewedby, function(assessment) {
-                                            promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
-                                                assessment.assessmentid, assessment.userid));
-                                        });
-
-                                        angular.forEach(grade.reviewerof, function(assessment) {
-                                            // Get the assessments and submissions if needed.
-                                            promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
-                                                assessment.assessmentid, assessment.userid));
-                                        });
-                                    });
-
-                                    return $q.all(promises2).then(function(assessments) {
-                                        angular.forEach(assessments, function(assessment) {
-                                            files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
-                                        });
-                                    });
-                                }));
-                            }
                         }
+                    }
 
-                        return $q.all(promises);
-                    });
+                    return $q.all(promises);
                 });
             });
         }).then(function() {
@@ -363,18 +366,21 @@ angular.module('mm.addons.mod_workshop')
                         }
 
                         var reportPromise = $q.when();
-                        if (access.canviewallsubmissions) {
+                        if (access.canviewallsubmissions && workshop.phase >= $mmaModWorkshop.PHASE_SUBMISSION) {
                             reportPromise = getAllGradesReport(workshop.id, info.groups).then(function(grades) {
                                 angular.forEach(grades, function(grade) {
                                     userIds.push(grade.userid);
+                                    userIds.push(grade.gradeoverby);
 
                                     angular.forEach(grade.reviewedby, function(assessment) {
                                         userIds.push(assessment.userid);
+                                        userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.assessmentid] = assessment;
                                     });
 
                                     angular.forEach(grade.reviewerof, function(assessment) {
                                         userIds.push(assessment.userid);
+                                        userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.assessmentid] = assessment;
                                     });
                                 });
@@ -388,6 +394,7 @@ angular.module('mm.addons.mod_workshop')
                                         undefined, siteId).then(function(revAssessments) {
                                     angular.forEach(revAssessments, function(assessment) {
                                         userIds.push(assessment.reviewerid);
+                                        userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.id] = assessment;
                                     });
                                 }).finally(function() {
@@ -405,8 +412,14 @@ angular.module('mm.addons.mod_workshop')
                                 });
                             });
                         }
-
                         promises2.push(reportPromise);
+
+                        if (workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+                            promises2.push($mmaModWorkshop.getGrades(workshop.id));
+                            if (access.canviewpublishedsubmissions) {
+                                promises2.push($mmaModWorkshop.getSubmissions(workshop.id));
+                            }
+                        }
 
                         return $q.all(promises2);
                     });

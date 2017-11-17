@@ -9,10 +9,12 @@
     "assessmentstrategynotsupported": "Assessment strategy {{$a}} not supported",
     "assessmentweight": "Assessment weight",
     "assignedassessments": "Assigned submissions to assess",
+    "conclusion": "Conclusion",
     "createsubmission": "Start preparing your submission",
     "deletesubmission": "Delete submission",
     "editsubmission": "Edit submission",
     "feedbackauthor": "Feedback for the author",
+    "feedbackby": "Feedback by {{$a}}",
     "feedbackreviewer": "Feedback for the reviewer",
     "givengrades": "Grades given",
     "gradecalculated": "Calculated grade for submission",
@@ -28,6 +30,7 @@
     "notoverridden": "Not overridden",
     "noyoursubmission": "You have not submitted your work yet",
     "overallfeedback": "Overall feedback",
+    "publishedsubmissions": "Published submissions",
     "publishsubmission": "Publish submission",
     "publishsubmission_help": "Published submissions are available to the others when the workshop is closed.",
     "reassess": "Re-assess",
@@ -52,5 +55,6 @@
     "weightinfo": "Weight: {{$a}}",
     "yourassessment": "Your assessment",
     "yourassessmentfor": "Your assessment for {{$a}}",
+    "yourgrades": "Your grades",
     "yoursubmission": "Your submission"
 }
