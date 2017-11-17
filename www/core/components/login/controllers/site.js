@@ -22,7 +22,7 @@ angular.module('mm.core.login')
  * @name mmLoginSiteCtrl
  */
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $ionicModal, $ionicPopup,
-        $mmLoginHelper, $q) {
+        $mmLoginHelper, $q, mmCoreConfigConstants) {
 
     $scope.loginData = {
         siteurl: ''
@@ -88,6 +88,7 @@ angular.module('mm.core.login')
     if ($mmLoginHelper.hasSeveralFixedSites()) {
         $scope.fixedSites = $mmLoginHelper.getFixedSites();
         $scope.loginData.siteurl = $scope.fixedSites[0].url;
+        $scope.displayAsButtons = mmCoreConfigConstants.multisitesdisplay == 'buttons';
     }
 
     // Get docs URL for help modal.
