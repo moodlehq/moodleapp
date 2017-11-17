@@ -386,6 +386,7 @@ angular.module('mm.core.course')
                 if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
                     // Check if activity has completions and if it's marked.
                     module.completionstatus = completionStatus[module.id];
+                    module.completionstatus.courseId = courseId;
                 }
 
                 if (module.id == moduleId) {
