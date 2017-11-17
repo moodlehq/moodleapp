@@ -694,14 +694,15 @@ export class CoreFileProvider {
      * @param {string} path Path to the ZIP file.
      * @param {string} [destFolder] Path to the destination folder. If not defined, a new folder will be created with the
      *                     same location and name as the ZIP file (without extension).
+     * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when the file is unzipped.
      */
-    unzipFile(path: string, destFolder?: string) : Promise<any> {
+    unzipFile(path: string, destFolder?: string, onProgress?: Function) : Promise<any> {
         // Get the source file.
         return this.getFile(path).then((fileEntry) => {
             // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
             destFolder = this.addBasePathIfNeeded(destFolder || this.mimeUtils.removeExtension(path));
-            return this.zip.unzip(fileEntry.toURL(), destFolder);
+            return this.zip.unzip(fileEntry.toURL(), destFolder, onProgress);
         });
     }
 

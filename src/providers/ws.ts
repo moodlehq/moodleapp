@@ -85,9 +85,9 @@ export class CoreWSProvider {
      * @param {string} siteUrl Complete site url to perform the call.
      * @param {any} ajaxData Arguments to pass to the method.
      * @param {CoreWSPreSets} preSets Extra settings and information.
-     * @return {Promise} Deferrend promise resolved with the response data in success and rejected with the error message if it fails.
+     * @return {Promise<any>} Deferred promise resolved with the response data in success and rejected with the error message if it fails.
      */
-    protected addToRetryQueue(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets) {
+    protected addToRetryQueue(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets) : Promise<any> {
         let call = {
             method: method,
             siteUrl: siteUrl,
@@ -106,9 +106,9 @@ export class CoreWSProvider {
      * @param {string} method The WebService method to be called.
      * @param {any} data Arguments to pass to the method. It's recommended to call convertValuesToString before passing the data.
      * @param {CoreWSPreSets} preSets Extra settings and information.
-     * @return {Promise} Promise resolved with the response data in success and rejected with the error message if it fails.
+     * @return {Promise<any>} Promise resolved with the response data in success and rejected if it fails.
      */
-    call(method: string, data: any, preSets: CoreWSPreSets) {
+    call(method: string, data: any, preSets: CoreWSPreSets) : Promise<any> {
 
         let siteUrl;
 
@@ -148,12 +148,12 @@ export class CoreWSProvider {
      * @param {string} method The WebService method to be called.
      * @param {any} data Arguments to pass to the method.
      * @param {CoreWSAjaxPreSets} preSets Extra settings and information. Only some
-     * @return {Promise}       Promise resolved with the response data in success and rejected with an object containing:
+     * @return {Promise<any>} Promise resolved with the response data in success and rejected with an object containing:
      *                                 - error: Error message.
      *                                 - errorcode: Error code returned by the site (if any).
      *                                 - available: 0 if unknown, 1 if available, -1 if not available.
      */
-    callAjax(method: string, data: any, preSets: CoreWSAjaxPreSets) {
+    callAjax(method: string, data: any, preSets: CoreWSAjaxPreSets) : Promise<any> {
         let siteUrl,
             ajaxData;
 
@@ -275,10 +275,11 @@ export class CoreWSProvider {
      *
      * @param {string} url Download url.
      * @param {string} path Local path to store the file.
-     * @param {boolean} addExtension True if extension need to be added to the final path.
-     * @return {Promise<FileEntry>} Promise resolved with the downloaded file.
+     * @param {boolean} [addExtension] True if extension need to be added to the final path.
+     * @param {Function} [onProgress] Function to call on progress.
+     * @return {Promise<any>} Promise resolved with the downloaded file.
      */
-    downloadFile(url: string, path: string, addExtension?: boolean) : Promise<FileEntry> {
+    downloadFile(url: string, path: string, addExtension?: boolean, onProgress?: (event: ProgressEvent) => any) : Promise<any> {
         this.logger.debug('Downloading file', url, path, addExtension);
 
         if (!this.appProvider.isOnline()) {
@@ -292,6 +293,8 @@ export class CoreWSProvider {
         // Create the tmp file as an empty file.
         return this.fileProvider.createFile(tmpPath).then((fileEntry) => {
             let transfer = this.fileTransfer.create();
+            transfer.onProgress(onProgress);
+
             return transfer.download(url, fileEntry.toURL(), true).then(() => {
                 let promise;
 
@@ -335,7 +338,7 @@ export class CoreWSProvider {
                 });
             });
         }).catch((err) => {
-            this.logger.error(`Error downloading ${url} to ${path}`, JSON.stringify(err));
+            this.logger.error(`Error downloading ${url} to ${path}`, err);
             return Promise.reject(err);
         });
     }
@@ -387,7 +390,7 @@ export class CoreWSProvider {
      * Perform a HEAD request to get the size of a remote file.
      *
      * @param {string} url File URL.
-     * @return {Promise}   Promise resolved with the size or -1 if failure.
+     * @return {Promise<number>} Promise resolved with the size or -1 if failure.
      */
     getRemoteFileSize(url: string) : Promise<number> {
         return this.performHead(url).then((data) => {
@@ -409,8 +412,9 @@ export class CoreWSProvider {
      * @param {string} method Method of the HTTP request.
      * @param {string} url Base URL of the HTTP request.
      * @param {object} [params] Params of the HTTP request.
+     * @return {string} Queue item ID.
      */
-    protected getQueueItemId(method: string, url: string, params?: any) {
+    protected getQueueItemId(method: string, url: string, params?: any) : string {
         if (params) {
             url += '###' + this.utils.serialize(params);
         }
@@ -646,9 +650,11 @@ export class CoreWSProvider {
      * @param {string} filePath File path.
      * @param {CoreWSFileUploadOptions} options File upload options.
      * @param {CoreWSPreSets} preSets Must contain siteUrl and wsToken.
+     * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when uploaded.
      */
-    uploadFile(filePath: string, options: CoreWSFileUploadOptions, preSets: CoreWSPreSets) : Promise<any> {
+    uploadFile(filePath: string, options: CoreWSFileUploadOptions, preSets: CoreWSPreSets,
+            onProgress?: (event: ProgressEvent) => any) : Promise<any> {
         this.logger.debug(`Trying to upload file: ${filePath}`);
 
         if (!filePath || !options || !preSets) {
@@ -661,6 +667,8 @@ export class CoreWSProvider {
 
         let uploadUrl = preSets.siteUrl + '/webservice/upload.php',
             transfer = this.fileTransfer.create();
+
+        transfer.onProgress(onProgress);
 
         options.httpMethod = 'POST';
         options.params = {
@@ -700,8 +708,8 @@ export class CoreWSProvider {
             // We uploaded only 1 file, so we only return the first file returned.
             this.logger.debug('Successfully uploaded file', filePath);
             return data[0];
-        }, (error) => {
-            this.logger.error('Error while uploading file', filePath, error.exception);
+        }).catch((error) => {
+            this.logger.error('Error while uploading file', filePath, error);
             return Promise.reject(this.translate.instant('mm.core.errorinvalidresponse'));
         });
     }

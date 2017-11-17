@@ -23,6 +23,12 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 
+export interface PromiseDefer {
+    promise?: Promise<any>; // Promise created.
+    resolve?: (value?: any) => any; // Function to resolve the promise.
+    reject?: (reason?: any) => any; // Function to reject the promise.
+}
+
 /*
  * "Utils" service with helper functions.
  */
@@ -966,12 +972,12 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Similar to AngularJS $q.defer(). It will return an object containing the promise, and the resolve and reject functions.
+     * Similar to AngularJS $q.defer().
      *
-     * @return {any} Object containing the promise, and the resolve and reject functions.
+     * @return {PromiseDefer} The deferred promise.
      */
-    promiseDefer() : any {
-        let deferred: any = {};
+    promiseDefer() : PromiseDefer {
+        let deferred: PromiseDefer = {};
         deferred.promise = new Promise((resolve, reject) => {
             deferred.resolve = resolve;
             deferred.reject = reject;
