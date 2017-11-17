@@ -80,7 +80,6 @@ angular.module('mm.addons.mod_workshop')
             return $mmaModWorkshop.getWorkshopAccessInformation($scope.workshop.id);
         }).then(function(accessData) {
             $scope.access = accessData;
-
             return $mmGroups.getActivityGroupInfo($scope.workshop.coursemodule, accessData.canswitchphase).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
 
@@ -234,6 +233,7 @@ angular.module('mm.addons.mod_workshop')
     $scope.switchPhase = function(phase) {
         $scope.phaseModal.hide();
         $scope.selectedPhase = phase;
+        $scope.page = 0;
     };
 
     // Just close the modal.
@@ -323,52 +323,48 @@ angular.module('mm.addons.mod_workshop')
 
     // Convenience function to set current phase information.
     function setPhaseInfo() {
-        var phase = $scope.phases[$scope.workshop.phase];
-
         $scope.submission = false;
         $scope.canAssess = false;
         $scope.assessments = false;
 
-        if ($scope.workshop.phase == $mmaModWorkshop.PHASE_SUBMISSION ||
-                $scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
-            var promises = [];
+        var promises = [];
 
-            $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access, phase.tasks);
-            if ($scope.canSubmit) {
-                promises.push($mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
-                    var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
-                    return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(submission) {
-                        $scope.submission = submission;
+        $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access,
+            $scope.phases[$mmaModWorkshop.PHASE_SUBMISSION].tasks);
+        if ($scope.canSubmit) {
+            promises.push($mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
+                var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
+                return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(submission) {
+                    $scope.submission = submission;
+                });
+            }));
+        }
+
+        if ($scope.access.canviewallsubmissions) {
+            promises.push($scope.gotoSubmissionsPage($scope.page));
+        }
+
+        if ($scope.workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT) {
+            $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
+            if ($scope.canAssess) {
+                promises.push($mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
+                    var p2 = [];
+                    angular.forEach(assessments, function(assessment) {
+                        assessment.strategy = $scope.workshop.strategy;
+                        if ($scope.hasOffline) {
+                            p2.push($mmaModWorkshopOffline.getAssessment($scope.workshop.id, assessment.id)
+                                .then(function(offlineAssessment) {
+                                    assessment.offline = true;
+                                    assessment.timemodified = parseInt(offlineAssessment.timemodified / 1000, 10);
+                            }).catch(function() {
+                                // Ignore errors.
+                            }));
+                        }
+                    });
+                    return $q.all(p2).then(function() {
+                        $scope.assessments = assessments;
                     });
                 }));
-            }
-
-            if ($scope.access.canviewallsubmissions) {
-                promises.push($scope.gotoSubmissionsPage($scope.page));
-            }
-
-            if ($scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
-                $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
-                if ($scope.canAssess) {
-                    promises.push($mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
-                        var p2 = [];
-                        angular.forEach(assessments, function(assessment) {
-                            assessment.strategy = $scope.workshop.strategy;
-                            if ($scope.hasOffline) {
-                                p2.push($mmaModWorkshopOffline.getAssessment($scope.workshop.id, assessment.id)
-                                    .then(function(offlineAssessment) {
-                                        assessment.offline = true;
-                                        assessment.timemodified = parseInt(offlineAssessment.timemodified / 1000, 10);
-                                }).catch(function() {
-                                    // Ignore errors.
-                                }));
-                            }
-                        });
-                        return $q.all(p2).then(function() {
-                            $scope.assessments = assessments;
-                        });
-                    }));
-                }
             }
 
             return $q.all(promises);

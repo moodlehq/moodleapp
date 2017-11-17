@@ -16,9 +16,12 @@ angular.module('mm.addons.mod_workshop')
 
 .constant('mmaModWorkshopOfflineSubmissionStore', 'mma_mod_workshop_offline_submissions')
 .constant('mmaModWorkshopOfflineAssessmentsStore', 'mma_mod_workshop_offline_assessments')
+.constant('mmaModWorkshopOfflineEvaluateSubmissionsStore', 'mma_mod_workshop_offline_evaluate_submissions')
+.constant('mmaModWorkshopOfflineEvaluateAssessmentsStore', 'mma_mod_workshop_offline_evaluate_assessments')
 
 
-.config(function($mmSitesFactoryProvider, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore) {
+.config(function($mmSitesFactoryProvider, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore,
+        mmaModWorkshopOfflineEvaluateSubmissionsStore, mmaModWorkshopOfflineEvaluateAssessmentsStore) {
     var stores = [
         {
             name: mmaModWorkshopOfflineSubmissionStore,
@@ -56,6 +59,36 @@ angular.module('mm.addons.mod_workshop')
                     name: 'assessmentid'
                 }
             ]
+        },
+        {
+            name: mmaModWorkshopOfflineEvaluateSubmissionsStore,
+            keyPath: ['workshopid', 'submissionid'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'submissionid'
+                }
+            ]
+        },
+        {
+            name: mmaModWorkshopOfflineEvaluateAssessmentsStore,
+            keyPath: ['workshopid', 'assessmentid'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'assessmentid'
+                }
+            ]
         }
     ];
     $mmSitesFactoryProvider.registerStores(stores);
@@ -68,8 +101,9 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopOffline
  */
-.factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore,
-        $mmSitesManager, $mmFS, $q, $mmUtil) {
+.factory('$mmaModWorkshopOffline', function($log, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore, $q,
+        $mmSitesManager, $mmFS, $mmUtil, mmaModWorkshopOfflineEvaluateSubmissionsStore,
+        mmaModWorkshopOfflineEvaluateAssessmentsStore) {
 
     $log = $log.getInstance('$mmaModWorkshopOffline');
 
@@ -88,7 +122,8 @@ angular.module('mm.addons.mod_workshop')
         var promises = [];
         promises.push(self.getAllSubmissions(siteId));
         promises.push(self.getAllAssessments(siteId));
-        // TODO: Add other objects.
+        promises.push(self.getAllEvaluateSubmissions(siteId));
+        promises.push(self.getAllEvaluateAssessments(siteId));
 
         return $q.all(promises).then(function(promiseResults) {
             var workshopIds = {};
@@ -99,7 +134,9 @@ angular.module('mm.addons.mod_workshop')
                     workshopIds[offlineObject.workshopid] = true;
                 });
             });
-            return Object.keys(workshopIds);
+            return Object.keys(workshopIds).map(function(workshopId) {
+                return parseInt(workshopId, 10);
+            });
         });
     };
 
@@ -117,7 +154,8 @@ angular.module('mm.addons.mod_workshop')
         var promises = [];
         promises.push(self.getSubmissions(workshopId, siteId));
         promises.push(self.getAssessments(workshopId, siteId));
-        // TODO: Add other objects.
+        promises.push(self.getEvaluateSubmissions(workshopId, siteId));
+        promises.push(self.getEvaluateAssessments(workshopId, siteId));
 
         return $q.all(promises).then(function(objects) {
             for (var i = 0; i < objects.length; i++) {
@@ -323,7 +361,7 @@ angular.module('mm.addons.mod_workshop')
     };
 
     /**
-     * Get an specific aassessment of a workshop to be synced.
+     * Get an specific assessment of a workshop to be synced.
      *
      * @module mm.addons.mod_workshop
      * @ngdoc method
@@ -365,6 +403,202 @@ angular.module('mm.addons.mod_workshop')
                 };
 
             return db.insert(mmaModWorkshopOfflineAssessmentsStore, assessment);
+        });
+    };
+
+    /**
+     * Delete workshop evaluate submission.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#deleteEvaluateSubmission
+     * @param  {Number} workshopId   Workshop ID.
+     * @param  {Number} submissionId Submission ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved if stored, rejected if failure.
+     */
+    self.deleteEvaluateSubmission = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineEvaluateSubmissionsStore, [workshopId, submissionId]);
+        });
+    };
+
+    /**
+     * Get the all the evaluate submissions to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAllEvaluateSubmissions
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the objects to be synced.
+     */
+    self.getAllEvaluateSubmissions = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineEvaluateSubmissionsStore);
+        });
+    };
+
+    /**
+     * Get the evaluate submissions of a workshop to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getEvaluateSubmissions
+     * @param  {Number} workshopId      ID of the workshop.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the object to be synced.
+     */
+    self.getEvaluateSubmissions = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineEvaluateSubmissionsStore, 'workshopid', workshopId);
+        });
+    };
+
+    /**
+     * Get an specific evaluate submission of a workshop to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getEvaluateSubmission
+     * @param  {Number} workshopId      ID of the workshop.
+     * @param  {Number} submissionId    Submission ID.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the object to be synced.
+     */
+    self.getEvaluateSubmission = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineEvaluateSubmissionsStore, [workshopId, submissionId]);
+        });
+    };
+
+    /**
+     * Offline version for evaluation a submission to a workshop.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#saveEvaluateSubmission
+     * @param  {Number}  workshopId     Workshop ID.
+     * @param  {Number}  submissionId   Submission ID.
+     * @param  {Number}  courseId       Course ID the workshop belongs to.
+     * @param  {String}  feedbackText   The feedback for the author.
+     * @param  {Boolean} published      Whether to publish the submission for other users.
+     * @param  {Mixed}   gradeOver      The new submission grade (empty for no overriding the grade).
+     * @param  {String}  [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when submission evaluation is successfully saved.
+     */
+    self.saveEvaluateSubmission = function(workshopId, submissionId, courseId, feedbackText, published, gradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                submission = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    submissionid: submissionId,
+                    timemodified: timemodified,
+                    feedbacktext: feedbackText,
+                    published: published,
+                    gradeover: gradeOver
+                };
+
+            return db.insert(mmaModWorkshopOfflineEvaluateSubmissionsStore, submission);
+        });
+    };
+
+    /**
+     * Delete workshop evaluate assessment.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#deleteEvaluateAssessment
+     * @param  {Number} workshopId   Workshop ID.
+     * @param  {Number} assessmentId Assessment ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved if stored, rejected if failure.
+     */
+    self.deleteEvaluateAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineEvaluateAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+
+    /**
+     * Get the all the evaluate assessments to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getAllEvaluateAssessments
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the objects to be synced.
+     */
+    self.getAllEvaluateAssessments = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineEvaluateAssessmentsStore);
+        });
+    };
+
+    /**
+     * Get the evaluate assessments of a workshop to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getEvaluateAssessments
+     * @param  {Number} workshopId      ID of the workshop.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the object to be synced.
+     */
+    self.getEvaluateAssessments = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineEvaluateAssessmentsStore, 'workshopid', workshopId);
+        });
+    };
+
+    /**
+     * Get an specific evaluate assessment of a workshop to be synced.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#getEvaluateAssessment
+     * @param  {Number} workshopId      ID of the workshop.
+     * @param  {Number} assessmentId    Assessment ID.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the object to be synced.
+     */
+    self.getEvaluateAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineEvaluateAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+
+    /**
+     * Offline version for evaluating an assessment to a workshop.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopOffline#saveEvaluateAssessment
+     * @param  {Number}  workshopId       Workshop ID.
+     * @param  {Number}  assessmentId     Assessment ID.
+     * @param  {Number}  courseId         Course ID the workshop belongs to.
+     * @param  {String}  feedbackText     The feedback for the reviewer.
+     * @param  {Boolean} weight           The new weight for the assessment.
+     * @param  {Mixed}   gradingGradeOver The new grading grade (empty for no overriding the grade).
+     * @param  {String}  [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                  Promise resolved when assessment evaluation is successfully saved.
+     */
+    self.saveEvaluateAssessment = function(workshopId, assessmentId, courseId, feedbackText, weight, gradingGradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                assessment = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    assessmentid: assessmentId,
+                    timemodified: timemodified,
+                    feedbacktext: feedbackText,
+                    weight: weight,
+                    gradinggradeover: gradingGradeOver
+                };
+
+            return db.insert(mmaModWorkshopOfflineEvaluateAssessmentsStore, assessment);
         });
     };
 

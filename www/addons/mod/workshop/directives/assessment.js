@@ -23,31 +23,50 @@ angular.module('mm.addons.mod_workshop')
  * @description
  * Directive to render assessments.
  */
-.directive('mmaModWorkshopAssessment', function($mmUser, $state, $mmSite) {
+.directive('mmaModWorkshopAssessment', function($mmUser, $state, $mmSite, $mmaModWorkshopHelper, $mmUtil, $mmaModWorkshopOffline,
+        $q) {
     return {
         scope: {
             assessment: '=',
             summary: '=?',
-            maxgrade: '=?',
             courseid: '=',
             submission: '=',
             module: '=?',
-            workshop: '=?',
+            workshop: '=',
             access: '=?'
         },
         restrict: 'E',
         templateUrl: 'addons/mod/workshop/templates/assessment.html',
         link: function(scope) {
+            var canAssess = scope.access && scope.access.assessingallowed,
+                currentUser = scope.assessment.userid == $mmSite.getUserId(),
+                promises = [];
+                assessmentId = scope.assessment.assessmentid || scope.assessment.id;
+
             scope.gotoAssessment = function() {
                 if (scope.canViewAssessment) {
                     var stateParams = {
                         assessment: scope.assessment,
                         submission: scope.submission,
-                        submissionid: scope.submission.id,
+                        submissionid: scope.assessment.submissionid,
                         profile: scope.profile,
                         courseid: scope.courseid,
-                        assessmentid: scope.assessment && scope.assessment.id
+                        assessmentid: assessmentId
                     };
+
+                    if (!scope.submission) {
+                        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+                        return $mmaModWorkshopHelper.getSubmissionById(scope.workshop.id, scope.assessment.submissionid)
+                                .then(function(submissionData) {
+
+                            stateParams.submission = submissionData;
+                            $state.go('site.mod_workshop-assessment', stateParams);
+                        }).catch(function(message) {
+                            $mmUtil.showErrorModal(message, 'Cannot load submission');
+                        }).finally(function() {
+                            modal.dismiss();
+                        });
+                    }
 
                     $state.go('site.mod_workshop-assessment', stateParams);
                 }
@@ -70,15 +89,33 @@ angular.module('mm.addons.mod_workshop')
                 }
             };
 
-            var canAssess = scope.access && scope.access.assessingallowed,
-                currentUser = scope.assessment.userid == $mmSite.getUserId();
-
-            scope.canViewAssessment = scope.submission && scope.assessment.grade && !currentUser;
+            scope.canViewAssessment = scope.assessment.grade && !currentUser;
             scope.canSelfAssess = canAssess && currentUser;
 
-            return $mmUser.getProfile(scope.assessment.userid, scope.courseid, true).then(function(profile) {
+            promises.push($mmUser.getProfile(scope.assessment.userid, scope.courseid, true).then(function(profile) {
                 scope.profile = profile;
-            }).finally(function() {
+            }));
+
+            var assessOffline;
+            if (currentUser) {
+                assessOffline = $mmaModWorkshopOffline.getAssessment(scope.workshop.id, assessmentId) .then(function(offlineAssess) {
+                    scope.offline = true;
+                    scope.assessment.weight = offlineAssess.inputdata.weight;
+                });
+            } else {
+                assessOffline = $mmaModWorkshopOffline.getEvaluateAssessment(scope.workshop.id, assessmentId).then(function(offlineAssess) {
+                    scope.offline = true;
+                    scope.assessment.gradinggradeover = offlineAssess.gradinggradeover;
+                    scope.assessment.weight = offlineAssess.weight;
+                });
+            }
+
+            promises.push(assessOffline.catch(function() {
+                scope.offline = false;
+                // Ignore errors.
+            }));
+
+            return $q.all(promises).finally(function() {
                 scope.loaded = true;
             });
         }

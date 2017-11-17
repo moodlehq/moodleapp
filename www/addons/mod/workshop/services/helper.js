@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_workshop')
  * @ngdoc service
  * @name $mmaModWorkshopHelper
  */
-.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q,
+.factory('$mmaModWorkshopHelper', function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q, $mmUtil,
         $mmaModWorkshopOffline, $mmaModWorkshopAssessmentStrategyDelegate, $translate, $mmFileUploaderHelper) {
 
     var self = {},
@@ -478,12 +478,16 @@ angular.module('mm.addons.mod_workshop')
         });
 
         // Check offline files for latest attachmentsid.
-        if (attachmentsid) {
-            return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, submission.workshopid, submission.id, editing)
-                    .then(function(files) {
-                submission.attachmentfiles = files;
-                return submission;
-            });
+        if (actions.length) {
+            if (attachmentsid) {
+                return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, submission.workshopid, submission.id, editing)
+                        .then(function(files) {
+                    submission.attachmentfiles = files;
+                    return submission;
+                });
+            } else {
+                submission.attachmentfiles = [];
+            }
         }
         return $q.when(submission);
     };
@@ -502,9 +506,7 @@ angular.module('mm.addons.mod_workshop')
      */
     self.prepareAssessmentData = function(workshop, inputData, form, attachmentsId) {
         delete inputData.files;
-        if (attachmentsId) {
-            inputData.feedbackauthorattachmentsid = attachmentsId;
-        }
+        inputData.feedbackauthorattachmentsid = attachmentsId || 0;
         inputData.nodims = form.dimenssionscount;
 
         if (workshop.overallfeedbackmode == 2 && (!inputData.feedbackauthor || inputData.feedbackauthor.length == 0)) {
@@ -512,6 +514,27 @@ angular.module('mm.addons.mod_workshop')
         }
 
         return $mmaModWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy, inputData, form);
+    };
+
+    /**
+     * Calculates the real value of a grade based on real_grade_value.
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#realGradeValue
+     * @param {Number} value  Percentual value from 0 to 100.
+     * @param {Number} max    The maximal grade.
+     * @return {String}
+     */
+    self.realGradeValue = function(value, max, decimals) {
+        if (value == null || value === "") {
+            return null;
+        } else if (max == 0) {
+            return 0;
+        } else {
+            value = $mmUtil.roundToDecimals(parseFloat(max * value / 100), decimals);
+            return $mmUtil.formatFloat(value);
+        }
     };
 
     return self;

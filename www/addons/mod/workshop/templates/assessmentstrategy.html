@@ -11,7 +11,7 @@
         </mm-loading>
     </span>
 
-    <div class="list card" ng-if="overallFeedkback && assessmentStrategyLoaded">
+    <div class="list card" ng-if="assessmentStrategyLoaded && overallFeedkback && (edit || assessment.feedbackauthor || assessment.feedbackattachmentfiles.length) ">
         <div class="item-heading item item-text-wrap">
             <h2>{{ 'mma.mod_workshop.overallfeedback' | translate }}</h2>
         </div>
