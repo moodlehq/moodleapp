@@ -957,25 +957,42 @@ angular.module('mm.core.question')
     self.treatCorrectnessIcons = function(scope, element) {
         element = element[0] || element; // Convert from jqLite to plain JS if needed.
 
-        var icons = element.querySelectorAll('.questioncorrectnessicon');
+        var icons = element.querySelectorAll('img.icon, img.questioncorrectnessicon');
         angular.forEach(icons, function(icon) {
-            var parent;
+            // Replace the icon with the font version. This will avoid some errors when adding mm-adapt-img class.
+            if (icon.src) {
+                var newIcon = document.createElement('i');
 
-            // Replace the icon with the local version.
-            if (icon.src && icon.src.indexOf('incorrect') > -1) {
-                icon.src = 'img/icons/grade_incorrect.svg';
-            } else if (icon.src && icon.src.indexOf('correct') > -1) {
-                icon.src = 'img/icons/grade_correct.svg';
+                if (icon.src.indexOf('incorrect') > -1) {
+                    newIcon.className = 'icon fa fa-remove text-danger fa-fw questioncorrectnessicon';
+                } else if (icon.src.indexOf('correct') > -1) {
+                    newIcon.className = 'icon fa fa-check text-success fa-fw questioncorrectnessicon';
+                } else {
+                    return;
+                }
+
+                newIcon.title = icon.title;
+                newIcon.ariaLabel = icon.title;
+                icon.parentNode.replaceChild(newIcon, icon);
+                icon = newIcon;
             }
+        });
 
+        var spans = element.querySelectorAll('.feedbackspan.accesshide');
+        angular.forEach(spans, function(span) {
             // Search if there's a hidden feedback for this element.
-            parent = icon.parentNode;
-            if (!parent) {
+            var icon = span.previousSibling,
+                iconAng;
+            if (!icon) {
                 return;
             }
-            if (!parent.querySelector('.feedbackspan.accesshide')) {
+
+            iconAng = angular.element(icon);
+            if (!iconAng.hasClass('icon') && !iconAng.hasClass('questioncorrectnessicon')) {
                 return;
             }
+
+            iconAng.addClass('questioncorrectnessicon');
 
             // There's a hidden feedback, set up ngClick to show the feedback.
             icon.setAttribute('ng-click', 'questionCorrectnessIconClicked($event)');

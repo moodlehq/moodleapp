@@ -46,3 +46,11 @@
 .fa-ban:before {
     content: $ionicon-var-minus-circled;
 }
+
+.fa-remove:before {
+    content: $ionicon-var-close-round;
+}
+
+.fa-check:before {
+    content: $ionicon-var-checkmark-round;
+}
