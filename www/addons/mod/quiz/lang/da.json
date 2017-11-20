@@ -12,7 +12,7 @@
     "confirmleavequizonerror": "Der opstod en fejl under forsøg på at gemme svarene. Er du sikker på at du vil forlade quizzen?",
     "confirmstart": "Quizzen har en tidsbegrænsning på {{$a}}. Tiden tælles ned fra det øjeblik du starter besvarelsen og du skal aflevere inden tidens udløb. Er du sikker på at du vil starte nu?",
     "confirmstartheader": "Tidsbegrænset quiz",
-    "connectionerror": "Har mistet forbindelse til netværket. (Autosave slog fejl).\n\nNoter alle svar, der er skrevet på denne side i løbet af de sidste par minutter, og prøv så at genoprette forbindelsen.\n\nNår forbindelsen er genoprettet, skulle dine svar være gemt, og denne besked forsvinder.",
+    "connectionerror": "Forbindelse til netværket afbrudt. (Autosave slog fejl).\n\nNoter alle svar der er skrevet på denne side i løbet af de sidste par minutter, og prøv så at genoprette forbindelsen.\n\nNår forbindelsen er genoprettet, skulle dine svar være gemt, og denne besked forsvinder.",
     "continueattemptquiz": "Fortsæt fra sidste forsøg",
     "continuepreview": "Fortsæt sidste gennemsyn",
     "errorbehaviournotsupported": "Quizzen kan ikke afvikles i appen, som ikke understøtter quizzens opførsel:",

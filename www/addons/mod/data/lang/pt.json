@@ -11,7 +11,7 @@
     "descending": "Descendente",
     "disapprove": "Anular aprovação",
     "emptyaddform": "Não preencheu nenhum campo!",
-    "entrieslefttoadd": "Tem que adicionar mais {{$a.entriesleft}} registo(s) para completar esta atividade",
+    "entrieslefttoadd": "Tem que adicionar mais {{$a.entriesleft}} registo(s) para concluir esta atividade",
     "entrieslefttoaddtoview": "Tem que adicionar mais {{$a.entrieslefttoview}} registos para conseguir visualizar as entradas dos outros participantes.",
     "errorapproving": "Erro ao aprovar ou desaprovar uma entrada.",
     "errordeleting": "Erro ao apagar a entrada.",

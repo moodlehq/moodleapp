@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Standardmäßige Benachrichtigungszeit",
     "errorloadevent": "Fehler beim Laden des Kalendereintrags",
     "errorloadevents": "Fehler beim Laden der Kalendereinträge",
-    "noevents": "Keine Kalendereinträge",
+    "noevents": "Keine anstehenden Aktivitäten fällig",
     "notifications": "Systemmitteilungen"
 }

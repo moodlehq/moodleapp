@@ -19,6 +19,7 @@
     "non_respondents_students": "Studerende der ikke har besvaret ({{$a}})",
     "not_selected": "Ikke valgt",
     "not_started": "Ikke startet",
+    "numberoutofrange": "Tal udenfor interval",
     "overview": "Overblik",
     "page_after_submit": "Fuldførelsesbesked",
     "preview": "Forhåndsvisning",

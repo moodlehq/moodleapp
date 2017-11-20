@@ -1,7 +1,7 @@
 {
     "cannoteditpage": "Du kan ikke redigere denne side.",
     "createpage": "Opret side",
-    "editingpage": "Redigering af denne side '{{$a}}'",
+    "editingpage": "Redigering af denne side \"{{$a}}\"",
     "errornowikiavailable": "Denne wiki har endnu intet indhold.",
     "map": "Kort",
     "newpagehdr": "Ny side",

@@ -61,7 +61,7 @@
     "showeachpage": "Mostrar una página cada vez",
     "startattempt": "Comenzar intento",
     "startedon": "Comenzado el",
-    "stateabandoned": "Nunca presentó",
+    "stateabandoned": "Nunca envió",
     "statefinished": "Finalizado",
     "statefinisheddetails": "Enviado: {{$a}}",
     "stateinprogress": "En curso",

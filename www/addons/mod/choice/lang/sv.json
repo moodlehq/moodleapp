@@ -6,14 +6,14 @@
     "full": "(Full)",
     "noresultsviewable": "Det går f.n. inte att visa resultaten.",
     "notopenyet": "Den här aktiviteten är tyvärr inte tillgänglig förrän {{$a}}",
-    "numberofuser": "Antal deltagare",
-    "numberofuserinpercentage": "Procent av deltagarna",
+    "numberofuser": "Antal användare",
+    "numberofuserinpercentage": "Antalet användare i procent.",
     "previewonly": "Detta är bara en förhandsvisning av de tillgängliga alternativen för den här aktiviteten . Du kommer inte att kunna lämna in ditt val innan {{$a}}",
     "removemychoice": "Ta bort mitt val",
     "responses": "Svar",
     "responsesresultgraphdescription": "{{number}}% Av användarna valde alternativet: {{text}}",
     "responsesresultgraphheader": "Visa en graf",
     "savemychoice": "Spara min opinionsundersökning",
-    "userchoosethisoption": "Användare som valt detta alternativ",
+    "userchoosethisoption": "Användaren väljer detta alternativ",
     "yourselection": "Ditt urval"
 }

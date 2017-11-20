@@ -11,6 +11,9 @@
     "nosearchresults": "Brak wyników",
     "notenroled": "Nie jesteś zapisany w tym kursie",
     "password": "Hasło",
+    "paymentrequired": "Ten kurs wymaga opłaty",
+    "paypalaccepted": "Płatności PayPal są akceptowane",
     "search": "Szukaj",
-    "searchcourses": "Szukaj kursów"
+    "searchcourses": "Szukaj kursów",
+    "sendpaymentbutton": "Wyślij płatności za pośrednictwem PayPal"
 }

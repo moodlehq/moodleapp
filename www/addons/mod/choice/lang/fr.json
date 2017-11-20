@@ -6,8 +6,8 @@
     "full": "(complet)",
     "noresultsviewable": "Les résultats ne sont actuellement pas visibles.",
     "notopenyet": "Désolé, cette activité ne sera disponible que le {{$a}}",
-    "numberofuser": "Nombre de participants",
-    "numberofuserinpercentage": "Pourcentage de participants",
+    "numberofuser": "Nombre de réponses",
+    "numberofuserinpercentage": "Pourcentage de réponses",
     "previewonly": "Cet affichage est une prévisualisation des options disponibles pour cette activité. Vous ne pourrez pas enregistrer votre choix avant le {{$a}}.",
     "removemychoice": "Retirer mon vote",
     "responses": "Réponses",
@@ -15,6 +15,6 @@
     "responsesresultgraphheader": "Affichage graphique",
     "resultsnotsynced": "Les résultats n'incluent pas votre dernière réponse. Veuillez synchroniser pour les mettre à jour.",
     "savemychoice": "Enregistrer mon choix",
-    "userchoosethisoption": "Les utilisateurs ont choisi cette option",
+    "userchoosethisoption": "Utilisateurs qui ont choisi l'option",
     "yourselection": "Votre choix"
 }

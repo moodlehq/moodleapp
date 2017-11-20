@@ -1,5 +1,6 @@
 {
     "activities": "Aktiviteter",
+    "competenciesmostoftennotproficientincourse": "Kompetencer der ofte \"halter\" på dette kursus",
     "coursecompetencies": "Kursuskompetencer",
     "coursecompetencyratingsarenotpushedtouserplans": "Kompetencebedømmelser på dette kursus påvirker ikke læringsplaner.",
     "coursecompetencyratingsarepushedtouserplans": "Kompetencebedømmelser på dette kursus opdateres straks i læringsplaner.",
@@ -11,13 +12,17 @@
     "learningplans": "Læringsplaner",
     "myplans": "Mine læringsplaner",
     "noactivities": "Ingen aktiviteter",
-    "nocompetencies": "Ingen kompetencer",
+    "nocompetencies": "Ingen kompetencer er oprettet i denne ramme.",
     "nocrossreferencedcompetencies": "Ingen andre kompetencer er krydsrefereret til denne kompetence.",
     "noevidence": "Ingen vidnesbyrd",
     "noplanswerecreated": "Der blev ikke oprettet nogen læringsplaner.",
     "path": "Sti:",
+    "proficient": "Dygtig",
     "progress": "Progression",
     "rating": "Bedømmelse",
+    "reviewstatus": "Status på gennemsyn",
     "status": "Badgestatus",
-    "template": "Læringsplanskabelon"
+    "template": "Læringsplanskabelon",
+    "xcompetenciesproficientoutofy": "{{$a.x}} ud af {{$a.y}} kompetencer er dygtige",
+    "xcompetenciesproficientoutofyincourse": "Du er dygtig i {{$a.x}} ud af {{$a.y}} kompetencer på dette kursus."
 }

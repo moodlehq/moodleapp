@@ -6,8 +6,8 @@
     "full": "(volledig)",
     "noresultsviewable": "De resultaten zijn nu niet zichtbaar.",
     "notopenyet": "Deze activiteit is niet beschikbaar tot {{$a}}",
-    "numberofuser": "Aantal deelnemers",
-    "numberofuserinpercentage": "Deelnemerspercentage",
+    "numberofuser": "Aantal antwoorden",
+    "numberofuserinpercentage": "Percentage antwoorden",
     "previewonly": "Dit is slechts een voorbeeld van de beschikbare opties voor deze activiteit. Je zult je keuze niet kunnen maken voor {{$a}}.",
     "removemychoice": "Verwijder mijn keuze",
     "responses": "Antwoorden",
@@ -15,6 +15,6 @@
     "responsesresultgraphheader": "Grafiek tonen",
     "resultsnotsynced": "Jouw laatste reactie zit niet in de resultaten. Synchroniseer om deze te up to date te maken.",
     "savemychoice": "Bewaar mijn antwoord",
-    "userchoosethisoption": "Gebruikers due deze optie kozen",
+    "userchoosethisoption": "Gebruikers die deze optie kozen",
     "yourselection": "Jouw selectie"
 }

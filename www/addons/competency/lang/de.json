@@ -12,7 +12,7 @@
     "learningplans": "Lernpläne",
     "myplans": "Meine Lernpläne",
     "noactivities": "Keine Aktivitäten",
-    "nocompetencies": "Keine Kompetenzen",
+    "nocompetencies": "Für diesen Kompetenzrahmen wurden keine Kompetenzen angelegt.",
     "nocrossreferencedcompetencies": "Keine anderen Kompetenzen wurden zu dieser Kompetenz referiert.",
     "noevidence": "Keine Belege",
     "noplanswerecreated": "Bisher sind keine Lernpläne angelegt.",
@@ -24,5 +24,5 @@
     "status": "Existierende Einschreibungen erlauben",
     "template": "Lernplanvorlage",
     "xcompetenciesproficientoutofy": "{{$a.x}} von {{$a.y}} Kompetenzen sind eingeübt",
-    "xcompetenciesproficientoutofyincourse": "Du bist in {{$a.x}} von {{$a.y}} Kompetenzen geübt"
+    "xcompetenciesproficientoutofyincourse": "Sie sind in {{$a.x}} von {{$a.y}} Kompetenzen geübt."
 }

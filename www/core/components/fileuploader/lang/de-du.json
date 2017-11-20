@@ -1,6 +1,6 @@
 {
     "addfiletext": "Datei hinzufügen",
-    "audio": "Audio",
+    "audio": "Audiodatei ({{$a.EXT}})",
     "camera": "Kamera",
     "confirmuploadfile": "Möchtest du wirklich {{size}} hochladen?",
     "confirmuploadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchtest du wirklich hochladen?",
@@ -10,16 +10,18 @@
     "errorgettingimagealbum": "Fehler beim Laden aus dem Fotoalbum",
     "errormustbeonlinetoupload": "Dateien können nur online hochgeladen werden.",
     "errornoapp": "Zum Ausführen dieser Aktion wurde keine App gefunden",
-    "errorreadingfile": "Fehler beim Lesen der Datei",
+    "errorreadingfile": "Fehler beim Lesen der Datei \"{{$a}}\"",
     "errorwhileuploading": "Fehler beim Hochladen der Datei",
     "file": "Datei",
     "fileuploaded": "Datei hochgeladen",
+    "invalidfiletype": "Dateityp {{$a}} wird nicht akzeptiert",
     "maxbytesfile": "Die Datei {{$a.file}} ist zu groß. Die maximale Größe zum Hochladen ist {{$a.size}}.",
+    "more": "Mehr",
     "photoalbums": "Fotoalbum",
     "readingfile": "Datei lesen",
     "selectafile": "Wähle eine Datei.",
     "uploadafile": "Datei hochladen",
-    "uploading": "Hochladen",
+    "uploading": "Wird hochgeladen...",
     "uploadingperc": "Hochladen: {{$a}}%",
-    "video": "Video"
+    "video": "Video Datei ({{$a.EXT}})"
 }

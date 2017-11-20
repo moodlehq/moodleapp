@@ -12,7 +12,7 @@
     "learningplans": "学習プラン",
     "myplans": "マイ学習プラン",
     "noactivities": "活動なし",
-    "nocompetencies": "コンピテンシーなし",
+    "nocompetencies": "このフレームワークにコンピテンシーは作成されていません。",
     "nocrossreferencedcompetencies": "このコンピテンシーに相互参照されている他のコンピテンシーはありません。",
     "noevidence": "エビデンスなし",
     "noplanswerecreated": "学習プランは作成されませんでした。",
