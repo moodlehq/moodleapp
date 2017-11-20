@@ -56,6 +56,8 @@ export interface LocalMobileResponse {
 /**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
+ * To add tables to the site's database, please use CoreSitesProvider.createTablesFromSchema. This will make sure that
+ * the tables are created in all the sites, not just the current one.
  */
 export class CoreSite {
     // List of injected services. This class isn't injectable, so it cannot use DI.

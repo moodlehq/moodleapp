@@ -46,9 +46,9 @@ export class CoreUrlUtilsProvider {
      * Extracts the parameters from a URL and stores them in an object.
      *
      * @param {string} url URL to treat.
-     * @return {object} Object with the params.
+     * @return {any} Object with the params.
      */
-    extractUrlParams(url: string) : object {
+    extractUrlParams(url: string) : any {
         let regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
             params = {};
 

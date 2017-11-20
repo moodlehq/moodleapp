@@ -51,13 +51,21 @@ export interface CoreSiteBasicInfo {
 
 /*
  * Service to manage and interact with sites.
+ * It allows creating tables in the databases of all sites. Each service or component should be responsible of creating
+ * their own database tables. Example:
+ *
+ * constructor(sitesProvider: CoreSitesProvider) {
+ *     this.sitesProvider.createTableFromSchema(this.tableSchema);
+ *
+ * This provider will automatically create the tables in the databases of all the instantiated sites, and also to the
+ * databases of sites instantiated from now on.
 */
 @Injectable()
 export class CoreSitesProvider {
     // Variables for the database.
     protected SITES_TABLE = 'sites';
     protected CURRENT_SITE_TABLE = 'current_site';
-    protected tablesSchema = [
+    protected appTablesSchema = [
         {
             name: this.SITES_TABLE,
             columns: [
@@ -122,6 +130,7 @@ export class CoreSitesProvider {
     protected currentSite: CoreSite;
     protected sites: {[s: string]: CoreSite} = {};
     protected appDB: SQLiteDB;
+    protected siteTablesSchemas = []; // Schemas for site tables. Other providers can add schemas in here.
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
@@ -129,7 +138,7 @@ export class CoreSitesProvider {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
-        this.appDB.createTablesFromSchema(this.tablesSchema);
+        this.appDB.createTablesFromSchema(this.appTablesSchema);
     }
 
     /**
@@ -383,9 +392,15 @@ export class CoreSitesProvider {
                     this.addSite(siteId, siteUrl, token, info, privateToken, config);
                     // Turn candidate site into current site.
                     this.currentSite = candidateSite;
+                    this.sites[siteId] = candidateSite;
                     // Store session.
                     this.login(siteId);
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, siteId);
+
+                    if (this.siteTablesSchemas.length) {
+                        // Create tables in the site's database.
+                        candidateSite.getDb().createTablesFromSchema(this.siteTablesSchemas);
+                    }
 
                     return siteId;
                 });
@@ -680,6 +695,11 @@ export class CoreSitesProvider {
         site = this.sitesFactory.makeSite(entry.id, entry.siteUrl, entry.token,
                 info, entry.privateToken, config, entry.loggedOut == 1);
         this.sites[entry.id] = site;
+        if (this.siteTablesSchemas.length) {
+            // Create tables in the site's database.
+            site.getDb().createTablesFromSchema(this.siteTablesSchemas);
+        }
+
         return site;
     }
 
@@ -1028,5 +1048,29 @@ export class CoreSitesProvider {
         return this.getSite(siteId).then((site) => {
             return site.isFeatureDisabled(name);
         });
+    }
+
+    /**
+     * Create a table in all the sites databases.
+     *
+     * @param {any} table Table schema.
+     */
+    createTableFromSchema(table: any) : void {
+        this.createTablesFromSchema([table]);
+    }
+
+    /**
+     * Create several tables in all the sites databases.
+     *
+     * @param {any[]} tables List of tables schema.
+     */
+    createTablesFromSchema(tables: any[]) : void {
+        // Add the tables to the list of schemas. This list is to create all the tables in new sites.
+        this.siteTablesSchemas = this.siteTablesSchemas.concat(tables);
+
+        // Now create these tables in current sites.
+        for (let id in this.sites) {
+            this.sites[id].getDb().createTablesFromSchema(tables);
+        }
     }
 }

@@ -46,6 +46,8 @@ import { CoreSitesProvider } from '../providers/sites';
 import { CoreLocalNotificationsProvider } from '../providers/local-notifications';
 import { CoreGroupsProvider } from '../providers/groups';
 import { CoreCronDelegate } from '../providers/cron';
+import { CoreFileSessionProvider } from '../providers/file-session';
+import { CoreFilepoolProvider } from '../providers/filepool';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -99,6 +101,8 @@ export function createTranslateLoader(http: HttpClient) {
         CoreLocalNotificationsProvider,
         CoreGroupsProvider,
         CoreCronDelegate,
+        CoreFileSessionProvider,
+        CoreFilepoolProvider,
     ]
 })
 export class AppModule {

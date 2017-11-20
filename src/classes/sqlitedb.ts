@@ -101,7 +101,7 @@ export class SQLiteDB {
 
             columnsSql.push(columnSql);
         }
-        sql += columnsSql.join(', ') + ')';
+        sql += columnsSql.join(', ');
 
         // Now add the table constraints.
 
@@ -141,7 +141,7 @@ export class SQLiteDB {
             }
         }
 
-        return sql;
+        return sql + ')';
     }
 
     /**
@@ -240,9 +240,9 @@ export class SQLiteDB {
     }
 
     /**
-     * Create a table if it doesn't exist from a schema.
+     * Create several tables if they don't exist from a list of schemas.
      *
-     * @param {any} table Table schema.
+     * @param {any[]} tables List of table schema.
      * @return {Promise<any>} Promise resolved when success.
      */
     createTablesFromSchema(tables: any[]) : Promise<any> {
@@ -394,7 +394,7 @@ export class SQLiteDB {
      * @param {any} items A single value or array of values for the expression. It doesn't accept objects.
      * @param {boolean} [equal=true] True means we want to equate to the constructed expression.
      * @param {any} [onEmptyItems] This defines the behavior when the array of items provided is empty. Defaults to false,
-     *              meaning throw exceptions. Other values will become part of the returned SQL fragment.
+     *              meaning return empty. Other values will become part of the returned SQL fragment.
      * @return {any[]} A list containing the constructed sql fragment and an array of parameters.
      */
     getInOrEqual(items: any, equal=true, onEmptyItems?: any) : any[] {
@@ -774,13 +774,50 @@ export class SQLiteDB {
             sql,
             params;
 
-        for (var key in data) {
+        for (let key in data) {
             sets.push(`${key} = ?`);
         }
 
         sql = `UPDATE ${table} SET ${sets.join(', ')} WHERE ${whereAndParams[0]}`;
         // Create the list of params using the "data" object and the params for the where clause.
         params = Object.keys(data).map(key => data[key]).concat(whereAndParams[1]);
+
+        return this.execute(sql, params);
+    }
+
+    /**
+     * Update one or more records in a table. It accepts a WHERE clause as a string.
+     *
+     * @param {string} string table The database table to update.
+     * @param {any} data An object with the fields to update: fieldname=>fieldvalue.
+     * @param {string} [where] Where clause. Must not include the "WHERE" word.
+     * @param {any[]} [whereParams] Params for the where clause.
+     * @return {Promise<any>} Promise resolved when updated.
+     */
+    updateRecordsWhere(table: string, data: any, where?: string, whereParams?: any[]) : Promise<any> {
+        if (!data || !Object.keys(data).length) {
+            // No fields to update, consider it's done.
+            return Promise.resolve();
+        }
+
+        let sets = [],
+            sql,
+            params;
+
+        for (let key in data) {
+            sets.push(`${key} = ?`);
+        }
+
+        sql = `UPDATE ${table} SET ${sets.join(', ')}`;
+        if (where) {
+            sql += ` WHERE ${where}`;
+        }
+
+        // Create the list of params using the "data" object and the params for the where clause.
+        params = Object.keys(data).map(key => data[key]);
+        if (where && whereParams) {
+            params = params.concat(whereParams[1]);
+        }
 
         return this.execute(sql, params);
     }

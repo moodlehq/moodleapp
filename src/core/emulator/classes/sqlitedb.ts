@@ -91,7 +91,9 @@ export class SQLiteDBMock extends SQLiteDB {
             this.db.transaction((tx) => {
                 tx.executeSql(sql, params, (tx, results) => {
                     resolve(results);
-                }, reject);
+                }, (tx, error) => {
+                    reject(error);
+                });
             });
         });
     }

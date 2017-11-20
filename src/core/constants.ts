@@ -37,4 +37,11 @@ export class CoreConstants {
     public static loginSSOCode = 2; // SSO in browser window is required.
     public static loginSSOInAppCode = 3; // SSO in embedded browser is required.
     public static loginLaunchData = 'mmLoginLaunchData';
+
+    // Download status constants.
+    public static downloaded = 'downloaded';
+    public static downloading = 'downloading';
+    public static notDownloaded = 'notdownloaded';
+    public static outdated = 'outdated';
+    public static notDownloadable = 'notdownloadable';
 }
