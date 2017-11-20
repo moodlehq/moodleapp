@@ -90,7 +90,7 @@
     "humanreadablesize": "{{size}} {{unit}}",
     "image": "Irudia ({{$a.MIMETYPE2}})",
     "imageviewer": "Irudi ikuskatzailea",
-    "info": "Informazioa",
+    "info": "Info",
     "ios": "iOS",
     "labelsep": " :",
     "lastmodified": "Azken aldaketa",

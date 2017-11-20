@@ -1,5 +1,5 @@
 {
-    "complete": "Osoa",
+    "complete": "Osatu",
     "completecourse": "Ikastaroa osatu",
     "completed": "Osatuta",
     "completiondate": "Osaketa-data",
@@ -9,7 +9,7 @@
     "criteriagroup": "Irizpide-multzoa",
     "criteriarequiredall": "Beheko irizpide guztiak dira beharrezko",
     "criteriarequiredany": "Beheko hainbat irizpide dira beharrezko",
-    "inprogress": "Ari da",
+    "inprogress": "Martxan",
     "manualselfcompletion": "Norberak eskuz osatu",
     "notyetstarted": "Ez da hasi",
     "pending": "Egin gabe",

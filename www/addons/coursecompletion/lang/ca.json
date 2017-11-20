@@ -1,5 +1,5 @@
 {
-    "complete": "Complet",
+    "complete": "Completa",
     "completecourse": "Curs complet",
     "completed": "Completat",
     "completiondate": "Data de compleció",
@@ -9,7 +9,7 @@
     "criteriagroup": "Grup de criteris",
     "criteriarequiredall": "Cal que es compleixin tots els criteris que es mostren a continuació",
     "criteriarequiredany": "Cal que es compleixi algun dels criteris que es mostren a continuació",
-    "inprogress": "En curs",
+    "inprogress": "En progrés",
     "manualselfcompletion": "Auto-compleció manual",
     "notyetstarted": "No s'ha començat encara",
     "pending": "Pendents",
