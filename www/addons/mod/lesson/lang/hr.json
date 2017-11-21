@@ -1,0 +1,4 @@
+{
+    "retakelabelfull": "{{retake}}: {{grade}} {{timestart}} ({{duration}})",
+    "retakelabelshort": "{{retake}}: {{grade}} {{timestart}}"
+}

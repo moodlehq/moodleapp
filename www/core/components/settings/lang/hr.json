@@ -1,0 +1,13 @@
+{
+    "deviceinfo": "Informacija o uređaju",
+    "deviceos": "OS uređaja",
+    "displayformat": "Oblik prikaza",
+    "spaceusage": "Utrošak prostora",
+    "storagetype": "Vrsta pohrane",
+    "synchronization": "Sinkronizacija",
+    "synchronizenow": "Sinkronizirajte sada",
+    "synchronizing": "Sinkronizacija",
+    "syncsettings": "Postavke sinkronizacije",
+    "versionname": "Naziv inačice",
+    "wificonnection": "Wifi povezanost"
+}

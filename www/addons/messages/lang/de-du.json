@@ -1,7 +1,7 @@
 {
     "addcontact": "Kontakt hinzufügen",
     "blockcontact": "Kontakt sperren",
-    "blockcontactconfirm": "Du sperrst gerade alle Mitteilungen von dieser Person.",
+    "blockcontactconfirm": "Möchtest du alle Mitteilungen von dieser Person sperren?",
     "blocknoncontacts": "Mitteilungen nur für Kontakte zulassen",
     "contactlistempty": "Die Kontaktliste ist leer.",
     "contactname": "Name",
@@ -19,7 +19,7 @@
     "newmessage": "Neue Mitteilung",
     "newmessages": "Neue Mitteilungen",
     "nomessages": "Keine Mitteilungen",
-    "nousersfound": "Keine Nutzer/innen gefunden",
+    "nousersfound": "Keine Personen gefunden",
     "removecontact": "Kontakt entfernen",
     "removecontactconfirm": "Der Kontakt wird aus deiner Kontaktliste gelöscht.",
     "send": "Senden",
@@ -28,7 +28,7 @@
     "type_offline": "Offline",
     "type_online": "Online",
     "type_search": "Suchergebnisse",
-    "type_strangers": "Andere Personen",
+    "type_strangers": "Weitere Personen",
     "unblockcontact": "Kontakt aktivieren",
     "warningmessagenotsent": "Die Mitteilung an {{user}} konnte nicht gesendet werden. {{error}}"
 }

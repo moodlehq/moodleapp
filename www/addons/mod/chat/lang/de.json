@@ -11,7 +11,7 @@
     "messagebeepsyou": "{{$a}} hat Sie angepiepst!",
     "messageenter": "{{$a}} hat den Chat gerade betreten",
     "messageexit": "{{$a}} hat den Chat verlassen",
-    "mustbeonlinetosendmessages": "Sie müssen online sein, um Mitteilungen zu senden",
+    "mustbeonlinetosendmessages": "Sie müssen online sein, um Mitteilungen zu senden.",
     "nomessages": "Keine Mitteilungen",
     "send": "Senden",
     "sessionstart": "Nächster Chat beginnt {{$a.date}}, (also in {{$a.fromnow}})",

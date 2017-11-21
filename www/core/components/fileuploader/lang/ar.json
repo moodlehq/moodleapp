@@ -5,12 +5,12 @@
     "errorcapturingimage": "خطأ في التقاط الصورة",
     "errorcapturingvideo": "خطأ في التقاط الفيديو",
     "errormustbeonlinetoupload": "لابد أن تكون متصل بالأنترنت لكي يتم رفع الملفات",
-    "errorreadingfile": "خطاء في قراءة ملف \"{{$a}}\"",
+    "errorreadingfile": "خطأ في قراءة الملف",
     "file": "ملف",
     "fileuploaded": "الملف الذي تم رفعه",
     "maxbytesfile": "حجم الملف {{$a.file}} كبير جداً . الحد الأقصى الذي تستطيع رفعه هو {{$a.size}}.",
     "readingfile": "يتم قراءة الملف",
-    "uploadafile": "تحميل ملف",
-    "uploading": "يتم التحميل",
+    "uploadafile": "إرفع ملف",
+    "uploading": "يتم الرفع",
     "video": "فيديو"
 }

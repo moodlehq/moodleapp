@@ -1,0 +1,6 @@
+{
+    "acceptsubmissionstatement": "Bekreft betingelsene",
+    "cannoteditduetostatementsubmission": "Du kan ikke redigere et bidrag fordi vi ikke kunne hente betingelsene fra siden",
+    "cannotgradefromapp": "Noen karaktermetoder er ikke støttet av appen og kan ikke endres",
+    "erroreditpluginsnotsupported": "Du kan ikke legge til eller endre bidrag i appen fordi noen plugins ikke støtter redigering:"
+}

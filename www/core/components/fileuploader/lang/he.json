@@ -1,6 +1,6 @@
 {
     "addfiletext": "הוספת קובץ",
-    "audio": "קובץ שמע ({{$a.EXT}})",
+    "audio": "קול",
     "camera": "מצלמה",
     "confirmuploadfile": "את/ה עומד/ת להעלות קובץ בגודל {{size}}. האם את/ה רוצא/ה להמשיך?",
     "errorcapturingaudio": "שגיאה בלכידת הקול.",
@@ -9,14 +9,14 @@
     "errorgettingimagealbum": "שגיאה בטעינת תמונה מאלבום.",
     "errormustbeonlinetoupload": "עליך להיות מחובר/ת בכדי להעלות קבצים.",
     "errornoapp": "לא נמצא יישומון זמין לביצוע פעולה הזו.",
-    "errorreadingfile": "שגיאה בקריאת קובץ \"{{$a}}\"",
+    "errorreadingfile": "שגיאה בקריאת קובץ.",
     "errorwhileuploading": "התרחשה שגיאה בזמן הניסיון להעלות את הקובץ.",
     "file": "קובץ",
     "fileuploaded": "הקובץ הועלה בהצלחה.",
     "invalidfiletype": "{{$a}} סוגי קבצים אשר אינם יכולים להתקבל",
     "photoalbums": "אלבומי תמונות",
     "readingfile": "קורא קובץ",
-    "uploadafile": "העלאת קובץ",
-    "uploading": "מעלה את הקובץ...",
+    "uploadafile": "העלה קובץ",
+    "uploading": "מעלה קבצים",
     "video": "וידאו"
 }

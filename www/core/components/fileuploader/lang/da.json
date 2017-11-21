@@ -1,6 +1,6 @@
 {
     "addfiletext": "Tilføj fil",
-    "audio": "Lydfil ({{$a.EXT}})",
+    "audio": "Audio",
     "camera": "Kamera",
     "confirmuploadfile": "Du er ved at oploade {{size}}. Er du sikker på at du vil fortsætte?",
     "confirmuploadunknownsize": "Vi kan ikke beregne hvor stor denne upload er. Er du sikker på at du vil fortsætte?",
@@ -10,17 +10,17 @@
     "errorgettingimagealbum": "Fejl ved indhentning af billede fra album",
     "errormustbeonlinetoupload": "Du skal være online for at uploade filer.",
     "errornoapp": "Du har ikke installeret en app som kan udføre denne handling.",
-    "errorreadingfile": "Fejl under læsning af filen \"{{$a}}\"",
+    "errorreadingfile": "Fejl ved læsning af fil.",
     "errorwhileuploading": "En fejl opstod under upload af filen.",
     "file": "Fil",
     "fileuploaded": "Filen er uploadet.",
     "invalidfiletype": "Filtypen {{$a}} accepteres ikke.",
-    "maxbytesfile": "Filen {{$a.file}} er for stor. Maksimal upload-størrelse er {{$a.size}}.",
+    "maxbytesfile": "Filen {{$a.file}} er for stor. Den må ikke fylde mere end {{$a.size}}.",
     "photoalbums": "Fotoalbum",
     "readingfile": "Læser fil",
     "selectafile": "Vælg en fil",
     "uploadafile": "Upload en fil",
-    "uploading": "Uploader...",
+    "uploading": "Uploader",
     "uploadingperc": "Uploader: {{$a}}%",
-    "video": "Videofil ({{$a.EXT}})"
+    "video": "Video"
 }
