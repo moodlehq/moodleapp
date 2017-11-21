@@ -14,7 +14,7 @@
     "errorcreateofflineattempt": "Une erreur est survenue lors de la création d'une tentative hors ligne. Veuillez réessayer.",
     "errordownloadscorm": "Erreur de téléchargement SCORM : « {{name}} »",
     "errorgetscorm": "Erreur de récupération des données SCORM.",
-    "errorinvalidversion": "L'application ne supporte que SCORM 1.2.",
+    "errorinvalidversion": "Désolé, l'application ne supporte que SCORM 1.2.",
     "errornotdownloadable": "Le téléchargement des paquetages SCORM n'est pas activé sur cette plateforme Moodle. Veuillez contacter l'administrateur de la plateforme.",
     "errornovalidsco": "Ce SCORM n'a pas de SCO visible à charger.",
     "errorpackagefile": "L'application ne supporte que les paquetages ZIP.",

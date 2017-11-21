@@ -14,6 +14,7 @@
     "errorwhileuploading": "En fejl opstod under upload af filen.",
     "file": "Fil",
     "fileuploaded": "Filen er uploadet.",
+    "invalidfiletype": "Filtypen {{$a}} accepteres ikke.",
     "maxbytesfile": "Filen {{$a.file}} er for stor. Den må ikke fylde mere end {{$a.size}}.",
     "photoalbums": "Fotoalbum",
     "readingfile": "Læser fil",

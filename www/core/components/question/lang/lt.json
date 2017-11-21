@@ -17,5 +17,5 @@
     "questionmessage": "Klausimas {{$a}}: {{$b}}",
     "questionno": "Klausimas {{$a}}",
     "requiresgrading": "Reikia vertinimo",
-    "unknown": "Negalima nustatyti statuso"
+    "unknown": "Nežinoma"
 }

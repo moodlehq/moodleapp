@@ -1,0 +1,10 @@
+{
+    "errorgetforum": "Feil ved henting av forumdata",
+    "errorgetgroups": "Feil ved henting av gruppeinnstillinger.",
+    "forumnodiscussionsyet": "Det er foreløpig ingen diskusjonsemner i dette forumet.",
+    "group": "Gruppe",
+    "numdiscussions": "{{numdiscussions}} diskusjoner",
+    "numreplies": "{{numreplies}} svar",
+    "refreshdiscussions": "Oppdater diskusjon",
+    "refreshposts": "Oppdater innlegg"
+}

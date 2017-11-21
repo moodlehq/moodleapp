@@ -87,7 +87,7 @@
     "submittedlate": "La tarea fue enviada {{$a}} después",
     "timemodified": "Última modificación",
     "timeremaining": "Tiempo restante",
-    "ungroupedusers": "Si se activa la configuración \"se requiere formar parte de un grupo para realizar la entrega\" se evitará que los usuarios no asignados a lo sgrupos realicen entregas.",
+    "ungroupedusers": "Si se activa la configuración \"se requiere formar parte de un grupo para realizar la entrega\" se evitará que los usuarios no asignados a los grupos realicen entregas.",
     "unlimitedattempts": "Ilimitado",
     "userswhoneedtosubmit": "Componentes del equipo pendientes de entrega: {{$a}}",
     "userwithid": "Usuario con ID {{id}}",

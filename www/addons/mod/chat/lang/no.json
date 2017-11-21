@@ -1,0 +1,5 @@
+{
+    "errorwhileretrievingmessages": "Feil ved henting av melding fra server.",
+    "errorwhilesendingmessage": "Melding kunne ikke sendes.",
+    "mustbeonlinetosendmessages": "Du må være på nett for å sende meldinger."
+}

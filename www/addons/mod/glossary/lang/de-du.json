@@ -1,4 +1,5 @@
 {
+    "attachment": "Auszeichnung an Mitteilung anhängen",
     "browsemode": "Einträge durchblättern",
     "byalphabet": "Alphabetisch",
     "byauthor": "Nach Autor/in",
@@ -7,6 +8,8 @@
     "byrecentlyupdated": "Kürzlich aktualisiert",
     "bysearch": "Suchen",
     "cannoteditentry": "Eintrag nicht bearbeitbar",
+    "casesensitive": "Groß-/Kleinschreibung",
+    "categories": "Kategorien",
     "entriestobesynced": "Einträge zum Synchronisieren",
     "entrypendingapproval": "Dieser Eintrag wartet auf eine Freigabe.",
     "errorloadingentries": "Fehler beim Laden von Einträgen",

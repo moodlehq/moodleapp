@@ -10,7 +10,7 @@
     "discussionsubscription": "ディスカッション購読",
     "edit": "編集",
     "erroremptymessage": "投稿メッセージを空にすることはできません。",
-    "erroremptysubject": "投稿の件名は必須です",
+    "erroremptysubject": "投稿件名を空にすることはできません。",
     "errorgetforum": "フォーラムのデータ取得中にエラーが発生しました。",
     "errorgetgroups": "グループ設定の取得中にエラーが発生しました。",
     "forumnodiscussionsyet": "このフォーラムにはまだディスカッショントピックがありません",

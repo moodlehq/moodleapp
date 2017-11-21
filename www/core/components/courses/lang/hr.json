@@ -1,0 +1,8 @@
+{
+    "enrolme": "Upiši me",
+    "filtermycourses": "Filtriraj moje e-kolegije",
+    "frontpage": "Naslovnica",
+    "notenrollable": "Ne možete se samostalno upisati na ovaj e-kolegij.",
+    "password": "Lozinka e-kolegija",
+    "totalcoursesearchresults": "Ukupni broj e-kolegija: {{$a}}"
+}

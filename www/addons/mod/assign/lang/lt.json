@@ -85,6 +85,7 @@
     "submittedlate": "Užduotis buvo įkelta vėluojant {{$a}}",
     "timemodified": "Paskutinį kartą keista",
     "timeremaining": "Liko laiko",
+    "ungroupedusers": "Nuostata \"Reikalinga grupė, kad pateikti darbus\" yra įjungta, tačiau kai kurie dalyviai nėra grupės nariai ar priklauso daugiau nei vienai grupei, todėl jie negali pateikti savo pateikimo.",
     "unlimitedattempts": "Neribotai",
     "userswhoneedtosubmit": "Naudotojai, kurie turi pateikti darbą: {{$a}}",
     "userwithid": "Naudotojas su  ID {{id}}",

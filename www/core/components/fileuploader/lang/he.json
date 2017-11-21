@@ -13,6 +13,7 @@
     "errorwhileuploading": "התרחשה שגיאה בזמן הניסיון להעלות את הקובץ.",
     "file": "קובץ",
     "fileuploaded": "הקובץ הועלה בהצלחה.",
+    "invalidfiletype": "{{$a}} סוגי קבצים אשר אינם יכולים להתקבל",
     "photoalbums": "אלבומי תמונות",
     "readingfile": "קורא קובץ",
     "uploadafile": "העלה קובץ",

@@ -16,12 +16,15 @@
     "nocourses": "O kurzu nejsou žádné informace.",
     "nocoursesyet": "Žádný kurz v této kategorii",
     "nosearchresults": "Z vašeho hledání nebyly nalezeny žádné výsledky",
-    "notenroled": "V tomto kurzu nejste zapsán",
+    "notenroled": "Nejste zapsáni v tomto kurzu",
     "notenrollable": "Do tohoto kurzu se nemůžete sami zapsat.",
     "password": "Klíč zápisu",
+    "paymentrequired": "Tento kurz je placený",
+    "paypalaccepted": "Platby přes PayPal přijímány",
     "search": "Vyhledat",
     "searchcourses": "Vyhledat kurzy",
     "searchcoursesadvice": "Můžete použít tlačítko Vyhledat kurzy, pracovat jako host nebo se zapsat do kurzů, které to umožňují.",
     "selfenrolment": "Zápis sebe sama",
+    "sendpaymentbutton": "Poslat platbu přes službu PayPal",
     "totalcoursesearchresults": "Celkem kurzů:  {{$a}}"
 }

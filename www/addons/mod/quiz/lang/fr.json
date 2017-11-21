@@ -19,7 +19,7 @@
     "errordownloading": "Erreur lors du téléchargement des données requises.",
     "errorgetattempt": "Erreur lors de l'obtention des données de tentative.",
     "errorgetquestions": "Erreur lors de l'obtention des questions.",
-    "errorgetquiz": "Erreur lors de l'obtention des données de test.",
+    "errorgetquiz": "Erreur lors de l'obtention des données du test.",
     "errorparsequestions": "Une erreur est survenue lors de la lecture des questions. Veuillez faire ce test dans un navigateur web.",
     "errorquestionsnotsupported": "Ce test ne peut être tenté dans l'app, car il contient des questions qui ne sont pas supportées :",
     "errorrulesnotsupported": "Ce test ne peut être tenté dans l'app, car il contient des règles d'accès qui ne sont pas supportées :",

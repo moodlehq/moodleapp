@@ -19,9 +19,12 @@
     "notenroled": "Não está inscrito como aluno nesta disciplina",
     "notenrollable": "Não se pode inscrever nesta disciplina.",
     "password": "Senha de inscrição",
+    "paymentrequired": "Esta disciplina exige uma taxa de inscrição.",
+    "paypalaccepted": "Tipos de pagamentos aceites",
     "search": "Pesquisa",
     "searchcourses": "Procurar disciplinas",
     "searchcoursesadvice": "Pode usar o botão de pesquisa de disciplinas para aceder às mesmas como visitante ou autoinscrever-se caso o permitam.",
     "selfenrolment": "Autoinscrição",
+    "sendpaymentbutton": "Realizar pagamento através de \"Paypal\"",
     "totalcoursesearchresults": "Total de disciplinas: {{$a}}"
 }

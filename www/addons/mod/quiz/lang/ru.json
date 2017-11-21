@@ -46,7 +46,7 @@
     "startattempt": "Начать попытку",
     "startedon": "Тест начат",
     "stateabandoned": "Не отправленные",
-    "statefinished": "Завершено",
+    "statefinished": "Завершенные",
     "statefinisheddetails": "Отправлено {{$a}}",
     "stateinprogress": "В процессе",
     "stateoverdue": "Просроченные",

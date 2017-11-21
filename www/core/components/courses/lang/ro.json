@@ -17,9 +17,12 @@
     "notenroled": "Nu sunteți înregistrat în  acest curs",
     "notenrollable": "Nu vă puteți auto-înregistra la acest curs.",
     "password": "Parola de înregistrare",
+    "paymentrequired": "Acest curs necesită plata unei taxe pentru acces.",
+    "paypalaccepted": "Se acceptă plăţi PayPal",
     "search": "Căutați",
     "searchcourses": "Caută cursuri",
     "searchcoursesadvice": "Puteți folosi butonul pentru căutarea cursurilor pentru a cauta și accesa ca vizitator sau pentru a vă auto-înregistra la acele cursuri care permit aceste opțiuni.",
     "selfenrolment": "Auto înscriere",
+    "sendpaymentbutton": "Trimite plată prin PayPal",
     "totalcoursesearchresults": "Totalul cursurilor: {{$a}}"
 }

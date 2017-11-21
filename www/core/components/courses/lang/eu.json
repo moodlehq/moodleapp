@@ -19,9 +19,12 @@
     "notenroled": "Ez zaude matrikulatuta ikastaro honetan",
     "notenrollable": "Ezin duzu zeure burua matrikulatu ikastaro honetan.",
     "password": "Matrikulazio-giltza",
+    "paymentrequired": "Ikastaro hau ordainpekoa da",
+    "paypalaccepted": "Paypal ordainketak onartu dira",
     "search": "Bilatu...",
     "searchcourses": "Bilatu ikastaroak",
     "searchcoursesadvice": "Bilatu botoia erabil dezakezu ikastaroak topatu eta bisitari gisa sartu edo bertan matrikulatzeko ikastaroak baimentzen badu.",
     "selfenrolment": "Matrikulazio automatikoa",
+    "sendpaymentbutton": "Paypal bidezko ordainketa bidali",
     "totalcoursesearchresults": "Ikastaroak guztira: {{$a}}"
 }

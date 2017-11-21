@@ -1,7 +1,7 @@
 {
     "cannoteditpage": "あなたはこのページを編集できません。",
     "createpage": "ページを作成する",
-    "editingpage": "このページ「 {{$a}} 」の編集",
+    "editingpage": "このページ「 {{$a}} 」を編集する",
     "errorloadingpage": "ページの読み込み中にエラーが発生しました。",
     "errornowikiavailable": "このwikiにはまだ内容がありません。",
     "gowikihome": "Wikiのホームへ移動",

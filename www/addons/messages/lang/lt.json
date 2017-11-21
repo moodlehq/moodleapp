@@ -1,5 +1,5 @@
 {
-    "addcontact": "Įtraukite kontaktą",
+    "addcontact": "Įtraukti kontaktą",
     "blockcontact": "Blokuoti kontaktą",
     "blocknoncontacts": "Neleisti neįtrauktiems į kontaktų sąrašą asmenims siųsti man žinutes",
     "contactlistempty": "Kontaktų sąrašas tuščias",
@@ -16,7 +16,7 @@
     "mustbeonlinetosendmessages": "Norėdamas išsiųsti žinutę, turite prisijungti",
     "newmessage": "Nauja žinutė",
     "nomessages": "Žinučių dar nėra",
-    "nousersfound": "Vartotojas nerastas",
+    "nousersfound": "Nerasta naudotojų",
     "removecontact": "Pašalinti kontaktą",
     "send": "Siųsti",
     "sendmessage": "Siųsti žinutę",

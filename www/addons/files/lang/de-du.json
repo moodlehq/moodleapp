@@ -4,7 +4,10 @@
     "couldnotloadfiles": "Die Liste der Dateien konnte nicht geladen werden.",
     "emptyfilelist": "Keine Dateien",
     "erroruploadnotworking": "Im Moment können keine Dateien zur Website hochgeladen werden.",
+    "files": "Dateien",
     "myprivatefilesdesc": "Dateien, die in deinem persönlichen Bereich auf dieser Website liegen.",
-    "sitefilesdesc": "Weitere Dateien, die für dich in anderen Bereichen der Website verfügbar sind.",
+    "privatefiles": "Meine Dateien",
+    "sitefiles": "Dateien der Website",
+    "sitefilesdesc": "Weitere Dateien, die für dich in anderen Bereichen der Website zugänglich sind.",
     "uploadfiles": "Dateien hochladen"
 }

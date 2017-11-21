@@ -11,6 +11,9 @@
     "nosearchresults": "Sonuç yok",
     "notenroled": "Bu derse kayıtlı değilsiniz",
     "password": "Kayıt anahtarı",
+    "paymentrequired": "Bu derse giriş için ödeme yapmanız gerekir.",
+    "paypalaccepted": "PayPal ödemeleri kabul edilir",
     "search": "Arama...",
-    "searchcourses": "Kursları ara"
+    "searchcourses": "Kursları ara",
+    "sendpaymentbutton": "Ödemeyi PayPal ile yap"
 }

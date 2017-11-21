@@ -1,0 +1,15 @@
+{
+    "connect": "Prijavi se!",
+    "connecttomoodle": "Prijavi se na Moodle",
+    "invaliddate": "Neispravan datum",
+    "invalidtime": "Neispravno vrijeme",
+    "loginbutton": "Prijava",
+    "notloggedin": "Morate biti prijavljeni",
+    "passwordrequired": "Unesite lozinku",
+    "profileinvaliddata": "Neispravna vrijednost",
+    "reconnect": "Spoji se ponovno",
+    "signupplugindisabled": "{{$a}} nije omogućen(o).",
+    "siteaddress": "Adresa poslužitelja",
+    "siteurl": "URL poslužitelja",
+    "usernamerequired": "Unesite korisničko ime"
+}

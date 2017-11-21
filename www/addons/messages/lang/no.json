@@ -1,0 +1,21 @@
+{
+    "blockcontactconfirm": "Du vil slutte å motta meldinger fra denne kontakten",
+    "contactlistempty": "Kontaktlisten er tom",
+    "contactname": "Navn på kontakt",
+    "errordeletemessage": "Feil ved sletting av melding",
+    "errorwhileretrievingcontacts": "Feil ved henting av kontakter fra server",
+    "errorwhileretrievingdiscussions": "Feil ved henting av diskusjoner fra server",
+    "errorwhileretrievingmessages": "Feil ved henting av meldinger fra server",
+    "loadpreviousmessages": "Last forrige meldinger",
+    "messagenotsent": "Meldingen ble ikke sendt. Prøv igjen senere",
+    "mustbeonlinetosendmessages": "Du må være på nett for å sende meldinger",
+    "newmessages": "Nye meldinger",
+    "nousersfound": "Ingen brukere funnet",
+    "removecontactconfirm": "Kontakten vil bli fjernet fra kontaktlisten",
+    "type_blocked": "Blokkert",
+    "type_offline": "Offline",
+    "type_online": "Online",
+    "type_search": "Søkeresultat",
+    "type_strangers": "Andre",
+    "warningmessagenotsent": "Kunne ikke sende melding(er) til {{user}}. {{error}}"
+}

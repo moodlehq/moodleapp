@@ -1,5 +1,5 @@
 {
-    "complete": "Completado",
+    "complete": "Finalizado",
     "completecourse": "Curso completado",
     "completed": "Finalizado",
     "completiondate": "Fecha de finalización",
@@ -9,7 +9,7 @@
     "criteriagroup": "Grupo de criterios",
     "criteriarequiredall": "Son necesarios todos los criterios que aparecen más abajo",
     "criteriarequiredany": "Es necesario cualquiera de los criterios que aparecen más abajo",
-    "inprogress": "En curso",
+    "inprogress": "En progreso",
     "manualselfcompletion": "Autocompletar manualmente",
     "notyetstarted": "Aún no comenzado",
     "pending": "Pendiente",

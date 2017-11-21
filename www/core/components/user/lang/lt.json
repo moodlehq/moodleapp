@@ -1,7 +1,7 @@
 {
     "address": "Adresas",
     "city": "Miestas / miestelis",
-    "contact": "Kontaktai",
+    "contact": "Kontaktas",
     "country": "Šalis",
     "description": "Įžangos tekstas",
     "details": "Detalės",
@@ -11,7 +11,7 @@
     "emailagain": "El. paštas (dar kartą)",
     "firstname": "Vardas",
     "interests": "Pomėgiai",
-    "invaliduser": "Netinkamas vartotojas.",
+    "invaliduser": "Klaidingas naudotojas",
     "lastname": "Pavardė",
     "manager": "Valdytojas",
     "newpicture": "Naujas paveikslėlis",
