@@ -13,17 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { CoreLoginInitPage } from './init';
-import { CoreLoginModule } from '../../login.module';
+import { CoreLoginHelperProvider } from './providers/helper';
 
 @NgModule({
     declarations: [
-        CoreLoginInitPage,
     ],
     imports: [
-        CoreLoginModule,
-        IonicPageModule.forChild(CoreLoginInitPage),
     ],
+    providers: [
+        CoreLoginHelperProvider,
+    ]
 })
-export class CoreLoginInitPageModule {}
+export class CoreLoginModule {}

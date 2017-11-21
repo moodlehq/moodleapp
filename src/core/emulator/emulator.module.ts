@@ -32,7 +32,7 @@ import { NetworkMock } from './providers/network';
 import { ZipMock } from './providers/zip';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
-import { CoreEmulatorHelper } from './providers/helper';
+import { CoreEmulatorHelperProvider } from './providers/helper';
 import { CoreAppProvider } from '../../providers/app';
 import { CoreFileProvider } from '../../providers/file';
 import { CoreTextUtilsProvider } from '../../providers/utils/text';
@@ -46,7 +46,7 @@ import { CoreInitDelegate } from '../../providers/init';
     imports: [
     ],
     providers: [
-        CoreEmulatorHelper,
+        CoreEmulatorHelperProvider,
         {
             provide: Clipboard,
             deps: [CoreAppProvider],
@@ -105,7 +105,7 @@ import { CoreInitDelegate } from '../../providers/init';
     ]
 })
 export class CoreEmulatorModule {
-    constructor(appProvider: CoreAppProvider, initDelegate: CoreInitDelegate, helper: CoreEmulatorHelper) {
+    constructor(appProvider: CoreAppProvider, initDelegate: CoreInitDelegate, helper: CoreEmulatorHelperProvider) {
         let win = <any>window; // Convert the "window" to "any" type to be able to use non-standard properties.
 
         // Emulate Custom URL Scheme plugin in desktop apps.

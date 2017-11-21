@@ -21,6 +21,13 @@ import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
 import { SQLiteDB } from '../classes/sqlitedb';
 
+export interface CoreRedirectData {
+    siteId?: string;
+    page?: string; // Name of the page to redirect.
+    params?: any; // Params to pass to the page.
+    timemodified?: number;
+};
+
 /**
  * Factory to provide some global functionalities, like access to the global app database.
  * @description
@@ -213,16 +220,16 @@ export class CoreAppProvider {
     /**
      * Retrieve redirect data.
      *
-     * @return {object} Object with siteid, state, params and timemodified.
+     * @return {CoreRedirectData} Object with siteid, state, params and timemodified.
      */
-    getRedirect() : object {
+    getRedirect() : CoreRedirectData {
         if (localStorage && localStorage.getItem) {
             try {
-                let data = {
-                    siteid: localStorage.getItem('mmCoreRedirectSiteId'),
-                    state: localStorage.getItem('mmCoreRedirectState'),
+                let data: CoreRedirectData = {
+                    siteId: localStorage.getItem('mmCoreRedirectSiteId'),
+                    page: localStorage.getItem('mmCoreRedirectState'),
                     params: localStorage.getItem('mmCoreRedirectParams'),
-                    timemodified: localStorage.getItem('mmCoreRedirectTime')
+                    timemodified: parseInt(localStorage.getItem('mmCoreRedirectTime'), 10)
                 };
 
                 if (data.params) {
@@ -243,9 +250,9 @@ export class CoreAppProvider {
      *
      * @param {string} siteId Site ID.
      * @param {string} page Page to go.
-     * @param {object} params Page params.
+     * @param {any} params Page params.
      */
-    storeRedirect(siteId: string, page: string, params: object) : void {
+    storeRedirect(siteId: string, page: string, params: any) : void {
         if (localStorage && localStorage.setItem) {
             try {
                 localStorage.setItem('mmCoreRedirectSiteId', siteId);

@@ -25,7 +25,7 @@ import { FileTransferErrorMock } from './file-transfer';
  * Emulates the Cordova Zip plugin in desktop apps and in browser.
  */
 @Injectable()
-export class CoreEmulatorHelper implements CoreInitHandler {
+export class CoreEmulatorHelperProvider implements CoreInitHandler {
     name = 'CoreEmulator';
     priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 500;
     blocking = true;

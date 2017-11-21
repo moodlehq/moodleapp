@@ -14,3 +14,42 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+
+/**
+ * App Branding
+ */
+.mm-bglogo {
+    background-color: $mm-color-init-screen; /* Change this to add a bg image or change color */
+    background: -webkit-radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
+    background: radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    display: table;
+
+    .mm-logo {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    img {
+        width: $mm-init-screen-logo-width;
+        max-width: $mm-init-screen-logo-max-width;
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 30px;
+    }
+
+    .spinner circle {
+        stroke: $mm-init-screen-spinner-color;
+    }
+}
+

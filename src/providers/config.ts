@@ -77,10 +77,10 @@ export class CoreConfigProvider {
      * Set an app setting.
      *
      * @param {string} name The config name.
-     * @param {any} value The config value. Can only store primitive values, not objects.
+     * @param {boolean|number|string} value The config value. Can only store primitive values, not objects.
      * @return {Promise<any>} Promise resolved when done.
      */
-    set(name: string, value: any) : Promise<any> {
+    set(name: string, value: boolean|number|string) : Promise<any> {
         return this.appDB.insertOrUpdateRecord(this.TABLE_NAME, {name: name, value: value}, {name: name});
     }
 }
