@@ -48,6 +48,7 @@ import { CoreGroupsProvider } from '../providers/groups';
 import { CoreCronDelegate } from '../providers/cron';
 import { CoreFileSessionProvider } from '../providers/file-session';
 import { CoreFilepoolProvider } from '../providers/filepool';
+import { CoreUpdateManagerProvider } from '../providers/update-manager';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -103,18 +104,22 @@ export function createTranslateLoader(http: HttpClient) {
         CoreCronDelegate,
         CoreFileSessionProvider,
         CoreFilepoolProvider,
+        CoreUpdateManagerProvider,
     ]
 })
 export class AppModule {
-    constructor(platform: Platform, initDelegate: CoreInitDelegate) {
+    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider) {
         // Create a handler for platform ready and register it in the init delegate.
         let handler = {
             name: 'CorePlatformReady',
-            priority: initDelegate.MAX_RECOMMENDED_PRIORITY + 400,
+            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 400,
             blocking: true,
             load: platform.ready
         };
         initDelegate.registerProcess(handler);
+
+        // Register the update manager as an init process.
+        initDelegate.registerProcess(updateManager);
 
         // Execute the init processes.
         initDelegate.executeInitProcesses();

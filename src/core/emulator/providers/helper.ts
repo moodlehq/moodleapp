@@ -27,13 +27,11 @@ import { FileTransferErrorMock } from './file-transfer';
 @Injectable()
 export class CoreEmulatorHelper implements CoreInitHandler {
     name = 'CoreEmulator';
-    priority;
+    priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 500;
     blocking = true;
 
     constructor(private file: File, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
-            initDelegate: CoreInitDelegate, private localNotif: LocalNotifications, private appProvider: CoreAppProvider) {
-        this.priority = initDelegate.MAX_RECOMMENDED_PRIORITY + 500;
-    }
+            initDelegate: CoreInitDelegate, private localNotif: LocalNotifications, private appProvider: CoreAppProvider) {}
 
     /**
      * Check if the app is running in a Linux environment.

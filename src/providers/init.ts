@@ -29,8 +29,9 @@ export interface CoreInitHandler {
  */
 @Injectable()
 export class CoreInitDelegate {
-    DEFAULT_PRIORITY = 100; // Default priority for init processes.
-    MAX_RECOMMENDED_PRIORITY = 600;
+    public static DEFAULT_PRIORITY = 100; // Default priority for init processes.
+    public static MAX_RECOMMENDED_PRIORITY = 600;
+
     initProcesses = {};
     logger;
     readiness;
@@ -142,7 +143,7 @@ export class CoreInitDelegate {
      */
     registerProcess(handler: CoreInitHandler) : void {
         if (typeof handler.priority == 'undefined') {
-            handler.priority = this.DEFAULT_PRIORITY;
+            handler.priority = CoreInitDelegate.DEFAULT_PRIORITY;
         }
 
         if (typeof this.initProcesses[handler.name] != 'undefined') {
