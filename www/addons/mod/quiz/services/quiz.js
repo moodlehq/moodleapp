@@ -164,7 +164,7 @@ angular.module('mm.addons.mod_quiz')
         if (typeof grade == 'undefined' || grade == -1 || grade === null) {
             return $translate.instant('mma.mod_quiz.notyetgraded');
         }
-        return $mmUtil.roundToDecimals(grade, decimals);
+        return $mmUtil.formatFloat($mmUtil.roundToDecimals(grade, decimals));
     };
 
     /**
