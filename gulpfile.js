@@ -64,9 +64,9 @@ function treatMergedData(data) {
 
             addProperties(merged, data[filepath], 'mm.core.');
 
-        } else if (filepath.indexOf('core/components') === 0) {
+        } else if (filepath.indexOf('core/') === 0) {
 
-            var componentName = filepath.replace('core/components/', '');
+            var componentName = filepath.replace('core/', '');
             componentName = componentName.substr(0, componentName.indexOf('/'));
             addProperties(merged, data[filepath], 'mm.'+componentName+'.');
 
