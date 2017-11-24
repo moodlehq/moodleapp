@@ -1,6 +1,6 @@
 {
     "addfiletext": "Gehitu fitxategia",
-    "audio": "Audioa",
+    "audio": "Audio-fitxategia ({{$a.EXT}})",
     "camera": "Kamera",
     "confirmuploadfile": "{{size}} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
     "confirmuploadunknownsize": "Ezin izan dugu igotzera zoazenaren tamaina kalkulatu. Ziur zaude jarraitu nahi duzula?",
@@ -10,9 +10,9 @@
     "errorgettingimagealbum": "Errorea irudia bildumatik jasotzean.",
     "errormustbeonlinetoupload": "Online egon behar zara fitxategiak igotzeko.",
     "errornoapp": "Ez daukazu ekintza hau burutzeko app-ik instalatuta.",
-    "errorreadingfile": "Errorea fitxategia irakurtzean.",
+    "errorreadingfile": "Errorea \"{{$a}}\" fitxategia irakurtzean",
     "errorwhileuploading": "Errorea gertatu da fitxategia igotzean.",
-    "file": "Fitxategia",
+    "file": "Fitxategi-bidalketak",
     "fileuploaded": "Fitxategia ondo igo da.",
     "invalidfiletype": "{{$a}} fitxategi-mota ezin da onartu.",
     "maxbytesfile": "{{$a.file}} fitxategia oso handia da. Igo ditzakezun fitxategien gehienezko tamaina {{$a.size}} da.",
@@ -20,8 +20,8 @@
     "photoalbums": "Argazki-bildumak",
     "readingfile": "Fitxategia irakurtzen",
     "selectafile": "Aukeratu fitxategi bat",
-    "uploadafile": "Igo fitxategia",
-    "uploading": "Igotzen",
+    "uploadafile": "Fitxategia igo",
+    "uploading": "Igotzen...",
     "uploadingperc": "Igotzen: %{{$a}}",
-    "video": "Bideoa"
+    "video": "Bideo fitxategia ({{$a.EXT}})"
 }

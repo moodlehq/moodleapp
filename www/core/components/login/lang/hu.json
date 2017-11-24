@@ -1,6 +1,6 @@
 {
     "authenticating": "Hitelesítés",
-    "cancel": "Törlés",
+    "cancel": "Mégse",
     "connect": "Kapcsolódás",
     "createaccount": "Új felhasználói azonosítóm létrehozása",
     "createuserandpass": "Új felhasználónév és jelszó megadása",
@@ -16,7 +16,7 @@
     "invalidemail": "Érvénytelen e-mail cím",
     "invalidmoodleversion": "Érvénytelen Moodle-verzió. A minimális verziószám a 2.4.",
     "invalidsite": "A portál-URL nem érvényes.",
-    "invalidurl": "A megadott URL nem érvényes",
+    "invalidurl": "Érvénytelen URL",
     "login": "Belépés",
     "logininsiterequired": "A portálra böngészőablakban kell bejelentkeznie.",
     "loginsteps": "Ahhoz, hogy teljesen hozzáférjen a portálhoz, először új fiókot kell létrehoznia.",

@@ -1,0 +1,13 @@
+{
+    "beep": "Bocni",
+    "currentusers": "Trenutačno prijavljeni korisnici",
+    "enterchat": "Kliknite ovdje za pristup chatu",
+    "entermessage": "Upišite svoju poruku",
+    "messagebeepsyou": "{{$a}} vas je upravo bocnuo!",
+    "messageenter": "Korisnik {{$a}} je došao na chat",
+    "messageexit": "Korisnik {{$a}} je otišao s chata",
+    "nomessages": "Nema poruka (još)",
+    "send": "Pošalji",
+    "sessionstart": "Sljedeća chat sesija će biti pokrenuta u: {{$a}}",
+    "talk": "Pričaj"
+}
