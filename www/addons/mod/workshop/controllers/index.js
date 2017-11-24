@@ -252,21 +252,19 @@ angular.module('mm.addons.mod_workshop')
     // Open task.
     $scope.runTask = function(task) {
         if (task.support) {
-            switch (task.code) {
-                case 'submit':
-                    var stateParams = {
-                        module: module,
-                        access: $scope.access,
-                        courseid: courseId,
-                        submission: $scope.submission
-                    };
+            if (task.code == 'submit' && $scope.canSubmit && (($scope.access.creatingsubmissionallowed && !$scope.submission) || ($scope.access.modifyingsubmissionallowed && $scope.submission))) {
+                var stateParams = {
+                    module: module,
+                    access: $scope.access,
+                    courseid: courseId,
+                    submission: $scope.submission
+                };
 
-                    if ($scope.submission.id) {
-                        stateParams.submissionid = $scope.submission.id;
-                    }
+                if ($scope.submission.id) {
+                    stateParams.submissionid = $scope.submission.id;
+                }
 
-                    $state.go('site.mod_workshop-edit-submission', stateParams);
-                    break;
+                $state.go('site.mod_workshop-edit-submission', stateParams);
             }
         } else if (task.link) {
             $mmUtil.openInBrowser(task.link);
