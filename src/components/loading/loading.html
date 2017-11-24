@@ -1,0 +1,8 @@
+<div class="mm-loading-container mm-animate-show-hide" *ngIf="!hideUntil">
+    <span class="mm-loading-spinner">
+        <ion-spinner></ion-spinner>
+        <p class="mm-loading-message" *ngIf="message">{{message}}</p>
+    </span>
+</div>
+<ng-content class="mm-loading-content mm-animate-show-hide" *ngIf="hideUntil">
+</ng-content>
