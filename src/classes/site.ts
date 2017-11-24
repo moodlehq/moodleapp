@@ -1051,27 +1051,30 @@ export class CoreSite {
                 modal.dismiss();
             }
 
-            let promise;
             if (alertMessage) {
-                promise = this.domUtils.showAlert('mm.core.notice', alertMessage, null, 3000);
+                let alert = this.domUtils.showAlert('mm.core.notice', alertMessage, null, 3000);
+                alert.onDidDismiss(() => {
+                    if (inApp) {
+                        this.utils.openInApp(url, options);
+                    } else {
+                        this.utils.openInBrowser(url);
+                    }
+                });
             } else {
-                promise = Promise.resolve();
-            }
-
-            return promise.finally(() => {
                 if (inApp) {
                     this.utils.openInApp(url, options);
                 } else {
                     this.utils.openInBrowser(url);
                 }
-            });
+            }
         };
 
         if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
                 (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.secondsMinute)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago.
             // Open the final URL without auto-login.
-            return open(url);
+            open(url);
+            return Promise.resolve();
         }
 
         const userId = this.getUserId(),
@@ -1084,15 +1087,16 @@ export class CoreSite {
         return this.write('tool_mobile_get_autologin_key', params).then((data) => {
             if (!data.autologinurl || !data.key) {
                 // Not valid data, open the final URL without auto-login.
-                return open(url);
+                open(url);
+                return;
             }
 
             this.lastAutoLogin = this.timeUtils.timestamp();
 
-            return open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
+            open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
         }).catch(() => {
             // Couldn't get autologin key, open the final URL without auto-login.
-            return open(url);
+            open(url);
         });
     }
 

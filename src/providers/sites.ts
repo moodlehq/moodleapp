@@ -301,7 +301,9 @@ export class CoreSitesProvider {
         }
 
         const observable = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.wsTimeout);
-        return this.utils.observableToPromise(observable).then((data: any) => {
+        return this.utils.observableToPromise(observable).catch((error) => {
+            return Promise.reject(error.message);
+        }).then((data: any) => {
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
                 return Promise.reject({errorcode: data.errorcode, error: data.error});
             } else if (data.error && data.error == 'Web services must be enabled in Advanced features.') {

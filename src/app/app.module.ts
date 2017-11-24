@@ -63,7 +63,9 @@ export function createTranslateLoader(http: HttpClient) {
     imports: [
         BrowserModule,
         HttpClientModule,
-        IonicModule.forRoot(MyApp),
+        IonicModule.forRoot(MyApp, {
+            pageTransition: 'ios-transition'
+        }),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
