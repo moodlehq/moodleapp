@@ -454,7 +454,8 @@ angular.module('mm.addons.mod_workshop')
         }
 
         var editing = true,
-            attachmentsid = false;
+            attachmentsid = false,
+            workshopId;
 
         angular.forEach(actions, function(action) {
             switch (action.action) {
@@ -469,6 +470,7 @@ angular.module('mm.addons.mod_workshop')
                     submission.submissionmodified = parseInt(action.timemodified / 1000, 10);
                     submission.offline = true;
                     attachmentsid = action.attachmentsid;
+                    workshopId = action.workshopid;
                     break;
                 case 'delete':
                     submission.deleted = true;
@@ -480,7 +482,7 @@ angular.module('mm.addons.mod_workshop')
         // Check offline files for latest attachmentsid.
         if (actions.length) {
             if (attachmentsid) {
-                return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, submission.workshopid, submission.id, editing)
+                return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, workshopId, submission.id, editing)
                         .then(function(files) {
                     submission.attachmentfiles = files;
                     return submission;
