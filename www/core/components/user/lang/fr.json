@@ -11,7 +11,7 @@
     "emailagain": "Courriel (confirmation)",
     "firstname": "Prénom",
     "interests": "Centres d'intérêt",
-    "invaliduser": "Utilisateur non valide",
+    "invaliduser": "Utilisateur non valide.",
     "lastname": "Nom",
     "manager": "Gestionnaire",
     "newpicture": "Nouvelle image",
@@ -19,7 +19,7 @@
     "phone2": "Téléphone mobile",
     "roles": "Rôles",
     "sendemail": "Courriel",
-    "student": "Participants",
+    "student": "Étudiant",
     "teacher": "Enseignant non-éditeur",
     "viewprofile": "Consulter le profil",
     "webpage": "Page Web"

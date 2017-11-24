@@ -1,6 +1,6 @@
 {
     "addfiletext": "Adicionar ficheiro",
-    "audio": "Ficheiro Audio ({{$a.EXT}})",
+    "audio": "Áudio",
     "camera": "Câmera",
     "confirmuploadfile": "Está prestes a carregar {{size}}. Tem a certeza que quer continuar?",
     "confirmuploadunknownsize": "Não foi possível calcular o tamanho do carregamento. Tem a certeza que quer continuar?",
@@ -10,18 +10,18 @@
     "errorgettingimagealbum": "Erro ao obter imagem do álbum",
     "errormustbeonlinetoupload": "Necessita de estar online para enviar ficheiros",
     "errornoapp": "Não possui a aplicação móvel necessária para executar esta ação.",
-    "errorreadingfile": "Erro na leitura do ficheiro \"{{$a}}\"",
+    "errorreadingfile": "Erro ao ler o ficheiro",
     "errorwhileuploading": "Ocorreu um erro durante o carregamento do ficheiro.",
-    "file": "Submissão de ficheiros",
+    "file": "Ficheiro",
     "fileuploaded": "Ficheiro carregado com sucesso",
     "invalidfiletype": "O tipo de ficheiro \"{{$a}}\" não é permitido.",
-    "maxbytesfile": "O ficheiro {{$a.file}} é muito grande. Apenas pode carregar ficheiros com um tamanho máximo de {{$a.size}}.",
+    "maxbytesfile": "O ficheiro {{$a.file}} é muito grande. O tamanho máximo que pode carregar é de {{$a.size}}.",
     "more": "Mais",
     "photoalbums": "Álbuns de fotos",
     "readingfile": "A ler ficheiro",
     "selectafile": "Selecione um ficheiro",
-    "uploadafile": "Carregar ficheiro",
-    "uploading": "A enviar...",
+    "uploadafile": "Carregar um ficheiro",
+    "uploading": "A carregar",
     "uploadingperc": "A carrregar: {{$a}}%",
-    "video": "Ficheiro de vídeo ({{$a.EXT}})"
+    "video": "Vídeo"
 }
