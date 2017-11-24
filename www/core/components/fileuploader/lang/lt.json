@@ -12,15 +12,16 @@
     "errornoapp": "Jūs neturite programėlės šiam veiksmui atlikti.",
     "errorreadingfile": "Įvyko klaida skaitant failą {{$a}}",
     "errorwhileuploading": "Klaida įkeliant failą.",
-    "file": "Failas",
+    "file": "Failų pateikimai",
     "fileuploaded": "Failas sėkmingai įkeltas.",
     "invalidfiletype": "Failo tipas {{$a}} nepriimtinas.",
     "maxbytesfile": "Failas {{$a.file}} ) per didelis. Galite įkelti failus iki {{$a.size}}.",
+    "more": "Daugiau",
     "photoalbums": "Nuotraukų albumai",
     "readingfile": "Skaitomas failas",
     "selectafile": "Pasirinkite failą",
     "uploadafile": "Įkelti failą",
     "uploading": "Įkeliama...",
     "uploadingperc": "Įkeliama: {{$a}}%",
-    "video": "Vaizdinė medžiaga"
+    "video": "Vaizdo įrašo failas ({{$a.EXT}})"
 }

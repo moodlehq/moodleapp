@@ -16,6 +16,7 @@
     "fileuploaded": "Filen er uploadet.",
     "invalidfiletype": "Filtypen {{$a}} accepteres ikke.",
     "maxbytesfile": "Filen {{$a.file}} er for stor. Den må ikke fylde mere end {{$a.size}}.",
+    "more": "Flere",
     "photoalbums": "Fotoalbum",
     "readingfile": "Læser fil",
     "selectafile": "Vælg en fil",

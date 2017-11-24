@@ -6,12 +6,12 @@
     "deviceinfo": "معلومات الجهاز",
     "deviceos": "نظام تشغيل الجهاز",
     "disableall": "تعطيل الإعلامات بشكل مؤقت",
-    "disabled": "معطل",
+    "disabled": "مُعطِّل",
     "enabledebugging": "تمكين التصحيح",
     "enabledownloadsection": "تفعيل تنزيل الأقسام",
     "enabledownloadsectiondescription": "عطل هذا الخيار لكي تسرع تحميل أقسام المنهج",
     "estimatedfreespace": "تقدير المساحة الحرة",
-    "general": "بيانات عامة",
+    "general": "عام",
     "language": "اللغة",
     "license": "رخصة",
     "localnotifavailable": "إشعارات محلية موجودة",
@@ -24,7 +24,7 @@
     "synchronizenow": "زامن الأن",
     "synchronizing": "يتم التزامن",
     "syncsettings": "إعدادات المزامنة",
-    "total": "المجموع",
+    "total": "مجموع",
     "versioncode": "رمز الإصدار",
     "versionname": "اسم الإصدار"
 }

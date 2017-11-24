@@ -1,4 +1,5 @@
 {
+    "attachment": "Vedlegg",
     "browsemode": "Bla i oppføringer",
     "byalphabet": "Alfabetisk",
     "byauthor": "Gruppér etter forfatter",
@@ -7,6 +8,8 @@
     "byrecentlyupdated": "Nylig oppdatert",
     "bysearch": "Søk",
     "cannoteditentry": "Kan ikke redigere oppføring",
+    "casesensitive": "Skiller mellom store/små bokstaver",
+    "categories": "Kurskategorier",
     "entriestobesynced": "Oppføringer som skal synkroniseres",
     "entrypendingapproval": "Denne oppføringen venter på godkjenning",
     "errorloadingentries": "Feil ved lasting av oppføringer.",

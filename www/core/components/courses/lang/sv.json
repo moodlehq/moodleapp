@@ -1,7 +1,7 @@
 {
     "allowguests": "Denna kurs tillåter gäster.",
     "availablecourses": "Tillgängliga kurser",
-    "categories": "Kategorier",
+    "categories": "Kurskategorier",
     "confirmselfenrol": "Är du säker att du vill registrera dig i den här kursen ?",
     "courses": "Kurser",
     "enrolme": "Registrera mig",
@@ -19,7 +19,7 @@
     "password": "Kursnyckel",
     "paymentrequired": "För att få tillgång till den här kursen måste Du betala först.",
     "paypalaccepted": "Betalningar via Paypal accepterade",
-    "search": "Sök...",
+    "search": "Sök",
     "searchcourses": "Sök kurser",
     "searchcoursesadvice": "Du kan använda knappen \"Sök kurser\" för att få tillgång som gäst eller registrera dig på kurser som tillåter det .",
     "selfenrolment": "Kursnyckel (Student)",

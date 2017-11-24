@@ -16,6 +16,7 @@
     "fileuploaded": "Ficheiro carregado com sucesso",
     "invalidfiletype": "O tipo de ficheiro \"{{$a}}\" não é permitido.",
     "maxbytesfile": "O ficheiro {{$a.file}} é muito grande. O tamanho máximo que pode carregar é de {{$a.size}}.",
+    "more": "Mais",
     "photoalbums": "Álbuns de fotos",
     "readingfile": "A ler ficheiro",
     "selectafile": "Selecione um ficheiro",

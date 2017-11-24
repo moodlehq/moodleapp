@@ -16,7 +16,7 @@
     "fileuploaded": "Datei hochgeladen",
     "invalidfiletype": "Dateityp {{$a}} wird nicht akzeptiert",
     "maxbytesfile": "Die Datei {{$a.file}} ist zu groß. Die maximale Größe zum Hochladen ist {{$a.size}}.",
-    "more": "Mehr",
+    "more": "Einzelansicht",
     "photoalbums": "Fotoalbum",
     "readingfile": "Datei lesen",
     "selectafile": "Wähle eine Datei.",

@@ -1,8 +1,12 @@
 {
+    "attachment": "Privitak",
+    "browsemode": "Način pregleda",
     "byalphabet": "Abecedno",
     "byauthor": "Grupirano po autoru",
     "bycategory": "Grupirano po kategoriji",
     "bynewestfirst": "Prvo najnoviji",
     "byrecentlyupdated": "Nedavno osvježeno",
-    "bysearch": "Pretraživanje"
+    "bysearch": "Pretraživanje",
+    "casesensitive": "Koristi regularne izraze",
+    "categories": "Popis e-kolegija"
 }

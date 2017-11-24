@@ -1,5 +1,5 @@
 {
-    "attachment": "Επισυναπτόμενο",
+    "attachment": "Συνημμένα",
     "browsemode": "Περιήγηση στις καταχωρήσεις",
     "byalphabet": "Αλφαβητικά",
     "byauthor": "Ομαδοποίηση ανά συγγραφέα",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Ανανεώθηκαν πρόσφατα",
     "bysearch": "Αναζήτηση",
     "cannoteditentry": "Δεν είναι δυνατή η επεξεργασία της καταχώρισης",
-    "casesensitive": "Διάκριση μικρών/κεφαλαίων",
-    "categories": "Κατηγορίες",
+    "casesensitive": "Χρήση κανονικών εκφράσεων",
+    "categories": "Κατηγορίες μαθημάτων",
     "entriestobesynced": "Entries που πρέπει να συγχρονιστούν",
     "entrypendingapproval": "Εκκρεμεί η έγκριση για αυτή την καταχώρηση.",
     "errorloadingentries": "Παρουσιάστηκε σφάλμα κατά τη φόρτωση των καταχωρήσεων.",

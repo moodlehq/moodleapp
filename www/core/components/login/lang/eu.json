@@ -29,7 +29,7 @@
     "invalidmoodleversion": "Moodle bertsio baliogabea. Gutxieneko bertsioa hurrengoa da:",
     "invalidsite": "Guneko URLa ez da zuzena",
     "invalidtime": "Ordu baliogabea",
-    "invalidurl": "Sartu duzun URL-a ez da onargarria",
+    "invalidurl": "URL baliogabea",
     "invalidvaluemax": "Gehieneko balioa {{$a}} da.",
     "invalidvaluemin": "Gutxieneko balioa {{$a}} da.",
     "localmobileunexpectedresponse": "Moodle Mobile-ko Funtzio Aurreratuen kontrolak ezusteko erantzuna eman du, Mobile zerbitzu estandarra erabilita autentifikatuko zaitugu.",
