@@ -307,7 +307,6 @@ angular.module('mm.addons.mod_workshop')
                     submissionid: submissionId ? submissionId : -timemodified,
                     timemodified: timemodified
                 };
-
             return db.insert(mmaModWorkshopOfflineSubmissionStore, submission);
         });
     };
@@ -637,8 +636,8 @@ angular.module('mm.addons.mod_workshop')
     self.getSubmissionFolder = function(workshopId, submissionId, editing, siteId) {
         return self.getWorkshopFolder(workshopId, siteId).then(function(folderPath) {
             folderPath += 'submission/';
-            var prefix = editing ? 'update_' : 'add_';
-            return $mmFS.concatenatePaths(folderPath, prefix + submissionId);
+            var folder = editing ? 'update_' + submissionId : 'add';
+            return $mmFS.concatenatePaths(folderPath, folder);
         });
     };
 
