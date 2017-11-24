@@ -1031,7 +1031,7 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
      * @return {Promise<any>} Promise resolved when done, rejected otherwise.
      */
-    openInAppWithAutoLoginIfSameSite(url: string, options: any, alertMessage?: string) : Promise<any> {
+    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string) : Promise<any> {
         return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
     }
 

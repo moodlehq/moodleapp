@@ -437,6 +437,18 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Move children from one HTMLElement to another.
+     *
+     * @param {HTMLElement} oldParent The old parent.
+     * @param {HTMLElement} newParent The new parent.
+     */
+    moveChildren(oldParent: HTMLElement, newParent: HTMLElement) : void {
+        while (oldParent.childNodes.length > 0) {
+            newParent.appendChild(oldParent.childNodes[0]);
+        }
+    }
+
+    /**
      * Search and remove a certain element from inside another element.
      *
      * @param {HTMLElement} element DOM element to search in.
