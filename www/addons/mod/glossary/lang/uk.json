@@ -1,5 +1,5 @@
 {
-    "attachment": "Долучення",
+    "attachment": "Прикріпити відзнаку до повідомлення",
     "browsemode": "Режим перегляду",
     "byalphabet": "По алфавіту",
     "byauthor": "Групувати за автором",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Нещодавно оновлені",
     "bysearch": "Пошук",
     "cannoteditentry": "Неможливо редагувати запис",
-    "casesensitive": "Використовувати регулярні вирази",
-    "categories": "Категорії курсів",
+    "casesensitive": "Чутливість відповіді до регістра",
+    "categories": "Категорії",
     "entriestobesynced": "Записи будуть синхронізовані",
     "entrypendingapproval": "Цей запис очікує схвалення.",
     "errorloadingentries": "Сталася помилка під час завантаження записів.",

@@ -29,7 +29,7 @@
     "invalidmoodleversion": "Ongeldige Moodleversie. De vereiste minimumversie is 2.4.",
     "invalidsite": "Deze site-URL is niet geldig.",
     "invalidtime": "Ongeldige tijd",
-    "invalidurl": "Ongeldige url",
+    "invalidurl": "De URL die je net gaf is niet geldig",
     "invalidvaluemax": "De maximum waarde is {{$a}}",
     "invalidvaluemin": "De minimum waard eis {{$a}}",
     "localmobileunexpectedresponse": "Moodle Mobile Additional Features Check gaf een onverwacht antwoord. Je zult aanmelden via de standaard Mobile service.",

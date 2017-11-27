@@ -29,7 +29,7 @@
     "invalidmoodleversion": "Falsche Version. Mindestens Moodle 2.4 ist notwendig.",
     "invalidsite": "Die URL der Website ist ungültig.",
     "invalidtime": "Ungültige Zeitangabe",
-    "invalidurl": "Ungültige URL",
+    "invalidurl": "Die eingegebene URL ist nicht gültig.",
     "invalidvaluemax": "Der Maximalwert ist {{$a}}.",
     "invalidvaluemin": "Der Minimalwert ist {{$a}}.",
     "localmobileunexpectedresponse": "Die Verbindung zum Plugin 'Moodle Mobile - Zusatzfeatures' ist fehlgeschlagen. Sie werden über den standardmäßigen mobilen Webservice authentifiziert.",

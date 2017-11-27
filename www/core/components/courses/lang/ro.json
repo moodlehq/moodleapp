@@ -1,7 +1,7 @@
 {
     "allowguests": "Acest curs permite accesul vizitatorilor",
     "availablecourses": "Cursuri disponibile",
-    "categories": "Categorii de cursuri",
+    "categories": "Categorii",
     "confirmselfenrol": "Sunteți sigur/ă că doriți să vă înregistrați la acest curs?",
     "courses": "Cursuri",
     "enrolme": "Înregistrează-mă",
@@ -19,7 +19,7 @@
     "password": "Parola de înregistrare",
     "paymentrequired": "Acest curs necesită plata unei taxe pentru acces.",
     "paypalaccepted": "Se acceptă plăţi PayPal",
-    "search": "Caută",
+    "search": "Căutați",
     "searchcourses": "Caută cursuri",
     "searchcoursesadvice": "Puteți folosi butonul pentru căutarea cursurilor pentru a cauta și accesa ca vizitator sau pentru a vă auto-înregistra la acele cursuri care permit aceste opțiuni.",
     "selfenrolment": "Auto înscriere",

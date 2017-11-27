@@ -1,5 +1,5 @@
 {
-    "attachment": "Připojit odznak do zprávy",
+    "attachment": "Příloha",
     "browsemode": "Prohlížení příspěvků",
     "byalphabet": "Abecedně",
     "byauthor": "Skupina podle autora",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Posledně aktualizované",
     "bysearch": "Hledat",
     "cannoteditentry": "Záznam nelze upravit",
-    "casesensitive": "Používat regulární výrazy",
-    "categories": "Kategorie kurzů",
+    "casesensitive": "Rozlišovat malá/VELKÁ",
+    "categories": "Kategorie",
     "entriestobesynced": "Příspěvky, které mají být synchronizovány",
     "entrypendingapproval": "Tato položka čeká na schválení",
     "errorloadingentries": "Při načítání položek došlo k chybě",
