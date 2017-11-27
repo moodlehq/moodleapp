@@ -24,6 +24,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '../core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { CoreInterceptor } from '../classes/interceptor';
 
 /**
  * Interface of the presets accepted by the WS call.
@@ -416,7 +417,7 @@ export class CoreWSProvider {
      */
     protected getQueueItemId(method: string, url: string, params?: any) : string {
         if (params) {
-            url += '###' + this.utils.serialize(params);
+            url += '###' + CoreInterceptor.serialize(params);
         }
         return method + '#' + Md5.hashAsciiStr(url);
     }
@@ -595,7 +596,7 @@ export class CoreWSProvider {
         siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';
 
         // Serialize data.
-        data = this.utils.serialize(data);
+        data = CoreInterceptor.serialize(data);
 
         // Perform sync request using XMLHttpRequest.
         xhr = new (<any>window).XMLHttpRequest();

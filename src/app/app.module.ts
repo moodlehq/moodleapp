@@ -15,7 +15,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule, Platform } from 'ionic-angular';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -25,6 +25,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { MyApp } from './app.component';
+import { CoreInterceptor } from '../classes/interceptor';
 import { CoreLoggerProvider } from '../providers/logger';
 import { CoreDbProvider } from '../providers/db';
 import { CoreAppProvider } from '../providers/app';
@@ -80,6 +81,11 @@ export function createTranslateLoader(http: HttpClient) {
         MyApp
     ],
     providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: CoreInterceptor,
+            multi: true,
+        },
         StatusBar,
         SplashScreen,
         SQLite,

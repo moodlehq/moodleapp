@@ -1037,46 +1037,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Serialize an object to be used in a request.
-     *
-     * @param {any} obj Object to serialize.
-     * @param {boolean} [addNull] Add null values to the serialized as empty parameters.
-     * @return {string} Serialization of the object.
-     */
-    serialize(obj: any, addNull?: boolean) : string {
-        let query = '',
-            fullSubName,
-            subValue,
-            innerObj;
-
-        for (let name in obj) {
-            let value = obj[name];
-
-            if (value instanceof Array) {
-                for (let i = 0; i < value.length; ++i) {
-                    subValue = value[i];
-                    fullSubName = name + '[' + i + ']';
-                    innerObj = {};
-                    innerObj[fullSubName] = subValue;
-                    query += this.serialize(innerObj) + '&';
-                }
-            } else if (value instanceof Object) {
-                for (let subName in value) {
-                    subValue = value[subName];
-                    fullSubName = name + '[' + subName + ']';
-                    innerObj = {};
-                    innerObj[fullSubName] = subValue;
-                    query += this.serialize(innerObj) + '&';
-                }
-            } else if (addNull || (typeof value != 'undefined' && value !== null)) {
-                query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
-            }
-        }
-
-        return query.length ? query.substr(0, query.length - 1) : query;
-    }
-
-    /**
      * Stringify an object, sorting the properties. It doesn't sort arrays, only object properties. E.g.:
      * {b: 2, a: 1} -> '{"a":1,"b":2}'
      *
