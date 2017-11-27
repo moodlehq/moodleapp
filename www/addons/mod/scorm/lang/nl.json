@@ -15,7 +15,7 @@
     "errordownloadscorm": "Fout bij het downloaden van SCORM: \"{{name}}\".",
     "errorgetscorm": "Fout bij het ophalen van SCORM-gegevens.",
     "errorinvalidversion": "Sorry, de applicatie ondersteund SCORM tot versie 1.2.",
-    "errornotdownloadable": "Het downloaden van SCORM-pakketten is uitgeschakeld in jouw Moodle-site. Neem contact op met je site-beheerder.",
+    "errornotdownloadable": "Het downloaden van SCORM-pakketten is uitgeschakeld. Neem contact op met je site-beheerder.",
     "errornovalidsco": "Deze SCORM heeft geen zichtbare SCO om te laden.",
     "errorpackagefile": "Sorry, de applicatie ondersteunt enkel ZIP-pakketten.",
     "errorsyncscorm": "Er is een fout opgetreden tijdens het synchroniseren. Probeer opnieuw.",

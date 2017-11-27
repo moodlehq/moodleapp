@@ -7,15 +7,15 @@
     "coursecompletion": "Ολοκλήρωση μαθήματος",
     "criteria": "Κριτήρια",
     "criteriagroup": "Ομάδα κριτηρίων",
-    "criteriarequiredall": "Όλα τα παρακάτω κριτήρια είναι απαραίτητα",
-    "criteriarequiredany": "Τα παρακάτω κριτήρια είναι απαραίτητα",
+    "criteriarequiredall": "Όλα τα παρακάτω κριτήρια είναι υποχρεωτικά",
+    "criteriarequiredany": "Οποιοδήποτε από τα παρακάτω κριτήρια είναι υποχρεωτικά",
     "inprogress": "Σε εξέλιξη",
-    "manualselfcompletion": "Χειροκίνητη αυτό-ολοκλήρωση",
+    "manualselfcompletion": "Μη αυτόματη ολοκλήρωση",
     "notyetstarted": "Δεν έχει ξεκινήσει ακόμα",
-    "pending": "Σε εκκρεμότητα",
+    "pending": "Εκκρεμής",
     "required": "Απαιτείται",
     "requiredcriteria": "Απαιτούμενα κριτήρια",
     "requirement": "Απαίτηση",
-    "status": "Επιτρέπεται η πρόσβαση στους επισκέπτες",
-    "viewcoursereport": "Προβολή αναφορά μαθήματος"
+    "status": "Κατάσταση",
+    "viewcoursereport": "Δείτε την αναφορά μαθήματος"
 }

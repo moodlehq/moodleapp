@@ -1,6 +1,6 @@
 {
     "addfiletext": "Dodaj datoteku",
-    "audio": "Zvučna datoteka ({{$a.EXT}})",
+    "audio": "Zvuk",
     "camera": "Kamera",
     "errorreadingfile": "Pogreška pri čitanju datoteke \"{{$a}}\"",
     "file": "Datoteka",

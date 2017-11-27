@@ -1,14 +1,14 @@
 {
     "about": "Acerca de",
     "appready": "App lista",
-    "cacheexpirationtime": "Tiempo de caducidad del caché (mili segundos)",
+    "cacheexpirationtime": "Tiempo de caducidad del caché (milisegundos)",
     "cannotsyncoffline": "No puede sincronizarse fuera-de-línea.",
     "cannotsyncwithoutwifi": "No puede sincronizarse porque las configuraciones actuales solamente permiten sincronizar cuando está conectado a Wi-Fi. Por favor, conéctese a una red Wi-Fi.",
     "configuringnotifications": "Usted está configurando notificaciones '{{$a}}'.",
     "cordovadevicemodel": "Modelo Dispositivo Cordova",
     "cordovadeviceosversion": "Versión OS Dispositivo Cordova",
     "cordovadeviceplatform": "Plataforma Dispositivo Cordova",
-    "cordovadeviceuuid": "uuid Dispositivo Cordova",
+    "cordovadeviceuuid": "UUID Dispositivo Cordova",
     "cordovaversion": "Versión Cordova",
     "credits": "Créditos",
     "currentlanguage": "Idioma actual",
@@ -23,8 +23,8 @@
     "enabledebugging": "Activar modo depuración (debug)",
     "enabledownloadsection": "Habilitar descargar secciones",
     "enabledownloadsectiondescription": "Deshabilitar ésta opción para acelerar la carga de secciones de curso.",
-    "enablerichtexteditor": "Habilitar editor de texto enriquecido",
-    "enablerichtexteditordescription": "Si se habilita, se mostrará un editor de texto enriquecido en los lugares que lo permitan.",
+    "enablerichtexteditor": "Habilitar editor de texto",
+    "enablerichtexteditordescription": "Si se habilita, un editor de texto estará disponible al ingresar contenido.",
     "enablesyncwifi": "Permitir sincronización solamente cuando esté en Wi-Fi",
     "errordeletesitefiles": "Error al eliminar archivos del sitio.",
     "errorsyncsite": "Error al sincronizarlos datos del sitio; por favor revise su conexión de Internet e inténtelo de nuevo.",
@@ -34,7 +34,7 @@
     "language": "Idioma",
     "license": "Licencia",
     "localnotifavailable": "Notificaciones locales disponibles",
-    "locationhref": "URL VistaWeb",
+    "locationhref": "URL Vista Web",
     "loggedin": "En línea",
     "loggedoff": "Fuera de línea",
     "navigatorlanguage": "Idioma del Navegador",
@@ -55,5 +55,5 @@
     "total": "Total",
     "versioncode": "Código de la versión",
     "versionname": "Nombre de la versión",
-    "wificonnection": "Conexión WiFi"
+    "wificonnection": "Conexión Wi-Fi"
 }

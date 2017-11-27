@@ -12,9 +12,9 @@
     "couldnotloadsectioncontent": "Die Abschnittsinhalte konnten nicht geladen werden. Versuche es später noch einmal.",
     "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuche es später noch einmal.",
     "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
-    "errorgetmodule": "Fehler beim Laden von Moduldaten",
+    "errorgetmodule": "Fehler beim Laden von Aktivitätsdaten",
     "hiddenfromstudents": "Für Teilnehmer/innen verborgen",
     "nocontentavailable": "Momentan sind keine Inhalte verfügbar",
     "overriddennotice": "Die endgültige Bewertung zu dieser Aktivität wurde manuell bearbeitet.",
-    "useactivityonbrowser": "Du kannst dies weiter im Browser verwenden."
+    "useactivityonbrowser": "Du kannst dies im Webbrowser verwenden."
 }

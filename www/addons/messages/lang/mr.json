@@ -1,0 +1,21 @@
+{
+    "blockcontactconfirm": "आपण या संपर्कातून संदेश प्राप्त करणे थांबवाल.",
+    "contactlistempty": "संपर्क यादी रिक्त आहे",
+    "contactname": "संपर्क नाव",
+    "errordeletemessage": "संदेश हटवताना त्रुटी.",
+    "errorwhileretrievingcontacts": "सर्व्हरवरून संपर्क पुनर्प्राप्त करताना त्रुटी.",
+    "errorwhileretrievingdiscussions": "सर्व्हरवरून चर्चा पुनर्प्राप्त करताना त्रुटी.",
+    "errorwhileretrievingmessages": "सर्व्हरवरून संदेश पुनर्प्राप्त करताना त्रुटी.",
+    "loadpreviousmessages": "मागील संदेश लोड करा",
+    "messagenotsent": "संदेश पाठविला गेला नाही, कृपया नंतर पुन्हा प्रयत्न करा.",
+    "mustbeonlinetosendmessages": "आपल्याला संदेश पाठविण्यासाठी ऑनलाइन असणे आवश्यक आहे",
+    "newmessages": "नवीन संदेश",
+    "nousersfound": "कोणतेही वापरकर्ते आढळले नाहीत",
+    "removecontactconfirm": "आपल्या संपर्क यादीतून संपर्क काढला जाईल.",
+    "type_blocked": "अवरोधित केले",
+    "type_offline": "ऑफलाइन",
+    "type_online": "ऑनलाइन",
+    "type_search": "शोध परिणाम",
+    "type_strangers": "इतर",
+    "warningmessagenotsent": "वापरकर्ता {{user}} ला संदेश पाठवू शकला नाही. {{error}}"
+}

@@ -13,7 +13,7 @@
     "responses": "Respostas",
     "responsesresultgraphdescription": "{{number}}% dos utilizadores escolheram esta opção: {{text}}.",
     "responsesresultgraphheader": "Gráfico",
-    "resultsnotsynced": "Os Resultados não incluem sua última resposta. Por favor, sincronize para atualizá-los.",
+    "resultsnotsynced": "A sua última resposta tem de ser sincronizada para estar incluída nos resultados.",
     "savemychoice": "Gravar a minha resposta",
     "userchoosethisoption": "Utilizadores que escolheram esta opção",
     "yourselection": "A sua resposta"

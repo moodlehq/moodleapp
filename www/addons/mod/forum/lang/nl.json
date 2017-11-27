@@ -13,7 +13,7 @@
     "erroremptysubject": "Onderwerp kan niet leeg zijn",
     "errorgetforum": "Fout bij het ophalen van forumgegevens",
     "errorgetgroups": "Fout bij het ophalen van groepinstellingen.",
-    "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum",
+    "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum.",
     "group": "Groep",
     "message": "Bericht",
     "modeflatnewestfirst": "Laat de antwoorden in één lijst zien, met de nieuwste eerst",

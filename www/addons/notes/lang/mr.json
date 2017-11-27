@@ -1,0 +1,13 @@
+{
+    "addnewnote": "नवीन टीप जोडा",
+    "coursenotes": "कोर्स नोट्स",
+    "eventnotecreated": "टीप तयार केली",
+    "nonotes": "या प्रकारच्या अद्याप कोणत्याही टिपा नाहीत",
+    "note": "टीप",
+    "notes": "टिपा",
+    "personalnotes": "वैयक्तिक नोट्स",
+    "publishstate": "संदर्भ",
+    "sitenotes": "साइट नोट्स",
+    "userwithid": "वापरकर्ता या आयडी {{id}} सह",
+    "warningnotenotsent": "{{Course}} या कोर्ससाठी टीप (नोट्स) जोडू शकले नाहीत {{error}}"
+}

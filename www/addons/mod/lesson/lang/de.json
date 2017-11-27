@@ -22,7 +22,7 @@
     "emptypassword": "Das Kennwort muss eingegeben werden",
     "enterpassword": "Bitte geben Sie das Kennwort ein:",
     "eolstudentoutoftimenoanswers": "Sie haben keine Fragen beantwortet. Sie erhalten daher 0 Punkte für die Lektion.",
-    "errorprefetchrandombranch": "Diese Lektion enthält einen Sprung zu einer zufälligen Seite. Die Lektion kann nicht in der App versucht werden, ohne im Web begonnen zu sein.",
+    "errorprefetchrandombranch": "Diese Lektion enthält einen Sprung zu einer zufälligen Seite. Die Lektion kann in der App nicht versucht werden, ohne im Webbrowser begonnen worden zu sein.",
     "errorreviewretakenotlast": "Dieser Versuch kann nicht mehr angesehen werden, weil ein weiterer Versuch beendet wurde.",
     "finish": "Fertigstellen",
     "finishretakeoffline": "Dieser Versuch wurde offline beendet.",

@@ -1,7 +1,7 @@
 {
     "address": "Адрес",
     "city": "Град/село",
-    "contact": "Контакт",
+    "contact": "Контакти",
     "country": "Държава",
     "description": "Въвеждащ текст",
     "details": "Подробности",
@@ -11,7 +11,7 @@
     "emailagain": "Имейл адрес (отново)",
     "firstname": "Име",
     "interests": "Интереси",
-    "invaliduser": "Невалиден потребител",
+    "invaliduser": "Невалиден потребител.",
     "lastname": "Фамилия",
     "manager": "Мениждър",
     "newpicture": "Нова снимка",

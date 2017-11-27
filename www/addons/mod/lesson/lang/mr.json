@@ -1,0 +1,9 @@
+{
+    "errorprefetchrandombranch": "हा पाठ यादृच्छिक सामग्री पृष्ठावर उडी मारतो, वेबवर सुरू होईपर्यंत अॅपमध्ये प्रयत्न करणे शक्य नाही.",
+    "errorreviewretakenotlast": "हा प्रयत्न यापुढे पुनरावलोकन केला जाऊ शकत नाही कारण दुसरा प्रयत्न संपला आहे",
+    "finishretakeoffline": "हा प्रयत्न ऑफलाइन संपला आहे",
+    "retakefinishedinsync": "ऑफलाइन प्रयत्न सिंक्रोनाईज झाला. आपण याचे पुनरावलोकन करू इच्छिता?",
+    "retakelabelfull": "{{retake}}: {{grade}} {{timestart}} ({{duration}})",
+    "retakelabelshort": "{{retake}}: {{grade}} {{timestart}}",
+    "warningretakefinished": "प्रयत्न वेबसाइटवर पूर्ण झाले."
+}
