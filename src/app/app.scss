@@ -108,3 +108,7 @@ ion-icon.icon-accessory {
   color: $item-icon-accessory-color;
   font-size: $item-icon-accessory-font-size;
 }
+
+.mm-bold, .mm-bold .label {
+  font-weight: bold;
+}
