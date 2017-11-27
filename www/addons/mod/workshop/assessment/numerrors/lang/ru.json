@@ -1,0 +1,5 @@
+{
+    "dimensioncommentfor": "Комментарий к {{$a}}",
+    "dimensiongradefor": "Оценка для {{$a}}",
+    "dimensionnumber": "Утверждение {{$a}}"
+}

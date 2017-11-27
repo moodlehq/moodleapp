@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "Comentari per a {{$a}}",
+    "dimensiongradefor": "Puntuació per a {{$a}}",
+    "dimensionnumber": "Aspecte {{$a}}",
+    "mustchoosegrade": "Heu de seleccionar una qualificació per aquest aspecte"
+}

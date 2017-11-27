@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Файлы этих типов могут быть добавлены к ответу:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Ответ в виде файла"
+}

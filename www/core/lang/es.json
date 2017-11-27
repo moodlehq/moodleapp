@@ -136,7 +136,7 @@
     "none": "Ninguna",
     "nopasswordchangeforced": "No puede seguir sin cambiar su contraseña, sin embargo no existe ninguna página disponible para cambiarla. Por favor contacte a su administrador de Moodle.",
     "nopermissions": "Lo sentimos, pero por el momento no tiene permiso para hacer eso ({{$a}})",
-    "noresults": "No hay resultados",
+    "noresults": "Sin resultados",
     "notapplicable": "n/a",
     "notice": "Noticia",
     "notsent": "No enviado",

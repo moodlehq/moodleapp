@@ -1,5 +1,5 @@
 {
-    "complete": "Dovršeno",
+    "complete": "Završeno",
     "completed": "Završeno",
     "completiondate": "Datum dovršetka",
     "coursecompletion": "Dovršenost e-kolegija",
@@ -14,6 +14,6 @@
     "required": "Obvezatno",
     "requiredcriteria": "Obvezatni kriterij",
     "requirement": "Uvjet",
-    "status": "Stanje",
+    "status": "Stanje značke",
     "viewcoursereport": "Prikaz izvješća e-kolegija"
 }

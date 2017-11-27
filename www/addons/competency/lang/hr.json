@@ -5,7 +5,7 @@
     "evidence": "Dokaz",
     "evidence_coursecompleted": "Kolegij '{{$a}}' je dovršen.",
     "evidence_coursemodulecompleted": "Aktivnost '{{$a}}' je dovršena.",
-    "path": "Putanja (PATH)",
+    "path": "Putanja",
     "planstatusactive": "Aktivno",
     "planstatuscomplete": "Dovršeno",
     "planstatusdraft": "Nacrt",

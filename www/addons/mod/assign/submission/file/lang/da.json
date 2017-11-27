@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Disse filtyper kan vedhæftes opgaveafleveringen:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Filafleveringer"
+}

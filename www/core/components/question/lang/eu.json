@@ -17,5 +17,5 @@
     "questionmessage": "{{$a}} galdera: {{$b}}",
     "questionno": "{{$a}} galdera",
     "requiresgrading": "Kalifikazioa behar du",
-    "unknown": "Ezin da egoera zehaztu"
+    "unknown": "Ezezaguna"
 }

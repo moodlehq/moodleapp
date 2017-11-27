@@ -13,7 +13,7 @@
     "password": "共有秘密鍵",
     "paymentrequired": "このコースへの登録は有料です。",
     "paypalaccepted": "PayPal支払済み",
-    "search": "検索",
+    "search": "検索 ...",
     "searchcourses": "コースを検索する",
     "sendpaymentbutton": "PayPalで支払いを送信する"
 }
