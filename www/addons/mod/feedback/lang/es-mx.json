@@ -3,7 +3,7 @@
     "anonymous": "Anónima",
     "anonymous_entries": "Respuestas anónimas ({{$a}})",
     "average": "Promedio",
-    "captchaofflinewarning": "La retroalimentación con captcha no puede ser completada fuera-de-línea, o si no está configurada, o con el servidor tirado.",
+    "captchaofflinewarning": "La retroalimentación con CAPTCHA no puede ser completada fuera-de-línea, o si no está configurada, o con el servidor tirado.",
     "complete_the_form": "Responda a las preguntas...",
     "completed_feedbacks": "Respuestas enviadas",
     "continue_the_form": "Continuar contestando las preguntas...",

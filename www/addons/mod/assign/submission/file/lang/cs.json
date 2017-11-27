@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "K řešení úkolu mohou být přidány soubory těchto typů:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Odevzdat soubor(y)"
+}

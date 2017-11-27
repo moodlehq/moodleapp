@@ -6,15 +6,15 @@
     "askadmintosupport": "Wenden Sie sich an den Administrator der Website, um diese Aktivität mit der Moodle Mobile App verwenden zu können.",
     "confirmdeletemodulefiles": "Möchten Sie diese Dateien wirklich löschen?",
     "confirmdownload": "Möchten Sie wirklich {{size}} herunterladen?",
-    "confirmdownloadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchten Sie wirklich herunterladen?",
+    "confirmdownloadunknownsize": "Die Datenmenge konnte nicht berechnet werden. Möchten Sie wirklich herunterladen?",
     "confirmpartialdownloadsize": "Möchten Sie wirklich {{size}} herunterladen?",
     "contents": "Inhalte",
     "couldnotloadsectioncontent": "Die Abschnittsinhalte konnten nicht geladen werden. Versuchen Sie es später noch einmal.",
     "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuchen Sie es später noch einmal.",
     "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
-    "errorgetmodule": "Fehler beim Laden von Moduldaten",
+    "errorgetmodule": "Fehler beim Laden von Aktivitätsdaten",
     "hiddenfromstudents": "Für Teilnehmer/innen verborgen",
     "nocontentavailable": "Momentan sind keine Inhalte verfügbar",
     "overriddennotice": "Die endgültige Bewertung zu dieser Aktivität wurde manuell bearbeitet.",
-    "useactivityonbrowser": "Sie können dies weiter im Browser verwenden."
+    "useactivityonbrowser": "Sie können dies im Webbrowser verwenden."
 }

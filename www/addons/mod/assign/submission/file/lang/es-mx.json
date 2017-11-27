@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Los archivos de estos tipos pueden ser añadidos al envío:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Envíos de archivo"
+}

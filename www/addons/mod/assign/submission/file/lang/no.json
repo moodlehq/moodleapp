@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Disse filtypene kan brukes i denne innleveringen.",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Filinnleveringer"
+}

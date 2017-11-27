@@ -36,7 +36,7 @@
     "progress": "学生の進捗",
     "rating": "評価",
     "reviewstatus": "レビューステータス",
-    "status": "ステータス",
+    "status": "バッジステータス",
     "template": "テンプレート",
     "usercompetencystatus_idle": "待機",
     "usercompetencystatus_inreview": "レビュー中",

@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Pateikimui gali būti įtraukti šių failų tipai:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Failų pateikimai"
+}

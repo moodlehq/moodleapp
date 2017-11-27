@@ -1,5 +1,5 @@
 {
-    "attachment": "Erantsi domina mezuari",
+    "attachment": "Eranskina",
     "browsemode": "Aztertu sarrerak",
     "byalphabet": "Alfabetikoki",
     "byauthor": "Taldekatu egilearen arabera",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Duela gutxi eguneratuak",
     "bysearch": "Bilatu",
     "cannoteditentry": "Ezin da sarrera editatu",
-    "casesensitive": "Erabil adierazpen erregularrak",
-    "categories": "Ikastaro-kategoriak",
+    "casesensitive": "Letra larriak eta xeheak bereiziz",
+    "categories": "Kategoriak",
     "entriestobesynced": "Sinkronizatu beharreko sarrerak",
     "entrypendingapproval": "Sarrera hau onarpenaren zain dago.",
     "errorloadingentries": "Errorea gertatu da sarrerak kargatzean.",

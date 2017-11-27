@@ -13,7 +13,7 @@
     "responses": "Antwoorden",
     "responsesresultgraphdescription": "{{number}}% van de gebruikers kozen optie: {{text}}.",
     "responsesresultgraphheader": "Grafiek tonen",
-    "resultsnotsynced": "Jouw laatste reactie zit niet in de resultaten. Synchroniseer om deze te up to date te maken.",
+    "resultsnotsynced": "Jouw laatste reactie moet gesynchroniseerd worden voor ze mee in de resultaten zit.",
     "savemychoice": "Bewaar mijn antwoord",
     "userchoosethisoption": "Gebruikers die deze optie kozen",
     "yourselection": "Jouw selectie"

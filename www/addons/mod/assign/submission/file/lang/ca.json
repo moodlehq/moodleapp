@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Es poden afegir a la tramesa fitxers d'aquests tipus:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Fitxers de la tramesa"
+}

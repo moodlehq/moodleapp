@@ -29,7 +29,7 @@
     "invalidmoodleversion": "Невірна версія Moodle. Мінімальна версія 2.4.",
     "invalidsite": "URL сайту недійсний.",
     "invalidtime": "Невірний час",
-    "invalidurl": "Неправильний URL",
+    "invalidurl": "Введений вами URL неправильний",
     "invalidvaluemax": "Максимальне значення {{$a}}",
     "invalidvaluemin": "Мінімальне значення {{$a}}",
     "localmobileunexpectedresponse": "Moodle Mobile Additional Features при  перевірці повернуло несподівану відповідь, ви будете проходити перевірку автентичності з використанням стандартного мобільного сервісу.",

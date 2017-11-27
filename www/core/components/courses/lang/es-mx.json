@@ -21,9 +21,9 @@
     "password": "Clave de inscripción",
     "paymentrequired": "Para entrar a este curso es necesario pagar.",
     "paypalaccepted": "Pagos PayPal aceptados",
-    "search": "Buscar",
+    "search": "Búsqueda",
     "searchcourses": "Buscar cursos",
-    "searchcoursesadvice": "Usted puede usar el botón de 'buscar cursos' para acceder como invitado o para inscribirse Usted mismo en los cursos que lo permitan.",
+    "searchcoursesadvice": "Usted puede usar el botón de 'buscar cursos' para encontrar cursos a los cuales acceder como un invitado o para inscribirse Usted mismo en los cursos que lo permitan.",
     "selfenrolment": "Auto-inscripción",
     "sendpaymentbutton": "Enviar pago por Paypal",
     "totalcoursesearchresults": "Total de cursos: {{$a}}"

@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Mota hauetako fitxategiak gehitu daitezke bidalketa honetara:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Fitxategi-bidalketak"
+}

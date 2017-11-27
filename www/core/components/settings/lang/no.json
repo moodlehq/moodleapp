@@ -2,8 +2,8 @@
     "about": "Om",
     "currentlanguage": "Gjeldende språk",
     "disableall": "Deaktiver varslinger",
-    "disabled": "Deaktivert",
-    "general": "Generell",
+    "disabled": "Meldingstjenesten er deaktivert på denne portalen",
+    "general": "Generelt",
     "language": "Språk",
     "license": "(C) Lisens",
     "loggedin": "Innlogget",
@@ -11,5 +11,5 @@
     "processorsettings": "Prosessorinnstillinger",
     "settings": "Innstillinger",
     "sites": "Nettsteder",
-    "total": "Totalt"
+    "total": "Total"
 }

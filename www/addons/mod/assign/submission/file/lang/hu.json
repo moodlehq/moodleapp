@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Az ilyen típusú fájlokat hozzáadhatja a leadott munkához:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Leadás állományban"
+}

@@ -1,0 +1,5 @@
+{
+    "filesofthesetypes": "Tipi di file accettati per la consegna:",
+    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
+    "pluginname": "Consegna file"
+}

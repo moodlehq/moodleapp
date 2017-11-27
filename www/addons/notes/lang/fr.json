@@ -2,12 +2,12 @@
     "addnewnote": "Ajouter une annotation",
     "coursenotes": "Annotations de cours",
     "eventnotecreated": "Annotation créée",
-    "nonotes": "Il n'y a pas encore d'annotation de ce type",
+    "nonotes": "Il n'y a pas encore d'annotation de ce type.",
     "note": "Annotation",
     "notes": "Annotations",
     "personalnotes": "Annotations personnelles",
     "publishstate": "Contexte",
     "sitenotes": "Annotations du site",
-    "userwithid": "Utilisateur d'identifiant {{id}}",
+    "userwithid": "Utilisateur d'ID {{id}}",
     "warningnotenotsent": "Impossible d'ajouter d'annotation au cours {{course}}. {{error}}"
 }

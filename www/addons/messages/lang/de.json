@@ -1,7 +1,7 @@
 {
     "addcontact": "Kontakt hinzufügen",
     "blockcontact": "Kontakt sperren",
-    "blockcontactconfirm": "Möchten Sie alle Mitteilungen von dieser Person sperren?",
+    "blockcontactconfirm": "Möchten Sie von dieser Person keine Mitteilungen mehr empfangen?",
     "blocknoncontacts": "Mitteilungen nur für Kontakte zulassen",
     "contactlistempty": "Die Kontaktliste ist leer.",
     "contactname": "Name",
@@ -17,7 +17,7 @@
     "messagenotsent": "Die Mitteilung wurde nicht gesendet. Versuchen Sie es später noch einmal.",
     "messagepreferences": "Mitteilungen",
     "messages": "Mitteilungen",
-    "mustbeonlinetosendmessages": "Sie müssen online sein, um Mitteilungen zu senden",
+    "mustbeonlinetosendmessages": "Sie müssen online sein, um Mitteilungen zu senden.",
     "newmessage": "Neue Mitteilung",
     "newmessages": "Neue Mitteilungen",
     "nomessages": "Keine Mitteilungen",

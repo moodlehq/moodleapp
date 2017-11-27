@@ -22,7 +22,7 @@
     "invalidemail": "Adresă de email incorectă",
     "invalidmoodleversion": "Versiunea Moodle este invalidă. Versiunea minimă este 2.4",
     "invalidsite": "Adresa URL este invalidă.",
-    "invalidurl": "URL incorect",
+    "invalidurl": "URL-ul pe care l-aţi introdus nu este corect",
     "localmobileunexpectedresponse": "Verificarea Moodle Mobile Additional Features a returnat un răspuns neașteptat. veți fi autentificat folosind serviciul standard.",
     "login": "Autentificare",
     "loginbutton": "Logat!",

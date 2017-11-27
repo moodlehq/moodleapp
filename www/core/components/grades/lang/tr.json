@@ -2,14 +2,14 @@
     "average": "Ortalama",
     "badgrade": "Sağlanan not geçersiz",
     "contributiontocoursetotal": "Ders toplamına katkısı",
-    "feedback": "Geri bildirim",
-    "grade": "Not",
-    "grades": "Notlar",
+    "feedback": "Geribildirim",
+    "grade": "Başarı notu",
+    "grades": "Başarı notları",
     "itemname": "Öge adı",
     "lettergrade": "Harf notu",
     "nooutcome": "Hedef yok",
     "percentage": "Yüzde",
     "range": "Fark",
-    "rank": "Sıra",
+    "rank": "sıra",
     "weight": "Ağırlık"
 }
