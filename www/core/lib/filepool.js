@@ -168,7 +168,8 @@ angular.module('mm.core')
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
         mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty,
         mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmFilepoolPackagesStore,
-        mmCoreEventPackageStatusChanged, $mmText, $mmUtil, mmFilepoolWifiDownloadThreshold, mmFilepoolDownloadThreshold) {
+        mmCoreEventPackageStatusChanged, $mmText, $mmUtil, mmFilepoolWifiDownloadThreshold, mmFilepoolDownloadThreshold,
+        $mmPluginFileDelegate) {
 
     $log = $log.getInstance('$mmFilepool');
 
@@ -181,7 +182,6 @@ angular.module('mm.core')
             new RegExp('(\\?|&)preview=[A-Za-z0-9]+'),
             new RegExp('(\\?|&)offline=[0-1]', 'g')
         ],
-        revisionRegex = new RegExp('/content/([0-9]+)/'),
         queueDeferreds = {}, // To handle file downloads using the queue.
         packagesPromises = {}, // To prevent downloading packages twice at the same time.
         filePromises = {}, // To prevent downloading files twice at the same time.
@@ -1909,10 +1909,20 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmFilepool#_getRevisionFromUrl
      * @param {String} url URL to get the revision number.
-     * @return {String}    Revision number.
+     * @return {Number}    Revision number.
      * @protected
      */
     self.getRevisionFromUrl = function(url) {
+        var args = getPluginFileArgs(url);
+        if (!args) {
+            // Not a pluginfile, no revision will be found.
+            return 0;
+        }
+
+        var revisionRegex = $mmPluginFileDelegate.getComponentRevisionRegExp(args);
+        if (!revisionRegex) {
+            return 0;
+        }
         var matches = url.match(revisionRegex);
         if (matches && typeof matches[1] != 'undefined') {
             return parseInt(matches[1]);
@@ -2592,7 +2602,13 @@ angular.module('mm.core')
      * The revision is used to know if a file has changed. We remove it from the URL to prevent storing a file per revision.
      */
     self._removeRevisionFromUrl = function(url) {
-        return url.replace(revisionRegex, '/content/0/');
+        var args = getPluginFileArgs(url);
+        if (!args) {
+            // Not a pluginfile, no revision will be found.
+            return url;
+        }
+
+        return $mmPluginFileDelegate.removeRevisionFromUrl(url, args);
     };
 
     /**
@@ -3006,6 +3022,28 @@ angular.module('mm.core')
             });
         });
     };
+
+    /**
+     * Return the array of arguments of the pluginfile url.
+     *
+     * @param {String} url      URL to get the revision number.
+     * @return {Array}          The args found or false if not a pluginfile.
+     */
+    function getPluginFileArgs(url) {
+        if (!$mmUtil.isPluginFileUrl(url)) {
+            // Not pluginfile, return.
+            return false;
+        }
+
+        var relativePath = url.substr(url.indexOf('/pluginfile.php') + 16),
+            args = relativePath.split('/');
+
+        if (args.length < 3) {
+            // To be a plugin file it should have at least contextId, Component and Filearea.
+            return false;
+        }
+        return args;
+    }
 
     return self;
 })
