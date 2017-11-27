@@ -65,13 +65,46 @@
   .mm-center-view .scroll-content {
     margin: 0 auto;
     max-width: 600px;
-    display: table !important;
+    /* display: table !important; */
     width: 100% !important;
     height: 100% !important;
     .mm-view-content {
-      display: table-cell;
-      vertical-align: middle;
+      /* display: table-cell;
+      vertical-align: middle; */
+      display: block; // Added this style and commented some others to make scroll work. Box isn't centered vertically.
     }
   }
 }
 
+// Define an alternative way to set a heading in an item without using a heading tag.
+// This is done for accessibility reasons when a heading is semantically incorrect.
+.item .item-heading {
+  @extend h6;
+}
+
+.mm-oauth-icon, .item.mm-oauth-icon, .list .item.mm-oauth-icon {
+  padding: ($content-padding / 2);
+  border: 1px solid $list-border-color;
+
+  img, span {
+    max-height: 32px;
+    vertical-align: middle;
+  }
+  img {
+    max-width: 32px;
+  }
+  span {
+    margin-left: 5px;
+    color: $gray-darker;
+  }
+
+  .label {
+    margin: 0;
+  }
+}
+
+.icon-accessory,
+ion-icon.icon-accessory {
+  color: $item-icon-accessory-color;
+  font-size: $item-icon-accessory-font-size;
+}

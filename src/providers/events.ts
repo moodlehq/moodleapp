@@ -41,6 +41,8 @@ export class CoreEventsProvider {
     public static PACKAGE_STATUS_CHANGED = 'package_status_changed';
     public static SECTION_STATUS_CHANGED = 'section_status_changed';
     public static REMOTE_ADDONS_LOADED = 'remote_addons_loaded';
+    public static LOGIN_SITE_CHECKED = 'login_site_checked';
+    public static LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
 
     logger;
     observables = {};
