@@ -45,7 +45,7 @@ angular.module('mm.addons.mod_workshop')
                 assessmentId = scope.assessment.assessmentid || scope.assessment.id;
 
             scope.gotoAssessment = function() {
-                if (scope.canViewAssessment) {
+                if (!scope.canSelfAssess && scope.canViewAssessment) {
                     var stateParams = {
                         assessment: scope.assessment,
                         submission: scope.submission,
@@ -87,15 +87,20 @@ angular.module('mm.addons.mod_workshop')
                     };
 
                     $state.go('site.mod_workshop-submission', stateParams);
+                    return false;
                 }
             };
 
             scope.canViewAssessment = scope.assessment.grade;
             scope.canSelfAssess = canAssess && currentUser;
 
-            promises.push($mmUser.getProfile(userId, scope.courseid, true).then(function(profile) {
-                scope.profile = profile;
-            }));
+            scope.showGrade = $mmaModWorkshopHelper.showGrade;
+
+            if (userId) {
+                promises.push($mmUser.getProfile(userId, scope.courseid, true).then(function(profile) {
+                    scope.profile = profile;
+                }));
+            }
 
             var assessOffline;
             if (currentUser) {

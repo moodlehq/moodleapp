@@ -1,5 +1,3 @@
 {
-    "filesofthesetypes": "Podem ser adicionados à submissão os seguintes tipos de ficheiros:",
-    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
     "pluginname": "Submissão de ficheiros"
 }

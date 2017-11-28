@@ -10,6 +10,7 @@ information provided here is intended especially for developers.
  * mmCoursesEventCourseOptionsInvalidated has been deprecated, it will no longer be triggered.
  * Now the "siteurl" in config.json accepts an array of sites. Each site must have "url" and "name".
  * $mmaModAssignHelper#getAnswersFromForm deprecated, use $mmUtil#getInfoValuesFromForm instead.
+ * Param mimetypes on mmAttachments directive has been deprecated in favor of acceptedTypes that will treat the filetypes string properly.
 
 === 3.3.2 ===
 

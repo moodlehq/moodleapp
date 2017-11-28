@@ -33,7 +33,7 @@
             </div>
 
             <div class="card" ng-if="phases[selectedPhase] && phases[selectedPhase].tasks.length">
-                <div ng-repeat="task in phases[selectedPhase].tasks"  class="item item-text-wrap item-icon-left item-icon-top" ng-class="{'item-icon-right': task.link && !task.support}" ng-click="runTask(task)">
+                <div ng-repeat="task in phases[selectedPhase].tasks"  class="item item-text-wrap item-icon-left item-icon-top" ng-class="{'item-icon-right': task.link && !task.support, 'item-dimmed': selectedPhase != workshop.phase}" ng-click="runTask(task)">
                     <i class="icon" ng-class="{'ion-ios-circle-outline': task.completed == null, 'ion-close-circled assertive': task.completed == '', 'ion-information-circled positive': task.completed == 'info', 'ion-checkmark-circled balanced': task.completed === '1'}"></i>
                     <h2>{{task.title}}</h2>
                     <p ng-if="task.details"><mm-format-text>{{task.details}}</mm-format-text></p>
@@ -64,7 +64,7 @@
                             <p>{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
                         </div>
 
-                        <mma-mod-workshop-submission ng-if="submission" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="workshop.phase == workshopPhases.PHASE_CLOSED">
+                        <mma-mod-workshop-submission ng-if="submission" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access">
                         </mma-mod-workshop-submission>
                     </div>
 
@@ -95,6 +95,17 @@
                     </div>
                 </div>
 
+                <div class="card" ng-if="!access.canviewallsubmissions && selectedPhase == workshop.phase && (canSubmit || canAssess) && selectedPhase == workshopPhases.PHASE_EVALUATION">
+                    <div ng-if="submission" class="item item-text-wrap item-icon-right" ng-click="switchPhase(workshopPhases.PHASE_SUBMISSION)">
+                        <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                    <div ng-if="canAssess" class="item item-text-wrap item-icon-right" ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
+                        <h2>{{ 'mma.mod_workshop.assignedassessments' | translate }}</h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                </div>
+
                 <!-- CLOSED PHASE -->
                 <div ng-if="selectedPhase == workshopPhases.PHASE_CLOSED">
                     <div class="card" ng-if="workshop.conclusion">
@@ -113,7 +124,7 @@
                             <mm-format-text>{{ userGrades.submissionlongstrgrade }}</mm-format-text>
                             <i class="icon icon-accessory ion-chevron-right"></i>
                         </div>
-                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.assessmentlongstrgrade"  ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
+                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.assessmentlongstrgrade" ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
                             <h2>{{ 'mma.mod_workshop.gradinggrade' | translate }}</h2>
                             <mm-format-text>{{ userGrades.assessmentlongstrgrade }}</mm-format-text>
                             <i class="icon icon-accessory ion-chevron-right"></i>
