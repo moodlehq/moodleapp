@@ -1,5 +1,3 @@
 {
-    "filesofthesetypes": "Des fichiers de ces types peuvent être ajoutés au devoir :",
-    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
     "pluginname": "Remises de fichiers"
 }

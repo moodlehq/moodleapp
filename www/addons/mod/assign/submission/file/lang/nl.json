@@ -1,5 +1,3 @@
 {
-    "filesofthesetypes": "Bestanden van volgende types mogen ingestuurd worden.",
-    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
     "pluginname": "Bestanden insturen"
 }

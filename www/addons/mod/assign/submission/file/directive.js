@@ -22,80 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignSubmissionFile
  */
 .directive('mmaModAssignSubmissionFile', function($mmaModAssign, $mmFileSession, mmaModAssignComponent, $mmaModAssignHelper,
-            $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper, $q, $mmFS) {
-
-    /**
-     * Add a dot to the beginning of an extension.
-     *
-     * @param  {String} extension Extension.
-     * @return {String}           Treated extension.
-     */
-    function addDot(extension) {
-        return '.' + extension;
-    }
-
-    /**
-     * Parse filetypeslist to get the list of allowed mimetypes and the data to render information.
-     *
-     * @param  {Object} scope Directive's scope.
-     * @return {Void}
-     */
-    function treatFileTypes(scope) {
-        var mimetypes = {}, // Use an object to prevent duplicates.
-            filetypes = scope.configs.filetypeslist.replace(/,/g, ';').split(';');
-
-        scope.typesInfo = [];
-
-        angular.forEach(filetypes, function(filetype) {
-            filetype = filetype.trim();
-
-            if (filetype) {
-                if (filetype.indexOf('/') != -1) {
-                    // It's a mimetype.
-                    mimetypes[filetype] = true;
-
-                    scope.typesInfo.push({
-                        type: 'mimetype',
-                        value: {
-                            name: $mmFS.getMimetypeDescription(filetype),
-                            extlist: $mmFS.getExtensions(filetype).map(addDot).join(' ')
-                        }
-                    });
-                } else if (filetype.indexOf('.') === 0) {
-                    // It's an extension.
-                    var mimetype = $mmFS.getMimeType(filetype);
-                    if (mimetype) {
-                        mimetypes[mimetype] = true;
-                    }
-
-                    scope.typesInfo.push({
-                        type: 'extension',
-                        value: filetype
-                    });
-                } else {
-                    // It's a group.
-                    var groupMimetypes = $mmFS.getGroupMimeInfo(filetype, 'mimetypes'),
-                        groupExtensions = $mmFS.getGroupMimeInfo(filetype, 'extensions');
-
-                    angular.forEach(groupMimetypes, function(mimetype) {
-                        if (mimetype) {
-                            mimetypes[mimetype] = true;
-                        }
-                    });
-
-                    scope.typesInfo.push({
-                        type: 'mimetype',
-                        value: {
-                            name: $mmFS.getTranslatedGroupName(filetype),
-                            extlist: groupExtensions ? groupExtensions.map(addDot).join(' ') : ''
-                        }
-                    });
-                }
-            }
-        });
-
-        scope.mimetypes = Object.keys(mimetypes);
-    }
+            $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper, $q) {
 
     return {
         restrict: 'A',
@@ -104,10 +31,6 @@ angular.module('mm.addons.mod_assign')
         link: function(scope) {
             if (!scope.plugin) {
                 return;
-            }
-
-            if (scope.edit && scope.configs && scope.configs.filetypeslist && scope.configs.filetypeslist.trim()) {
-                treatFileTypes(scope);
             }
 
             // Get the offline data.

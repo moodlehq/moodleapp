@@ -1,5 +1,3 @@
 {
-    "filesofthesetypes": "これらのタイプのファイルは提出に追加することができます:",
-    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
     "pluginname": "ファイル提出"
 }

@@ -295,6 +295,78 @@ angular.module('mm.core.fileuploader')
     };
 
     /**
+     * Add a dot to the beginning of an extension.
+     *
+     * @param  {String} extension Extension.
+     * @return {String}           Treated extension.
+     */
+    function addDot(extension) {
+        return '.' + extension;
+    }
+
+    /**
+     * Parse filetypeslist to get the list of allowed mimetypes and the data to render information.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#prepareFiletypeList
+     * @param  {String} filetypeList Formatted string list where the mimetypes can be checked.
+     * @return {Object}              With mimetypes and the filetypes informations.
+     */
+    self.prepareFiletypeList = function(filetypeList) {
+        var filetypes = filetypeList.split(/[;, ]+/g),
+            mimetypes = {}, // Use an object to prevent duplicates.
+            typesInfo = [];
+
+        angular.forEach(filetypes, function(filetype) {
+            filetype = filetype.trim();
+
+            if (filetype) {
+                if (filetype.indexOf('/') != -1) {
+                    // It's a mimetype.
+                    typesInfo.push({
+                        name: $mmFS.getMimetypeDescription(filetype),
+                        extlist: $mmFS.getExtensions(filetype).map(addDot).join(' ')
+                    });
+
+                    mimetypes[filetype] = true;
+                } else if (filetype.indexOf('.') === 0) {
+                    // It's an extension.
+                    var mimetype = $mmFS.getMimeType(filetype);
+                    typesInfo.push({
+                        name: mimetype ? $mmFS.getMimetypeDescription(mimetype) : false,
+                        extlist: filetype
+                    });
+
+                    if (mimetype) {
+                        mimetypes[mimetype] = true;
+                    }
+                } else {
+                    // It's a group.
+                    var groupExtensions = $mmFS.getGroupMimeInfo(filetype, 'extensions'),
+                        groupMimetypes = $mmFS.getGroupMimeInfo(filetype, 'mimetypes');
+
+                    typesInfo.push({
+                        name: $mmFS.getTranslatedGroupName(filetype),
+                        extlist: groupExtensions ? groupExtensions.map(addDot).join(' ') : ''
+                    });
+
+                    angular.forEach(groupMimetypes, function(mimetype) {
+                        if (mimetype) {
+                            mimetypes[mimetype] = true;
+                        }
+                    });
+                }
+            }
+        });
+
+        return {
+            info: typesInfo,
+            mimetypes: Object.keys(mimetypes)
+        };
+    };
+
+    /**
      * Mark files as offline.
      *
      * @module mm.core.fileuploader

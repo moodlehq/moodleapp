@@ -1,5 +1,3 @@
 {
-    "filesofthesetypes": "Folgende Dateitypen können als Abgabe hinzugefügt werden:",
-    "filetypewithexts": "{{$a.name}} &mdash; {{$a.extlist}}",
     "pluginname": "Dateiabgabe"
 }
