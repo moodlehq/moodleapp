@@ -95,6 +95,17 @@
                     </div>
                 </div>
 
+                <div class="card" ng-if="!access.canviewallsubmissions && selectedPhase == workshop.phase && (canSubmit || canAssess) && selectedPhase == workshopPhases.PHASE_EVALUATION">
+                    <div ng-if="submission" class="item item-text-wrap item-icon-right" ng-click="switchPhase(workshopPhases.PHASE_SUBMISSION)">
+                        <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                    <div ng-if="canAssess" class="item item-text-wrap item-icon-right" ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
+                        <h2>{{ 'mma.mod_workshop.assignedassessments' | translate }}</h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                </div>
+
                 <!-- CLOSED PHASE -->
                 <div ng-if="selectedPhase == workshopPhases.PHASE_CLOSED">
                     <div class="card" ng-if="workshop.conclusion">
@@ -113,7 +124,7 @@
                             <mm-format-text>{{ userGrades.submissionlongstrgrade }}</mm-format-text>
                             <i class="icon icon-accessory ion-chevron-right"></i>
                         </div>
-                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.assessmentlongstrgrade"  ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
+                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.assessmentlongstrgrade" ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
                             <h2>{{ 'mma.mod_workshop.gradinggrade' | translate }}</h2>
                             <mm-format-text>{{ userGrades.assessmentlongstrgrade }}</mm-format-text>
                             <i class="icon icon-accessory ion-chevron-right"></i>
