@@ -44,7 +44,7 @@ angular.module('mm.core.login')
                 showError(isMail, response.warnings);
             } else if (response.status == 'emailpasswordconfirmnotsent' || response.status == 'emailpasswordconfirmnoemail') {
                 // Error, not found.
-                $mmUtil.showErrorModal(response.notive);
+                $mmUtil.showErrorModal(response.notice);
             } else {
                 // Success.
                 $mmUtil.showModal('mm.core.success', response.notice);
