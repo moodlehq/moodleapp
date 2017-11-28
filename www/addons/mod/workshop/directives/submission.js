@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_workshop')
  * Directive to render submission.
  */
 .directive('mmaModWorkshopSubmission', function(mmaModWorkshopComponent, $mmUser, $state, $mmSite, $mmaModWorkshop, $q,
-        $mmaModWorkshopOffline, $mmaModWorkshopHelper) {
+        $mmaModWorkshopOffline, $mmaModWorkshopHelper, $ionicHistory) {
     return {
         scope: {
             submission: '=',
@@ -77,6 +77,13 @@ angular.module('mm.addons.mod_workshop')
             if (scope.userId) {
                 promises.push($mmUser.getProfile(scope.userId, scope.courseid, true).then(function(profile) {
                     scope.profile = profile;
+                }));
+            }
+
+            scope.viewDetails = !scope.summary && scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED && $ionicHistory.currentView().stateName !== 'site.mod_workshop-submission';
+            if (scope.viewDetails && scope.submission.gradeoverby) {
+                promises.push($mmUser.getProfile(scope.submission.gradeoverby, scope.courseid, true).then(function(profile) {
+                    scope.evaluateByProfile = profile;
                 }));
             }
 

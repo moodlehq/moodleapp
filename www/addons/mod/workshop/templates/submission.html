@@ -25,6 +25,15 @@
             <!-- Files stored in offline to be sent later. -->
             <mm-local-file ng-if="attachment.name" file="attachment"></mm-local-file>
         </div>
+        <div class="item item-text-wrap item-border item-avatar clearfix" ng-if="viewDetails && submission.feedbackauthor">
+            <img ng-if="evaluateByProfile.profileimageurl" ng-src="{{evaluateByProfile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseId}}" userid="{{evaluateByProfile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: evaluateByProfile.fullname} }}" role="presentation">
+            <img ng-if="evaluateByProfile && !evaluateByProfile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: evaluateByProfile.fullname} }}" role="presentation">
+            <h2 ng-if="evaluateByProfile.fullname">{{ 'mma.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
+            <mm-format-text watch="true">{{ submission.feedbackauthor }}</mm-format-text>
+        </div>
+        <div class="item" ng-if="viewDetails">
+            <a class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoSubmission()">{{ 'mm.core.showmore' | translate }}</a>
+        </div>
     </div>
 
     <a class="item item-text-wrap item-avatar item-border clearfix" ng-if="summary" ng-class="{'item-icon-right': submission.timemodified}" ng-click="gotoSubmission()">
