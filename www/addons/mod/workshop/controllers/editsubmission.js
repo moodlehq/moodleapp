@@ -226,7 +226,7 @@ angular.module('mm.addons.mod_workshop')
                 cmid: module.cmid
             };
 
-            if (newSubmissionId) {
+            if (newSubmissionId && submissionId) {
                 // Data sent to server, delete stored files (if any).
                 $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, editing ? 'update' : 'add');
                 $mmaModWorkshopHelper.deleteSubmissionStoredFiles(workshopId, submissionId, editing);

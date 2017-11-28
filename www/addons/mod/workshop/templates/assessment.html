@@ -1,5 +1,5 @@
 <mm-loading hide-until="loaded" class="mm-loading-noheight">
-    <a class="item item-heading item-text-wrap item-border item-avatar clearfix" ng-if="summary" ng-class="{'item-icon-right': canViewAssessment}" ng-click="gotoAssessment()">
+    <a class="item item-heading item-text-wrap item-border item-avatar clearfix" ng-if="summary" ng-class="{'item-icon-right': canViewAssessment && !canSelfAssess}" ng-click="gotoAssessment()">
         <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseId}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
         <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
         <h2 ng-if="profile.fullname">{{profile.fullname}}</h2>
@@ -11,6 +11,6 @@
         <button ng-if="canSelfAssess && !showGrade(assessment.grade)" class="button button-block" ng-click="gotoOwnAssessment()">{{ 'mma.mod_workshop.assess' | translate }}</button>
         <button ng-if="canSelfAssess && showGrade(assessment.grade)" class="button button-block" ng-click="gotoOwnAssessment()">{{ 'mma.mod_workshop.reassess' | translate }}</button>
         <div class="item-note text-right" ng-if="offline"><i class="icon ion-clock"></i>{{ 'mm.core.notsent' | translate }}</div>
-        <i ng-if="canViewAssessment" class="icon icon-accessory ion-chevron-right"></i>
+        <i ng-if="canViewAssessment && !canSelfAssess" class="icon icon-accessory ion-chevron-right"></i>
     </a>
 </mm-loading>

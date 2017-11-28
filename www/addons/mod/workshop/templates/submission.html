@@ -6,7 +6,7 @@
             <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
             <h2>{{submission.title}}</h2>
             <p ng-if="profile.fullname">{{profile.fullname}}</p>
-            <p ng-if="showGrade(submission.submissiongrade)">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
+            <p ng-if="showGrade(submission.submissiongrade)" ng-class="{'mm-has-overriden-grade': showGrade(submission.submissiongradeover)}">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
             <p ng-if="showGrade(submission.submissiongradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.gradeover' | translate }}: {{submission.submissiongradeover}}</p>
             <p ng-if="access.canviewallsubmissions && showGrade(submission.gradinggrade)">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
             <div class="item-note" ng-if="!submission.timemodified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>

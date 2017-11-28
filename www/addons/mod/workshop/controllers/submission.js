@@ -63,11 +63,11 @@ angular.module('mm.addons.mod_workshop')
             userId = submissionData.authorid || userId;
             $scope.canEdit = currentUserId == userId && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed;
             $scope.canDelete = $scope.access.candeletesubmissions;
-            $scope.canAddFeedback = !$scope.assessmentId && $scope.workshop.phase < $mmaModWorkshop.PHASE_CLOSED &&
-                $scope.access.canoverridegrades;
+            $scope.canAddFeedback = !$scope.assessmentId && $scope.workshop.phase > $mmaModWorkshop.PHASE_ASSESSMENT &&
+                $scope.workshop.phase < $mmaModWorkshop.PHASE_CLOSED && $scope.access.canoverridegrades;
             $scope.ownAssessment = false;
 
-            if ($scope.access.canviewallassessments || currentUserId == userId) {
+            if ($scope.access.canviewallassessments) {
                 // Get new data, different that came from stateParams.
                 promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(subAssessments) {
                     // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
@@ -86,6 +86,24 @@ angular.module('mm.addons.mod_workshop')
                             assessment.ownAssessment = true;
                         }
                     });
+                }));
+            } else if (currentUserId == userId && $scope.assessmentId) {
+                // Get new data, different that came from stateParams.
+                promises.push($mmaModWorkshop.getAssessment(workshopId, $scope.assessmentId).then(function(assessment) {
+                    // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
+                    if ($scope.canDelete) {
+                        $scope.canDelete = !assessment;
+                    }
+
+                    assessment.userid = assessment.reviewerid;
+                    assessment = $mmaModWorkshopHelper.realGradeValue($scope.workshop, assessment);
+
+                    if (currentUserId == assessment.userid) {
+                        $scope.ownAssessment = assessment;
+                        assessment.ownAssessment = true;
+                    }
+
+                    $scope.submissionInfo.reviewedby = [assessment];
                 }));
             }
 
