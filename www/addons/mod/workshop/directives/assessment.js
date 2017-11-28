@@ -93,9 +93,13 @@ angular.module('mm.addons.mod_workshop')
             scope.canViewAssessment = scope.assessment.grade;
             scope.canSelfAssess = canAssess && currentUser;
 
-            promises.push($mmUser.getProfile(userId, scope.courseid, true).then(function(profile) {
-                scope.profile = profile;
-            }));
+            scope.showGrade = $mmaModWorkshopHelper.showGrade;
+
+            if (userId) {
+                promises.push($mmUser.getProfile(userId, scope.courseid, true).then(function(profile) {
+                    scope.profile = profile;
+                }));
+            }
 
             var assessOffline;
             if (currentUser) {

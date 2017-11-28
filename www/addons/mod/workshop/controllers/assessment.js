@@ -264,6 +264,8 @@ angular.module('mm.addons.mod_workshop')
         }
     };
 
+    $scope.showGrade = $mmaModWorkshopHelper.showGrade;
+
     $scope.$on('$destroy', function() {
         syncObserver && syncObserver.off && syncObserver.off();
         // Restore original back functions.

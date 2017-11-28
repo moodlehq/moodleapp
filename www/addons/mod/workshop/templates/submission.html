@@ -6,9 +6,9 @@
             <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
             <h2>{{submission.title}}</h2>
             <p ng-if="profile.fullname">{{profile.fullname}}</p>
-            <p ng-if="submission.submissiongrade">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
-            <p ng-if="submission.submissiongradeover" class="mm-overriden-grade">{{ 'mma.mod_workshop.gradeover' | translate }}: {{submission.submissiongradeover}}</p>
-            <p ng-if="access.canviewallsubmissions && submission.gradinggrade">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
+            <p ng-if="showGrade(submission.submissiongrade)">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
+            <p ng-if="showGrade(submission.submissiongradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.gradeover' | translate }}: {{submission.submissiongradeover}}</p>
+            <p ng-if="access.canviewallsubmissions && showGrade(submission.gradinggrade)">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
             <div class="item-note" ng-if="!submission.timemodified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
             <div class="item-note text-right" ng-if="submission.timemodified">
                 {{submission.timemodified | mmDateDayOrTime}}
@@ -35,13 +35,13 @@
         <p ng-if="profile.fullname">{{profile.fullname}}</p>
         <p ng-if="submission.reviewedbycount">{{ 'mma.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbycount}} / {{submission.reviewedby.length}}</p>
         <p ng-if="submission.reviewerofcount">{{ 'mma.mod_workshop.givengrades' | translate }}: {{submission.reviewerofcount}} / {{submission.reviewerof.length}}</p>
-        <p ng-if="!submission.submissiongradeover && submission.submissiongrade">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
-        <p ng-if="submission.submissiongradeover" class="mm-overriden-grade">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongradeover}}</p>
-        <p ng-if="access.canviewallsubmissions && submission.gradinggrade">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
-        <p ng-if="assessment && (assessment.grade != null || assessment.offline)" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_workshop.assessedsubmission' | translate }}</p>
-        <p ng-if="assessment && assessment.grade == null && !assessment.offline" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
-        <div class="item-note text-right" ng-if="timemodified">
-            {{timemodified | mmDateDayOrTime}}
+        <p ng-if="!showGrade(submission.submissiongradeover) && showGrade(submission.submissiongrade)">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
+        <p ng-if="showGrade(submission.submissiongradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongradeover}}</p>
+        <p ng-if="access.canviewallsubmissions && showGrade(submission.gradinggrade)">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
+        <p ng-if="assessment && (showGrade(assessment.grade) || assessment.offline)" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_workshop.assessedsubmission' | translate }}</p>
+        <p ng-if="assessment && !showGrade(assessment.grade) && !assessment.offline" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
+        <div class="item-note text-right" ng-if="submission.timemodified">
+            {{submission.timemodified | mmDateDayOrTime}}
             <div ng-if="offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
             <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
         </div>

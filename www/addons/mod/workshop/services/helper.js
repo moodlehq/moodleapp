@@ -554,5 +554,18 @@ angular.module('mm.addons.mod_workshop')
         return assessment;
     };
 
+    /**
+     * Check grade should be shown
+     *
+     * @module mm.addons.mod_workshop
+     * @ngdoc method
+     * @name $mmaModWorkshopHelper#showGrade
+     * @param {Number}  grade        Grade to be shown
+     * @return {Boolean}  If grade should be shown or not.
+     */
+    self.showGrade = function(grade) {
+        return typeof grade !== "undefined" && grade !== null;
+    };
+
     return self;
 });

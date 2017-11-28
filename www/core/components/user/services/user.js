@@ -172,7 +172,7 @@ angular.module('mm.core.user')
      * @module mm.core.user
      * @ngdoc method
      * @name $mmUser#getUserFromWS
-     * @param  {Number} id         User ID.
+     * @param  {Number} userid         User ID.
      * @param  {Number} [courseid] Course ID to get course profile, undefined or 0 to get site profile.
      * @return {Promise}           Promise resolve when the user is retrieved.
      */
@@ -212,7 +212,7 @@ angular.module('mm.core.user')
 
         return $mmSite.read(wsName, data, preSets).then(function(users) {
             if (users.length == 0) {
-                return $q.reject();
+                return $q.reject('Cannot retrieve user info.');
             }
 
             var user = users.shift();

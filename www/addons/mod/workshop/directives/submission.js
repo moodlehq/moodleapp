@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_workshop')
  * Directive to render submission.
  */
 .directive('mmaModWorkshopSubmission', function(mmaModWorkshopComponent, $mmUser, $state, $mmSite, $mmaModWorkshop, $q,
-        $mmaModWorkshopOffline) {
+        $mmaModWorkshopOffline, $mmaModWorkshopHelper) {
     return {
         scope: {
             submission: '=',
@@ -63,7 +63,6 @@ angular.module('mm.addons.mod_workshop')
             }
 
             scope.offline = (scope.submission && scope.submission.offline) || (scope.assessment && scope.assessment.offline);
-            scope.timemodified = scope.assessment ?  scope.assessment.timemodified : scope.submission.timemodified;
 
             if (scope.submission.id) {
                 promises.push($mmaModWorkshopOffline.getEvaluateSubmission(scope.workshop.id, scope.submission.id)
@@ -75,9 +74,11 @@ angular.module('mm.addons.mod_workshop')
                 }));
             }
 
-            promises.push($mmUser.getProfile(scope.userId, scope.courseid, true).then(function(profile) {
-                scope.profile = profile;
-            }));
+            if (scope.userId) {
+                promises.push($mmUser.getProfile(scope.userId, scope.courseid, true).then(function(profile) {
+                    scope.profile = profile;
+                }));
+            }
 
             scope.gotoSubmission = function() {
                 if (scope.submission.timemodified) {
@@ -95,6 +96,8 @@ angular.module('mm.addons.mod_workshop')
                     $state.go('site.mod_workshop-submission', stateParams);
                 }
             };
+
+            scope.showGrade = $mmaModWorkshopHelper.showGrade;
 
             return $q.all(promises).finally(function() {
                 scope.loaded = true;

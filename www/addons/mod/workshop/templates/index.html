@@ -33,7 +33,7 @@
             </div>
 
             <div class="card" ng-if="phases[selectedPhase] && phases[selectedPhase].tasks.length">
-                <div ng-repeat="task in phases[selectedPhase].tasks"  class="item item-text-wrap item-icon-left item-icon-top" ng-class="{'item-icon-right': task.link && !task.support}" ng-click="runTask(task)">
+                <div ng-repeat="task in phases[selectedPhase].tasks"  class="item item-text-wrap item-icon-left item-icon-top" ng-class="{'item-icon-right': task.link && !task.support, 'item-dimmed': selectedPhase != workshop.phase}" ng-click="runTask(task)">
                     <i class="icon" ng-class="{'ion-ios-circle-outline': task.completed == null, 'ion-close-circled assertive': task.completed == '', 'ion-information-circled positive': task.completed == 'info', 'ion-checkmark-circled balanced': task.completed === '1'}"></i>
                     <h2>{{task.title}}</h2>
                     <p ng-if="task.details"><mm-format-text>{{task.details}}</mm-format-text></p>
