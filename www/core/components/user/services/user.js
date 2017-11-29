@@ -284,7 +284,9 @@ angular.module('mm.core.user')
             promises = [];
 
         angular.forEach(userIds, function(userId) {
-            if (!treated[userId]) {
+            userId = parseInt(userId, 10);
+            // Prevent repeats and errors.
+            if (!isNaN(userId) && !treated[userId]) {
                 treated[userId] = true;
 
                 promises.push(self.getProfile(userId, courseId).then(function(profile) {
