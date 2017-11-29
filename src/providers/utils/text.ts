@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 
@@ -23,7 +24,7 @@ import { CoreLangProvider } from '../lang';
 export class CoreTextUtilsProvider {
     element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
 
-    constructor(private translate: TranslateService, private langProvider: CoreLangProvider) {}
+    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) {}
 
     /**
      * Given a list of sentences, build a message with all of them wrapped in <p>.
@@ -247,22 +248,33 @@ export class CoreTextUtilsProvider {
      *
      * @param {string} title Title of the new state.
      * @param {string} text Content of the text to be expanded.
-     * @param {boolean} [replaceLineBreaks] Whether to replace line breaks by <br> tag.
+     * @param {boolean} [isModal] Whether it should be opened in a modal (true) or in a new page (false).
      * @param {string} [component] Component to link the embedded files to.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {NavController} [navCtrl] The NavController instance to use.
      */
-    expandText(title: string, text: string, replaceLineBreaks?: boolean, component?: string, componentId?: string|number) : void {
+    expandText(title: string, text: string, isModal?: boolean, component?: string, componentId?: string|number,
+            navCtrl?: NavController) : void {
         if (text.length > 0) {
-            // Open a new page with the interpolated contents.
-            // @todo
-            // $state.go('site.mm_textviewer', {
-            //     title: title,
-            //     content: text,
-            //     replacelinebreaks: replaceLineBreaks,
-            //     component: component,
-            //     componentId: componentId
-            // });
+            let params: any = {
+                title: title,
+                content: text,
+                component: component,
+                componentId: componentId
+            };
+
+            if (isModal) {
+                // Open a modal with the contents.
+                params.isModal = true;
+
+                let modal = this.modalCtrl.create('CoreViewerTextPage', params);
+                modal.present();
+            } else if (navCtrl) {
+                // Open a new page with the contents.
+                navCtrl.push('CoreViewerTextPage', params);
+            }
         }
+
     }
 
     /**

@@ -126,6 +126,7 @@ export class CoreFormatTextDirective implements OnInit {
             let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
                 label = this.textUtils.escapeHTML(this.translate.instant('mm.core.openfullimage'));
 
+            // @todo: Implement image viewer. Maybe we can add the listener here directly?
             container.innerHTML += '<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
                             '" aria-label="' + label + '"><ion-icon name="search"></ion-icon></a>';
         }
@@ -193,8 +194,9 @@ export class CoreFormatTextDirective implements OnInit {
                         }
 
                         // Open a new state with the contents.
-                        this.textUtils.expandText(this.fullTitle || this.translate.instant('mm.core.description'),
-                            this.text, this.brOnFull, this.component, this.componentId);
+                        // @todo: brOnFull is needed?
+                        this.textUtils.expandText(this.fullTitle || this.translate.instant('mm.core.description'), this.text,
+                            false, this.component, this.componentId);
                     });
                 }
             } else {
