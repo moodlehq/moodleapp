@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform } from 'ionic-angular';
+import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
@@ -365,7 +365,7 @@ export class CoreDomUtilsProvider {
             }
 
             // Finally, check again.
-            if (element.className.indexOf(positionParentClass) != -1) {
+            if (element && element.className.indexOf(positionParentClass) != -1) {
                 element = null;
             }
         }
@@ -564,13 +564,14 @@ export class CoreDomUtilsProvider {
     /**
      * Scroll to a certain element inside another element.
      *
-     * @param {HTMLElement} scrollEl The element that must be scrolled.
+     * @param {Content|HTMLElement} scrollEl The content that must be scrolled.
      * @param {HTMLElement} container Element to search in.
      * @param {string} [selector] Selector to find the element to scroll to. If not defined, scroll to the container.
      * @param {string} [scrollParentClass] Parent class where to stop calculating the position. Default scroll-content.
      * @return {boolean} True if the element is found, false otherwise.
      */
-    scrollToElement(scrollEl: HTMLElement, container: HTMLElement, selector?: string, scrollParentClass?: string) : boolean {
+    scrollToElement(scrollEl: Content|HTMLElement, container: HTMLElement, selector?: string, scrollParentClass?: string)
+            : boolean {
         let position = this.getElementXY(container, selector, scrollParentClass);
         if (!position) {
             return false;
@@ -583,23 +584,17 @@ export class CoreDomUtilsProvider {
     /**
      * Search for an input with error (mm-input-error directive) and scrolls to it if found.
      *
-     * @param {HTMLElement} scrollEl The element that must be scrolled.
+     * @param {Content|HTMLElement} scrollEl The element that must be scrolled.
      * @param {HTMLElement} container Element to search in.
      * @param [scrollParentClass] Parent class where to stop calculating the position. Default scroll-content.
      * @return {boolean} True if the element is found, false otherwise.
      */
-    scrollToInputError(scrollEl: HTMLElement, container: HTMLElement, scrollParentClass?: string) : boolean {
-        // @todo
-        return true;
-        // Wait an instant to make sure errors are shown and scroll to the element.
-        // return $timeout(function() {
-        //     if (!scrollDelegate) {
-        //         scrollDelegate = $ionicScrollDelegate;
-        //     }
+    scrollToInputError(scrollEl: Content|HTMLElement, container: HTMLElement, scrollParentClass?: string) : boolean {
+        if (!scrollEl) {
+            return false;
+        }
 
-        //     scrollDelegate.resize();
-        //     return self.scrollToElement(container, '.mm-input-has-errors', scrollDelegate, scrollParentClass);
-        // }, 100);
+        return this.scrollToElement(scrollEl, container, '.core-input-error', scrollParentClass);
     }
 
     /**

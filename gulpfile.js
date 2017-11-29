@@ -84,11 +84,11 @@ function treatMergedData(data) {
             }
             addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
-        } else if (filepath.indexOf('core/assets/countries') === 0) {
+        } else if (filepath.indexOf('assets/countries') === 0) {
 
             addProperties(merged, data[filepath], 'mm.core.country-');
 
-        } else if (filepath.indexOf('core/assets/mimetypes') === 0) {
+        } else if (filepath.indexOf('assets/mimetypes') === 0) {
 
             addProperties(merged, data[filepath], 'mm.core.mimetype-');
 
@@ -181,7 +181,9 @@ var appLangFiles = ['ar.json', 'bg.json', 'ca.json', 'cs.json', 'da.json', 'de.j
         lang: [
             './src/lang/',
             './src/core/**/lang/',
-            './src/addons/**/lang/'
+            './src/addons/**/lang/',
+            './src/assets/countries/',
+            './src/assets/mimetypes/'
         ],
         config: './src/config.json',
     };

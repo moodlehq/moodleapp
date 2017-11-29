@@ -553,8 +553,8 @@ export class CoreUtilsProvider {
 
             for (let name in table) {
                 if (name.indexOf('mm.core.country-') === 0) {
-                    name = name.replace('mm.core.country-', '');
-                    countries[name] = table[name];
+                    let code = name.replace('mm.core.country-', '');
+                    countries[code] = table[name];
                 }
             }
 

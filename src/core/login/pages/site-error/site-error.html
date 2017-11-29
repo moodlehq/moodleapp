@@ -21,7 +21,7 @@
         {{ 'mm.login.contactyouradministratorissue' | translate:{$a: ''} }}
     </p>
     <p *ngIf="issue">
-        <core-format-text>{{issue}}</core-format-text>
+        <core-format-text [text]="issue"></core-format-text>
     </p>
 </ion-content>
 

@@ -122,6 +122,10 @@ export class CoreLoginHelperProvider {
     formatProfileFieldsForSignup(profileFields: any[]) : any {
         let categories = {};
 
+        if (!profileFields) {
+            return categories;
+        }
+
         profileFields.forEach((field) => {
             if (!field.signup) {
                 // Not a signup field, ignore it.
@@ -161,7 +165,7 @@ export class CoreLoginHelperProvider {
         var errors: any = {};
 
         if (requiredMsg) {
-            errors.required = this.translate.instant(requiredMsg);
+            errors.required = errors.requiredTrue = this.translate.instant(requiredMsg);
         }
         if (emailMsg) {
             errors.email = this.translate.instant(emailMsg);
