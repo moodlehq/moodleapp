@@ -2671,7 +2671,8 @@ angular.module('mm.core')
                 return {};
             }
 
-            var formData = {};
+            var formData = {},
+                simpleCheckboxes = {};
 
             angular.forEach(form.elements, function(element) {
                 var name = element.name || '';
@@ -2687,7 +2688,10 @@ angular.module('mm.core')
                 // Get the value.
                 switch (element.type) {
                     case 'checkbox':
-                        formData[name] = !!element.checked;
+                        if (typeof simpleCheckboxes[name] == "undefined") {
+                           simpleCheckboxes[name] = {};
+                        }
+                        simpleCheckboxes[name][element.value] = !!element.checked;
                         break;
                     case 'radio':
                         if (element.checked) {
@@ -2696,6 +2700,16 @@ angular.module('mm.core')
                         break;
                     default:
                         formData[name] = element.value;
+                }
+            });
+
+            angular.forEach(simpleCheckboxes, function(checkbox, name) {
+                var keys = Object.keys(checkbox);
+                // Single standard checkbox without real value.
+                if (keys.length == 1 && keys[0] == "on") {
+                    formData[name] = checkbox.on;
+                } else {
+                    formData[name] = checkbox;
                 }
             });
 
