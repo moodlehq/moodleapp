@@ -346,16 +346,30 @@ angular.module('mm.core.fileuploader')
                     var groupExtensions = $mmFS.getGroupMimeInfo(filetype, 'extensions'),
                         groupMimetypes = $mmFS.getGroupMimeInfo(filetype, 'mimetypes');
 
-                    typesInfo.push({
-                        name: $mmFS.getTranslatedGroupName(filetype),
-                        extlist: groupExtensions ? groupExtensions.map(addDot).join(' ') : ''
-                    });
+                    if (groupExtensions.length > 0) {
+                        typesInfo.push({
+                            name: $mmFS.getTranslatedGroupName(filetype),
+                            extlist: groupExtensions ? groupExtensions.map(addDot).join(' ') : ''
+                        });
 
-                    angular.forEach(groupMimetypes, function(mimetype) {
+                        angular.forEach(groupMimetypes, function(mimetype) {
+                            if (mimetype) {
+                                mimetypes[mimetype] = true;
+                            }
+                        });
+                    } else {
+                        // Treat them as extensions.
+                        filetype = '.' + filetype;
+                        var mimetype = $mmFS.getMimeType(filetype);
+                        typesInfo.push({
+                            name: mimetype ? $mmFS.getMimetypeDescription(mimetype) : false,
+                            extlist: filetype
+                        });
+
                         if (mimetype) {
                             mimetypes[mimetype] = true;
                         }
-                    });
+                    }
                 }
             }
         });
