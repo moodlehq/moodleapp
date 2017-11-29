@@ -24,7 +24,7 @@ import { CoreDomUtilsProvider } from '../providers/utils/dom';
     selector: '[core-auto-focus]'
 })
 export class CoreAutoFocusDirective implements AfterViewInit {
-    @Input('core-auto-focus') coreAutoFocus: boolean = true;
+    @Input('core-auto-focus') coreAutoFocus: boolean|string = true;
 
     protected element: HTMLElement;
 
@@ -36,8 +36,14 @@ export class CoreAutoFocusDirective implements AfterViewInit {
      * Function after the view is initialized.
      */
     ngAfterViewInit() {
-        this.coreAutoFocus = typeof this.coreAutoFocus != 'boolean' ? true : this.coreAutoFocus;
-        if (this.coreAutoFocus) {
+        let autoFocus;
+        if (typeof this.coreAutoFocus == 'string') {
+            autoFocus = this.coreAutoFocus && this.coreAutoFocus !== 'false';
+        } else {
+            autoFocus = !!this.coreAutoFocus;
+        }
+
+        if (autoFocus) {
             // If it's a ion-input or ion-textarea, search the right input to use.
             let element = this.element;
             if (this.element.tagName == 'ION-INPUT') {

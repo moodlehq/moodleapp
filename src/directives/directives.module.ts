@@ -17,12 +17,14 @@ import { CoreAutoFocusDirective } from './auto-focus';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
+import { CoreKeepKeyboardDirective } from './keep-keyboard';
 
 @NgModule({
     declarations: [
         CoreAutoFocusDirective,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
+        CoreKeepKeyboardDirective,
         CoreLinkDirective
     ],
     imports: [],
@@ -30,6 +32,7 @@ import { CoreLinkDirective } from './link';
         CoreAutoFocusDirective,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
+        CoreKeepKeyboardDirective,
         CoreLinkDirective
     ]
 })

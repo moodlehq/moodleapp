@@ -14,17 +14,30 @@
 
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreDirectivesModule } from '../directives/directives.module';
 import { CoreLoadingComponent } from './loading/loading';
+import { CoreMarkRequiredComponent } from './mark-required/mark-required';
+import { CoreInputErrorsComponent } from './input-errors/input-errors';
+import { CoreShowPasswordComponent } from './show-password/show-password';
 
 @NgModule({
     declarations: [
-        CoreLoadingComponent
+        CoreLoadingComponent,
+        CoreMarkRequiredComponent,
+        CoreInputErrorsComponent,
+        CoreShowPasswordComponent
     ],
     imports: [
-        IonicModule
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreDirectivesModule
     ],
     exports: [
-        CoreLoadingComponent
+        CoreLoadingComponent,
+        CoreMarkRequiredComponent,
+        CoreInputErrorsComponent,
+        CoreShowPasswordComponent
     ]
 })
 export class CoreComponentsModule {}
