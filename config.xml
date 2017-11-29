@@ -118,5 +118,4 @@
     <plugin name="net.tunts.webintent" spec="https://github.com/Tunts/WebIntent.git" />
     <plugin name="ch.ti8m.documenthandler" spec="https://github.com/ti8m/DocumentHandler.git" />
     <plugin name="cordova-sqlite-storage" spec="2.0.4" />
-    <plugin name="cordova-plugin-ionic-webview" spec="1.1.16" />
 </widget>
