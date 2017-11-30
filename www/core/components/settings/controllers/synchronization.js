@@ -21,9 +21,11 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsSynchronizationCtrl
  */
-.controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmUtil, $mmConfig, $mmSettingsHelper,
-            mmCoreSettingsSyncOnlyOnWifi) {
+.controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmUtil, $mmConfig, $mmSettingsHelper, $mmSite,
+            mmCoreSettingsSyncOnlyOnWifi, $mmSitesManager) {
     $log = $log.getInstance('mmSettingsSynchronizationCtrl');
+
+    $scope.currentSiteId = $mmSite.getId();
 
     // Get the sites to show.
     $mmSettingsHelper.getSites().then(function(sites) {
