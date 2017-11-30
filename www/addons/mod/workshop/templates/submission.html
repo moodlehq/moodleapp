@@ -16,7 +16,7 @@
                 <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
             </div>
         </div>
-        <div class="item item-body">
+        <div class="item item-body" ng-if="submission.content">
             <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{submission.content}}</mm-format-text>
         </div>
         <div class="item" ng-repeat="attachment in submission.attachmentfiles">

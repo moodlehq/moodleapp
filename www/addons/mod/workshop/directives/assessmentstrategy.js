@@ -230,6 +230,10 @@ angular.module('mm.addons.mod_workshop')
 
             // Check if data has changed.
             function hasDataChanged() {
+                if (!scope.assessmentStrategyLoaded) {
+                    return false;
+                }
+
                 var inputData = getInputData();
 
                 // Compare feedback text.
