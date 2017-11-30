@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" ng-if="phases">
                 <div class="item item-input item-stacked-label item-icon-right" ng-click="selectPhase()">
                     <ion-label class="item-text-wrap">{{ phases[selectedPhase].title }}</ion-label>
                     <p class="item-text-wrap" ng-if="phases[selectedPhase].code == workshop.phase">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>

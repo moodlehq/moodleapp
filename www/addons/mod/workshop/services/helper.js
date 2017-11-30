@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_workshop')
             examplesDone = access.canmanageexamples || workshop.examplesmode == examples.EXAMPLES_VOLUNTARY ||
                 self.isTaskDone(tasks, 'examples');
 
-        return access.cansubmit && (!examplesMust || examplesDone);
+        return workshop.phase > $mmaModWorkshop.PHASE_SETUP && access.cansubmit && (!examplesMust || examplesDone);
     };
 
     /**
