@@ -3,7 +3,7 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sizeLoaded" on-refresh="refresh()"></ion-refresher>
         <mm-loading hide-until="sizeLoaded">
             <ul>
-                <li ng-repeat="site in sites" class="item item-button-right">
+                <li ng-repeat="site in sites" class="item item-button-right" ng-class="{'mm-info-item': site.id == currentSiteId}">
                     <span class="item-note">{{ site.spaceusage | mmBytesToSize }}</span>
                     <h2><mm-format-text>{{site.sitename}}</mm-format-text></h2>
                     <p>{{site.fullname}}</p>

@@ -41,21 +41,7 @@ angular.module('mm.core.login')
         });
 
         // Sort sites by url and fullname.
-        $scope.sites = sites.sort(function(a, b) {
-            // First compare by site url without the protocol.
-            var compareA = a.siteurl.toLowerCase(),
-                compareB = b.siteurl.toLowerCase(),
-                compare = compareA.localeCompare(compareB);
-
-            if (compare !== 0) {
-                return compare;
-            }
-
-            // If site url is the same, use fullname instead.
-            compareA = a.fullname.toLowerCase().trim();
-            compareB = b.fullname.toLowerCase().trim();
-            return compareA.localeCompare(compareB);
-        });
+        $scope.sites = $mmSitesManager.sortSites(sites);
 
         $scope.data = {
             hasSites: sites.length > 0,

@@ -56,8 +56,10 @@ angular.module('mm.addons.mod_resource')
                 });
             }
         }).then(function(mod) {
-            $scope.title = mod.name;
-            $scope.description = mod.intro || mod.description;
+            if (mod) {
+                $scope.title = mod.name;
+                $scope.description = mod.intro || mod.description;
+            }
 
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
@@ -85,7 +87,7 @@ angular.module('mm.addons.mod_resource')
                         }
                     });
                 });
-            } else if ($mmaModResource.isDisplayedEmbedded(module, mod.display)) {
+            } else if ($mmaModResource.isDisplayedEmbedded(module, mod && mod.display)) {
                 $scope.mode = 'embedded';
                 return $mmaModResource.getEmbeddedHtml(module).then(function(html) {
                     $scope.content = html;
