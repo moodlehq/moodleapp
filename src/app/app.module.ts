@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule, Platform } from 'ionic-angular';
+import { NgModule } from '@angular/core';
+import { IonicApp, IonicModule, Platform } from 'ionic-angular';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -90,7 +90,6 @@ export function createTranslateLoader(http: HttpClient) {
         SplashScreen,
         SQLite,
         Keyboard,
-        {provide: ErrorHandler, useClass: IonicErrorHandler},
         CoreLoggerProvider,
         CoreDbProvider,
         CoreAppProvider,
