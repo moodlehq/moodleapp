@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, AfterViewInit, ElementRef } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreAppProvider } from '../providers/app';
 import { CoreLoggerProvider } from '../providers/logger';
@@ -32,7 +32,7 @@ import { CoreUrlUtilsProvider } from '../providers/utils/url';
 @Directive({
     selector: '[core-external-content]'
 })
-export class CoreExternalContentDirective implements OnInit {
+export class CoreExternalContentDirective implements AfterViewInit {
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component to link the file to.
     @Input() componentId?: string|number; // Component ID to use in conjunction with the component.
@@ -49,9 +49,9 @@ export class CoreExternalContentDirective implements OnInit {
     }
 
     /**
-     * Function executed when the component is initialized.
+     * View has been initialized
      */
-    ngOnInit() {
+    ngAfterViewInit() {
         let currentSite = this.sitesProvider.getCurrentSite(),
             siteId = this.siteId || (currentSite && currentSite.getId()),
             targetAttr,

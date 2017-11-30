@@ -1435,7 +1435,14 @@ export class CoreFilepoolProvider {
     protected getFileUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string|number, mode = 'url',
             timemodified = 0, checkSize = true, downloadUnknown?: boolean, options: any = {}) : Promise<string> {
         let fileId,
-            revision;
+            revision,
+            addToQueue = (fileUrl) => {
+                // Add the file to queue if needed and ignore errors.
+                this.addToQueueIfNeeded(siteId, fileUrl, component, componentId, timemodified, checkSize,
+                        downloadUnknown, options).catch(() => {
+                    // Ignore errors.
+                });
+            };
 
         return this.fixPluginfileURL(siteId, fileUrl).then((fixedUrl) => {
             fileUrl = fixedUrl;
@@ -1447,14 +1454,12 @@ export class CoreFilepoolProvider {
 
                 if (typeof entry === 'undefined') {
                     // We do not have the file, add it to the queue, and return real URL.
-                    this.addToQueueIfNeeded(
-                            siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown, options);
+                    addToQueue(fileUrl);
                     response = fileUrl;
 
                 } else if (this.isFileOutdated(entry, revision, timemodified) && this.appProvider.isOnline()) {
                     // The file is outdated, we add to the queue and return real URL.
-                    this.addToQueueIfNeeded(
-                            siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown, options);
+                    addToQueue(fileUrl);
                     response = fileUrl;
                 } else {
                     // We found the file entry, now look for the file on disk.
@@ -1471,8 +1476,7 @@ export class CoreFilepoolProvider {
                         // We could not retrieve the file, delete the entries associated with that ID.
                         this.logger.debug('File ' + fileId + ' not found on disk');
                         this.removeFileById(siteId, fileId);
-                        this.addToQueueIfNeeded(
-                                siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown, options);
+                        addToQueue(fileUrl);
 
                         if (this.appProvider.isOnline()) {
                             // We still have a chance to serve the right content.
@@ -1486,8 +1490,7 @@ export class CoreFilepoolProvider {
                 return response;
             }, () => {
                 // We do not have the file in store yet. Add to queue and return the fixed URL.
-                this.addToQueueIfNeeded(
-                        siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown, options);
+                addToQueue(fileUrl);
                 return fileUrl;
             });
         });

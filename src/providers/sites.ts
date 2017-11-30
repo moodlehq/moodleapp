@@ -47,6 +47,7 @@ export interface CoreSiteBasicInfo {
     fullName: string;
     siteName: string;
     avatar: string;
+    badge?: number;
 };
 
 /*
@@ -750,17 +751,23 @@ export class CoreSitesProvider {
      * @param {String[]} [ids] IDs of the sites to get. If not defined, return all sites.
      * @return {Promise<CoreSiteBasicInfo[]>} Promise resolved when the sites are retrieved.
      */
-    getSites(ids: string[]) : Promise<CoreSiteBasicInfo[]> {
+    getSites(ids?: string[]) : Promise<CoreSiteBasicInfo[]> {
         return this.appDB.getAllRecords(this.SITES_TABLE).then((sites) => {
             let formattedSites = [];
             sites.forEach((site) => {
                 if (!ids || ids.indexOf(site.id) > -1) {
+                    // Try to parse info.
+                    let siteInfo = site.info;
+                    try {
+                        siteInfo = siteInfo ? JSON.parse(siteInfo) : siteInfo;
+                    } catch(ex) {}
+
                     const basicInfo: CoreSiteBasicInfo = {
                         id: site.id,
                         siteUrl: site.siteUrl,
-                        fullName: site.info.fullname,
-                        siteName: site.info.sitename,
-                        avatar: site.info.userpictureurl
+                        fullName: siteInfo && siteInfo.fullname,
+                        siteName: siteInfo && siteInfo.sitename,
+                        avatar: siteInfo && siteInfo.userpictureurl
                     };
                     formattedSites.push(basicInfo);
                 }

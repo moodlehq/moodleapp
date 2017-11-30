@@ -88,7 +88,7 @@ export class CoreFormatTextDirective implements OnInit {
         extContent.componentId = this.componentId;
         extContent.siteId = this.siteId;
 
-        extContent.ngOnInit();
+        extContent.ngAfterViewInit();
     }
 
     /**

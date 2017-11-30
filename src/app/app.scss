@@ -119,3 +119,8 @@ ion-icon.icon-accessory {
   padding-bottom: 10px;
   font-style: italic;
 }
+
+.content {
+  // Set bgcolor in content instead of overriding $background-color because that variable is applied to a lot of places.
+  background-color: $gray-light;
+}
