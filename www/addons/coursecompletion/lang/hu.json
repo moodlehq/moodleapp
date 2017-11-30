@@ -1,17 +1,17 @@
 {
-    "complete": "Kész",
-    "completed": "Kész",
-    "coursecompletion": "A tanulóknak teljesíteni kell ezt a kurzust",
-    "criteria": "Feltételek",
+    "complete": "Teljes",
+    "completed": "Teljesítve",
+    "coursecompletion": "Kurzus teljesítése",
+    "criteria": "Követelmények",
     "criteriagroup": "Követelménycsoport",
     "criteriarequiredall": "Az összes alábbi követelmény teljesítendő",
     "criteriarequiredany": "Bármely alábbi követelmény teljesítendő",
-    "inprogress": "Folyamatban",
+    "inprogress": "Folyamatban lévő",
     "manualselfcompletion": "Saját teljesítés kézzel",
     "notyetstarted": "Még nem kezdődött el",
     "pending": "Függőben",
     "required": "Kitöltendő",
     "requiredcriteria": "Előírt követelmények",
-    "status": "A kitűző állapota",
+    "status": "Állapot",
     "viewcoursereport": "Kurzusjelentés megtekintése"
 }

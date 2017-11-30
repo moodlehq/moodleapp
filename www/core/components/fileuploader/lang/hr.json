@@ -1,9 +1,10 @@
 {
     "addfiletext": "Dodaj datoteku",
-    "audio": "Zvuk",
+    "audio": "Zvučna datoteka ({{$a.EXT}})",
     "camera": "Kamera",
     "errorreadingfile": "Pogreška pri čitanju datoteke \"{{$a}}\"",
-    "file": "Datoteka",
+    "file": "Postavljanje datoteke",
+    "filesofthesetypes": "Za ovu zadaću ovo su dopuštene vrste datoteka:",
     "invalidfiletype": "{{$a}}: vrsta datoteke nije prihvaćena.",
     "more": "Više",
     "photoalbums": "Foto albumi",

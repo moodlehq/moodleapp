@@ -1,0 +1,20 @@
+{
+    "activitydisabled": "Organisaatiosi on estänyt tämän aktiviteettityypin mobiilisovelluksessa.",
+    "activitynotyetviewableremoteaddon": "Organisaatiosi on asentanut lisäosan, jota ei vielä tueta.",
+    "activitynotyetviewablesiteupgradeneeded": "Organisaatiosi Moodle täytyy päivittää uudempaan versioon. Ole hyvä ja ota yhteyttä järjestelmän pääkäyttäjään.",
+    "allsections": "Kaikki osiot",
+    "askadmintosupport": "Ota yhteyttä sivuston pääkäyttäjään ja kerro heille, että haluat käyttää tätä aktiviteettia Moodlen mobiilisovelluksessa.",
+    "confirmdeletemodulefiles": "Oletko varma, että haluat poistaa nämä tiedostot?",
+    "confirmdownload": "Olet lataamassa {{size}}. Oletko varma, että haluat jatkaa?",
+    "confirmdownloadunknownsize": "Lataamaasi tiedoston kokoa ei pystytty määrittelemään. Oletko varma, että haluat jatkaa?",
+    "confirmpartialdownloadsize": "Olet lataamassa <strong>vähintään</strong> {{size}}.  Oletko varma, että haluat jatkaa?",
+    "contents": "Sisältö",
+    "couldnotloadsectioncontent": "Osion sisältöä ei pystytty lataamaan. Ole hyvä ja yritä uudelleen.",
+    "couldnotloadsections": "Osioita ei pystytty lataamaan. Ole hyvä ja yritä uudelleen.",
+    "errordownloadingsection": "Kurssin osiota ladattaessa tapahtui virhe.",
+    "errorgetmodule": "Virhe haettaessa aktiviteetin tietoja.",
+    "hiddenfromstudents": "Piilotettu opiskelijoilta",
+    "nocontentavailable": "Yhtään sisältöä ei ole tällä hetkellä saatavilla.",
+    "overriddennotice": "Sinun arvosanasi tältä aktiviteetilta käsiteltiin manuaalisesti.",
+    "useactivityonbrowser": "Voit käyttää sitä silti laitteesi www-selaimella."
+}

@@ -7,7 +7,7 @@
     "deletesitefiles": "Вы уверены, что хотите удалить файлы, скачанные с сайта «{{sitename}}»?",
     "deletesitefilestitle": "Удалить файлы сайта",
     "disableall": "Отключить уведомления",
-    "disabled": "Отключено",
+    "disabled": "Выключить",
     "enabledebugging": "Включить отладку",
     "enabledownloadsection": "Показать материалы, доступные для скачивания",
     "enablerichtexteditor": "Включить текстовый редактор",
@@ -16,9 +16,9 @@
     "errordeletesitefiles": "Ошибка при удалении файлов сайта",
     "errorsyncsite": "Ошибка синхронизации данных сайта. Проверьте интернет-соединение и повторите попытку.",
     "estimatedfreespace": "Ориентировочное свободное место",
-    "general": "Общие",
+    "general": "Основные",
     "language": "Язык",
-    "license": "Лицензия",
+    "license": "Лицензия:",
     "loggedin": "На сайте",
     "loggedoff": "Вне сайта",
     "processorsettings": "Настройки способа доставки сообщений",
@@ -30,5 +30,5 @@
     "synchronizing": "Синхронизация",
     "syncsettings": "Настройки синхронизации",
     "syncsitesuccess": "Данные синхронизации сайта и все кэши недействительны.",
-    "total": "Итого"
+    "total": "Итог"
 }

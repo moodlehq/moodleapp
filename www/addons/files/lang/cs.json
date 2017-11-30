@@ -2,12 +2,12 @@
     "admindisableddownload": "Upozorňujeme, že správce Moodle zakázal stahování souborů, soubory si můžete prohlížet, ale ne stáhnout.",
     "clicktoupload": "Kliknutím na tlačítko níže nahrát soubory do vašich osobních souborů.",
     "couldnotloadfiles": "Seznam souborů, které nelze načíst .",
-    "emptyfilelist": "Žádný soubor k zobrazení.",
+    "emptyfilelist": "Žádný soubor k zobrazení",
     "erroruploadnotworking": "Bohužel v současné době není možné nahrávat na stránky vašeho Moodle.",
     "files": "Soubory",
     "myprivatefilesdesc": "Soubory, které jsou dostupné v soukromé oblasti na těchto stránkách Moodle.",
     "privatefiles": "Osobní soubory",
     "sitefiles": "Soubory stránek",
     "sitefilesdesc": "Další soubory, které jsou dostupné na těchto stránkách Moodle.",
-    "uploadfiles": "Nahrát soubory"
+    "uploadfiles": "Poslat zpětnovazební soubory"
 }
