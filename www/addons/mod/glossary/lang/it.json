@@ -1,10 +1,10 @@
 {
-    "attachment": "Allegato",
+    "attachment": "Allega badge al messaggio",
     "browsemode": "Modalità anteprima",
     "byrecentlyupdated": "Aggiornati di recente",
     "bysearch": "Cerca",
-    "casesensitive": "Rilevanza maiuscolo/minuscolo",
-    "categories": "Categorie",
+    "casesensitive": "Utilizza regular expression",
+    "categories": "Categorie di corso",
     "entrypendingapproval": "Questa voce è in attesa di approvazione.",
     "errorloadingentries": "Si è verificato un errore durante il caricamento delle voci.",
     "errorloadingentry": "Si è verificato un errore durante il caricamento della voce.",

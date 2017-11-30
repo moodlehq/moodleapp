@@ -1,5 +1,5 @@
 {
-    "activities": "Activități",
+    "activities": "Activităţi",
     "competencies": "Competențe",
     "duedate": "Termen de predare",
     "evidence": "Evidență",
@@ -16,7 +16,7 @@
     "planstatuswaitingforreview": "Se așteaptă recenzia",
     "progress": "Progres student",
     "rating": "Rating",
-    "status": "Status ecuson",
+    "status": "Status",
     "template": "Șablon",
     "usercompetencystatus_idle": "Pauză",
     "usercompetencystatus_inreview": "În revizuire",

@@ -1,7 +1,7 @@
 {
     "auth_email": "ईमेलवर आधारित स्वयं-नोंदणी",
     "authenticating": "प्रमाणीकरण करीत आहे",
-    "cancel": "रद्द करा",
+    "cancel": "रद्द",
     "checksiteversion": "आपली साइट Moodle 2.4 किंवा नंतर वापरते हे तपासा.",
     "confirmdeletesite": "Are you sure you want to delete the site {{sitename}}?",
     "connect": "कनेक्ट व्हा!",
@@ -29,7 +29,7 @@
     "invalidmoodleversion": "अवैध मूडल आवृत्ती आवश्यक किमान आवृत्ती 2.4 आहे.",
     "invalidsite": "साइट URL अवैध आहे",
     "invalidtime": "अवैध वेळ",
-    "invalidurl": "युआरएल अमान्य आहे",
+    "invalidurl": "टाईप केलेले युआरएल ही विधाग्राहय आहे",
     "invalidvaluemax": "The maximum value is {{$a}}",
     "invalidvaluemin": "किमान मूल्य {{$a}} आहे",
     "localmobileunexpectedresponse": "मूडल मोबाईल अतिरिक्त वैशिष्ट्ये तपासा अनपेक्षित प्रतिसाद परत केला, मानक मोबाइल सेवेचा वापर करून आपल्याला प्रमाणीकृत केले जाईल",

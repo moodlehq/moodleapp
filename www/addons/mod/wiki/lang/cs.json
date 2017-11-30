@@ -10,7 +10,7 @@
     "newpagetitle": "Nový název stránky",
     "nocontent": "Pro tuto stránku není obsah",
     "notingroup": "Není ve skupině",
-    "page": "Stránka",
+    "page": "Stránka: {{$a}}",
     "pageexists": "Tato stránka již existuje.",
     "pagename": "Název stránky",
     "subwiki": "Subwiki",

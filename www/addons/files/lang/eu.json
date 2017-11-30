@@ -2,12 +2,12 @@
     "admindisableddownload": "Mesedez ohartu zaitez zure Moodle administratzaileak fitxategien jaitsiera ezgaitu duela, fitxategiak arakatu ditzakezu baina ezin dituzu jaitsi.",
     "clicktoupload": "Klik egin beheko botoian fitxategiak zure gune pribatura igotzeko.",
     "couldnotloadfiles": "Ezin izan da fitxategien zerrenda kargatu.",
-    "emptyfilelist": "Ez dago fitxategirik erakusteko.",
+    "emptyfilelist": "Ez dago erakusteko fitxategirik",
     "erroruploadnotworking": "Zoritxarrez une honetan ezin dira fitxategiak zure gunera igo.",
     "files": "Fitxategiak",
     "myprivatefilesdesc": "Moodle gune honetako zure gune pribatuan eskuragarri dauden fitxategiak.",
     "privatefiles": "Fitxategi pribatuak",
     "sitefiles": "Guneko fitxategiak",
     "sitefilesdesc": "Zure Moodle gunean eskuragarri dauden beste fitxategiak.",
-    "uploadfiles": "Igo fitxategiak"
+    "uploadfiles": "bidali feedback-fitxategiak"
 }

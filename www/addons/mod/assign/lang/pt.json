@@ -32,7 +32,7 @@
     "errorshowinginformation": "Não é possível mostrar informações da submissão",
     "extensionduedate": "Prolongamento da data limite",
     "feedbacknotsupported": "Este feedback não é suportado pela aplicação e pode não conter toda a informação.",
-    "grade": "Nota",
+    "grade": "Avaliação",
     "graded": "Avaliado",
     "gradedby": "Avaliado por",
     "gradedon": "Avaliado em",
@@ -92,6 +92,6 @@
     "userswhoneedtosubmit": "Utilizadores que têm de submeter: {{$a}}",
     "userwithid": "Utilizador com ID {{id}}",
     "viewsubmission": "Ver trabalho",
-    "warningsubmissiongrademodified": "A nota de submissão foi modificada no site.",
+    "warningsubmissiongrademodified": "A nota da submissão foi modificada no site.",
     "warningsubmissionmodified": "A submissão do utilizador foi modificada no site."
 }
