@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { FileTransfer, FileUploadOptions } from '@ionic-native/file-transfer';
@@ -75,7 +76,8 @@ export class CoreWSProvider {
 
     constructor(private http: HttpClient, private translate: TranslateService, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, logger: CoreLoggerProvider, private utils: CoreUtilsProvider,
-            private fileProvider: CoreFileProvider, private fileTransfer: FileTransfer, private mimeUtils: CoreMimetypeUtilsProvider) {
+            private fileProvider: CoreFileProvider, private fileTransfer: FileTransfer, private commonHttp: Http,
+            private mimeUtils: CoreMimetypeUtilsProvider) {
         this.logger = logger.getInstance('CoreWSProvider');
     }
 
@@ -373,7 +375,7 @@ export class CoreWSProvider {
         }
 
         return this.performHead(url).then((data) => {
-            let mimeType = data.headers('Content-Type');
+            let mimeType = data.headers.get('Content-Type');
             if (mimeType) {
                 // Remove "parameters" like charset.
                 mimeType = mimeType.split(';')[0];
@@ -395,7 +397,7 @@ export class CoreWSProvider {
      */
     getRemoteFileSize(url: string) : Promise<number> {
         return this.performHead(url).then((data) => {
-            let size = parseInt(data.headers('Content-Length'), 10);
+            let size = parseInt(data.headers.get('Content-Length'), 10);
 
             if (size) {
                 return size;
@@ -432,8 +434,8 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.utils.observableToPromise(this.http.head(url).timeout(CoreConstants.wsTimeout));
-            this.setPromiseHttp(promise, 'head', url);
+            promise = this.utils.observableToPromise(this.commonHttp.head(url).timeout(CoreConstants.wsTimeout));
+            promise = this.setPromiseHttp(promise, 'head', url);
         }
 
         return promise;
@@ -483,7 +485,7 @@ export class CoreWSProvider {
 
                 // Only process the queue one time.
                 if (this.retryTimeout == 0) {
-                    this.retryTimeout = parseInt(error.headers('Retry-After'), 10) || 5;
+                    this.retryTimeout = parseInt(error.headers.get('Retry-After'), 10) || 5;
                     this.logger.warn(`${error.statusText}. Retrying in ${this.retryTimeout} seconds. ` +
                                     `${this.retryCalls.length} calls left.`);
 
@@ -503,7 +505,7 @@ export class CoreWSProvider {
             return Promise.reject(this.createFakeWSError('mm.core.serverconnection', true));
         });
 
-        this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);
+        promise = this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);
 
         return promise;
     }
@@ -532,8 +534,9 @@ export class CoreWSProvider {
      * @param {string} method Method of the HTTP request.
      * @param {string} url Base URL of the HTTP request.
      * @param {any} [params] Params of the HTTP request.
+     * @return {Promise<any>} The promise saved.
      */
-    protected setPromiseHttp(promise: Promise<any>, method: string, url: string, params?: any) : void {
+    protected setPromiseHttp(promise: Promise<any>, method: string, url: string, params?: any) : Promise<any> {
         let timeout,
             queueItemId = this.getQueueItemId(method, url, params);
 
@@ -545,7 +548,7 @@ export class CoreWSProvider {
         }, CoreConstants.wsTimeout);
 
         // HTTP finished, delete from ongoing.
-        this.ongoingCalls[queueItemId].finally(() => {
+        return promise.finally(() => {
             delete this.ongoingCalls[queueItemId];
 
             clearTimeout(timeout);

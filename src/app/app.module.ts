@@ -15,6 +15,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule, Platform } from 'ionic-angular';
+import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -63,7 +64,8 @@ export function createTranslateLoader(http: HttpClient) {
     ],
     imports: [
         BrowserModule,
-        HttpClientModule,
+        HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
+        HttpModule,
         IonicModule.forRoot(MyApp, {
             pageTransition: 'ios-transition'
         }),
