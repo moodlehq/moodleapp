@@ -142,6 +142,10 @@ angular.module('mm.addons.mod_workshop')
 
     // Check if data has changed.
     function hasDataChanged() {
+        if (!$scope.submissionLoaded) {
+            return false;
+        }
+
         var inputData = getInputData();
         if (!originalData || typeof originalData.title == 'undefined') {
             // There is no original data, assume it hasn't changed.

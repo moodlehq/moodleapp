@@ -243,7 +243,7 @@ angular.module('mm.addons.mod_workshop')
 
     // Check if data has changed.
     function hasEvaluationChanged() {
-        if (!$scope.access.canoverridegrades) {
+        if (!$scope.submissionLoaded || !$scope.access.canoverridegrades) {
             return false;
         }
 

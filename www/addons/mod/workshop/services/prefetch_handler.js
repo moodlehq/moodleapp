@@ -115,6 +115,21 @@ angular.module('mm.addons.mod_workshop')
                         }));
                     }
 
+                    if (access.canviewallsubmissions && workshop.phase >= $mmaModWorkshop.PHASE_SUBMISSION) {
+                        promises.push($mmaModWorkshop.getSubmissions(workshop.id).then(function(submissions) {
+                            var promises2 = [];
+                            angular.forEach(submissions, function(submission) {
+                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                                promises2.push($mmaModWorkshop.getSubmissionAssessments(workshop.id, submission.id).then(function(assessments) {
+                                    angular.forEach(assessments, function(assessment) {
+                                        files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                                    });
+                                }));
+                            });
+                            return $q.all(promises2);
+                        }));
+                    }
+
                     // Get assessment files.
                     if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
                         promises.push($mmaModWorkshopHelper.getReviewerAssessments(workshop.id).then(function(assessments) {
@@ -122,31 +137,6 @@ angular.module('mm.addons.mod_workshop')
                                 files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
                             });
                         }));
-
-                        if (access.canviewallsubmissions) {
-                            promises.push(getAllGradesReport(workshop.id, groups).then(function(grades) {
-                                var promises2 = [];
-
-                                angular.forEach(grades, function(grade) {
-                                    angular.forEach(grade.reviewedby, function(assessment) {
-                                        promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
-                                            assessment.assessmentid, assessment.userid));
-                                    });
-
-                                    angular.forEach(grade.reviewerof, function(assessment) {
-                                        // Get the assessments and submissions if needed.
-                                        promises2.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id,
-                                            assessment.assessmentid, assessment.userid));
-                                    });
-                                });
-
-                                return $q.all(promises2).then(function(assessments) {
-                                    angular.forEach(assessments, function(assessment) {
-                                        files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
-                                    });
-                                });
-                            }));
-                        }
                     }
 
                     return $q.all(promises);
@@ -388,28 +378,32 @@ angular.module('mm.addons.mod_workshop')
                         }
 
                         if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
-                            // Wait the report promise to finish to ovverride assessments array if needed.
+                            // Wait the report promise to finish to override assessments array if needed.
                             reportPromise = reportPromise.finally(function() {
                                 return $mmaModWorkshopHelper.getReviewerAssessments(workshop.id, currentUserId, undefined,
                                         undefined, siteId).then(function(revAssessments) {
+                                    var p = $q.when();
                                     angular.forEach(revAssessments, function(assessment) {
+                                        if (assessment.submission.authorid == currentUserId) {
+                                            p = $mmaModWorkshop.getAssessment(workshop.id, assessment.id);
+                                        }
                                         userIds.push(assessment.reviewerid);
                                         userIds.push(assessment.gradinggradeoverby);
                                         assessments[assessment.id] = assessment;
                                     });
-                                }).finally(function() {
-                                    var promises3 = [];
-                                    angular.forEach(assessments, function(assessment, id) {
-                                        // Get the assessments and submissions if needed.
-                                        if (!assessment.reviewerid) {
-                                            promises3.push($mmaModWorkshopHelper.getReviewerAssessmentById(workshop.id, id, assessment.userid));
-                                        } else {
-                                            promises3.push($mmaModWorkshop.getAssessmentForm(workshop.id, id, undefined, undefined,
-                                                undefined, siteId));
-                                        }
-                                    });
-                                    return $q.all(promises3);
+                                    return p;
                                 });
+                            });
+                        }
+
+                        if (assessments.length > 0) {
+                            reportPromise = reportPromise.finally(function() {
+                                var promises3 = [];
+                                angular.forEach(assessments, function(assessment, id) {
+                                    promises3.push($mmaModWorkshop.getAssessmentForm(workshop.id, id, undefined, undefined,
+                                        undefined, siteId));
+                                });
+                                return $q.all(promises3);
                             });
                         }
                         promises2.push(reportPromise);
@@ -426,6 +420,7 @@ angular.module('mm.addons.mod_workshop')
                 }));
                 // Add Basic Info to manage links.
                 promises.push($mmCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
+                promises.push($mmCourse.getModuleBasicGradeInfo(module.id, siteId));
 
                 return $q.all(promises);
             });

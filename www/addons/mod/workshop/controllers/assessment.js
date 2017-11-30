@@ -169,7 +169,7 @@ angular.module('mm.addons.mod_workshop')
 
     // Check if data has changed.
     function hasEvaluationChanged() {
-        if (!$scope.evaluating) {
+        if (!$scope.assessmentLoaded || !$scope.evaluating) {
             return false;
         }
 
