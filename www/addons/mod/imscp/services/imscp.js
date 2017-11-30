@@ -202,7 +202,6 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}        Promise resolved when the imscp is retrieved.
      */
     self.getImscp = function(courseId, cmId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return getImscp(siteId, courseId, 'coursemodule', cmId);
     };
 

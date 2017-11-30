@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipantsHandlers
  */
-.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $state, $mmContentLinkHandlerFactory) {
+.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $state, $mmContentLinkHandlerFactory, $q) {
     var self = {};
 
     /**
@@ -36,6 +36,23 @@ angular.module('mm.addons.participants')
         var self = {};
 
         /**
+         * Invalidate data to determine if handler is enabled for a course.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}             Promise resolved when done.
+         */
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                // No need to invalidate anything.
+                return $q.when();
+            }
+
+            return $mmaParticipants.invalidateParticipantsList(courseId);
+        };
+
+        /**
          * Check if handler is enabled.
          *
          * @return {Boolean} True if handler is enabled, false otherwise.
@@ -47,12 +64,13 @@ angular.module('mm.addons.participants')
         /**
          * Check if handler is enabled for this course.
          *
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
+         *
          * @param  {Number} courseId     Course ID.
          * @param  {Object} accessData   Type of access to the course: default, guest, ...
          * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
          * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
-         * @return {Boolean|Promise}     Promise resolved  with true if handler is enabled,
-         *                               false or promise rejected or resolved with false otherwise.
+         * @return {Boolean}             True if handler is enabled, false otherwise.
          */
         self.isEnabledForCourse = function(courseId, accessData, navOptions, admOptions) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
@@ -63,7 +81,8 @@ angular.module('mm.addons.participants')
                 return navOptions.participants;
             }
 
-            return $mmaParticipants.isPluginEnabledForCourse(courseId);
+            // Assume it's enabled for now, further checks will be done in shouldDisplayForCourse.
+            return true;
         };
 
         /**
@@ -85,6 +104,25 @@ angular.module('mm.addons.participants')
                     });
                 };
             };
+        };
+
+        /**
+         * Check if handler should be displayed in a course. Will only be called if the handler is enabled for the course.
+         *
+         * This function shouldn't be called too much, so WebServices calls are allowed.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise|Boolean}     True or promise resolved with true if handler should be displayed.
+         */
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                return navOptions.participants;
+            }
+
+            return $mmaParticipants.isPluginEnabledForCourse(courseId);
         };
 
         return self;

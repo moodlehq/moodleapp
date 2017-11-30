@@ -31,37 +31,61 @@ angular.module('mm.core')
  * @param {String} after-change  Name of a scope function to call when completion changes.
  * @param {String} module-name   Name of the module this completion refers to.
  */
-.directive('mmCompletion', function($mmSite, $mmUtil, $mmText, $translate, $q) {
+.directive('mmCompletion', function($mmSite, $mmUtil, $mmText, $translate, $q, $mmUser) {
 
     // Set image and description to show as completion icon.
     function showStatus(scope) {
         var langKey,
-            moduleName = scope.moduleName || '';
+            moduleName = scope.moduleName || '',
+            image = false;
 
         if (scope.completion.tracking === 1 && scope.completion.state === 0) {
-            scope.completionImage = 'img/completion/completion-manual-n.svg';
+            image = 'completion-manual-n';
             langKey = 'mm.core.completion-alt-manual-n';
         } else if(scope.completion.tracking === 1 && scope.completion.state === 1) {
-            scope.completionImage = 'img/completion/completion-manual-y.svg';
+            image = 'completion-manual-y';
             langKey = 'mm.core.completion-alt-manual-y';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 0) {
-            scope.completionImage = 'img/completion/completion-auto-n.svg';
+            image = 'completion-auto-n';
             langKey = 'mm.core.completion-alt-auto-n';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 1) {
-            scope.completionImage = 'img/completion/completion-auto-y.svg';
+            image = 'completion-auto-y';
             langKey = 'mm.core.completion-alt-auto-y';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 2) {
-            scope.completionImage = 'img/completion/completion-auto-pass.svg';
+            image = 'completion-auto-pass';
             langKey = 'mm.core.completion-alt-auto-pass';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 3) {
-            scope.completionImage = 'img/completion/completion-auto-fail.svg';
+            image = 'completion-auto-fail';
             langKey = 'mm.core.completion-alt-auto-fail';
         }
 
+        if (image) {
+            if (scope.completion.overrideby > 0) {
+                image += '-override';
+            }
+            scope.completionImage = 'img/completion/' + image + '.svg';
+        }
+
         if (moduleName) {
-            $mmText.formatText(moduleName, true, true, 50).then(function(formatted) {
-                $translate(langKey, {$a: formatted}).then(function(translated) {
-                    scope.completionDescription = translated;
+            $mmText.formatText(moduleName, true, true, 50).then(function(modNameFormatted) {
+                var promise;
+
+                if (scope.completion.overrideby > 0) {
+                    langKey += '-override';
+
+                    promise = $mmUser.getProfile(scope.completion.overrideby, scope.completion.courseId, true).then(function(profile) {
+                        return {
+                            overrideuser: profile.fullname,
+                            modname: modNameFormatted
+                        };
+                    });
+                } else {
+                    promise = $q.when(modNameFormatted);
+                }
+                return promise.then(function(translateParams) {
+                    $translate(langKey, {$a: translateParams}).then(function(translated) {
+                        scope.completionDescription = translated;
+                    });
                 });
             });
         }
@@ -76,7 +100,7 @@ angular.module('mm.core')
             moduleName: '=?'
         },
         templateUrl: 'core/templates/completion.html',
-        link: function(scope, element, attrs) {
+        link: function(scope) {
             if (scope.completion) {
                 showStatus(scope);
             }
@@ -112,7 +136,7 @@ angular.module('mm.core')
 
                     return false;
                 }
-            }
+            };
         }
     };
 });

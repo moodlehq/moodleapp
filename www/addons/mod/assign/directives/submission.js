@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
         $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmGrades, mmaModAssignAttemptReopenMethodManual,
-        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicPlatform, mmaModAssignGradedEvent) {
+        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicPlatform, mmaModAssignGradedEvent, $mmGradesHelper) {
 
     var originalGrades =  {};
 
@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_assign')
                 scope.canSaveGrades = scope.grade.method == 'simple';
 
                 if (scope.gradeInfo.scale) {
-                    scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
+                    scope.grade.scale = $mmUtil.makeMenuFromList(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
                 } else {
                     // Get current language to format grade input field.
                     $mmLang.getCurrentLanguage().then(function(lang) {
@@ -172,7 +172,7 @@ angular.module('mm.addons.mod_assign')
                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                         if (outcome.scale) {
                             outcome.options =
-                                formatScaleOptions(outcome.scale, $translate.instant('mm.grades.nooutcome'));
+                                $mmUtil.makeMenuFromList(outcome.scale, $translate.instant('mm.grades.nooutcome'));
                         }
                         outcome.selectedId = 0;
                         originalGrades.outcomes[outcome.id] = outcome.selectedId;
@@ -185,7 +185,7 @@ angular.module('mm.addons.mod_assign')
                     angular.forEach(grades, function(grade) {
                         if (!grade.outcomeid && !grade.scaleid) {
                             if (scope.grade.scale) {
-                                scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
+                                scope.grade.grade = $mmGradesHelper.getGradeValueFromLabel(scope.grade.scale, grade.gradeformatted);
                             } else {
                                 var parsedGrade = parseFloat(grade.gradeformatted);
                                 scope.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
@@ -199,7 +199,7 @@ angular.module('mm.addons.mod_assign')
                                     outcome.selected = grade.gradeformatted;
                                     outcome.modified = grade.gradedategraded;
                                     if (outcome.options) {
-                                        outcome.selectedId = getSelectedScaleId(outcome.options, outcome.selected);
+                                        outcome.selectedId = $mmGradesHelper.getGradeValueFromLabel(outcome.options, outcome.selected);
                                         originalGrades.outcomes[outcome.id] = outcome.selectedId;
                                         outcome.itemNumber = grade.itemnumber;
                                     }
@@ -278,23 +278,6 @@ angular.module('mm.addons.mod_assign')
                 }
             });
         });
-    }
-
-    // Convenience function to format scale selectors options.
-    function formatScaleOptions(options, defaultOption) {
-        options = options.split(",");
-        options = options.map(function (value) {return value.trim();});
-        options.unshift(defaultOption);
-        return options;
-    }
-
-    // Convenience function to get scale selected option.
-    function getSelectedScaleId(options, selected) {
-        var index = options.indexOf(selected) || 0;
-        if (index < 0) {
-            return 0;
-        }
-        return index;
     }
 
     // Directive controller.

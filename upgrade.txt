@@ -1,6 +1,17 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.4 ===
+
+ * For performance reasons, $mmCoursesDelegate has changed a bit:
+    - Now the function isEnabledForCourse of the handlers shouldn't call any WebService. It can still be asynchronous though.
+    - If the handler needs to do a WebService call to check if it's enabled for a course, it should implement shouldDisplayForCourse.
+    - All the functions getNavHandlersFor* should be used only to check if there is any handler enabled, not to get the list of handlers to display. If you want to display the list of handlers for a course, please use $mmCoursesDelegate#getNavHandlersToDisplay.
+ * mmCoursesEventCourseOptionsInvalidated has been deprecated, it will no longer be triggered.
+ * Now the "siteurl" in config.json accepts an array of sites. Each site must have "url" and "name".
+ * $mmaModAssignHelper#getAnswersFromForm deprecated, use $mmUtil#getInfoValuesFromForm instead.
+ * Param mimetypes on mmAttachments directive has been deprecated in favor of acceptedTypes that will treat the filetypes string properly.
+
 === 3.3.2 ===
 
  * Handlers registered in $mmFileUploaderDelegate now need to implement a function getSupportedMimeTypes. This function will receive a list of mimetypes and needs to return the ones supported by the handler. Also, the handler's action and afterRender functions now receive a new parameter: mimetypes.

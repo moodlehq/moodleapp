@@ -13,6 +13,8 @@
     "emptyaddform": "Ez duzu eremuren bat bete!",
     "entrieslefttoadd": "{{$a.entriesleft}} sarrera gehiago gehitu behar dituzu jarduera hau osatzeko.",
     "entrieslefttoaddtoview": "{{$a.entrieslefttoview}} sarrera gehiago gehitu behar dituzu beste partaideen sarrerak ikusi ahal izateko.",
+    "errorapproving": "Errorea sarrera onartu edo baztertzean.",
+    "errordeleting": "Errorea sarrera ezabatzean.",
     "errormustsupplyvalue": "Hemen balio bat eman behar duzu.",
     "expired": "Barkatu, jarduera hau {{$a}} datan itxi zen eta dagoeneko ez dago eskuragarri",
     "fields": "Eremuak",
@@ -31,6 +33,7 @@
     "resetsettings": "Berrabiarazi iragazkiak",
     "search": "Bilatu",
     "selectedrequired": "Aukeratutako guztia beharrezkoa",
+    "single": "Sarrera bakarra",
     "timeadded": "Denbora gehituta",
     "timemodified": "Denbora aldatuta",
     "usedate": "Sartu bilaketan."

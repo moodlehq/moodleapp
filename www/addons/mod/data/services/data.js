@@ -885,7 +885,7 @@ angular.module('mm.addons.mod_data')
      *
      * @module mm.addons.mod_data
      * @ngdoc method
-     * @name $mmaModDataPrefetchHandler#fetchAllEntries
+     * @name $mmaModData#fetchAllEntries
      * @param  {Number}    dataId          Data ID.
      * @param  {Number}    [groupId]       Group ID.
      * @param  {Number}    [sort]          Sort the records by this field id. See $mmaModData#getEntries for more information.

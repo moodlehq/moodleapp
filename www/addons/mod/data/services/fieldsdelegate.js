@@ -314,7 +314,7 @@ angular.module('mm.addons.mod_data')
 
         // Verify that this call is the last one that was started.
         // Check that site hasn't changed since the check started.
-        if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+        if (self.isLastUpdateCall(time) && $mmSite.getId() === siteId) {
             if (enabled) {
                 enabledHandlers[pluginType] = handlerInfo.instance;
             } else {

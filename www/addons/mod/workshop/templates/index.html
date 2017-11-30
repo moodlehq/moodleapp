@@ -1,0 +1,171 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="workshopLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshWorkshop(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="workshopLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshWorkshop(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="300" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModWorkshopIndexScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="workshopLoaded" on-refresh="refreshWorkshop(false)"></ion-refresher>
+        <mm-loading hide-until="workshopLoaded">
+            <div class="card" ng-if="description && selectedPhase == workshopPhases.PHASE_SETUP" ng-click="expandDescription()">
+                <div class="item item-text-wrap">
+                    <mm-format-text max-height="120" fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ description }}</mm-format-text>
+                </div>
+            </div>
+
+            <div class="card" ng-if="phases">
+                <div class="item item-input item-stacked-label item-icon-right" ng-click="selectPhase()">
+                    <ion-label class="item-text-wrap">{{ phases[selectedPhase].title }}</ion-label>
+                    <p class="item-text-wrap" ng-if="phases[selectedPhase].code == workshop.phase">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+                    <i class="icon ion-android-arrow-dropdown"></i>
+                </div>
+                <a ng-if="phases[selectedPhase].switchUrl"  class="item item-text-wrap item-icon-left item-icon-right item-icon-top" ng-href="{{phases[selectedPhase].switchUrl}}">
+                    <i class="icon ion-arrow-swap"></i>
+                    {{ 'mma.mod_workshop.switchphase' + selectedPhase | translate }}
+                    <i class="icon ion-share"></i>
+                </a>
+            </div>
+
+            <div class="card" ng-if="phases[selectedPhase] && phases[selectedPhase].tasks.length">
+                <div ng-repeat="task in phases[selectedPhase].tasks"  class="item item-text-wrap item-icon-left item-icon-top" ng-class="{'item-icon-right': task.link && !task.support, 'item-dimmed': selectedPhase != workshop.phase}" ng-click="runTask(task)">
+                    <i class="icon" ng-class="{'ion-ios-circle-outline': task.completed == null, 'ion-close-circled assertive': task.completed == '', 'ion-information-circled positive': task.completed == 'info', 'ion-checkmark-circled balanced': task.completed === '1'}"></i>
+                    <h2>{{task.title}}</h2>
+                    <p ng-if="task.details"><mm-format-text>{{task.details}}</mm-format-text></p>
+                    <i ng-if="task.link && !task.support" class="icon ion-share"></i>
+                </div>
+            </div>
+
+            <!-- Has something offline. -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i>
+                {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
+            <div ng-if="workshop.phase >= selectedPhase">
+
+                <!-- SUBMISSION PHASE -->
+                <div ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">
+                    <div class="card" ng-if="workshop.instructauthors">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.areainstructauthors' | translate }}</h2>
+                            <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.instructauthors }}</mm-format-text>
+                        </div>
+                    </div>
+
+                    <div class="card" ng-if="canSubmit">
+                        <div class="item item-text-wrap" ng-if="!submission">
+                            <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
+                            <p>{{ 'mma.mod_workshop.noyoursubmission' | translate }}</p>
+                        </div>
+
+                        <mma-mod-workshop-submission ng-if="submission" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access">
+                        </mma-mod-workshop-submission>
+                    </div>
+
+                    <!-- Show only on current phase -->
+                    <div ng-if="workshop.phase == selectedPhase">
+                        <div ng-if="canSubmit && ((access.creatingsubmissionallowed && !submission) || (access.modifyingsubmissionallowed && submission))" class="item item-text-wrap">
+                            <a class="button button-block button-positive icon-left ion-plus-round" ng-if="access.creatingsubmissionallowed && !submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.createsubmission' | translate }}</a>
+                            <a class="button button-block button-positive icon-left ion-edit" ng-if="access.modifyingsubmissionallowed && submission" ng-click="runTaskByCode('submit')">{{ 'mma.mod_workshop.editsubmission' | translate }}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ASSESSMENT PHASE -->
+                <div ng-if="selectedPhase == workshopPhases.PHASE_ASSESSMENT">
+                    <div class="card" ng-if="workshop.instructreviewers">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.areainstructreviewers' | translate }}</h2>
+                            <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.instructreviewers }}</mm-format-text>
+                        </div>
+                    </div>
+
+                    <div class="card" ng-if="canAssess && assessments.length">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.assignedassessments' | translate }}</h2>
+                        </div>
+                        <mma-mod-workshop-submission ng-repeat="assessment in assessments" submission="assessment.submission" assessment="assessment" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
+                        </mma-mod-workshop-submission>
+                    </div>
+                </div>
+
+                <div class="card" ng-if="!access.canviewallsubmissions && selectedPhase == workshop.phase && (canSubmit || canAssess) && selectedPhase == workshopPhases.PHASE_EVALUATION">
+                    <div ng-if="submission" class="item item-text-wrap item-icon-right" ng-click="switchPhase(workshopPhases.PHASE_SUBMISSION)">
+                        <h2>{{ 'mma.mod_workshop.yoursubmission' | translate }}</h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                    <div ng-if="canAssess" class="item item-text-wrap item-icon-right" ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
+                        <h2>{{ 'mma.mod_workshop.assignedassessments' | translate }}</h2>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                </div>
+
+                <!-- CLOSED PHASE -->
+                <div ng-if="selectedPhase == workshopPhases.PHASE_CLOSED">
+                    <div class="card" ng-if="workshop.conclusion">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.conclusion' | translate }}</h2>
+                            <mm-format-text fullview-on-click="true" component="{{component}}" component-id="{{workshop.cmid}}">{{ workshop.conclusion }}</mm-format-text>
+                        </div>
+                    </div>
+
+                    <div class="card" ng-if="userGrades">
+                        <div class="item item-header item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.yourgrades' | translate }}</h2>
+                        </div>
+                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.submissionlongstrgrade" ng-click="switchPhase(workshopPhases.PHASE_SUBMISSION)">
+                            <h2>{{ 'mma.mod_workshop.submissiongrade' | translate }}</h2>
+                            <mm-format-text>{{ userGrades.submissionlongstrgrade }}</mm-format-text>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
+                        </div>
+                        <div class="item item-text-wrap item-icon-right" ng-if="userGrades.assessmentlongstrgrade" ng-click="switchPhase(workshopPhases.PHASE_ASSESSMENT)">
+                            <h2>{{ 'mma.mod_workshop.gradinggrade' | translate }}</h2>
+                            <mm-format-text>{{ userGrades.assessmentlongstrgrade }}</mm-format-text>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="card" ng-if="publishedSubmissions.length">
+                        <div class="item item-text-wrap">
+                            <h2>{{ 'mma.mod_workshop.publishedsubmissions' | translate }}</h2>
+                        </div>
+                        <mma-mod-workshop-submission ng-repeat="submission in publishedSubmissions" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
+                        </mma-mod-workshop-submission>
+                    </div>
+                </div>
+
+                <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
+                <div class="card" ng-if="workshop.phase == selectedPhase && access.canviewallsubmissions && selectedPhase >= workshopPhases.PHASE_SUBMISSION && grades.length">
+                    <div class="item item-text-wrap" ng-if="selectedPhase == workshopPhases.PHASE_SUBMISSION">
+                        <h2>{{ 'mma.mod_workshop.submissionsreport' | translate }}</h2>
+                    </div>
+                    <div class="item item-text-wrap" ng-if="selectedPhase > workshopPhases.PHASE_SUBMISSION">
+                        <h2>{{ 'mma.mod_workshop.gradesreport' | translate }}</h2>
+                    </div>
+                    <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                        <ion-label id="mma-workshop-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                        <ion-label id="mma-workshop-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                        <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-workshop-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                        </select>
+                    </div>
+                    <mma-mod-workshop-submission ng-repeat="submission in grades" submission="submission" courseid="workshop.course" module="module" workshop="workshop" access="access" summary="true">
+                    </mma-mod-workshop-submission>
+                    <div ng-if="page > 0 || hasNextPage" class="item item-text-wrap row-buttons responsive-sm">
+                        <button ng-if="page > 0" class="button button-block icon-left ion-chevron-left" ng-click="gotoSubmissionsPage(page - 1)">
+                            {{ 'mm.core.previous' | translate }}
+                        </button>
+                        <button ng-if="hasNextPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoSubmissionsPage(page + 1)">
+                            {{ 'mm.core.next' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -87,7 +87,7 @@
     "submittedlate": "A tarefa foi enviada {{$a}} atrasada",
     "timemodified": "Última modificação",
     "timeremaining": "Tempo restante",
-    "ungroupedusers": "A configuração \"Somente membros de grupo podem fazer envio\" está ligada e existem usuários não alocados em grupos. Isso impedira que estes usuários consigam enviar tarefas.",
+    "ungroupedusers": "A configuração \"Somente membros de grupo podem fazer envio\" está habilitada e alguns usuários não são membros de nenhum grupo ou são membros de mais de um grupo, portanto, não conseguem fazer envios.",
     "unlimitedattempts": "Ilimitado",
     "userswhoneedtosubmit": "Usuários que precisam enviar: {{$a}}",
     "userwithid": "Usuário com id {{id}}",

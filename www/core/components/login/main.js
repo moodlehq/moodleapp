@@ -116,6 +116,16 @@ angular.module('mm.core.login', [])
         params: {
             siteid: ''
         }
+    })
+
+    .state('mm_login.forgottenpassword', {
+        url: '/forgottenpassword',
+        templateUrl: 'core/components/login/templates/forgottenpassword.html',
+        controller: 'mmLoginForgottenPasswordCtrl',
+        params: {
+            siteurl: '',
+            username: ''
+        }
     });
 
     // Default redirect to the login page.

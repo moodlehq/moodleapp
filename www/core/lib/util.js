@@ -1997,6 +1997,40 @@ angular.module('mm.core')
         };
 
         /**
+         * Given a list (eg a,b,c,d,e) this function returns an array of 1->a, 2->b, 3->c etc.
+         *
+         * Taken from make_menu_from_list on moodlelib.php (not the same but similar).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#makeMenuFromList
+         * @param  {String} list            The string to explode into array bits
+         * @param  {String} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
+         * @param  {String} [separator]     The separator used within the list string. Default ','.
+         * @param  {Mixed}  [defaultValue]  Element that will become default option value. Default 0.
+         * @return {Arrray}                 The now assembled array
+         */
+        self.makeMenuFromList = function(list, defaultLabel, separator, defaultValue) {
+            separator = separator || ',';
+            list = list.split(separator);
+
+            list = list.map(function (label, index) {
+                return {
+                    label: label.trim(),
+                    value: index + 1
+                };
+            });
+
+            if (defaultLabel) {
+                list.unshift({
+                    label: defaultLabel,
+                    value: defaultValue || 0
+                });
+            }
+            return list;
+        };
+
+        /**
          * Converts an object into an array of objects, where each entry is an object containing
          * the key and value of the original object.
          * For example, it can convert {size: 2} into [{name: 'size', value: 2}].
@@ -2619,6 +2653,81 @@ angular.module('mm.core')
                 var matches = entry.match(regex);
                 return matches && matches.length;
             });
+        };
+
+        /**
+         * Filters the undefined items that can be in an array.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterUndefinedItemsInArray
+         * @param  {Array} items  With all the items.
+         * @return {Array}        Only with the defined items,
+         */
+        self.filterUndefinedItemsInArray = function(items) {
+            return items.filter(function(item) {
+                return typeof item != "undefined";
+            });
+        };
+
+        /**
+         * Retrieve the information entered in a form.
+         * We don't use ng-model because it doesn't detect changes done by JavaScript.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getInfoValuesFromForm
+         * @param  {Object} form Form (DOM element).
+         * @return {Object}      Object with the info values.
+         */
+        self.getInfoValuesFromForm = function(form) {
+            if (!form || !form.elements) {
+                return {};
+            }
+
+            var formData = {},
+                simpleCheckboxes = {};
+
+            angular.forEach(form.elements, function(element) {
+                var name = element.name || '';
+                // Ignore submit inputs.
+                if (element.type == 'submit' || element.tagName == 'BUTTON') {
+                    return;
+                }
+                if (!name) {
+                    $log.debug('Form element without name.', element);
+                    return;
+                }
+
+                // Get the value.
+                switch (element.type) {
+                    case 'checkbox':
+                        if (typeof simpleCheckboxes[name] == "undefined") {
+                           simpleCheckboxes[name] = {};
+                        }
+                        simpleCheckboxes[name][element.value] = !!element.checked;
+                        break;
+                    case 'radio':
+                        if (element.checked) {
+                            formData[name] = element.value;
+                        }
+                        break;
+                    default:
+                        formData[name] = element.value;
+                }
+            });
+
+            angular.forEach(simpleCheckboxes, function(checkbox, name) {
+                var keys = Object.keys(checkbox);
+                // Single standard checkbox without real value.
+                if (keys.length == 1 && keys[0] == "on") {
+                    formData[name] = checkbox.on;
+                } else {
+                    formData[name] = checkbox;
+                }
+            });
+
+            return formData;
         };
 
         return self;

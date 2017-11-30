@@ -23,7 +23,7 @@ angular.module('mm.core.courses')
  */
 .controller('mmCoursesViewResultCtrl', function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
             $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated,
-            $timeout) {
+            $timeout, $mmFS, $rootScope, $mmApp, $ionicPlatform) {
 
     var course = angular.copy($stateParams.course || {}), // Copy the object to prevent modifying the one from the previous view.
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
@@ -31,7 +31,14 @@ angular.module('mm.core.courses')
         isGuestEnabled = false,
         guestInstanceId,
         enrollmentMethods,
-        waitStart = 0;
+        waitStart = 0,
+        enrolUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/index.php?id=' + course.id),
+        courseUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'course/view.php?id=' + course.id),
+        paypalReturnUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/paypal/return.php'),
+        inAppLoadListener,
+        inAppFinishListener,
+        inAppExitListener,
+        appResumeListener;
 
     $scope.course = course;
     $scope.component = mmCoursesSearchComponent;
@@ -49,6 +56,7 @@ angular.module('mm.core.courses')
     // Convenience function to get course. We use this to determine if a user can see the course or not.
     function getCourse(refresh) {
         var promise;
+
         if (selfEnrolWSAvailable || guestWSAvailable) {
             // Get course enrolment methods.
             $scope.selfEnrolInstances = [];
@@ -131,28 +139,9 @@ angular.module('mm.core.courses')
 
     // Load course nav handlers.
     function loadCourseNavHandlers(refresh, guest) {
-        var promises = [],
-            navOptions,
-            admOptions;
-
-        // Get user navigation and administration options to speed up handlers loading.
-        promises.push($mmCourses.getUserNavigationOptions([course.id]).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            navOptions = options;
-        }));
-
-        promises.push($mmCourses.getUserAdministrationOptions([course.id]).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            admOptions = options;
-        }));
-
-        return $q.all(promises).then(function() {
-            var getHandlersFn = guest ? $mmCoursesDelegate.getNavHandlersForGuest : $mmCoursesDelegate.getNavHandlersFor;
-            course._handlers = getHandlersFn(course.id, refresh, navOptions[course.id], admOptions[course.id]);
+        // Get the handlers to be shown.
+        return $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, guest, true).then(function(handlers) {
+            course._handlers = handlers;
             $scope.handlersShouldBeShown = true;
         });
 
@@ -164,13 +153,10 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateCourse(course.id));
         promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
-        promises.push($mmCourses.invalidateUserNavigationOptionsForCourses([course.id]));
-        promises.push($mmCourses.invalidateUserAdministrationOptionsForCourses([course.id]));
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions(course.id));
         if (guestInstanceId) {
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }
-
-        $mmCoursesDelegate.clearCoursesHandlers(course.id);
 
         return $q.all(promises).finally(function() {
             return getCourse(true);
@@ -276,5 +262,67 @@ angular.module('mm.core.courses')
                 }, 5000);
             });
         }
+    }
+
+    if (course.enrollmentmethods && course.enrollmentmethods.indexOf('paypal') > -1) {
+        $scope.paypalEnabled = true;
+
+        $scope.paypalEnrol = function() {
+            var hasReturnedFromPaypal = false;
+
+            // Stop previous listeners if any.
+            stopListeners();
+
+            // Open the enrolment page in InAppBrowser.
+            $mmSite.openInAppWithAutoLogin(enrolUrl);
+
+            // Observe loaded pages in the InAppBrowser to check if the enrol process has ended.
+            inAppLoadListener = $rootScope.$on('$cordovaInAppBrowser:loadstart', urlLoaded);
+
+            if (!$mmApp.isDevice()) {
+                // In desktop, also observe stop loading since some pages don't throw the loadstart event.
+                inAppFinishListener = $rootScope.$on('$cordovaInAppBrowser:loadstop', urlLoaded);
+
+                // Since the user can switch windows, reload the data if he comes back to the app.
+                appResumeListener = $ionicPlatform.on('resume', function() {
+                    if (!$scope.courseLoaded) {
+                        return;
+                    }
+                    $scope.courseLoaded = false;
+                    refreshData();
+                });
+            }
+
+            // Observe InAppBrowser closed events.
+            inAppExitListener = $rootScope.$on('$cordovaInAppBrowser:exit', inAppClosed);
+
+            function stopListeners() {
+                inAppLoadListener && inAppLoadListener();
+                inAppFinishListener && inAppFinishListener();
+                inAppExitListener && inAppExitListener();
+                appResumeListener && appResumeListener();
+            }
+
+            function urlLoaded(e, event) {
+                if (event.url.indexOf(paypalReturnUrl) != -1) {
+                    hasReturnedFromPaypal = true;
+                } else if (event.url.indexOf(courseUrl) != -1 && hasReturnedFromPaypal) {
+                    // User reached the course index page after returning from PayPal, close the InAppBrowser.
+                    inAppClosed();
+                    $mmUtil.closeInAppBrowser();
+                }
+            }
+
+            function inAppClosed() {
+                // InAppBrowser closed, refresh data.
+                stopListeners();
+
+                if (!$scope.courseLoaded) {
+                    return;
+                }
+                $scope.courseLoaded = false;
+                refreshData();
+            }
+        };
     }
 });

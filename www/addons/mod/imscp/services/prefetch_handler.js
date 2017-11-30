@@ -38,7 +38,7 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.download = function(module, courseId, single) {
-        return downloadOrPrefetch(module, courseId, true);
+        return downloadOrPrefetch(module, courseId, false);
     };
 
     /**
@@ -51,7 +51,12 @@ angular.module('mm.addons.mod_imscp')
      */
     function downloadOrPrefetch(module, courseId, prefetch) {
         return $mmFilepool.getPackageDirPathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-            return self.downloadOrPrefetch(module, courseId, prefetch, dirPath);
+            var promises = [];
+
+            promises.push(self.downloadOrPrefetch(module, courseId, prefetch, dirPath));
+            promises.push($mmaModImscp.getImscp(courseId, module.id));
+
+            return $q.all(promises);
         });
     }
 

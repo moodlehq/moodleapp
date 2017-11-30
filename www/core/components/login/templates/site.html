@@ -8,11 +8,33 @@
         <div class="text-center padding">
           <img ng-src="img/logo.png" class="avatar-full  moodle-logo" role="presentation">
         </div>
-        <p class="padding">{{ 'mm.login.newsitedescription' | translate }}</p>
-        <div class="list item item-input">
-          <input type="url" placeholder="{{ 'mm.login.siteaddress' | translate }}" ng-model="siteurl" mm-no-input-validation mm-auto-focus >
+
+        <!-- Form to input the site URL if there are no fixed sites. -->
+        <div ng-if="!fixedSites">
+          <p class="padding">{{ 'mm.login.newsitedescription' | translate }}</p>
+          <div class="list item item-input">
+            <input type="url" placeholder="{{ 'mm.login.siteaddress' | translate }}" ng-model="loginData.siteurl" mm-no-input-validation mm-auto-focus >
+          </div>
         </div>
-        <button class="button button-block button-positive" ng-click="connect(siteurl)" ng-disabled="!siteurl">{{ 'mm.login.connect' | translate }}</button>
+
+        <!-- Pick the site from a list of fixed sites. -->
+        <div ng-if="fixedSites" class="item-text-wrap">
+          <!-- Display them using a select. -->
+          <div ng-if="!displayAsButtons">
+            <label for="siteSelect" class="padding no-padding-bottom">{{ 'mm.login.selectsite' | translate }}</label>
+            <div class="item item-input item-select mm-full-width select-align-left">
+              <select ng-model="loginData.siteurl" ng-options="site.url as site.name for site in fixedSites" mm-ios-select-fix id="siteSelect"></select>
+            </div>
+          </div>
+
+          <!-- Display them using buttons. -->
+          <div ng-if="displayAsButtons">
+            <p class="padding no-padding-bottom">{{ 'mm.login.selectsite' | translate }}</p>
+            <a ng-repeat="site in fixedSites" class="button button-block" ng-click="connect(site.url)" title="{{site.name}}">{{site.name}}</a>
+          </div>
+        </div>
+
+        <button ng-if="!fixedSites || !displayAsButtons" class="button button-block button-positive" ng-click="connect(loginData.siteurl)" ng-disabled="!loginData.siteurl">{{ 'mm.login.connect' | translate }}</button>
       </div>
     </form>
   </ion-content>

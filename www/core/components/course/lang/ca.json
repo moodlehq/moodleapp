@@ -1,6 +1,5 @@
 {
     "activitydisabled": "La vostra organització ha desactivat aquesta activitat a l'app mòbil.",
-    "activitynotyetviewableinapp": "Estem treballant per donar suport a l'activitat {{$a}}.",
     "activitynotyetviewableremoteaddon": "La vostra organització ha instal·lat un complement que encara no és compatible amb l'aplicació.",
     "activitynotyetviewablesiteupgradeneeded": "El Moodle de la vostra organització necessita una actualització.",
     "allsections": "Totes les seccions",
@@ -17,6 +16,5 @@
     "hiddenfromstudents": "Ocult per a l'estudiantat",
     "nocontentavailable": "No hi ha contingut disponible en aquest moment.",
     "overriddennotice": "La vostra qualificació final en aquesta activitat s'ha modificat manualment.",
-    "showall": "Mostra-ho tot",
     "useactivityonbrowser": "Tot i així, podeu fer-la servir al navegador del dispositiu."
 }

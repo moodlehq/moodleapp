@@ -11,6 +11,9 @@
     "nosearchresults": "Nincs eredmény",
     "notenroled": "Ezt a kurzust nem vette föl",
     "password": "Jelszó",
-    "search": "Keresés...",
-    "searchcourses": "Keresés a kurzusokban"
+    "paymentrequired": "Ebbe a kurzusba csak fizetés után léphet be.",
+    "paypalaccepted": "PayPal-lel való fizetést elfogadunk",
+    "search": "Keresés",
+    "searchcourses": "Keresés a kurzusokban",
+    "sendpaymentbutton": "Fizetés küldése Paypal-lel"
 }

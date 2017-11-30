@@ -1,7 +1,7 @@
 {
-    "errorgetnotifications": "Error al obtener notificaciones",
+    "errorgetnotifications": "Error al obtener notificaciones.",
     "notificationpreferences": "Preferencias de notificación",
     "notifications": "Notificaciones",
     "playsound": "Reproducir sonido",
-    "therearentnotificationsyet": "No hay notificaciones"
+    "therearentnotificationsyet": "No hay notificaciones."
 }

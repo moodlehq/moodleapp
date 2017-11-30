@@ -15,7 +15,7 @@
     "errordownloadscorm": "Fehler beim Laden des Lernpakets '{{name}}'.",
     "errorgetscorm": "Fehler beim Laden von Lernpaketdaten",
     "errorinvalidversion": "Die App unterstützt ausschließlich Lernpakete mit SCORM 1.2.",
-    "errornotdownloadable": "Das Herunterladen von Lernpaketen ist für Ihre Website deaktiviert. Wenden Sie sich an den Administrator der Website.",
+    "errornotdownloadable": "Das Herunterladen von Lernpaketen ist für diese Website deaktiviert. Wenden Sie sich an den Administrator.",
     "errornovalidsco": "Dieses Lernpaket hat kein sichtbares SCO zum Laden.",
     "errorpackagefile": "Die App unterstützt ausschließlich ZIP-Pakete.",
     "errorsyncscorm": "Fehler beim Synchronisieren. Versuchen Sie es noch einmal.",
@@ -44,8 +44,8 @@
     "passed": "Abgeschlossen",
     "reviewmode": "Rückblick-Modus",
     "scormstatusnotdownloaded": "Dieses Lernpaket ist noch nicht geladen. Es wird automatisch heruntergeladen, wenn Sie es öffnen.",
-    "scormstatusoutdated": "Dieses Lernpaket wurde seit dem Herunterladen verändert. Es wird automatisch heruntergeladen, wenn Sie es öffnen.",
+    "scormstatusoutdated": "Dieses Lernpaket wurde seit dem Herunterladen verändert. Es wird automatisch geladen, wenn Sie es öffnen.",
     "suspended": "Ausgeschlossen",
-    "warningofflinedatadeleted": "Die Offline-Daten von Versuch {{number}} wurden gelöscht, weil sie nicht für einen neuen Versuch verwendet werden können.",
-    "warningsynconlineincomplete": "Die Versuche konnten nicht synchronisiert werden, weil der letzte Online-Versuchnicht beendet wurde. Beenden Sie zuerst den Online-Versuch."
+    "warningofflinedatadeleted": "Die Offline-Daten von Versuch {{number}} wurden gelöscht, weil sie nicht als neuer Versuch gezählt werden können.",
+    "warningsynconlineincomplete": "Einige Versuche konnten nicht synchronisiert werden, weil der letzte Online-Versuch nicht beendet wurde. Beenden Sie zuerst den Online-Versuch."
 }

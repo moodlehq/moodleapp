@@ -22,7 +22,7 @@
     "emptypassword": "A palava-chave não pode estar em branco",
     "enterpassword": "Introduza a senha:",
     "eolstudentoutoftimenoanswers": "Não respondeu a nenhuma pergunta. Obteve uma classificação de 0 para esta lição.",
-    "errorprefetchrandombranch": "Esta lição contém um salto para uma página de conteúdo aleatório, não pode ser tentada na aplicação até que tenha sido iniciada no site.",
+    "errorprefetchrandombranch": "Esta lição contém um salto para uma página de conteúdo aleatório. Não pode ser tentada na aplicação antes de ser iniciada no site.",
     "errorreviewretakenotlast": "Já não é possível rever esta tentativa porque outra tentativa foi terminada.",
     "finish": "Terminar",
     "finishretakeoffline": "Esta tentativa foi concluída em modo offline.",

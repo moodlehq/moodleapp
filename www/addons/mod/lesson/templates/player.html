@@ -28,7 +28,7 @@
                 </form>
                 <div ng-if="!eolData && !processData" class="list">
                     <div ng-if="pageButtons && pageButtons.length" class="item item-text-wrap row-buttons responsive-sm">
-                        <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button.data)">{{button.content}}</button>
+                        <button ng-repeat="button in pageButtons track by $index" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button.data)">{{button.content}}</button>
                     </div>
                     <div ng-if="lesson.progressbar && !canManage" class="item">
                         <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>

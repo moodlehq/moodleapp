@@ -1,6 +1,6 @@
 {
     "addfiletext": "Pridėti failą",
-    "audio": "Garsas",
+    "audio": "Garso failas ({{$a.EXT}})",
     "camera": "Fotoaparatas",
     "confirmuploadfile": "Ketinate įkelti {{size}}. Ar norite tęsti?",
     "confirmuploadunknownsize": "Negalima apskaičiuoti failo, kurį norite įkelti, dydžio. Ar tikrai norite tęsti?",
@@ -10,16 +10,18 @@
     "errorgettingimagealbum": "Klaida gaunant paveiksliuką iš albumo.",
     "errormustbeonlinetoupload": "Norint įkelti failą reikia prisijungti.",
     "errornoapp": "Jūs neturite programėlės šiam veiksmui atlikti.",
-    "errorreadingfile": "Klaida nuskaitant failą.",
+    "errorreadingfile": "Įvyko klaida skaitant failą {{$a}}",
     "errorwhileuploading": "Klaida įkeliant failą.",
     "file": "Failas",
     "fileuploaded": "Failas sėkmingai įkeltas.",
+    "invalidfiletype": "Failo tipas {{$a}} nepriimtinas.",
     "maxbytesfile": "Failas {{$a.file}} ) per didelis. Galite įkelti failus iki {{$a.size}}.",
+    "more": "Daugiau",
     "photoalbums": "Nuotraukų albumai",
     "readingfile": "Skaitomas failas",
     "selectafile": "Pasirinkite failą",
-    "uploadafile": "Įkelkite failą",
-    "uploading": "Įkeliama",
+    "uploadafile": "Įkelti failą",
+    "uploading": "Įkeliama...",
     "uploadingperc": "Įkeliama: {{$a}}%",
-    "video": "Vaizdinė medžiaga"
+    "video": "Vaizdo įrašo failas ({{$a.EXT}})"
 }

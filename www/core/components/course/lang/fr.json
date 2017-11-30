@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Votre institution a désactivé cette activité dans l'App mobile.",
-    "activitynotyetviewableinapp": "L'activité {{$a}} sera bientôt supportée.",
     "activitynotyetviewableremoteaddon": "Votre institution a installé un plugin qui n'est pas encore supporté.",
     "activitynotyetviewablesiteupgradeneeded": "L'installation Moodle de votre institution doit être mise à jour.",
     "allsections": "Toutes les sections",
@@ -14,9 +13,8 @@
     "couldnotloadsections": "Impossible de charger les sections. Veuillez essayer plus tard.",
     "errordownloadingsection": "Erreur lors du téléchargement de la section.",
     "errorgetmodule": "Erreur lors de l'obtention des données du module.",
-    "hiddenfromstudents": "Caché pour les participants",
+    "hiddenfromstudents": "Caché pour les étudiants",
     "nocontentavailable": "Aucun contenu disponible actuellement.",
     "overriddennotice": "Votre note finale pour cette activité a été ajustée manuellement.",
-    "showall": "Tout afficher",
     "useactivityonbrowser": "Vous pouvez continuer à l'utiliser avec le navigateur de votre appareil."
 }

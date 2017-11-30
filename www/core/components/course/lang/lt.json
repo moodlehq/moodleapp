@@ -1,5 +1,4 @@
 {
-    "activitynotyetviewableinapp": "Dirbame prie {{$a}} veiklos.",
     "activitynotyetviewableremoteaddon": "Jūsų įstaiga įdiegė papildinį, kuris dar nėra palaikomas.",
     "activitynotyetviewablesiteupgradeneeded": "Jūsų įstaigos Moodle versija turi būti atnaujinta.",
     "allsections": "Visi pasirinkimai",
@@ -8,7 +7,7 @@
     "confirmdownload": "Norite atsisiųsti {{size}}. Ar norite tęsti?",
     "confirmdownloadunknownsize": "Negalima apskaičiuoti failo, kurį norite atsisiųsti, dydžio. Ar tikrai norite atsisiųsti?",
     "confirmpartialdownloadsize": "Norite atsisiųsti <strong>mažiausiai</strong> {{size}}. Ar tikrai norite tęsti?",
-    "contents": "Turiniai",
+    "contents": "Turinys",
     "couldnotloadsectioncontent": "Negalima užkrauti pasirinkto turinio, prašome pamėginti vėliau.",
     "couldnotloadsections": "Negalima užkrauti pasirinkto turinio, prašome pamėginti vėliau.",
     "errordownloadingsection": "Klaida atsisiunčiant.",
@@ -16,6 +15,5 @@
     "hiddenfromstudents": "Paslėpta nuo besimokančiųjų",
     "nocontentavailable": "Turinys šiuo metu nepasiekiamas.",
     "overriddennotice": "Šios veiklos galutinis įvertis buvo koreguotas rankiniu būdu.",
-    "showall": "Rodyti visus",
     "useactivityonbrowser": "Galite naudoti savo naršyklėje."
 }

@@ -14,7 +14,7 @@
     "entrieslefttoadd": "Debe añadir {{$a.entriesleft}} entrada(s) más antes de poder ver las entradas de otro participante.",
     "entrieslefttoaddtoview": "Debe añadir {{$a.entrieslefttoview}} entrada(s) antes de poder ver las entradas de otros participantes.",
     "errorapproving": "Error al aprobar o des_aprobar una entrada.",
-    "errordeleting": "Error al eliminar la entrada.",
+    "errordeleting": "Error al eliminar entrada.",
     "errormustsupplyvalue": "Usted debe proporcionar un valor aquí.",
     "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
     "fields": "Campos",
@@ -33,6 +33,7 @@
     "resetsettings": "Restablecer filtros",
     "search": "Buscar",
     "selectedrequired": "Se requieren todos los seleccionados",
+    "single": "Ver individual",
     "timeadded": "Tiempo añadido",
     "timemodified": "Tiempo modificado",
     "usedate": "Incluir en búsqueda."

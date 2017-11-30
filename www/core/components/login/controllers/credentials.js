@@ -22,7 +22,7 @@ angular.module('mm.core.login')
  * @name mmLoginCredentialsCtrl
  */
 .controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $mmEvents,
-            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent,
+            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent, $state,
             mmCoreLoginSiteUncheckedEvent) {
 
     $scope.siteurl = $stateParams.siteurl;
@@ -172,6 +172,28 @@ angular.module('mm.core.login')
             });
         }).catch(function(error) {
             $mmLoginHelper.treatUserTokenError(siteurl, error);
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
+    $scope.forgottenPassword = function() {
+        if (siteConfig && siteConfig.forgottenpasswordurl) {
+            // URL set, open it.
+            return $mmUtil.openInApp(siteConfig.forgottenpasswordurl);
+        }
+
+        // Check if password reset can be done through the app.
+        var modal = $mmUtil.showModalLoading();
+        $mmLoginHelper.canRequestPasswordReset($scope.siteurl).then(function(canReset) {
+            if (canReset) {
+                $state.go('mm_login.forgottenpassword', {
+                    siteurl: $scope.siteurl,
+                    username: $scope.credentials.username
+                });
+            } else {
+                $mmLoginHelper.openForgottenPassword($scope.siteurl);
+            }
         }).finally(function() {
             modal.dismiss();
         });

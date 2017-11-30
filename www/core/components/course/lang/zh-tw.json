@@ -1,5 +1,4 @@
 {
-    "activitynotyetviewableinapp": "我們正在努力支援{{$ a}}活動.",
     "activitynotyetviewableremoteaddon": "您的組織安裝了尚未支援的外掛",
     "activitynotyetviewablesiteupgradeneeded": "您的組織的Moodle安裝需要更新.",
     "allsections": "全部",
@@ -16,6 +15,5 @@
     "hiddenfromstudents": "對學生隱藏",
     "nocontentavailable": "目前無內容可使用",
     "overriddennotice": "您在這活動的最後成績是手動調整的。",
-    "showall": "顯示全部",
     "useactivityonbrowser": "你可以以瀏覽器一直使用"
 }

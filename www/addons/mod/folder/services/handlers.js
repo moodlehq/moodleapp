@@ -165,5 +165,50 @@ angular.module('mm.addons.mod_folder')
      */
     self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModFolder', 'folder', $mmaModFolder);
 
+    /**
+     * Plugin file handler.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderHandlers#pluginfileHandler
+     */
+    self.pluginfileHandler = function() {
+        var self = {};
+
+        /**
+         * Get the RegExp of the component and filearea described in the URL.
+         *
+         * @module mm.addons.mod_folder
+         * @ngdoc method
+         * @name $mmaModFolderPluginfileHandler#getComponentRevisionRegExp
+         * @param {Array} args    Arguments of the pluginfile URL defining component and filearea at least.
+         * @return {RegExp}       To match the revision.
+         */
+        self.getComponentRevisionRegExp = function(args) {
+            // Check filearea.
+            if (args[2] == 'content') {
+                // Component + Filearea + Revision
+                return new RegExp('/mod_folder/content/([0-9]+)/');
+            }
+            return false;
+        };
+
+        /**
+         * Returns an string to remove revision when matching the RegExp provided.
+         *
+         * @module mm.addons.mod_folder
+         * @ngdoc method
+         * @name $mmaModFolderPluginfileHandler#getComponentRevisionReplace
+         * @param {Array} args    Arguments of the pluginfile URL defining component and filearea at least.
+         * @return {String}       String to remove revision when matching the RegExp provided.
+         */
+        self.getComponentRevisionReplace = function(args) {
+            // Component + Filearea + Revision
+            return '/mod_folder/content/0/';
+        };
+
+        return self;
+    };
+
     return self;
 });

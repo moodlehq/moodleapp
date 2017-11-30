@@ -1,5 +1,5 @@
 {
-    "addentries": "Tilføj indlæg",
+    "addentries": "Tilføj poster",
     "advancedsearch": "Avanceret søgning",
     "alttext": "Alternativ tekst",
     "approve": "Godkend",
@@ -19,7 +19,7 @@
     "latlongboth": "Skriv både bredde- og længdegrad",
     "menuchoose": "Vælg...",
     "more": "Flere",
-    "nomatch": "Ingen passende indlæg fundet",
+    "nomatch": "Ingen matchende poster fundet",
     "norecords": "Ingen indlæg i databasen",
     "notapproved": "Posten er ikke godkendt endnu.",
     "notopenyet": "Beklager, denne aktivitet er først tilgængelig {{$a}}",
@@ -31,6 +31,7 @@
     "resetsettings": "Nulstil filtre",
     "search": "Søg",
     "selectedrequired": "Alle valgte er påkrævet",
+    "single": "Vis en enkelt post",
     "timeadded": "Tilføjet",
     "timemodified": "Ændret",
     "usedate": "Inkluder i søgning."

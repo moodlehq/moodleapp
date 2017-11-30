@@ -12,6 +12,9 @@
     "nosearchresults": "אין תוצאות",
     "notenroled": "אינך רשום לקורס זה",
     "password": "סיסמה",
+    "paymentrequired": "קורס זה מצריך תשלום לכניסה",
+    "paypalaccepted": "התקבלו תשלומי Paypal",
     "search": "חפשו",
-    "searchcourses": "חיפוש קורסים"
+    "searchcourses": "חיפוש קורסים",
+    "sendpaymentbutton": "שליחת תשלום דרך Paypal"
 }

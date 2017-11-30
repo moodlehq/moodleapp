@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Vaše organizace zakázal tuto činnost v mobilní aplikaci.",
-    "activitynotyetviewableinapp": "Pracujeme na úpravě aktivity {{$a}}.",
     "activitynotyetviewableremoteaddon": "Tato aktivita je doplněk třetí strany, který ještě není aplikací podporován.",
     "activitynotyetviewablesiteupgradeneeded": "Instalace Moodle vaší organizace je třeba aktualizovat.",
     "allsections": "Všechny sekce",
@@ -17,6 +16,5 @@
     "hiddenfromstudents": "Skryté před studenty",
     "nocontentavailable": "V tuto chvíli není k dispozici žádný obsah.",
     "overriddennotice": "Vaše výsledná známka za tuto činnost byla ručně upravena.",
-    "showall": "Zobrazit vše",
     "useactivityonbrowser": "Můžete i nadále používat jej pomocí prohlížeče zařízení."
 }

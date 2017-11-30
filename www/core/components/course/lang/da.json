@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Denne aktivitet er deaktiveret i mobilappen.",
-    "activitynotyetviewableinapp": "Vi arbejder på at understøtte aktiviteten {{$a}}.",
     "allsections": "Alle sektioner",
     "confirmdeletemodulefiles": "Er du sikker på at du vil slette disse modulfiler?",
     "confirmdownload": "Du er ved at hente {{size}}. Er du sikker på at du vil fortsætte?",
@@ -12,6 +11,5 @@
     "errordownloadingsection": "Fejl ved indlæsning af sektion.",
     "hiddenfromstudents": "Skjult for studerende",
     "nocontentavailable": "Intet indhold tilgængeligt lige nu.",
-    "overriddennotice": "Din endelige karakter fra denne aktivitet blev justeret manuelt.",
-    "showall": "Vis alt"
+    "overriddennotice": "Din endelige karakter fra denne aktivitet blev justeret manuelt."
 }

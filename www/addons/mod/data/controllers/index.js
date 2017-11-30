@@ -45,6 +45,7 @@ angular.module('mm.addons.mod_data')
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
     $scope.entries = {};
+    $scope.firstEntry = false;
 
     $scope.search = {
         sortBy: "0",
@@ -57,6 +58,8 @@ angular.module('mm.addons.mod_data')
     };
 
     function fetchDatabaseData(refresh, sync, showErrors) {
+        var canAdd = canSearch = false;
+
         $scope.isOnline = $mmApp.isOnline();
 
         return $mmaModData.getDatabase(courseId, module.id).then(function(databaseData) {
@@ -93,8 +96,8 @@ angular.module('mm.addons.mod_data')
                 return false;
             }
 
-            $scope.canSearch = true;
-            $scope.canAdd = accessData.canaddentry;
+            canSearch = true;
+            canAdd = accessData.canaddentry;
 
             return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
@@ -117,8 +120,8 @@ angular.module('mm.addons.mod_data')
         }).then(function() {
             return $mmaModData.getFields(data.id).then(function(fields) {
                 if (fields.length == 0) {
-                    $scope.canSearch = false;
-                    $scope.canAdd = false;
+                    canSearch = false;
+                    canAdd = false;
                 }
                 $scope.search.advanced = {};
 
@@ -142,6 +145,8 @@ angular.module('mm.addons.mod_data')
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
         }).finally(function() {
+            $scope.canAdd = canAdd;
+            $scope.canSearch = canSearch;
             $scope.databaseLoaded = true;
         });
     }
@@ -247,7 +252,12 @@ angular.module('mm.addons.mod_data')
                 });
 
                 return $q.all(promises).then(function(entries) {
-                    var entriesHTML = data.listtemplateheader;
+                    var entriesHTML = data.listtemplateheader || '';
+
+                    // Get first entry from the whole list.
+                    if (entries && entries[0] && (!$scope.search.searching || !$scope.firstEntry)) {
+                        $scope.firstEntry = entries[0].id;
+                    }
 
                     angular.forEach(entries, function(entry) {
                         $scope.entries[entry.id] = entry;
@@ -256,13 +266,15 @@ angular.module('mm.addons.mod_data')
 
                         entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry, 'list', actions);
                     });
-                    entriesHTML += data.listtemplatefooter;
+                    entriesHTML += data.listtemplatefooter || '';
 
                     $scope.entriesRendered = entriesHTML;
                 });
             } else if (!$scope.search.searching) {
+                // Empty and no searching.
                 $scope.canSearch = false;
             }
+            $scope.firstEntry = false;
         });
     }
 

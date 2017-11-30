@@ -1,0 +1,10 @@
+<div ng-repeat="(n, field) in assessment.form.fields" class="list card">
+    <div class="item item-text-wrap" ng-class="{'mm-input-has-errors': edit && fieldErrors['chosenlevelid_' + n]}" mm-mark-required="{{edit}}">
+        <h2>{{ field.dimtitle }}</h2>
+        <mm-format-text watch="true">{{field.description}}</mm-format-text>
+        <p ng-if="edit && fieldErrors['chosenlevelid_' + n]" class="mm-error">{{fieldErrors['chosenlevelid_' + n]}}</p>
+    </div>
+    <ion-radio ng-repeat="subfield in field.fields" ng-model="selectedValues[n].chosenlevelid" ng-value="subfield.levelid" name="chosenlevelid_{{n}}" ng-disabled="!edit">
+        <p><mm-format-text watch="true">{{subfield.definition}}</mm-format-text></p>
+    </ion-radio>
+</div>

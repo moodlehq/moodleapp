@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_data')
  * @name $mmaModDataHelper
  */
 .factory('$mmaModDataHelper', function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader, $mmSite,
-        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager, $translate) {
+        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager, $translate, $mmUtil) {
 
     var self = {
             searchOther: {
@@ -219,40 +219,6 @@ angular.module('mm.addons.mod_data')
     };
 
     /**
-     * Return the form data.
-     *
-     * @param  {Object} form Form (DOM element).
-     * @return {Object}      Data retrieved from form.
-     */
-    function getFormData(form) {
-        var formData = {};
-
-        angular.forEach(form.elements, function(element) {
-            var name = element.name || '';
-            // Ignore submit inputs.
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
-            }
-
-            // Get the value.
-            if (element.type == 'checkbox') {
-                if (typeof formData[name] == "undefined") {
-                    formData[name] = {};
-                }
-                formData[name][element.value] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    formData[name] = element.value;
-                }
-            } else {
-                formData[name] = element.value;
-            }
-        });
-
-        return formData;
-    }
-
-    /**
      * Retrieve the entered data in search in a form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *
@@ -268,7 +234,7 @@ angular.module('mm.addons.mod_data')
             return {};
         }
 
-        var searchedData = getFormData(form);
+        var searchedData = $mmUtil.getInfoValuesFromForm(form);
 
         // Filter and translate fields to each field plugin.
         var advancedSearch = [];
@@ -359,7 +325,7 @@ angular.module('mm.addons.mod_data')
 
         siteId = siteId || $mmSite.getId();
 
-        var formData = getFormData(form);
+        var formData = $mmUtil.getInfoValuesFromForm(form);
 
         // Filter and translate fields to each field plugin.
         var edit = [],
@@ -423,7 +389,7 @@ angular.module('mm.addons.mod_data')
             return $q.when([]);
         }
 
-        var formData = getFormData(form);
+        var formData = $mmUtil.getInfoValuesFromForm(form);
 
         // Filter and translate fields to each field plugin.
         var promises = [];
@@ -456,7 +422,7 @@ angular.module('mm.addons.mod_data')
      * @return {Promise}                True if changed, false if not.
      */
     self.hasEditDataChanged = function(form, fields, dataId, entryContents) {
-        var inputData = getFormData(form),
+        var inputData = $mmUtil.getInfoValuesFromForm(form),
             promises = [];
 
         angular.forEach(fields, function(field) {

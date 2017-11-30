@@ -5,9 +5,9 @@
     "emptyfilelist": "Er zijn geen bestanden te tonen.",
     "erroruploadnotworking": "Jammer genoeg kun je op dit ogenblik geen bestanden uploaden naar de site.",
     "files": "Bestanden",
-    "myprivatefilesdesc": "Jouw bestanden op deze Moodle-site.",
+    "myprivatefilesdesc": "Bestanden die jij alleen kan zien.",
     "privatefiles": "Privébestanden",
     "sitefiles": "Sitebestanden",
-    "sitefilesdesc": "Andere bestanden op deze Moodle-site.",
+    "sitefilesdesc": "Andere bestanden voor jou.",
     "uploadfiles": "Bestanden uploaden"
 }

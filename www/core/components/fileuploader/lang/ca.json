@@ -1,6 +1,6 @@
 {
     "addfiletext": "Afegeix un fitxer",
-    "audio": "Àudio",
+    "audio": "Fitxer d'àudio ({{$a.EXT}})",
     "camera": "Càmera",
     "confirmuploadfile": "Ara pujareu {{size}}. Confirmeu que voleu continuar?",
     "confirmuploadunknownsize": "No s'ha pogut calcular la mida del fitxer per pujar. Confirmeu que voleu continuar?",
@@ -10,16 +10,18 @@
     "errorgettingimagealbum": "S'ha produït un error descarregant la imatge de l'àlbum.",
     "errormustbeonlinetoupload": "Heu d'estar connectat per pujar arxius.",
     "errornoapp": "No teniu instal·lada una app per realitzar aquesta acció.",
-    "errorreadingfile": "S'ha produït un error llegint el fitxer.",
+    "errorreadingfile": "S'ha produït un error en llegir el fitxer \"{{$a}}\"",
     "errorwhileuploading": "S'ha produït un error penjant el fitxer.",
-    "file": "Arxiu",
+    "file": "Tramesa de fitxers",
     "fileuploaded": "S'ha penjat el fitxer",
-    "maxbytesfile": "El fitxer {{$a.file}} és massa gran. La mida màxima de càrrega és {{$a.size}}.",
+    "invalidfiletype": "El tipus de fitxer {{$a}} no pot ser acceptat",
+    "maxbytesfile": "El fitxer {{$a.file}} és massa gran. La mida màxima que podeu pujar és de {{$a.size}}.",
+    "more": "Més",
     "photoalbums": "Àlbums de fotos",
     "readingfile": "S'està llegint un fitxer",
     "selectafile": "Selecciona un fitxer",
     "uploadafile": "Penja un fitxer",
-    "uploading": "S'està penjant",
+    "uploading": "S'està carregant...",
     "uploadingperc": "S'està pujant: {{$a}}%",
-    "video": "Vídeo"
+    "video": "Fitxer de vídeo ({{$a.EXT}})"
 }

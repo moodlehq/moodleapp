@@ -194,7 +194,7 @@ angular.module('mm.addons.mod_quiz')
             // Get gradebook grade.
             return $mmaModQuiz.getGradeFromGradebook(courseId, module.id).then(function(data) {
                 gradebookData = {
-                    grade: data.gradeformatted,
+                    grade: data.graderaw,
                     feedback: data.feedback
                 };
             }).catch(function() {
@@ -234,7 +234,7 @@ angular.module('mm.addons.mod_quiz')
             $scope.showResults = true;
             $scope.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
             $scope.gradebookFeedback = gradebookData.feedback;
-            if (formattedBestGrade > formattedGradebookGrade && formattedGradebookGrade == quiz.grade) {
+            if (bestGrade.grade > gradebookData.grade && gradebookData.grade == quiz.grade) {
                 // The best grade is higher than the max grade for the quiz. We'll do like Moodle web and
                 // show the best grade instead of the gradebook grade.
                 $scope.gradeOverridden = false;

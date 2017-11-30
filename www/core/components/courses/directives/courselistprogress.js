@@ -30,8 +30,28 @@ angular.module('mm.core.courses')
  *
  * <mm-course-list-progress course="course" round-progress="true" show-summary="true"></mm-course-list-progress>
  */
-.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $mmEvents,
-        mmCoursesEventCourseOptionsInvalidated) {
+.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $q) {
+
+    /**
+     * Check if the actions button should be shown.
+     *
+     * @param  {Object} scope    Directive's scope.
+     * @param  {Boolean} refresh Whether to refresh the list of handlers.
+     * @return {Promise}         Promise resolved when done.
+     */
+    function shouldShowActions(scope, refresh) {
+        scope.loaded = false;
+
+        return $mmCoursesDelegate.getNavHandlersForCourse(scope.course, refresh, true).then(function(handlers) {
+            scope.showActions = !!handlers.length;
+        }).catch(function(error) {
+            scope.showActions = false;
+            return $q.reject(error);
+        }).finally(function() {
+            scope.loaded = true;
+        });
+    }
+
     return {
         restrict: 'E',
         templateUrl: 'core/components/courses/templates/courselistprogress.html',
@@ -42,15 +62,20 @@ angular.module('mm.core.courses')
             showSummary: "=?"
         },
         link: function(scope) {
-            var buttons, invObserver;
-            scope.loaded = false;
+            var buttons;
 
-            function updateButtons(refresh) {
+            shouldShowActions(scope, false);
+
+            scope.showCourseActions = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                // Get the list of handlers to display.
                 scope.loaded = false;
-                $mmCoursesDelegate.getNavHandlersForCourse(scope.course, refresh, true).then(function(buttonsLoaded) {
-                    buttons = buttonsLoaded.map(function(button) {
+                $mmCoursesDelegate.getNavHandlersToDisplay(scope.course, false, false, true).then(function(handlers) {
+                    buttons = handlers.map(function(handler) {
                         var newScope = scope.$new();
-                        $controller(button.controller, {$scope: newScope});
+                        $controller(handler.controller, {$scope: newScope});
 
                         var title = newScope.title || "",
                             icon = newScope.icon || false,
@@ -58,7 +83,7 @@ angular.module('mm.core.courses')
                                 text: (icon ? '<i class="icon ' + icon + '"></i>' : '') + $translate.instant(title),
                                 action: newScope.action || false,
                                 className: newScope.class || false,
-                                priority: button.priority || false
+                                priority: handler.priority || false
                             };
 
                         newScope.$destroy();
@@ -67,42 +92,28 @@ angular.module('mm.core.courses')
                         return b.priority - a.priority;
                     });
                 }).finally(function() {
-                    scope.showActions = !!buttons.length;
+                    // We have the list of buttons to show, show the action sheet.
                     scope.loaded = true;
-                });
-            }
 
-            updateButtons(false);
-
-            scope.showCourseActions = function($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $ionicActionSheet.show({
-                    titleText: scope.course.fullname,
-                    buttons: buttons,
-                    cancelText: $translate.instant('mm.core.cancel'),
-                    buttonClicked: function(index) {
-                        if (angular.isFunction(buttons[index].action)) {
-                            // Execute the action and close the action sheet.
-                            return buttons[index].action($event, scope.course);
+                    $ionicActionSheet.show({
+                        titleText: scope.course.fullname,
+                        buttons: buttons,
+                        cancelText: $translate.instant('mm.core.cancel'),
+                        buttonClicked: function(index) {
+                            if (angular.isFunction(buttons[index].action)) {
+                                // Execute the action and close the action sheet.
+                                return buttons[index].action($event, scope.course);
+                            }
+                            // Never close the action sheet. It will automatically be closed if success.
+                            return false;
+                        },
+                        cancel: function() {
+                            // User cancelled the action sheet.
+                            return true;
                         }
-                        // Never close the action sheet. It will automatically be closed if success.
-                        return false;
-                    },
-                    cancel: function() {
-                        // User cancelled the action sheet.
-                        return true;
-                    }
+                    });
                 });
             };
-
-            invObserver = $mmEvents.on(mmCoursesEventCourseOptionsInvalidated, function() {
-                updateButtons(true);
-            });
-
-            scope.$on('$destroy', function() {
-                invObserver && invObserver.off && invObserver.off();
-            });
         }
     };
 });

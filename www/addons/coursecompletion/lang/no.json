@@ -1,0 +1,21 @@
+{
+    "complete": "Fullfør",
+    "completecourse": "Fullfør kurs",
+    "completed": "Fullført",
+    "completiondate": "Fullført dato",
+    "couldnotloadreport": "Kunne ikke laste kursets avslutningsrapport. Prøv igjen senere.",
+    "coursecompletion": "Kursavslutning",
+    "criteria": "Kriterium",
+    "criteriagroup": "Kriteriagruppe",
+    "criteriarequiredall": "Alle kriterier under er påkrevd",
+    "criteriarequiredany": "Alle kriterier under er påkrevd",
+    "inprogress": "Under arbeid",
+    "manualselfcompletion": "Manuell fullføring",
+    "notyetstarted": "Ikke startet",
+    "pending": "Ventende",
+    "required": "Obligatorisk",
+    "requiredcriteria": "Obligatorisk kriterium",
+    "requirement": "Krav",
+    "status": "Status",
+    "viewcoursereport": "Vis kursrapport"
+}

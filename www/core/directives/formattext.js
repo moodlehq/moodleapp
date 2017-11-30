@@ -45,7 +45,7 @@ angular.module('mm.core')
  *     -shorten: If shorten is present, max-height="100" will be applied.
  *     -expand-on-click: This attribute will be discarded. The text will be expanded if shortened and fullview-on-click not true.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $mmUtil) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $mmUtil, $mmSitesManager, $mmFS) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
@@ -222,16 +222,25 @@ angular.module('mm.core')
      */
     function formatContents(scope, element, attrs, text) {
 
-        var siteId = scope.siteid,
+        var siteId = attrs.siteid,
             component = attrs.component,
-            componentId = attrs.componentId;
+            componentId = attrs.componentId,
+            site;
 
-        // Apply format text function.
-        return $mmText.formatText(text, attrs.clean, attrs.singleline).then(function(formatted) {
+        // Retrieve the site since it might be needed later.
+        return $mmSitesManager.getSite(siteId).catch(function() {
+            // Error getting the site. This probably means that there is no current site and no siteId was supplied.
+        }).then(function(siteInstance) {
+            site = siteInstance;
+
+            // Apply format text function.
+            return $mmText.formatText(text, attrs.clean, attrs.singleline);
+        }).then(function(formatted) {
 
             var el = element[0],
                 dom = angular.element('<div>').html(formatted), // Convert the content into DOM.
-                images = dom.find('img');
+                images = dom.find('img'),
+                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without mm-link.
@@ -287,7 +296,9 @@ angular.module('mm.core')
                 // Set data-tap-disabled="true" to make controls work in Android (see MOBILE-1452).
                 el.setAttribute('data-tap-disabled', true);
             });
-            angular.forEach(dom.find('iframe'), addMediaAdaptClass);
+            angular.forEach(dom.find('iframe'), function(el) {
+                treatIframe(el, site, canTreatVimeo);
+            });
 
             // Treat selects in iOS.
             if (ionic.Platform.isIOS()) {
@@ -386,6 +397,35 @@ angular.module('mm.core')
         angular.forEach(angular.element(el).find('track'), function(track) {
             addExternalContent(track, component, componentId, siteId);
         });
+    }
+
+    /**
+     * Add media adapt class and treat the iframe source.
+     *
+     * @param  {Object} el             DOM element.
+     * @param  {Object} site           Site instance.
+     * @param  {Boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
+     * @return {Void}
+     */
+    function treatIframe(el, site, canTreatVimeo) {
+        addMediaAdaptClass(el);
+
+        if (el.src && canTreatVimeo) {
+            // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
+            var matches = el.src.match(/https?:\/\/player\.vimeo\.com\/video\/([^\/]*)/);
+            if (matches && matches[1]) {
+                var newUrl = $mmFS.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                        matches[1] + '&token=' + site.getToken();
+                if (el.width) {
+                    newUrl = newUrl + '&width=' + el.width;
+                }
+                if (el.height) {
+                    newUrl = newUrl + '&height=' + el.height;
+                }
+
+                el.src = newUrl;
+            }
+        }
     }
 
     return {

@@ -1,6 +1,6 @@
 {
   "name": "moodlemobile",
-  "version": "3.3.2",
+  "version": "3.4.0",
   "description": "The official app for Moodle.",
   "author": {
     "name": "Moodle Pty Ltd.",
@@ -52,68 +52,8 @@
     "wd-bridge": "0.0.2",
     "yargs": "^3.25.0"
   },
-  "cordovaPlugins": [
-    "cordova-plugin-device",
-    "cordova-plugin-globalization",
-    "cordova-plugin-file",
-    "cordova-plugin-inappbrowser",
-    "cordova-plugin-file-transfer",
-    "cordova-plugin-network-information",
-    "cordova-plugin-camera",
-    {
-      "locator": "cordova-plugin-media-capture",
-      "id": "cordova-plugin-media-capture",
-      "variables": {
-        "CAMERA_USAGE_DESCRIPTION": "We'd like to access your camera to let you take a photo",
-        "PHOTOLIBRARY_USAGE_DESCRIPTION": "We'd like like to open your photo library to let you pick a photo",
-        "MICROPHONE_USAGE_DESCRIPTION": "We'd like to access your microphone to let you record an audio"
-      }
-    },
-    "cordova-plugin-splashscreen",
-    "cordova-plugin-statusbar",
-    "cordova-plugin-whitelist",
-    {
-      "locator": "https://github.com/Tunts/WebIntent",
-      "id": "net.tunts.webintent"
-    },
-    {
-      "variables": {
-        "URL_SCHEME": "moodlemobile"
-      },
-      "locator": "cordova-plugin-customurlscheme",
-      "id": "cordova-plugin-customurlscheme"
-    },
-    "ionic-plugin-keyboard",
-    {
-      "locator": "https://github.com/ti8m/DocumentHandler",
-      "id": "ch.ti8m.documenthandler"
-    },
-    "cordova-plugin-local-notifications-mm",
-    "cordova-plugin-zip",
-    {
-      "variables": {
-        "SENDER_ID": "694767596569"
-      },
-      "locator": "phonegap-plugin-push",
-      "id": "phonegap-plugin-push"
-    },
-    "cordova-universal-clipboard",
-    "nl.kingsquare.cordova.background-audio"
-  ],
-  "cordovaPlatforms": [
-    {
-      "platform": "ios",
-      "version": "4.3.0",
-      "locator": "ios@4.3.0"
-    },
-    {
-      "platform": "android",
-      "version": "6.1.2",
-      "locator": "android@6.1.2"
-    }
-  ],
   "scripts": {
-    "setup": "npm install && ionic state restore && bower install && gulp",
+    "setup": "npm install && cordova prepare && bower install && gulp",
     "reinstall": "gulp clean-build && gulp clean-libs && gulp clean-node-modules && npm run-script setup",
     "start": "ionic serve",
     "clean": "gulp clean-build",

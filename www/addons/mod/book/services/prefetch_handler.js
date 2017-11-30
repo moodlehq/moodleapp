@@ -49,6 +49,53 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
+     * Prefetch the module.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    self.download = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, false);
+    };
+
+    /**
+     * Download or prefetch the module.
+     *
+     * @param  {Object} module    The module object returned by WS.
+     * @param  {Number} courseId  Course ID the module belongs to.
+     * @param  {Boolean} prefetch True to prefetch, false to download right away.
+     * @return {Promise}          Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    function downloadOrPrefetch(module, courseId, prefetch) {
+        var promises = [];
+
+        promises.push(self.downloadOrPrefetch(module, courseId, prefetch));
+        promises.push($mmaModBook.getBook(courseId, module.id));
+
+        return $q.all(promises);
+    }
+
+    /**
+     * Prefetch the module.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#prefetch
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    self.prefetch = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, true);
+    };
+
+    /**
      * Returns book intro files.
      *
      * @module mm.addons.mod_book

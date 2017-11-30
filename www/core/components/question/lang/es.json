@@ -8,7 +8,7 @@
     "errorquestionnotsupported": "Este tipo de pregunta no está soportada por la aplicación: {{$a}}.",
     "feedback": "Retroalimentación",
     "howtodraganddrop": "Tocar para seleccionar y tocar para soltar.",
-    "incorrect": "Incorrecta",
+    "incorrect": "Incorrecto",
     "information": "Información",
     "invalidanswer": "Respuesta incompleta",
     "notanswered": "Sin contestar",
@@ -17,5 +17,5 @@
     "questionmessage": "Pregunta {{$a}}: {{$b}}",
     "questionno": "Pregunta {{$a}}",
     "requiresgrading": "Requiere calificación",
-    "unknown": "No se puede determinar el estado."
+    "unknown": "Desconocido"
 }

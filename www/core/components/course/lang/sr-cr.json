@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Ваша институција је онемогућила ову активност у мобилној апликацији.",
-    "activitynotyetviewableinapp": "Радимо на подршци за активност {{$a}}.",
     "activitynotyetviewableremoteaddon": "Ваша институција је инсталирала додатак који још увек није подржан.",
     "activitynotyetviewablesiteupgradeneeded": "Потребно је да се ажурира Moodle инсталација ваше институције.",
     "allsections": "Све секције",
@@ -17,6 +16,5 @@
     "hiddenfromstudents": "Сакривено од полазника",
     "nocontentavailable": "Никакав садржај није доступан у овом тренутку.",
     "overriddennotice": "Ваша завршна оцена за ову активност је ручно подешена",
-    "showall": "Прикажи све",
     "useactivityonbrowser": "Још увек можете да га користите помоћу веб читача вашег уређаја."
 }

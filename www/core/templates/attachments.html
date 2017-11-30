@@ -1,6 +1,14 @@
 <div class="item item-text-wrap item-border">
 	{{ 'mm.core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissions} } }}
 </div>
+<div class="item item-text-wrap" ng-if="filetypes && filetypes.mimetypes && filetypes.mimetypes.length">
+    <p>{{ 'mm.fileuploader.filesofthesetypes' | translate }}</p>
+    <ul class="list-with-style">
+        <li ng-repeat="typeInfo in filetypes.info">
+            <strong ng-if="typeInfo.name">{{typeInfo.name}} </strong>{{typeInfo.extlist}}</p>
+        </li>
+    </ul>
+</div>
 <div ng-repeat="file in files">
     <!-- Files already attached to the submission, either in online or in offline. -->
     <mm-file ng-if="!file.name || file.offline" file="file" component="{{component}}" component-id="{{componentId}}" can-delete="true" on-delete="delete($index, true)" can-download="{{!file.offline}}"></mm-file>

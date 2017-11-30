@@ -16,6 +16,7 @@
     "errormustsupplyvalue": "Trebuie să inserați o valoare aici.",
     "expired": "Ne pare rău, activitatea s-a închis în {{$a}} și nu mai este disponibilă",
     "fields": "Câmpuri",
+    "latlongboth": "Sunt necesare atât latitudinea, cât și longitudinea.",
     "menuchoose": "Alegeţi...",
     "more": "Detalii suplimentare",
     "nomatch": "Nu s-au găsit articole care să corespundă criteriilor selectate!",
@@ -30,6 +31,7 @@
     "resetsettings": "Resetează filtre",
     "search": "Căutare",
     "selectedrequired": "Toate elementele selectate sunt obligatorii",
+    "single": "Afişează unul singur",
     "timeadded": "Ora la care a fost adăugat",
     "timemodified": "Ora la care a fost modificat",
     "usedate": "Include în căutare"

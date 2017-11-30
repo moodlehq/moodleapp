@@ -3,7 +3,8 @@
     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
     <div class="buttons buttons-small">
         <span ng-if="!course.isEnrolled" ng-repeat="instance in course.enrollment" class="button button-icon" aria-label="{{ instance.name | translate }}">
-            <i class="icon icon-accessory {{instance.icon}}"></i>
+            <i ng-if="instance.icon" class="icon icon-accessory {{instance.icon}}"></i>
+            <img ng-if="instance.img && !instance.icon" ng-src="{{instance.img}}" class="mm-course-enrollment-img">
         </span>
         <span class="button button-icon">
             <i class="icon icon-accessory ion-chevron-right"></i>

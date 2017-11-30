@@ -41,7 +41,7 @@
     "offlineattemptnote": "Dette forsøg har data, der ikke er synkroniseret.",
     "offlineattemptovermax": "Dette forsøg kan ikke sendes da du har overskredet det tilladte antal forsøg.",
     "organizations": "Organisationer",
-    "passed": "Godkendt",
+    "passed": "Bestået",
     "reviewmode": "Gennemsynstilstand",
     "scormstatusnotdownloaded": "Denne SCORM er ikke downloadet. Den bliver automatisk downloadet når du åbner den.",
     "scormstatusoutdated": "Denne SCORM er ændret efter den sidste download. Den bliver automatisk downloadet når du åbner den.",

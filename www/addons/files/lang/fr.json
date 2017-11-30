@@ -5,9 +5,9 @@
     "emptyfilelist": "Aucun fichier à afficher.",
     "erroruploadnotworking": "Il n'est actuellement pas possible de déposer des fichiers sur votre site.",
     "files": "Fichiers",
-    "myprivatefilesdesc": "Les fichiers disponibles dans votre zone privée sur cette plateforme Moodle.",
+    "myprivatefilesdesc": "Fichiers auxquels vous seul avez accès.",
     "privatefiles": "Fichiers personnels",
     "sitefiles": "Fichiers du site",
-    "sitefilesdesc": "Les autres fichiers disponibles sur cette plateforme Moodle.",
+    "sitefilesdesc": "Autres fichiers auxquels vous avez accès sur cette plateforme.",
     "uploadfiles": "Déposer des fichiers"
 }

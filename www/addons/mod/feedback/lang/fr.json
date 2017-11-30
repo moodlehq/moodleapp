@@ -3,7 +3,7 @@
     "anonymous": "Anonyme",
     "anonymous_entries": "Réponses anonymes ({{$a}})",
     "average": "Moyenne",
-    "captchaofflinewarning": "Le feedback avec captcha ne peut pas être terminé hors ligne, ou s'il n'est pas configuré, ou si le serveur est arrêté.",
+    "captchaofflinewarning": "Le feedback avec CAPTCHA ne peut pas être terminé hors connexion, ou s'il n'est pas configuré, ou si le serveur est arrêté.",
     "complete_the_form": "Répondre aux questions...",
     "completed_feedbacks": "Réponses envoyées",
     "continue_the_form": "Continuer à répondre aux questions...",

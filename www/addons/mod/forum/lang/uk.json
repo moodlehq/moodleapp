@@ -9,7 +9,7 @@
     "discussionsubscription": "Підписатися на дискусію",
     "edit": "Редагувати",
     "erroremptymessage": "Повідомлення не може бути порожнім",
-    "erroremptysubject": "Заголовок не повинен бути пустим",
+    "erroremptysubject": "Тема повідомлення не може бути порожньою",
     "errorgetforum": "Помилка отримання даних форуму",
     "errorgetgroups": "Помилка отримання групових налаштувань.",
     "forumnodiscussionsyet": "Відсутні обговорення в даному форумі.",

@@ -3,7 +3,7 @@
     "anonymous": "Anoniem",
     "anonymous_entries": "Anoniem ingevulde formulieren ({{$a}})",
     "average": "Gemiddelde",
-    "captchaofflinewarning": "Feedback met captcha kan niet offline voltooid worden of wanneer dat niet geconfigureerd is of wanneer de server onbereikbaar is.",
+    "captchaofflinewarning": "Feedback met CAPTCHA kan niet offline voltooid worden of wanneer dat niet geconfigureerd is of wanneer de server onbereikbaar is.",
     "complete_the_form": "Beantwoord de vragen...",
     "completed_feedbacks": "Ingevulde antwoorden",
     "continue_the_form": "Ga verder met het beantwoorden van de vragen...",

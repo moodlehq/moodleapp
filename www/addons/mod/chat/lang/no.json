@@ -1,0 +1,16 @@
+{
+    "beep": "tut",
+    "currentusers": "Nåværende brukere",
+    "enterchat": "Start praten",
+    "entermessage": "Skriv inn din melding",
+    "errorwhileretrievingmessages": "Feil ved henting av melding fra server.",
+    "errorwhilesendingmessage": "Melding kunne ikke sendes.",
+    "messagebeepsyou": "{{$a}} har tutet på deg",
+    "messageenter": "{{$a}} har akkurat kommet",
+    "messageexit": "{{$a}} har forlatt denne praten",
+    "mustbeonlinetosendmessages": "Du må være på nett for å sende meldinger.",
+    "nomessages": "Ingen beskjeder ennå",
+    "send": "Send",
+    "sessionstart": "Prateøkten vil starte:  {{$a.date}}, ({{$a.fromnow}} fra nå)",
+    "talk": "Snakk"
+}

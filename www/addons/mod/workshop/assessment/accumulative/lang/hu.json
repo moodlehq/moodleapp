@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "Megjegyzés ehhez: {{$a}}",
+    "dimensiongradefor": "{{$a}} osztályzata",
+    "dimensionnumber": "{{$a}} szempont",
+    "mustchoosegrade": "Ehhez a nézethez ki kell választania egy pontszámot."
+}
