@@ -43,15 +43,15 @@ export class CoreFormatTextDirective implements OnInit {
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component for CoreExternalContentDirective.
     @Input() componentId?: string|number; // Component ID to use in conjunction with the component.
-    @Input() adaptImg?: boolean = true; // Whether to adapt images to screen width.
-    @Input() clean?: boolean; // Whether all the HTML tags should be removed.
-    @Input() singleLine?: boolean; // Whether new lines should be removed (all text in single line). Only valid if clean=true.
+    @Input() adaptImg?: boolean|string = true; // Whether to adapt images to screen width.
+    @Input() clean?: boolean|string; // Whether all the HTML tags should be removed.
+    @Input() singleLine?: boolean|string; // Whether new lines should be removed (all text in single line). Only valid if clean=true.
     @Input() maxHeight?: number; // Max height in pixels to render the content box. It should be 50 at least to make sense.
                                  // Using this parameter will force display: block to calculate height better. If you want to
                                  // avoid this use class="inline" at the same time to use display: inline-block.
-    @Input() fullOnClick?: boolean; // Whether it should open a new page with the full contents on click. Only if "max-height"
-                                    // is set and the content has been collapsed.
-    @Input() brOnFull?: boolean; // Whether new lines should be replaced by <br> on full view.
+    @Input() fullOnClick?: boolean|string; // Whether it should open a new page with the full contents on click. Only if
+                                           // "max-height" is set and the content has been collapsed.
+    @Input() brOnFull?: boolean|string; // Whether new lines should be replaced by <br> on full view.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
@@ -225,7 +225,7 @@ export class CoreFormatTextDirective implements OnInit {
             site = siteInstance;
 
             // Apply format text function.
-            return this.textUtils.formatText(this.text, this.clean, this.singleLine);
+            return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean), this.utils.isTrueOrOne(this.singleLine));
         }).then((formatted) => {
 
             let div = document.createElement('div'),
@@ -264,7 +264,7 @@ export class CoreFormatTextDirective implements OnInit {
                 images.forEach((img: HTMLElement) => {
                     this.addMediaAdaptClass(img);
                     this.addExternalContent(img);
-                    if (this.adaptImg) {
+                    if (this.utils.isTrueOrOne(this.adaptImg)) {
                         // Create a container for the image and use it instead of the image.
                         let container = this.createMagnifyingGlassContainer(elWidth, img);
                         div.replaceChild(container, img);

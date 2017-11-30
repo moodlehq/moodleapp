@@ -26,8 +26,8 @@ import { CoreConfigConstants } from '../configconstants';
     selector: '[core-link]'
 })
 export class CoreLinkDirective implements OnInit {
-    @Input() capture?: boolean; // If the link needs to be captured by the app.
-    @Input() inApp?: boolean; // True to open in embedded browser, false to open in system browser.
+    @Input() capture?: boolean|string; // If the link needs to be captured by the app.
+    @Input() inApp?: boolean|string; // True to open in embedded browser, false to open in system browser.
     @Input() autoLogin? = 'check'; // If the link should be open with auto-login. Accepts the following values:
                                    //   "yes" -> Always auto-login.
                                    //   "no" -> Never auto-login.
@@ -45,6 +45,8 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit() {
+        this.inApp = this.utils.isTrueOrOne(this.inApp);
+
         this.element.addEventListener('click', (event) => {
             // If the event prevented default action, do nothing.
             if (!event.defaultPrevented) {
@@ -53,7 +55,7 @@ export class CoreLinkDirective implements OnInit {
                     event.preventDefault();
                     event.stopPropagation();
 
-                    if (this.capture) {
+                    if (this.utils.isTrueOrOne(this.capture)) {
                         // @todo: Handle link using content links helper.
                         // $mmContentLinksHelper.handleLink(href).then((treated) => {
                         //     if (!treated) {

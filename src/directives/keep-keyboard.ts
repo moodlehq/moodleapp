@@ -14,6 +14,7 @@
 
 import { Directive, AfterViewInit, Input, ElementRef, OnDestroy } from '@angular/core';
 import { CoreDomUtilsProvider } from '../providers/utils/dom';
+import { CoreUtilsProvider } from '../providers/utils/utils';
 
 /**
  * Directive to keep the keyboard open when clicking a certain element (usually a button).
@@ -55,7 +56,7 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     protected focusAgainListener : any; // Another listener for focusout, with the purpose to focus again.
     protected stopFocusAgainTimeout: any; // Timeout to stop focus again listener.
 
-    constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider) {
+    constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
     }
 
@@ -66,7 +67,7 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
         // Use a setTimeout because, if this directive is applied to a button, then the ion-input that it affects
         // maybe it hasn't been treated yet.
         setTimeout(() => {
-            let inButton = this.inButton && this.inButton !== 'false',
+            let inButton = this.utils.isTrueOrOne(this.inButton),
                 candidateEls,
                 selectedEl;
 

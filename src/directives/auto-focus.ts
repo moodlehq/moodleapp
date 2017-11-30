@@ -14,6 +14,7 @@
 
 import { Directive, Input, AfterViewInit, ElementRef } from '@angular/core';
 import { CoreDomUtilsProvider } from '../providers/utils/dom';
+import { CoreUtilsProvider } from '../providers/utils/utils';
 
 /**
  * Directive to auto focus an element when a view is loaded.
@@ -28,7 +29,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
 
     protected element: HTMLElement;
 
-    constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider) {
+    constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider) {
         this.element = element.nativeElement || element;
     }
 
@@ -36,13 +37,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
      * Function after the view is initialized.
      */
     ngAfterViewInit() {
-        let autoFocus;
-        if (typeof this.coreAutoFocus == 'string') {
-            autoFocus = this.coreAutoFocus && this.coreAutoFocus !== 'false';
-        } else {
-            autoFocus = !!this.coreAutoFocus;
-        }
-
+        const autoFocus = this.utils.isTrueOrOne(this.coreAutoFocus);
         if (autoFocus) {
             // If it's a ion-input or ion-textarea, search the right input to use.
             let element = this.element;

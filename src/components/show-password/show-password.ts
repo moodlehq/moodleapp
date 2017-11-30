@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, AfterViewInit, Input, ElementRef } from '@angular/core';
+import { CoreUtilsProvider } from '../../providers/utils/utils';
 
 /**
  * Component to allow showing and hiding a password. The affected input MUST have a name to identify it.
@@ -44,7 +45,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     protected input: HTMLInputElement; // Input affected.
     protected element: HTMLElement; // Current element.
 
-    constructor(element: ElementRef) {
+    constructor(element: ElementRef, private utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
     }
 
@@ -52,7 +53,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * Component being initialized.
      */
     ngOnInit() {
-        this.shown = this.initialShown && this.initialShown !== 'false';
+        this.shown = this.utils.isTrueOrOne(this.initialShown);
         this.selector = 'input[name="' + this.name + '"]';
         this.setData();
     }

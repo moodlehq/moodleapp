@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '../../providers/utils/text';
+import { CoreUtilsProvider } from '../../providers/utils/utils';
 
 /**
  * Directive to add a red asterisk for required input fields.
@@ -30,14 +31,22 @@ import { CoreTextUtilsProvider } from '../../providers/utils/text';
     selector: '[core-mark-required]',
     templateUrl: 'mark-required.html'
 })
-export class CoreMarkRequiredComponent implements AfterViewInit {
+export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
     @Input('core-mark-required') coreMarkRequired: boolean|string = true;
     protected element: HTMLElement;
     requiredLabel: string;
 
-    constructor(element: ElementRef, private translate: TranslateService, private textUtils: CoreTextUtilsProvider) {
+    constructor(element: ElementRef, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
+            private utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
         this.requiredLabel = this.translate.instant('mm.core.required');
+    }
+
+    /**
+     * Component being initialized.
+     */
+    ngOnInit() {
+        this.coreMarkRequired = this.utils.isTrueOrOne(this.coreMarkRequired);
     }
 
     /**
