@@ -124,3 +124,37 @@ ion-icon.icon-accessory {
   // Set bgcolor in content instead of overriding $background-color because that variable is applied to a lot of places.
   background-color: $gray-light;
 }
+
+// Large centered avatar.
+.item-avatar-center {
+    text-align: center;
+    padding-left: 16px;
+
+    &.item-complex .item-content {
+        text-align: center;
+        padding-left: 49px;
+    }
+
+    > img:first-child,
+    ion-avatar img {
+        display: block;
+        margin: auto;
+        width: 90px;
+        height: 90px;
+        max-width: 90px;
+        max-height: 90px;
+        margin-bottom: 10px;
+        border-radius : 50%;
+        padding: 4px;
+        border: 1px solid #ddd;
+
+        &.avatar-full {
+            border-radius: 2%;
+            border: 0;
+            max-width: 100%;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+        }
+    }
+}

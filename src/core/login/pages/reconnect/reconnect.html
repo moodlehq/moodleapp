@@ -1,0 +1,54 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'mm.login.reconnect' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding class="mm-center-view">
+    <ion-list no-lines class="box">
+        <ion-item *ngIf="site" text-wrap class="item-avatar-center" [ngClass]="{'item-avatar-center': site.avatar, 'text-center': !site.avatar}">
+            <ion-avatar *ngIf="site.avatar">
+                <!-- Show user avatar. -->
+                <img [src]="site.avatar" class="avatar" core-external-content [siteId]="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+            </ion-avatar>
+
+            <!-- Show site logo or a default image. -->
+            <img *ngIf="!site.avatar && logoUrl" [src]="logoUrl" core-external-content [siteId]="site.id" role="presentation">
+            <img *ngIf="!site.avatar && !logoUrl" src="assets/img/logo.png" class="moodle-logo" role="presentation">
+
+            <!-- If no sitename show big siteurl. -->
+            <p *ngIf="!siteName" class="item-heading mm-siteurl">{{siteUrl}}</p>
+            <!-- If sitename, show big sitename and small siteurl. -->
+            <p *ngIf="siteName" class="item-heading mm-sitename">{{siteName}}</p>
+            <p *ngIf="siteName" class="mm-siteurl">{{siteUrl}}</p>
+
+            <p *ngIf="!isLoggedOut">
+                <ion-icon padding name="alert"></ion-icon> {{ 'mm.login.reconnectdescription' | translate }}
+            </p>
+        </ion-item>
+        <ion-item padding text-wrap class="mm-username">
+            <p class="item-heading">{{ 'mm.login.username' | translate }}</p>
+            <p>{{username}}</p>
+        </ion-item>
+        <form [formGroup]="credForm" (ngSubmit)="login()">
+            <ion-item>
+                <core-show-password item-content [name]="'password'">
+                    <ion-input class="mm-ioninput-password" name="password" type="password" placeholder="{{ 'mm.login.password' | translate }}" formControlName="password" mm-show-password></ion-input>
+                </core-show-password>
+            </ion-item>
+            <ion-buttons class="button-bar">
+                <a ion-button (click)="cancel()">{{ 'mm.login.cancel' | translate }}</a>
+                <button ion-button color="primary" [disabled]="!credForm.valid">{{ 'mm.login.loginbutton' | translate }}</button>
+            </ion-buttons>
+        </form>
+
+        <!-- Identity providers. -->
+        <div *ngIf="identityProviders && identityProviders.length" padding-top>
+            <p>{{ 'mm.login.potentialidps' | translate }}</p>
+            <ion-item *ngFor="let provider of identityProviders" text-wrap class="mm-oauth-icon" (click)="oauthClicked(provider)" title="{{provider.name}}">
+                <img [src]="provider.iconurl" alt="{{provider.name}}">
+                <span>{{provider.name}}</span>
+                <ion-icon class="icon-accessory" name="arrow-forward" md="ios-arrow-forward" item-end></ion-icon>
+            </ion-item>
+        </div>
+    </ion-list>
+</ion-content>
