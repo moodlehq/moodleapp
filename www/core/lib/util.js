@@ -2655,6 +2655,20 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Filters the undefined items that can be in an array.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterUndefinedItemsInArray
+         * @param  {Array} items  With all the items.
+         * @return {Array}        Only with the defined items,
+         */
+        self.filterUndefinedItemsInArray = function(items) {
+            return items.filter(function(item) {
+                return typeof item != "undefined";
+            });
+        };
 
         /**
          * Retrieve the information entered in a form.

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_workshop')
  * @name $mmaModWorkshopPrefetchHandler
  */
 .factory('$mmaModWorkshopPrefetchHandler', function($mmaModWorkshop, mmaModWorkshopComponent, $mmFilepool, $q, $mmPrefetchFactory,
-        $mmSite, $mmGroups, $mmCourse, $mmaModWorkshopHelper, $mmSitesManager, $mmUser) {
+        $mmSite, $mmGroups, $mmCourse, $mmaModWorkshopHelper, $mmSitesManager, $mmUser, $mmUtil) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModWorkshopComponent);
 
@@ -156,7 +156,7 @@ angular.module('mm.addons.mod_workshop')
             return {
                 workshop: workshop,
                 groups: groups,
-                files: files
+                files: $mmUtil.filterUndefinedItemsInArray(files)
             };
         }).catch(function(message) {
             if (omitFail) {
@@ -164,7 +164,7 @@ angular.module('mm.addons.mod_workshop')
                 return {
                     workshop: workshop,
                     groups: groups,
-                    files: files
+                    files: $mmUtil.filterUndefinedItemsInArray(files)
                 };
             }
             return $q.reject(message);
