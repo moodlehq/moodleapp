@@ -46,9 +46,10 @@ export class CoreAppProvider {
     ssoAuthenticationPromise : Promise<any>;
     isKeyboardShown: boolean = false;
 
-    constructor(private dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard,
+    constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard,
             private network: Network, logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreAppProvider');
+        this.db = dbProvider.getDB(this.DBNAME);
 
         this.keyboard.onKeyboardShow().subscribe((data) => {
             this.isKeyboardShown = true;
@@ -92,10 +93,6 @@ export class CoreAppProvider {
      * @return {SQLiteDB} App's DB.
      */
     getDB() : SQLiteDB {
-        if (typeof this.db == 'undefined') {
-            this.db = this.dbProvider.getDB(this.DBNAME);
-        }
-
         return this.db;
     };
 

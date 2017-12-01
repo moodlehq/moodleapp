@@ -65,7 +65,17 @@ export class CoreLoginHelperProvider {
                 if (!result.status) {
                     // Error.
                     if (result.warnings && result.warnings.length) {
-                        return Promise.reject(result.warnings[0].message);
+                        // Check if there is a warning 'alreadyagreed'.
+                        for (let i in result.warnings) {
+                            let warning = result.warnings[i];
+                            if (warning.warningcode == 'alreadyagreed') {
+                                // Policy already agreed, treat it as a success.
+                                return;
+                            }
+                        }
+
+                        // Another warning, reject.
+                        return Promise.reject(result.warnings[0]);
                     } else {
                         return Promise.reject(null);
                     }

@@ -62,7 +62,7 @@ export class CoreLoggerProvider {
         // Return our own function that will call the logging function with the treated message.
         return (...args) => {
             if (this.enabled) {
-                let now  = moment().format('l LTS');
+                let now = moment().format('l LTS');
 
                 args[0] = now + ' ' + className + ': ' + args[0]; // Prepend timestamp and className to the original message.
                 logFn.apply(null, args);

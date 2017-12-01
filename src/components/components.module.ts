@@ -20,13 +20,15 @@ import { CoreLoadingComponent } from './loading/loading';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreShowPasswordComponent } from './show-password/show-password';
+import { CoreIframeComponent } from './iframe/iframe';
 
 @NgModule({
     declarations: [
         CoreLoadingComponent,
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
-        CoreShowPasswordComponent
+        CoreShowPasswordComponent,
+        CoreIframeComponent
     ],
     imports: [
         IonicModule,
@@ -37,7 +39,8 @@ import { CoreShowPasswordComponent } from './show-password/show-password';
         CoreLoadingComponent,
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
-        CoreShowPasswordComponent
+        CoreShowPasswordComponent,
+        CoreIframeComponent
     ]
 })
 export class CoreComponentsModule {}

@@ -298,7 +298,6 @@ export class SQLiteDB {
         }
 
         return this.execute(`DELETE FROM ${table} ${select}`, params);
-
     }
 
     /**
