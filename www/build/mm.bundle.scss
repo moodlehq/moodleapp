@@ -170,6 +170,11 @@ p.item-text-wrap {
   width: 40%;
 }
 
+.item-avatar > img:first-child {
+  text-indent: -99999px;
+  background-color: $gray-light;
+}
+
 // Media item, ideal for icons.
 .item-media {
   @extend .item-avatar;
@@ -179,6 +184,7 @@ p.item-text-wrap {
     max-width: $item-media-width;
     max-height: $item-media-height;
     border-radius: 0;
+    background-color: transparent;
   }
   p {
     margin: 0px;
@@ -447,6 +453,20 @@ button.item.item-button-right {
   &.icon-left:before,
   &.icon-right:before {
     line-height: 28px;
+  }
+}
+
+.item-icon-right .item-note .icon {
+  display: inline;
+  align-items: normal;
+  position: relative;
+  top: auto;
+  right: auto;
+  height: auto;
+  font-size: 14px;
+  &:before {
+    display: inline;
+    width: auto;
   }
 }
 
@@ -719,6 +739,13 @@ mm-navigation-bar {
   }
 }
 
+.item-icon-left, .item-icon-right {
+  &.item-icon-top .icon {
+    align-items: flex-start;
+    top: 11px;
+  }
+}
+
 // These will need item-icon-left as well.
 @mixin mm-message-item($color) {
   border-bottom: 3px solid $color !important;
@@ -950,6 +977,28 @@ mm-timer {
     line-height: $font-size-base + 2;
     border: 0;
     position: relative;
+  }
+}
+
+.item-select.mm-full-width {
+  margin-top: ($item-input-padding / 2);
+  margin-bottom: $item-input-padding - 1;
+  border: 0;
+
+  select {
+    max-width: 100%;
+    width: 100%;
+    background: transparent;
+    text-indent: 0;
+    line-height: $font-size-base + 2;
+    border: 0;
+    position: relative;
+  }
+
+  &.select-align-left {
+    select {
+      direction: ltr;
+    }
   }
 }
 
@@ -1760,6 +1809,18 @@ ol.list-with-style, ul.list-with-style {
   padding-left: 40px;
 }
 
+.no-padding-bottom, .padding.no-padding-bottom {
+  padding-bottom: 0;
+}
+
+.text-success {
+  color: $mm-success-color;
+}
+
+.text-danger {
+  color: $mm-error-color;
+}
+
 .atto_image_preview {
     width: 100%;
     height: 100%;
@@ -1877,6 +1938,14 @@ ol.list-with-style, ul.list-with-style {
 
 .fa-ban:before {
     content: $ionicon-var-minus-circled;
+}
+
+.fa-remove:before {
+    content: $ionicon-var-close-round;
+}
+
+.fa-check:before {
+    content: $ionicon-var-checkmark-round;
 }
 /**
  * In this file we will reset ionic styles that can bother online html.
@@ -2313,6 +2382,12 @@ $doughnut-text-colour: $gray-darker;
 mm-course-list-item .item-icon-left {
   color: $black;
 }
+
+.mm-course-enrollment-img {
+  max-width: 20px;
+  max-height: 34px;
+}
+
 .mm-capture-media-modal {
     background-color: $gray-light;
 
@@ -2534,6 +2609,7 @@ mm-course-list-item .item-icon-left {
     border-radius : 50%;
     padding: 4px;
     border: 1px solid #ddd;
+    text-indent: -99999px;
   }
 }
 
@@ -2719,6 +2795,9 @@ li.mm-question-answer-incorrect,
   color: $mm-question-warning-color;
 }
 
+.questioncorrectnessicon {
+  font-size: 20px;
+}
 #mm-settings-languagelabel {
   color: $base-color;
 }
@@ -3839,6 +3918,20 @@ $mma-mod-wiki-subwiki-selected-background-color:   $gray-light !default;
 
   .mma-mod_wiki-subwiki-picker .item.item-selected .icon {
     font-size: 24px;
+  }
+}
+
+.mm-site_mod_workshop,
+.mm-site_mod_workshop-submission,
+.mm-site_mod_workshop-assessment {
+
+  p.mm-overriden-grade {
+    color: $mm-success-color;
+  }
+
+  p.mm-has-overriden-grade {
+    color: $mm-error-color;
+    text-decoration: line-through;
   }
 }
 

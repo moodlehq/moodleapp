@@ -10371,6 +10371,8 @@ a.button {
     color: #0064d2; }
   .icon.assertive {
     color: #cb3d4d; }
+  .icon.balanced {
+    color: #5e8100; }
   .icon.dark {
     color: #3a3a3a; }
   .icon.icon-accessory {
@@ -10427,37 +10429,64 @@ a.button {
 .item-delete .button.icon.actived {
   color: #cb3d4d; }
 
-.button.button-light, .button.button-stable, .button.button-calm, .button.button-assertive, .button.button-balanced, .button.button-energized, .button.button-royal {
+.button.button-light, .button.button-stable, .button.button-calm, .button.button-balanced, .button.button-energized, .button.button-royal {
   border-color: #0064d2;
   background-color: #ffffff;
   color: #0064d2; }
-  .button.button-light:hover, .button.button-stable:hover, .button.button-calm:hover, .button.button-assertive:hover, .button.button-balanced:hover, .button.button-energized:hover, .button.button-royal:hover {
+  .button.button-light:hover, .button.button-stable:hover, .button.button-calm:hover, .button.button-balanced:hover, .button.button-energized:hover, .button.button-royal:hover {
     color: #0064d2;
     text-decoration: none; }
-  .button.button-light.active, .button.button-light.activated, .button.button-stable.active, .button.button-stable.activated, .button.button-calm.active, .button.button-calm.activated, .button.button-assertive.active, .button.button-assertive.activated, .button.button-balanced.active, .button.button-balanced.activated, .button.button-energized.active, .button.button-energized.activated, .button.button-royal.active, .button.button-royal.activated {
+  .button.button-light.active, .button.button-light.activated, .button.button-stable.active, .button.button-stable.activated, .button.button-calm.active, .button.button-calm.activated, .button.button-balanced.active, .button.button-balanced.activated, .button.button-energized.active, .button.button-energized.activated, .button.button-royal.active, .button.button-royal.activated {
     border-color: #0064d2;
     background-color: #0064d2; }
-  .button.button-light.button-clear, .button.button-stable.button-clear, .button.button-calm.button-clear, .button.button-assertive.button-clear, .button.button-balanced.button-clear, .button.button-energized.button-clear, .button.button-royal.button-clear {
+  .button.button-light.button-clear, .button.button-stable.button-clear, .button.button-calm.button-clear, .button.button-balanced.button-clear, .button.button-energized.button-clear, .button.button-royal.button-clear {
     border-color: transparent;
     background: none;
     box-shadow: none;
     color: #0064d2; }
-  .button.button-light.button-icon, .button.button-stable.button-icon, .button.button-calm.button-icon, .button.button-assertive.button-icon, .button.button-balanced.button-icon, .button.button-energized.button-icon, .button.button-royal.button-icon {
+  .button.button-light.button-icon, .button.button-stable.button-icon, .button.button-calm.button-icon, .button.button-balanced.button-icon, .button.button-energized.button-icon, .button.button-royal.button-icon {
     border-color: transparent;
     background: none; }
-  .button.button-light.button-outline, .button.button-stable.button-outline, .button.button-calm.button-outline, .button.button-assertive.button-outline, .button.button-balanced.button-outline, .button.button-energized.button-outline, .button.button-royal.button-outline {
+  .button.button-light.button-outline, .button.button-stable.button-outline, .button.button-calm.button-outline, .button.button-balanced.button-outline, .button.button-energized.button-outline, .button.button-royal.button-outline {
     border-color: #0064d2;
     background: transparent;
     color: #0064d2; }
-    .button.button-light.button-outline.active, .button.button-light.button-outline.activated, .button.button-stable.button-outline.active, .button.button-stable.button-outline.activated, .button.button-calm.button-outline.active, .button.button-calm.button-outline.activated, .button.button-assertive.button-outline.active, .button.button-assertive.button-outline.activated, .button.button-balanced.button-outline.active, .button.button-balanced.button-outline.activated, .button.button-energized.button-outline.active, .button.button-energized.button-outline.activated, .button.button-royal.button-outline.active, .button.button-royal.button-outline.activated {
+    .button.button-light.button-outline.active, .button.button-light.button-outline.activated, .button.button-stable.button-outline.active, .button.button-stable.button-outline.activated, .button.button-calm.button-outline.active, .button.button-calm.button-outline.activated, .button.button-balanced.button-outline.active, .button.button-balanced.button-outline.activated, .button.button-energized.button-outline.active, .button.button-energized.button-outline.activated, .button.button-royal.button-outline.active, .button.button-royal.button-outline.activated {
       background-color: #0064d2;
       box-shadow: none;
       color: #fff; }
-  .button.button-light.active, .button.button-light.activated, .button.button-stable.active, .button.button-stable.activated, .button.button-calm.active, .button.button-calm.activated, .button.button-assertive.active, .button.button-assertive.activated, .button.button-balanced.active, .button.button-balanced.activated, .button.button-energized.active, .button.button-energized.activated, .button.button-royal.active, .button.button-royal.activated {
+  .button.button-light.active, .button.button-light.activated, .button.button-stable.active, .button.button-stable.activated, .button.button-calm.active, .button.button-calm.activated, .button.button-balanced.active, .button.button-balanced.activated, .button.button-energized.active, .button.button-energized.activated, .button.button-royal.active, .button.button-royal.activated {
     box-shadow: none;
     color: #ffffff; }
-    .button.button-light.active .icon, .button.button-light.activated .icon, .button.button-stable.active .icon, .button.button-stable.activated .icon, .button.button-calm.active .icon, .button.button-calm.activated .icon, .button.button-assertive.active .icon, .button.button-assertive.activated .icon, .button.button-balanced.active .icon, .button.button-balanced.activated .icon, .button.button-energized.active .icon, .button.button-energized.activated .icon, .button.button-royal.active .icon, .button.button-royal.activated .icon {
+    .button.button-light.active .icon, .button.button-light.activated .icon, .button.button-stable.active .icon, .button.button-stable.activated .icon, .button.button-calm.active .icon, .button.button-calm.activated .icon, .button.button-balanced.active .icon, .button.button-balanced.activated .icon, .button.button-energized.active .icon, .button.button-energized.activated .icon, .button.button-royal.active .icon, .button.button-royal.activated .icon {
       color: #ffffff; }
+
+.button.button-assertive {
+  border-color: #a82d3b;
+  background-color: #cb3d4d;
+  color: #fff; }
+  .button.button-assertive:hover {
+    color: #fff;
+    text-decoration: none; }
+  .button.button-assertive.active, .button.button-assertive.activated {
+    border-color: #a82d3b;
+    background-color: #a82d3b; }
+  .button.button-assertive.button-clear {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+    color: #cb3d4d; }
+  .button.button-assertive.button-icon {
+    border-color: transparent;
+    background: none; }
+  .button.button-assertive.button-outline {
+    border-color: #cb3d4d;
+    background: transparent;
+    color: #cb3d4d; }
+    .button.button-assertive.button-outline.active, .button.button-assertive.button-outline.activated {
+      background-color: #cb3d4d;
+      box-shadow: none;
+      color: #fff; }
 
 .button.active, .button.activated {
   box-shadow: none;
@@ -10636,13 +10665,18 @@ p.item-text-wrap {
   max-width: 40%;
   width: 40%; }
 
+.item-avatar > img:first-child, .item-media > img:first-child, .item-avatar-center > img:first-child, .item-progress > img:first-child {
+  text-indent: -99999px;
+  background-color: #eeeeee; }
+
 .item-media {
   padding-left: 64px;
   min-height: 64px; }
   .item-media > img:first-child {
     max-width: 32px;
     max-height: 32px;
-    border-radius: 0; }
+    border-radius: 0;
+    background-color: transparent; }
   .item-media p {
     margin: 0px; }
   .item-media.item-button-right > .button,
@@ -10931,6 +10965,18 @@ button.item.item-button-right.item-3-button-right,
   padding-bottom: 7px; }
   .button.button-block .icon:before, .button.button-block.icon:before, .button.button-block.icon-left:before, .button.button-block.icon-right:before {
     line-height: 28px; }
+
+.item-icon-right .item-note .icon {
+  display: inline;
+  align-items: normal;
+  position: relative;
+  top: auto;
+  right: auto;
+  height: auto;
+  font-size: 14px; }
+  .item-icon-right .item-note .icon:before {
+    display: inline;
+    width: auto; }
 
 /**
  * Core directives.
@@ -11277,6 +11323,10 @@ mm-navigation-bar .col, mm-navigation-bar .mm-data-contents td, .mm-data-content
   margin-left: 0;
   margin-right: 0; }
 
+.item-icon-left.item-icon-top .icon, .item-icon-right.item-icon-top .icon {
+  align-items: flex-start;
+  top: 11px; }
+
 .mm-error-item, .mm-site_mod_assign div.latesubmission,
 .mm-site_mod_assign div.overdue,
 .mm-site_mod_assign-submission div.latesubmission,
@@ -11503,6 +11553,21 @@ mm-timer {
     line-height: 16px;
     border: 0;
     position: relative; }
+
+.item-select.mm-full-width {
+  margin-top: 8px;
+  margin-bottom: 15px;
+  border: 0; }
+  .item-select.mm-full-width select {
+    max-width: 100%;
+    width: 100%;
+    background: transparent;
+    text-indent: 0;
+    line-height: 16px;
+    border: 0;
+    position: relative; }
+  .item-select.mm-full-width.select-align-left select {
+    direction: ltr; }
 
 .item-select .mm-select-fix {
   position: absolute;
@@ -12137,6 +12202,15 @@ ol.list-with-style, ul.list-with-style {
   list-style: initial;
   padding-left: 40px; }
 
+.no-padding-bottom, .padding.no-padding-bottom, .item .no-padding-bottom.item-heading.padding, .mm-grades-table .itemcenter .no-padding-bottom.item-heading.padding {
+  padding-bottom: 0; }
+
+.text-success {
+  color: #5e8100; }
+
+.text-danger {
+  color: #cb3d4d; }
+
 .atto_image_preview {
   width: 100%;
   height: 100%;
@@ -12229,6 +12303,12 @@ ol.list-with-style, ul.list-with-style {
 
 .fa-ban:before {
   content: ""; }
+
+.fa-remove:before {
+  content: ""; }
+
+.fa-check:before {
+  content: ""; }
 
 /**
  * In this file we will reset ionic styles that can bother online html.
@@ -12819,6 +12899,10 @@ mm-course-list-item
 mm-course-list-item div.item-icon-left.earlysubmission {
   color: #3a3a3a; }
 
+.mm-course-enrollment-img {
+  max-width: 20px;
+  max-height: 34px; }
+
 .mm-capture-media-modal {
   background-color: #eeeeee; }
   .mm-capture-media-modal .bar-header {
@@ -12981,7 +13065,8 @@ mm-course-list-item div.item-icon-left.earlysubmission {
   max-height: 80px;
   border-radius: 50%;
   padding: 4px;
-  border: 1px solid #ddd; }
+  border: 1px solid #ddd;
+  text-indent: -99999px; }
 
 .mm-login-sitepolicy-iframe {
   height: 300px; }
@@ -13143,6 +13228,9 @@ li.mm-question-answer-incorrect,
 
 .mm-question-warning, p.mm-question-warning, .item .mm-question-warning, .mm-grades-table .itemcenter .mm-question-warning {
   color: #cb3d4d; }
+
+.questioncorrectnessicon {
+  font-size: 20px; }
 
 #mm-settings-languagelabel {
   color: #3a3a3a; }
@@ -14088,6 +14176,17 @@ ion-popover-view {
     background-color: #eeeeee; }
   .mm-site_mod_wiki .mma-mod_wiki-subwiki-picker .item.item-selected .icon, .mm-site_mod_wiki .mma-mod_wiki-subwiki-picker .mm-grades-table .item-selected.itemcenter .icon, .mm-grades-table .mm-site_mod_wiki .mma-mod_wiki-subwiki-picker .item-selected.itemcenter .icon {
     font-size: 24px; }
+
+.mm-site_mod_workshop p.mm-overriden-grade,
+.mm-site_mod_workshop-submission p.mm-overriden-grade,
+.mm-site_mod_workshop-assessment p.mm-overriden-grade {
+  color: #5e8100; }
+
+.mm-site_mod_workshop p.mm-has-overriden-grade,
+.mm-site_mod_workshop-submission p.mm-has-overriden-grade,
+.mm-site_mod_workshop-assessment p.mm-has-overriden-grade {
+  color: #cb3d4d;
+  text-decoration: line-through; }
 
 .qbehaviour_deferredcbm_actual_percentage {
   font-weight: bold; }

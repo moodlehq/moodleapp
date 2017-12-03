@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.comments', 'mm.core.contentlinks', 'mm.core.course', 'mm.core.courses', 'mm.core.emulator', 'mm.core.fileuploader', 'mm.core.grades', 'mm.core.login', 'mm.core.question', 'mm.core.settings', 'mm.core.sharedfiles', 'mm.core.sidemenu', 'mm.core.textviewer', 'mm.core.user', 'mm.addons.badges', 'mm.addons.calendar', 'mm.addons.competency', 'mm.addons.coursecompletion', 'mm.addons.files', 'mm.addons.frontpage', 'mm.addons.grades', 'mm.addons.messageoutput', 'mm.addons.messages', 'mm.addons.myoverview', 'mm.addons.notes', 'mm.addons.notifications', 'mm.addons.participants', 'mm.addons.pushnotifications', 'mm.addons.remotestyles', 'mm.addons.messageoutput_airnotifier', 'mm.addons.mod_assign', 'mm.addons.mod_book', 'mm.addons.mod_chat', 'mm.addons.mod_choice', 'mm.addons.mod_data', 'mm.addons.mod_feedback', 'mm.addons.mod_folder', 'mm.addons.mod_forum', 'mm.addons.mod_glossary', 'mm.addons.mod_imscp', 'mm.addons.mod_label', 'mm.addons.mod_lesson', 'mm.addons.mod_lti', 'mm.addons.mod_page', 'mm.addons.mod_quiz', 'mm.addons.mod_resource', 'mm.addons.mod_scorm', 'mm.addons.mod_survey', 'mm.addons.mod_url', 'mm.addons.mod_wiki', 'mm.addons.qbehaviour_adaptive', 'mm.addons.qbehaviour_adaptivenopenalty', 'mm.addons.qbehaviour_deferredcbm', 'mm.addons.qbehaviour_deferredfeedback', 'mm.addons.qbehaviour_immediatecbm', 'mm.addons.qbehaviour_immediatefeedback', 'mm.addons.qbehaviour_informationitem', 'mm.addons.qbehaviour_interactive', 'mm.addons.qbehaviour_interactivecountback', 'mm.addons.qbehaviour_manualgraded', 'mm.addons.qtype_calculated', 'mm.addons.qtype_calculatedmulti', 'mm.addons.qtype_calculatedsimple', 'mm.addons.qtype_ddimageortext', 'mm.addons.qtype_ddwtos', 'mm.addons.qtype_ddmarker', 'mm.addons.qtype_description', 'mm.addons.qtype_essay', 'mm.addons.qtype_gapselect', 'mm.addons.qtype_match', 'mm.addons.qtype_multianswer', 'mm.addons.qtype_multichoice', 'mm.addons.qtype_numerical', 'mm.addons.qtype_randomsamatch', 'mm.addons.qtype_shortanswer', 'mm.addons.qtype_truefalse', 'mm.addons.userprofilefield_checkbox', 'mm.addons.userprofilefield_datetime', 'mm.addons.userprofilefield_menu', 'mm.addons.userprofilefield_text', 'mm.addons.userprofilefield_textarea', 'ngCordova', 'angular-md5', 'pascalprecht.translate', 'ngAria', 'oc.lazyLoad', 'ckeditor',
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.comments', 'mm.core.contentlinks', 'mm.core.course', 'mm.core.courses', 'mm.core.emulator', 'mm.core.fileuploader', 'mm.core.login', 'mm.core.grades', 'mm.core.question', 'mm.core.settings', 'mm.core.sidemenu', 'mm.core.sharedfiles', 'mm.core.user', 'mm.core.textviewer', 'mm.addons.badges', 'mm.addons.calendar', 'mm.addons.competency', 'mm.addons.coursecompletion', 'mm.addons.files', 'mm.addons.frontpage', 'mm.addons.grades', 'mm.addons.messageoutput', 'mm.addons.messages', 'mm.addons.myoverview', 'mm.addons.notes', 'mm.addons.notifications', 'mm.addons.participants', 'mm.addons.pushnotifications', 'mm.addons.remotestyles', 'mm.addons.messageoutput_airnotifier', 'mm.addons.mod_assign', 'mm.addons.mod_book', 'mm.addons.mod_chat', 'mm.addons.mod_choice', 'mm.addons.mod_data', 'mm.addons.mod_feedback', 'mm.addons.mod_folder', 'mm.addons.mod_forum', 'mm.addons.mod_glossary', 'mm.addons.mod_imscp', 'mm.addons.mod_label', 'mm.addons.mod_lesson', 'mm.addons.mod_lti', 'mm.addons.mod_page', 'mm.addons.mod_quiz', 'mm.addons.mod_resource', 'mm.addons.mod_scorm', 'mm.addons.mod_survey', 'mm.addons.mod_url', 'mm.addons.mod_wiki', 'mm.addons.mod_workshop', 'mm.addons.qbehaviour_adaptive', 'mm.addons.qbehaviour_adaptivenopenalty', 'mm.addons.qbehaviour_deferredcbm', 'mm.addons.qbehaviour_deferredfeedback', 'mm.addons.qbehaviour_immediatecbm', 'mm.addons.qbehaviour_immediatefeedback', 'mm.addons.qbehaviour_informationitem', 'mm.addons.qbehaviour_interactive', 'mm.addons.qbehaviour_interactivecountback', 'mm.addons.qbehaviour_manualgraded', 'mm.addons.qtype_calculated', 'mm.addons.qtype_calculatedmulti', 'mm.addons.qtype_calculatedsimple', 'mm.addons.qtype_ddimageortext', 'mm.addons.qtype_ddmarker', 'mm.addons.qtype_ddwtos', 'mm.addons.qtype_description', 'mm.addons.qtype_essay', 'mm.addons.qtype_gapselect', 'mm.addons.qtype_match', 'mm.addons.qtype_multianswer', 'mm.addons.qtype_multichoice', 'mm.addons.qtype_numerical', 'mm.addons.qtype_randomsamatch', 'mm.addons.qtype_shortanswer', 'mm.addons.qtype_truefalse', 'mm.addons.userprofilefield_checkbox', 'mm.addons.userprofilefield_datetime', 'mm.addons.userprofilefield_menu', 'mm.addons.userprofilefield_text', 'mm.addons.userprofilefield_textarea', 'ngCordova', 'angular-md5', 'pascalprecht.translate', 'ngAria', 'oc.lazyLoad', 'ckeditor',
             'ngMessages', 'ngAnimate'])
 .run(["$ionicPlatform", function($ionicPlatform) {
     $ionicPlatform.ready(function() {
@@ -1390,10 +1390,11 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(appStores);
     $mmSitesFactoryProvider.registerStores(siteStores);
 }])
-.factory('$mmFilepool', ["$q", "$log", "$timeout", "$mmApp", "$mmFS", "$mmWS", "$mmSitesManager", "$mmEvents", "md5", "mmFilepoolStore", "mmFilepoolLinksStore", "mmFilepoolQueueStore", "mmFilepoolFolder", "mmFilepoolQueueProcessInterval", "mmCoreEventQueueEmpty", "mmCoreDownloaded", "mmCoreDownloading", "mmCoreNotDownloaded", "mmCoreOutdated", "mmCoreNotDownloadable", "mmFilepoolPackagesStore", "mmCoreEventPackageStatusChanged", "$mmText", "$mmUtil", "mmFilepoolWifiDownloadThreshold", "mmFilepoolDownloadThreshold", function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
+.factory('$mmFilepool', ["$q", "$log", "$timeout", "$mmApp", "$mmFS", "$mmWS", "$mmSitesManager", "$mmEvents", "md5", "mmFilepoolStore", "mmFilepoolLinksStore", "mmFilepoolQueueStore", "mmFilepoolFolder", "mmFilepoolQueueProcessInterval", "mmCoreEventQueueEmpty", "mmCoreDownloaded", "mmCoreDownloading", "mmCoreNotDownloaded", "mmCoreOutdated", "mmCoreNotDownloadable", "mmFilepoolPackagesStore", "mmCoreEventPackageStatusChanged", "$mmText", "$mmUtil", "mmFilepoolWifiDownloadThreshold", "mmFilepoolDownloadThreshold", "$mmPluginFileDelegate", function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
         mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty,
         mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmFilepoolPackagesStore,
-        mmCoreEventPackageStatusChanged, $mmText, $mmUtil, mmFilepoolWifiDownloadThreshold, mmFilepoolDownloadThreshold) {
+        mmCoreEventPackageStatusChanged, $mmText, $mmUtil, mmFilepoolWifiDownloadThreshold, mmFilepoolDownloadThreshold,
+        $mmPluginFileDelegate) {
     $log = $log.getInstance('$mmFilepool');
     var self = {},
         tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
@@ -1404,7 +1405,6 @@ angular.module('mm.core')
             new RegExp('(\\?|&)preview=[A-Za-z0-9]+'),
             new RegExp('(\\?|&)offline=[0-1]', 'g')
         ],
-        revisionRegex = new RegExp('/content/([0-9]+)/'),
         queueDeferreds = {}, 
         packagesPromises = {}, 
         filePromises = {}, 
@@ -2249,6 +2249,14 @@ angular.module('mm.core')
         return revision;
     };
     self.getRevisionFromUrl = function(url) {
+        var args = getPluginFileArgs(url);
+        if (!args) {
+            return 0;
+        }
+        var revisionRegex = $mmPluginFileDelegate.getComponentRevisionRegExp(args);
+        if (!revisionRegex) {
+            return 0;
+        }
         var matches = url.match(revisionRegex);
         if (matches && typeof matches[1] != 'undefined') {
             return parseInt(matches[1]);
@@ -2541,7 +2549,11 @@ angular.module('mm.core')
         });
     };
     self._removeRevisionFromUrl = function(url) {
-        return url.replace(revisionRegex, '/content/0/');
+        var args = getPluginFileArgs(url);
+        if (!args) {
+            return url;
+        }
+        return $mmPluginFileDelegate.removeRevisionFromUrl(url, args);
     };
     self._fillExtensionInFile = function(fileObject, siteId) {
         var extension;
@@ -2760,6 +2772,17 @@ angular.module('mm.core')
             });
         });
     };
+    function getPluginFileArgs(url) {
+        if (!$mmUtil.isPluginFileUrl(url)) {
+            return false;
+        }
+        var relativePath = url.substr(url.indexOf('/pluginfile.php') + 16),
+            args = relativePath.split('/');
+        if (args.length < 3) {
+            return false;
+        }
+        return args;
+    }
     return self;
 }])
 .run(["$ionicPlatform", "$timeout", "$mmFilepool", "$mmEvents", "mmCoreEventOnlineStatusChanged", function($ionicPlatform, $timeout, $mmFilepool, $mmEvents, mmCoreEventOnlineStatusChanged) {
@@ -3914,9 +3937,15 @@ angular.module('mm.core')
     };
     return self;
 }])
+.factory('$mmLangErrorHandler', ["$q", function($q) {
+    return function() {
+        return $q.when({});
+    };
+}])
 .config(["$translateProvider", "$translatePartialLoaderProvider", "mmCoreConfigConstants", function($translateProvider, $translatePartialLoaderProvider, mmCoreConfigConstants) {
     $translateProvider.useLoader('$translatePartialLoader', {
-        urlTemplate: '{part}/{lang}.json'
+        urlTemplate: '{part}/{lang}.json',
+        loadFailureHandler: '$mmLangErrorHandler'
     });
     $translatePartialLoaderProvider.addPart('build/lang');
     var lang = mmCoreConfigConstants.default_lang || 'en';
@@ -4287,7 +4316,7 @@ angular.module('mm.core')
 }]);
 
 angular.module('mm.core')
-.constant('mmCoreLogEnabledDefault', true) 
+.constant('mmCoreLogEnabledDefault', false) 
 .constant('mmCoreLogEnabledConfigName', 'debug_enabled')
 .provider('$mmLog', ["mmCoreLogEnabledDefault", function(mmCoreLogEnabledDefault) {
     var isEnabled = mmCoreLogEnabledDefault,
@@ -4355,6 +4384,94 @@ angular.module('mm.core')
     $mmLog.init();
 }]);
 
+angular.module('mm.core')
+.provider('$mmPluginFileDelegate', function() {
+    var pluginHandlers = {},
+        self = {};
+    self.registerHandler = function(addon, component, handler) {
+        if (typeof pluginHandlers[component] !== 'undefined') {
+            console.log("$mmPluginFileDelegateProvider: Addon '" + pluginHandlers[component].addon + "' already registered as handler for '" + component + "'");
+            return false;
+        }
+        console.log("$mmPluginFileDelegateProvider: Registered addon '" + addon + "' as pluginfile handler.");
+        pluginHandlers[component] = {
+            addon: addon,
+            handler: handler,
+            instance: undefined
+        };
+        return true;
+    };
+    self.$get = ["$log", "$mmSite", "$mmUtil", "$q", function($log, $mmSite, $mmUtil, $q) {
+        var self = {},
+            enabledHandlers = {},
+            lastUpdateHandlersStart;
+        $log = $log.getInstance('$mmPluginFileDelegate');
+        function getPluginHandler(pluginType) {
+            if (typeof enabledHandlers[pluginType] != 'undefined') {
+                return enabledHandlers[pluginType];
+            }
+        }
+        self.getComponentRevisionRegExp = function(args) {
+            var handler = getPluginHandler(args[1]);
+            if (handler && handler.getComponentRevisionRegExp) {
+                return handler.getComponentRevisionRegExp(args);
+            }
+            return false;
+        };
+        self.removeRevisionFromUrl = function(url, args) {
+            var handler = getPluginHandler(args[1]);
+            if (handler && handler.getComponentRevisionRegExp && handler.getComponentRevisionReplace) {
+                var revisionRegex = handler.getComponentRevisionRegExp(args);
+                if (revisionRegex) {
+                    replace = handler.getComponentRevisionReplace(args);
+                    return url.replace(revisionRegex, replace);
+                }
+            }
+            return url;
+        };
+        self.isLastUpdateCall = function(time) {
+            if (!lastUpdateHandlersStart) {
+                return true;
+            }
+            return time == lastUpdateHandlersStart;
+        };
+        self.updateHandler = function(pluginType, handlerInfo, time) {
+            var siteId = $mmSite.getId();
+            if (typeof handlerInfo.instance === 'undefined') {
+                handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
+            }
+            var enabled = $mmSite.isLoggedIn();
+            if (self.isLastUpdateCall(time) && $mmSite.getId() === siteId) {
+                if (enabled) {
+                    enabledHandlers[pluginType] = handlerInfo.instance;
+                } else {
+                    delete enabledHandlers[pluginType];
+                }
+            }
+        };
+        self.updateHandlers = function() {
+            var promises = [],
+                now = new Date().getTime();
+            $log.debug('Updating handlers for current site.');
+            lastUpdateHandlersStart = now;
+            angular.forEach(pluginHandlers, function(handlerInfo, pluginType) {
+                promises.push(self.updateHandler(pluginType, handlerInfo, now));
+            });
+            return $q.all(promises).then(function() {
+                return true;
+            }, function() {
+                return true;
+            });
+        };
+        return self;
+    }];
+    return self;
+})
+.run(["$mmEvents", "mmCoreEventLogin", "mmCoreEventSiteUpdated", "mmCoreEventRemoteAddonsLoaded", "$mmPluginFileDelegate", function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventRemoteAddonsLoaded, $mmPluginFileDelegate) {
+    $mmEvents.on(mmCoreEventLogin, $mmPluginFileDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmPluginFileDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmPluginFileDelegate.updateHandlers);
+}]);
 angular.module('mm.core')
 .factory('$mmSite', ["$mmSitesManager", "$mmSitesFactory", function($mmSitesManager, $mmSitesFactory) {
     var self = {},
@@ -4524,7 +4641,10 @@ angular.module('mm.core')
                 '2.9': 2015051100,
                 '3.0': 2015111600,
                 '3.1': 2016052300,
-                '3.2': 2016120500
+                '3.2': 2016120500,
+                '3.3': 2017051500,
+                '3.4': 2017111300,
+                '3.5': 2018051200 
             };
         function Site(id, siteurl, token, infos, privateToken, config, loggedOut) {
             this.id = id;
@@ -5598,6 +5718,19 @@ angular.module('mm.core')
                 }
             });
             return formattedSites;
+        });
+    };
+    self.sortSites = function(sites) {
+        return sites.sort(function(a, b) {
+            var compareA = a.siteurl.toLowerCase(),
+                compareB = b.siteurl.toLowerCase(),
+                compare = compareA.localeCompare(compareB);
+            if (compare !== 0) {
+                return compare;
+            }
+            compareA = a.fullname.toLowerCase().trim();
+            compareB = b.fullname.toLowerCase().trim();
+            return compareA.localeCompare(compareB);
         });
     };
     self.getSitesIds = function() {
@@ -7643,6 +7776,23 @@ angular.module('mm.core')
                 };
             });
         };
+        self.makeMenuFromList = function(list, defaultLabel, separator, defaultValue) {
+            separator = separator || ',';
+            list = list.split(separator);
+            list = list.map(function (label, index) {
+                return {
+                    label: label.trim(),
+                    value: index + 1
+                };
+            });
+            if (defaultLabel) {
+                list.unshift({
+                    label: defaultLabel,
+                    value: defaultValue || 0
+                });
+            }
+            return list;
+        };
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
             var entries = getEntries('', obj);
             if (sort) {
@@ -7960,6 +8110,52 @@ angular.module('mm.core')
                 var matches = entry.match(regex);
                 return matches && matches.length;
             });
+        };
+        self.filterUndefinedItemsInArray = function(items) {
+            return items.filter(function(item) {
+                return typeof item != "undefined";
+            });
+        };
+        self.getInfoValuesFromForm = function(form) {
+            if (!form || !form.elements) {
+                return {};
+            }
+            var formData = {},
+                simpleCheckboxes = {};
+            angular.forEach(form.elements, function(element) {
+                var name = element.name || '';
+                if (element.type == 'submit' || element.tagName == 'BUTTON') {
+                    return;
+                }
+                if (!name) {
+                    $log.debug('Form element without name.', element);
+                    return;
+                }
+                switch (element.type) {
+                    case 'checkbox':
+                        if (typeof simpleCheckboxes[name] == "undefined") {
+                           simpleCheckboxes[name] = {};
+                        }
+                        simpleCheckboxes[name][element.value] = !!element.checked;
+                        break;
+                    case 'radio':
+                        if (element.checked) {
+                            formData[name] = element.value;
+                        }
+                        break;
+                    default:
+                        formData[name] = element.value;
+                }
+            });
+            angular.forEach(simpleCheckboxes, function(checkbox, name) {
+                var keys = Object.keys(checkbox);
+                if (keys.length == 1 && keys[0] == "on") {
+                    formData[name] = checkbox.on;
+                } else {
+                    formData[name] = checkbox;
+                }
+            });
+            return formData;
         };
         return self;
     }];
@@ -8587,7 +8783,8 @@ angular.module('mm.core')
             component: '@?',
             componentId: '@?',
             allowOffline: '@?',
-            mimetypes: '=?'
+            acceptedTypes: '=?',
+            mimetypes: '=?',
         },
         link: function(scope) {
             var allowOffline = scope.allowOffline && scope.allowOffline !== 'false';
@@ -8602,11 +8799,15 @@ angular.module('mm.core')
                 scope.maxSubmissions = $translate.instant('mm.core.unknown');
                 scope.unlimitedFiles = true;
             }
+            if (scope.acceptedTypes && scope.acceptedTypes.trim()) {
+                scope.filetypes = $mmFileUploaderHelper.prepareFiletypeList(scope.acceptedTypes);
+            }
             scope.add = function() {
                 if (!allowOffline && !$mmApp.isOnline()) {
                     $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
                 } else {
-                    return $mmFileUploaderHelper.selectFile(maxSize, allowOffline, undefined, undefined, scope.mimetypes)
+                    var mimetypes = scope.filetypes && scope.filetypes.mimetypes || scope.mimetypes;
+                    return $mmFileUploaderHelper.selectFile(maxSize, allowOffline, undefined, undefined, mimetypes)
                             .then(function(result) {
                         scope.files.push(result);
                     });
@@ -8789,33 +8990,54 @@ angular.module('mm.core')
 }]);
 
 angular.module('mm.core')
-.directive('mmCompletion', ["$mmSite", "$mmUtil", "$mmText", "$translate", "$q", function($mmSite, $mmUtil, $mmText, $translate, $q) {
+.directive('mmCompletion', ["$mmSite", "$mmUtil", "$mmText", "$translate", "$q", "$mmUser", function($mmSite, $mmUtil, $mmText, $translate, $q, $mmUser) {
     function showStatus(scope) {
         var langKey,
-            moduleName = scope.moduleName || '';
+            moduleName = scope.moduleName || '',
+            image = false;
         if (scope.completion.tracking === 1 && scope.completion.state === 0) {
-            scope.completionImage = 'img/completion/completion-manual-n.svg';
+            image = 'completion-manual-n';
             langKey = 'mm.core.completion-alt-manual-n';
         } else if(scope.completion.tracking === 1 && scope.completion.state === 1) {
-            scope.completionImage = 'img/completion/completion-manual-y.svg';
+            image = 'completion-manual-y';
             langKey = 'mm.core.completion-alt-manual-y';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 0) {
-            scope.completionImage = 'img/completion/completion-auto-n.svg';
+            image = 'completion-auto-n';
             langKey = 'mm.core.completion-alt-auto-n';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 1) {
-            scope.completionImage = 'img/completion/completion-auto-y.svg';
+            image = 'completion-auto-y';
             langKey = 'mm.core.completion-alt-auto-y';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 2) {
-            scope.completionImage = 'img/completion/completion-auto-pass.svg';
+            image = 'completion-auto-pass';
             langKey = 'mm.core.completion-alt-auto-pass';
         } else if(scope.completion.tracking === 2 && scope.completion.state === 3) {
-            scope.completionImage = 'img/completion/completion-auto-fail.svg';
+            image = 'completion-auto-fail';
             langKey = 'mm.core.completion-alt-auto-fail';
         }
+        if (image) {
+            if (scope.completion.overrideby > 0) {
+                image += '-override';
+            }
+            scope.completionImage = 'img/completion/' + image + '.svg';
+        }
         if (moduleName) {
-            $mmText.formatText(moduleName, true, true, 50).then(function(formatted) {
-                $translate(langKey, {$a: formatted}).then(function(translated) {
-                    scope.completionDescription = translated;
+            $mmText.formatText(moduleName, true, true, 50).then(function(modNameFormatted) {
+                var promise;
+                if (scope.completion.overrideby > 0) {
+                    langKey += '-override';
+                    promise = $mmUser.getProfile(scope.completion.overrideby, scope.completion.courseId, true).then(function(profile) {
+                        return {
+                            overrideuser: profile.fullname,
+                            modname: modNameFormatted
+                        };
+                    });
+                } else {
+                    promise = $q.when(modNameFormatted);
+                }
+                return promise.then(function(translateParams) {
+                    $translate(langKey, {$a: translateParams}).then(function(translated) {
+                        scope.completionDescription = translated;
+                    });
                 });
             });
         }
@@ -8829,7 +9051,7 @@ angular.module('mm.core')
             moduleName: '=?'
         },
         templateUrl: 'core/templates/completion.html',
-        link: function(scope, element, attrs) {
+        link: function(scope) {
             if (scope.completion) {
                 showStatus(scope);
             }
@@ -8859,7 +9081,7 @@ angular.module('mm.core')
                     });
                     return false;
                 }
-            }
+            };
         }
     };
 }]);
@@ -9350,7 +9572,7 @@ angular.module('mm.core')
 }]);
 
 angular.module('mm.core')
-.directive('mmFormatText', ["$interpolate", "$mmText", "$compile", "$translate", "$mmUtil", function($interpolate, $mmText, $compile, $translate, $mmUtil) {
+.directive('mmFormatText', ["$interpolate", "$mmText", "$compile", "$translate", "$mmUtil", "$mmSitesManager", "$mmFS", function($interpolate, $mmText, $compile, $translate, $mmUtil, $mmSitesManager, $mmFS) {
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
     function addExternalContent(el, component, componentId, siteId) {
@@ -9441,13 +9663,19 @@ angular.module('mm.core')
         });
     }
     function formatContents(scope, element, attrs, text) {
-        var siteId = scope.siteid,
+        var siteId = attrs.siteid,
             component = attrs.component,
-            componentId = attrs.componentId;
-        return $mmText.formatText(text, attrs.clean, attrs.singleline).then(function(formatted) {
+            componentId = attrs.componentId,
+            site;
+        return $mmSitesManager.getSite(siteId).catch(function() {
+        }).then(function(siteInstance) {
+            site = siteInstance;
+            return $mmText.formatText(text, attrs.clean, attrs.singleline);
+        }).then(function(formatted) {
             var el = element[0],
                 dom = angular.element('<div>').html(formatted), 
-                images = dom.find('img');
+                images = dom.find('img'),
+                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
             angular.forEach(dom.find('a'), function(anchor) {
                 anchor.setAttribute('mm-link', '');
                 anchor.setAttribute('capture-link', true);
@@ -9489,7 +9717,9 @@ angular.module('mm.core')
                 treatMedia(el, component, componentId, siteId);
                 el.setAttribute('data-tap-disabled', true);
             });
-            angular.forEach(dom.find('iframe'), addMediaAdaptClass);
+            angular.forEach(dom.find('iframe'), function(el) {
+                treatIframe(el, site, canTreatVimeo);
+            });
             if (ionic.Platform.isIOS()) {
                 angular.forEach(dom.find('select'), function(select) {
                     select.setAttribute('mm-ios-select-fix', '');
@@ -9546,6 +9776,23 @@ angular.module('mm.core')
         angular.forEach(angular.element(el).find('track'), function(track) {
             addExternalContent(track, component, componentId, siteId);
         });
+    }
+    function treatIframe(el, site, canTreatVimeo) {
+        addMediaAdaptClass(el);
+        if (el.src && canTreatVimeo) {
+            var matches = el.src.match(/https?:\/\/player\.vimeo\.com\/video\/([^\/]*)/);
+            if (matches && matches[1]) {
+                var newUrl = $mmFS.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                        matches[1] + '&token=' + site.getToken();
+                if (el.width) {
+                    newUrl = newUrl + '&width=' + el.width;
+                }
+                if (el.height) {
+                    newUrl = newUrl + '&height=' + el.height;
+                }
+                el.src = newUrl;
+            }
+        }
     }
     return {
         restrict: 'EA',
@@ -11383,7 +11630,7 @@ angular.module('mm.core.courses', ['mm.core.contentlinks', 'mm.core.sidemenu'])
 .constant('mmCoursesEnrolInvalidKey', 'mmCoursesEnrolInvalidKey')
 .constant('mmCoursesEventMyCoursesUpdated', 'my_courses_updated')
 .constant('mmCoursesEventMyCoursesRefreshed', 'my_courses_refreshed') 
-.constant('mmCoursesEventCourseOptionsInvalidated', 'course_options_invalidated')
+.constant('mmCoursesEventCourseOptionsInvalidated', 'course_options_invalidated') 
 .constant('mmCoursesAccessMethods', {
      guest: 'guest',
      default: 'default'
@@ -11495,44 +11742,6 @@ angular.module('mm.core.fileuploader', ['mm.core'])
     $mmEvents.on(mmCoreEventLogout, $mmFileUploaderDelegate.clearSiteHandlers);
 }]);
 
-angular.module('mm.core.grades', [])
-.constant('mmCoreGradeTypeNone', 0) 
-.constant('mmCoreGradeTypeValue', 1) 
-.constant('mmCoreGradeTypeScale', 2) 
-.constant('mmCoreGradeTypeText', 3) 
-.config(["$stateProvider", function($stateProvider) {
-    $stateProvider
-    .state('site.grades', {
-        url: '/grades',
-        views: {
-            'site': {
-                templateUrl: 'core/components/grades/templates/table.html',
-                controller: 'mmGradesTableCtrl'
-            }
-        },
-        params: {
-            course: null,
-            userid: null,
-            courseid: null,
-            forcephoneview: null
-        }
-    })
-    .state('site.grade', {
-        url: '/grade',
-        views: {
-            'site': {
-                templateUrl: 'core/components/grades/templates/grade.html',
-                controller: 'mmGradesGradeCtrl'
-            }
-        },
-        params: {
-            courseid: null,
-            userid: null,
-            gradeid: null
-        }
-    });
-}]);
-
 angular.module('mm.core.login', [])
 .constant('mmCoreLoginTokenChangePassword', '*changepassword*') 
 .constant('mmCoreLoginSiteCheckedEvent', 'mm_login_site_checked')
@@ -11621,6 +11830,15 @@ angular.module('mm.core.login', [])
         cache: false,
         params: {
             siteid: ''
+        }
+    })
+    .state('mm_login.forgottenpassword', {
+        url: '/forgottenpassword',
+        templateUrl: 'core/components/login/templates/forgottenpassword.html',
+        controller: 'mmLoginForgottenPasswordCtrl',
+        params: {
+            siteurl: '',
+            username: ''
         }
     });
     $urlRouterProvider.otherwise(function($injector) {
@@ -11850,6 +12068,44 @@ angular.module('mm.core.login', [])
     }
 }]);
 
+angular.module('mm.core.grades', [])
+.constant('mmCoreGradeTypeNone', 0) 
+.constant('mmCoreGradeTypeValue', 1) 
+.constant('mmCoreGradeTypeScale', 2) 
+.constant('mmCoreGradeTypeText', 3) 
+.config(["$stateProvider", function($stateProvider) {
+    $stateProvider
+    .state('site.grades', {
+        url: '/grades',
+        views: {
+            'site': {
+                templateUrl: 'core/components/grades/templates/table.html',
+                controller: 'mmGradesTableCtrl'
+            }
+        },
+        params: {
+            course: null,
+            userid: null,
+            courseid: null,
+            forcephoneview: null
+        }
+    })
+    .state('site.grade', {
+        url: '/grade',
+        views: {
+            'site': {
+                templateUrl: 'core/components/grades/templates/grade.html',
+                controller: 'mmGradesGradeCtrl'
+            }
+        },
+        params: {
+            courseid: null,
+            userid: null,
+            gradeid: null
+        }
+    });
+}]);
+
 angular.module('mm.core.question', [])
 .constant('mmQuestionComponent', 'mmQuestion')
 .run(["$mmEvents", "mmCoreEventLogin", "mmCoreEventSiteUpdated", "$mmQuestionDelegate", "$mmQuestionBehaviourDelegate", "mmCoreEventRemoteAddonsLoaded", function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate,
@@ -11924,11 +12180,49 @@ angular.module('mm.core.settings', [])
     $mmEvents.on(mmCoreEventLogout, $mmSettingsDelegate.clearSiteHandlers);
 }]);
 
+angular.module('mm.core.sidemenu', [])
+.config(["$stateProvider", function($stateProvider) {
+    $stateProvider
+    .state('site', {
+        url: '/site',
+        templateUrl: 'core/components/sidemenu/templates/menu.html',
+        controller: 'mmSideMenuCtrl',
+        abstract: true,
+        cache: false,
+        onEnter: ["$ionicHistory", "$state", "$mmSite", function($ionicHistory, $state, $mmSite) {
+            $ionicHistory.clearHistory();
+            if (!$mmSite.isLoggedIn()) {
+                $state.go('mm_login.init');
+            }
+        }]
+    })
+    .state('site.iframe-view', {
+        url: '/iframe-view',
+        params: {
+            title: null,
+            url: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/sidemenu/templates/iframe.html',
+                controller: 'mmSideMenuIframeViewCtrl'
+            }
+        }
+    });
+}])
+.run(["$mmEvents", "mmCoreEventLogin", "mmCoreEventSiteUpdated", "mmCoreEventLogout", "$mmSideMenuDelegate", "mmCoreEventRemoteAddonsLoaded", function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmSideMenuDelegate,
+            mmCoreEventRemoteAddonsLoaded) {
+    $mmEvents.on(mmCoreEventLogin, $mmSideMenuDelegate.updateNavHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmSideMenuDelegate.updateNavHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmSideMenuDelegate.updateNavHandlers);
+    $mmEvents.on(mmCoreEventLogout, $mmSideMenuDelegate.clearSiteHandlers);
+}]);
+
 angular.module('mm.core.sharedfiles', ['mm.core'])
 .constant('mmSharedFilesFolder', 'sharedfiles')
 .constant('mmSharedFilesStore', 'shared_files')
 .constant('mmSharedFilesEventFileShared', 'file_shared')
-.constant('mmSharedFilesPickerPriority', 1000)
+.constant('mmSharedFilesPickerPriority', 1300)
 .config(["$stateProvider", "$mmFileUploaderDelegateProvider", "mmSharedFilesPickerPriority", function($stateProvider, $mmFileUploaderDelegateProvider, mmSharedFilesPickerPriority) {
     var chooseSiteState = {
             url: '/sharedfiles-choose-site',
@@ -11969,65 +12263,6 @@ angular.module('mm.core.sharedfiles', ['mm.core'])
         $ionicPlatform.on('resume', $mmSharedFilesHelper.searchIOSNewSharedFiles);
         $mmSharedFilesHelper.searchIOSNewSharedFiles();
     }
-}]);
-
-angular.module('mm.core.sidemenu', [])
-.config(["$stateProvider", function($stateProvider) {
-    $stateProvider
-    .state('site', {
-        url: '/site',
-        templateUrl: 'core/components/sidemenu/templates/menu.html',
-        controller: 'mmSideMenuCtrl',
-        abstract: true,
-        cache: false,
-        onEnter: ["$ionicHistory", "$state", "$mmSite", function($ionicHistory, $state, $mmSite) {
-            $ionicHistory.clearHistory();
-            if (!$mmSite.isLoggedIn()) {
-                $state.go('mm_login.init');
-            }
-        }]
-    })
-    .state('site.iframe-view', {
-        url: '/iframe-view',
-        params: {
-            title: null,
-            url: null
-        },
-        views: {
-            'site': {
-                templateUrl: 'core/components/sidemenu/templates/iframe.html',
-                controller: 'mmSideMenuIframeViewCtrl'
-            }
-        }
-    });
-}])
-.run(["$mmEvents", "mmCoreEventLogin", "mmCoreEventSiteUpdated", "mmCoreEventLogout", "$mmSideMenuDelegate", "mmCoreEventRemoteAddonsLoaded", function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmSideMenuDelegate,
-            mmCoreEventRemoteAddonsLoaded) {
-    $mmEvents.on(mmCoreEventLogin, $mmSideMenuDelegate.updateNavHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmSideMenuDelegate.updateNavHandlers);
-    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmSideMenuDelegate.updateNavHandlers);
-    $mmEvents.on(mmCoreEventLogout, $mmSideMenuDelegate.clearSiteHandlers);
-}]);
-
-angular.module('mm.core.textviewer', [])
-.config(["$stateProvider", function($stateProvider) {
-    $stateProvider
-    .state('site.mm_textviewer', {
-        url: '/mm_textviewer',
-        params: {
-            title: null,
-            content: null,
-            replacelinebreaks: null,
-            component: null,
-            componentId: null
-        },
-        views: {
-            'site': {
-                templateUrl: 'core/components/textviewer/templates/textviewer.html',
-                controller: 'mmTextViewerIndexCtrl'
-            }
-        }
-    });
 }]);
 
 angular.module('mm.core.user', ['mm.core.contentlinks'])
@@ -12094,6 +12329,27 @@ angular.module('mm.core.user', ['mm.core.contentlinks'])
             userid = parseInt(userid);
             if (userid > 0) {
                 $mmUser.deleteStoredUser(userid);
+            }
+        }
+    });
+}]);
+
+angular.module('mm.core.textviewer', [])
+.config(["$stateProvider", function($stateProvider) {
+    $stateProvider
+    .state('site.mm_textviewer', {
+        url: '/mm_textviewer',
+        params: {
+            title: null,
+            content: null,
+            replacelinebreaks: null,
+            component: null,
+            componentId: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/textviewer/templates/textviewer.html',
+                controller: 'mmTextViewerIndexCtrl'
             }
         }
     });
@@ -12632,7 +12888,6 @@ angular.module('mm.core.course')
     $scope.isDisabledInSite = $mmCourseDelegate.isModuleDisabledInSite(module.modname);
     $scope.isSupportedByTheApp = $mmCourseDelegate.hasContentHandler(module.modname);
     $scope.moduleName = $mmCourse.translateModuleName(module.modname);
-    $scope.isContributedPlugin = $scope.moduleName == $translate.instant('mm.core.mod_external-tool');
     $scope.description = module.description;
     $scope.title = module.name;
     $scope.url = module.url;
@@ -12799,7 +13054,7 @@ angular.module('mm.core.course')
             if (courseFullName) {
                 $scope.fullname = courseFullName;
             }
-            $mmCoursesDelegate.getNavHandlersForCourse(course, refresh, true).then(function(buttons) {
+            $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, false, true).then(function(buttons) {
                 $scope.courseActions = buttons.map(function(button) {
                     var newScope = $scope.$new();
                     $controller(button.controller, {$scope: newScope});
@@ -13662,6 +13917,7 @@ angular.module('mm.core.course')
                         $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId, section.id);
                 if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
                     module.completionstatus = completionStatus[module.id];
+                    module.completionstatus.courseId = courseId;
                 }
                 if (module.id == moduleId) {
                     var newScope = scope.$new();
@@ -14882,6 +15138,118 @@ angular.module('mm.core.course')
 }]);
 
 angular.module('mm.core.courses')
+.directive('mmCourseListItem', ["$mmCourses", "$translate", function($mmCourses, $translate) {
+    return {
+        restrict: 'E',
+        templateUrl: 'core/components/courses/templates/courselistitem.html',
+        scope: {
+            course: '=',
+        },
+        link: function(scope) {
+            var course = scope.course;
+            return $mmCourses.getUserCourse(course.id).then(function() {
+                course.isEnrolled = true;
+            }).catch(function() {
+                course.isEnrolled = false;
+                course.enrollment = [];
+                angular.forEach(course.enrollmentmethods, function(instance) {
+                    if (instance === 'self') {
+                        course.enrollment.push({
+                            name: $translate.instant('mm.courses.selfenrolment'),
+                            icon: 'ion-unlocked'
+                        });
+                    } else if (instance === 'guest') {
+                        course.enrollment.push({
+                            name: $translate.instant('mm.courses.allowguests'),
+                            icon: 'ion-person'
+                        });
+                    } else if (instance === 'paypal') {
+                        course.enrollment.push({
+                            name: $translate.instant('mm.courses.paypalaccepted'),
+                            img: 'img/icons/paypal.png'
+                        });
+                    }
+                });
+                if (course.enrollment.length == 0) {
+                    course.enrollment.push({
+                        name: $translate.instant('mm.courses.notenrollable'),
+                        icon: 'ion-locked'
+                    });
+                }
+            });
+        }
+    };
+}]);
+
+angular.module('mm.core.courses')
+.directive('mmCourseListProgress', ["$ionicActionSheet", "$mmCoursesDelegate", "$translate", "$controller", "$q", function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $q) {
+    function shouldShowActions(scope, refresh) {
+        scope.loaded = false;
+        return $mmCoursesDelegate.getNavHandlersForCourse(scope.course, refresh, true).then(function(handlers) {
+            scope.showActions = !!handlers.length;
+        }).catch(function(error) {
+            scope.showActions = false;
+            return $q.reject(error);
+        }).finally(function() {
+            scope.loaded = true;
+        });
+    }
+    return {
+        restrict: 'E',
+        templateUrl: 'core/components/courses/templates/courselistprogress.html',
+        transclude: true,
+        scope: {
+            course: '=',
+            roundProgress: '=?',
+            showSummary: "=?"
+        },
+        link: function(scope) {
+            var buttons;
+            shouldShowActions(scope, false);
+            scope.showCourseActions = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                scope.loaded = false;
+                $mmCoursesDelegate.getNavHandlersToDisplay(scope.course, false, false, true).then(function(handlers) {
+                    buttons = handlers.map(function(handler) {
+                        var newScope = scope.$new();
+                        $controller(handler.controller, {$scope: newScope});
+                        var title = newScope.title || "",
+                            icon = newScope.icon || false,
+                            buttonInfo = {
+                                text: (icon ? '<i class="icon ' + icon + '"></i>' : '') + $translate.instant(title),
+                                action: newScope.action || false,
+                                className: newScope.class || false,
+                                priority: handler.priority || false
+                            };
+                        newScope.$destroy();
+                        return buttonInfo;
+                    }).sort(function(a, b) {
+                        return b.priority - a.priority;
+                    });
+                }).finally(function() {
+                    scope.loaded = true;
+                    $ionicActionSheet.show({
+                        titleText: scope.course.fullname,
+                        buttons: buttons,
+                        cancelText: $translate.instant('mm.core.cancel'),
+                        buttonClicked: function(index) {
+                            if (angular.isFunction(buttons[index].action)) {
+                                return buttons[index].action($event, scope.course);
+                            }
+                            return false;
+                        },
+                        cancel: function() {
+                            return true;
+                        }
+                    });
+                });
+            };
+        }
+    };
+}]);
+
+angular.module('mm.core.courses')
 .controller('mmCoursesAvailableCtrl', ["$scope", "$mmCourses", "$q", "$mmUtil", "$mmSite", function($scope, $mmCourses, $q, $mmUtil, $mmSite) {
     function loadCourses() {
         var frontpageCourseId = $mmSite.getSiteHomeId();
@@ -15049,16 +15417,23 @@ angular.module('mm.core.courses')
 }]);
 
 angular.module('mm.core.courses')
-.controller('mmCoursesViewResultCtrl', ["$scope", "$stateParams", "$mmCourses", "$mmCoursesDelegate", "$mmUtil", "$translate", "$q", "$ionicModal", "$mmEvents", "$mmSite", "mmCoursesSearchComponent", "mmCoursesEnrolInvalidKey", "mmCoursesEventMyCoursesUpdated", "$timeout", function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
+.controller('mmCoursesViewResultCtrl', ["$scope", "$stateParams", "$mmCourses", "$mmCoursesDelegate", "$mmUtil", "$translate", "$q", "$ionicModal", "$mmEvents", "$mmSite", "mmCoursesSearchComponent", "mmCoursesEnrolInvalidKey", "mmCoursesEventMyCoursesUpdated", "$timeout", "$mmFS", "$rootScope", "$mmApp", "$ionicPlatform", function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
             $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated,
-            $timeout) {
+            $timeout, $mmFS, $rootScope, $mmApp, $ionicPlatform) {
     var course = angular.copy($stateParams.course || {}), 
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
         guestWSAvailable = $mmCourses.isGuestWSAvailable(),
         isGuestEnabled = false,
         guestInstanceId,
         enrollmentMethods,
-        waitStart = 0;
+        waitStart = 0,
+        enrolUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/index.php?id=' + course.id),
+        courseUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'course/view.php?id=' + course.id),
+        paypalReturnUrl = $mmFS.concatenatePaths($mmSite.getURL(), 'enrol/paypal/return.php'),
+        inAppLoadListener,
+        inAppFinishListener,
+        inAppExitListener,
+        appResumeListener;
     $scope.course = course;
     $scope.component = mmCoursesSearchComponent;
     $scope.handlersShouldBeShown = true;
@@ -15138,22 +15513,8 @@ angular.module('mm.core.courses')
         return $q.reject();
     }
     function loadCourseNavHandlers(refresh, guest) {
-        var promises = [],
-            navOptions,
-            admOptions;
-        promises.push($mmCourses.getUserNavigationOptions([course.id]).catch(function() {
-            return {};
-        }).then(function(options) {
-            navOptions = options;
-        }));
-        promises.push($mmCourses.getUserAdministrationOptions([course.id]).catch(function() {
-            return {};
-        }).then(function(options) {
-            admOptions = options;
-        }));
-        return $q.all(promises).then(function() {
-            var getHandlersFn = guest ? $mmCoursesDelegate.getNavHandlersForGuest : $mmCoursesDelegate.getNavHandlersFor;
-            course._handlers = getHandlersFn(course.id, refresh, navOptions[course.id], admOptions[course.id]);
+        return $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, guest, true).then(function(handlers) {
+            course._handlers = handlers;
             $scope.handlersShouldBeShown = true;
         });
     }
@@ -15162,12 +15523,10 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateCourse(course.id));
         promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
-        promises.push($mmCourses.invalidateUserNavigationOptionsForCourses([course.id]));
-        promises.push($mmCourses.invalidateUserAdministrationOptionsForCourses([course.id]));
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions(course.id));
         if (guestInstanceId) {
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }
-        $mmCoursesDelegate.clearCoursesHandlers(course.id);
         return $q.all(promises).finally(function() {
             return getCourse(true);
         });
@@ -15249,113 +15608,48 @@ angular.module('mm.core.courses')
             });
         }
     }
-}]);
-
-angular.module('mm.core.courses')
-.directive('mmCourseListItem', ["$mmCourses", "$translate", function($mmCourses, $translate) {
-    return {
-        restrict: 'E',
-        templateUrl: 'core/components/courses/templates/courselistitem.html',
-        scope: {
-            course: '=',
-        },
-        link: function(scope) {
-            var course = scope.course;
-            return $mmCourses.getUserCourse(course.id).then(function() {
-                course.isEnrolled = true;
-            }).catch(function() {
-                course.isEnrolled = false;
-                course.enrollment = [];
-                angular.forEach(course.enrollmentmethods, function(instance) {
-                    if (instance === 'self') {
-                        course.enrollment.push({
-                            name: $translate.instant('mm.courses.selfenrolment'),
-                            icon: 'ion-unlocked'
-                        });
-                    } else if (instance === 'guest') {
-                        course.enrollment.push({
-                            name: $translate.instant('mm.courses.allowguests'),
-                            icon: 'ion-person'
-                        });
+    if (course.enrollmentmethods && course.enrollmentmethods.indexOf('paypal') > -1) {
+        $scope.paypalEnabled = true;
+        $scope.paypalEnrol = function() {
+            var hasReturnedFromPaypal = false;
+            stopListeners();
+            $mmSite.openInAppWithAutoLogin(enrolUrl);
+            inAppLoadListener = $rootScope.$on('$cordovaInAppBrowser:loadstart', urlLoaded);
+            if (!$mmApp.isDevice()) {
+                inAppFinishListener = $rootScope.$on('$cordovaInAppBrowser:loadstop', urlLoaded);
+                appResumeListener = $ionicPlatform.on('resume', function() {
+                    if (!$scope.courseLoaded) {
+                        return;
                     }
-                });
-                if (course.enrollment.length == 0) {
-                    course.enrollment.push({
-                        name: $translate.instant('mm.courses.notenrollable'),
-                        icon: 'ion-locked'
-                    });
-                }
-            });
-        }
-    };
-}]);
-
-angular.module('mm.core.courses')
-.directive('mmCourseListProgress', ["$ionicActionSheet", "$mmCoursesDelegate", "$translate", "$controller", "$mmEvents", "mmCoursesEventCourseOptionsInvalidated", function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $mmEvents,
-        mmCoursesEventCourseOptionsInvalidated) {
-    return {
-        restrict: 'E',
-        templateUrl: 'core/components/courses/templates/courselistprogress.html',
-        transclude: true,
-        scope: {
-            course: '=',
-            roundProgress: '=?',
-            showSummary: "=?"
-        },
-        link: function(scope) {
-            var buttons, invObserver;
-            scope.loaded = false;
-            function updateButtons(refresh) {
-                scope.loaded = false;
-                $mmCoursesDelegate.getNavHandlersForCourse(scope.course, refresh, true).then(function(buttonsLoaded) {
-                    buttons = buttonsLoaded.map(function(button) {
-                        var newScope = scope.$new();
-                        $controller(button.controller, {$scope: newScope});
-                        var title = newScope.title || "",
-                            icon = newScope.icon || false,
-                            buttonInfo = {
-                                text: (icon ? '<i class="icon ' + icon + '"></i>' : '') + $translate.instant(title),
-                                action: newScope.action || false,
-                                className: newScope.class || false,
-                                priority: button.priority || false
-                            };
-                        newScope.$destroy();
-                        return buttonInfo;
-                    }).sort(function(a, b) {
-                        return b.priority - a.priority;
-                    });
-                }).finally(function() {
-                    scope.showActions = !!buttons.length;
-                    scope.loaded = true;
+                    $scope.courseLoaded = false;
+                    refreshData();
                 });
             }
-            updateButtons(false);
-            scope.showCourseActions = function($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $ionicActionSheet.show({
-                    titleText: scope.course.fullname,
-                    buttons: buttons,
-                    cancelText: $translate.instant('mm.core.cancel'),
-                    buttonClicked: function(index) {
-                        if (angular.isFunction(buttons[index].action)) {
-                            return buttons[index].action($event, scope.course);
-                        }
-                        return false;
-                    },
-                    cancel: function() {
-                        return true;
-                    }
-                });
-            };
-            invObserver = $mmEvents.on(mmCoursesEventCourseOptionsInvalidated, function() {
-                updateButtons(true);
-            });
-            scope.$on('$destroy', function() {
-                invObserver && invObserver.off && invObserver.off();
-            });
-        }
-    };
+            inAppExitListener = $rootScope.$on('$cordovaInAppBrowser:exit', inAppClosed);
+            function stopListeners() {
+                inAppLoadListener && inAppLoadListener();
+                inAppFinishListener && inAppFinishListener();
+                inAppExitListener && inAppExitListener();
+                appResumeListener && appResumeListener();
+            }
+            function urlLoaded(e, event) {
+                if (event.url.indexOf(paypalReturnUrl) != -1) {
+                    hasReturnedFromPaypal = true;
+                } else if (event.url.indexOf(courseUrl) != -1 && hasReturnedFromPaypal) {
+                    inAppClosed();
+                    $mmUtil.closeInAppBrowser();
+                }
+            }
+            function inAppClosed() {
+                stopListeners();
+                if (!$scope.courseLoaded) {
+                    return;
+                }
+                $scope.courseLoaded = false;
+                refreshData();
+            }
+        };
+    }
 }]);
 
 angular.module('mm.core.courses')
@@ -15380,6 +15674,38 @@ angular.module('mm.core.courses')
     };
     function getCategoriesCacheKey(categoryId, addSubcategories) {
         return 'mmCourses:categories:' + categoryId + ':' + addSubcategories;
+    }
+    function getCourseIdsForOptions(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var siteHomeId = site.getSiteHomeId();
+            if (courseIds.length == 1) {
+                return self.getUserCourses(true, siteId).then(function(courses) {
+                    var courseId = courseIds[0],
+                        useAllCourses = false;
+                    if (courseId == siteHomeId) {
+                        useAllCourses = true;
+                    } else {
+                        for (var i = 0; i < courses.length; i++) {
+                            if (courses[i].id == courseId) {
+                                useAllCourses = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (useAllCourses) {
+                        courseIds = courses.map(function(course) {
+                            return course.id;
+                        });
+                        courseIds.push(siteHomeId);
+                    }
+                    return courseIds;
+                }).catch(function() {
+                    return courseIds;
+                });
+            } else {
+                return courseIds;
+            }
+        });
     }
     self.isGetCategoriesAvailable = function() {
         return $mmSite.wsAvailable('core_course_get_categories');
@@ -15509,9 +15835,7 @@ angular.module('mm.core.courses')
         var promises = [],
             navOptions,
             admOptions;
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            courseIds.push(site.getSiteHomeId());
-            siteId = siteId || site.getId();
+        return getCourseIdsForOptions(courseIds, siteId).then(function(courseIds) {
             promises.push(self.getUserNavigationOptions(courseIds, siteId).catch(function() {
                 return {};
             }).then(function(options) {
@@ -15633,6 +15957,14 @@ angular.module('mm.core.courses')
     self.invalidateCourseGuestEnrolmentInfo = function(instanceId) {
         return $mmSite.invalidateWsCacheForKey(getCourseGuestEnrolmentInfoCacheKey(instanceId));
     };
+    self.invalidateCoursesOptions = function(courseIds, siteId) {
+        return getCourseIdsForOptions(courseIds, siteId).then(function(ids) {
+            var promises = [];
+            promises.push(self.invalidateUserAdministrationOptionsForCourses(ids, siteId));
+            promises.push(self.invalidateUserNavigationOptionsForCourses(ids, siteId));
+            return $q.all(promises);
+        });
+    };
     self.invalidateCourses = function(ids, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getCoursesCacheKey(ids));
@@ -15713,7 +16045,7 @@ angular.module('mm.core.courses')
                 } else if (response.warnings && response.warnings.length) {
                     var message;
                     angular.forEach(response.warnings, function(warning) {
-                        if (warning.warningcode == '2' || warning.warningcode == '4') { 
+                        if (warning.warningcode == '2' || warning.warningcode == '3' || warning.warningcode == '4') {
                             message = warning.message;
                         }
                     });
@@ -15751,8 +16083,8 @@ angular.module('mm.core.courses')
         };
         return true;
     };
-    self.$get = ["$mmUtil", "$q", "$log", "$mmSite", "mmCoursesAccessMethods", "$mmCourses", "$mmEvents", "mmCoursesEventCourseOptionsInvalidated", "mmCoursesEventMyCoursesRefreshed", function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods, $mmCourses, $mmEvents,
-            mmCoursesEventCourseOptionsInvalidated, mmCoursesEventMyCoursesRefreshed) {
+    self.$get = ["$mmUtil", "$q", "$log", "$mmSite", "mmCoursesAccessMethods", "$mmCourses", "$mmEvents", "mmCoursesEventMyCoursesRefreshed", function($mmUtil, $q, $log, $mmSite, mmCoursesAccessMethods, $mmCourses, $mmEvents,
+            mmCoursesEventMyCoursesRefreshed) {
         var enabledNavHandlers = {},
             coursesHandlers = {},
             self = {},
@@ -15775,14 +16107,21 @@ angular.module('mm.core.courses')
         self.clearAndInvalidateCoursesOptions = function(courseId) {
             var promises = [];
             $mmEvents.trigger(mmCoursesEventMyCoursesRefreshed);
-            promises.push($mmCourses.invalidateUserNavigationOptions());
-            promises.push($mmCourses.invalidateUserAdministrationOptions());
+            if (courseId) {
+                promises.push($mmCourses.invalidateCoursesOptions([courseId]));
+                promises.push(self.invalidateCourseHandlers(courseId));
+            } else {
+                promises.push($mmCourses.invalidateUserNavigationOptions());
+                promises.push($mmCourses.invalidateUserAdministrationOptions());
+                for (var cId in coursesHandlers) {
+                    promises.push(self.invalidateCourseHandlers(cId));
+                }
+            }
             self.clearCoursesHandlers(courseId);
-            return $q.all(promises).finally(function() {
-                $mmEvents.trigger(mmCoursesEventCourseOptionsInvalidated);
-            });
+            return $q.all(promises);
         };
         function getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise) {
+            courseId = parseInt(courseId, 10);
             if (coursesHandlers[courseId] && coursesHandlers[courseId].deferred &&
                     coursesHandlers[courseId].deferred.promise.$$state &&
                     coursesHandlers[courseId].deferred.promise.$$state.status === 0) {
@@ -15793,17 +16132,17 @@ angular.module('mm.core.courses')
                     access: accessData,
                     navOptions: navOptions,
                     admOptions: admOptions,
-                    handlers: [],
+                    enabledHandlers: [],
                     deferred: $q.defer()
                 };
                 self.updateNavHandlersForCourse(courseId, accessData, navOptions, admOptions);
             }
             if (waitForPromise) {
                 return coursesHandlers[courseId].deferred.promise.then(function() {
-                    return coursesHandlers[courseId].handlers;
+                    return coursesHandlers[courseId].enabledHandlers;
                 });
             }
-            return coursesHandlers[courseId].handlers;
+            return coursesHandlers[courseId].enabledHandlers;
         }
         self.getNavHandlersFor = function(courseId, refresh, navOptions, admOptions, waitForPromise) {
             var accessData = {
@@ -15812,16 +16151,7 @@ angular.module('mm.core.courses')
             return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise);
         };
         self.getNavHandlersForCourse = function(course, refresh, waitForPromise) {
-            var promise;
-            if (typeof course.navOptions == "undefined" || typeof course.admOptions == "undefined" || refresh) {
-                promise = $mmCourses.getCoursesOptions([course.id]).then(function(options) {
-                    course.navOptions = options.navOptions[course.id];
-                    course.admOptions = options.admOptions[course.id];
-                });
-            } else {
-                promise = $q.when();
-            }
-            return promise.then(function() {
+            return loadCourseOptions(course, refresh).then(function() {
                 return self.getNavHandlersFor(course.id, refresh, course.navOptions, course.admOptions, waitForPromise);
             });
         };
@@ -15830,6 +16160,58 @@ angular.module('mm.core.courses')
                 type: mmCoursesAccessMethods.guest
             };
             return getNavHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions, waitForPromise);
+        };
+        self.getNavHandlersToDisplay = function(course, refresh, isGuest, waitForPromise, navOptions, admOptions) {
+            course.id = parseInt(course.id, 10);
+            var accessData = {
+                type: isGuest ? mmCoursesAccessMethods.guest : mmCoursesAccessMethods.default
+            };
+            if (navOptions) {
+                course.navOptions = navOptions;
+            }
+            if (admOptions) {
+                course.admOptions = admOptions;
+            }
+            return loadCourseOptions(course, refresh).then(function() {
+                return getNavHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions, waitForPromise);
+            }).then(function() {
+                var handlersToDisplay = [],
+                    promises = [],
+                    promise;
+                angular.forEach(coursesHandlers[course.id].enabledHandlers, function(handler) {
+                    if (handler.instance.shouldDisplayForCourse) {
+                        promise = $q.when(handler.instance.shouldDisplayForCourse(
+                                course.id, accessData, course.navOptions, course.admOptions));
+                    } else {
+                        promise = $q.when(true);
+                    }
+                    promises.push(promise.then(function(enabled) {
+                        if (enabled) {
+                            handlersToDisplay.push({
+                                controller: handler.instance.getController(course.id),
+                                priority: handler.priority
+                            });
+                        }
+                    }));
+                });
+                return $mmUtil.allPromises(promises).then(function() {
+                    return handlersToDisplay;
+                });
+            });
+        };
+        self.invalidateCourseHandlers = function(courseId) {
+            var promises = [],
+                courseData = coursesHandlers[courseId];
+            if (!courseData) {
+                return $q.when();
+            }
+            angular.forEach(courseData.enabledHandlers, function(handler) {
+                if (handler && handler.instance && handler.instance.invalidateEnabledForCourse) {
+                    promises.push($q.when(
+                            handler.instance.invalidateEnabledForCourse(courseId, courseData.navOptions, courseData.admOptions)));
+                }
+            });
+            return $mmUtil.allPromises(promises);
         };
         self.isLastUpdateCall = function(time) {
             if (!lastUpdateHandlersStart) {
@@ -15843,6 +16225,18 @@ angular.module('mm.core.courses')
             }
             return time == lastUpdateHandlersForCoursesStart[courseId];
         };
+        function loadCourseOptions(course, refresh) {
+            var promise;
+            if (typeof course.navOptions == "undefined" || typeof course.admOptions == "undefined" || refresh) {
+                promise = $mmCourses.getCoursesOptions([course.id]).then(function(options) {
+                    course.navOptions = options.navOptions[course.id];
+                    course.admOptions = options.admOptions[course.id];
+                });
+            } else {
+                promise = $q.when();
+            }
+            return promise;
+        }
         self.updateNavHandler = function(addon, handlerInfo, time) {
             var promise,
                 siteId = $mmSite.getId();
@@ -15898,7 +16292,7 @@ angular.module('mm.core.courses')
                 siteId = $mmSite.getId(),
                 now = new Date().getTime();
             lastUpdateHandlersForCoursesStart[courseId] = now;
-            angular.forEach(enabledNavHandlers, function(handler) {
+            angular.forEach(enabledNavHandlers, function(handler, name) {
                 var promise = $q.when(handler.instance.isEnabledForCourse(courseId, accessData, navOptions, admOptions))
                         .then(function(enabled) {
                     if (enabled) {
@@ -15916,12 +16310,9 @@ angular.module('mm.core.courses')
                 return true;
             }).finally(function() {
                 if (self.isLastUpdateCourseCall(courseId, now) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
-                    $mmUtil.emptyArray(coursesHandlers[courseId].handlers);
+                    $mmUtil.emptyArray(coursesHandlers[courseId].enabledHandlers);
                     angular.forEach(enabledForCourse, function(handler) {
-                        coursesHandlers[courseId].handlers.push({
-                            controller: handler.instance.getController(courseId),
-                            priority: handler.priority
-                        });
+                        coursesHandlers[courseId].enabledHandlers.push(handler);
                     });
                     loaded[courseId] = true;
                     coursesHandlers[courseId].deferred.resolve();
@@ -16201,9 +16592,10 @@ angular.module('mm.core.emulator')
 }]);
 
 angular.module('mm.core.emulator')
-.factory('$mmEmulatorManager', ["$log", "$q", "$mmFS", "$mmEmulatorClipboard", "$mmEmulatorCustomURLScheme", "$mmEmulatorFile", "$mmEmulatorFileTransfer", "$mmEmulatorGlobalization", "$mmEmulatorInAppBrowser", "$mmEmulatorLocalNotifications", "$mmEmulatorPushNotifications", "$mmEmulatorZip", "$mmUtil", "$mmEmulatorMediaCapture", "$mmEmulatorNetwork", function($log, $q, $mmFS, $mmEmulatorClipboard, $mmEmulatorCustomURLScheme, $mmEmulatorFile,
+.factory('$mmEmulatorManager', ["$log", "$q", "$mmFS", "$mmEmulatorClipboard", "$mmEmulatorCustomURLScheme", "$mmEmulatorFile", "$mmEmulatorFileTransfer", "$mmEmulatorGlobalization", "$mmEmulatorInAppBrowser", "$mmEmulatorLocalNotifications", "$mmEmulatorPushNotifications", "$mmEmulatorZip", "$mmUtil", "$mmEmulatorMediaCapture", "$mmEmulatorNetwork", "$ionicPlatform", "$mmApp", function($log, $q, $mmFS, $mmEmulatorClipboard, $mmEmulatorCustomURLScheme, $mmEmulatorFile,
             $mmEmulatorFileTransfer, $mmEmulatorGlobalization, $mmEmulatorInAppBrowser, $mmEmulatorLocalNotifications,
-            $mmEmulatorPushNotifications, $mmEmulatorZip, $mmUtil, $mmEmulatorMediaCapture, $mmEmulatorNetwork) {
+            $mmEmulatorPushNotifications, $mmEmulatorZip, $mmUtil, $mmEmulatorMediaCapture, $mmEmulatorNetwork,
+            $ionicPlatform, $mmApp) {
     $log = $log.getInstance('$mmEmulatorManager');
     var self = {};
     self.loadHTMLAPI = function() {
@@ -16224,6 +16616,11 @@ angular.module('mm.core.emulator')
         promises.push($mmEmulatorPushNotifications.load());
         promises.push($mmEmulatorZip.load());
         promises.push($mmEmulatorNetwork.load());
+        if ($mmApp.isDesktop()) {
+            require('electron').ipcRenderer.on('mmAppFocused', function() {
+                document.dispatchEvent(new Event('resume'));
+            });
+        }
         return $mmUtil.allPromises(promises);
     };
     return self;
@@ -18485,14 +18882,16 @@ angular.module('mm.core.fileuploader')
         var self = {},
             uploadFileScope;
         self.isEnabled = function() {
-            return ionic.Platform.isAndroid() || !$mmApp.isDevice();
+            return ionic.Platform.isAndroid() || !$mmApp.isDevice() ||
+                    (ionic.Platform.isIOS() && parseInt(ionic.Platform.version(), 10) >= 9);
         };
         self.getData = function() {
+            var isIOS = ionic.Platform.isIOS();
             return {
                 name: 'file',
-                title: 'mm.fileuploader.file',
+                title: isIOS ? 'mm.fileuploader.more' : 'mm.fileuploader.file',
                 class: 'mm-fileuploader-file-handler',
-                icon: 'ion-folder',
+                icon: isIOS ? 'ion-more' : 'ion-folder',
                 afterRender: function(maxSize, upload, allowOffline, mimetypes) {
                     var element = document.querySelector('.mm-fileuploader-file-handler');
                     if (element) {
@@ -18504,8 +18903,9 @@ angular.module('mm.core.fileuploader')
                             uploadFileScope = $rootScope.$new();
                         }
                         uploadFileScope.filePicked = function(evt) {
-                            var input = evt.srcElement;
-                            var file = input.files[0];
+                            var input = evt.srcElement,
+                                file = input.files[0],
+                                fileName;
                             input.value = ''; 
                             if (!file) {
                                 return;
@@ -18515,7 +18915,15 @@ angular.module('mm.core.fileuploader')
                                 $mmUtil.showErrorModal(error);
                                 return;
                             }
-                            $mmFileUploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
+                            fileName = file.name;
+                            if (isIOS) {
+                                var matches = fileName.match(/image\.(jpe?g|png)/);
+                                if (matches) {
+                                    fileName = 'image_' + $mmUtil.readableTimestamp() + '.' + matches[1];
+                                }
+                            }
+                            $mmFileUploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline, fileName)
+                                    .then(function(result) {
                                 $mmFileUploaderHelper.fileUploaded(result);
                             }).catch(function(error) {
                                 if (error) {
@@ -18554,7 +18962,7 @@ angular.module('mm.core.fileuploader')
             return true;
         }
         for (var i = 0; i < a.length; i++) {
-            if (a[i].name != b[i].name) {
+            if ((a[i].name || a[i].filename) != (b[i].name || b[i].filename)) {
                 return true;
             }
         }
@@ -18589,12 +18997,13 @@ angular.module('mm.core.fileuploader')
             }
         }
     };
-    self.copyAndUploadFile = function(file, upload) {
+    self.copyAndUploadFile = function(file, upload, name) {
+        name = name || file.name;
         var modal = $mmUtil.showModalLoading('mm.fileuploader.readingfile', true),
             fileData;
         return $mmFS.readFileData(file, $mmFS.FORMATARRAYBUFFER).then(function(data) {
             fileData = data;
-            return $mmFS.getUniqueNameInFolder($mmFS.getTmpFolder(), file.name);
+            return $mmFS.getUniqueNameInFolder($mmFS.getTmpFolder(), name);
         }).then(function(newName) {
             var filepath = $mmFS.concatenatePaths($mmFS.getTmpFolder(), newName);
             return $mmFS.writeFile(filepath, fileData);
@@ -18605,7 +19014,7 @@ angular.module('mm.core.fileuploader')
         }).then(function(fileEntry) {
             modal.dismiss();
             if (upload) {
-                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, true);
+                return self.uploadGenericFile(fileEntry.toURL(), name, file.type, true);
             } else {
                 return fileEntry;
             }
@@ -18642,6 +19051,22 @@ angular.module('mm.core.fileuploader')
             return self.markOfflineFiles(files);
         });
     };
+    self.getStoredFilesFromOfflineFilesObject = function(filesObject, folderPath) {
+        var files = [];
+        if (filesObject) {
+            if (filesObject.online && filesObject.online.length > 0) {
+                files = angular.copy(filesObject.online);
+            }
+            if (filesObject.offline > 0) {
+                return self.getStoredFiles(folderPath).then(function(offlineFiles) {
+                    return files.concat(offlineFiles);
+                }).catch(function() {
+                    return files;
+                });
+            }
+        }
+        return $q.when(files);
+    };
     self.isInvalidMimetype = function(mimetypes, path, mimetype) {
         var extension;
         if (mimetypes) {
@@ -18657,6 +19082,63 @@ angular.module('mm.core.fileuploader')
             }
         }
         return false;
+    };
+    function addDot(extension) {
+        return '.' + extension;
+    }
+    self.prepareFiletypeList = function(filetypeList) {
+        var filetypes = filetypeList.split(/[;, ]+/g),
+            mimetypes = {}, 
+            typesInfo = [];
+        angular.forEach(filetypes, function(filetype) {
+            filetype = filetype.trim();
+            if (filetype) {
+                if (filetype.indexOf('/') != -1) {
+                    typesInfo.push({
+                        name: $mmFS.getMimetypeDescription(filetype),
+                        extlist: $mmFS.getExtensions(filetype).map(addDot).join(' ')
+                    });
+                    mimetypes[filetype] = true;
+                } else if (filetype.indexOf('.') === 0) {
+                    var mimetype = $mmFS.getMimeType(filetype);
+                    typesInfo.push({
+                        name: mimetype ? $mmFS.getMimetypeDescription(mimetype) : false,
+                        extlist: filetype
+                    });
+                    if (mimetype) {
+                        mimetypes[mimetype] = true;
+                    }
+                } else {
+                    var groupExtensions = $mmFS.getGroupMimeInfo(filetype, 'extensions'),
+                        groupMimetypes = $mmFS.getGroupMimeInfo(filetype, 'mimetypes');
+                    if (groupExtensions.length > 0) {
+                        typesInfo.push({
+                            name: $mmFS.getTranslatedGroupName(filetype),
+                            extlist: groupExtensions ? groupExtensions.map(addDot).join(' ') : ''
+                        });
+                        angular.forEach(groupMimetypes, function(mimetype) {
+                            if (mimetype) {
+                                mimetypes[mimetype] = true;
+                            }
+                        });
+                    } else {
+                        filetype = '.' + filetype;
+                        var mimetype = $mmFS.getMimeType(filetype);
+                        typesInfo.push({
+                            name: mimetype ? $mmFS.getMimetypeDescription(mimetype) : false,
+                            extlist: filetype
+                        });
+                        if (mimetype) {
+                            mimetypes[mimetype] = true;
+                        }
+                    }
+                }
+            }
+        });
+        return {
+            info: typesInfo,
+            mimetypes: Object.keys(mimetypes)
+        };
     };
     self.markOfflineFiles = function(files) {
         angular.forEach(files, function(file) {
@@ -18825,9 +19307,9 @@ angular.module('mm.core.fileuploader')
             return treatImageError(error, defaultError);
         });
     };
-    self.uploadFileEntry = function(fileEntry, deleteAfter, maxSize, upload, allowOffline) {
+    self.uploadFileEntry = function(fileEntry, deleteAfter, maxSize, upload, allowOffline, name) {
         return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
-            return self.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
+            return self.uploadFileObject(file, maxSize, upload, allowOffline, name).then(function(result) {
                 if (deleteAfter) {
                     $mmFS.removeFileByFileEntry(fileEntry);
                 }
@@ -18835,12 +19317,12 @@ angular.module('mm.core.fileuploader')
             });
         });
     };
-    self.uploadFileObject = function(file, maxSize, upload, allowOffline) {
+    self.uploadFileObject = function(file, maxSize, upload, allowOffline, name) {
         if (maxSize != -1 && file.size > maxSize) {
             return self.errorMaxBytes(maxSize, file.name);
         }
         return self.confirmUploadFile(file.size, false, allowOffline).then(function() {
-            return self.copyAndUploadFile(file, upload);
+            return self.copyAndUploadFile(file, upload, name);
         });
     };
     function treatImageError(error, defaultMessage) {
@@ -19273,7 +19755,7 @@ angular.module('mm.core.grades')
 }]);
 
 angular.module('mm.core.grades')
-.factory('$mmGradesHelper', ["$q", "$mmText", "$translate", "$mmCourse", "$sce", function($q, $mmText, $translate, $mmCourse, $sce) {
+.factory('$mmGradesHelper', ["$q", "$mmText", "$translate", "$mmCourse", "$sce", "$mmUtil", function($q, $mmText, $translate, $mmCourse, $sce, $mmUtil) {
     var self = {};
     self.formatGradesTable = function(table, forcePhoneView) {
         var formatted = {
@@ -19466,12 +19948,68 @@ angular.module('mm.core.grades')
             };
         });
     };
+    self.makeGradesMenu = function(gradingType, moduleId, defaultLabel, defaultValue, scale) {
+        gradingType = parseInt(gradingType, 10);
+        defaultValue = defaultValue || '';
+        if (gradingType < 0) {
+            if (scale) {
+                return $q.when($mmUtil.makeMenuFromList(scale, defaultLabel, false, defaultValue));
+            } else {
+                return $mmCourse.getModuleBasicGradeInfo(moduleId).then(function(gradeInfo) {
+                    if (gradeInfo.scale) {
+                        return $mmUtil.makeMenuFromList(gradeInfo.scale, defaultLabel, false,  defaultValue);
+                    }
+                    return [];
+                });
+            }
+        }
+        if (gradingType > 0) {
+            var grades = [];
+            if (defaultLabel) {
+                grades.push({
+                    label: defaultLabel,
+                    value: defaultValue
+                });
+            }
+            for (var i = gradingType; i >= 0; i--) {
+                 grades.push({
+                    label: i +' / '+ gradingType,
+                    value: i
+                });
+            }
+            return $q.when(grades);
+        }
+        return $q.when([]);
+    };
+    self.getGradeLabelFromValue = function(grades, selectedGrade) {
+        selectedGrade = parseInt(selectedGrade, 10);
+        if (!grades || !selectedGrade || selectedGrade <= 0) {
+            return "";
+        }
+        for (var x in grades) {
+            if (grades[x].value == selectedGrade) {
+                return grades[x].label;
+            }
+        }
+        return "";
+    };
+    self.getGradeValueFromLabel = function(grades, selectedGrade) {
+        if (!grades || !selectedGrade) {
+            return 0;
+        }
+        for (var x in grades) {
+            if (grades[x].label == selectedGrade) {
+                return grades[x].value < 0 ? 0 : grades[x].value;
+            }
+        }
+        return 0;
+    };
     return self;
 }]);
 
 angular.module('mm.core.login')
-.controller('mmLoginCredentialsCtrl', ["$scope", "$stateParams", "$mmSitesManager", "$mmUtil", "$ionicHistory", "$mmApp", "$mmEvents", "$q", "$mmLoginHelper", "$mmContentLinksDelegate", "$mmContentLinksHelper", "$translate", "mmCoreLoginSiteCheckedEvent", "mmCoreLoginSiteUncheckedEvent", function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $mmEvents,
-            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent,
+.controller('mmLoginCredentialsCtrl', ["$scope", "$stateParams", "$mmSitesManager", "$mmUtil", "$ionicHistory", "$mmApp", "$mmEvents", "$q", "$mmLoginHelper", "$mmContentLinksDelegate", "$mmContentLinksHelper", "$translate", "mmCoreLoginSiteCheckedEvent", "$state", "mmCoreLoginSiteUncheckedEvent", function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $mmEvents,
+            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent, $state,
             mmCoreLoginSiteUncheckedEvent) {
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
@@ -19584,6 +20122,24 @@ angular.module('mm.core.login')
             });
         }).catch(function(error) {
             $mmLoginHelper.treatUserTokenError(siteurl, error);
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+    $scope.forgottenPassword = function() {
+        if (siteConfig && siteConfig.forgottenpasswordurl) {
+            return $mmUtil.openInApp(siteConfig.forgottenpasswordurl);
+        }
+        var modal = $mmUtil.showModalLoading();
+        $mmLoginHelper.canRequestPasswordReset($scope.siteurl).then(function(canReset) {
+            if (canReset) {
+                $state.go('mm_login.forgottenpassword', {
+                    siteurl: $scope.siteurl,
+                    username: $scope.credentials.username
+                });
+            } else {
+                $mmLoginHelper.openForgottenPassword($scope.siteurl);
+            }
         }).finally(function() {
             modal.dismiss();
         });
@@ -19749,6 +20305,47 @@ angular.module('mm.core.login')
 }]);
 
 angular.module('mm.core.login')
+.controller('mmLoginForgottenPasswordCtrl', ["$scope", "$stateParams", "$q", "$mmUtil", "$mmLoginHelper", "$ionicHistory", function($scope, $stateParams, $q, $mmUtil, $mmLoginHelper, $ionicHistory) {
+    $scope.siteurl = $stateParams.siteurl;
+    $scope.data = {
+        field: 'username',
+        value: $stateParams.username || ''
+    };
+    $scope.resetPassword = function(field, value) {
+        if (!value) {
+            $mmUtil.showErrorModal('mm.login.usernameoremail', true);
+            return;
+        }
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true),
+            isMail = field == 'email';
+        $mmLoginHelper.requestPasswordReset($scope.siteurl, isMail ? '' : value, isMail ? value : '').then(function(response) {
+            if (response.status == 'dataerror') {
+                showError(isMail, response.warnings);
+            } else if (response.status == 'emailpasswordconfirmnotsent' || response.status == 'emailpasswordconfirmnoemail') {
+                $mmUtil.showErrorModal(response.notice);
+            } else {
+                $mmUtil.showModal('mm.core.success', response.notice);
+                $ionicHistory.goBack();
+            }
+        }).catch(function(error) {
+            $mmUtil.showErrorModal(error.error);
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+    function showError(isMail, warnings) {
+        for (var i = 0; i < warnings.length; i++) {
+            var warning = warnings[i];
+            if ((warning.item == 'email' && isMail) || (warning.item == 'username' && !isMail)) {
+                $mmUtil.showErrorModal(warning.message);
+                break;
+            }
+        }
+    }
+}]);
+
+angular.module('mm.core.login')
 .controller('mmLoginInitCtrl', ["$log", "$ionicHistory", "$state", "$mmSitesManager", "$mmSite", "$mmApp", "$mmLoginHelper", "mmCoreNoSiteId", function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmApp, $mmLoginHelper,
             mmCoreNoSiteId) {
     $log = $log.getInstance('mmLoginInitCtrl');
@@ -19876,9 +20473,11 @@ angular.module('mm.core.login')
 }]);
 
 angular.module('mm.core.login')
-.controller('mmLoginSiteCtrl', ["$scope", "$state", "$mmSitesManager", "$mmUtil", "$ionicHistory", "$mmApp", "$ionicModal", "$ionicPopup", "$mmLoginHelper", "$q", function($scope, $state, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $ionicModal, $ionicPopup,
-        $mmLoginHelper, $q) {
-    $scope.siteurl = '';
+.controller('mmLoginSiteCtrl', ["$scope", "$state", "$mmSitesManager", "$mmUtil", "$ionicHistory", "$mmApp", "$ionicModal", "$ionicPopup", "$mmLoginHelper", "$q", "mmCoreConfigConstants", function($scope, $state, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $ionicModal, $ionicPopup,
+        $mmLoginHelper, $q, mmCoreConfigConstants) {
+    $scope.loginData = {
+        siteurl: ''
+    };
     $scope.connect = function(url) {
         $mmApp.closeKeyboard();
         if (!url) {
@@ -19923,11 +20522,16 @@ angular.module('mm.core.login')
             });
         }
     };
+    if ($mmLoginHelper.hasSeveralFixedSites()) {
+        $scope.fixedSites = $mmLoginHelper.getFixedSites();
+        $scope.loginData.siteurl = $scope.fixedSites[0].url;
+        $scope.displayAsButtons = mmCoreConfigConstants.multisitesdisplay == 'buttons';
+    }
     $mmUtil.getDocsUrl().then(function(docsurl) {
         $scope.docsurl = docsurl;
     });
     function showLoginIssue(siteurl, issue) {
-        $scope.siteurl = siteurl;
+        $scope.loginData.siteurl = siteurl;
         $scope.issue = issue;
         var popup = $ionicPopup.show({
             templateUrl:  'core/components/login/templates/login-issue.html',
@@ -19966,16 +20570,13 @@ angular.module('mm.core.login')
         return;
     }
     function fetchSitePolicy() {
-        return $mmWS.callAjax('auth_email_get_signup_settings', {}, {siteurl: $mmSite.getURL()}).then(function(settings) {
-            if (!settings.sitepolicy) {
-                return $q.reject();
-            }
-            $scope.sitePolicy = settings.sitepolicy;
+        return $mmLoginHelper.getSitePolicy(siteId).then(function(sitePolicy) {
+            $scope.sitePolicy = sitePolicy;
             return $mmUtil.getMimeTypeFromUrl($scope.sitePolicy).then(function(mimeType) {
                 var extension = $mmFS.getExtension(mimeType, $scope.sitePolicy);
                 $scope.showInline = extension == 'html' || extension == 'html';
                 if ($scope.showInline) {
-                    $scope.trustedSitePolicy = $sce.trustAsResourceUrl(settings.sitepolicy);
+                    $scope.trustedSitePolicy = $sce.trustAsResourceUrl($scope.sitePolicy);
                 }
             }).catch(function() {
                 $scope.showInline = false;
@@ -20032,17 +20633,7 @@ angular.module('mm.core.login')
             }
             return site;
         });
-        $scope.sites = sites.sort(function(a, b) {
-            var compareA = a.siteurl.toLowerCase(),
-                compareB = b.siteurl.toLowerCase(),
-                compare = compareA.localeCompare(compareB);
-            if (compare !== 0) {
-                return compare;
-            }
-            compareA = a.fullname.toLowerCase().trim();
-            compareB = b.fullname.toLowerCase().trim();
-            return compareA.localeCompare(compareB);
-        });
+        $scope.sites = $mmSitesManager.sortSites(sites);
         $scope.data = {
             hasSites: sites.length > 0,
             showDelete: false
@@ -20097,9 +20688,9 @@ angular.module('mm.core.login')
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL') 
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport') 
 .constant('mmLoginLaunchData', 'mmLoginLaunchData')
-.factory('$mmLoginHelper', ["$q", "$log", "$mmConfig", "mmLoginSSOCode", "mmLoginSSOInAppCode", "mmLoginLaunchData", "$mmEvents", "md5", "$mmSite", "$mmSitesManager", "$mmLang", "$mmUtil", "$state", "$mmAddonManager", "$translate", "mmCoreConfigConstants", "mmCoreEventSessionExpired", "mmUserProfileState", "$mmCourses", "$mmFS", "$mmApp", "$mmEmulatorHelper", function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
+.factory('$mmLoginHelper', ["$q", "$log", "$mmConfig", "mmLoginSSOCode", "mmLoginSSOInAppCode", "mmLoginLaunchData", "$mmEvents", "md5", "$mmSite", "$mmSitesManager", "$mmLang", "$mmUtil", "$state", "$mmAddonManager", "$translate", "mmCoreConfigConstants", "mmCoreEventSessionExpired", "mmUserProfileState", "$mmCourses", "$mmFS", "$mmApp", "$mmEmulatorHelper", "$mmWS", function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
             md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
-            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS, $mmApp, $mmEmulatorHelper) {
+            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS, $mmApp, $mmEmulatorHelper, $mmWS) {
     $log = $log.getInstance('$mmLoginHelper');
     var self = {};
     self.acceptSitePolicy = function(siteId) {
@@ -20113,6 +20704,13 @@ angular.module('mm.core.login')
                     }
                 }
             });
+        });
+    };
+    self.canRequestPasswordReset = function(siteUrl) {
+        return self.requestPasswordReset(siteUrl).then(function() {
+            return true;
+        }).catch(function(error) {
+            return error.available == 1 || error.errorcode != 'invalidrecord';
         });
     };
     self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
@@ -20167,6 +20765,20 @@ angular.module('mm.core.login')
         }
         return errors;
     };
+    self.getSitePolicy = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var sitePolicy = site.getStoredConfig('sitepolicy');
+            if (typeof sitePolicy != 'undefined') {
+                return sitePolicy ? sitePolicy : $q.reject();
+            }
+            return $mmWS.callAjax('auth_email_get_signup_settings', {}, {siteurl: site.getURL()}).then(function(settings) {
+                return settings.sitepolicy ? settings.sitepolicy : $q.reject();
+            });
+        });
+    };
+    self.getFixedSites = function() {
+        return mmCoreConfigConstants.siteurl;
+    };
     self.getValidIdentityProviders = function(siteConfig) {
         var validProviders = [],
             httpUrl = $mmFS.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/'),
@@ -20179,8 +20791,10 @@ angular.module('mm.core.login')
         return validProviders;
     };
     self.goToAddSite = function() {
-        if (mmCoreConfigConstants.siteurl) {
-            return $state.go('mm_login.credentials', {siteurl: mmCoreConfigConstants.siteurl});
+        if (self.isFixedUrlSet()) {
+            var url = typeof mmCoreConfigConstants.siteurl == 'string' ?
+                    mmCoreConfigConstants.siteurl : mmCoreConfigConstants.siteurl[0].url;
+            return $state.go('mm_login.credentials', {siteurl: url});
         } else {
             return $state.go('mm_login.site');
         }
@@ -20227,6 +20841,10 @@ angular.module('mm.core.login')
             return $q.when(false);
         }
     };
+    self.hasSeveralFixedSites = function() {
+        return mmCoreConfigConstants.siteurl && angular.isArray(mmCoreConfigConstants.siteurl) &&
+                mmCoreConfigConstants.siteurl.length > 1;
+    };
     self.isEmailSignupDisabled = function(config) {
         var disabledFeatures = config && config.tool_mobile_disabledfeatures;
         if (!disabledFeatures) {
@@ -20236,7 +20854,8 @@ angular.module('mm.core.login')
         return !!disabledFeatures.match(regEx);
     };
     self.isFixedUrlSet = function() {
-        return !!mmCoreConfigConstants.siteurl;
+        return mmCoreConfigConstants.siteurl &&
+                (typeof mmCoreConfigConstants.siteurl == 'string' || mmCoreConfigConstants.siteurl.length == 1);
     };
     self.isSiteLoggedOut = function(stateName, stateParams) {
         if ($mmSite.isLoggedOut()) {
@@ -20295,6 +20914,9 @@ angular.module('mm.core.login')
             }
         }
     };
+    self.openForgottenPassword = function(siteUrl) {
+        $mmUtil.openInApp(siteUrl + '/login/forgot_password.php');
+    };
     self.prepareForSSOLogin = function(siteUrl, service, launchUrl, stateName, stateParams) {
         service = service || mmCoreConfigConstants.wsextservice;
         launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
@@ -20309,6 +20931,16 @@ angular.module('mm.core.login')
             stateparams: stateParams || {}
         });
         return loginUrl;
+    };
+    self.requestPasswordReset = function(siteUrl, username, email) {
+        var params = {};
+        if (username) {
+            params.username = username;
+        }
+        if (email) {
+            params.email = email;
+        }
+        return $mmWS.callAjax('core_auth_request_password_reset', params, {siteurl: siteUrl});
     };
     self.shouldShowSSOConfirm = function(typeOfLogin) {
         return !self.isSSOEmbeddedBrowser(typeOfLogin) &&
@@ -21166,21 +21798,35 @@ angular.module('mm.core.question')
     };
     self.treatCorrectnessIcons = function(scope, element) {
         element = element[0] || element; 
-        var icons = element.querySelectorAll('.questioncorrectnessicon');
+        var icons = element.querySelectorAll('img.icon, img.questioncorrectnessicon');
         angular.forEach(icons, function(icon) {
-            var parent;
-            if (icon.src && icon.src.indexOf('incorrect') > -1) {
-                icon.src = 'img/icons/grade_incorrect.svg';
-            } else if (icon.src && icon.src.indexOf('correct') > -1) {
-                icon.src = 'img/icons/grade_correct.svg';
+            if (icon.src) {
+                var newIcon = document.createElement('i');
+                if (icon.src.indexOf('incorrect') > -1) {
+                    newIcon.className = 'icon fa fa-remove text-danger fa-fw questioncorrectnessicon';
+                } else if (icon.src.indexOf('correct') > -1) {
+                    newIcon.className = 'icon fa fa-check text-success fa-fw questioncorrectnessicon';
+                } else {
+                    return;
+                }
+                newIcon.title = icon.title;
+                newIcon.ariaLabel = icon.title;
+                icon.parentNode.replaceChild(newIcon, icon);
+                icon = newIcon;
             }
-            parent = icon.parentNode;
-            if (!parent) {
+        });
+        var spans = element.querySelectorAll('.feedbackspan.accesshide');
+        angular.forEach(spans, function(span) {
+            var icon = span.previousSibling,
+                iconAng;
+            if (!icon) {
                 return;
             }
-            if (!parent.querySelector('.feedbackspan.accesshide')) {
+            iconAng = angular.element(icon);
+            if (!iconAng.hasClass('icon') && !iconAng.hasClass('questioncorrectnessicon')) {
                 return;
             }
+            iconAng.addClass('questioncorrectnessicon');
             icon.setAttribute('ng-click', 'questionCorrectnessIconClicked($event)');
         });
         scope.questionCorrectnessIconClicked = function(event) {
@@ -21655,13 +22301,14 @@ angular.module('mm.core.settings')
 }]);
 
 angular.module('mm.core.settings')
-.controller('mmSettingsSpaceUsageCtrl', ["$log", "$scope", "$mmSitesManager", "$mmFS", "$q", "$mmUtil", "$translate", "$mmText", "$mmFilepool", function($log, $scope, $mmSitesManager, $mmFS, $q, $mmUtil, $translate,
+.controller('mmSettingsSpaceUsageCtrl', ["$log", "$scope", "$mmSitesManager", "$mmFS", "$q", "$mmUtil", "$translate", "$mmSite", "$mmText", "$mmFilepool", function($log, $scope, $mmSitesManager, $mmFS, $q, $mmUtil, $translate, $mmSite,
             $mmText, $mmFilepool) {
     $log = $log.getInstance('mmSettingsSpaceUsageCtrl');
+    $scope.currentSiteId = $mmSite.getId();
     function calculateSizeUsage() {
         return $mmSitesManager.getSites().then(function(sites) {
             var promises = [];
-            $scope.sites = sites;
+            $scope.sites = $mmSitesManager.sortSites(sites);
             angular.forEach(sites, function(siteEntry) {
                 var promise = $mmSitesManager.getSite(siteEntry.id).then(function(site) {
                     return site.getSpaceUsage().then(function(size) {
@@ -21745,9 +22392,10 @@ angular.module('mm.core.settings')
 }]);
 
 angular.module('mm.core.settings')
-.controller('mmSettingsSynchronizationCtrl', ["$log", "$scope", "$mmUtil", "$mmConfig", "$mmSettingsHelper", "mmCoreSettingsSyncOnlyOnWifi", function($log, $scope, $mmUtil, $mmConfig, $mmSettingsHelper,
-            mmCoreSettingsSyncOnlyOnWifi) {
+.controller('mmSettingsSynchronizationCtrl', ["$log", "$scope", "$mmUtil", "$mmConfig", "$mmSettingsHelper", "$mmSite", "mmCoreSettingsSyncOnlyOnWifi", "$mmSitesManager", function($log, $scope, $mmUtil, $mmConfig, $mmSettingsHelper, $mmSite,
+            mmCoreSettingsSyncOnlyOnWifi, $mmSitesManager) {
     $log = $log.getInstance('mmSettingsSynchronizationCtrl');
+    $scope.currentSiteId = $mmSite.getId();
     $mmSettingsHelper.getSites().then(function(sites) {
         $scope.sites = sites;
         angular.forEach(sites, function(site) {
@@ -21926,6 +22574,7 @@ angular.module('mm.core')
     };
     self.getSites = function() {
         return $mmSitesManager.getSites().then(function(dbSites) {
+            dbSites = $mmSitesManager.sortSites(dbSites);
             var newSites = {}; 
             angular.forEach(dbSites, function(site) {
                 if (sites[site.id]) {
@@ -22619,9 +23268,18 @@ angular.module('mm.core.sidemenu')
             return $mmLang.getCurrentLanguage().then(function(currentLang) {
                 var fallbackLang = mmCoreConfigConstants.default_lang || 'en';
                 angular.forEach(map, function(entry) {
-                    var data = entry.labels[currentLang] || entry.labels.none || entry.labels[fallbackLang];
+                    var data = entry.labels[currentLang] || entry.labels[currentLang + '_only'] ||
+                            entry.labels.none || entry.labels[fallbackLang];
                     if (!data) {
-                        data = entry.labels[Object.keys(entry.labels)[0]];
+                        for (var lang in entry.labels) {
+                            if (lang.indexOf('_only') == -1) {
+                                data = entry.labels[lang];
+                                break;
+                            }
+                        }
+                        if (!data) {
+                            return;
+                        }
                     }
                     result[entry.position] = {
                         url: entry.url,
@@ -23191,21 +23849,18 @@ angular.module('mm.core.user')
         }, []);
         return roles.join(separator + " ");
     };
-    self.getProfile = function(userid, courseid, forceLocal) {
-        var deferred = $q.defer();
+    self.getProfile = function(userId, courseId, forceLocal) {
         if (forceLocal) {
-            self.getUserFromLocal(userid).then(deferred.resolve, function() {
-                self.getUserFromWS(userid, courseid).then(deferred.resolve, deferred.reject);
-            });
-        } else {
-            self.getUserFromWS(userid, courseid).then(deferred.resolve, function() {
-                self.getUserFromLocal(userid).then(deferred.resolve, deferred.reject);
+            return self.getUserFromLocal(userId).catch(function() {
+                return self.getUserFromWS(userId, courseId);
             });
         }
-        return deferred.promise;
+        return self.getUserFromWS(userId, courseId).catch(function() {
+            return self.getUserFromLocal(userId);
+        });
     };
-    function getUserCacheKey(userid) {
-        return 'mmUser:data:'+userid;
+    function getUserCacheKey(userId) {
+        return 'mmUser:data:' + userId;
     }
     self.getUserFromLocal = function(id) {
         if (!$mmSite.isLoggedIn()) {
@@ -23249,7 +23904,7 @@ angular.module('mm.core.user')
         }
         return $mmSite.read(wsName, data, preSets).then(function(users) {
             if (users.length == 0) {
-                return $q.reject();
+                return $q.reject('Cannot retrieve user info.');
             }
             var user = users.shift();
             if (user.country) {
@@ -23276,7 +23931,8 @@ angular.module('mm.core.user')
         var treated = {},
             promises = [];
         angular.forEach(userIds, function(userId) {
-            if (!treated[userId]) {
+            userId = parseInt(userId, 10);
+            if (!isNaN(userId) && !treated[userId]) {
                 treated[userId] = true;
                 promises.push(self.getProfile(userId, courseId).then(function(profile) {
                     if (profile.profileimageurl) {
@@ -23620,7 +24276,7 @@ angular.module('mm.addons.files', ['mm.core'])
 
 angular.module('mm.addons.frontpage', [])
 .constant('mmaFrontpagePriority', 1000)
-.config(["$stateProvider", "$mmCoursesDelegateProvider", "mmCoreCoursePriority", function($stateProvider, $mmCoursesDelegateProvider, mmCoreCoursePriority) {
+.config(["$stateProvider", function($stateProvider) {
     $stateProvider
     .state('site.frontpage', {
         url: '/frontpage',
@@ -24402,10 +25058,12 @@ angular.module('mm.addons.mod_folder', ['mm.core'])
       }
     });
 }])
-.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", "$mmPluginFileDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider,
+      $mmPluginFileDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModFolder', 'folder', '$mmaModFolderHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModFolder', 'folder', '$mmaModFolderPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFolder', '$mmaModFolderHandlers.linksHandler');
+    $mmPluginFileDelegateProvider.registerHandler('mmaModFolder', 'mod_folder', '$mmaModFolderHandlers.pluginfileHandler');
 }]);
 
 angular.module('mm.addons.mod_forum', [])
@@ -24557,10 +25215,12 @@ angular.module('mm.addons.mod_imscp', ['mm.core'])
       }
     });
 }])
-.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", "$mmPluginFileDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider,
+      $mmPluginFileDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModImscp', 'imscp', '$mmaModImscpHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModImscp', 'imscp', '$mmaModImscpPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModImscp', '$mmaModImscpHandlers.linksHandler');
+    $mmPluginFileDelegateProvider.registerHandler('mmaModImscp', 'mod_ispc', '$mmaModImscpHandlers.pluginfileHandler');
 }]);
 
 angular.module('mm.addons.mod_label', ['mm.core'])
@@ -24677,10 +25337,12 @@ angular.module('mm.addons.mod_page', ['mm.core'])
       }
     });
 }])
-.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", "$mmPluginFileDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider,
+        $mmPluginFileDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModPage', 'page', '$mmaModPageHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModPage', 'page', '$mmaModPagePrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModPage', '$mmaModPageHandlers.linksHandler');
+    $mmPluginFileDelegateProvider.registerHandler('mmaModPage', 'mod_page', '$mmaModPageHandlers.pluginfileHandler');
 }]);
 
 angular.module('mm.addons.mod_quiz', ['mm.core'])
@@ -24777,10 +25439,12 @@ angular.module('mm.addons.mod_resource', ['mm.core'])
       }
     });
 }])
-.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", "$mmPluginFileDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider,
+        $mmPluginFileDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModResource', 'resource', '$mmaModResourceHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModResource', 'resource', '$mmaModResourcePrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModResource', '$mmaModResourceHandlers.linksHandler');
+    $mmPluginFileDelegateProvider.registerHandler('mmaModResource', 'mod_resource', '$mmaModResourceHandlers.pluginfileHandler');
 }]);
 
 angular.module('mm.addons.mod_scorm', ['mm.core'])
@@ -24823,11 +25487,13 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
       }
     });
 }])
-.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(["$mmCourseDelegateProvider", "$mmCoursePrefetchDelegateProvider", "$mmContentLinksDelegateProvider", "$mmPluginFileDelegateProvider", function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider,
+        $mmPluginFileDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModScorm', 'scorm', '$mmaModScormHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModScorm', 'scorm', '$mmaModScormPrefetchHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModScorm:index', '$mmaModScormHandlers.indexLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModScorm:grade', '$mmaModScormHandlers.gradeLinksHandler');
+    $mmPluginFileDelegateProvider.registerHandler('mmaModScorm', 'mod_scorm', '$mmaModScormHandlers.pluginfileHandler');
 }])
 .run(["$mmCronDelegate", function($mmCronDelegate) {
     $mmCronDelegate.register('mmaModScorm', '$mmaModScormHandlers.syncHandler');
@@ -24950,6 +25616,96 @@ angular.module('mm.addons.mod_wiki', [])
     $mmCronDelegate.register('mmaModWiki', '$mmaModWikiHandlers.syncHandler');
 }]);
 
+angular.module('mm.addons.mod_workshop', ['mm.core'])
+.constant('mmaModWorkshopComponent', 'mmaModWorkshop')
+.constant('mmaModWorkshopSubmissionChangedEvent', 'mma-mod_workshop_submission_changed')
+.constant('mmaModWorkshopPerPage', 10)
+.constant('mmaModWorkshopEventAutomSynced', 'mma_mod_workshop_autom_synced')
+.constant('mmaModWorkshopEventManualSynced', 'mma_mod_workshop_manual_synced')
+.constant('mmaModWorkshopAssessmentRefreshedEvent', 'mma_mod_workshop_assessment_refreshed')
+.constant('mmaModWorkshopAssessmentInvalidatedEvent', 'mma_mod_workshop_assessment_invalidated')
+.constant('mmaModWorkshopAssessmentSaveEvent', 'mma_mod_workshop_assessment_save')
+.constant('mmaModWorkshopAssessmentSavedEvent', 'mma_mod_workshop_assessment_saved')
+.constant('mmaModWorkshopSyncTime', 300000) 
+.config(["$stateProvider", function($stateProvider) {
+    $stateProvider
+    .state('site.mod_workshop', {
+        url: '/mod_workshop',
+        params: {
+            module: null,
+            moduleid: null, 
+            courseid: null,
+            group: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopIndexCtrl',
+                templateUrl: 'addons/mod/workshop/templates/index.html'
+            }
+        }
+    })
+    .state('site.mod_workshop-submission', {
+        url: '/mod_workshop-submission',
+        params: {
+            module: null,
+            workshop: null,
+            access: null,
+            courseid: null,
+            profile: null,
+            submission: null,
+            assessment: null,
+            submissionid: null 
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopSubmissionCtrl',
+                templateUrl: 'addons/mod/workshop/templates/viewsubmission.html'
+            }
+        }
+    })
+    .state('site.mod_workshop-edit-submission', {
+        url: '/mod_workshop-edit-submission',
+        params: {
+            module: null,
+            access: null,
+            courseid: null,
+            submission: null,
+            submissionid: null 
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopEditSubmissionCtrl',
+                templateUrl: 'addons/mod/workshop/templates/editsubmission.html'
+            }
+        }
+    })
+    .state('site.mod_workshop-assessment', {
+        url: '/mod_workshop-assessment',
+        params: {
+            assessment: null,
+            courseid: null,
+            submission: null,
+            profile: null,
+            submissionid: null, 
+            assessmentid: null 
+        },
+        views: {
+            'site': {
+                controller: 'mmaModWorkshopAssessmentCtrl',
+                templateUrl: 'addons/mod/workshop/templates/viewassessment.html'
+            }
+        }
+    });
+}])
+.config(["$mmCourseDelegateProvider", "$mmContentLinksDelegateProvider", "$mmCoursePrefetchDelegateProvider", function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
+    $mmCourseDelegateProvider.registerContentHandler('mmaModWorkshop', 'workshop', '$mmaModWorkshopHandlers.courseContent');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModWorkshop', 'workshop', '$mmaModWorkshopPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWorkshop:index', '$mmaModWorkshopHandlers.indexLinksHandler');
+}])
+.run(["$mmCronDelegate", function($mmCronDelegate) {
+    $mmCronDelegate.register('mmaModWorkshop', '$mmaModWorkshopHandlers.syncHandler');
+}]);
+
 angular.module('mm.addons.qbehaviour_adaptive', ['mm.core'])
 .config(["$mmQuestionBehaviourDelegateProvider", function($mmQuestionBehaviourDelegateProvider) {
     $mmQuestionBehaviourDelegateProvider.registerHandler('mmaQbehaviourAdaptive', 'adaptive', '$mmaQbehaviourAdaptiveHandler');
@@ -25031,14 +25787,14 @@ angular.module('mm.addons.qtype_ddimageortext', ['mm.core'])
     $mmQuestionDelegateProvider.registerHandler('mmaQtypeDdimageortext', 'qtype_ddimageortext', '$mmaQtypeDdimageortextHandler');
 }]);
 
-angular.module('mm.addons.qtype_ddwtos', ['mm.core'])
-.config(["$mmQuestionDelegateProvider", function($mmQuestionDelegateProvider) {
-    $mmQuestionDelegateProvider.registerHandler('mmaQtypeDdwtos', 'qtype_ddwtos', '$mmaQtypeDdwtosHandler');
-}]);
-
 angular.module('mm.addons.qtype_ddmarker', ['mm.core'])
 .config(["$mmQuestionDelegateProvider", function($mmQuestionDelegateProvider) {
     $mmQuestionDelegateProvider.registerHandler('mmaQtypeDdmarker', 'qtype_ddmarker', '$mmaQtypeDdmarkerHandler');
+}]);
+
+angular.module('mm.addons.qtype_ddwtos', ['mm.core'])
+.config(["$mmQuestionDelegateProvider", function($mmQuestionDelegateProvider) {
+    $mmQuestionDelegateProvider.registerHandler('mmaQtypeDdwtos', 'qtype_ddwtos', '$mmaQtypeDdwtosHandler');
 }]);
 
 angular.module('mm.addons.qtype_description', ['mm.core'])
@@ -25122,43 +25878,6 @@ angular.module('mm.addons.userprofilefield_textarea', ['mm.core'])
 }]);
 
 angular.module('mm.addons.mod_assign')
-.directive('mmaModAssignFeedbackEditpdf', ["$mmaModAssign", function($mmaModAssign) {
-    return {
-        restrict: 'A',
-        priority: 100,
-        templateUrl: 'addons/mod/assign/feedback/editpdf/template.html',
-        link: function(scope) {
-            if (!scope.plugin) {
-                return;
-            }
-            scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
-        }
-    };
-}]);
-
-angular.module('mm.addons.mod_assign')
-.factory('$mmaModAssignFeedbackEditpdfHandler', ["$mmaModAssign", "$mmFilepool", "$q", "mmaModAssignComponent", function($mmaModAssign, $mmFilepool, $q, mmaModAssignComponent) {
-    var self = {};
-    self.isEnabled = function() {
-        return true;
-    };
-    self.getDirectiveName = function() {
-        return 'mma-mod-assign-feedback-editpdf';
-    };
-    self.getPluginFiles = function(assign, submission, plugin, siteId) {
-        return $mmaModAssign.getSubmissionPluginAttachments(plugin);
-    };
-    return self;
-}])
-.run(["$mmAddonManager", function($mmAddonManager) {
-    var $mmaModAssignFeedbackDelegate = $mmAddonManager.get('$mmaModAssignFeedbackDelegate');
-    if ($mmaModAssignFeedbackDelegate) {
-        $mmaModAssignFeedbackDelegate.registerHandler('mmaModAssignFeedbackEditpdf', 'editpdf',
-                '$mmaModAssignFeedbackEditpdfHandler');
-    }
-}]);
-
-angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignFeedbackComments', ["$mmaModAssign", "$mmText", "$mmUtil", "$q", "$mmaModAssignFeedbackCommentsHandler", "$mmEvents", "mmaModAssignFeedbackSavedEvent", "$mmSite", "$mmaModAssignOffline", function($mmaModAssign, $mmText, $mmUtil, $q, $mmaModAssignFeedbackCommentsHandler,
         $mmEvents, mmaModAssignFeedbackSavedEvent, $mmSite, $mmaModAssignOffline) {
     function getContents(scope, rteEnabled) {
@@ -25201,7 +25920,6 @@ angular.module('mm.addons.mod_assign')
                 scope.model = {
                     text: text
                 };
-                scope.plugin.originalText = text;
                 if (!scope.canEdit && !scope.edit) {
                     angular.element(element).on('click', function(e) {
                         e.preventDefault();
@@ -25224,6 +25942,8 @@ angular.module('mm.addons.mod_assign')
                     scope.$on('$destroy', function() {
                         obsSaved && obsSaved.off && obsSaved.off();
                     });
+                } else {
+                    scope.plugin.originalText = text;
                 }
                 scope.firstRender = function() {
                     scope.plugin.originalText = scope.model.text;
@@ -25325,6 +26045,43 @@ angular.module('mm.addons.mod_assign')
 }]);
 
 angular.module('mm.addons.mod_assign')
+.directive('mmaModAssignFeedbackEditpdf', ["$mmaModAssign", function($mmaModAssign) {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/assign/feedback/editpdf/template.html',
+        link: function(scope) {
+            if (!scope.plugin) {
+                return;
+            }
+            scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_assign')
+.factory('$mmaModAssignFeedbackEditpdfHandler', ["$mmaModAssign", "$mmFilepool", "$q", "mmaModAssignComponent", function($mmaModAssign, $mmFilepool, $q, mmaModAssignComponent) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.getDirectiveName = function() {
+        return 'mma-mod-assign-feedback-editpdf';
+    };
+    self.getPluginFiles = function(assign, submission, plugin, siteId) {
+        return $mmaModAssign.getSubmissionPluginAttachments(plugin);
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModAssignFeedbackDelegate = $mmAddonManager.get('$mmaModAssignFeedbackDelegate');
+    if ($mmaModAssignFeedbackDelegate) {
+        $mmaModAssignFeedbackDelegate.registerHandler('mmaModAssignFeedbackEditpdf', 'editpdf',
+                '$mmaModAssignFeedbackEditpdfHandler');
+    }
+}]);
+
+angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignFeedbackFile', ["$mmaModAssign", function($mmaModAssign) {
     return {
         restrict: 'A',
@@ -25361,56 +26118,8 @@ angular.module('mm.addons.mod_assign')
 }]);
 
 angular.module('mm.addons.mod_assign')
-.directive('mmaModAssignSubmissionFile', ["$mmaModAssign", "$mmFileSession", "mmaModAssignComponent", "$mmaModAssignHelper", "$mmaModAssignOffline", "mmaModAssignSubmissionFileName", "$mmFileUploaderHelper", "$q", "$mmFS", function($mmaModAssign, $mmFileSession, mmaModAssignComponent, $mmaModAssignHelper,
-            $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper, $q, $mmFS) {
-    function addDot(extension) {
-        return '.' + extension;
-    }
-    function treatFileTypes(scope) {
-        var mimetypes = {}, 
-            filetypes = scope.configs.filetypeslist.replace(/,/g, ';').split(';');
-        scope.typesInfo = [];
-        angular.forEach(filetypes, function(filetype) {
-            filetype = filetype.trim();
-            if (filetype) {
-                if (filetype.indexOf('/') != -1) {
-                    mimetypes[filetype] = true;
-                    scope.typesInfo.push({
-                        type: 'mimetype',
-                        value: {
-                            name: $mmFS.getMimetypeDescription(filetype),
-                            extlist: $mmFS.getExtensions(filetype).map(addDot).join(' ')
-                        }
-                    });
-                } else if (filetype.indexOf('.') === 0) {
-                    var mimetype = $mmFS.getMimeType(filetype);
-                    if (mimetype) {
-                        mimetypes[mimetype] = true;
-                    }
-                    scope.typesInfo.push({
-                        type: 'extension',
-                        value: filetype
-                    });
-                } else {
-                    var groupMimetypes = $mmFS.getGroupMimeInfo(filetype, 'mimetypes'),
-                        groupExtensions = $mmFS.getGroupMimeInfo(filetype, 'extensions');
-                    angular.forEach(groupMimetypes, function(mimetype) {
-                        if (mimetype) {
-                            mimetypes[mimetype] = true;
-                        }
-                    });
-                    scope.typesInfo.push({
-                        type: 'mimetype',
-                        value: {
-                            name: $mmFS.getTranslatedGroupName(filetype),
-                            extlist: groupExtensions ? groupExtensions.map(addDot).join(' ') : ''
-                        }
-                    });
-                }
-            }
-        });
-        scope.mimetypes = Object.keys(mimetypes);
-    }
+.directive('mmaModAssignSubmissionFile', ["$mmaModAssign", "$mmFileSession", "mmaModAssignComponent", "$mmaModAssignHelper", "$mmaModAssignOffline", "mmaModAssignSubmissionFileName", "$mmFileUploaderHelper", "$q", function($mmaModAssign, $mmFileSession, mmaModAssignComponent, $mmaModAssignHelper,
+            $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper, $q) {
     return {
         restrict: 'A',
         priority: 100,
@@ -25418,9 +26127,6 @@ angular.module('mm.addons.mod_assign')
         link: function(scope) {
             if (!scope.plugin) {
                 return;
-            }
-            if (scope.edit && scope.configs && scope.configs.filetypeslist && scope.configs.filetypeslist.trim()) {
-                treatFileTypes(scope);
             }
             $mmaModAssignOffline.getSubmission(scope.assign.id).catch(function() {
             }).then(function(offlineData) {
@@ -25838,107 +26544,6 @@ angular.module('mm.addons.mod_assign')
 }]);
 
 angular.module('mm.addons.mod_data')
-.filter('mmaModDataFieldCheckboxFormat', function() {
-    return function(text) {
-        return text.split("##").join("<br>");
-    };
-})
-.directive('mmaModDataFieldCheckbox', function() {
-    return {
-        restrict: 'A',
-        priority: 100,
-        templateUrl: 'addons/mod/data/fields/checkbox/template.html',
-        link: function(scope) {
-            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
-            if (scope.mode == 'show') {
-                return;
-            }
-            scope.options = scope.field.param1.split("\n");
-            if (scope.mode == 'edit' && scope.value) {
-                scope.values = {};
-                angular.forEach(scope.value.content.split("##"), function(value) {
-                    scope.values[value] = true;
-                });
-            }
-        }
-    };
-});
-
-angular.module('mm.addons.mod_data')
-.factory('$mmaModDataFieldCheckboxHandler', ["$translate", function($translate) {
-    var self = {};
-    self.getFieldSearchData = function(field, inputData) {
-        var fieldName = 'f_' + field.id,
-            reqName = 'f_' + field.id + '_allreq';
-        var checkboxes = [],
-            values = [];
-        angular.forEach(inputData[fieldName], function(value, option) {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            values.push({
-                name: fieldName,
-                value: checkboxes
-            });
-            if (inputData[reqName]['1']) {
-                values.push({
-                    name: reqName,
-                    value: true
-                });
-            }
-            return values;
-        }
-        return false;
-    };
-    self.getFieldEditData = function(field, inputData) {
-        var fieldName = 'f_' + field.id;
-        var checkboxes = [];
-        angular.forEach(inputData[fieldName], function(value, option) {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        if (checkboxes.length > 0) {
-            return [{
-                fieldid: field.id,
-                value: checkboxes
-            }];
-        }
-        return false;
-    };
-    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
-        var fieldName = 'f_' + field.id,
-            checkboxes = [];
-        angular.forEach(inputData[fieldName], function(value, option) {
-            if (value) {
-                checkboxes.push(option);
-            }
-        });
-        originalFieldData = (originalFieldData && originalFieldData.content) || "";
-        return checkboxes.join("##") != originalFieldData;
-    };
-    self.getFieldsNotifications = function(field, inputData) {
-        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
-            return $translate.instant('mma.mod_data.errormustsupplyvalue');
-        }
-        return false;
-    };
-    self.overrideData = function(originalContent, offlineContent) {
-        originalContent.content = (offlineContent[''] && offlineContent[''].join("##")) || "";
-        return originalContent;
-    };
-    return self;
-}])
-.run(["$mmAddonManager", function($mmAddonManager) {
-    var $mmaModDataFieldsDelegate = $mmAddonManager.get('$mmaModDataFieldsDelegate');
-    if ($mmaModDataFieldsDelegate) {
-        $mmaModDataFieldsDelegate.registerHandler('mmaModDataFieldCheckbox', 'checkbox', '$mmaModDataFieldCheckboxHandler');
-    }
-}]);
-
-angular.module('mm.addons.mod_data')
 .filter('mmaModDataFieldDateFormat', function() {
     return function(text) {
         return text * 1000;
@@ -26053,6 +26658,107 @@ angular.module('mm.addons.mod_data')
     var $mmaModDataFieldsDelegate = $mmAddonManager.get('$mmaModDataFieldsDelegate');
     if ($mmaModDataFieldsDelegate) {
         $mmaModDataFieldsDelegate.registerHandler('mmaModDataFieldDate', 'date', '$mmaModDataFieldDateHandler');
+    }
+}]);
+
+angular.module('mm.addons.mod_data')
+.filter('mmaModDataFieldCheckboxFormat', function() {
+    return function(text) {
+        return text.split("##").join("<br>");
+    };
+})
+.directive('mmaModDataFieldCheckbox', function() {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/data/fields/checkbox/template.html',
+        link: function(scope) {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
+            if (scope.mode == 'show') {
+                return;
+            }
+            scope.options = scope.field.param1.split("\n");
+            if (scope.mode == 'edit' && scope.value) {
+                scope.values = {};
+                angular.forEach(scope.value.content.split("##"), function(value) {
+                    scope.values[value] = true;
+                });
+            }
+        }
+    };
+});
+
+angular.module('mm.addons.mod_data')
+.factory('$mmaModDataFieldCheckboxHandler', ["$translate", function($translate) {
+    var self = {};
+    self.getFieldSearchData = function(field, inputData) {
+        var fieldName = 'f_' + field.id,
+            reqName = 'f_' + field.id + '_allreq';
+        var checkboxes = [],
+            values = [];
+        angular.forEach(inputData[fieldName], function(value, option) {
+            if (value) {
+                checkboxes.push(option);
+            }
+        });
+        if (checkboxes.length > 0) {
+            values.push({
+                name: fieldName,
+                value: checkboxes
+            });
+            if (inputData[reqName]['1']) {
+                values.push({
+                    name: reqName,
+                    value: true
+                });
+            }
+            return values;
+        }
+        return false;
+    };
+    self.getFieldEditData = function(field, inputData) {
+        var fieldName = 'f_' + field.id;
+        var checkboxes = [];
+        angular.forEach(inputData[fieldName], function(value, option) {
+            if (value) {
+                checkboxes.push(option);
+            }
+        });
+        if (checkboxes.length > 0) {
+            return [{
+                fieldid: field.id,
+                value: checkboxes
+            }];
+        }
+        return false;
+    };
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
+        var fieldName = 'f_' + field.id,
+            checkboxes = [];
+        angular.forEach(inputData[fieldName], function(value, option) {
+            if (value) {
+                checkboxes.push(option);
+            }
+        });
+        originalFieldData = (originalFieldData && originalFieldData.content) || "";
+        return checkboxes.join("##") != originalFieldData;
+    };
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
+            return $translate.instant('mma.mod_data.errormustsupplyvalue');
+        }
+        return false;
+    };
+    self.overrideData = function(originalContent, offlineContent) {
+        originalContent.content = (offlineContent[''] && offlineContent[''].join("##")) || "";
+        return originalContent;
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModDataFieldsDelegate = $mmAddonManager.get('$mmaModDataFieldsDelegate');
+    if ($mmaModDataFieldsDelegate) {
+        $mmaModDataFieldsDelegate.registerHandler('mmaModDataFieldCheckbox', 'checkbox', '$mmaModDataFieldCheckboxHandler');
     }
 }]);
 
@@ -26632,6 +27338,69 @@ angular.module('mm.addons.mod_data')
 }]);
 
 angular.module('mm.addons.mod_data')
+.directive('mmaModDataFieldText', function() {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/data/fields/text/template.html',
+        link: function(scope) {
+            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
+            if (scope.mode == 'edit' && scope.value) {
+                scope.val = scope.value.content;
+            }
+        }
+    };
+});
+
+angular.module('mm.addons.mod_data')
+.factory('$mmaModDataFieldTextHandler', ["$translate", function($translate) {
+    var self = {};
+    self.getFieldSearchData = function(field, inputData) {
+        var fieldName = 'f_' + field.id;
+        if (inputData[fieldName]) {
+            return [{
+                name: fieldName,
+                value: inputData[fieldName]
+            }];
+        }
+        return false;
+    };
+    self.getFieldEditData = function(field, inputData) {
+        var fieldName = 'f_' + field.id;
+        if (inputData[fieldName]) {
+            return [{
+                fieldid: field.id,
+                value: inputData[fieldName]
+            }];
+        }
+        return false;
+    };
+    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
+        var fieldName = 'f_' + field.id,
+            input = inputData[fieldName] || "";
+        originalFieldData = (originalFieldData && originalFieldData.content) || "";
+        return input != originalFieldData;
+    };
+    self.getFieldsNotifications = function(field, inputData) {
+        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
+            return $translate.instant('mma.mod_data.errormustsupplyvalue');
+        }
+        return false;
+    };
+    self.overrideData = function(originalContent, offlineContent) {
+        originalContent.content = offlineContent[''] || "";
+        return originalContent;
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModDataFieldsDelegate = $mmAddonManager.get('$mmaModDataFieldsDelegate');
+    if ($mmaModDataFieldsDelegate) {
+        $mmaModDataFieldsDelegate.registerHandler('mmaModDataFieldText', 'text', '$mmaModDataFieldTextHandler');
+    }
+}]);
+
+angular.module('mm.addons.mod_data')
 .directive('mmaModDataFieldRadiobutton', function() {
     return {
         restrict: 'A',
@@ -26695,69 +27464,6 @@ angular.module('mm.addons.mod_data')
     var $mmaModDataFieldsDelegate = $mmAddonManager.get('$mmaModDataFieldsDelegate');
     if ($mmaModDataFieldsDelegate) {
         $mmaModDataFieldsDelegate.registerHandler('mmaModDataFieldRadiobutton', 'radiobutton', '$mmaModDataFieldRadiobuttonHandler');
-    }
-}]);
-
-angular.module('mm.addons.mod_data')
-.directive('mmaModDataFieldText', function() {
-    return {
-        restrict: 'A',
-        priority: 100,
-        templateUrl: 'addons/mod/data/fields/text/template.html',
-        link: function(scope) {
-            scope.mode = scope.mode == 'list' ? 'show' : scope.mode;
-            if (scope.mode == 'edit' && scope.value) {
-                scope.val = scope.value.content;
-            }
-        }
-    };
-});
-
-angular.module('mm.addons.mod_data')
-.factory('$mmaModDataFieldTextHandler', ["$translate", function($translate) {
-    var self = {};
-    self.getFieldSearchData = function(field, inputData) {
-        var fieldName = 'f_' + field.id;
-        if (inputData[fieldName]) {
-            return [{
-                name: fieldName,
-                value: inputData[fieldName]
-            }];
-        }
-        return false;
-    };
-    self.getFieldEditData = function(field, inputData) {
-        var fieldName = 'f_' + field.id;
-        if (inputData[fieldName]) {
-            return [{
-                fieldid: field.id,
-                value: inputData[fieldName]
-            }];
-        }
-        return false;
-    };
-    self.hasFieldDataChanged = function(field, inputData, originalFieldData) {
-        var fieldName = 'f_' + field.id,
-            input = inputData[fieldName] || "";
-        originalFieldData = (originalFieldData && originalFieldData.content) || "";
-        return input != originalFieldData;
-    };
-    self.getFieldsNotifications = function(field, inputData) {
-        if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
-            return $translate.instant('mma.mod_data.errormustsupplyvalue');
-        }
-        return false;
-    };
-    self.overrideData = function(originalContent, offlineContent) {
-        originalContent.content = offlineContent[''] || "";
-        return originalContent;
-    };
-    return self;
-}])
-.run(["$mmAddonManager", function($mmAddonManager) {
-    var $mmaModDataFieldsDelegate = $mmAddonManager.get('$mmaModDataFieldsDelegate');
-    if ($mmaModDataFieldsDelegate) {
-        $mmaModDataFieldsDelegate.registerHandler('mmaModDataFieldText', 'text', '$mmaModDataFieldTextHandler');
     }
 }]);
 
@@ -27234,6 +27940,396 @@ angular.module('mm.addons.mod_quiz')
     }
 }]);
 
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopAssessmentStrategyAccumulative', ["$mmEvents", "mmaModWorkshopAssessmentRefreshedEvent", "$mmaModWorkshopAssessmentStrategyAccumulativeHandler", function($mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        $mmaModWorkshopAssessmentStrategyAccumulativeHandler) {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/workshop/assessment/accumulative/template.html',
+        link: function(scope) {
+            var obsRefreshed,
+                load = function() {
+                    if (!scope.assessment || !scope.assessment.form) {
+                        return;
+                    }
+                    $mmaModWorkshopAssessmentStrategyAccumulativeHandler.getOriginalValues(scope.assessment.form, scope.workshopId)
+                            .then(function(originalValues) {
+                        if (!scope.selectedValues) {
+                            scope.selectedValues = originalValues;
+                        }
+                    });
+                };
+            load();
+            obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
+            scope.$on('$destroy', function() {
+                obsRefreshed && obsRefreshed.off && obsRefreshed.off();
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopAssessmentStrategyAccumulativeHandler', ["$mmGradesHelper", "$q", "$translate", function($mmGradesHelper, $q, $translate) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.getDirectiveName = function() {
+        return 'mma-mod-workshop-assessment-strategy-accumulative';
+    };
+    self.hasDataChanged = function(originalData, inputData) {
+        for (var x in originalData) {
+            if (originalData[x].grade.value != inputData['grade_' + x]) {
+                return true;
+            }
+            if (originalData[x].peercomment != inputData['peercomment_' + x]) {
+                return true;
+            }
+        }
+        return false;
+    };
+    self.getOriginalValues = function(form, workshopId) {
+        var defaultGrade = $translate.instant('mm.core.choosedots'),
+            originalValues = [],
+            promises = [];
+        angular.forEach(form.fields, function(field, n) {
+            field.dimtitle = $translate.instant('mma.mod_workshop_assessment_accumulative.dimensionnumber', {'$a': field.number});
+            var scale = parseInt(field.grade, 10) < 0 ? form.dimensionsinfo[n].scale : null;
+            if (!form.current[n]) {
+                form.current[n] = {};
+            }
+            originalValues[n] = {
+                peercomment: form.current[n].peercomment || "",
+                number: field.number
+            };
+            form.current[n].grade = form.current[n].grade ? parseInt(form.current[n].grade, 10) : -1;
+            promises.push($mmGradesHelper.makeGradesMenu(field.grade, workshopId, defaultGrade, -1, scale).then(function(grades) {
+                field.grades = grades;
+                originalValues[n].grade = {
+                    label: $mmGradesHelper.getGradeLabelFromValue(grades, form.current[n].grade) || defaultGrade,
+                    value: form.current[n].grade
+                };
+            }));
+        });
+        return $q.all(promises).then(function() {
+            return originalValues;
+        });
+    };
+    self.prepareAssessmentData = function(inputData, form) {
+        var errors = {},
+            hasErrors = false;
+        angular.forEach(form.fields, function(field, idx) {
+            inputData['grade_' + idx] = parseInt(inputData['grade_' + idx], 10);
+            if (!isNaN(inputData['grade_' + idx]) && inputData['grade_' + idx] >= 0) {
+                inputData['grade__idx_' + idx] = inputData['grade_' + idx];
+            } else {
+                errors['grade_' + idx] = $translate.instant('mma.mod_workshop_assessment_accumulative.mustchoosegrade');
+                hasErrors = true;
+                return;
+            }
+            delete inputData['grade_' + idx];
+            if (inputData['peercomment_' + idx]) {
+                inputData['peercomment__idx_' + idx] = inputData['peercomment_' + idx];
+            }
+            delete inputData['peercomment_' + idx];
+            inputData['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+            inputData['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+            inputData['weight__idx_' + idx] = parseInt(field.weight, 10) ||  0;
+        });
+        if (hasErrors) {
+            return $q.reject(errors);
+        }
+        return inputData;
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModWorkshopAssessmentStrategyDelegate = $mmAddonManager.get('$mmaModWorkshopAssessmentStrategyDelegate');
+    if ($mmaModWorkshopAssessmentStrategyDelegate) {
+        $mmaModWorkshopAssessmentStrategyDelegate.registerHandler('mmaModWorkshopAssessmentStrategyAccumulative', 'accumulative',
+                '$mmaModWorkshopAssessmentStrategyAccumulativeHandler');
+    }
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopAssessmentStrategyComments', ["$mmEvents", "mmaModWorkshopAssessmentRefreshedEvent", "$mmaModWorkshopAssessmentStrategyCommentsHandler", function($mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        $mmaModWorkshopAssessmentStrategyCommentsHandler) {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/workshop/assessment/comments/template.html',
+        link: function(scope) {
+            var obsRefreshed,
+                load = function() {
+                    if (!scope.assessment || !scope.assessment.form) {
+                        return;
+                    }
+                    var originalValues = $mmaModWorkshopAssessmentStrategyCommentsHandler.getOriginalValues(
+                        scope.assessment.form, scope.workshopId);
+                    if (!scope.selectedValues) {
+                        scope.selectedValues = originalValues;
+                    }
+                };
+            load();
+            obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
+            scope.$on('$destroy', function() {
+                obsRefreshed && obsRefreshed.off && obsRefreshed.off();
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopAssessmentStrategyCommentsHandler', ["$translate", "$q", function($translate, $q) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.getDirectiveName = function() {
+        return 'mma-mod-workshop-assessment-strategy-comments';
+    };
+    self.hasDataChanged = function(originalData, inputData) {
+        for (var x in originalData) {
+            if (originalData[x].peercomment != inputData['peercomment_' + x]) {
+                return true;
+            }
+        }
+        return false;
+    };
+    self.getOriginalValues = function(form, workshopId) {
+        var originalValues = [];
+        angular.forEach(form.fields, function(field, n) {
+            field.dimtitle = $translate.instant('mma.mod_workshop_assessment_comments.dimensionnumber', {'$a': field.number});
+            if (!form.current[n]) {
+                form.current[n] = {};
+            }
+            originalValues[n] = {
+                peercomment: form.current[n].peercomment || "",
+                number: field.number
+            };
+        });
+        return originalValues;
+    };
+    self.prepareAssessmentData = function(inputData, form) {
+        var errors = {},
+            hasErrors = false;
+        angular.forEach(form.fields, function(field, idx) {
+            if (inputData['peercomment_' + idx] && inputData['peercomment_' + idx].length) {
+                inputData['peercomment__idx_' + idx] = inputData['peercomment_' + idx];
+            } else {
+                errors['peercomment_' + idx] = $translate.instant('mm.core.err_required');
+                hasErrors = true;
+                return;
+            }
+            delete inputData['peercomment_' + idx];
+            inputData['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+            inputData['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+        });
+        if (hasErrors) {
+            return $q.reject(errors);
+        }
+        return inputData;
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModWorkshopAssessmentStrategyDelegate = $mmAddonManager.get('$mmaModWorkshopAssessmentStrategyDelegate');
+    if ($mmaModWorkshopAssessmentStrategyDelegate) {
+        $mmaModWorkshopAssessmentStrategyDelegate.registerHandler('mmaModWorkshopAssessmentStrategyComments', 'comments',
+                '$mmaModWorkshopAssessmentStrategyCommentsHandler');
+    }
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopAssessmentStrategyRubric', ["$mmEvents", "mmaModWorkshopAssessmentRefreshedEvent", "$mmaModWorkshopAssessmentStrategyRubricHandler", function($mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        $mmaModWorkshopAssessmentStrategyRubricHandler) {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/workshop/assessment/rubric/template.html',
+        link: function(scope) {
+            var obsRefreshed,
+                load = function() {
+                    if (!scope.assessment || !scope.assessment.form) {
+                        return;
+                    }
+                    var originalValues = $mmaModWorkshopAssessmentStrategyRubricHandler.getOriginalValues(
+                            scope.assessment.form, scope.workshopId);
+                    if (!scope.selectedValues) {
+                        scope.selectedValues = originalValues;
+                    }
+                };
+            load();
+            obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
+            scope.$on('$destroy', function() {
+                obsRefreshed && obsRefreshed.off && obsRefreshed.off();
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopAssessmentStrategyRubricHandler', ["$translate", "$q", function($translate, $q) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.getDirectiveName = function() {
+        return 'mma-mod-workshop-assessment-strategy-rubric';
+    };
+    self.hasDataChanged = function(originalData, inputData) {
+        for (var x in originalData) {
+            if (originalData[x].chosenlevelid != (inputData['chosenlevelid_' + x] || '')) {
+                return true;
+            }
+        }
+        return false;
+    };
+    self.getOriginalValues = function(form, workshopId) {
+        var originalValues = [];
+        angular.forEach(form.fields, function(field, n) {
+            field.dimtitle = $translate.instant('mma.mod_workshop_assessment_rubric.dimensionnumber', {'$a': field.number});
+            if (!form.current[n]) {
+                form.current[n] = {};
+            }
+            originalValues[n] = {
+                chosenlevelid: form.current[n].chosenlevelid || "",
+                number: field.number
+            };
+        });
+        return originalValues;
+    };
+    self.prepareAssessmentData = function(inputData, form) {
+        var errors = {},
+            hasErrors = false;
+        angular.forEach(form.fields, function(field, idx) {
+            inputData['chosenlevelid_' + idx] = parseInt(inputData['chosenlevelid_' + idx], 10);
+            if (!isNaN(inputData['chosenlevelid_' + idx]) && inputData['chosenlevelid_' + idx] >= 0) {
+                inputData['chosenlevelid__idx_' + idx] = inputData['chosenlevelid_' + idx];
+            } else {
+                errors['chosenlevelid_' + idx] = $translate.instant('mma.mod_workshop_assessment_rubric.mustchooseone');
+                hasErrors = true;
+                return;
+            }
+            delete inputData['chosenlevelid_' + idx];
+            inputData['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+            inputData['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+        });
+        if (hasErrors) {
+            return $q.reject(errors);
+        }
+        return inputData;
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModWorkshopAssessmentStrategyDelegate = $mmAddonManager.get('$mmaModWorkshopAssessmentStrategyDelegate');
+    if ($mmaModWorkshopAssessmentStrategyDelegate) {
+        $mmaModWorkshopAssessmentStrategyDelegate.registerHandler('mmaModWorkshopAssessmentStrategyRubric', 'rubric',
+                '$mmaModWorkshopAssessmentStrategyRubricHandler');
+    }
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopAssessmentStrategyNumErrors', ["$mmEvents", "mmaModWorkshopAssessmentRefreshedEvent", "$mmaModWorkshopAssessmentStrategyNumErrorsHandler", function($mmEvents, mmaModWorkshopAssessmentRefreshedEvent,
+        $mmaModWorkshopAssessmentStrategyNumErrorsHandler) {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/workshop/assessment/numerrors/template.html',
+        link: function(scope) {
+            var obsRefreshed,
+                load = function() {
+                    if (!scope.assessment || !scope.assessment.form) {
+                        return;
+                    }
+                    var originalValues = $mmaModWorkshopAssessmentStrategyNumErrorsHandler.getOriginalValues(
+                            scope.assessment.form, scope.workshopId);
+                    if (!scope.selectedValues) {
+                        scope.selectedValues = originalValues;
+                    }
+                };
+            load();
+            obsRefreshed = $mmEvents.on(mmaModWorkshopAssessmentRefreshedEvent, load);
+            scope.$on('$destroy', function() {
+                obsRefreshed && obsRefreshed.off && obsRefreshed.off();
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopAssessmentStrategyNumErrorsHandler', ["$translate", "$q", function($translate, $q) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.getDirectiveName = function() {
+        return 'mma-mod-workshop-assessment-strategy-num-errors';
+    };
+    self.hasDataChanged = function(originalData, inputData) {
+        for (var x in originalData) {
+            if (originalData[x].peercomment != inputData['peercomment_' + x]) {
+                return true;
+            }
+            if (originalData[x].grade != (inputData['grade_' + x] || '')) {
+                return true;
+            }
+        }
+        return false;
+    };
+    self.getOriginalValues = function(form, workshopId) {
+        var originalValues = [];
+        angular.forEach(form.fields, function(field, n) {
+            field.dimtitle = $translate.instant('mma.mod_workshop_assessment_numerrors.dimensionnumber', {'$a': field.number});
+            if (!form.current[n]) {
+                form.current[n] = {};
+            }
+            originalValues[n] = {
+                peercomment: form.current[n].peercomment || "",
+                number: field.number,
+                grade: form.current[n].grade || ""
+            };
+        });
+        return originalValues;
+    };
+    self.prepareAssessmentData = function(inputData, form) {
+        var errors = {},
+            hasErrors = false;
+        angular.forEach(form.fields, function(field, idx) {
+            inputData['grade_' + idx] = parseInt(inputData['grade_' + idx], 10);
+            if (!isNaN(inputData['grade_' + idx]) && inputData['grade_' + idx] != 0) {
+                inputData['grade__idx_' + idx] = inputData['grade_' + idx];
+            } else {
+                errors['grade_' + idx] = $translate.instant('mm.core.required');
+                hasErrors = true;
+                return;
+            }
+            delete inputData['grade_' + idx];
+            if (inputData['peercomment_' + idx]) {
+                inputData['peercomment__idx_' + idx] = inputData['peercomment_' + idx];
+            }
+            delete inputData['peercomment_' + idx];
+            inputData['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
+            inputData['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+            inputData['weight__idx_' + idx] = parseInt(field.weight, 10);
+        });
+        if (hasErrors) {
+            return $q.reject(errors);
+        }
+        return inputData;
+    };
+    return self;
+}])
+.run(["$mmAddonManager", function($mmAddonManager) {
+    var $mmaModWorkshopAssessmentStrategyDelegate = $mmAddonManager.get('$mmaModWorkshopAssessmentStrategyDelegate');
+    if ($mmaModWorkshopAssessmentStrategyDelegate) {
+        $mmaModWorkshopAssessmentStrategyDelegate.registerHandler('mmaModWorkshopAssessmentStrategyNumErrors', 'numerrors',
+                '$mmaModWorkshopAssessmentStrategyNumErrorsHandler');
+    }
+}]);
+
 angular.module('mm.addons.badges')
 .controller('mmaBadgesIssuedCtrl', ["$scope", "$stateParams", "$mmUtil", "$mmaBadges", "$mmSite", "$q", "$mmCourses", "$mmUser", function($scope, $stateParams, $mmUtil, $mmaBadges, $mmSite, $q, $mmCourses, $mmUser) {
     $scope.courseId = $stateParams.cid;
@@ -27485,11 +28581,16 @@ angular.module('mm.addons.calendar')
         scrollView = $ionicScrollDelegate.$getByHandle('mmaCalendarEventsListScroll'),
         obsDefaultTimeChange,
         popover,
+        canGetCategories = $mmCourses.isGetCategoriesAvailable(),
+        categories = {},
+        getCategories = false,
+        categoriesRetrieved = false,
         allCourses = {
             id: -1,
             fullname: $translate.instant('mm.core.fulllistofcourses')
         };
     $scope.events = [];
+    $scope.filteredEvents = [];
     $scope.eventToLoad = 1;
     if ($stateParams.eventid && !$ionicPlatform.isTablet()) {
         $state.go('site.calendar-event', {id: $stateParams.eventid});
@@ -27513,6 +28614,7 @@ angular.module('mm.addons.calendar')
                     $scope.canLoadMore = false;
                     if (refresh) {
                         $scope.events = [];
+                        $scope.filteredEvents = [];
                     }
                 } else {
                     return fetchEvents(refresh);
@@ -27527,13 +28629,30 @@ angular.module('mm.addons.calendar')
                 } else {
                     $scope.events = $mmUtil.mergeArraysWithoutDuplicates($scope.events, events, 'id');
                 }
+                $scope.filteredEvents = getFilteredEvents($scope.events);
                 $scope.canLoadMore = true;
                 $mmaCalendar.scheduleEventsNotifications(events);
+                if (canGetCategories && !categoriesRetrieved && !getCategories) {
+                    for (var i = 0; i < events.length; i++) {
+                        var event = events[i];
+                        if (typeof event.categoryid != 'undefined' && event.categoryid > 0) {
+                            getCategories = true;
+                            break;
+                        }
+                    }
+                }
             }
             scrollView.resize();
         }, function(error) {
             $mmUtil.showErrorModalDefault(error, 'mma.calendar.errorloadevents', true);
             $scope.canLoadMore = false; 
+            return $q.reject();
+        }).then(function() {
+            if (getCategories) {
+                getCategories = false;
+                return loadCategories().catch(function() {
+                });
+            }
         });
     }
     function loadCourses() {
@@ -27542,8 +28661,52 @@ angular.module('mm.addons.calendar')
             $scope.courses = courses;
         });
     }
+    function loadCategories() {
+        return $mmCourses.getCategories(0, true).then(function(cats) {
+            categoriesRetrieved = true;
+            cats.forEach(function(category) {
+                categories[category.id] = category;
+            });
+        });
+    }
+    function getFilteredEvents() {
+        if ($scope.filter.course.id == -1) {
+            return $scope.events;
+        }
+        var filteredEvents = [];
+        angular.forEach($scope.events, function(event) {
+            if (shouldDisplayEvent(event)) {
+                filteredEvents.push(event);
+            }
+        });
+        return filteredEvents;
+    }
+    function shouldDisplayEvent(event) {
+        if (event.eventtype == 'user' || event.eventtype == 'site') {
+            return true;
+        }
+        if (event.eventtype == 'category') {
+            if (!event.categoryid || !Object.keys(categories).length) {
+                return true;
+            } else if (event.categoryid == $scope.filter.course.category) {
+                return true;
+            }
+            var category = categories[$scope.filter.course.category];
+            while (category) {
+                if (!category.parent) {
+                    break;
+                }
+                if (event.categoryid == category.parent) {
+                    return true;
+                }
+                category = categories[category.parent];
+            }
+            return false;
+        }
+        return event.courseid === 1 || event.courseid == $scope.filter.course.id;
+    }
     $scope.filter = {
-        courseid: -1,
+        course: allCourses
     };
     $scope.notificationsEnabled = $mmLocalNotifications.isAvailable();
     fetchData().then(function() {
@@ -27575,6 +28738,7 @@ angular.module('mm.addons.calendar')
         $scope.coursePicked = function() {
             popover.hide();
             scrollView.scrollTop();
+            $scope.filteredEvents = getFilteredEvents($scope.events);
         };
     });
     $scope.loadMoreEvents = function() {
@@ -27586,18 +28750,16 @@ angular.module('mm.addons.calendar')
         var promises = [];
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmaCalendar.invalidateEventsList());
+        if (categoriesRetrieved) {
+            promises.push($mmCourses.invalidateCategories(0, true));
+            categoriesRetrieved = false;
+        }
         return $q.all(promises).finally(function() {
             return fetchData(true);
         });
     };
     $scope.openSettings = function() {
         $state.go('site.calendar-settings');
-    };
-    $scope.filterEvent = function(event) {
-        if ($scope.filter.courseid == -1) {
-            return true;
-        }
-        return event.courseid === 1 || event.courseid == $scope.filter.courseid;
     };
     if ($scope.notificationsEnabled) {
         obsDefaultTimeChange = $mmEvents.on(mmaCalendarDefaultNotifTimeChangedEvent, function() {
@@ -27648,7 +28810,8 @@ angular.module('mm.addons.calendar')
             'course': calendarImgPath + 'courseevent.svg',
             'group': calendarImgPath + 'groupevent.svg',
             'site': calendarImgPath + 'siteevent.svg',
-            'user': calendarImgPath + 'userevent.svg'
+            'user': calendarImgPath + 'userevent.svg',
+            'category': calendarImgPath + 'categoryevent.svg'
         };
     function getEventsListCacheKey(daysToStart, daysInterval) {
         return 'mmaCalendar:events:' + daysToStart + ':' + daysInterval;
@@ -27707,9 +28870,16 @@ angular.module('mm.addons.calendar')
             presets.getFromCache = false;
         }
         return $mmSite.read('core_calendar_get_calendar_events', data, presets).then(function(response) {
-            var e = response.events[0];
-            if (e) {
-                return e;
+            var event;
+            for (var i in response.events) {
+                var e = response.events[i];
+                if (e.id == id) {
+                    event = e;
+                    break;
+                }
+            }
+            if (event) {
+                return event;
             } else {
                 return self.getEventFromLocalDb(id);
             }
@@ -28496,7 +29666,7 @@ angular.module('mm.addons.competency')
 }]);
 
 angular.module('mm.addons.competency')
-.factory('$mmaCompetencyHandlers', ["$log", "$mmaCompetency", "mmCoursesAccessMethods", "mmUserProfileHandlersTypeNewPage", function($log, $mmaCompetency, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
+.factory('$mmaCompetencyHandlers', ["$log", "$mmaCompetency", "mmCoursesAccessMethods", "mmUserProfileHandlersTypeNewPage", "$q", function($log, $mmaCompetency, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage, $q) {
     $log = $log.getInstance('$mmaCompetencyHandlers');
     var self = {},
         coursesNavEnabledCache = {},
@@ -28533,6 +29703,12 @@ angular.module('mm.addons.competency')
     };
     self.coursesNav = function() {
         var self = {};
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.competencies != 'undefined') {
+                return $q.when();
+            }
+            return $mmaCompetency.invalidateCourseCompetencies(courseId);
+        };
         self.isEnabled = function() {
             return $mmaCompetency.isPluginEnabled();
         };
@@ -28543,15 +29719,7 @@ angular.module('mm.addons.competency')
             if (navOptions && typeof navOptions.competencies != 'undefined') {
                 return navOptions.competencies;
             }
-            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
-                return coursesNavEnabledCache[courseId];
-            }
-            return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
-                var enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
-                participantsNavEnabledCache[courseId] = !!competencies;
-                coursesNavEnabledCache[courseId] = enabled;
-                return enabled;
-            });
+            return true;
         };
         self.getController = function(courseId) {
             return function($scope, $state) {
@@ -28566,6 +29734,20 @@ angular.module('mm.addons.competency')
                     });
                 };
             };
+        };
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.competencies != 'undefined') {
+                return navOptions.competencies;
+            }
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+            return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
+                var enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
+                participantsNavEnabledCache[courseId] = !!competencies;
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
         };
         return self;
     };
@@ -28700,7 +29882,7 @@ angular.module('mm.addons.coursecompletion')
 }]);
 
 angular.module('mm.addons.coursecompletion')
-.factory('$mmaCourseCompletion', ["$mmSite", "$log", "$q", "$mmCourses", function($mmSite, $log, $q, $mmCourses) {
+.factory('$mmaCourseCompletion', ["$mmSite", "$log", "$q", "$mmCourses", "$mmUtil", "$mmSitesManager", function($mmSite, $log, $q, $mmCourses, $mmUtil, $mmSitesManager) {
     $log = $log.getInstance('$mmaCourseCompletion');
     var self = {};
     self.canMarkSelfCompleted = function(userid, completion) {
@@ -28734,21 +29916,22 @@ angular.module('mm.addons.coursecompletion')
             }
         }
     };
-    self.getCompletion = function(courseid, userid) {
-        userid = userid || $mmSite.getUserId();
-        $log.debug('Get completion for course ' + courseid + ' and user ' + userid);
-        var data = {
-                courseid : courseid,
-                userid: userid
-            },
-            preSets = {
-                cacheKey: getCompletionCacheKey(courseid, userid)
-            };
-        return $mmSite.read('core_completion_get_course_completion_status', data, preSets).then(function(data) {
-            if (data.completionstatus) {
-                return data.completionstatus;
-            }
-            return $q.reject();
+    self.getCompletion = function(courseId, userId, preSets, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            preSets = preSets || {};
+            $log.debug('Get completion for course ' + courseId + ' and user ' + userId);
+            var data = {
+                    courseid: courseId,
+                    userid: userId
+                };
+            preSets.cacheKey = getCompletionCacheKey(courseId, userId);
+            return site.read('core_completion_get_course_completion_status', data, preSets).then(function(data) {
+                if (data.completionstatus) {
+                    return data.completionstatus;
+                }
+                return $q.reject();
+            });
         });
     };
     function getCompletionCacheKey(courseid, userid) {
@@ -28781,10 +29964,22 @@ angular.module('mm.addons.coursecompletion')
         });
     };
     self.isPluginViewEnabledForUser = function(courseId, userId) {
-        return self.getCompletion(courseId, userId).then(function() {
+        var preSets = {
+            emergencyCache: 0
+        };
+        return self.getCompletion(courseId, userId, preSets).then(function() {
             return true;
-        }).catch(function() {
-            return false;
+        }).catch(function(error) {
+            if ($mmUtil.isWebServiceError(error)) {
+                return false;
+            } else {
+                preSets.omitExpires = true;
+                return self.getCompletion(courseId, userId, preSets).then(function() {
+                    return true;
+                }).catch(function() {
+                    return false;
+                });
+            }
         });
     };
     self.isSelfCompletionAvailable = function() {
@@ -28862,6 +30057,9 @@ angular.module('mm.addons.coursecompletion')
     };
     self.coursesNav = function() {
         var self = {};
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            return $mmaCourseCompletion.invalidateCourseCompletion(courseId);
+        };
         self.isEnabled = function() {
             return $mmaCourseCompletion.isPluginViewEnabled();
         };
@@ -28869,18 +30067,7 @@ angular.module('mm.addons.coursecompletion')
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; 
             }
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId, false).then(function(courseEnabled) {
-                if (!courseEnabled) {
-                    coursesNavEnabledCache[courseId] = false;
-                }
-                if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
-                    return coursesNavEnabledCache[courseId];
-                }
-                return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId).then(function(enabled) {
-                    coursesNavEnabledCache[courseId] = enabled;
-                    return enabled;
-                });
-            });
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId, true);
         };
         self.getController = function(courseId) {
             return function($scope, $state) {
@@ -28895,6 +30082,15 @@ angular.module('mm.addons.coursecompletion')
                     });
                 };
             };
+        };
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+            return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId).then(function(enabled) {
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
         };
         return self;
     };
@@ -28950,20 +30146,36 @@ angular.module('mm.addons.files')
 }]);
 
 angular.module('mm.addons.files')
-.controller('mmaFilesListController', ["$q", "$scope", "$stateParams", "$mmaFiles", "$mmSite", "$translate", "$mmUtil", "$mmaFilesHelper", "$mmApp", "mmaFilesMyComponent", "mmaFilesSiteComponent", function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil,
+.controller('mmaFilesListController', ["$q", "$scope", "$stateParams", "$mmaFiles", "$mmSite", "$translate", "$mmUtil", "$mmText", "$mmaFilesHelper", "$mmApp", "mmaFilesMyComponent", "mmaFilesSiteComponent", function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil, $mmText,
         $mmaFilesHelper, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
     var path = $stateParams.path,
         root = $stateParams.root,
+        isMyFiles = root === 'my',
+        isSiteFiles = root === 'site',
+        userQuota = $mmSite.getInfo().userquota,
         promise;
     $scope.count = -1;
-    $scope.component = root === 'my' ? mmaFilesMyComponent : mmaFilesSiteComponent;
-    function fetchFiles(root, path) {
+    $scope.component = isMyFiles ? mmaFilesMyComponent : mmaFilesSiteComponent;
+    $scope.showUpload = isMyFiles && !path && $mmSite.canUploadFiles() && !$mmaFiles.isUploadDisabledInSite();
+    function fetchFiles() {
         if (!path) {
-            if (root === 'site') {
+            if (isSiteFiles) {
                 promise = $mmaFiles.getSiteFiles();
                 $scope.title = $translate.instant('mma.files.sitefiles');
-            } else if (root === 'my') {
-                promise = $mmaFiles.getMyFiles();
+            } else if (isMyFiles) {
+                promise = $mmaFiles.getMyFiles().then(function(files) {
+                    if ($scope.showUpload && $mmaFiles.canGetPrivateFilesInfo() && userQuota > 0) {
+                        return $mmaFiles.getPrivateFilesInfo().then(function(info) {
+                            $scope.filesInfo = info;
+                            $scope.spaceUsed = $mmText.bytesToSize(info.filesizewithoutreferences, 1);
+                            $scope.userQuota = $mmText.bytesToSize(userQuota, 1);
+                            return files;
+                        });
+                    } else {
+                        delete $scope.userQuota;
+                    }
+                    return files;
+                });
                 $scope.title = $translate.instant('mma.files.files');
             } else {
                 promise = $q.reject();
@@ -28982,11 +30194,14 @@ angular.module('mm.addons.files')
         });
     }
     function refreshFiles() {
-        return $mmaFiles.invalidateDirectory(root, path).finally(function() {
-            return fetchFiles(root, path);
+        var promises = [];
+        promises.push($mmaFiles.invalidateDirectory(root, path));
+        promises.push($mmaFiles.invalidatePrivateFilesInfoForUser());
+        return $q.all(promises).finally(function() {
+            return fetchFiles();
         });
     }
-    fetchFiles(root, path).finally(function() {
+    fetchFiles().finally(function() {
         $scope.filesLoaded = true;
     });
     $scope.refreshFiles = function() {
@@ -28994,7 +30209,6 @@ angular.module('mm.addons.files')
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
-    $scope.showUpload = root === 'my' && !path && $mmSite.canUploadFiles() && !$mmaFiles.isUploadDisabledInSite();
     $scope.add = function() {
         $mmaFiles.versionCanUploadFiles().then(function(canUpload) {
             if (!canUpload) {
@@ -29002,7 +30216,7 @@ angular.module('mm.addons.files')
             } else if (!$mmApp.isOnline()) {
                 $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
             } else {
-                $mmaFilesHelper.selectAndUploadFile().then(function() {
+                $mmaFilesHelper.selectAndUploadFile($scope.filesInfo).then(function() {
                     $scope.filesLoaded = false;
                     refreshFiles().finally(function() {
                         $scope.filesLoaded = true;
@@ -29027,6 +30241,9 @@ angular.module('mm.addons.files')
         };
     self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
+    };
+    self.canGetPrivateFilesInfo = function() {
+        return $mmSite.wsAvailable('core_user_get_private_files_info');
     };
     self.canMoveFromDraftToPrivate = function(siteId) {
         siteId = siteId || $mmSite.getId();
@@ -29089,6 +30306,24 @@ angular.module('mm.addons.files')
         params.instanceid = $mmSite.getUserId();
         return params;
     }
+    function getPrivateFilesInfoCacheKey(userId) {
+        return getPrivateFilesInfoCommonCacheKey() + ':' + userId;
+    }
+    function getPrivateFilesInfoCommonCacheKey() {
+        return 'mmaFiles:privateInfo';
+    }
+    self.getPrivateFilesInfo = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            var params = {
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getPrivateFilesInfoCacheKey(userId)
+                };
+            return site.read('core_user_get_private_files_info', params, preSets);
+        });
+    };
     self.getSiteFiles = function() {
         var params = angular.copy(defaultParams, {});
         return self.getFiles(params);
@@ -29114,6 +30349,17 @@ angular.module('mm.addons.files')
     };
     self.invalidateMyFiles = function() {
         return $mmSite.invalidateWsCacheForKeyStartingWith(getMyFilesListCommonCacheKey());
+    };
+    self.invalidatePrivateFilesInfo = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getPrivateFilesInfoCommonCacheKey());
+        });
+    };
+    self.invalidatePrivateFilesInfoForUser = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKey(getPrivateFilesInfoCacheKey(userId));
+        });
     };
     self.invalidateSiteFiles = function() {
         return $mmSite.invalidateWsCacheForKeyStartingWith(getSiteFilesListCommonCacheKey());
@@ -29219,11 +30465,13 @@ angular.module('mm.addons.files')
 .factory('$mmaFilesHelper', ["$q", "$mmUtil", "$log", "$mmaFiles", "$mmFileUploaderHelper", "$mmSite", function($q, $mmUtil, $log, $mmaFiles, $mmFileUploaderHelper, $mmSite) {
     $log = $log.getInstance('$mmaFilesHelper');
     var self = {};
-    self.selectAndUploadFile = function() {
+    self.selectAndUploadFile = function(info) {
         var maxSize = $mmSite.getInfo().usermaxuploadfilesize,
             userQuota = $mmSite.getInfo().userquota;
         if (userQuota === 0) {
             userQuota = -1;
+        } else if (userQuota > 0 && typeof info != 'undefined') {
+            userQuota = userQuota - info.filesizewithoutreferences;
         }
         if (typeof maxSize == 'undefined') {
             if (typeof userQuota != 'undefined') {
@@ -32418,6 +33666,12 @@ angular.module('mm.addons.notes')
     };
     self.coursesNav = function() {
         var self = {};
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.notes != 'undefined') {
+                return $q.when();
+            }
+            return $mmaNotes.invalidateNotes(courseId);
+        };
         self.isEnabled = function() {
             return $mmaNotes.isPluginViewNotesEnabled();
         };
@@ -32428,13 +33682,7 @@ angular.module('mm.addons.notes')
             if (navOptions && typeof navOptions.notes != 'undefined') {
                 return navOptions.notes;
             }
-            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
-                return coursesNavEnabledCache[courseId];
-            }
-            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId).then(function(enabled) {
-                coursesNavEnabledCache[courseId] = enabled;
-                return enabled;
-            });
+            return true;
         };
         self.getController = function(courseId) {
             return function($scope, $state) {
@@ -32449,6 +33697,18 @@ angular.module('mm.addons.notes')
                     });
                 };
             };
+        };
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.notes != 'undefined') {
+                return navOptions.notes;
+            }
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId).then(function(enabled) {
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
         };
         return self;
     };
@@ -33455,10 +34715,16 @@ angular.module('mm.addons.participants')
 }]);
 
 angular.module('mm.addons.participants')
-.factory('$mmaParticipantsHandlers', ["$mmaParticipants", "mmCoursesAccessMethods", "$state", "$mmContentLinkHandlerFactory", function($mmaParticipants, mmCoursesAccessMethods, $state, $mmContentLinkHandlerFactory) {
+.factory('$mmaParticipantsHandlers', ["$mmaParticipants", "mmCoursesAccessMethods", "$state", "$mmContentLinkHandlerFactory", "$q", function($mmaParticipants, mmCoursesAccessMethods, $state, $mmContentLinkHandlerFactory, $q) {
     var self = {};
     self.coursesNavHandler = function() {
         var self = {};
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                return $q.when();
+            }
+            return $mmaParticipants.invalidateParticipantsList(courseId);
+        };
         self.isEnabled = function() {
             return true;
         };
@@ -33469,7 +34735,7 @@ angular.module('mm.addons.participants')
             if (navOptions && typeof navOptions.participants != 'undefined') {
                 return navOptions.participants;
             }
-            return $mmaParticipants.isPluginEnabledForCourse(courseId);
+            return true;
         };
         self.getController = function(courseId) {
             return function($scope, $state) {
@@ -33484,6 +34750,12 @@ angular.module('mm.addons.participants')
                     });
                 };
             };
+        };
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                return navOptions.participants;
+            }
+            return $mmaParticipants.isPluginEnabledForCourse(courseId);
         };
         return self;
     };
@@ -33876,6 +35148,18 @@ angular.module('mm.addons.pushnotifications')
     return self;
 }]);
 
+angular.module('mm.addons.qbehaviour_adaptivenopenalty')
+.factory('$mmaQbehaviourAdaptiveNoPenaltyHandler', ["$mmQuestionHelper", function($mmQuestionHelper) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.handleQuestion = function(question) {
+        $mmQuestionHelper.extractQbehaviourButtons(question);
+    };
+    return self;
+}]);
+
 angular.module('mm.addons.qbehaviour_adaptive')
 .factory('$mmaQbehaviourAdaptiveHandler', ["$mmQuestionHelper", function($mmQuestionHelper) {
     var self = {};
@@ -33888,14 +35172,43 @@ angular.module('mm.addons.qbehaviour_adaptive')
     return self;
 }]);
 
-angular.module('mm.addons.qbehaviour_adaptivenopenalty')
-.factory('$mmaQbehaviourAdaptiveNoPenaltyHandler', ["$mmQuestionHelper", function($mmQuestionHelper) {
+angular.module('mm.addons.qbehaviour_deferredcbm')
+.directive('mmaQbehaviourDeferredCbm', function() {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/qbehaviour/deferredcbm/template.html'
+    };
+});
+
+angular.module('mm.addons.qbehaviour_deferredcbm')
+.factory('$mmaQbehaviourDeferredCBMHandler', ["$mmQuestionHelper", "$mmaQbehaviourDeferredFeedbackHandler", "$mmQuestion", function($mmQuestionHelper, $mmaQbehaviourDeferredFeedbackHandler, $mmQuestion) {
     var self = {};
+    self.determineQuestionState = function(component, attemptId, question, siteId) {
+        return $mmaQbehaviourDeferredFeedbackHandler.determineQuestionState(
+                    component, attemptId, question, siteId, self.isCompleteResponse, self.isSameResponse);
+    };
+    self.isCompleteResponse = function(question, answers) {
+        var complete = $mmQuestion.isCompleteResponse(question, answers);
+        if (complete && complete != -1) {
+            return !!answers['-certainty'];
+        }
+        return complete;
+    };
+    self.isSameResponse = function(question, prevAnswers, prevBasicAnswers, newAnswers, newBasicAnswers) {
+        var same = $mmQuestion.isSameResponse(question, prevBasicAnswers, newBasicAnswers);
+        if (same) {
+            return prevAnswers['-certainty'] == newAnswers['-certainty'];
+        }
+        return same;
+    };
     self.isEnabled = function() {
         return true;
     };
     self.handleQuestion = function(question) {
-        $mmQuestionHelper.extractQbehaviourButtons(question);
+        if ($mmQuestionHelper.extractQbehaviourCBM(question)) {
+            return ['mma-qbehaviour-deferred-cbm'];
+        }
     };
     return self;
 }]);
@@ -33955,47 +35268,6 @@ angular.module('mm.addons.qbehaviour_deferredfeedback')
         return true;
     };
     self.handleQuestion = function(question) {
-    };
-    return self;
-}]);
-
-angular.module('mm.addons.qbehaviour_deferredcbm')
-.directive('mmaQbehaviourDeferredCbm', function() {
-    return {
-        restrict: 'A',
-        priority: 100,
-        templateUrl: 'addons/qbehaviour/deferredcbm/template.html'
-    };
-});
-
-angular.module('mm.addons.qbehaviour_deferredcbm')
-.factory('$mmaQbehaviourDeferredCBMHandler', ["$mmQuestionHelper", "$mmaQbehaviourDeferredFeedbackHandler", "$mmQuestion", function($mmQuestionHelper, $mmaQbehaviourDeferredFeedbackHandler, $mmQuestion) {
-    var self = {};
-    self.determineQuestionState = function(component, attemptId, question, siteId) {
-        return $mmaQbehaviourDeferredFeedbackHandler.determineQuestionState(
-                    component, attemptId, question, siteId, self.isCompleteResponse, self.isSameResponse);
-    };
-    self.isCompleteResponse = function(question, answers) {
-        var complete = $mmQuestion.isCompleteResponse(question, answers);
-        if (complete && complete != -1) {
-            return !!answers['-certainty'];
-        }
-        return complete;
-    };
-    self.isSameResponse = function(question, prevAnswers, prevBasicAnswers, newAnswers, newBasicAnswers) {
-        var same = $mmQuestion.isSameResponse(question, prevBasicAnswers, newBasicAnswers);
-        if (same) {
-            return prevAnswers['-certainty'] == newAnswers['-certainty'];
-        }
-        return same;
-    };
-    self.isEnabled = function() {
-        return true;
-    };
-    self.handleQuestion = function(question) {
-        if ($mmQuestionHelper.extractQbehaviourCBM(question)) {
-            return ['mma-qbehaviour-deferred-cbm'];
-        }
     };
     return self;
 }]);
@@ -34068,18 +35340,6 @@ angular.module('mm.addons.qbehaviour_interactive')
     return self;
 }]);
 
-angular.module('mm.addons.qbehaviour_interactivecountback')
-.factory('$mmaQbehaviourInteractiveCountbackHandler', ["$mmQuestionHelper", function($mmQuestionHelper) {
-    var self = {};
-    self.isEnabled = function() {
-        return true;
-    };
-    self.handleQuestion = function(question) {
-        $mmQuestionHelper.extractQbehaviourButtons(question);
-    };
-    return self;
-}]);
-
 angular.module('mm.addons.qbehaviour_manualgraded')
 .factory('$mmaQbehaviourManualGradedHandler', ["$mmQuestion", function($mmQuestion) {
     var self = {};
@@ -34131,36 +35391,14 @@ angular.module('mm.addons.qbehaviour_manualgraded')
     return self;
 }]);
 
-angular.module('mm.addons.qtype_calculated')
-.directive('mmaQtypeCalculated', ["$log", "$mmQuestionHelper", function($log, $mmQuestionHelper) {
-	$log = $log.getInstance('mmaQtypeCalculated');
-    return {
-        restrict: 'A',
-        priority: 100,
-        templateUrl: 'addons/qtype/shortanswer/template.html',
-        link: function(scope) {
-            $mmQuestionHelper.inputTextDirective(scope, $log);
-        }
-    };
-}]);
-
-angular.module('mm.addons.qtype_calculated')
-.factory('$mmaQtypeCalculatedHandler', ["$mmaQtypeNumericalHandler", function($mmaQtypeNumericalHandler) {
+angular.module('mm.addons.qbehaviour_interactivecountback')
+.factory('$mmaQbehaviourInteractiveCountbackHandler', ["$mmQuestionHelper", function($mmQuestionHelper) {
     var self = {};
-    self.isCompleteResponse = function(question, answers) {
-        return $mmaQtypeNumericalHandler.isCompleteResponse(question, answers);
-    };
     self.isEnabled = function() {
         return true;
     };
-    self.isGradableResponse = function(question, answers) {
-        return $mmaQtypeNumericalHandler.isGradableResponse(question, answers);
-    };
-    self.isSameResponse = function(question, prevAnswers, newAnswers) {
-        return $mmaQtypeNumericalHandler.isSameResponse(question, prevAnswers, newAnswers);
-    };
-    self.getDirectiveName = function(question) {
-        return 'mma-qtype-calculated';
+    self.handleQuestion = function(question) {
+        $mmQuestionHelper.extractQbehaviourButtons(question);
     };
     return self;
 }]);
@@ -34195,6 +35433,40 @@ angular.module('mm.addons.qtype_calculatedmulti')
     };
     self.getDirectiveName = function(question) {
         return 'mma-qtype-calculated-multi';
+    };
+    return self;
+}]);
+
+angular.module('mm.addons.qtype_calculated')
+.directive('mmaQtypeCalculated', ["$log", "$mmQuestionHelper", function($log, $mmQuestionHelper) {
+	$log = $log.getInstance('mmaQtypeCalculated');
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/qtype/shortanswer/template.html',
+        link: function(scope) {
+            $mmQuestionHelper.inputTextDirective(scope, $log);
+        }
+    };
+}]);
+
+angular.module('mm.addons.qtype_calculated')
+.factory('$mmaQtypeCalculatedHandler', ["$mmaQtypeNumericalHandler", function($mmaQtypeNumericalHandler) {
+    var self = {};
+    self.isCompleteResponse = function(question, answers) {
+        return $mmaQtypeNumericalHandler.isCompleteResponse(question, answers);
+    };
+    self.isEnabled = function() {
+        return true;
+    };
+    self.isGradableResponse = function(question, answers) {
+        return $mmaQtypeNumericalHandler.isGradableResponse(question, answers);
+    };
+    self.isSameResponse = function(question, prevAnswers, newAnswers) {
+        return $mmaQtypeNumericalHandler.isSameResponse(question, prevAnswers, newAnswers);
+    };
+    self.getDirectiveName = function(question) {
+        return 'mma-qtype-calculated';
     };
     return self;
 }]);
@@ -36596,49 +37868,6 @@ angular.module('mm.addons.userprofilefield_checkbox')
     return self;
 });
 
-angular.module('mm.addons.userprofilefield_text')
-.directive('mmaUserProfileFieldText', ["$log", function($log) {
-    $log = $log.getInstance('mmaUserProfileFieldText');
-    return {
-        restrict: 'A',
-        priority: 100,
-        templateUrl: 'addons/userprofilefield/text/template.html',
-        link: function(scope, element) {
-            var field = scope.field;
-            if (field && scope.edit && scope.model) {
-                field.modelName = 'profile_field_' + field.shortname;
-                if (field.param2) {
-                    field.maxlength = parseInt(field.param2, 10) || '';
-                }
-                field.inputType = field.param3 && field.param3 !== '0' && field.param3 !== 'false' ? 'password' : 'text';
-                if (typeof field.defaultdata != 'undefined' && typeof scope.model[field.modelName] == 'undefined') {
-                    scope.model[field.modelName] = field.defaultdata;
-                }
-            }
-        }
-    };
-}]);
-
-angular.module('mm.addons.userprofilefield_text')
-.factory('$mmaUserProfileFieldTextHandler', ["$mmText", function($mmText) {
-    var self = {};
-    self.isEnabled = function() {
-        return true;
-    };
-    self.getData = function(field, signup, registerAuth, model) {
-        var name = 'profile_field_' + field.shortname;
-        return {
-            type: 'text',
-            name: name,
-            value: $mmText.cleanTags(model[name])
-        };
-    };
-    self.getDirectiveName = function(field) {
-        return 'mma-user-profile-field-text';
-    };
-    return self;
-}]);
-
 angular.module('mm.addons.userprofilefield_menu')
 .directive('mmaUserProfileFieldMenu', ["$log", function($log) {
     $log = $log.getInstance('mmaUserProfileFieldMenu');
@@ -36684,6 +37913,49 @@ angular.module('mm.addons.userprofilefield_menu')
     };
     return self;
 });
+
+angular.module('mm.addons.userprofilefield_text')
+.directive('mmaUserProfileFieldText', ["$log", function($log) {
+    $log = $log.getInstance('mmaUserProfileFieldText');
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/userprofilefield/text/template.html',
+        link: function(scope, element) {
+            var field = scope.field;
+            if (field && scope.edit && scope.model) {
+                field.modelName = 'profile_field_' + field.shortname;
+                if (field.param2) {
+                    field.maxlength = parseInt(field.param2, 10) || '';
+                }
+                field.inputType = field.param3 && field.param3 !== '0' && field.param3 !== 'false' ? 'password' : 'text';
+                if (typeof field.defaultdata != 'undefined' && typeof scope.model[field.modelName] == 'undefined') {
+                    scope.model[field.modelName] = field.defaultdata;
+                }
+            }
+        }
+    };
+}]);
+
+angular.module('mm.addons.userprofilefield_text')
+.factory('$mmaUserProfileFieldTextHandler', ["$mmText", function($mmText) {
+    var self = {};
+    self.isEnabled = function() {
+        return true;
+    };
+    self.getData = function(field, signup, registerAuth, model) {
+        var name = 'profile_field_' + field.shortname;
+        return {
+            type: 'text',
+            name: name,
+            value: $mmText.cleanTags(model[name])
+        };
+    };
+    self.getDirectiveName = function(field) {
+        return 'mma-user-profile-field-text';
+    };
+    return self;
+}]);
 
 angular.module('mm.addons.userprofilefield_textarea')
 .directive('mmaUserProfileFieldTextarea', ["$log", function($log) {
@@ -36926,12 +38198,12 @@ angular.module('mm.addons.mod_assign')
 }]);
 
 angular.module('mm.addons.mod_assign')
-.directive('mmaModAssignSubmission', ["$mmaModAssign", "$translate", "$mmUser", "mmaModAssignAttemptReopenMethodNone", "$q", "$mmSite", "mmaModAssignUnlimitedAttempts", "mmUserProfileState", "mmaModAssignSubmissionStatusNew", "mmaModAssignSubmissionStatusSubmitted", "mmaModAssignSubmissionInvalidatedEvent", "$mmGroups", "$state", "$mmaModAssignHelper", "mmaModAssignSubmissionStatusReopened", "$mmEvents", "mmaModAssignSubmittedForGradingEvent", "$mmFileUploaderHelper", "$mmApp", "$mmText", "mmaModAssignComponent", "$mmUtil", "$mmaModAssignOffline", "mmaModAssignEventManualSynced", "$mmCourse", "$mmGrades", "mmaModAssignAttemptReopenMethodManual", "$mmLang", "$mmSyncBlock", "mmaModAssignEventSubmitGrade", "$ionicPlatform", "mmaModAssignGradedEvent", function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
+.directive('mmaModAssignSubmission', ["$mmaModAssign", "$translate", "$mmUser", "mmaModAssignAttemptReopenMethodNone", "$q", "$mmSite", "mmaModAssignUnlimitedAttempts", "mmUserProfileState", "mmaModAssignSubmissionStatusNew", "mmaModAssignSubmissionStatusSubmitted", "mmaModAssignSubmissionInvalidatedEvent", "$mmGroups", "$state", "$mmaModAssignHelper", "mmaModAssignSubmissionStatusReopened", "$mmEvents", "mmaModAssignSubmittedForGradingEvent", "$mmFileUploaderHelper", "$mmApp", "$mmText", "mmaModAssignComponent", "$mmUtil", "$mmaModAssignOffline", "mmaModAssignEventManualSynced", "$mmCourse", "$mmGrades", "mmaModAssignAttemptReopenMethodManual", "$mmLang", "$mmSyncBlock", "mmaModAssignEventSubmitGrade", "$ionicPlatform", "mmaModAssignGradedEvent", "$mmGradesHelper", function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmUserProfileState, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted,
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
         $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmGrades, mmaModAssignAttemptReopenMethodManual,
-        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicPlatform, mmaModAssignGradedEvent) {
+        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicPlatform, mmaModAssignGradedEvent, $mmGradesHelper) {
     var originalGrades =  {};
     function setStatusNameAndClass(scope, assign, status) {
         if (scope.hasOffline) {
@@ -37027,7 +38299,7 @@ angular.module('mm.addons.mod_assign')
                 scope.isGrading = true;
                 scope.canSaveGrades = scope.grade.method == 'simple';
                 if (scope.gradeInfo.scale) {
-                    scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
+                    scope.grade.scale = $mmUtil.makeMenuFromList(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
                 } else {
                     $mmLang.getCurrentLanguage().then(function(lang) {
                         scope.grade.lang = lang;
@@ -37037,7 +38309,7 @@ angular.module('mm.addons.mod_assign')
                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                         if (outcome.scale) {
                             outcome.options =
-                                formatScaleOptions(outcome.scale, $translate.instant('mm.grades.nooutcome'));
+                                $mmUtil.makeMenuFromList(outcome.scale, $translate.instant('mm.grades.nooutcome'));
                         }
                         outcome.selectedId = 0;
                         originalGrades.outcomes[outcome.id] = outcome.selectedId;
@@ -37048,7 +38320,7 @@ angular.module('mm.addons.mod_assign')
                     angular.forEach(grades, function(grade) {
                         if (!grade.outcomeid && !grade.scaleid) {
                             if (scope.grade.scale) {
-                                scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
+                                scope.grade.grade = $mmGradesHelper.getGradeValueFromLabel(scope.grade.scale, grade.gradeformatted);
                             } else {
                                 var parsedGrade = parseFloat(grade.gradeformatted);
                                 scope.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
@@ -37061,7 +38333,7 @@ angular.module('mm.addons.mod_assign')
                                     outcome.selected = grade.gradeformatted;
                                     outcome.modified = grade.gradedategraded;
                                     if (outcome.options) {
-                                        outcome.selectedId = getSelectedScaleId(outcome.options, outcome.selected);
+                                        outcome.selectedId = $mmGradesHelper.getGradeValueFromLabel(outcome.options, outcome.selected);
                                         originalGrades.outcomes[outcome.id] = outcome.selectedId;
                                         outcome.itemNumber = grade.itemnumber;
                                     }
@@ -37126,19 +38398,6 @@ angular.module('mm.addons.mod_assign')
                 }
             });
         });
-    }
-    function formatScaleOptions(options, defaultOption) {
-        options = options.split(",");
-        options = options.map(function (value) {return value.trim();});
-        options.unshift(defaultOption);
-        return options;
-    }
-    function getSelectedScaleId(options, selected) {
-        var index = options.indexOf(selected) || 0;
-        if (index < 0) {
-            return 0;
-        }
-        return index;
     }
     function controller() {
         var self = this;
@@ -37691,7 +38950,7 @@ angular.module('mm.addons.mod_assign')
         });
     }
     function getInputData() {
-        return $mmaModAssignHelper.getAnswersFromForm(document.forms['mma-mod_assign-edit-form']);
+        return $mmUtil.getInfoValuesFromForm(document.forms['mma-mod_assign-edit-form']);
     }
     function prepareSubmissionData(inputData) {
         saveOffline = hasOffline;
@@ -37815,7 +39074,7 @@ angular.module('mm.addons.mod_assign')
 }]);
 
 angular.module('mm.addons.mod_assign')
-.controller('mmaModAssignFeedbackEditCtrl', ["$scope", "$stateParams", "$mmaModAssignHelper", "$q", "$mmUtil", "$translate", "$mmSite", "$mmaModAssignFeedbackDelegate", "$mmEvents", "mmaModAssignFeedbackSavedEvent", function($scope, $stateParams, $mmaModAssignHelper, $q, $mmUtil, $translate, $mmSite,
+.controller('mmaModAssignFeedbackEditCtrl', ["$scope", "$stateParams", "$q", "$mmUtil", "$translate", "$mmSite", "$mmaModAssignFeedbackDelegate", "$mmEvents", "mmaModAssignFeedbackSavedEvent", function($scope, $stateParams, $q, $mmUtil, $translate, $mmSite,
         $mmaModAssignFeedbackDelegate, $mmEvents, mmaModAssignFeedbackSavedEvent) {
     var blockData = $mmUtil.blockLeaveView($scope, leaveView);
     $scope.assign = $stateParams.assign;
@@ -37835,7 +39094,7 @@ angular.module('mm.addons.mod_assign')
         });
     }
     function getInputData() {
-        return $mmaModAssignHelper.getAnswersFromForm(document.forms['mma-mod_assign-edit-form']);
+        return $mmUtil.getInfoValuesFromForm(document.forms['mma-mod_assign-edit-form']);
     }
     function hasDataChanged() {
         return $mmaModAssignFeedbackDelegate.hasPluginDataChanged($scope.assign, $scope.userId, $scope.plugin, getInputData()).catch(function() {
@@ -39764,26 +41023,7 @@ angular.module('mm.addons.mod_assign')
         });
     };
     self.getAnswersFromForm = function(form) {
-        if (!form || !form.elements) {
-            return {};
-        }
-        var answers = {};
-        angular.forEach(form.elements, function(element) {
-            var name = element.name || '';
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
-            }
-            if (element.type == 'checkbox') {
-                answers[name] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    answers[name] = element.value;
-                }
-            } else {
-                answers[name] = element.value;
-            }
-        });
-        return answers;
+        return $mmUtil.getInfoValuesFromForm(form);
     };
     self.getStoredSubmissionFiles = function(assignId, pluginName, userId, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -40432,19 +41672,6 @@ angular.module('mm.addons.mod_assign')
 }]);
 
 angular.module('mm.addons.mod_book')
-.directive('mmaModBookArrows', function() {
-    return {
-        restrict: 'E',
-        scope: {
-            previous: '=?',
-            next: '=?',
-            action: '=?'
-        },
-        templateUrl: 'addons/mod/book/templates/arrows.html'
-    };
-});
-
-angular.module('mm.addons.mod_book')
 .controller('mmaModBookIndexCtrl', ["$scope", "$stateParams", "$mmUtil", "$mmCourseHelper", "$mmaModBook", "$log", "mmaModBookComponent", "$mmText", "$ionicPopover", "$mmApp", "$q", "$mmCourse", "$ionicScrollDelegate", "$translate", "$mmaModBookPrefetchHandler", function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmaModBook, $log, mmaModBookComponent,
             $mmText, $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
@@ -40553,6 +41780,19 @@ angular.module('mm.addons.mod_book')
 }]);
 
 angular.module('mm.addons.mod_book')
+.directive('mmaModBookArrows', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            previous: '=?',
+            next: '=?',
+            action: '=?'
+        },
+        templateUrl: 'addons/mod/book/templates/arrows.html'
+    };
+});
+
+angular.module('mm.addons.mod_book')
 .factory('$mmaModBook', ["$mmFilepool", "$mmSite", "$mmFS", "$http", "$log", "$q", "$mmSitesManager", "$mmUtil", "mmaModBookComponent", "$mmCourse", "$mmText", function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent,
             $mmCourse, $mmText) {
     $log = $log.getInstance('$mmaModBook');
@@ -40585,7 +41825,6 @@ angular.module('mm.addons.mod_book')
         });
     }
     self.getBook = function(courseId, cmId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return getBook(siteId, courseId, 'coursemodule', cmId);
     };
     self.getToc = function(contents) {
@@ -40835,6 +42074,18 @@ angular.module('mm.addons.mod_book')
             return status;
         }
     };
+    self.download = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, false);
+    };
+    function downloadOrPrefetch(module, courseId, prefetch) {
+        var promises = [];
+        promises.push(self.downloadOrPrefetch(module, courseId, prefetch));
+        promises.push($mmaModBook.getBook(courseId, module.id));
+        return $q.all(promises);
+    }
+    self.prefetch = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, true);
+    };
     self.getIntroFiles = function(module, courseId) {
         return $mmaModBook.getBook(courseId, module.id).catch(function() {
         }).then(function(book) {
@@ -40865,6 +42116,347 @@ angular.module('mm.addons.mod_book')
     return self;
 }]);
 
+angular.module('mm.addons.mod_chat')
+.controller('mmaModChatChatCtrl', ["$scope", "$stateParams", "$mmApp", "$mmaModChat", "$log", "$ionicModal", "$mmUtil", "$ionicHistory", "$ionicScrollDelegate", "$timeout", "$mmSite", "$interval", "mmaChatPollInterval", "$q", "$mmText", function($scope, $stateParams, $mmApp, $mmaModChat, $log, $ionicModal, $mmUtil, $ionicHistory,
+            $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval, $q, $mmText) {
+    $log = $log.getInstance('mmaModChatChatCtrl');
+    var chatId = $stateParams.chatid,
+        courseId = $stateParams.courseid,
+        title = $stateParams.title,
+        chatLastTime = 0,
+        pollingRunning = false;
+    $scope.loaded = false;
+    $scope.title = title;
+    $scope.currentUserId = $mmSite.getUserId();
+    $scope.currentUserBeep = 'beep ' + $scope.currentUserId;
+    $scope.messages = [];
+    $scope.chatUsers = [];
+    $scope.newMessage = {
+        text: ''
+    };
+    $ionicModal.fromTemplateUrl('addons/mod/chat/templates/users.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(m) {
+        $scope.modal = m;
+    });
+    $scope.closeModal = function(){
+        $scope.modal.hide();
+    };
+    $scope.showChatUsers = function() {
+        $scope.usersLoaded = false;
+        $scope.modal.show();
+        $mmaModChat.getChatUsers($scope.chatsid).then(function(data) {
+            $scope.chatUsers = data.users;
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhilegettingchatusers', true);
+        }).finally(function() {
+            $scope.usersLoaded = true;
+        });
+    };
+    $scope.talkTo = function(user) {
+        $scope.newMessage.text = "To " + user + ": ";
+        $scope.modal.hide();
+    };
+    $scope.beepTo = function(userId) {
+        $scope.sendMessage('', userId);
+        $scope.modal.hide();
+    };
+    $scope.isAppOffline = function() {
+        return !$mmApp.isOnline();
+    };
+    function loginUser() {
+        return $mmaModChat.loginUser(chatId).then(function(chatsid) {
+            $scope.chatsid = chatsid;
+        });
+    }
+    function getMessages() {
+        return $mmaModChat.getLatestMessages($scope.chatsid, chatLastTime).then(function(messagesInfo) {
+            chatLastTime = messagesInfo.chatnewlasttime;
+            return $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
+                $scope.messages = $scope.messages.concat(messages);
+            });
+        });
+    }
+    function startPolling() {
+        if ($scope.polling) {
+            return;
+        }
+        $scope.polling = $interval(getMessagesInterval, mmaChatPollInterval);
+    }
+    function getMessagesInterval() {
+        $log.debug('Polling for messages');
+        if (!$mmApp.isOnline() || pollingRunning) {
+            return $q.reject();
+        }
+        pollingRunning = true;
+        return getMessages().catch(function() {
+            return loginUser().then(function() {
+                return getMessages();
+            }).catch(function(error) {
+                if ($scope.polling) {
+                    $interval.cancel($scope.polling);
+                    $scope.polling = undefined;
+                }
+                $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhileretrievingmessages', true);
+                return $q.reject();
+            });
+        }).finally(function() {
+            pollingRunning = false;
+        });
+    }
+    $scope.showDate = function(message, prevMessage) {
+        if (!prevMessage) {
+            return true;
+        }
+        return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
+    };
+    $scope.sendMessage = function(text, beep) {
+        beep = beep || '';
+        if (!$mmApp.isOnline()) {
+            return;
+        } else if (beep === '' && !text.trim()) {
+            return;
+        }
+        text = $mmText.replaceNewLines(text, '<br>');
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        $mmaModChat.sendMessage($scope.chatsid, text, beep).then(function() {
+            if (beep === '') {
+                $scope.newMessage.text = '';
+            }
+            getMessagesInterval(); 
+        }).catch(function(error) {
+            $mmApp.closeKeyboard();
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhilesendingmessage', true);
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+    $scope.reconnect = function() {
+        var modal = $mmUtil.showModalLoading();
+        return getMessagesInterval().then(function() {
+            startPolling();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+    loginUser().then(function() {
+        return getMessages().then(function() {
+            startPolling();
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhileretrievingmessages', true);
+            $ionicHistory.goBack();
+            return $q.reject();
+        });
+    }, function(error) {
+        $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhileconnecting', true);
+        $ionicHistory.goBack();
+    }).finally(function() {
+        $scope.loaded = true;
+    });
+    $scope.scrollAfterRender = function(scope) {
+        if (scope.$last === true) {
+            $timeout(function() {
+                var scrollView = $ionicScrollDelegate.$getByHandle('mmaChatScroll');
+                scrollView.scrollBottom();
+            });
+        }
+    };
+    $scope.$on('$ionicView.leave', function() {
+        if ($scope.polling) {
+            $log.debug('Cancelling polling for conversation');
+            $interval.cancel($scope.polling);
+        }
+    });
+}]);
+
+angular.module('mm.addons.mod_chat')
+.controller('mmaModChatIndexCtrl', ["$scope", "$stateParams", "$mmaModChat", "$mmUtil", "$q", "$mmCourse", "$mmText", "$translate", "mmaModChatComponent", function($scope, $stateParams, $mmaModChat, $mmUtil, $q, $mmCourse, $mmText, $translate,
+            mmaModChatComponent) {
+    var module = $stateParams.module || {},
+        courseid = $stateParams.courseid,
+        chat;
+    $scope.title = module.name;
+    $scope.description = module.description;
+    $scope.moduleUrl = module.url;
+    $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModChatComponent;
+    $scope.componentId = module.id;
+    function fetchChatData(refresh) {
+        return $mmaModChat.getChat(courseid, module.id, refresh).then(function(chatdata) {
+            chat = chatdata;
+            $scope.title = chat.name || $scope.title;
+            $scope.description = chat.intro || $scope.description;
+            $scope.chatId = chat.id;
+            var now = $mmUtil.timestamp();
+            var span = chat.chattime - now;
+            if (chat.chattime && chat.schedule > 0 && span > 0) {
+                $scope.chatInfo = {
+                    date: moment(chat.chattime * 1000).format('LLL'),
+                    fromnow: $mmUtil.formatTimeInstant(span)
+                };
+            } else {
+                $scope.chatInfo = false;
+            }
+        }, function(error) {
+            if (!refresh) {
+                return fetchChatData(true);
+            }
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.mod_chat.errorwhilegettingchatdata', true);
+            }
+            return $q.reject();
+        });
+    }
+    fetchChatData().then(function() {
+        $mmaModChat.logView(chat.id).then(function() {
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+        });
+    }).finally(function() {
+        $scope.chatLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
+    });
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModChatComponent, module.id);
+    };
+    $scope.refreshChat = function() {
+        if ($scope.chatLoaded) {
+            $scope.refreshIcon = 'spinner';
+            return fetchChatData(true).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+    };
+}]);
+angular.module('mm.addons.mod_chat')
+.factory('$mmaModChat', ["$q", "$mmSite", "$mmUser", "$mmSitesManager", function($q, $mmSite, $mmUser, $mmSitesManager) {
+    var self = {};
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return  site.wsAvailable('mod_chat_get_chats_by_courses') &&
+                    site.wsAvailable('mod_chat_login_user') &&
+                    site.wsAvailable('mod_chat_get_chat_users') &&
+                    site.wsAvailable('mod_chat_send_chat_message') &&
+                    site.wsAvailable('mod_chat_get_chat_latest_messages');
+        });
+    };
+    self.getChat = function(courseid, cmid, refresh) {
+        var params = {
+            courseids: [courseid]
+            },
+            preSets = {};
+        if (refresh) {
+            preSets.getFromCache = false;
+        }
+        return $mmSite.read('mod_chat_get_chats_by_courses', params, preSets).then(function(response) {
+            if (response.chats) {
+                var currentChat;
+                angular.forEach(response.chats, function(chat) {
+                    if (chat.coursemodule == cmid) {
+                        currentChat = chat;
+                    }
+                });
+                if (currentChat) {
+                    return currentChat;
+                }
+            }
+            return $q.reject();
+        });
+    };
+    self.loginUser = function(chatId) {
+        var params = {
+            chatid: chatId
+        };
+        return $mmSite.write('mod_chat_login_user', params).then(function(response) {
+            if (response.chatsid) {
+                return response.chatsid;
+            }
+            return $q.reject();
+        });
+    };
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                chatid: id
+            };
+            return $mmSite.write('mod_chat_view_chat', params);
+        }
+        return $q.reject();
+    };
+    self.sendMessage = function(chatsid, message, beep) {
+        var params = {
+            chatsid: chatsid,
+            messagetext: message,
+            beepid: beep
+        };
+        return $mmSite.write('mod_chat_send_chat_message', params).then(function(response) {
+            if (response.messageid) {
+                return response.messageid;
+            }
+            return $q.reject();
+        });
+    };
+    self.getLatestMessages = function(chatsid, lasttime) {
+        var params = {
+            chatsid: chatsid,
+            chatlasttime: lasttime
+        };
+        return $mmSite.write('mod_chat_get_chat_latest_messages', params);
+    };
+    self.getMessagesUserData = function(messages, courseid) {
+        var promises = [];
+        angular.forEach(messages, function(message) {
+            var promise = $mmUser.getProfile(message.userid, courseid, true).then(function(user) {
+                message.userfullname = user.fullname;
+                message.userprofileimageurl = user.profileimageurl;
+            }, function() {
+                message.userfullname = message.userid;
+            });
+            promises.push(promise);
+        });
+        return $q.all(promises).then(function() {
+            return messages;
+        });
+    };
+    self.getChatUsers = function(chatsid) {
+        var params = {
+            chatsid: chatsid
+        };
+        var preSets = {
+            getFromCache: false
+        };
+        return $mmSite.read('mod_chat_get_chat_users', params, preSets);
+    };
+    return self;
+}]);
+angular.module('mm.addons.mod_chat')
+.factory('$mmaModChatHandlers', ["$mmCourse", "$mmaModChat", "$state", "$mmContentLinksHelper", function($mmCourse, $mmaModChat, $state, $mmContentLinksHelper) {
+    var self = {};
+    self.courseContent = function() {
+        var self = {};
+        self.isEnabled = function() {
+            return $mmaModChat.isPluginEnabled();
+        };
+        self.getController = function(module, courseid) {
+            return function($scope) {
+                $scope.title = module.name;
+                $scope.icon = $mmCourse.getModuleIconSrc('chat');
+                $scope.class = 'mma-mod_chat-handler';
+                $scope.action = function(e) {
+                    $state.go('site.mod_chat', {module: module, courseid: courseid});
+                };
+            };
+        };
+        return self;
+    };
+    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModChat', 'chat', $mmaModChat);
+    return self;
+}]);
 angular.module('mm.addons.mod_choice')
 .controller('mmaModChoiceIndexCtrl', ["$scope", "$stateParams", "$mmaModChoice", "$mmUtil", "$mmCourseHelper", "$q", "$mmCourse", "$mmText", "mmaModChoiceComponent", "mmaModChoiceAutomSyncedEvent", "$mmSite", "$mmEvents", "$mmaModChoiceSync", "$ionicScrollDelegate", "$mmaModChoiceOffline", "$mmApp", "$translate", "mmCoreEventOnlineStatusChanged", function($scope, $stateParams, $mmaModChoice, $mmUtil, $mmCourseHelper, $q, $mmCourse, $mmText,
             mmaModChoiceComponent, mmaModChoiceAutomSyncedEvent, $mmSite, $mmEvents, $mmaModChoiceSync, $ionicScrollDelegate,
@@ -41751,347 +43343,6 @@ angular.module('mm.addons.mod_choice')
     return self;
 }]);
 
-angular.module('mm.addons.mod_chat')
-.controller('mmaModChatChatCtrl', ["$scope", "$stateParams", "$mmApp", "$mmaModChat", "$log", "$ionicModal", "$mmUtil", "$ionicHistory", "$ionicScrollDelegate", "$timeout", "$mmSite", "$interval", "mmaChatPollInterval", "$q", "$mmText", function($scope, $stateParams, $mmApp, $mmaModChat, $log, $ionicModal, $mmUtil, $ionicHistory,
-            $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval, $q, $mmText) {
-    $log = $log.getInstance('mmaModChatChatCtrl');
-    var chatId = $stateParams.chatid,
-        courseId = $stateParams.courseid,
-        title = $stateParams.title,
-        chatLastTime = 0,
-        pollingRunning = false;
-    $scope.loaded = false;
-    $scope.title = title;
-    $scope.currentUserId = $mmSite.getUserId();
-    $scope.currentUserBeep = 'beep ' + $scope.currentUserId;
-    $scope.messages = [];
-    $scope.chatUsers = [];
-    $scope.newMessage = {
-        text: ''
-    };
-    $ionicModal.fromTemplateUrl('addons/mod/chat/templates/users.html', {
-        scope: $scope,
-        animation: 'slide-in-up'
-    }).then(function(m) {
-        $scope.modal = m;
-    });
-    $scope.closeModal = function(){
-        $scope.modal.hide();
-    };
-    $scope.showChatUsers = function() {
-        $scope.usersLoaded = false;
-        $scope.modal.show();
-        $mmaModChat.getChatUsers($scope.chatsid).then(function(data) {
-            $scope.chatUsers = data.users;
-        }).catch(function(error) {
-            $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhilegettingchatusers', true);
-        }).finally(function() {
-            $scope.usersLoaded = true;
-        });
-    };
-    $scope.talkTo = function(user) {
-        $scope.newMessage.text = "To " + user + ": ";
-        $scope.modal.hide();
-    };
-    $scope.beepTo = function(userId) {
-        $scope.sendMessage('', userId);
-        $scope.modal.hide();
-    };
-    $scope.isAppOffline = function() {
-        return !$mmApp.isOnline();
-    };
-    function loginUser() {
-        return $mmaModChat.loginUser(chatId).then(function(chatsid) {
-            $scope.chatsid = chatsid;
-        });
-    }
-    function getMessages() {
-        return $mmaModChat.getLatestMessages($scope.chatsid, chatLastTime).then(function(messagesInfo) {
-            chatLastTime = messagesInfo.chatnewlasttime;
-            return $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
-                $scope.messages = $scope.messages.concat(messages);
-            });
-        });
-    }
-    function startPolling() {
-        if ($scope.polling) {
-            return;
-        }
-        $scope.polling = $interval(getMessagesInterval, mmaChatPollInterval);
-    }
-    function getMessagesInterval() {
-        $log.debug('Polling for messages');
-        if (!$mmApp.isOnline() || pollingRunning) {
-            return $q.reject();
-        }
-        pollingRunning = true;
-        return getMessages().catch(function() {
-            return loginUser().then(function() {
-                return getMessages();
-            }).catch(function(error) {
-                if ($scope.polling) {
-                    $interval.cancel($scope.polling);
-                    $scope.polling = undefined;
-                }
-                $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhileretrievingmessages', true);
-                return $q.reject();
-            });
-        }).finally(function() {
-            pollingRunning = false;
-        });
-    }
-    $scope.showDate = function(message, prevMessage) {
-        if (!prevMessage) {
-            return true;
-        }
-        return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
-    };
-    $scope.sendMessage = function(text, beep) {
-        beep = beep || '';
-        if (!$mmApp.isOnline()) {
-            return;
-        } else if (beep === '' && !text.trim()) {
-            return;
-        }
-        text = $mmText.replaceNewLines(text, '<br>');
-        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-        $mmaModChat.sendMessage($scope.chatsid, text, beep).then(function() {
-            if (beep === '') {
-                $scope.newMessage.text = '';
-            }
-            getMessagesInterval(); 
-        }).catch(function(error) {
-            $mmApp.closeKeyboard();
-            $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhilesendingmessage', true);
-        }).finally(function() {
-            modal.dismiss();
-        });
-    };
-    $scope.reconnect = function() {
-        var modal = $mmUtil.showModalLoading();
-        return getMessagesInterval().then(function() {
-            startPolling();
-        }).finally(function() {
-            modal.dismiss();
-        });
-    };
-    loginUser().then(function() {
-        return getMessages().then(function() {
-            startPolling();
-        }).catch(function(error) {
-            $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhileretrievingmessages', true);
-            $ionicHistory.goBack();
-            return $q.reject();
-        });
-    }, function(error) {
-        $mmUtil.showErrorModalDefault(error, 'mma.mod_chat.errorwhileconnecting', true);
-        $ionicHistory.goBack();
-    }).finally(function() {
-        $scope.loaded = true;
-    });
-    $scope.scrollAfterRender = function(scope) {
-        if (scope.$last === true) {
-            $timeout(function() {
-                var scrollView = $ionicScrollDelegate.$getByHandle('mmaChatScroll');
-                scrollView.scrollBottom();
-            });
-        }
-    };
-    $scope.$on('$ionicView.leave', function() {
-        if ($scope.polling) {
-            $log.debug('Cancelling polling for conversation');
-            $interval.cancel($scope.polling);
-        }
-    });
-}]);
-
-angular.module('mm.addons.mod_chat')
-.controller('mmaModChatIndexCtrl', ["$scope", "$stateParams", "$mmaModChat", "$mmUtil", "$q", "$mmCourse", "$mmText", "$translate", "mmaModChatComponent", function($scope, $stateParams, $mmaModChat, $mmUtil, $q, $mmCourse, $mmText, $translate,
-            mmaModChatComponent) {
-    var module = $stateParams.module || {},
-        courseid = $stateParams.courseid,
-        chat;
-    $scope.title = module.name;
-    $scope.description = module.description;
-    $scope.moduleUrl = module.url;
-    $scope.courseid = courseid;
-    $scope.refreshIcon = 'spinner';
-    $scope.component = mmaModChatComponent;
-    $scope.componentId = module.id;
-    function fetchChatData(refresh) {
-        return $mmaModChat.getChat(courseid, module.id, refresh).then(function(chatdata) {
-            chat = chatdata;
-            $scope.title = chat.name || $scope.title;
-            $scope.description = chat.intro || $scope.description;
-            $scope.chatId = chat.id;
-            var now = $mmUtil.timestamp();
-            var span = chat.chattime - now;
-            if (chat.chattime && chat.schedule > 0 && span > 0) {
-                $scope.chatInfo = {
-                    date: moment(chat.chattime * 1000).format('LLL'),
-                    fromnow: $mmUtil.formatTimeInstant(span)
-                };
-            } else {
-                $scope.chatInfo = false;
-            }
-        }, function(error) {
-            if (!refresh) {
-                return fetchChatData(true);
-            }
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.mod_chat.errorwhilegettingchatdata', true);
-            }
-            return $q.reject();
-        });
-    }
-    fetchChatData().then(function() {
-        $mmaModChat.logView(chat.id).then(function() {
-            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
-        });
-    }).finally(function() {
-        $scope.chatLoaded = true;
-        $scope.refreshIcon = 'ion-refresh';
-    });
-    $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModChatComponent, module.id);
-    };
-    $scope.refreshChat = function() {
-        if ($scope.chatLoaded) {
-            $scope.refreshIcon = 'spinner';
-            return fetchChatData(true).finally(function() {
-                $scope.refreshIcon = 'ion-refresh';
-                $scope.$broadcast('scroll.refreshComplete');
-            });
-        }
-    };
-}]);
-angular.module('mm.addons.mod_chat')
-.factory('$mmaModChat', ["$q", "$mmSite", "$mmUser", "$mmSitesManager", function($q, $mmSite, $mmUser, $mmSitesManager) {
-    var self = {};
-    self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return  site.wsAvailable('mod_chat_get_chats_by_courses') &&
-                    site.wsAvailable('mod_chat_login_user') &&
-                    site.wsAvailable('mod_chat_get_chat_users') &&
-                    site.wsAvailable('mod_chat_send_chat_message') &&
-                    site.wsAvailable('mod_chat_get_chat_latest_messages');
-        });
-    };
-    self.getChat = function(courseid, cmid, refresh) {
-        var params = {
-            courseids: [courseid]
-            },
-            preSets = {};
-        if (refresh) {
-            preSets.getFromCache = false;
-        }
-        return $mmSite.read('mod_chat_get_chats_by_courses', params, preSets).then(function(response) {
-            if (response.chats) {
-                var currentChat;
-                angular.forEach(response.chats, function(chat) {
-                    if (chat.coursemodule == cmid) {
-                        currentChat = chat;
-                    }
-                });
-                if (currentChat) {
-                    return currentChat;
-                }
-            }
-            return $q.reject();
-        });
-    };
-    self.loginUser = function(chatId) {
-        var params = {
-            chatid: chatId
-        };
-        return $mmSite.write('mod_chat_login_user', params).then(function(response) {
-            if (response.chatsid) {
-                return response.chatsid;
-            }
-            return $q.reject();
-        });
-    };
-    self.logView = function(id) {
-        if (id) {
-            var params = {
-                chatid: id
-            };
-            return $mmSite.write('mod_chat_view_chat', params);
-        }
-        return $q.reject();
-    };
-    self.sendMessage = function(chatsid, message, beep) {
-        var params = {
-            chatsid: chatsid,
-            messagetext: message,
-            beepid: beep
-        };
-        return $mmSite.write('mod_chat_send_chat_message', params).then(function(response) {
-            if (response.messageid) {
-                return response.messageid;
-            }
-            return $q.reject();
-        });
-    };
-    self.getLatestMessages = function(chatsid, lasttime) {
-        var params = {
-            chatsid: chatsid,
-            chatlasttime: lasttime
-        };
-        return $mmSite.write('mod_chat_get_chat_latest_messages', params);
-    };
-    self.getMessagesUserData = function(messages, courseid) {
-        var promises = [];
-        angular.forEach(messages, function(message) {
-            var promise = $mmUser.getProfile(message.userid, courseid, true).then(function(user) {
-                message.userfullname = user.fullname;
-                message.userprofileimageurl = user.profileimageurl;
-            }, function() {
-                message.userfullname = message.userid;
-            });
-            promises.push(promise);
-        });
-        return $q.all(promises).then(function() {
-            return messages;
-        });
-    };
-    self.getChatUsers = function(chatsid) {
-        var params = {
-            chatsid: chatsid
-        };
-        var preSets = {
-            getFromCache: false
-        };
-        return $mmSite.read('mod_chat_get_chat_users', params, preSets);
-    };
-    return self;
-}]);
-angular.module('mm.addons.mod_chat')
-.factory('$mmaModChatHandlers', ["$mmCourse", "$mmaModChat", "$state", "$mmContentLinksHelper", function($mmCourse, $mmaModChat, $state, $mmContentLinksHelper) {
-    var self = {};
-    self.courseContent = function() {
-        var self = {};
-        self.isEnabled = function() {
-            return $mmaModChat.isPluginEnabled();
-        };
-        self.getController = function(module, courseid) {
-            return function($scope) {
-                $scope.title = module.name;
-                $scope.icon = $mmCourse.getModuleIconSrc('chat');
-                $scope.class = 'mma-mod_chat-handler';
-                $scope.action = function(e) {
-                    $state.go('site.mod_chat', {module: module, courseid: courseid});
-                };
-            };
-        };
-        return self;
-    };
-    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModChat', 'chat', $mmaModChat);
-    return self;
-}]);
 angular.module('mm.addons.mod_data')
 .directive('mmaModDataAction', ["$mmSite", "$mmUser", "$mmaModDataOffline", "$mmEvents", "mmaModDataEventEntryChanged", function($mmSite, $mmUser, $mmaModDataOffline, $mmEvents, mmaModDataEventEntryChanged) {
     return {
@@ -42530,6 +43781,7 @@ angular.module('mm.addons.mod_data')
     $scope.databaseLoaded = false;
     $scope.selectedGroup = $stateParams.group || 0;
     $scope.entries = {};
+    $scope.firstEntry = false;
     $scope.search = {
         sortBy: "0",
         sortDirection: "DESC",
@@ -42540,6 +43792,7 @@ angular.module('mm.addons.mod_data')
         advanced: {}
     };
     function fetchDatabaseData(refresh, sync, showErrors) {
+        var canAdd = canSearch = false;
         $scope.isOnline = $mmApp.isOnline();
         return $mmaModData.getDatabase(courseId, module.id).then(function(databaseData) {
             data = databaseData;
@@ -42567,8 +43820,8 @@ angular.module('mm.addons.mod_data')
                 $scope.groupInfo = false;
                 return false;
             }
-            $scope.canSearch = true;
-            $scope.canAdd = accessData.canaddentry;
+            canSearch = true;
+            canAdd = accessData.canaddentry;
             return $mmGroups.getActivityGroupInfo(data.coursemodule, accessData.canmanageentries).then(function(groupInfo) {
                 $scope.groupInfo = groupInfo;
                 if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
@@ -42588,8 +43841,8 @@ angular.module('mm.addons.mod_data')
         }).then(function() {
             return $mmaModData.getFields(data.id).then(function(fields) {
                 if (fields.length == 0) {
-                    $scope.canSearch = false;
-                    $scope.canAdd = false;
+                    canSearch = false;
+                    canAdd = false;
                 }
                 $scope.search.advanced = {};
                 $scope.fields = {};
@@ -42608,6 +43861,8 @@ angular.module('mm.addons.mod_data')
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
         }).finally(function() {
+            $scope.canAdd = canAdd;
+            $scope.canSearch = canSearch;
             $scope.databaseLoaded = true;
         });
     }
@@ -42694,18 +43949,22 @@ angular.module('mm.addons.mod_data')
                     }
                 });
                 return $q.all(promises).then(function(entries) {
-                    var entriesHTML = data.listtemplateheader;
+                    var entriesHTML = data.listtemplateheader || '';
+                    if (entries && entries[0] && (!$scope.search.searching || !$scope.firstEntry)) {
+                        $scope.firstEntry = entries[0].id;
+                    }
                     angular.forEach(entries, function(entry) {
                         $scope.entries[entry.id] = entry;
                         var actions = $mmaModDataHelper.getActions(data, $scope.access, entry);
                         entriesHTML += $mmaModDataHelper.displayShowFields(data.listtemplate, $scope.fields, entry, 'list', actions);
                     });
-                    entriesHTML += data.listtemplatefooter;
+                    entriesHTML += data.listtemplatefooter || '';
                     $scope.entriesRendered = entriesHTML;
                 });
             } else if (!$scope.search.searching) {
                 $scope.canSearch = false;
             }
+            $scope.firstEntry = false;
         });
     }
     $scope.setGroup = function(groupId) {
@@ -43733,7 +44992,7 @@ angular.module('mm.addons.mod_data')
             handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
         }
         var enabled = $mmSite.isLoggedIn();
-        if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+        if (self.isLastUpdateCall(time) && $mmSite.getId() === siteId) {
             if (enabled) {
                 enabledHandlers[pluginType] = handlerInfo.instance;
             } else {
@@ -44020,8 +45279,8 @@ angular.module('mm.addons.mod_data')
 }]);
 
 angular.module('mm.addons.mod_data')
-.factory('$mmaModDataHelper', ["$mmaModData", "$mmaModDataFieldsDelegate", "$q", "mmaModDataComponent", "$mmFileUploader", "$mmSite", "$mmaModDataOffline", "$mmFS", "$mmFileUploaderHelper", "$mmSitesManager", "$translate", function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader, $mmSite,
-        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager, $translate) {
+.factory('$mmaModDataHelper', ["$mmaModData", "$mmaModDataFieldsDelegate", "$q", "mmaModDataComponent", "$mmFileUploader", "$mmSite", "$mmaModDataOffline", "$mmFS", "$mmFileUploaderHelper", "$mmSitesManager", "$translate", "$mmUtil", function($mmaModData, $mmaModDataFieldsDelegate, $q, mmaModDataComponent, $mmFileUploader, $mmSite,
+        $mmaModDataOffline, $mmFS, $mmFileUploaderHelper, $mmSitesManager, $translate, $mmUtil) {
     var self = {
             searchOther: {
                 'fn': 'firstname',
@@ -44140,33 +45399,11 @@ angular.module('mm.addons.mod_data')
         });
         return template;
     };
-    function getFormData(form) {
-        var formData = {};
-        angular.forEach(form.elements, function(element) {
-            var name = element.name || '';
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
-            }
-            if (element.type == 'checkbox') {
-                if (typeof formData[name] == "undefined") {
-                    formData[name] = {};
-                }
-                formData[name][element.value] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    formData[name] = element.value;
-                }
-            } else {
-                formData[name] = element.value;
-            }
-        });
-        return formData;
-    }
     self.getSearchDataFromForm = function(form, fields) {
         if (!form || !form.elements) {
             return {};
         }
-        var searchedData = getFormData(form);
+        var searchedData = $mmUtil.getInfoValuesFromForm(form);
         var advancedSearch = [];
         angular.forEach(fields, function(field) {
             var fieldData = $mmaModDataFieldsDelegate.getFieldSearchData(field, searchedData);
@@ -44210,7 +45447,7 @@ angular.module('mm.addons.mod_data')
             return $q.when({});
         }
         siteId = siteId || $mmSite.getId();
-        var formData = getFormData(form);
+        var formData = $mmUtil.getInfoValuesFromForm(form);
         var edit = [],
             promises = [];
         angular.forEach(fields, function(field) {
@@ -44250,7 +45487,7 @@ angular.module('mm.addons.mod_data')
         if (!form || !form.elements) {
             return $q.when([]);
         }
-        var formData = getFormData(form);
+        var formData = $mmUtil.getInfoValuesFromForm(form);
         var promises = [];
         angular.forEach(fields, function(field) {
             promises.push(
@@ -44266,7 +45503,7 @@ angular.module('mm.addons.mod_data')
         });
     };
     self.hasEditDataChanged = function(form, fields, dataId, entryContents) {
-        var inputData = getFormData(form),
+        var inputData = $mmUtil.getInfoValuesFromForm(form),
             promises = [];
         angular.forEach(fields, function(field) {
             promises.push($mmaModDataFieldsDelegate.hasFieldDataChanged(field, inputData, entryContents[field.id]));
@@ -47058,12 +48295,48 @@ angular.module('mm.addons.mod_folder')
         return self;
     };
     self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModFolder', 'folder', $mmaModFolder);
+    self.pluginfileHandler = function() {
+        var self = {};
+        self.getComponentRevisionRegExp = function(args) {
+            if (args[2] == 'content') {
+                return new RegExp('/mod_folder/content/([0-9]+)/');
+            }
+            return false;
+        };
+        self.getComponentRevisionReplace = function(args) {
+            return '/mod_folder/content/0/';
+        };
+        return self;
+    };
     return self;
 }]);
 
 angular.module('mm.addons.mod_folder')
-.factory('$mmaModFolderPrefetchHandler', ["$mmPrefetchFactory", "mmaModFolderComponent", function($mmPrefetchFactory, mmaModFolderComponent) {
+.factory('$mmaModFolderPrefetchHandler', ["$mmPrefetchFactory", "mmaModFolderComponent", "$mmaModFolder", "$q", "$mmCourse", function($mmPrefetchFactory, mmaModFolderComponent, $mmaModFolder, $q, $mmCourse) {
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModFolderComponent, true);
+    self.download = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, false);
+    };
+    function downloadOrPrefetch(module, courseId, prefetch) {
+        var promises = [];
+        promises.push(self.downloadOrPrefetch(module, courseId, prefetch));
+        if ($mmaModFolder.isGetFolderWSAvailable()) {
+            promises.push($mmaModFolder.getFolder(courseId, module.id));
+        }
+        return $q.all(promises);
+    }
+    self.prefetch = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, true);
+    };
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModFolder.invalidateContent(moduleId, courseId);
+    };
+    self.invalidateModule = function(module, courseId) {
+        var promises = [];
+        promises.push($mmaModFolder.invalidateFolderData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+        return $q.all(promises);
+    };
     return self;
 }]);
 
@@ -51181,6 +52454,22 @@ angular.module('mm.addons.mod_imscp')
         return self;
     };
     self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModImscp', 'imscp', $mmaModImscp);
+    self.pluginfileHandler = function() {
+        var self = {};
+        self.getComponentRevisionRegExp = function(args) {
+            if (args[2] == 'content') {
+                return new RegExp('/mod_imscp/content/([0-9]+)/');
+            }
+            if (args[2] == 'backup') {
+                return new RegExp('/mod_imscp/backup/([0-9]+)/');
+            }
+            return false;
+        };
+        self.getComponentRevisionReplace = function(args) {
+            return '/mod_imscp/' + args[2] + '/0/';
+        };
+        return self;
+    };
     return self;
 }]);
 
@@ -51268,7 +52557,6 @@ angular.module('mm.addons.mod_imscp')
         });
     }
     self.getImscp = function(courseId, cmId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return getImscp(siteId, courseId, 'coursemodule', cmId);
     };
     self._getFileUrlFromContents = function(contents, targetFilepath) {
@@ -51356,11 +52644,14 @@ angular.module('mm.addons.mod_imscp')
             $mmCourse, $q) {
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModImscpComponent, true);
     self.download = function(module, courseId, single) {
-        return downloadOrPrefetch(module, courseId, true);
+        return downloadOrPrefetch(module, courseId, false);
     };
     function downloadOrPrefetch(module, courseId, prefetch) {
         return $mmFilepool.getPackageDirPathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-            return self.downloadOrPrefetch(module, courseId, prefetch, dirPath);
+            var promises = [];
+            promises.push(self.downloadOrPrefetch(module, courseId, prefetch, dirPath));
+            promises.push($mmaModImscp.getImscp(courseId, module.id));
+            return $q.all(promises);
         });
     }
     self.getIntroFiles = function(module, courseId) {
@@ -55739,6 +57030,19 @@ angular.module('mm.addons.mod_page')
         return self;
     };
     self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModPage', 'page', $mmaModPage);
+    self.pluginfileHandler = function() {
+        var self = {};
+        self.getComponentRevisionRegExp = function(args) {
+            if (args[2] == 'content') {
+                return new RegExp('/mod_page/content/([0-9]+)/');
+            }
+            return false;
+        };
+        self.getComponentRevisionReplace = function(args) {
+            return '/mod_page/content/0/';
+        };
+        return self;
+    };
     return self;
 }]);
 
@@ -55858,6 +57162,20 @@ angular.module('mm.addons.mod_page')
 .factory('$mmaModPagePrefetchHandler', ["$mmPrefetchFactory", "mmaModPageComponent", "$mmaModPage", "$mmCourse", "$q", function($mmPrefetchFactory, mmaModPageComponent, $mmaModPage, $mmCourse, $q) {
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModPageComponent, true);
     self.updatesNames = /^configuration$|^.*files$/;
+    self.download = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, false);
+    };
+    function downloadOrPrefetch(module, courseId, prefetch) {
+        var promises = [];
+        promises.push(self.downloadOrPrefetch(module, courseId, prefetch));
+        if ($mmaModPage.isGetPageWSAvailable()) {
+            promises.push($mmaModPage.getPageData(courseId, module.id));
+        }
+        return $q.all(promises);
+    }
+    self.prefetch = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, true);
+    };
     self.invalidateContent = function(moduleId, courseId) {
         return $mmaModPage.invalidateContent(moduleId, courseId);
     };
@@ -56082,7 +57400,7 @@ angular.module('mm.addons.mod_quiz')
             bestGrade = best;
             return $mmaModQuiz.getGradeFromGradebook(courseId, module.id).then(function(data) {
                 gradebookData = {
-                    grade: data.gradeformatted,
+                    grade: data.graderaw,
                     feedback: data.feedback
                 };
             }).catch(function() {
@@ -56110,7 +57428,7 @@ angular.module('mm.addons.mod_quiz')
             $scope.showResults = true;
             $scope.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
             $scope.gradebookFeedback = gradebookData.feedback;
-            if (formattedBestGrade > formattedGradebookGrade && formattedGradebookGrade == quiz.grade) {
+            if (bestGrade.grade > gradebookData.grade && gradebookData.grade == quiz.grade) {
                 $scope.gradeOverridden = false;
                 gradeToShow = formattedBestGrade;
             }
@@ -57486,8 +58804,8 @@ angular.module('mm.addons.mod_quiz')
             promises.push($mmaModQuiz.getCombinedReviewOptions(quiz.id, true, siteId));
             promises.push($mmaModQuiz.getUserBestGrade(quiz.id, true, siteId));
             promises.push($mmaModQuiz.getGradeFromGradebook(courseId, module.id, true, siteId).then(function(gradebookData) {
-                if (typeof gradebookData.grade != 'undefined') {
-                    return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                if (typeof gradebookData.graderaw != 'undefined') {
+                    return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
                 }
             }).catch(function() {
             }));
@@ -57583,7 +58901,7 @@ angular.module('mm.addons.mod_quiz')
         }));
         promises.push($mmaModQuiz.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId).then(function(gradebookData) {
             if (typeof gradebookData.grade != 'undefined') {
-                return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
             }
         }));
         promises.push($mmaModQuiz.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); 
@@ -57701,7 +59019,7 @@ angular.module('mm.addons.mod_quiz')
         if (typeof grade == 'undefined' || grade == -1 || grade === null) {
             return $translate.instant('mma.mod_quiz.notyetgraded');
         }
-        return $mmUtil.roundToDecimals(grade, decimals);
+        return $mmUtil.formatFloat($mmUtil.roundToDecimals(grade, decimals));
     };
     self.getAllQuestionsData = function(quiz, attempt, preflightData, pages, offline, ignoreCache, siteId) {
         var promises = [],
@@ -59038,8 +60356,10 @@ angular.module('mm.addons.mod_resource')
                 });
             }
         }).then(function(mod) {
-            $scope.title = mod.name;
-            $scope.description = mod.intro || mod.description;
+            if (mod) {
+                $scope.title = mod.name;
+                $scope.description = mod.intro || mod.description;
+            }
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
                 var downloadFailed = false;
@@ -59060,7 +60380,7 @@ angular.module('mm.addons.mod_resource')
                         }
                     });
                 });
-            } else if ($mmaModResource.isDisplayedEmbedded(module, mod.display)) {
+            } else if ($mmaModResource.isDisplayedEmbedded(module, mod && mod.display)) {
                 $scope.mode = 'embedded';
                 return $mmaModResource.getEmbeddedHtml(module).then(function(html) {
                     $scope.content = html;
@@ -59248,6 +60568,19 @@ angular.module('mm.addons.mod_resource')
         return self;
     };
     self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModResource', 'resource', $mmaModResource);
+    self.pluginfileHandler = function() {
+        var self = {};
+        self.getComponentRevisionRegExp = function(args) {
+            if (args[2] == 'content') {
+                return new RegExp('/mod_resource/content/([0-9]+)/');
+            }
+            return false;
+        };
+        self.getComponentRevisionReplace = function(args) {
+            return '/mod_resource/content/0/';
+        };
+        return self;
+    };
     return self;
 }]);
 
@@ -59289,7 +60622,12 @@ angular.module('mm.addons.mod_resource')
             promise = $q.when();
         }
         return promise.then(function(dirPath) {
-            return self.downloadOrPrefetch(module, courseId, prefetch, dirPath);
+            var promises = [];
+            promises.push(self.downloadOrPrefetch(module, courseId, prefetch, dirPath));
+            if ($mmaModResource.isGetResourceWSAvailable()) {
+                promises.push($mmaModResource.getResourceData(courseId, module.id));
+            }
+            return $q.all(promises);
         });
     }
     self.prefetch = function(module, courseId, single) {
@@ -60894,6 +62232,19 @@ angular.module('mm.addons.mod_scorm')
         };
         self.usesNetwork = function() {
             return true;
+        };
+        return self;
+    };
+    self.pluginfileHandler = function() {
+        var self = {};
+        self.getComponentRevisionRegExp = function(args) {
+            if (args[2] == 'content') {
+                return new RegExp('/mod_scorm/content/([0-9]+)/');
+            }
+            return false;
+        };
+        self.getComponentRevisionReplace = function(args) {
+            return '/mod_scorm/content/0/';
         };
         return self;
     };
@@ -63894,21 +65245,25 @@ angular.module('mm.addons.mod_url')
     $scope.componentId = module.id;
     $scope.canGetUrl = $mmaModUrl.isGetUrlWSAvailable();
     function fetchContent() {
+        var canGetUrl = $scope.canGetUrl;
         var promise;
-        if ($scope.canGetUrl) {
+        if (canGetUrl) {
             promise = $mmaModUrl.getUrl(courseId, module.id);
         } else {
-            promise = $mmCourse.getModule(module.id, courseId);
+            promise = $q.reject();
         }
-        return promise.then(function(mod) {
-            if (!$scope.canGetUrl) {
+        return promise.catch(function() {
+            canGetUrl = false;
+            return $mmCourse.getModule(module.id, courseId);
+        }).then(function(mod) {
+            if (!canGetUrl) {
                 if (!mod.contents.length) {
                     return $q.reject();
                 }
             }
             $scope.title = mod.name;
             $scope.description = mod.intro || mod.description;
-            $scope.url = $scope.canGetUrl ? mod.externalurl : 
+            $scope.url = canGetUrl ? mod.externalurl :
                             ((mod.contents[0] && mod.contents[0].fileurl) ? mod.contents[0].fileurl : undefined);
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
@@ -66198,23 +67553,3560 @@ angular.module('mm.addons.mod_wiki')
     return self;
 }]);
 
+angular.module('mm.addons.mod_workshop')
+.controller('mmaModWorkshopAssessmentCtrl', ["$scope", "$stateParams", "$mmUtil", "$mmEvents", "$q", "$mmSite", "$mmaModWorkshopOffline", "$mmCourse", "$mmaModWorkshop", "mmaModWorkshopAssessmentInvalidatedEvent", "$mmGradesHelper", "mmaModWorkshopAssessmentSavedEvent", "$translate", "$mmaModWorkshopHelper", "$mmSyncBlock", "mmaModWorkshopComponent", "mmaModWorkshopEventAutomSynced", "$mmUser", function($scope, $stateParams, $mmUtil, $mmEvents, $q, $mmSite, $mmaModWorkshopOffline,
+        $mmCourse, $mmaModWorkshop, mmaModWorkshopAssessmentInvalidatedEvent, $mmGradesHelper, mmaModWorkshopAssessmentSavedEvent,
+        $translate, $mmaModWorkshopHelper, $mmSyncBlock, mmaModWorkshopComponent, mmaModWorkshopEventAutomSynced, $mmUser) {
+    $scope.assessment = $stateParams.assessment || {};
+    $scope.submission = $stateParams.submission || {};
+    $scope.profile = $stateParams.profile || {};
+    $scope.assessmentId = $scope.assessment && ($scope.assessment.assessmentid || $scope.assessment.id);
+    $scope.evaluating = false;
+    $scope.courseId = $stateParams.courseid || false;
+    var courseId = $scope.courseId,
+        workshopId = $stateParams.submission.workshopid || false,
+        blockData,
+        originalEvaluation = {},
+        assessmentId = $scope.assessmentId,
+        syncObserver,
+        siteId = $mmSite.getId(),
+        hasOffline;
+    function fetchAssessmentData() {
+        return $mmaModWorkshop.getWorkshopById(courseId, workshopId).then(function(workshopData) {
+            $scope.workshop = workshopData;
+            $scope.title = $scope.workshop.name;
+            $scope.strategy = $scope.workshop.strategy;
+            return $mmCourse.getModuleBasicGradeInfo(workshopData.coursemodule);
+        }).then(function(gradeInfo) {
+            $scope.maxGrade = gradeInfo.grade;
+            return $mmaModWorkshop.getWorkshopAccessInformation(workshopId);
+        }).then(function(accessData) {
+            $scope.access = accessData;
+            if (assessmentId && (accessData.canallocate || accessData.canoverridegrades)) {
+                blockData = $mmUtil.blockLeaveView($scope, leaveView);
+                if (!$scope.$$destroyed) {
+                    $mmSyncBlock.blockOperation(mmaModWorkshopComponent, workshopId);
+                }
+                $scope.evaluating = true;
+            } else {
+                $scope.evaluating = false;
+            }
+            if ($scope.evaluating || $scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+                return $mmaModWorkshopHelper.getReviewerAssessmentById(workshopId, assessmentId, $scope.profile.id)
+                        .then(function(assessment) {
+                    var defaultGrade, promise;
+                    $scope.assessment = $mmaModWorkshopHelper.realGradeValue($scope.workshop, assessment);
+                    $scope.evaluate = {
+                        weight: $scope.assessment.weight,
+                        text: $scope.assessment.feedbackreviewer
+                    };
+                    if ($scope.evaluating) {
+                        if (accessData.canallocate) {
+                            $scope.weights = [];
+                            for (var i = 16; i >= 0; i--) {
+                                $scope.weights[i] = i;
+                            }
+                        }
+                        if (accessData.canoverridegrades) {
+                            defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
+                            promise = $mmGradesHelper.makeGradesMenu($scope.workshop.gradinggrade, workshopId, defaultGrade, -1).then(function(grades) {
+                                $scope.evaluationGrades = grades;
+                            });
+                        } else {
+                            promise = $q.when();
+                        }
+                        return promise.then(function() {
+                            return $mmaModWorkshopOffline.getEvaluateAssessment(workshopId, assessmentId).then(function(offlineAssess) {
+                                hasOffline = true;
+                                $scope.evaluate.weight = offlineAssess.weight;
+                                if (accessData.canoverridegrades) {
+                                    $scope.evaluate.text = offlineAssess.feedbacktext;
+                                    $scope.evaluate.grade = {
+                                        label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, offlineAssess.gradinggradeover) || defaultGrade,
+                                        value: offlineAssess.gradinggradeover || -1
+                                    };
+                                }
+                            }).catch(function() {
+                                hasOffline = false;
+                                if (accessData.canoverridegrades) {
+                                    $scope.evaluate.text = $scope.assessment.feedbackreviewer;
+                                    $scope.evaluate.grade = {
+                                        label: $mmGradesHelper.getGradeLabelFromValue($scope.evaluationGrades, $scope.assessment.gradinggradeover) || defaultGrade,
+                                        value: $scope.assessment.gradinggradeover || -1
+                                    };
+                                }
+                            });
+                        }).finally(function() {
+                            originalEvaluation.weight = $scope.evaluate.weight;
+                            if (accessData.canoverridegrades) {
+                                originalEvaluation.text = $scope.evaluate.text;
+                                originalEvaluation.grade = $scope.evaluate.grade.value;
+                            }
+                        });
+                    } else if ($scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED && $scope.assessment.gradinggradeoverby) {
+                        return $mmUser.getProfile($scope.assessment.gradinggradeoverby, courseId, true).then(function(profile) {
+                            $scope.evaluateByProfile = profile;
+                        });
+                    }
+                });
+            }
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        }).finally(function() {
+            $scope.assessmentLoaded = true;
+        });
+    }
+    function refreshAllData() {
+        var promises = [];
+        promises.push($mmaModWorkshop.invalidateWorkshopData(courseId));
+        promises.push($mmaModWorkshop.invalidateWorkshopAccessInformationData(workshopId));
+        promises.push($mmaModWorkshop.invalidateReviewerAssesmentsData(workshopId));
+        if (assessmentId) {
+            promises.push($mmaModWorkshop.invalidateAssessmentFormData(workshopId, assessmentId));
+            promises.push($mmaModWorkshop.invalidateAssessmentData(workshopId, assessmentId));
+        }
+        return $q.all(promises).finally(function() {
+            $mmEvents.trigger(mmaModWorkshopAssessmentInvalidatedEvent);
+            return fetchAssessmentData(true);
+        });
+    }
+    $scope.firstRenderFeedbackReviewer = function() {
+        originalEvaluation.text = $scope.evaluate.text;
+    };
+    function hasEvaluationChanged() {
+        if (!$scope.assessmentLoaded || !$scope.evaluating) {
+            return false;
+        }
+        if (originalEvaluation.weight != $scope.evaluate.weight) {
+            return true;
+        }
+        if ($scope.access.canoverridegrades) {
+            if (originalEvaluation.text != $scope.evaluate.text) {
+                return true;
+            }
+            if (originalEvaluation.grade != $scope.evaluate.grade.value) {
+                return true;
+            }
+        }
+        return false;
+    }
+    function saveEvaluation() {
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        return $mmUtil.isRichTextEditorEnabled().then(function(rteEnabled) {
+            var text = $scope.evaluate.text,
+                grade = $scope.evaluate.grade.value >= 0 ? $scope.evaluate.grade.value : "";
+            if (!rteEnabled) {
+                text = $mmText.formatHtmlLines(text);
+            }
+            return $mmaModWorkshop.evaluateAssessment(workshopId, assessmentId, courseId, text, $scope.evaluate.weight, grade);
+        }).then(function() {
+            var data = {
+                workshopid: workshopId,
+                assessmentid: assessmentId,
+                userId: $mmSite.getUserId(),
+                siteId: siteId
+            };
+            return $mmaModWorkshop.invalidateAssessmentData(workshopId, assessmentId).finally(function() {
+                $mmEvents.trigger(mmaModWorkshopAssessmentSavedEvent, data);
+            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModal(message, 'Cannot save submission evaluation');
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+    $scope.saveEvaluation = function() {
+        if (hasEvaluationChanged()) {
+            saveEvaluation().then(function() {
+                blockData && blockData.back();
+            });
+        } else {
+            blockData && blockData.back();
+        }
+    };
+    function leaveView() {
+        if (!hasEvaluationChanged()) {
+            return $q.when();
+        }
+        return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+    }
+    fetchAssessmentData();
+    syncObserver = $mmEvents.on(mmaModWorkshopEventAutomSynced, function(eventData) {
+        if (workshopId == eventData.workshopid && siteId == eventData.siteid) {
+            $scope.assessmentLoaded = false;
+            refreshAllData();
+        }
+    });
+    $scope.refreshAssessment = function() {
+        if ($scope.assessmentLoaded) {
+            return refreshAllData().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+    };
+    $scope.showGrade = $mmaModWorkshopHelper.showGrade;
+    $scope.$on('$destroy', function() {
+        syncObserver && syncObserver.off && syncObserver.off();
+        $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, workshopId);
+    });
+}]);
+angular.module('mm.addons.mod_workshop')
+.controller('mmaModWorkshopEditSubmissionCtrl', ["$scope", "$stateParams", "$mmaModWorkshop", "$q", "$mmUtil", "$mmaModWorkshopHelper", "$mmSite", "mmaModWorkshopComponent", "$mmFileUploaderHelper", "$translate", "$mmText", "$mmEvents", "$mmFileSession", "mmaModWorkshopSubmissionChangedEvent", "$mmaModWorkshopOffline", "$mmSyncBlock", function($scope, $stateParams, $mmaModWorkshop, $q, $mmUtil, $mmaModWorkshopHelper,
+        $mmSite, mmaModWorkshopComponent, $mmFileUploaderHelper, $translate, $mmText, $mmEvents, $mmFileSession,
+        mmaModWorkshopSubmissionChangedEvent, $mmaModWorkshopOffline, $mmSyncBlock) {
+    var submission = $stateParams.submission || {},
+        module = $stateParams.module,
+        workshopId = module.instance,
+        access = $stateParams.access,
+        userId = $mmSite.getUserId(),
+        originalData = {},
+        blockData,
+        hasOffline,
+        editing = false;
+    $scope.title = module.name;
+    $scope.component = mmaModWorkshopComponent;
+    $scope.courseId = $stateParams.courseid;
+    $scope.submissionLoaded = false;
+    $scope.module = module;
+    $scope.submission = {
+        title: "",
+        text: "",
+        attachmentfiles: []
+    };
+    blockData = $mmUtil.blockLeaveView($scope, leaveView);
+    if (!$scope.$$destroyed) {
+        $mmSyncBlock.blockOperation(mmaModWorkshopComponent, workshopId);
+    }
+    function fetchSubmissionData() {
+        return $mmaModWorkshop.getWorkshop($scope.courseId, module.id).then(function(workshopData) {
+            $scope.workshop = workshopData;
+            if (submission && submission.id > 0) {
+                editing = true;
+                return $mmaModWorkshopHelper.getSubmissionById(workshopId, submission.id).then(function(submissionData) {
+                    $scope.submission = submissionData;
+                    $scope.submission.text = submissionData.content;
+                    var canEdit = (userId == submissionData.authorid && access.cansubmit && access.modifyingsubmissionallowed);
+                    if (!canEdit) {
+                        blockData && blockData.back();
+                        return;
+                    }
+                });
+            } else if (!access.cansubmit || !access.creatingsubmissionallowed) {
+                blockData && blockData.back();
+                return;
+            }
+        }).then(function() {
+            return $mmaModWorkshopOffline.getSubmissions(workshopId).then(function(submissionsActions) {
+                if (submissionsActions && submissionsActions.length) {
+                    hasOffline = true;
+                    var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, editing ? submission.id : false);
+                    return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(offlineSubmission) {
+                        $scope.submission.title = offlineSubmission.title;
+                        $scope.submission.text = offlineSubmission.content;
+                        $scope.submission.attachmentfiles = offlineSubmission.attachmentfiles;
+                    });
+                } else {
+                    hasOffline = false;
+                }
+            }).finally(function() {
+                originalData.title = $scope.submission.title;
+                originalData.text = $scope.submission.text;
+                originalData.attachmentfiles = [];
+                angular.forEach($scope.submission.attachmentfiles, function(file) {
+                    var filename;
+                    if (file.filename) {
+                        filename = file.filename;
+                    } else {
+                        filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                    }
+                    originalData.attachmentfiles.push({
+                        'filename' : filename,
+                        'fileurl': file.fileurl
+                    });
+                });
+            });
+        }).then(function() {
+            var submissionId = submission.id || 'newsub';
+            $mmFileSession.setFiles(mmaModWorkshopComponent, workshopId + '_' + submissionId, $scope.submission.attachmentfiles || []);
+            $scope.submissionLoaded = true;
+        }).catch(function(message) {
+            $scope.submissionLoaded = false;
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            blockData && blockData.back();
+            return $q.reject();
+        });
+    }
+    $scope.firstRender = function() {
+        originalData.text = $scope.submission.text;
+    };
+    function getInputData() {
+        var submissionId = submission.id || 'newsub';
+        return {
+                title: $scope.submission.title,
+                content: $scope.submission.text,
+                attachmentfiles: $mmFileSession.getFiles(mmaModWorkshopComponent, workshopId + '_' + submissionId) || []
+            };
+    }
+    function hasDataChanged() {
+        if (!$scope.submissionLoaded) {
+            return false;
+        }
+        var inputData = getInputData();
+        if (!originalData || typeof originalData.title == 'undefined') {
+            return false;
+        }
+        if (originalData.title != inputData.title || originalData.text != inputData.content) {
+            return true;
+        }
+        return $mmFileUploaderHelper.areFileListDifferent(inputData.attachmentfiles, originalData.attachmentfiles);
+    }
+    function saveSubmission() {
+        var modal,
+            inputData = getInputData(),
+            allowOffline = true,
+            submissionId = submission && (submission.id || submission.submissionid) || false,
+            saveOffline = false;
+        if (!inputData.title) {
+            $mmUtil.showModal('mm.core.notice', 'mm.core.requireduserdatamissing');
+            return $q.reject();
+        }
+        if (!inputData.content) {
+            $mmUtil.showModal('mm.core.notice', 'mma.mod_workshop.submissionrequiredcontent');
+            return $q.reject();
+        }
+        modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        return $mmUtil.isRichTextEditorEnabled().then(function(rteEnabled) {
+            if (rteEnabled) {
+                inputData.content = $mmText.restorePluginfileUrls(inputData.content, $scope.submission.inlinefiles);
+            } else {
+                inputData.content = $mmText.formatHtmlLines(inputData.content);
+            }
+            allowOffline = !inputData.attachmentfiles.length;
+            return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, inputData.attachmentfiles,
+                    editing, saveOffline).catch(function() {
+                saveOffline = true;
+                allowOffline = true;
+                return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshopId, submissionId, inputData.attachmentfiles,
+                    editing, saveOffline);
+            });
+        }).then(function(attachmentsId) {
+            if (editing) {
+                if (saveOffline) {
+                    return $mmaModWorkshopOffline.saveSubmission(workshopId, $scope.courseId, inputData.title, inputData.content,
+                            attachmentsId, submissionId, 'update').then(function() {
+                    });
+                }
+                return $mmaModWorkshop.updateSubmission(workshopId, submissionId, $scope.courseId, inputData.title,
+                    inputData.content, attachmentsId, false, allowOffline);
+            }
+            if (saveOffline) {
+                return $mmaModWorkshopOffline.saveSubmission(workshopId, $scope.courseId, inputData.title, inputData.content,
+                    attachmentsId, submissionId, 'add').then(function() {
+                });
+            }
+            return $mmaModWorkshop.addSubmission(workshopId, $scope.courseId, inputData.title, inputData.content, attachmentsId,
+                false, submissionId, allowOffline);
+        }).then(function(newSubmissionId) {
+            var data = {
+                workshopid: workshopId,
+                cmid: module.cmid
+            };
+            if (newSubmissionId && submissionId) {
+                $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, editing ? 'update' : 'add');
+                $mmaModWorkshopHelper.deleteSubmissionStoredFiles(workshopId, submissionId, editing);
+                data.submissionid = newSubmissionId;
+            }
+            var promise = newSubmissionId ? $mmaModWorkshop.invalidateSubmissionData(workshopId, newSubmissionId) : $q.when();
+            return promise.finally(function() {
+                $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
+                $mmFileUploaderHelper.clearTmpFiles(inputData.attachmentfiles);
+            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModal(message, 'Cannot save submission');
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+    $scope.save = function() {
+        if (hasDataChanged()) {
+            saveSubmission().then(function() {
+                blockData && blockData.back();
+            });
+        } else {
+            blockData && blockData.back();
+        }
+    };
+    function leaveView() {
+        var promise;
+        if (!hasDataChanged()) {
+            promise = $q.when();
+        } else {
+            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+        }
+        return promise.then(function() {
+            if ($scope.submission.attachmentfiles) {
+                $mmFileUploaderHelper.clearTmpFiles($scope.submission.attachmentfiles);
+            }
+        });
+    }
+    function refreshAllData() {
+        var promises = [];
+        promises.push($mmaModWorkshop.invalidateSubmissionData(workshopId, submission.id));
+        promises.push($mmaModWorkshop.invalidateSubmissionsData(workshopId));
+        return $q.all(promises).finally(function() {
+            return fetchSubmissionData();
+        });
+    }
+    fetchSubmissionData();
+    $scope.refreshSubmission = function() {
+        if ($scope.submissionLoaded) {
+            return refreshAllData().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+    };
+    $scope.$on('$destroy', function() {
+        $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, workshopId);
+    });
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.controller('mmaModWorkshopIndexCtrl', ["$scope", "$stateParams", "$mmaModWorkshop", "mmaModWorkshopComponent", "$mmCourse", "$mmCourseHelper", "$q", "$mmText", "$translate", "$mmEvents", "mmCoreEventOnlineStatusChanged", "$mmApp", "$mmUtil", "$ionicModal", "$mmGroups", "$ionicPlatform", "$mmaModWorkshopHelper", "mmaModWorkshopPerPage", "$state", "mmaModWorkshopSubmissionChangedEvent", "$ionicScrollDelegate", "$mmaModWorkshopSync", "mmaModWorkshopEventAutomSynced", "$mmSite", "$mmaModWorkshopOffline", "mmaModWorkshopAssessmentSavedEvent", function($scope, $stateParams, $mmaModWorkshop, mmaModWorkshopComponent, $mmCourse,
+        $mmCourseHelper, $q, $mmText, $translate, $mmEvents, mmCoreEventOnlineStatusChanged, $mmApp, $mmUtil, $ionicModal,
+        $mmGroups, $ionicPlatform, $mmaModWorkshopHelper, mmaModWorkshopPerPage, $state, mmaModWorkshopSubmissionChangedEvent,
+        $ionicScrollDelegate, $mmaModWorkshopSync, mmaModWorkshopEventAutomSynced, $mmSite, $mmaModWorkshopOffline,
+        mmaModWorkshopAssessmentSavedEvent) {
+    var module = $stateParams.module || {},
+        courseId = $stateParams.courseid,
+        siteId = $mmSite.getId(),
+        offlineSubmissions = [],
+        obsSubmissionChanged,
+        onlineObserver,
+        resumeObserver,
+        syncObserver,
+        scrollView,
+        supportedTasks = { 
+            'submit': true
+        };
+    $scope.title = module.name;
+    $scope.description = module.description;
+    $scope.moduleUrl = module.url;
+    $scope.moduleName = $mmCourse.translateModuleName('workshop');
+    $scope.module = module;
+    $scope.refreshIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
+    $scope.component = mmaModWorkshopComponent;
+    $scope.workshopLoaded = false;
+    $scope.selectedGroup = $stateParams.group || 0;
+    $scope.page = 0;
+    $scope.workshopPhases = {
+        PHASE_SETUP: $mmaModWorkshop.PHASE_SETUP,
+        PHASE_SUBMISSION: $mmaModWorkshop.PHASE_SUBMISSION,
+        PHASE_ASSESSMENT: $mmaModWorkshop.PHASE_ASSESSMENT,
+        PHASE_EVALUATION: $mmaModWorkshop.PHASE_EVALUATION,
+        PHASE_CLOSED: $mmaModWorkshop.PHASE_CLOSED
+    };
+    function fetchWorkshopData(refresh, sync, showErrors) {
+        $scope.isOnline = $mmApp.isOnline();
+        return $mmaModWorkshop.getWorkshop(courseId, module.id).then(function(workshopData) {
+            $scope.workshop = workshopData;
+            $scope.selectedPhase = workshopData.phase;
+            $scope.title = $scope.workshop.name || $scope.title;
+            $scope.description = $scope.workshop.intro || $scope.description;
+            if (sync) {
+                return syncWorkshop(showErrors).catch(function() {
+                });
+            }
+        }).then(function() {
+            return $mmaModWorkshop.getWorkshopAccessInformation($scope.workshop.id);
+        }).then(function(accessData) {
+            $scope.access = accessData;
+            var groupPromise;
+            if (accessData.canviewallsubmissions) {
+                groupPromise = $mmGroups.getActivityGroupInfo($scope.workshop.coursemodule, accessData.canviewallsubmissions).then(function(groupInfo) {
+                    $scope.groupInfo = groupInfo;
+                    if (groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
+                        var found = false;
+                        for (var x in groupInfo.groups) {
+                            if (groupInfo.groups[x].id == $scope.selectedGroup) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            $scope.selectedGroup = groupInfo.groups[0].id;
+                        }
+                    }
+                });
+            } else {
+                groupPromise = $q.when();
+            }
+            return groupPromise.then(function() {
+                return $mmaModWorkshop.getUserPlanPhases($scope.workshop.id);
+            });
+        }).then(function(phases) {
+            $scope.phases = phases;
+            angular.forEach(phases, function(phase) {
+                angular.forEach(phase.tasks, function(task) {
+                    if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                        task.link = $scope.moduleUrl;
+                    } else if (task.link && typeof supportedTasks[task.code] !== 'undefined') {
+                        task.support = true;
+                    }
+                });
+                phase.switchUrl = "";
+                for (var x in phase.actions) {
+                    if (phase.actions[x].url && phase.actions[x].type == "switchphase") {
+                        phase.switchUrl = phase.actions[x].url;
+                        break;
+                    }
+                }
+            });
+            return $mmaModWorkshopOffline.hasWorkshopOfflineData($scope.workshop.id).then(function(hasOffline) {
+                $scope.hasOffline = hasOffline;
+                if (hasOffline) {
+                    return $mmaModWorkshopOffline.getSubmissions($scope.workshop.id).then(function(submissionsActions) {
+                        offlineSubmissions = submissionsActions;
+                    });
+                } else {
+                    offlineSubmissions = [];
+                }
+            });
+        }).then(function() {
+            return setPhaseInfo();
+        }).then(function() {
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModWorkshopComponent);
+        }).catch(function(message) {
+            if (!refresh) {
+                return refreshAllData();
+            }
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        }).finally(function() {
+            $scope.workshopLoaded = true;
+        });
+    }
+    $scope.setGroup = function(groupId) {
+        $scope.selectedGroup = groupId;
+        return $scope.gotoSubmissionsPage(0);
+    };
+    function refreshAllData(sync, showErrors) {
+        var promises = [];
+        promises.push($mmaModWorkshop.invalidateWorkshopData(courseId));
+        if ($scope.workshop) {
+            promises.push($mmaModWorkshop.invalidateWorkshopAccessInformationData($scope.workshop.id));
+            promises.push($mmaModWorkshop.invalidateUserPlanPhasesData($scope.workshop.id));
+            if ($scope.canSubmit) {
+                promises.push($mmaModWorkshop.invalidateSubmissionsData($scope.workshop.id));
+            }
+            if ($scope.access.canviewallsubmissions) {
+                promises.push($mmaModWorkshop.invalidateGradeReportData($scope.workshop.id));
+                promises.push($mmGroups.invalidateActivityGroupInfo($scope.workshop.coursemodule));
+            }
+            if ($scope.canAssess) {
+                promises.push($mmaModWorkshop.invalidateReviewerAssesmentsData($scope.workshop.id));
+            }
+            promises.push($mmaModWorkshop.invalidateGradesData($scope.workshop.id));
+        }
+        return $q.all(promises).finally(function() {
+            return fetchWorkshopData(true, sync, showErrors);
+        });
+    }
+    function syncWorkshop(showErrors) {
+        return $mmaModWorkshopSync.syncWorkshop($scope.workshop.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
+            }
+            return $q.reject();
+        });
+    }
+    fetchWorkshopData(false, true).then(function() {
+        initPhaseSelector();
+        $mmaModWorkshop.logView($scope.workshop.id).then(function() {
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+        });
+    }).finally(function() {
+        $scope.refreshIcon = 'ion-refresh';
+        $scope.syncIcon = 'ion-loop';
+    });
+    function initPhaseSelector() {
+        if ($scope.phases) {
+            return $ionicModal.fromTemplateUrl('addons/mod/workshop/templates/phaseselect.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            }).then(function(m) {
+                $scope.phaseModal = m;
+            });
+        }
+    }
+    $scope.selectPhase = function() {
+        if (!$scope.phaseModal) {
+            initPhaseSelector().then(function() {
+                $scope.phaseModal.show();
+            });
+        } else {
+            $scope.phaseModal.show();
+        }
+    };
+    $scope.switchPhase = function(phase) {
+        $scope.phaseModal.hide();
+        $scope.selectedPhase = phase;
+        $scope.page = 0;
+    };
+    $scope.closeModal = function() {
+        $scope.phaseModal.hide();
+    };
+    $scope.runTask = function(task) {
+        if (task.support) {
+            if (task.code == 'submit' && $scope.canSubmit && (($scope.access.creatingsubmissionallowed && !$scope.submission) || ($scope.access.modifyingsubmissionallowed && $scope.submission))) {
+                var stateParams = {
+                    module: module,
+                    access: $scope.access,
+                    courseid: courseId,
+                    submission: $scope.submission
+                };
+                if ($scope.submission.id) {
+                    stateParams.submissionid = $scope.submission.id;
+                }
+                $state.go('site.mod_workshop-edit-submission', stateParams);
+            }
+        } else if (task.link) {
+            $mmUtil.openInBrowser(task.link);
+        }
+    };
+    $scope.runTaskByCode = function(taskCode) {
+        var task = $mmaModWorkshopHelper.getTask($scope.phases[$scope.workshop.phase].tasks, taskCode);
+        if (task) {
+            return $scope.runTask(task);
+        }
+        return false;
+    };
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModWorkshopComponent, module.id);
+    };
+    $scope.refreshWorkshop = function(showErrors) {
+        if ($scope.workshopLoaded) {
+            $scope.refreshIcon = 'spinner';
+            $scope.syncIcon = 'spinner';
+            return refreshAllData(true, showErrors).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.syncIcon = 'ion-loop';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+    };
+    $scope.gotoSubmissionsPage = function(page) {
+        return $mmaModWorkshop.getGradesReport($scope.workshop.id, $scope.selectedGroup, page).then(function(report) {
+            var numEntries = (report && report.grades && report.grades.length) || 0;
+            $scope.page = page;
+            $scope.hasNextPage = numEntries >= mmaModWorkshopPerPage && (($scope.page  + 1) * mmaModWorkshopPerPage) < report.totalcount;
+            $scope.grades = report.grades || [];
+            return $scope.grades;
+        }).then(function() {
+            angular.forEach($scope.grades, function(submission) {
+                var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.submissionid || false);
+                submission = $mmaModWorkshopHelper.applyOfflineData(submission, actions);
+                return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(offlineSubmission) {
+                    submission = offlineSubmission;
+                });
+            });
+        });
+    };
+    function setPhaseInfo() {
+        $scope.submission = false;
+        $scope.canAssess = false;
+        $scope.assessments = false;
+        $scope.userGrades = false;
+        $scope.publishedSubmissions = false;
+        var promises = [],
+            assessPromise = $q.when();
+        $scope.canSubmit = $mmaModWorkshopHelper.canSubmit($scope.workshop, $scope.access,
+            $scope.phases[$mmaModWorkshop.PHASE_SUBMISSION].tasks);
+        if ($scope.canSubmit) {
+            promises.push($mmaModWorkshopHelper.getUserSubmission($scope.workshop.id).then(function(submission) {
+                var actions = $mmaModWorkshopHelper.filterSubmissionActions(offlineSubmissions, submission.id || false);
+                return $mmaModWorkshopHelper.applyOfflineData(submission, actions).then(function(submission) {
+                    $scope.submission = submission;
+                });
+            }));
+        }
+        if ($scope.access.canviewallsubmissions && $scope.workshop.phase >= $mmaModWorkshop.PHASE_SUBMISSION) {
+            promises.push($scope.gotoSubmissionsPage($scope.page));
+        }
+        if ($scope.workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT) {
+            $scope.canAssess = $mmaModWorkshopHelper.canAssess($scope.workshop, $scope.access);
+            if ($scope.canAssess) {
+                assessPromise = $mmaModWorkshopHelper.getReviewerAssessments($scope.workshop.id).then(function(assessments) {
+                    var p2 = [];
+                    angular.forEach(assessments, function(assessment) {
+                        assessment.strategy = $scope.workshop.strategy;
+                        if ($scope.hasOffline) {
+                            p2.push($mmaModWorkshopOffline.getAssessment($scope.workshop.id, assessment.id)
+                                .then(function(offlineAssessment) {
+                                    assessment.offline = true;
+                                    assessment.timemodified = parseInt(offlineAssessment.timemodified / 1000, 10);
+                            }).catch(function() {
+                            }));
+                        }
+                    });
+                    return $q.all(p2).then(function() {
+                        $scope.assessments = assessments;
+                    });
+                });
+                promises.push(assessPromise);
+            }
+        }
+        if ($scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+            promises.push($mmaModWorkshop.getGrades($scope.workshop.id).then(function(grades) {
+                $scope.userGrades = grades.submissionlongstrgrade || grades.assessmentlongstrgrade ? grades : false;
+            }));
+            if ($scope.access.canviewpublishedsubmissions) {
+                promises.push(assessPromise.then(function() {
+                    return $mmaModWorkshop.getSubmissions($scope.workshop.id).then(function(submissions) {
+                        $scope.publishedSubmissions = submissions.filter(function(submission) {
+                            if (submission.published) {
+                                for (var x in $scope.assessments) {
+                                    submission.reviewedby = [];
+                                    if ($scope.assessments[x].submissionid == submission.id) {
+                                        submission.reviewedby.push($mmaModWorkshopHelper.realGradeValue($scope.workshop, $scope.assessments[x]));
+                                    }
+                                }
+                                return true;
+                            }
+                            return false;
+                        });
+                    });
+                }));
+            }
+        }
+        return $q.all(promises);
+    }
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModWorkshopIndexScroll');
+        }
+        scrollView && scrollView.scrollTop && scrollView.scrollTop();
+    }
+    function eventReceived(data) {
+        if (($scope.workshop && $scope.workshop.id === data.workshopid) || data.cmid === module.id) {
+            scrollTop();
+            $scope.workshopLoaded = false;
+            refreshAllData(true, false);
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+        }
+    }
+    obsSubmissionChanged = $mmEvents.on(mmaModWorkshopSubmissionChangedEvent, eventReceived);
+    obsAssessmentSaved = $mmEvents.on(mmaModWorkshopAssessmentSavedEvent, eventReceived);
+    onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
+        $scope.isOnline = online;
+    });
+    resumeObserver = $ionicPlatform.on('resume', function() {
+        scrollTop();
+        $scope.workshopLoaded = false;
+        return refreshAllData(true, false);
+    });
+    syncObserver = $mmEvents.on(mmaModWorkshopEventAutomSynced, function(eventData) {
+        if ($scope.workshop.id == eventData.workshopid && siteId == eventData.siteid) {
+            $scope.workshopLoaded = false;
+            fetchWorkshopData(true);
+        }
+    });
+    $scope.$on('$destroy', function() {
+        onlineObserver && onlineObserver.off && onlineObserver.off();
+        obsSubmissionChanged && obsSubmissionChanged.off && obsSubmissionChanged.off();
+        syncObserver && syncObserver.off && syncObserver.off();
+        obsAssessmentSaved && obsAssessmentSaved.off && obsAssessmentSaved.off();
+        resumeObserver && resumeObserver();
+    });
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.controller('mmaModWorkshopSubmissionCtrl', ["$scope", "$stateParams", "$mmaModWorkshop", "$mmCourse", "$q", "$mmUtil", "$mmSite", "$state", "$mmaModWorkshopHelper", "$ionicHistory", "$mmEvents", "mmaModWorkshopSubmissionChangedEvent", "$translate", "$mmaModWorkshopOffline", "mmaModWorkshopAssessmentInvalidatedEvent", "mmaModWorkshopAssessmentSaveEvent", "$mmGradesHelper", "$ionicScrollDelegate", "mmaModWorkshopAssessmentSavedEvent", "mmaModWorkshopEventAutomSynced", "$mmSyncBlock", "mmaModWorkshopComponent", "$mmUser", function($scope, $stateParams, $mmaModWorkshop, $mmCourse, $q, $mmUtil, $mmSite, $state,
+        $mmaModWorkshopHelper, $ionicHistory, $mmEvents, mmaModWorkshopSubmissionChangedEvent, $translate, $mmaModWorkshopOffline,
+        mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentSaveEvent, $mmGradesHelper, $ionicScrollDelegate,
+        mmaModWorkshopAssessmentSavedEvent, mmaModWorkshopEventAutomSynced, $mmSyncBlock, mmaModWorkshopComponent, $mmUser) {
+    $scope.title = $stateParams.module.name;
+    $scope.courseId = $stateParams.courseid;
+    $scope.assessment = $stateParams.assessment || false;
+    $scope.submissionLoaded = false;
+    $scope.module = $stateParams.module;
+    $scope.workshop = $stateParams.workshop;
+    $scope.access = $stateParams.access;
+    $scope.ownAssessment = false;
+    $scope.submissionInfo = $stateParams.submission || {};
+    $scope.strategy = ($scope.assessment && $scope.assessment.strategy) || ($scope.workshop && $scope.workshop.strategy);
+    $scope.assessmentId = $scope.assessment && ($scope.assessment.assessmentid || $scope.assessment.id);
+    $scope.assessmentUserId = $scope.assessment.reviewerid || $scope.assessment.userid;
+    var module = $scope.module,
+        workshopId = module.instance,
+        currentUserId = $mmSite.getUserId(),
+        submissionId = $scope.submissionInfo.submissionid || $scope.submissionInfo.id,
+        userId = $scope.submissionInfo.userid || false,
+        originalEvaluation = {},
+        blockData,
+        siteId = $mmSite.getId(),
+        scrollView,
+        obsAssessmentSaved,
+        syncObserver,
+        hasOffline;
+    function fetchSubmissionData() {
+        return $mmaModWorkshopHelper.getSubmissionById(workshopId, submissionId).then(function(submissionData) {
+            var promises = [];
+            $scope.submission = submissionData;
+            $scope.submission.submissiongrade = $scope.submissionInfo && $scope.submissionInfo.submissiongrade;
+            $scope.submission.gradinggrade = $scope.submissionInfo && $scope.submissionInfo.gradinggrade;
+            $scope.submission.submissiongradeover = $scope.submissionInfo && $scope.submissionInfo.submissiongradeover;
+            userId = submissionData.authorid || userId;
+            $scope.canEdit = currentUserId == userId && $scope.access.cansubmit && $scope.access.modifyingsubmissionallowed;
+            $scope.canDelete = $scope.access.candeletesubmissions;
+            $scope.canAddFeedback = !$scope.assessmentId && $scope.workshop.phase > $mmaModWorkshop.PHASE_ASSESSMENT &&
+                $scope.workshop.phase < $mmaModWorkshop.PHASE_CLOSED && $scope.access.canoverridegrades;
+            $scope.ownAssessment = false;
+            if ($scope.access.canviewallassessments) {
+                promises.push($mmaModWorkshop.getSubmissionAssessments(workshopId, submissionId).then(function(subAssessments) {
+                    if ($scope.canDelete) {
+                        $scope.canDelete = !subAssessments.length;
+                    }
+                    $scope.submissionInfo.reviewedby = subAssessments;
+                    angular.forEach($scope.submissionInfo.reviewedby, function(assessment) {
+                        assessment.userid = assessment.reviewerid;
+                        assessment = $mmaModWorkshopHelper.realGradeValue($scope.workshop, assessment);
+                        if (currentUserId == assessment.userid) {
+                            $scope.ownAssessment = assessment;
+                            assessment.ownAssessment = true;
+                        }
+                    });
+                }));
+            } else if (currentUserId == userId && $scope.assessmentId) {
+                promises.push($mmaModWorkshop.getAssessment(workshopId, $scope.assessmentId).then(function(assessment) {
+                    if ($scope.canDelete) {
+                        $scope.canDelete = !assessment;
+                    }
+                    assessment.userid = assessment.reviewerid;
+                    assessment = $mmaModWorkshopHelper.realGradeValue($scope.workshop, assessment);
+                    if (currentUserId == assessment.userid) {
+                        $scope.ownAssessment = assessment;
+                        assessment.ownAssessment = true;
+                    }
+                    $scope.submissionInfo.reviewedby = [assessment];
+                }));
+            }
+            if ($scope.canAddFeedback || $scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+                $scope.evaluate = {
+                    published: submissionData.published,
+                    text: submissionData.feedbackauthor || ""
+                };
+            }
+            if ($scope.canAddFeedback) {
+                blockData = $mmUtil.blockLeaveView($scope, leaveView);
+                if (!$scope.$$destroyed) {
+                    $mmSyncBlock.blockOperation(mmaModWorkshopComponent, workshopId);
+                }
+                var defaultGrade = $translate.instant('mma.mod_workshop.notoverridden');
+                promises.push($mmGradesHelper.makeGradesMenu($scope.workshop.grade, workshopId, defaultGrade, -1).then(function(grades) {
+                    $scope.evaluationGrades = grades;
+                    $scope.evaluate.grade = {
+                        label: $mmGradesHelper.getGradeLabelFromValue(grades, $scope.submissionInfo.submissiongradeover) || defaultGrade,
+                        value: $scope.submissionInfo.submissiongradeover || -1
+                    };
+                    return $mmaModWorkshopOffline.getEvaluateSubmission(workshopId, submissionId).then(function(offlineSubmission) {
+                        hasOffline = true;
+                        $scope.evaluate.published = offlineSubmission.published;
+                        $scope.evaluate.text = offlineSubmission.feedbacktext;
+                        $scope.evaluate.grade = {
+                            label: $mmGradesHelper.getGradeLabelFromValue(grades, offlineSubmission.gradeover) || defaultGrade,
+                            value: offlineSubmission.gradeover || -1
+                        };
+                    }).catch(function() {
+                        hasOffline = false;
+                    }).finally(function() {
+                        originalEvaluation.published = $scope.evaluate.published;
+                        originalEvaluation.text = $scope.evaluate.text;
+                        originalEvaluation.grade = $scope.evaluate.grade.value;
+                    });
+                }));
+            } else if ($scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED && submissionData.gradeoverby) {
+                promises.push($mmUser.getProfile(submissionData.gradeoverby, $scope.courseId, true).then(function(profile) {
+                    $scope.evaluateByProfile = profile;
+                }));
+            }
+            if ($scope.assessmentId && !$scope.access.assessingallowed && $scope.assessment.feedbackreviewer && $scope.assessment.gradinggradeoverby) {
+                promises.push($mmUser.getProfile($scope.assessment.gradinggradeoverby, $scope.courseId, true).then(function(profile) {
+                    $scope.evaluateGradingByProfile = profile;
+                }));
+            }
+            return $q.all(promises);
+        }).then(function() {
+            return $mmaModWorkshopOffline.getSubmissions(workshopId).then(function(submissionsActions) {
+                var actions = $mmaModWorkshopHelper.filterSubmissionActions(submissionsActions, submissionId);
+                return $mmaModWorkshopHelper.applyOfflineData($scope.submission, actions).then(function(submission) {
+                    $scope.submission = submission;
+                });
+            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        }).finally(function() {
+            $scope.submissionLoaded = true;
+        });
+    }
+    $scope.editSubmission = function() {
+        var stateParams = {
+            module: module,
+            access: $scope.access,
+            courseid: $scope.courseId,
+            submission: $scope.submission,
+            submissionid: submissionId
+        };
+        $state.go('site.mod_workshop-edit-submission', stateParams);
+    };
+    $scope.deleteSubmission = function() {
+        $mmUtil.showConfirm($translate('mma.mod_workshop.submissiondeleteconfirm')).then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.deleting', true),
+                success = false;
+            $mmaModWorkshop.deleteSubmission(workshopId, submissionId, $scope.courseId).then(function() {
+                success = true;
+                return $mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId);
+            }).catch(function(error) {
+                $mmUtil.showErrorModalDefault(error, 'Cannot delete submission');
+            }).finally(function() {
+                modal.dismiss();
+                if (success) {
+                    var data = {
+                        workshopid: workshopId,
+                        cmid: module.cmid,
+                        submissionid: submissionId
+                    };
+                    $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
+                    $ionicHistory.goBack();
+                }
+            });
+        });
+    };
+    $scope.undoDeleteSubmission = function() {
+        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, "delete").finally(function() {
+            var data = {
+                workshopid: workshopId,
+                cmid: module.cmid,
+                submissionid: submissionId
+            };
+            $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
+            return refreshAllData();
+        });
+    };
+    $scope.firstRenderFeedbackAuthor = function() {
+        originalEvaluation.text = $scope.evaluate.text;
+    };
+    $scope.saveAssessment = function() {
+        $mmEvents.trigger(mmaModWorkshopAssessmentSaveEvent);
+    };
+    function hasEvaluationChanged() {
+        if (!$scope.submissionLoaded || !$scope.access.canoverridegrades) {
+            return false;
+        }
+        if (originalEvaluation.published != $scope.evaluate.published) {
+            return true;
+        }
+        if (originalEvaluation.text != $scope.evaluate.text) {
+            return true;
+        }
+        if (originalEvaluation.grade != $scope.evaluate.grade.value) {
+            return true;
+        }
+        return false;
+    }
+    function saveEvaluation() {
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        return $mmUtil.isRichTextEditorEnabled().then(function(rteEnabled) {
+            var text = $scope.evaluate.text,
+                grade = $scope.evaluate.grade.value >= 0 ? $scope.evaluate.grade.value : "";
+            if (!rteEnabled) {
+                text = $mmText.formatHtmlLines(text);
+            }
+            return $mmaModWorkshop.evaluateSubmission(workshopId, submissionId, $scope.courseId, text, $scope.evaluate.published,
+                grade);
+        }).then(function() {
+            var data = {
+                workshopid: workshopId,
+                cmid: module.cmid,
+                submissionid: submissionId
+            };
+            return $mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId).finally(function() {
+                $mmEvents.trigger(mmaModWorkshopSubmissionChangedEvent, data);
+            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModal(message, 'Cannot save submission evaluation');
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+    $scope.saveEvaluation = function() {
+        if (hasEvaluationChanged()) {
+            saveEvaluation().then(function() {
+                blockData && blockData.back();
+            });
+        } else {
+            blockData && blockData.back();
+        }
+    };
+    function leaveView() {
+        if (!hasEvaluationChanged()) {
+            return $q.when();
+        }
+        return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+    }
+    function refreshAllData() {
+        var promises = [];
+        promises.push($mmaModWorkshop.invalidateSubmissionData(workshopId, submissionId));
+        promises.push($mmaModWorkshop.invalidateSubmissionsData(workshopId));
+        promises.push($mmaModWorkshop.invalidateSubmissionAssesmentsData(workshopId, submissionId));
+        if ($scope.assessmentId) {
+            promises.push($mmaModWorkshop.invalidateAssessmentFormData(workshopId, $scope.assessmentId));
+            promises.push($mmaModWorkshop.invalidateAssessmentData(workshopId, $scope.assessmentId));
+        }
+        return $q.all(promises).finally(function() {
+            $mmEvents.trigger(mmaModWorkshopAssessmentInvalidatedEvent);
+            return fetchSubmissionData();
+        });
+    }
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModWorkshopSubmissionScroll');
+        }
+        scrollView && scrollView.scrollTop && scrollView.scrollTop();
+    }
+    function eventReceived(data) {
+        if (workshopId === data.workshopid) {
+            scrollTop();
+            $scope.submissionLoaded = false;
+            refreshAllData();
+        }
+    }
+    fetchSubmissionData().then(function() {
+        $mmaModWorkshop.logViewSubmission(submissionId).then(function() {
+            $mmCourse.checkModuleCompletion($scope.courseId, module.completionstatus);
+        });
+    });
+    obsAssessmentSaved = $mmEvents.on(mmaModWorkshopAssessmentSavedEvent, eventReceived);
+    syncObserver = $mmEvents.on(mmaModWorkshopEventAutomSynced, function(eventData) {
+        if (workshopId == eventData.workshopid && siteId == eventData.siteid) {
+            $scope.submissionLoaded = false;
+            refreshAllData();
+        }
+    });
+    $scope.refreshSubmission = function() {
+        if ($scope.submissionLoaded) {
+            return refreshAllData().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
+    };
+    $scope.$on('$destroy', function() {
+        syncObserver && syncObserver.off && syncObserver.off();
+        obsAssessmentSaved && obsAssessmentSaved.off && obsAssessmentSaved.off();
+        $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, workshopId);
+    });
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopAssessment', ["$mmUser", "$state", "$mmSite", "$mmaModWorkshopHelper", "$mmUtil", "$mmaModWorkshopOffline", "$q", function($mmUser, $state, $mmSite, $mmaModWorkshopHelper, $mmUtil, $mmaModWorkshopOffline,
+        $q) {
+    return {
+        scope: {
+            assessment: '=',
+            summary: '=?',
+            courseid: '=',
+            submission: '=',
+            module: '=?',
+            workshop: '=',
+            access: '='
+        },
+        restrict: 'E',
+        templateUrl: 'addons/mod/workshop/templates/assessment.html',
+        link: function(scope) {
+            var canAssess = scope.access && scope.access.assessingallowed,
+                userId = scope.assessment.userid || scope.assessment.reviewerid,
+                currentUser = userId == $mmSite.getUserId(),
+                promises = [];
+                assessmentId = scope.assessment.assessmentid || scope.assessment.id;
+            scope.gotoAssessment = function() {
+                if (!scope.canSelfAssess && scope.canViewAssessment) {
+                    var stateParams = {
+                        assessment: scope.assessment,
+                        submission: scope.submission,
+                        submissionid: scope.assessment.submissionid,
+                        profile: scope.profile,
+                        courseid: scope.courseid,
+                        assessmentid: assessmentId
+                    };
+                    if (!scope.submission) {
+                        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+                        return $mmaModWorkshopHelper.getSubmissionById(scope.workshop.id, scope.assessment.submissionid)
+                                .then(function(submissionData) {
+                            stateParams.submission = submissionData;
+                            $state.go('site.mod_workshop-assessment', stateParams);
+                        }).catch(function(message) {
+                            $mmUtil.showErrorModal(message, 'Cannot load submission');
+                        }).finally(function() {
+                            modal.dismiss();
+                        });
+                    }
+                    $state.go('site.mod_workshop-assessment', stateParams);
+                }
+            };
+            scope.gotoOwnAssessment = function() {
+                if (scope.canSelfAssess) {
+                    var stateParams = {
+                        module: scope.module,
+                        workshop: scope.workshop,
+                        access: scope.access,
+                        courseid: scope.courseid,
+                        profile: scope.profile,
+                        submission: scope.submission,
+                        assessment: scope.assessment,
+                        submissionid: scope.submission.id
+                    };
+                    $state.go('site.mod_workshop-submission', stateParams);
+                    return false;
+                }
+            };
+            scope.canViewAssessment = scope.assessment.grade;
+            scope.canSelfAssess = canAssess && currentUser;
+            scope.showGrade = $mmaModWorkshopHelper.showGrade;
+            if (userId) {
+                promises.push($mmUser.getProfile(userId, scope.courseid, true).then(function(profile) {
+                    scope.profile = profile;
+                }));
+            }
+            var assessOffline;
+            if (currentUser) {
+                assessOffline = $mmaModWorkshopOffline.getAssessment(scope.workshop.id, assessmentId) .then(function(offlineAssess) {
+                    scope.offline = true;
+                    scope.assessment.weight = offlineAssess.inputdata.weight;
+                });
+            } else {
+                assessOffline = $mmaModWorkshopOffline.getEvaluateAssessment(scope.workshop.id, assessmentId).then(function(offlineAssess) {
+                    scope.offline = true;
+                    scope.assessment.gradinggradeover = offlineAssess.gradinggradeover;
+                    scope.assessment.weight = offlineAssess.weight;
+                });
+            }
+            promises.push(assessOffline.catch(function() {
+                scope.offline = false;
+            }));
+            return $q.all(promises).finally(function() {
+                scope.loaded = true;
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopAssessmentStrategy', ["$compile", "$mmaModWorkshopAssessmentStrategyDelegate", "$mmEvents", "$mmText", "mmaModWorkshopComponent", "mmaModWorkshopAssessmentInvalidatedEvent", "mmaModWorkshopAssessmentRefreshedEvent", "$translate", "$q", "$mmaModWorkshopHelper", "$mmUtil", "mmaModWorkshopAssessmentSaveEvent", "$mmFileSession", "$mmFileUploaderHelper", "$mmaModWorkshop", "mmaModWorkshopAssessmentSavedEvent", "$mmSite", "$mmaModWorkshopOffline", "$mmSyncBlock", function($compile, $mmaModWorkshopAssessmentStrategyDelegate, $mmEvents, $mmText,
+        mmaModWorkshopComponent, mmaModWorkshopAssessmentInvalidatedEvent, mmaModWorkshopAssessmentRefreshedEvent, $translate, $q,
+        $mmaModWorkshopHelper, $mmUtil, mmaModWorkshopAssessmentSaveEvent, $mmFileSession, $mmFileUploaderHelper, $mmaModWorkshop,
+        mmaModWorkshopAssessmentSavedEvent, $mmSite, $mmaModWorkshopOffline, $mmSyncBlock) {
+    var originalData = {
+        text: '',
+        files: [],
+        weight: 1,
+        assessment: false
+    };
+    return {
+        restrict: 'E',
+        scope: {
+            assessmentId: '=',
+            userId: '=',
+            strategy: '=',
+            workshop: '=',
+            access: '=',
+            edit: '=?'
+        },
+        templateUrl: 'addons/mod/workshop/templates/assessmentstrategy.html',
+        link: function(scope, element) {
+            var strategy = scope.strategy,
+                container = element[0].querySelector('.mma-mod-workshop-assessment-strategy-container'),
+                directive,
+                blockData,
+                obsInvalidated,
+                obsSaveAssessment,
+                promise,
+                hasOffline,
+                edit = !!scope.edit,
+                rteEnabled = false;
+            if (!scope.assessmentId || !container || !strategy) {
+                scope.assessmentStrategyLoaded = true;
+                return;
+            }
+            var load = function() {
+                return $mmaModWorkshopHelper.getReviewerAssessmentById(scope.workshopId, scope.assessmentId, scope.userId)
+                        .then(function(assessmentData) {
+                    scope.assessment = assessmentData;
+                    if (edit) {
+                        return $mmaModWorkshopOffline.getAssessment(scope.workshopId, scope.assessmentId)
+                                .then(function(offlineAssessment) {
+                            var offlineData = offlineAssessment.inputdata;
+                            hasOffline = true;
+                            assessmentData.feedbackauthor = offlineData.feedbackauthor;
+                            if (scope.access.canallocate) {
+                                assessmentData.weight = offlineData.weight;
+                            }
+                            assessmentData.form.current = $mmaModWorkshop.parseFields(
+                                $mmUtil.objectToArrayOfObjects(offlineData, 'name', 'value'));
+                            if (offlineData) {
+                                return $mmaModWorkshopHelper.getAssessmentFilesFromOfflineFilesObject(
+                                        offlineData.feedbackauthorattachmentsid, scope.workshopId, scope.assessmentId)
+                                        .then(function(files) {
+                                    assessmentData.feedbackattachmentfiles = files;
+                                });
+                            }
+                        }).catch(function() {
+                            hasOffline = false;
+                        }).finally(function() {
+                            scope.feedback.text = assessmentData.feedbackauthor;
+                            originalData.text = scope.assessment.feedbackauthor;
+                            if (scope.access.canallocate) {
+                                originalData.weight = assessmentData.weight;
+                            }
+                            originalData.files = [];
+                            angular.forEach(assessmentData.feedbackattachmentfiles, function(file) {
+                                var filename;
+                                if (file.filename) {
+                                    filename = file.filename;
+                                } else {
+                                    filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                                }
+                                originalData.files.push({
+                                    'filename' : filename,
+                                    'fileurl': file.fileurl
+                                });
+                            });
+                            return $mmaModWorkshopAssessmentStrategyDelegate.getOriginalValues(strategy, assessmentData.form,
+                                    scope.workshopId).then(function(values) {
+                                originalData.assessment = values;
+                            }).finally(function() {
+                                $mmFileSession.setFiles(mmaModWorkshopComponent, scope.workshopId + '_' + scope.assessmentId,
+                                    assessmentData.feedbackattachmentfiles);
+                                if (scope.access.canallocate) {
+                                    scope.weight = assessmentData.weight;
+                                }
+                            });
+                        });
+                    }
+                }).then(function() {
+                    $mmEvents.trigger(mmaModWorkshopAssessmentRefreshedEvent);
+                });
+            };
+            directive = $mmaModWorkshopAssessmentStrategyDelegate.getDirectiveForPlugin(strategy);
+            if (directive) {
+                scope.feedback = {};
+                scope.workshopId = scope.workshop.id;
+                scope.overallFeedkback = !!scope.workshop.overallfeedbackmode;
+                scope.overallFeedkbackRequired = scope.workshop.overallfeedbackmode == 2;
+                scope.component = mmaModWorkshopComponent;
+                scope.componentId = scope.workshop.cmid;
+                if (edit && scope.access.canallocate) {
+                    scope.weights = [];
+                    for (var i = 16; i >= 0; i--) {
+                        scope.weights[i] = i;
+                    }
+                }
+                if (edit) {
+                    blockData = $mmUtil.blockLeaveView(scope, cancel);
+                    if (!scope.$$destroyed) {
+                        $mmSyncBlock.blockOperation(mmaModWorkshopComponent, scope.workshopId);
+                    }
+                    promise = $mmUtil.isRichTextEditorEnabled();
+                } else {
+                    promise = $q.when(false);
+                }
+                promise.then(function(enabled) {
+                    rteEnabled = enabled;
+                    return load();
+                }).then(function() {
+                    container.setAttribute(directive, '');
+                    $compile(container)(scope);
+                    obsInvalidated = $mmEvents.on(mmaModWorkshopAssessmentInvalidatedEvent, load);
+                }).finally(function() {
+                    scope.assessmentStrategyLoaded = true;
+                });
+            } else {
+                scope.notSupported = !$mmaModWorkshopAssessmentStrategyDelegate.isPluginSupported(strategy);
+                scope.assessmentStrategyLoaded = true;
+            }
+            obsSaveAssessment = $mmEvents.on(mmaModWorkshopAssessmentSaveEvent, function() {
+                if (hasDataChanged()) {
+                    saveAssessment().then(function() {
+                        blockData && blockData.back();
+                    });
+                } else {
+                    blockData && blockData.back();
+                }
+            });
+            scope.firstRender = function() {
+                originalData.text = scope.feedback.text;
+            };
+            function getInputData() {
+                var data = $mmUtil.getInfoValuesFromForm(document.forms['mma-mod_workshop-assessment-form']);
+                data.feedbackauthor = $mmText.restorePluginfileUrls(scope.feedback.text, scope.assessment.feedbackcontentfiles || []);
+                data.files =  $mmFileSession.getFiles(mmaModWorkshopComponent,  scope.workshopId + '_' + scope.assessmentId) || [];
+                return data;
+            }
+            function hasDataChanged() {
+                if (!scope.assessmentStrategyLoaded) {
+                    return false;
+                }
+                var inputData = getInputData();
+                if (rteEnabled) {
+                    inputData.feedbackauthor = scope.feedback.text;
+                }
+                if (originalData.text != inputData.feedbackauthor) {
+                    return true;
+                }
+                if (scope.access.canallocate && originalData.weight != inputData.weight) {
+                    return true;
+                }
+                if ($mmFileUploaderHelper.areFileListDifferent(inputData.files, originalData.files)) {
+                    return true;
+                }
+                return $mmaModWorkshopAssessmentStrategyDelegate.hasPluginDataChanged(scope.workshop, originalData.assessment, inputData);
+            }
+            function saveAssessment() {
+                var modal,
+                    filePromise,
+                    inputData = getInputData(),
+                    saveOffline = false,
+                    allowOffline = true,
+                    tempFiles = inputData.files;
+                modal = $mmUtil.showModalLoading('mm.core.sending', true);
+                scope.fieldErrors = false;
+                allowOffline = !tempFiles.length;
+                filePromise = $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(scope.workshop.id, scope.assessmentId,
+                        tempFiles, saveOffline).catch(function() {
+                    saveOffline = true;
+                    allowOffline = true;
+                    return $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(scope.workshop.id, scope.assessmentId,
+                        tempFiles, saveOffline);
+                });
+                return filePromise.then(function(attachmentsId) {
+                    return $mmaModWorkshopHelper.prepareAssessmentData(scope.workshop, inputData, scope.assessment.form,
+                            attachmentsId).catch(function(errors) {
+                        scope.fieldErrors = errors;
+                        return $q.reject($translate.instant('mm.core.errorinvalidform'));
+                    });
+                }).then(function(assessmentData) {
+                    if (saveOffline) {
+                        return $mmaModWorkshopOffline.saveAssessment(scope.workshop.id, scope.assessmentId, scope.workshop.course,
+                                assessmentData).then(function() {
+                        });
+                    }
+                    return $mmaModWorkshop.updateAssessment(scope.workshop.id, scope.assessmentId, scope.workshop.course,
+                        assessmentData, false, allowOffline);
+                }).then(function(grade) {
+                    var promises = [];
+                    if (grade) {
+                        promises.push($mmaModWorkshopHelper.deleteAssessmentStoredFiles(scope.workshop.id, scope.assessmentId));
+                        promises.push($mmaModWorkshop.invalidateAssessmentFormData(scope.workshop.id, scope.assessmentId));
+                        promises.push($mmaModWorkshop.invalidateAssessmentData(scope.workshop.id, scope.assessmentId));
+                    }
+                    return $q.all(promises).catch(function() {
+                    }).finally(function() {
+                        $mmEvents.trigger(mmaModWorkshopAssessmentSavedEvent, {
+                            workshopid: scope.workshop.id,
+                            assessmentid: scope.assessmentId,
+                            userId: $mmSite.getUserId(),
+                            siteId: $mmSite.getId()
+                        });
+                        if (tempFiles) {
+                            $mmFileUploaderHelper.clearTmpFiles(tempFiles);
+                        }
+                    });
+                }).catch(function(message) {
+                    $mmUtil.showErrorModalDefault(message, 'Error saving assessment.');
+                    return $q.reject();
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+            function cancel() {
+                var promise;
+                if (!hasDataChanged()) {
+                    promise = $q.when();
+                } else {
+                    promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+                }
+                return promise.then(function() {
+                    if (scope.assessment.feedbackattachmentfiles) {
+                        $mmFileUploaderHelper.clearTmpFiles(scope.assessment.feedbackattachmentfiles);
+                    }
+                });
+            }
+            scope.$on('$destroy', function() {
+                obsInvalidated && obsInvalidated.off && obsInvalidated.off();
+                obsSaveAssessment && obsSaveAssessment.off && obsSaveAssessment.off();
+                $mmSyncBlock.unblockOperation(mmaModWorkshopComponent, scope.workshopId);
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.directive('mmaModWorkshopSubmission', ["mmaModWorkshopComponent", "$mmUser", "$state", "$mmSite", "$mmaModWorkshop", "$q", "$mmaModWorkshopOffline", "$mmaModWorkshopHelper", "$ionicHistory", function(mmaModWorkshopComponent, $mmUser, $state, $mmSite, $mmaModWorkshop, $q,
+        $mmaModWorkshopOffline, $mmaModWorkshopHelper, $ionicHistory) {
+    return {
+        scope: {
+            submission: '=',
+            assessment: '=?',
+            module: '=',
+            workshop: '=',
+            access: '=',
+            summary: '=?',
+            courseid: '='
+        },
+        restrict: 'E',
+        templateUrl: 'addons/mod/workshop/templates/submission.html',
+        link: function(scope) {
+            var promises = [];
+            scope.component = mmaModWorkshopComponent;
+            scope.componentId = scope.module.instance;
+            scope.userId = scope.submission.authorid || scope.submission.userid || $mmSite.getUserId();
+            scope.submission.title = scope.submission.title || scope.submission.submissiontitle;
+            scope.submission.timemodified = scope.submission.timemodified || scope.submission.submissionmodified;
+            scope.submission.id = scope.submission.id || scope.submission.submissionid;
+            if (scope.workshop.phase == $mmaModWorkshop.PHASE_ASSESSMENT) {
+                if (scope.submission.reviewedby && scope.submission.reviewedby.length) {
+                    scope.submission.reviewedbycount = scope.submission.reviewedby.reduce(function (a, b){
+                        return a + (b.grade ? 1 : 0);
+                    }, 0);
+                }
+                if (scope.submission.reviewerof && scope.submission.reviewerof.length) {
+                    scope.submission.reviewerofcount = scope.submission.reviewerof.reduce(function (a, b){
+                        return a + (b.grade ? 1 : 0);
+                    }, 0);
+                }
+            }
+            scope.offline = (scope.submission && scope.submission.offline) || (scope.assessment && scope.assessment.offline);
+            if (scope.submission.id) {
+                promises.push($mmaModWorkshopOffline.getEvaluateSubmission(scope.workshop.id, scope.submission.id)
+                        .then(function(offlineSubmission) {
+                    scope.submission.submissiongradeover = offlineSubmission.gradeover;
+                    scope.offline = true;
+                }).catch(function() {
+                }));
+            }
+            if (scope.userId) {
+                promises.push($mmUser.getProfile(scope.userId, scope.courseid, true).then(function(profile) {
+                    scope.profile = profile;
+                }));
+            }
+            scope.viewDetails = !scope.summary && scope.workshop.phase == $mmaModWorkshop.PHASE_CLOSED && $ionicHistory.currentView().stateName !== 'site.mod_workshop-submission';
+            if (scope.viewDetails && scope.submission.gradeoverby) {
+                promises.push($mmUser.getProfile(scope.submission.gradeoverby, scope.courseid, true).then(function(profile) {
+                    scope.evaluateByProfile = profile;
+                }));
+            }
+            scope.gotoSubmission = function() {
+                if (scope.submission.timemodified) {
+                    var stateParams = {
+                        module: scope.module,
+                        workshop: scope.workshop,
+                        access: scope.access,
+                        courseid: scope.courseid,
+                        profile: scope.profile,
+                        submission: scope.submission,
+                        assessment: scope.assessment,
+                        submissionid: scope.submission.id
+                    };
+                    $state.go('site.mod_workshop-submission', stateParams);
+                }
+            };
+            scope.showGrade = $mmaModWorkshopHelper.showGrade;
+            return $q.all(promises).finally(function() {
+                scope.loaded = true;
+            });
+        }
+    };
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopHandlers', ["$mmCourse", "$mmaModWorkshop", "$state", "$mmContentLinksHelper", "$mmUtil", "$mmEvents", "$mmSite", "$q", "mmaModWorkshopComponent", "$mmaModWorkshopPrefetchHandler", "mmCoreDownloading", "mmCoreNotDownloaded", "mmCoreEventPackageStatusChanged", "mmCoreOutdated", "$mmCoursePrefetchDelegate", "$mmaModWorkshopSync", function($mmCourse, $mmaModWorkshop, $state, $mmContentLinksHelper, $mmUtil, $mmEvents, $mmSite,
+        $q, mmaModWorkshopComponent, $mmaModWorkshopPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded,
+        mmCoreEventPackageStatusChanged, mmCoreOutdated, $mmCoursePrefetchDelegate, $mmaModWorkshopSync) {
+    var self = {};
+    self.courseContent = function() {
+        var self = {};
+        self.isEnabled = function() {
+            return $mmaModWorkshop.isPluginEnabled();
+        };
+        self.getController = function(module, courseId) {
+            return function($scope) {
+                var downloadBtn = {
+                        hidden: true,
+                        icon: 'ion-ios-cloud-download-outline',
+                        label: 'mm.core.download',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            download();
+                        }
+                    },
+                    refreshBtn = {
+                        hidden: true,
+                        icon: 'ion-android-refresh',
+                        label: 'mm.core.refresh',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            $mmaModWorkshop.invalidateContent(module.id, courseId).finally(function() {
+                                download();
+                            });
+                        }
+                    };
+                $scope.title = module.name;
+                $scope.icon = $mmCourse.getModuleIconSrc('workshop');
+                $scope.class = 'mma-mod_workshop-handler';
+                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.spinner = true; 
+                $scope.action = function(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    $state.go('site.mod_workshop', {module: module, moduleid: module.id, courseid: courseId});
+                };
+                function download() {
+                    $scope.spinner = true; 
+                    $mmaModWorkshopPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
+                        $mmUtil.confirmDownloadSize(size).then(function() {
+                            return $mmaModWorkshopPrefetchHandler.prefetch(module, courseId).catch(function(error) {
+                                if (!$scope.$$destroyed) {
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
+                                }
+                            });
+                        }).catch(function() {
+                            $scope.spinner = false;
+                        });
+                    }).catch(function(error) {
+                        $scope.spinner = false;
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                    });
+                }
+                function showStatus(status) {
+                    if (status) {
+                        $scope.spinner = status === mmCoreDownloading;
+                        downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                    }
+                }
+                var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(workshop) {
+                    if (workshop.siteid === $mmSite.getId() && workshop.componentId === module.id &&
+                            workshop.component === mmaModWorkshopComponent) {
+                        showStatus(workshop.status);
+                    }
+                });
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
+                $scope.$on('$destroy', function() {
+                    statusObserver && statusObserver.off && statusObserver.off();
+                });
+            };
+        };
+        return self;
+    };
+    self.indexLinksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModWorkshop', 'workshop', $mmaModWorkshop);
+    self.syncHandler = function() {
+        var self = {};
+        self.execute = function(siteId) {
+            return $mmaModWorkshopSync.syncAllWorkshops(siteId);
+        };
+        self.getInterval = function() {
+            return 600000; 
+        };
+        self.isSync = function() {
+            return true;
+        };
+        self.usesNetwork = function() {
+            return true;
+        };
+        return self;
+    };
+    return self;
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopHelper', ["$mmaModWorkshop", "$mmSite", "$mmFileUploader", "mmaModWorkshopComponent", "$mmFS", "$q", "$mmUtil", "$mmaModWorkshopOffline", "$mmaModWorkshopAssessmentStrategyDelegate", "$translate", "$mmFileUploaderHelper", function($mmaModWorkshop, $mmSite, $mmFileUploader, mmaModWorkshopComponent, $mmFS, $q, $mmUtil,
+        $mmaModWorkshopOffline, $mmaModWorkshopAssessmentStrategyDelegate, $translate, $mmFileUploaderHelper) {
+    var self = {},
+        examples = {
+            EXAMPLES_VOLUNTARY: 0,
+            EXAMPLES_BEFORE_SUBMISSION: 1,
+            EXAMPLES_BEFORE_ASSESSMENT: 2
+        };
+    self.getTask = function(tasks, taskCode) {
+        for (var x in tasks) {
+            if (tasks[x].code == taskCode) {
+                return tasks[x];
+            }
+        }
+        return false;
+    };
+    self.isTaskDone = function(tasks, taskCode) {
+        var task = self.getTask(tasks, taskCode);
+        if (task) {
+            return task.completed;
+        }
+        return true;
+    };
+    self.canSubmit = function(workshop, access, tasks) {
+        var examplesMust = workshop.useexamples && workshop.examplesmode == examples.EXAMPLES_BEFORE_SUBMISSION,
+            examplesDone = access.canmanageexamples || workshop.examplesmode == examples.EXAMPLES_VOLUNTARY ||
+                self.isTaskDone(tasks, 'examples');
+        return workshop.phase > $mmaModWorkshop.PHASE_SETUP && access.cansubmit && (!examplesMust || examplesDone);
+    };
+    self.canAssess = function(workshop, access) {
+        var examplesMust = workshop.useexamples && workshop.examplesmode == examples.EXAMPLES_BEFORE_ASSESSMENT,
+            examplesDone = access.canmanageexamples;
+        return !examplesMust || examplesDone;
+    };
+    self.getUserSubmission = function(workshopId, userId) {
+        return $mmaModWorkshop.getSubmissions(workshopId).then(function(submissions) {
+            userId = userId || $mmSite.getUserId();
+            for (var x in submissions) {
+                if (submissions[x].authorid == userId) {
+                    return submissions[x];
+                }
+            }
+            return false;
+        });
+    };
+    self.getSubmissionById = function(workshopId, submissionId, siteId) {
+        return $mmaModWorkshop.getSubmission(workshopId, submissionId, siteId).catch(function() {
+            return $mmaModWorkshop.getSubmissions(workshopId, undefined, undefined, undefined, undefined, siteId)
+                    .then(function(submissions) {
+                for (var x in submissions) {
+                    if (submissions[x].id == submissionId) {
+                        return submissions[x];
+                    }
+                }
+                return false;
+            });
+        });
+    };
+    self.getReviewerAssessmentById = function(workshopId, assessmentId, userId, siteId) {
+        return $mmaModWorkshop.getAssessment(workshopId, assessmentId, siteId).catch(function() {
+            return $mmaModWorkshop.getReviewerAssessments(workshopId, userId, undefined, undefined, siteId)
+                    .then(function(assessments) {
+                for (var x in assessments) {
+                    if (assessments[x].id == assessmentId) {
+                        return assessments[x];
+                    }
+                }
+                return false;
+            });
+        }).then(function(assessment) {
+            if (!assessment) {
+                return false;
+            }
+            return $mmaModWorkshop.getAssessmentForm(workshopId, assessmentId, undefined, undefined, undefined, siteId)
+                    .then(function(assessmentForm) {
+                assessment.form = assessmentForm;
+                return assessment;
+            });
+        });
+    };
+    self.getReviewerAssessments = function(workshopId, userId, offline, ignoreCache, siteId) {
+        return $mmaModWorkshop.getReviewerAssessments(workshopId, userId, offline, ignoreCache, siteId).then(function(assessments) {
+            var promises = [];
+            angular.forEach(assessments, function (assessment) {
+                promises.push(self.getSubmissionById(workshopId, assessment.submissionid, siteId)
+                        .then(function(submission) {
+                    assessment.submission = submission;
+                }));
+            });
+            return $q.all(promises).then(function() {
+                return assessments;
+            });
+        });
+    };
+    self.deleteSubmissionStoredFiles = function(workshopId, submissionId, editing, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFS.removeDir(folderPath);
+        });
+    };
+    self.storeSubmissionFiles = function(workshopId, submissionId, editing, files, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
+        });
+    };
+    self.uploadOrStoreSubmissionFiles = function(workshopId, submissionId, files, editing, offline, siteId) {
+        if (offline) {
+            return self.storeSubmissionFiles(workshopId, submissionId, editing, files, siteId);
+        } else {
+            return $mmFileUploader.uploadOrReuploadFiles(files, mmaModWorkshopComponent, workshopId, siteId);
+        }
+    };
+    self.getStoredSubmissionFiles = function(workshopId, submissionId, editing, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function() {
+                return [];
+            });
+        });
+    };
+    self.getSubmissionFilesFromOfflineFilesObject = function(filesObject, workshopId, submissionId, editing, siteId) {
+        return $mmaModWorkshopOffline.getSubmissionFolder(workshopId, submissionId, editing, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFilesFromOfflineFilesObject(filesObject, folderPath);
+        });
+    };
+    self.deleteAssessmentStoredFiles = function(workshopId, assessmentId, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFS.removeDir(folderPath);
+        });
+    };
+    self.storeAssessmentFiles = function(workshopId, assessmentId, files, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
+        });
+    };
+    self.uploadOrStoreAssessmentFiles = function(workshopId, assessmentId, files, offline, siteId) {
+        if (offline) {
+            return self.storeAssessmentFiles(workshopId, assessmentId, files, siteId);
+        } else {
+            return $mmFileUploader.uploadOrReuploadFiles(files, mmaModWorkshopComponent, workshopId, siteId);
+        }
+    };
+    self.getStoredAssessmentFiles = function(workshopId, assessmentId, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath).catch(function() {
+                return [];
+            });
+        });
+    };
+    self.getAssessmentFilesFromOfflineFilesObject = function(filesObject, workshopId, assessmentId, siteId) {
+        return $mmaModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFilesFromOfflineFilesObject(filesObject, folderPath);
+        });
+    };
+    self.filterSubmissionActions = function(actions, submissionId) {
+        return actions.filter(function(action) {
+            if (submissionId) {
+                return action.submissionid == submissionId;
+            } else {
+                return action.submissionid < 0;
+            }
+        });
+    };
+    self.applyOfflineData = function(submission, actions) {
+        if (actions.length && !submission) {
+            submission = {};
+        }
+        var editing = true,
+            attachmentsid = false,
+            workshopId;
+        angular.forEach(actions, function(action) {
+            switch (action.action) {
+                case 'add':
+                    submission.id = action.submissionid;
+                    editing = false;
+                case 'update':
+                    submission.title = action.title;
+                    submission.content = action.content;
+                    submission.title = action.title;
+                    submission.courseid = action.courseid;
+                    submission.submissionmodified = parseInt(action.timemodified / 1000, 10);
+                    submission.offline = true;
+                    attachmentsid = action.attachmentsid;
+                    workshopId = action.workshopid;
+                    break;
+                case 'delete':
+                    submission.deleted = true;
+                    submission.submissionmodified = parseInt(action.timemodified / 1000, 10);
+                    break;
+            }
+        });
+        if (actions.length) {
+            if (attachmentsid) {
+                return self.getSubmissionFilesFromOfflineFilesObject(attachmentsid, workshopId, submission.id, editing)
+                        .then(function(files) {
+                    submission.attachmentfiles = files;
+                    return submission;
+                });
+            } else {
+                submission.attachmentfiles = [];
+            }
+        }
+        return $q.when(submission);
+    };
+    self.prepareAssessmentData = function(workshop, inputData, form, attachmentsId) {
+        delete inputData.files;
+        inputData.feedbackauthorattachmentsid = attachmentsId || 0;
+        inputData.nodims = form.dimenssionscount;
+        if (workshop.overallfeedbackmode == 2 && (!inputData.feedbackauthor || inputData.feedbackauthor.length == 0)) {
+            return $q.reject({'feedbackauthor': $translate.instant('mm.core.err_required')});
+        }
+        return $mmaModWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy, inputData, form);
+    };
+    function realGradeValue(value, max, decimals) {
+        if (value == null || value === "") {
+            return null;
+        } else if (max == 0) {
+            return 0;
+        } else {
+            value = $mmUtil.roundToDecimals(parseFloat(max * value / 100), decimals);
+            return $mmUtil.formatFloat(value);
+        }
+    };
+    self.realGradeValue = function(workshop, assessment) {
+        assessment.grade = realGradeValue(assessment.grade, workshop.grade, workshop.gradedecimals);
+        assessment.gradinggrade = realGradeValue(assessment.gradinggrade, workshop.gradinggrade, workshop.gradedecimals);
+        assessment.gradinggradeover = realGradeValue(assessment.gradinggradeover, workshop.gradinggrade, workshop.gradedecimals);
+        return assessment;
+    };
+    self.showGrade = function(grade) {
+        return typeof grade !== "undefined" && grade !== null;
+    };
+    return self;
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopPrefetchHandler', ["$mmaModWorkshop", "mmaModWorkshopComponent", "$mmFilepool", "$q", "$mmPrefetchFactory", "$mmSite", "$mmGroups", "$mmCourse", "$mmaModWorkshopHelper", "$mmSitesManager", "$mmUser", "$mmUtil", function($mmaModWorkshop, mmaModWorkshopComponent, $mmFilepool, $q, $mmPrefetchFactory,
+        $mmSite, $mmGroups, $mmCourse, $mmaModWorkshopHelper, $mmSitesManager, $mmUser, $mmUtil) {
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModWorkshopComponent);
+    self.updatesNames = /^configuration$|^.*files$|^completion|^gradeitems$|^outcomes$|^submissions$|^assessments$|^assessmentgrades$|^usersubmissions$|^userassessments$|^userassessmentgrades$|^userassessmentgrades$/;
+    self.download = function(module, courseId) {
+        return self.prefetch(module, courseId);
+    };
+    self.getFiles = function(module, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return getWorkshopInfoHelper(module, courseId, true, undefined, undefined, siteId).then(function(info) {
+            return info.files;
+        });
+    };
+    function getWorkshopInfoHelper(module, courseId, omitFail, forceCache, ignoreCache, siteId) {
+        var workshop,
+            groups = [],
+            files = [],
+            access;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var userId = site.getUserId();
+            return $mmaModWorkshop.getWorkshop(courseId, module.id, siteId, forceCache).then(function(data) {
+                files = self.getIntroFilesFromInstance(module, data);
+                files = files.concat(data.instructauthorsfiles).concat(data.instructreviewersfiles);
+                workshop = data;
+                return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (accessData) {
+                    access = accessData;
+                    if (access.canviewallsubmissions) {
+                        return $mmGroups.getActivityGroupInfo(module.id, false, undefined, siteId).then(function(groupInfo) {
+                            if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                                groupInfo.groups = [{id: 0}];
+                            }
+                            groups = groupInfo.groups;
+                        });
+                    }
+                });
+            }).then(function() {
+                return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+                    var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                        canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
+                        canAssess = $mmaModWorkshopHelper.canAssess(workshop, access),
+                        promises = [];
+                    if (canSubmit) {
+                        promises.push($mmaModWorkshopHelper.getUserSubmission(workshop.id, userId).then(function(submission) {
+                            if (submission) {
+                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                            }
+                        }));
+                    }
+                    if (access.canviewallsubmissions && workshop.phase >= $mmaModWorkshop.PHASE_SUBMISSION) {
+                        promises.push($mmaModWorkshop.getSubmissions(workshop.id).then(function(submissions) {
+                            var promises2 = [];
+                            angular.forEach(submissions, function(submission) {
+                                files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
+                                promises2.push($mmaModWorkshop.getSubmissionAssessments(workshop.id, submission.id).then(function(assessments) {
+                                    angular.forEach(assessments, function(assessment) {
+                                        files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                                    });
+                                }));
+                            });
+                            return $q.all(promises2);
+                        }));
+                    }
+                    if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
+                        promises.push($mmaModWorkshopHelper.getReviewerAssessments(workshop.id).then(function(assessments) {
+                            angular.forEach(assessments, function(assessment) {
+                                files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
+                            });
+                        }));
+                    }
+                    return $q.all(promises);
+                });
+            });
+        }).then(function() {
+            return {
+                workshop: workshop,
+                groups: groups,
+                files: $mmUtil.filterUndefinedItemsInArray(files)
+            };
+        }).catch(function(message) {
+            if (omitFail) {
+                return {
+                    workshop: workshop,
+                    groups: groups,
+                    files: $mmUtil.filterUndefinedItemsInArray(files)
+                };
+            }
+            return $q.reject(message);
+        });
+    }
+    self.getIntroFiles = function(module, courseId) {
+        return $mmaModWorkshop.getWorkshop(courseId, module.id).catch(function() {
+        }).then(function(workshop) {
+            return self.getIntroFilesFromInstance(module, workshop);
+        });
+    };
+    self.getRevision = function(module, courseId) {
+        return 0;
+    };
+    self.getTimemodified = function(module, courseId) {
+        return 0;
+    };
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModWorkshop.invalidateContent(moduleId, courseId);
+    };
+    self.invalidateModule = function(module, courseId) {
+        return $mmaModWorkshop.invalidateWorkshopData(courseId);
+    };
+    self.isDownloadable = function(module, courseId) {
+        return $mmaModWorkshop.getWorkshop(courseId, module.id, false, true).then(function(workshop) {
+            return $mmaModWorkshop.getWorkshopAccessInformation(workshop.id).then(function(accessData) {
+                return accessData.canswitchphase || workshop.phase > $mmaModWorkshop.PHASE_SETUP;
+            });
+        });
+    };
+    self.isEnabled = function() {
+        return $mmaModWorkshop.isPluginEnabled();
+    };
+    self.prefetch = function(module, courseId, single) {
+        return self.prefetchPackage(module, courseId, single, prefetchWorkshop);
+    };
+    function getAllGradesReport(workshopId, groups, forceCache, ignoreCache, siteId) {
+        var promises = [];
+        angular.forEach(groups, function(group) {
+            promises.push($mmaModWorkshop.fetchAllGradeReports(workshopId, group.id, undefined, forceCache, ignoreCache, siteId));
+        });
+        return $q.all(promises).then(function(grades) {
+            var uniqueGrades = {};
+            angular.forEach(grades, function(groupGrades) {
+                angular.forEach(groupGrades, function(grade) {
+                    if (grade.submissionid) {
+                        uniqueGrades[grade.submissionid] = grade;
+                    }
+                });
+            });
+            return uniqueGrades;
+        });
+    }
+    function prefetchWorkshop(module, courseId, single, siteId) {
+        var userIds = [];
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var currentUserId = site.getUserId();
+            return getWorkshopInfoHelper(module, courseId, false, false, true, siteId).then(function(info) {
+                var workshop = info.workshop,
+                    promises = [],
+                    assessments = [];
+                promises.push($mmFilepool.addFilesToQueueByUrl(siteId, info.files, self.component, module.id));
+                promises.push($mmaModWorkshop.getWorkshopAccessInformation(workshop.id, false, true, siteId).then(function (access) {
+                    return $mmaModWorkshop.getUserPlanPhases(workshop.id, false, true, siteId).then(function (phases) {
+                        var submissionPhase = phases[$mmaModWorkshop.PHASE_SUBMISSION],
+                            canSubmit = $mmaModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
+                            canAssess = $mmaModWorkshopHelper.canAssess(workshop, access),
+                            promises2 = [];
+                        if (canSubmit) {
+                            promises2.push($mmaModWorkshop.getSubmissions(workshop.id));
+                            userIds.push(currentUserId);
+                        }
+                        var reportPromise = $q.when();
+                        if (access.canviewallsubmissions && workshop.phase >= $mmaModWorkshop.PHASE_SUBMISSION) {
+                            reportPromise = getAllGradesReport(workshop.id, info.groups).then(function(grades) {
+                                angular.forEach(grades, function(grade) {
+                                    userIds.push(grade.userid);
+                                    userIds.push(grade.gradeoverby);
+                                    angular.forEach(grade.reviewedby, function(assessment) {
+                                        userIds.push(assessment.userid);
+                                        userIds.push(assessment.gradinggradeoverby);
+                                        assessments[assessment.assessmentid] = assessment;
+                                    });
+                                    angular.forEach(grade.reviewerof, function(assessment) {
+                                        userIds.push(assessment.userid);
+                                        userIds.push(assessment.gradinggradeoverby);
+                                        assessments[assessment.assessmentid] = assessment;
+                                    });
+                                });
+                            });
+                        }
+                        if (workshop.phase >= $mmaModWorkshop.PHASE_ASSESSMENT && canAssess) {
+                            reportPromise = reportPromise.finally(function() {
+                                return $mmaModWorkshopHelper.getReviewerAssessments(workshop.id, currentUserId, undefined,
+                                        undefined, siteId).then(function(revAssessments) {
+                                    var p = $q.when();
+                                    angular.forEach(revAssessments, function(assessment) {
+                                        if (assessment.submission.authorid == currentUserId) {
+                                            p = $mmaModWorkshop.getAssessment(workshop.id, assessment.id);
+                                        }
+                                        userIds.push(assessment.reviewerid);
+                                        userIds.push(assessment.gradinggradeoverby);
+                                        assessments[assessment.id] = assessment;
+                                    });
+                                    return p;
+                                });
+                            });
+                        }
+                        if (assessments.length > 0) {
+                            reportPromise = reportPromise.finally(function() {
+                                var promises3 = [];
+                                angular.forEach(assessments, function(assessment, id) {
+                                    promises3.push($mmaModWorkshop.getAssessmentForm(workshop.id, id, undefined, undefined,
+                                        undefined, siteId));
+                                });
+                                return $q.all(promises3);
+                            });
+                        }
+                        promises2.push(reportPromise);
+                        if (workshop.phase == $mmaModWorkshop.PHASE_CLOSED) {
+                            promises2.push($mmaModWorkshop.getGrades(workshop.id));
+                            if (access.canviewpublishedsubmissions) {
+                                promises2.push($mmaModWorkshop.getSubmissions(workshop.id));
+                            }
+                        }
+                        return $q.all(promises2);
+                    });
+                }));
+                promises.push($mmCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
+                promises.push($mmCourse.getModuleBasicGradeInfo(module.id, siteId));
+                return $q.all(promises);
+            });
+        }).then(function() {
+            return $mmUser.prefetchProfiles(userIds, courseId, siteId);
+        }).then(function() {
+            var promises = [];
+            promises.push(self.getRevision(module, courseId));
+            promises.push(self.getTimemodified(module, courseId));
+            return $q.all(promises).then(function(list) {
+                return {
+                    revision: list[0],
+                    timemod: list[1]
+                };
+            });
+        });
+    }
+    return self;
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopAssessmentStrategyDelegate', ["$log", "$mmSite", "$mmUtil", "$q", function($log, $mmSite, $mmUtil, $q) {
+    $log = $log.getInstance('$mmaModWorkshopAssessmentStrategyDelegate');
+    var handlers = {},
+        enabledHandlers = {},
+        self = {},
+        updatePromises = {},
+        lastUpdateHandlersStart;
+    self.getDirectiveForPlugin = function(strategy) {
+        var handler = self.getPluginHandler(strategy);
+        if (handler && handler.getDirectiveName) {
+            return handler.getDirectiveName();
+        }
+    };
+    self.getPluginHandler = function(pluginType) {
+        if (typeof enabledHandlers[pluginType] != 'undefined') {
+            return enabledHandlers[pluginType];
+        }
+    };
+    self.isPluginSupported = function(pluginType) {
+        return typeof enabledHandlers[pluginType] != 'undefined';
+    };
+    self.registerHandler = function(addon, pluginType, handler) {
+        if (typeof handlers[pluginType] !== 'undefined') {
+            $log.debug("Addon '" + addon + "' already registered as handler for '" + pluginType + "'");
+            return false;
+        }
+        $log.debug("Registered handler '" + addon + "' for assessment strategy plugin '" + pluginType + "'");
+        handlers[pluginType] = {
+            addon: addon,
+            instance: undefined,
+            handler: handler
+        };
+        if ($mmSite.isLoggedIn()) {
+            self.updateHandler(pluginType, handlers[pluginType]);
+        }
+    };
+    self.isLastUpdateCall = function(time) {
+        if (!lastUpdateHandlersStart) {
+            return true;
+        }
+        return time == lastUpdateHandlersStart;
+    };
+    self.hasPluginDataChanged = function(workshop, originalData, inputData) {
+        var handler = self.getPluginHandler(workshop.strategy);
+        if (handler && handler.hasDataChanged) {
+            return handler.hasDataChanged(originalData, inputData);
+        }
+        return false;
+    };
+    self.getOriginalValues = function(workshopStrategy, form, workshopId) {
+        var handler = self.getPluginHandler(workshopStrategy);
+        if (handler && handler.getOriginalValues) {
+            return $q.when(handler.getOriginalValues(form, workshopId));
+        }
+        return $q.when(false);
+    };
+    self.prepareAssessmentData = function(workshopStrategy, inputData, form) {
+        var handler = self.getPluginHandler(workshopStrategy);
+        if (handler && handler.prepareAssessmentData) {
+            return $q.when(handler.prepareAssessmentData(inputData, form));
+        }
+        return $q.when(inputData);
+    };
+    self.updateHandler = function(pluginType, handlerInfo, time) {
+        var promise,
+            deleted = false,
+            siteId = $mmSite.getId();
+        if (updatePromises[siteId] && updatePromises[siteId][pluginType]) {
+            return updatePromises[siteId][pluginType];
+        } else if (!updatePromises[siteId]) {
+            updatePromises[siteId] = {};
+        }
+        if (typeof handlerInfo.instance === 'undefined') {
+            handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
+        }
+        if (!$mmSite.isLoggedIn()) {
+            promise = $q.reject();
+        } else {
+            promise = $q.when(handlerInfo.instance.isEnabled());
+        }
+        promise = promise.catch(function() {
+            return false;
+        }).then(function(enabled) {
+            if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+                if (enabled) {
+                    enabledHandlers[pluginType] = handlerInfo.instance;
+                } else {
+                    delete enabledHandlers[pluginType];
+                }
+            }
+        }).finally(function() {
+            delete updatePromises[siteId][pluginType];
+            deleted = true;
+        });
+        if (!deleted) { 
+            updatePromises[siteId][pluginType] = promise;
+        }
+        return promise;
+    };
+    self.updateHandlers = function() {
+        var promises = [],
+            now = new Date().getTime();
+        $log.debug('Updating handlers for current site.');
+        lastUpdateHandlersStart = now;
+        angular.forEach(handlers, function(handlerInfo, pluginType) {
+            promises.push(self.updateHandler(pluginType, handlerInfo, now));
+        });
+        return $q.all(promises).then(function() {
+            return true;
+        }, function() {
+            return true;
+        });
+    };
+    return self;
+}])
+.run(["$mmEvents", "mmCoreEventLogin", "mmCoreEventSiteUpdated", "$mmaModWorkshopAssessmentStrategyDelegate", "mmCoreEventRemoteAddonsLoaded", function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmaModWorkshopAssessmentStrategyDelegate, mmCoreEventRemoteAddonsLoaded) {
+    $mmEvents.on(mmCoreEventLogin, $mmaModWorkshopAssessmentStrategyDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmaModWorkshopAssessmentStrategyDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmaModWorkshopAssessmentStrategyDelegate.updateHandlers);
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshop', ["$q", "$mmSitesManager", "mmaModWorkshopComponent", "$mmFilepool", "$mmSite", "mmaModWorkshopPerPage", "$mmaModWorkshopOffline", "$mmApp", "$mmUtil", function($q, $mmSitesManager, mmaModWorkshopComponent, $mmFilepool, $mmSite, mmaModWorkshopPerPage,
+        $mmaModWorkshopOffline, $mmApp, $mmUtil) {
+    var self = {
+        PHASE_SETUP: 10,
+        PHASE_SUBMISSION: 20,
+        PHASE_ASSESSMENT: 30,
+        PHASE_EVALUATION: 40,
+        PHASE_CLOSED: 50
+    };
+    function getWorkshopDataCacheKey(courseId) {
+        return 'mmaModWorkshop:workshop:' + courseId;
+    }
+    function getWorkshopDataPrefixCacheKey(workshopId) {
+        return 'mmaModWorkshop:' + workshopId;
+    }
+    function getWorkshopAccessInformationDataCacheKey(workshopId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':access';
+    }
+    function getUserPlanDataCacheKey(workshopId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':userplan';
+    }
+    function getSubmissionsDataCacheKey(workshopId, userId, groupId) {
+        userId = userId || 0;
+        groupId = groupId || 0;
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':submissions:' + userId + ':' + groupId;
+    }
+    function getSubmissionDataCacheKey(workshopId, submissionId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':submission:' + submissionId;
+    }
+    function getGradesDataCacheKey(workshopId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':grades';
+    }
+    function getGradesReportDataCacheKey(workshopId, groupId) {
+        groupId = groupId || 0;
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':report:' + groupId;
+    }
+    function getSubmissionAssessmentsDataCacheKey(workshopId, submissionId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessments:' + submissionId;
+    }
+    function getReviewerAssessmentsDataCacheKey(workshopId, userId) {
+        userId = userId || 0;
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':reviewerassessments:' + userId;
+    }
+    function getAssessmentDataCacheKey(workshopId, assessmentId) {
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessment:' + assessmentId;
+    }
+    function getAssessmentFormDataCacheKey(workshopId, assessmentId, mode) {
+        mode = mode || 'assessment';
+        return getWorkshopDataPrefixCacheKey(workshopId) + ':assessmentsform:' + assessmentId + ':' + mode;
+    }
+    self.isPluginEnabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return  site.wsAvailable('mod_workshop_get_workshops_by_courses') &&
+                site.wsAvailable('mod_workshop_get_workshop_access_information');
+        });
+    };
+    function getWorkshop(courseId, key, value, siteId, forceCache) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getWorkshopDataCacheKey(courseId)
+                };
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
+            return site.read('mod_workshop_get_workshops_by_courses', params, preSets).then(function(response) {
+                if (response && response.workshops) {
+                    for (var x in response.workshops) {
+                        if (response.workshops[x][key] == value) {
+                            return response.workshops[x];
+                        }
+                    }
+                }
+                return $q.reject();
+            });
+        });
+    }
+    self.getWorkshop = function(courseId, cmId, siteId, forceCache) {
+        return getWorkshop(courseId, 'coursemodule', cmId, siteId, forceCache);
+    };
+    self.getWorkshopById = function(courseId, id, siteId, forceCache) {
+        return getWorkshop(courseId, 'id', id, siteId, forceCache);
+    };
+    self.invalidateWorkshopData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getWorkshopDataCacheKey(courseId));
+        });
+    };
+    self.invalidateWorkshopWSData = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getWorkshopDataPrefixCacheKey(workshopId));
+        });
+    };
+    self.getWorkshopAccessInformation = function(workshopId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getWorkshopAccessInformationDataCacheKey(workshopId)
+                };
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_workshop_access_information', params, preSets);
+        });
+    };
+    self.invalidateWorkshopAccessInformationData = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getWorkshopAccessInformationDataCacheKey(workshopId));
+        });
+    };
+    self.getUserPlanPhases = function(workshopId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getUserPlanDataCacheKey(workshopId)
+                };
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_user_plan', params, preSets).then(function(response) {
+                if (response && response.userplan && response.userplan.phases) {
+                    var phases = {};
+                    angular.forEach(response.userplan.phases, function(phase) {
+                        phases[phase.code] = phase;
+                    });
+                    return phases;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.invalidateUserPlanPhasesData = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getUserPlanDataCacheKey(workshopId));
+        });
+    };
+    self.getSubmissions = function(workshopId, userId, groupId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId,
+                    userid: userId || 0,
+                    groupid: groupId || 0
+                },
+                preSets = {
+                    cacheKey: getSubmissionsDataCacheKey(workshopId, userId, groupId)
+                };
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_submissions', params, preSets).then(function(response) {
+                if (response && response.submissions) {
+                    return response.submissions;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.invalidateSubmissionsData = function(workshopId, userId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getSubmissionsDataCacheKey(workshopId, userId, groupId));
+        });
+    };
+    self.getSubmission = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    submissionid: submissionId
+                },
+                preSets = {
+                    cacheKey: getSubmissionDataCacheKey(workshopId, submissionId)
+                };
+            return site.read('mod_workshop_get_submission', params, preSets).then(function(response) {
+                if (response && response.submission) {
+                    return response.submission;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.invalidateSubmissionData = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getSubmissionDataCacheKey(workshopId, submissionId));
+        });
+    };
+    self.getGrades = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getGradesDataCacheKey(workshopId)
+                };
+            return site.read('mod_workshop_get_grades', params, preSets);
+        });
+    };
+    self.invalidateGradesData = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getGradesDataCacheKey(workshopId));
+        });
+    };
+    self.getGradesReport = function(workshopId, groupId, page, perPage, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId,
+                    groupid: groupId || 0,
+                    page: page || 0,
+                    perpage: perPage || mmaModWorkshopPerPage
+                },
+                preSets = {
+                    cacheKey: getGradesReportDataCacheKey(workshopId, groupId)
+                };
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_grades_report', params, preSets).then(function(response) {
+                if (response && response.report) {
+                    return response.report;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.fetchAllGradeReports = function(workshopId, groupId, perPage, forceCache, ignoreCache, siteId) {
+        siteId = siteId || $mmSite.getId();
+        perPage = perPage || mmaModWorkshopPerPage;
+        return fetchGradeReportsRecursive(workshopId, groupId, perPage, forceCache, ignoreCache, [], 0, siteId);
+    };
+    function fetchGradeReportsRecursive(workshopId, groupId, perPage, forceCache, ignoreCache, grades, page, siteId) {
+        return self.getGradesReport(workshopId, groupId, page, perPage, forceCache, ignoreCache, siteId).then(function(report) {
+            grades = grades.concat(report.grades);
+            var canLoadMore = ((page + 1) * perPage) < report.totalcount;
+            if (canLoadMore) {
+                return fetchGradeReportsRecursive(workshopId, groupId, perPage, forceCache, ignoreCache, grades, page + 1, siteId);
+            }
+            return grades;
+        });
+    }
+    self.invalidateGradeReportData = function(workshopId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getGradesReportDataCacheKey(workshopId, groupId));
+        });
+    };
+    self.getSubmissionAssessments = function(workshopId, submissionId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    submissionid: submissionId
+                },
+                preSets = {
+                    cacheKey: getSubmissionAssessmentsDataCacheKey(workshopId, submissionId)
+                };
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_submission_assessments', params, preSets).then(function(response) {
+                if (response && response.assessments) {
+                    return response.assessments;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.invalidateSubmissionAssesmentsData = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getSubmissionAssessmentsDataCacheKey(workshopId, submissionId));
+        });
+    };
+    self.addSubmission = function(workshopId, courseId, title, content, attachmentsId, siteId, timecreated, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+        var discardPromise =
+            timecreated ? $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, timecreated, 'add', siteId) : $q.when();
+        return discardPromise.then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                return storeOffline();
+            }
+            return self.addSubmissionOnline(workshopId, title, content, attachmentsId, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    return storeOffline();
+                } else {
+                    return $q.reject(error.error);
+                }
+            });
+        });
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveSubmission(workshopId, courseId, title, content, attachmentsId, timecreated, 'add',
+                    siteId).then(function() {
+                return false;
+            });
+        }
+    };
+    self.addSubmissionOnline = function(workshopId, title, content, attachmentsId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                workshopid: workshopId,
+                title: title,
+                content: content,
+                attachmentsid: attachmentsId || 0
+            };
+            return site.write('mod_workshop_add_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.submissionid) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return response.submissionid;
+            });
+        });
+    };
+    self.updateSubmission = function(workshopId, submissionId, courseId, title, content, attachmentsId, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, 'update', siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                return storeOffline();
+            }
+            return self.updateSubmissionOnline(submissionId, title, content, attachmentsId, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    return storeOffline();
+                } else {
+                    return $q.reject(error.error);
+                }
+            });
+        });
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveSubmission(workshopId, courseId, title, content, attachmentsId, submissionId, 'update',
+                    siteId).then(function() {
+                return false;
+            });
+        }
+    };
+    self.updateSubmissionOnline = function(submissionId, title, content, attachmentsId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: submissionId,
+                title: title,
+                content: content,
+                attachmentsid: attachmentsId || 0
+            };
+            return site.write('mod_workshop_update_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return submissionId;
+            });
+        });
+    };
+    self.deleteSubmission = function(workshopId, submissionId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmaModWorkshopOffline.deleteSubmissionAction(workshopId, submissionId, 'delete', siteId).then(function() {
+            if (!$mmApp.isOnline()) {
+                return storeOffline();
+            }
+            return self.deleteSubmissionOnline(submissionId, siteId).catch(function(error) {
+                if (error && !error.wserror) {
+                    return storeOffline();
+                } else {
+                    return $q.reject(error.error);
+                }
+            });
+        });
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveSubmission(workshopId, courseId, false, false, false, submissionId, 'delete',
+                    siteId).then(function() {
+                return false;
+            });
+        }
+    };
+    self.deleteSubmissionOnline = function(submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: submissionId
+            };
+            return site.write('mod_workshop_delete_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return submissionId;
+            });
+        });
+    };
+    self.getReviewerAssessments = function(workshopId, userId, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    workshopid: workshopId
+                },
+                preSets = {
+                    cacheKey: getReviewerAssessmentsDataCacheKey(workshopId, userId)
+                };
+            if (userId) {
+                params.userid = userId;
+            }
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_reviewer_assessments', params, preSets).then(function(response) {
+                if (response && response.assessments) {
+                    return response.assessments;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.invalidateReviewerAssesmentsData = function(workshopId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getReviewerAssessmentsDataCacheKey(workshopId, userId));
+        });
+    };
+    self.getAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    assessmentid: assessmentId
+                },
+                preSets = {
+                    cacheKey: getAssessmentDataCacheKey(workshopId, assessmentId)
+                };
+            return site.read('mod_workshop_get_assessment', params, preSets).then(function(response) {
+                if (response && response.assessment) {
+                    return response.assessment;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.invalidateAssessmentData = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getAssessmentDataCacheKey(workshopId, assessmentId));
+        });
+    };
+    self.getAssessmentForm = function(workshopId, assessmentId, mode, offline, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    assessmentid: assessmentId,
+                    mode: mode || 'assessment'
+                },
+                preSets = {
+                    cacheKey: getAssessmentFormDataCacheKey(workshopId, assessmentId, mode)
+                };
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+            return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then(function(response) {
+                if (response) {
+                    response.fields = self.parseFields(response.fields);
+                    response.options = $mmUtil.objectToKeyValueMap(response.options, 'name', 'value');
+                    response.current = self.parseFields(response.current);
+                    return response;
+                }
+                return $q.reject();
+            });
+        });
+    };
+    self.parseFields = function(fields) {
+        var parsedFields = [];
+        angular.forEach(fields, function(field) {
+            var args = field.name.split('_'),
+                name = args[0],
+                idx = args[3],
+                idy = args[6] || false;
+            if (parseInt(idx, 10) == idx) {
+                if (!parsedFields[idx]) {
+                    parsedFields[idx] = {
+                        number: parseInt(idx, 10) + 1
+                    };
+                }
+                if (idy && parseInt(idy, 10) == idy) {
+                    if (!parsedFields[idx].fields) {
+                        parsedFields[idx].fields = [];
+                    }
+                    if (!parsedFields[idx].fields[idy]) {
+                        parsedFields[idx].fields[idy] = {
+                            number: parseInt(idy, 10) + 1
+                        };
+                    }
+                    parsedFields[idx].fields[idy][name] = field.value;
+                } else {
+                    parsedFields[idx][name] = field.value;
+                }
+            }
+        });
+        return parsedFields;
+    };
+    self.invalidateAssessmentFormData = function(workshopId, assessmentId, mode, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getAssessmentFormDataCacheKey(workshopId, assessmentId, mode));
+        });
+    };
+    self.updateAssessment = function(workshopId, assessmentId, courseId, inputData, siteId, allowOffline) {
+        siteId = siteId || $mmSite.getId();
+        return $mmaModWorkshopOffline.deleteAssessment(workshopId, assessmentId, siteId).then(function() {
+            if (!$mmApp.isOnline() && allowOffline) {
+                return storeOffline();
+            }
+            return self.updateAssessmentOnline(assessmentId, inputData, siteId).catch(function(error) {
+                if (allowOffline && error && !error.wserror) {
+                    return storeOffline();
+                } else {
+                    return $q.reject(error.error);
+                }
+            });
+        });
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveAssessment(workshopId, assessmentId, courseId, inputData, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+    self.updateAssessmentOnline = function(assessmentId, inputData, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assessmentid: assessmentId,
+                data: inputData
+            };
+            params.data = $mmUtil.objectToArrayOfObjects(inputData, 'name', 'value');
+            return site.write('mod_workshop_update_assessment', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return response.rawgrade;
+            });
+        });
+    };
+    self.evaluateSubmission = function(workshopId, submissionId, courseId, feedbackText, published, gradeOver, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmaModWorkshopOffline.deleteEvaluateSubmission(workshopId, submissionId, siteId).then(function() {
+            if (!$mmApp.isOnline()) {
+                return storeOffline();
+            }
+            return self.evaluateSubmissionOnline(submissionId, feedbackText, published, gradeOver, siteId).catch(function(error) {
+                if (error && !error.wserror) {
+                    return storeOffline();
+                } else {
+                    return $q.reject(error.error);
+                }
+            });
+        });
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveEvaluateSubmission(workshopId, submissionId, courseId, feedbackText, published,
+                    gradeOver, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+    self.evaluateSubmissionOnline = function(submissionId, feedbackText, published, gradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: submissionId,
+                feedbacktext: feedbackText || "",
+                published: published ? 1 : 0,
+                gradeover: gradeOver
+            };
+            return site.write('mod_workshop_evaluate_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return true;
+            });
+        });
+    };
+    self.evaluateAssessment = function(workshopId, assessmentId, courseId, feedbackText, weight, gradingGradeOver, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshopId, assessmentId, siteId).then(function() {
+            if (!$mmApp.isOnline()) {
+                return storeOffline();
+            }
+            return self.evaluateAssessmentOnline(assessmentId, feedbackText, weight, gradingGradeOver, siteId).catch(function(error) {
+                if (error && !error.wserror) {
+                    return storeOffline();
+                } else {
+                    return $q.reject(error.error);
+                }
+            });
+        });
+        function storeOffline() {
+            return $mmaModWorkshopOffline.saveEvaluateAssessment(workshopId, assessmentId, courseId, feedbackText, weight,
+                    gradingGradeOver, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+    self.evaluateAssessmentOnline = function(assessmentId, feedbackText, weight, gradingGradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assessmentid: assessmentId,
+                feedbacktext: feedbackText || "",
+                weight: weight,
+                gradinggradeover: gradingGradeOver
+            };
+            return site.write('mod_workshop_evaluate_assessment', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.status) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                }
+                return true;
+            });
+        });
+    };
+    self.invalidateContent = function(moduleId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return self.getWorkshop(courseId, moduleId, siteId, true).then(function(workshop) {
+            return self.invalidateContentById(workshop.id, courseId, siteId);
+        });
+    };
+    self.invalidateContentById = function(workshopId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        var ps = [];
+        ps.push(self.invalidateWorkshopData(courseId, siteId));
+        ps.push(self.invalidateWorkshopWSData(workshopId, siteId));
+        return $q.all(ps);
+    };
+    self.invalidateFiles = function(moduleId, siteId) {
+        return $mmFilepool.invalidateFilesByComponent(siteId, mmaModWorkshopComponent, moduleId);
+    };
+    self.logView = function(id, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                workshopid: id
+            };
+            return site.write('mod_workshop_view_workshop', params);
+        });
+    };
+    self.logViewSubmission = function(id, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                submissionid: id
+            };
+            return site.write('mod_workshop_view_submission', params);
+        });
+    };
+    return self;
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.constant('mmaModWorkshopOfflineSubmissionStore', 'mma_mod_workshop_offline_submissions')
+.constant('mmaModWorkshopOfflineAssessmentsStore', 'mma_mod_workshop_offline_assessments')
+.constant('mmaModWorkshopOfflineEvaluateSubmissionsStore', 'mma_mod_workshop_offline_evaluate_submissions')
+.constant('mmaModWorkshopOfflineEvaluateAssessmentsStore', 'mma_mod_workshop_offline_evaluate_assessments')
+.config(["$mmSitesFactoryProvider", "mmaModWorkshopOfflineSubmissionStore", "mmaModWorkshopOfflineAssessmentsStore", "mmaModWorkshopOfflineEvaluateSubmissionsStore", "mmaModWorkshopOfflineEvaluateAssessmentsStore", function($mmSitesFactoryProvider, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore,
+        mmaModWorkshopOfflineEvaluateSubmissionsStore, mmaModWorkshopOfflineEvaluateAssessmentsStore) {
+    var stores = [
+        {
+            name: mmaModWorkshopOfflineSubmissionStore,
+            keyPath: ['workshopid', 'submissionid', 'action'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'submissionid'
+                },
+                {
+                    name: 'action'
+                },
+                {
+                    name: 'workshopAndSubmission',
+                    keyPath: ['workshopid', 'submissionid']
+                }
+            ]
+        },
+        {
+            name: mmaModWorkshopOfflineAssessmentsStore,
+            keyPath: ['workshopid', 'assessmentid'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'assessmentid'
+                }
+            ]
+        },
+        {
+            name: mmaModWorkshopOfflineEvaluateSubmissionsStore,
+            keyPath: ['workshopid', 'submissionid'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'submissionid'
+                }
+            ]
+        },
+        {
+            name: mmaModWorkshopOfflineEvaluateAssessmentsStore,
+            keyPath: ['workshopid', 'assessmentid'],
+            indexes: [
+                {
+                    name: 'workshopid'
+                },
+                {
+                    name: 'courseid'
+                },
+                {
+                    name: 'assessmentid'
+                }
+            ]
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+}])
+.factory('$mmaModWorkshopOffline', ["$log", "mmaModWorkshopOfflineSubmissionStore", "mmaModWorkshopOfflineAssessmentsStore", "$q", "$mmSitesManager", "$mmFS", "$mmUtil", "mmaModWorkshopOfflineEvaluateSubmissionsStore", "mmaModWorkshopOfflineEvaluateAssessmentsStore", function($log, mmaModWorkshopOfflineSubmissionStore, mmaModWorkshopOfflineAssessmentsStore, $q,
+        $mmSitesManager, $mmFS, $mmUtil, mmaModWorkshopOfflineEvaluateSubmissionsStore,
+        mmaModWorkshopOfflineEvaluateAssessmentsStore) {
+    $log = $log.getInstance('$mmaModWorkshopOffline');
+    var self = {};
+    self.getAllWorkshops = function(siteId) {
+        var promises = [];
+        promises.push(self.getAllSubmissions(siteId));
+        promises.push(self.getAllAssessments(siteId));
+        promises.push(self.getAllEvaluateSubmissions(siteId));
+        promises.push(self.getAllEvaluateAssessments(siteId));
+        return $q.all(promises).then(function(promiseResults) {
+            var workshopIds = {};
+            angular.forEach(promiseResults, function(offlineObjects) {
+                angular.forEach(offlineObjects, function(offlineObject) {
+                    workshopIds[offlineObject.workshopid] = true;
+                });
+            });
+            return Object.keys(workshopIds).map(function(workshopId) {
+                return parseInt(workshopId, 10);
+            });
+        });
+    };
+    self.hasWorkshopOfflineData = function(workshopId, siteId) {
+        var promises = [];
+        promises.push(self.getSubmissions(workshopId, siteId));
+        promises.push(self.getAssessments(workshopId, siteId));
+        promises.push(self.getEvaluateSubmissions(workshopId, siteId));
+        promises.push(self.getEvaluateAssessments(workshopId, siteId));
+        return $q.all(promises).then(function(objects) {
+            for (var i = 0; i < objects.length; i++) {
+                var result = objects[i];
+                if (result && result.length) {
+                    return true;
+                }
+            }
+            return false;
+        }).catch(function() {
+            return false;
+        });
+    };
+    self.deleteSubmissionAction = function(workshopId, submissionId, action, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
+        });
+    };
+    self.deleteAllSubmissionActions = function(workshopId, submissionId, siteId) {
+        return self.getSubmissionActions(workshopId, submissionId, siteId).then(function(actions) {
+            var promises = [];
+            angular.forEach(actions, function(action) {
+                promises.push(self.deleteSubmissionAction(workshopId, submissionId, action.action, siteId));
+            });
+            return $q.all(promises);
+        });
+    };
+    self.getAllSubmissions = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineSubmissionStore);
+        });
+    };
+    self.getSubmissions = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineSubmissionStore, 'workshopid', workshopId);
+        });
+    };
+    self.getSubmissionActions = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineSubmissionStore, 'workshopAndSubmission', [workshopId, submissionId]);
+        });
+    };
+    self.getSubmissionAction = function(workshopId, submissionId, action, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineSubmissionStore, [workshopId, submissionId, action]);
+        });
+    };
+    self.saveSubmission = function(workshopId, courseId, title, content, attachmentsId, submissionId, action, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                submission = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    title: title,
+                    content: content,
+                    attachmentsid: attachmentsId || 0,
+                    action: action,
+                    submissionid: submissionId ? submissionId : -timemodified,
+                    timemodified: timemodified
+                };
+            return db.insert(mmaModWorkshopOfflineSubmissionStore, submission);
+        });
+    };
+    self.deleteAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+    self.getAllAssessments = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineAssessmentsStore);
+        });
+    };
+    self.getAssessments = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineAssessmentsStore, 'workshopid', workshopId);
+        });
+    };
+    self.getAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+    self.saveAssessment = function(workshopId, assessmentId, courseId, inputData, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                assessment = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    inputdata: inputData,
+                    assessmentid: assessmentId,
+                    timemodified: timemodified
+                };
+            return db.insert(mmaModWorkshopOfflineAssessmentsStore, assessment);
+        });
+    };
+    self.deleteEvaluateSubmission = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineEvaluateSubmissionsStore, [workshopId, submissionId]);
+        });
+    };
+    self.getAllEvaluateSubmissions = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineEvaluateSubmissionsStore);
+        });
+    };
+    self.getEvaluateSubmissions = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineEvaluateSubmissionsStore, 'workshopid', workshopId);
+        });
+    };
+    self.getEvaluateSubmission = function(workshopId, submissionId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineEvaluateSubmissionsStore, [workshopId, submissionId]);
+        });
+    };
+    self.saveEvaluateSubmission = function(workshopId, submissionId, courseId, feedbackText, published, gradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                submission = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    submissionid: submissionId,
+                    timemodified: timemodified,
+                    feedbacktext: feedbackText,
+                    published: published,
+                    gradeover: gradeOver
+                };
+            return db.insert(mmaModWorkshopOfflineEvaluateSubmissionsStore, submission);
+        });
+    };
+    self.deleteEvaluateAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModWorkshopOfflineEvaluateAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+    self.getAllEvaluateAssessments = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModWorkshopOfflineEvaluateAssessmentsStore);
+        });
+    };
+    self.getEvaluateAssessments = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModWorkshopOfflineEvaluateAssessmentsStore, 'workshopid', workshopId);
+        });
+    };
+    self.getEvaluateAssessment = function(workshopId, assessmentId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModWorkshopOfflineEvaluateAssessmentsStore, [workshopId, assessmentId]);
+        });
+    };
+    self.saveEvaluateAssessment = function(workshopId, assessmentId, courseId, feedbackText, weight, gradingGradeOver, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                timemodified = $mmUtil.timestamp(),
+                assessment = {
+                    workshopid: workshopId,
+                    courseid: courseId,
+                    assessmentid: assessmentId,
+                    timemodified: timemodified,
+                    feedbacktext: feedbackText,
+                    weight: weight,
+                    gradinggradeover: gradingGradeOver
+                };
+            return db.insert(mmaModWorkshopOfflineEvaluateAssessmentsStore, assessment);
+        });
+    };
+    self.getWorkshopFolder = function(workshopId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
+                workshopFolderPath = 'offlineworkshop/' + workshopId + '/';
+            return $mmFS.concatenatePaths(siteFolderPath, workshopFolderPath);
+        });
+    };
+    self.getSubmissionFolder = function(workshopId, submissionId, editing, siteId) {
+        return self.getWorkshopFolder(workshopId, siteId).then(function(folderPath) {
+            folderPath += 'submission/';
+            var folder = editing ? 'update_' + submissionId : 'add';
+            return $mmFS.concatenatePaths(folderPath, folder);
+        });
+    };
+    self.getAssessmentFolder = function(workshopId, assessmentId, siteId) {
+        return self.getWorkshopFolder(workshopId, siteId).then(function(folderPath) {
+            folderPath += 'assessment/';
+            return $mmFS.concatenatePaths(folderPath, assessmentId + '');
+        });
+    };
+    return self;
+}]);
+
+angular.module('mm.addons.mod_workshop')
+.factory('$mmaModWorkshopSync', ["$log", "$mmaModWorkshop", "$mmSite", "$mmSitesManager", "$q", "$mmaModWorkshopOffline", "$mmCourse", "$mmApp", "$mmEvents", "$translate", "mmaModWorkshopSyncTime", "$mmSync", "mmaModWorkshopEventAutomSynced", "mmaModWorkshopComponent", "$mmSyncBlock", "$mmLang", "$mmaModWorkshopHelper", function($log, $mmaModWorkshop, $mmSite, $mmSitesManager, $q, $mmaModWorkshopOffline, $mmCourse,
+            $mmApp, $mmEvents, $translate, mmaModWorkshopSyncTime, $mmSync, mmaModWorkshopEventAutomSynced, mmaModWorkshopComponent,
+            $mmSyncBlock, $mmLang, $mmaModWorkshopHelper) {
+    $log = $log.getInstance('$mmaModWorkshopSync');
+    var self = $mmSync.createChild(mmaModWorkshopComponent, mmaModWorkshopSyncTime);
+    self.hasDataToSync = function(workshopId, siteId) {
+        return $mmaModWorkshopOffline.hasWorkshopOfflineData(workshopId, siteId);
+    };
+    self.syncAllWorkshops = function(siteId) {
+        if (!$mmApp.isOnline()) {
+            $log.debug('Cannot sync all workshops because device is offline.');
+            return $q.reject();
+        }
+        var promise;
+        if (!siteId) {
+            $log.debug('Try to sync workshops in all sites.');
+            promise = $mmSitesManager.getSitesIds();
+        } else {
+            $log.debug('Try to sync workshops in site ' + siteId);
+            promise = $q.when([siteId]);
+        }
+        return promise.then(function(siteIds) {
+            var sitePromises = [];
+            angular.forEach(siteIds, function(siteId) {
+                sitePromises.push($mmaModWorkshopOffline.getAllWorkshops(siteId).then(function(workshopIds) {
+                    var promises = [];
+                    angular.forEach(workshopIds, function(workshopId) {
+                        promises.push(self.syncWorkshopIfNeeded(workshopId, siteId).then(function(data) {
+                            if (data && data.updated) {
+                                $mmEvents.trigger(mmaModWorkshopEventAutomSynced, {
+                                    siteid: siteId,
+                                    workshopid: workshopId,
+                                    warnings: data.warnings
+                                });
+                            }
+                        }));
+                    });
+                    return $q.all(promises);
+                }));
+            });
+            return $q.all(sitePromises);
+        });
+    };
+    self.syncWorkshopIfNeeded = function(workshopId, siteId) {
+        return self.isSyncNeeded(workshopId, siteId).then(function(needed) {
+            if (needed) {
+                return self.syncWorkshop(workshopId, siteId);
+            }
+        });
+    };
+    self.syncWorkshop = function(workshopId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        var syncPromise,
+            syncPromises = [],
+            workshop,
+            courseId,
+            result = {
+                warnings: [],
+                updated: false
+            };
+        if (self.isSyncing(workshopId, siteId)) {
+            return self.getOngoingSync(workshopId, siteId);
+        }
+        if ($mmSyncBlock.isBlocked(mmaModWorkshopComponent, workshopId, siteId)) {
+            $log.debug('Cannot sync workshop ' + workshopId + ' because it is blocked.');
+            var modulename = $mmCourse.translateModuleName('workshop');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
+        }
+        $log.debug('Try to sync workshop ' + workshopId);
+        syncPromises.push($mmaModWorkshopOffline.getSubmissions(workshopId, siteId).catch(function() {
+            return [];
+        }));
+        syncPromises.push($mmaModWorkshopOffline.getAssessments(workshopId, siteId).catch(function() {
+            return [];
+        }));
+        syncPromises.push($mmaModWorkshopOffline.getEvaluateSubmissions(workshopId, siteId).catch(function() {
+            return [];
+        }));
+        syncPromises.push($mmaModWorkshopOffline.getEvaluateAssessments(workshopId, siteId).catch(function() {
+            return [];
+        }));
+        syncPromise = $q.all(syncPromises).then(function(syncs) {
+            for (var x in syncs) {
+                if (syncs[x].length > 0 && syncs[x][0].courseid) {
+                    courseId = syncs[x][0].courseid;
+                    break;
+                }
+            }
+            if (!courseId) {
+                return;
+            } else if (!$mmApp.isOnline()) {
+                return $q.reject();
+            }
+            return $mmaModWorkshop.getWorkshopById(courseId, workshopId, siteId).then(function(workshop) {
+                var submissionsActions = syncs[0],
+                    assessments = syncs[1],
+                    submissionEvaluations = syncs[2],
+                    assessmentEvaluations = syncs[3];
+                var promises = [],
+                    offlineSubmissions = {};
+                angular.forEach(submissionsActions, function(action) {
+                    if (typeof offlineSubmissions[action.submissionid] == "undefined") {
+                        offlineSubmissions[action.submissionid] = [];
+                    }
+                    offlineSubmissions[action.submissionid].push(action);
+                });
+                angular.forEach(offlineSubmissions, function(submissionActions) {
+                    promises.push(syncSubmission(workshop, submissionActions, result, siteId).then(function() {
+                        result.updated = true;
+                    }));
+                });
+                angular.forEach(assessments, function(assessment) {
+                    promises.push(syncAssessment(workshop, assessment, result, siteId).then(function() {
+                        result.updated = true;
+                    }));
+                });
+                angular.forEach(submissionEvaluations, function(evaluation) {
+                    promises.push(syncEvaluateSubmission(workshop, evaluation, result, siteId).then(function() {
+                        result.updated = true;
+                    }));
+                });
+                angular.forEach(assessmentEvaluations, function(evaluation) {
+                    promises.push(syncEvaluateAssessment(workshop, evaluation, result, siteId).then(function() {
+                        result.updated = true;
+                    }));
+                });
+                return $q.all(promises);
+            }).then(function() {
+                if (result.updated) {
+                    return $mmaModWorkshop.invalidateContentById(workshopId, courseId, siteId).catch(function() {
+                    });
+                }
+            });
+        }).then(function() {
+            return self.setSyncTime(workshopId, siteId).catch(function() {
+            });
+        }).then(function() {
+            return result;
+        });
+        return self.addOngoingSync(workshopId, syncPromise, siteId);
+    };
+    function syncSubmission(workshop, submissionActions, result, siteId) {
+        var discardError,
+            deleted = false,
+            editing = false;
+        submissionActions = submissionActions.sort(function(a, b) {
+            return a.timemodified - b.timemodified;
+        });
+        submissionId = submissionActions[0].submissionid;
+        if (submissionId > 0) {
+            editing = true;
+            timePromise = $mmaModWorkshop.getSubmission(workshop.id, submissionId, siteId).then(function(submission) {
+                return submission.timemodified;
+            }).catch(function() {
+                return -1;
+            });
+        } else {
+            timePromise = $q.when(0);
+        }
+        return timePromise.then(function(timemodified) {
+            if (timemodified < 0 || timemodified >= submissionActions[0].timemodified) {
+                result.updated = true;
+                discardError = $translate.instant('mma.mod_workshop.warningsubmissionmodified');
+                return $mmaModWorkshopOffline.deleteAllSubmissionActions(workshop.id, submissionId, siteId);
+            }
+            var promises = [];
+            angular.forEach(submissionActions, function(action) {
+                var actionPromise,
+                    fileProm;
+                submissionId = action.submissionid > 0 ? action.submissionid : submissionId;
+                if (action.attachmentsid) {
+                    fileProm = $mmaModWorkshopHelper.getSubmissionFilesFromOfflineFilesObject(action.attachmentsid, workshop.id,
+                            submissionId, editing, siteId).then(function(files) {
+                        return $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshop.id, submissionId, files, editing, false,
+                                siteId);
+                    });
+                } else {
+                    fileProm = $mmaModWorkshopHelper.uploadOrStoreSubmissionFiles(workshop.id, submissionId, [], editing, false,
+                                siteId);
+                }
+                actionPromise = fileProm.then(function(attachmentsId) {
+                    switch (action.action) {
+                        case 'add':
+                            return $mmaModWorkshop.addSubmissionOnline(workshop.id, action.title, action.content, attachmentsId,
+                                    siteId).then(function(newSubmissionId) {
+                                submissionId = newSubmissionId;
+                            });
+                        case 'update':
+                            return $mmaModWorkshop.updateSubmissionOnline(submissionId, action.title, action.content, attachmentsId,
+                                    siteId);
+                        case 'delete':
+                            return $mmaModWorkshop.deleteSubmissionOnline(submissionId, siteId).then(function() {
+                                deleted = true;
+                            });
+                    }
+                });
+                promises.push(actionPromise.catch(function(error) {
+                    if (error && error.wserror) {
+                        discardError = error.error;
+                    } else {
+                        return $q.reject(error && error.error);
+                    }
+                }).then(function() {
+                    result.updated = true;
+                    return $mmaModWorkshopOffline.deleteSubmissionAction(action.workshopid, action.submissionid, action.action,
+                            siteId);
+                }));
+            });
+            return $q.all(promises);
+        }).then(function() {
+            if (discardError) {
+                var message = $translate.instant('mm.core.warningofflinedatadeleted', {
+                    component: $mmCourse.translateModuleName('workshop'),
+                    name: workshop.name,
+                    error: discardError
+                });
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
+                }
+            }
+        });
+    }
+    function syncAssessment(workshop, assessmentData, result, siteId) {
+        var discardError,
+            timePromise,
+            assessmentId = assessmentData.assessmentid;
+        timePromise = $mmaModWorkshop.getAssessment(workshop.id, assessmentId, siteId).then(function(assessment) {
+            return assessment.timemodified;
+        }).catch(function() {
+            return -1;
+        });
+        return timePromise.then(function(timemodified) {
+            if (timemodified < 0 || timemodified >= assessmentData.timemodified) {
+                result.updated = true;
+                discardError = $translate.instant('mma.mod_workshop.warningassessmentmodified');
+                return $mmaModWorkshopOffline.deleteAssessment(workshop.id, assessmentId, siteId);
+            }
+            var fileProm,
+                inputData = assessmentData.inputdata;
+            if (inputData.feedbackauthorattachmentsid) {
+                fileProm = $mmaModWorkshopHelper.getAssessmentFilesFromOfflineFilesObject(inputData.feedbackauthorattachmentsid,
+                        workshop.id, assessmentId, siteId).then(function(files) {
+                    return $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(workshop.id, assessmentId, files, false, siteId);
+                });
+            } else {
+                fileProm = $mmaModWorkshopHelper.uploadOrStoreAssessmentFiles(workshop.id, assessmentId, [], false, siteId);
+            }
+            return fileProm.then(function(attachmentsId) {
+                inputData.feedbackauthorattachmentsid = attachmentsId || 0;
+                return $mmaModWorkshop.updateAssessmentOnline(assessmentId, inputData, siteId);
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    discardError = error.error;
+                } else {
+                    return $q.reject(error && error.error);
+                }
+            }).then(function() {
+                result.updated = true;
+                return $mmaModWorkshopOffline.deleteAssessment(workshop.id, assessmentId, siteId);
+            });
+        }).then(function() {
+            if (discardError) {
+                var message = $translate.instant('mm.core.warningofflinedatadeleted', {
+                    component: $mmCourse.translateModuleName('workshop'),
+                    name: workshop.name,
+                    error: discardError
+                });
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
+                }
+            }
+        });
+    }
+    function syncEvaluateSubmission(workshop, evaluate, result, siteId) {
+        var discardError,
+            timePromise,
+            submissionId = evaluate.submissionid;
+        timePromise = $mmaModWorkshop.getSubmission(workshop.id, submissionId, siteId).then(function(submission) {
+            return submission.timemodified;
+        }).catch(function() {
+            return -1;
+        });
+        return timePromise.then(function(timemodified) {
+            if (timemodified < 0 || timemodified >= evaluate.timemodified) {
+                result.updated = true;
+                discardError = $translate.instant('mma.mod_workshop.warningsubmissionmodified');
+                return $mmaModWorkshopOffline.deleteEvaluateSubmission(workshop.id, submissionId, siteId);
+            }
+            return $mmaModWorkshop.evaluateSubmissionOnline(submissionId, evaluate.feedbacktext, evaluate.published,
+                evaluate.gradeover, siteId).catch(function(error) {
+                if (error && error.wserror) {
+                    discardError = error.error;
+                } else {
+                    return $q.reject(error && error.error);
+                }
+            }).then(function() {
+                result.updated = true;
+                return $mmaModWorkshopOffline.deleteEvaluateSubmission(workshop.id, submissionId, siteId);
+            });
+        }).then(function() {
+            if (discardError) {
+                var message = $translate.instant('mm.core.warningofflinedatadeleted', {
+                    component: $mmCourse.translateModuleName('workshop'),
+                    name: workshop.name,
+                    error: discardError
+                });
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
+                }
+            }
+        });
+    }
+    function syncEvaluateAssessment(workshop, evaluate, result, siteId) {
+        var discardError,
+            timePromise,
+            assessmentId = evaluate.assessmentid;
+        timePromise = $mmaModWorkshop.getAssessment(workshop.id, assessmentId, siteId).then(function(assessment) {
+            return assessment.timemodified;
+        }).catch(function() {
+            return -1;
+        });
+        return timePromise.then(function(timemodified) {
+            if (timemodified < 0 || timemodified >= evaluate.timemodified) {
+                result.updated = true;
+                discardError = $translate.instant('mma.mod_workshop.warningassessmentmodified');
+                return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshop.id, assessmentId, siteId);
+            }
+            return $mmaModWorkshop.evaluateAssessmentOnline(assessmentId, evaluate.feedbacktext, evaluate.weight,
+                evaluate.gradinggradeover, siteId).catch(function(error) {
+                if (error && error.wserror) {
+                    discardError = error.error;
+                } else {
+                    return $q.reject(error && error.error);
+                }
+            }).then(function() {
+                result.updated = true;
+                return $mmaModWorkshopOffline.deleteEvaluateAssessment(workshop.id, assessmentId, siteId);
+            });
+        }).then(function() {
+            if (discardError) {
+                var message = $translate.instant('mm.core.warningofflinedatadeleted', {
+                    component: $mmCourse.translateModuleName('workshop'),
+                    name: workshop.name,
+                    error: discardError
+                });
+                if (result.warnings.indexOf(message) == -1) {
+                    result.warnings.push(message);
+                }
+            }
+        });
+    }
+    return self;
+}]);
+
 angular.module('mm.core')
 
 .constant('mmCoreConfigConstants', {
     "app_id" : "com.moodle.moodlemobile",
     "appname": "Moodle Mobile",
     "desktopappname": "Moodle Desktop",
-    "versioncode" : "2020",
-    "versionname" : "3.3.2",
+    "versioncode" : "2021",
+    "versionname" : "3.4.0",
     "cache_expiration_time" : 300000,
     "default_lang" : "en",
-    "languages": {"ar": "عربي", "bg": "Български", "ca": "Català", "cs": "Čeština", "da": "Dansk", "de": "Deutsch", "de-du": "Deutsch - Du", "el": "Ελληνικά", "en": "English", "es": "Español", "es-mx": "Español - México", "eu": "Euskara", "fa": "فارسی", "fr" : "Français", "he" : "עברית", "hu": "magyar", "it": "Italiano", "lt" : "Lietuvių", "ja": "日本語","nl": "Nederlands", "pl": "Polski", "pt-br": "Português - Brasil", "pt": "Português - Portugal", "ro": "Română", "ru": "Русский", "sr-cr": "Српски", "sr-lt": "Srpski", "sv": "Svenska", "tr" : "Türkçe", "uk" : "Українська", "zh-cn" : "简体中文", "zh-tw" : "正體中文"},
+    "languages": {"ar": "عربي", "bg": "Български", "ca": "Català", "cs": "Čeština", "da": "Dansk", "de": "Deutsch", "de-du": "Deutsch - Du", "el": "Ελληνικά", "en": "English", "es": "Español", "es-mx": "Español - México", "eu": "Euskara", "fa": "فارسی", "fi": "Suomi", "fr" : "Français", "he" : "עברית", "hu": "magyar", "it": "Italiano", "ja": "日本語", "lt" : "Lietuvių", "mr": "मराठी", "nl": "Nederlands", "pl": "Polski", "pt-br": "Português - Brasil", "pt": "Português - Portugal", "ro": "Română", "ru": "Русский", "sr-cr": "Српски", "sr-lt": "Srpski", "sv": "Svenska", "tr" : "Türkçe", "uk" : "Українська", "zh-cn" : "简体中文", "zh-tw" : "正體中文"},
     "wsservice" : "moodle_mobile_app",
     "wsextservice" : "local_mobile",
-    "demo_sites": {"student": {"url": "http://school.demo.moodle.net", "username": "student", "password": "moodle"}, "teacher": {"url": "http://school.demo.moodle.net", "username": "teacher", "password": "moodle"}, "cva": {"url": "http://mm.cvaconsulting.com/moodle", "username": "student", "password": "student"}},
+    "demo_sites": {"student": {"url": "https://school.demo.moodle.net", "username": "student", "password": "moodle"}, "teacher": {"url": "https://school.demo.moodle.net", "username": "teacher", "password": "moodle"}},
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
     "siteurl": "",
+    "multisitesdisplay": "select",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
     "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
