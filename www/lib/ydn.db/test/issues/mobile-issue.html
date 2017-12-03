@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Test for multiple storages #issue 56</title>
+</head>
+<body>
+  <div id="console"></div>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure-library/closure/goog/deps.js"></script>
+    <script type="text/javascript" src="../../../ydn-base/src/deps.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+
+  <p>Testing for issue 56</p>
+  <div id="div-console"></div>
+
+  <script type="text/javascript" >
+      goog.require('ydn.debug');
+      goog.require('goog.userAgent');
+      goog.require('ydn.db.base');
+  </script>
+  <script type="text/javascript" >
+      options = {mechanisms: ['indexeddb']};
+      if (goog.userAgent.MOBILE) {
+          var div = document.getElementById('div-console');
+          div.textContent = 'mobile test running';
+          ydn.debug.log('ydn.db', 'finest', div);
+      }
+  </script>
+
+
+	<script type="text/javascript" src="mobile-issue.js"></script>
+</body>
+</html>

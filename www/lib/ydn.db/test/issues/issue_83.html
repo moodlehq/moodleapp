@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Issue 83</title>
+    <meta charset="utf-8">
+
+</head>
+<body>
+<h3>Testing for issue 83</h3>
+
+
+<script type="text/javascript">
+
+    var show = function(s) {
+        var div = document.createElement('p');
+        div.innerHTML = s;
+        document.body.appendChild(div);
+    };
+
+    var db = window.openDatabase('test-83-3', '', 'test db', 1*1024*1024);
+    db.transaction(function(tx) {
+        tx.executeSql('CREATE TABLE IF NOT EXISTS people(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT)',
+                [], function() {
+                    show('table creating requested')
+                }, function(t, e) {
+                    show('tx failed on requesting creating table ' + e.code + ' ' + e.message);
+                })
+    }, function(e) {
+        show('tx failed on creating table ' + e.code + ' ' + e.message);
+    }, function() {
+        show('table creating done');
+    });
+
+
+
+    show(navigator.userAgent);
+
+    var runSql = function(sql) {
+        var msg = document.createElement('div');
+        msg.textContent = 'running ' + sql;
+        document.body.appendChild(msg);
+        db.readTransaction(function(tx) {
+            tx.executeSql(sql, [], function(tx, rs) {
+                var n = rs.rows.length;
+                var s = '<hr /><div><code>' + sql + '</code></div>';
+                s += '<p> received ' + n + ' rows </p>';
+                for (var i = 0; i < n; i++) {
+                    s += '<div>' + JSON.stringify(rs.rows.item(i)) + '</div>';
+                }
+                show(s);
+            }, function(t, e) {
+                show('error executing ' + sql + e.code + ' ' + e.name + ' ' +
+                        e.message);
+            });
+        }, function(e) {
+            show('tx failed ' + e.code + ' ' + e.message);
+        }, function() {
+            show('tx committed');
+        });
+    };
+
+    runSql('SELECT sql FROM sqlite_master');
+    runSql('SELECT sql, name FROM sqlite_master');
+    runSql('SELECT * FROM sqlite_master');
+    runSql('SELECT * FROM sqlite_master WHERE type = "table"');
+
+</script>
+
+</body>
+</html>

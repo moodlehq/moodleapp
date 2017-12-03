@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Visual test for utils</title>
+    <script src="../../../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../../../closure-library/closure/goog/deps.js"></script>
+    <script type="text/javascript" src="../../../../../ydn-base/src/deps.js"></script>
+    <script type="text/javascript" src="../../../../src/deps.js"></script>
+    <script>
+        goog.require('ydn.db.Storage');
+        goog.require('ydn.debug');
+    </script>
+</head>
+<body>
+<script>
+    ydn.debug.log('ydn.db', 'finest');
+    /**
+     * @param {string} url URL of the file to be retrieved
+     * @param {Function=} callback optional callback
+     */
+    var loadImage = function(url, callback) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", url, true);
+        xhr.responseType = "blob";
+
+        xhr.addEventListener("load", function () {
+            if (xhr.status === 200) {
+                console.log("Image retrieved");
+
+                var blob = xhr.response;
+
+                var fr = new FileReader();
+                fr.onload = function(e) {
+                    callback(e.target.result);
+                };
+                fr.onerror = function(e) {
+                    throw e;
+                };
+                fr.onabort = function(e) {
+                    throw e;
+                };
+                fr.readAsDataURL(blob);
+            }
+        }, false);
+        xhr.send();
+    };
+    /*
+    loadImage('logo.png', function(v) {
+        console.log(v);
+    });
+    */
+</script>
+<script>
+
+    var file_schema = {
+        version: 2,
+        stores: [
+            {
+                name: 'file',
+                fixed: true
+            }
+        ]};
+    var options = {
+        mechanisms: ['indexeddb', 'websql']
+    };
+    var db = new ydn.db.Storage('file-test-2', file_schema, options);
+    /**
+     * @param {string} url URL of the file to be retrieved
+     * @param {Function=} callback optional callback
+     */
+    var saveImage = function(url, callback) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", url, true);
+        xhr.responseType = "blob";
+
+        xhr.addEventListener("load", function () {
+            if (xhr.status === 200) {
+                console.log("Image retrieved");
+
+                var blob = xhr.response;
+
+                // Put the received blob into IndexedDB
+                db.put('file', blob, url).addCallback(function(key) {
+                        console.log('Save to ', 'file:' + key);
+                        if (callback) {callback(key);}
+                    }, function(e) {
+                        throw e;
+                    }
+                );
+            }
+        }, false);
+        xhr.send();
+    };
+    /**
+     * @param {string} key the key of the image record
+     */
+    var showImage = function(key) {
+        db.get('file', key).addCallback(function(record) {
+            console.log(record);
+            // Get window.URL object
+            var URL = window.URL || window.webkitURL;
+            // Create ObjectURL
+            var imgURL = URL.createObjectURL(record);
+            // Set img src to ObjectURL
+            console.log('read ' + key + ' ' + imgURL.length);
+            var img = document.createElement('img');
+            img.setAttribute('name', url);
+            img.setAttribute('src', imgURL);
+            document.body.appendChild(img);
+
+            // Revoking ObjectURL
+            URL.revokeObjectURL(imgURL);
+        }, function(e) {
+            throw e;
+        });
+    };
+    var url = 'logo.png';
+    saveImage(url, function(key) {
+        console.log('showing image ', key);
+        showImage(key);
+    });
+</script>
+</body>
+</html>

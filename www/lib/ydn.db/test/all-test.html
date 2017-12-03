@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2012 YDN Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+  <title>YDN-DB - All JsUnit Tests</title>
+  <script src="../../closure-library/closure/goog/base.js"></script>
+  <script type="text/javascript" src="../src/deps.js"></script>
+  <script src="alltests.js"></script>
+  <script>
+    goog.require('goog.userAgent.product');
+    goog.require('goog.testing.MultiTestRunner');
+  </script>
+  <link rel="stylesheet" href="../../closure-library/closure/goog/css/multitestrunner.css" type="text/css">
+  <style>
+    h1 {
+      font: normal x-large arial, helvetica, sans-serif;
+      margin: 0;
+    }
+    p, form {
+      font: normal small sans-serif;
+      margin: 0;
+    }
+    #header {
+      position: absolute;
+      right: 10px;
+      top: 13px;
+    }
+    #footer {
+      margin-top: 8px;
+    }
+    a {
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .warning {
+      font-size: 14px;
+      font-weight: bold;
+      width: 80%;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  if (goog.userAgent.product.CHROME &&
+      window.location.toString().indexOf('file:') == 0) {
+    document.write(
+        '<div class="warning">' +
+            'WARNING: Due to Chrome\'s security restrictions ' +
+            'this test will not be able to load files off your local disk ' +
+            'unless you start Chrome with:<br>' +
+            '<code>--allow-file-access-from-files</code></div><br>');
+  }
+</script>
+
+<h1>YDN-DB - All JsUnit Tests</h1>
+<p id="header">
+  <label for="idb">IDB</label>
+  <input type="checkbox" name="idb" id="idb" checked>
+    <label for="websql">WebSQL</label>
+  <input type="checkbox" name="websql" id="websql"  checked>
+    <label for="ls">localStorage</label>
+  <input type="checkbox" name="ls" id="ls"  checked>
+    <label for="ud">IE user data</label>
+    <input type="checkbox" name="ud" id="ud" >
+</p>
+<div id="runner"></div>
+<!--  Use a form so browser persists input values -->
+<form id="footer" onsubmit="return false">
+  Settings:<br>
+  <input type="checkbox" name="hidepasses" id="hidepasses" checked>
+  <label for="hidepasses">Hide passes</label><br>
+  <input type="checkbox" name="parallel" id="parallel" >
+  <label for="parallel">Run in parallel</label>
+  <small>(timing stats not available if enabled)</small><br>
+  <input type="text" name="filter" id="filter" value="">
+  <label for="filter">Run only tests for path</label>
+</form>
+<script>
+  var hidePassesInput = document.getElementById('hidepasses');
+  var parallelInput = document.getElementById('parallel');
+  var filterInput = document.getElementById('filter');
+
+  var chk_idb = document.getElementById('idb');
+  var chk_websql = document.getElementById('websql');
+  var chk_ls = document.getElementById('ls');
+  var chk_ud = document.getElementById('ud');
+
+  function setFilterFunction() {
+    var matchValue = filterInput.value || '';
+    testRunner.setFilterFunction(function(testPath) {
+      return testPath.indexOf(matchValue) > -1;
+    });
+  }
+
+  // Create a test runner and render it.
+  var testRunner = new goog.testing.MultiTestRunner()
+      .setName(document.title)
+      .setBasePath('./')
+      .setPoolSize(parallelInput.checked ? 8 : 1)
+      .setStatsBucketSizes(5, 500)
+      .setHidePasses(hidePassesInput.checked)
+    //.setVerbosePasses(true)
+      .addTests(_allTests);
+
+  testRunner.render(document.getElementById('runner'));
+
+  var change_test = function() {
+      var all_tests = testRunner.getAllTests();
+      goog.array.clear(all_tests);
+      if (chk_idb.checked && chk_websql.checked && chk_ls.checked &&
+              chk_ud.checked) {
+          testRunner.addTests(_allTests);
+      } else {
+          if (chk_idb.checked) testRunner.addTests(_idb_allTests);
+          if (chk_websql.checked) testRunner.addTests(_websql_allTests);
+          if (chk_ls.checked) testRunner.addTests(_ls_allTests);
+          if (chk_ud.checked) testRunner.addTests(_ud_allTests);
+      }
+  };
+  goog.events.listen(chk_idb, 'click', function(e) {
+      change_test();
+  });
+  goog.events.listen(chk_websql, 'click', function(e) {
+      change_test();
+  });
+  goog.events.listen(chk_ls, 'click', function(e) {
+      change_test();
+  });
+
+
+  goog.events.listen(hidePassesInput, 'click', function(e) {
+    testRunner.setHidePasses(e.target.checked);
+  });
+
+  goog.events.listen(parallelInput, 'click', function(e) {
+    testRunner.setPoolSize(e.target.checked ? 8 : 1);
+  });
+
+  goog.events.listen(filterInput, 'keyup', setFilterFunction);
+  setFilterFunction();
+</script>
+</body>
+</html>

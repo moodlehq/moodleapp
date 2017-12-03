@@ -1,0 +1,14 @@
+td:not(:first-child) {
+    text-align: right;
+}
+td, th {
+    border: 1px solid black;
+    padding: 4px;
+}
+table {
+    border-collapse: collapse;
+}
+th.title {
+    font-weight: lighter;
+    font-style: italic;
+}

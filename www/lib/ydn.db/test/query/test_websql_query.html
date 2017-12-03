@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Query - WebSql</title>
+  <meta charset="utf-8">
+  <link href="http://code.jquery.com/qunit/qunit-1.11.0.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript"
+          src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript"
+          src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
+    <script type="text/javascript" src="http://dev.yathit.com/jsc/reporter.js"></script>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure-library/closure/goog/deps.js"></script>
+    <script type="text/javascript" src="../../../ydn-base/src/deps.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+    <script>
+        goog.require('ydn.db.Storage');
+        goog.require('ydn.db.Query');
+        goog.require('ydn.debug');
+        goog.require('ydn.db.con.exports');
+        goog.require('ydn.db.core.exports');
+        goog.require('ydn.db.crud.exports');
+        goog.require('ydn.db.sql.exports');
+        options = {mechanisms: ['websql']};
+    </script>
+</head>
+<body>
+
+  <div id="qunit"></div>
+
+	<script type="text/javascript" src="query-basic.js"></script>
+
+</body>
+</html>

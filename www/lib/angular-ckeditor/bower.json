@@ -1,0 +1,31 @@
+{
+  "name": "angular-ckeditor",
+  "main": "angular-ckeditor.js",
+  "version": "1.0.3",
+  "homepage": "https://github.com/lemonde/angular-ckeditor",
+  "authors": [
+    "Team Le8 <projet-cms-tech@lemonde.fr>"
+  ],
+  "description": "CKEditor directive for Angular.",
+  "keywords": [
+    "angular",
+    "directive",
+    "ckeditor"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "package.json",
+    "karma.conf.js",
+    "node_modules",
+    "bower_components",
+    "Gruntfile.js",
+    "test"
+  ],
+  "devDependencies": {
+    "angular-mocks": "~1.3.21",
+    "ckeditor": "#full/4.4.6",
+    "jquery": "~2.1.4",
+    "lodash": "~3.10.1"
+  }
+}

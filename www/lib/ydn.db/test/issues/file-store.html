@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Test for multiple storages #issue 17</title>
+</head>
+<body>
+  <div id="console"></div>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure-library/closure/goog/deps.js"></script>
+    <script type="text/javascript" src="../../../ydn-base/src/deps.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+
+	<script type="text/javascript">
+    goog.require('goog.debug.DivConsole');
+    goog.require('ydn.db.Storage');
+    goog.require('goog.async.Deferred');
+    </script><script type="text/javascript">
+    goog.exportProperty(goog.async.Deferred.prototype, 'done',
+            goog.async.Deferred.prototype.addCallback);
+    goog.exportProperty(goog.async.Deferred.prototype, 'fail',
+            goog.async.Deferred.prototype.addErrback);
+    goog.exportProperty(goog.async.Deferred.prototype, 'then',
+            goog.async.Deferred.prototype.addCallbacks);
+	</script>
+	<script type="text/javascript" src="file-store.js"></script>
+</body>
+</html>

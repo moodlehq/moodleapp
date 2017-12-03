@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CorsConfig>
+    <Cors>
+        <Origins>
+            <Origin>http://localhost</Origin>
+            <Origin>http://localhost:8085</Origin>
+        </Origins>
+        <Methods>
+            <Method>GET</Method>
+            <Method>HEAD</Method>
+            <Method>POST</Method>
+            <Method>PUT</Method>
+            <Method>DELETE</Method>
+        </Methods>
+        <ResponseHeaders>
+            <ResponseHeader>content-type</ResponseHeader>
+            <ResponseHeader>Authorization</ResponseHeader>
+            <ResponseHeader>cache-control</ResponseHeader>
+            <ResponseHeader>if-modified-since</ResponseHeader>
+            <ResponseHeader>if-unmodified-since</ResponseHeader>
+        </ResponseHeaders>
+        <MaxAgeSec>60</MaxAgeSec>
+    </Cors>
+</CorsConfig>
