@@ -3,7 +3,26 @@
  *
  * Use it to customise the look and feel of the app.
  */
-
+}
+*/
+ 
+ .bar-side-menu {
+   background-color: blue;
+ }
+ 
+ .bar-content {
+   background-color: blue;
+ }
+ 
+ .button.button-positive {
+   border-color: blue;
+   background-color: blue;
+    color: #fff;
+ } 
+ 
+ .item-divider {
+   background-color: #fafafa;
+ }
 // Color palette
 $black:           #3a3a3a; // Headings, standard text.
 $gray-darker:     #626262; // Text (emphasis-detail), placeholder, background.
