@@ -5,9 +5,9 @@ node_modules/
 platforms/
 /plugins/
 hooks/
-www/build
+#www/build
 .sass-cache/
-www/lib
+#www/lib
 e2e/build
 /desktop/*
 !/desktop/assets/
