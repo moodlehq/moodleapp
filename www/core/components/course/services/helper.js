@@ -178,9 +178,10 @@ angular.module('mm.core.course')
      * @param {Number} courseid     Course ID the section belongs to.
      * @param {Object} [section]    Section. If not provided, all sections.
      * @param {Object[]} [sections] List of sections. Used when downloading all the sections.
+     * @param  {Boolean} [alwaysConfirm] True to show a confirm even if the size isn't high, false otherwise.
      * @return {Promise}            Promise resolved if the user confirms or there's no need to confirm.
      */
-    self.confirmDownloadSize = function(courseid, section, sections) {
+    self.confirmDownloadSize = function(courseid, section, sections, alwaysConfirm) {
         var sizePromise;
 
         // Calculate the size of the download.
@@ -208,7 +209,7 @@ angular.module('mm.core.course')
 
         return sizePromise.then(function(size) {
             // Show confirm modal if needed.
-            return $mmUtil.confirmDownloadSize(size);
+            return $mmUtil.confirmDownloadSize(size, undefined, undefined, undefined, undefined, alwaysConfirm);
         });
     };
 

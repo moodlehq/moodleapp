@@ -15,6 +15,18 @@ $doughnut-text-colour: $gray-darker;
     color: $doughnut-text-colour;
     position: absolute;
   }
+
+  &.item-progress .mm-course-download-spinner {
+    top: 46px;
+  }
+
+  &:not(.item-progress) {
+    padding-right: 80px;
+
+    .mm-course-download-spinner {
+      right: 40px;
+    }
+  }
 }
 
 .item-progress {

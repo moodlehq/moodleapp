@@ -30,7 +30,8 @@ angular.module('mm.core.courses')
  *
  * <mm-course-list-progress course="course" round-progress="true" show-summary="true"></mm-course-list-progress>
  */
-.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $q) {
+.directive('mmCourseListProgress', function($ionicActionSheet, $mmCoursesDelegate, $translate, $controller, $q, $mmCourseHelper,
+        $mmUtil, $mmCourse, $mmEvents, $mmSite, mmCoreEventCourseStatusChanged) {
 
     /**
      * Check if the actions button should be shown.
@@ -48,7 +49,7 @@ angular.module('mm.core.courses')
             scope.showActions = false;
             return $q.reject(error);
         }).finally(function() {
-            scope.loaded = true;
+            scope.actionsLoaded = true;
         });
     }
 
@@ -62,17 +63,50 @@ angular.module('mm.core.courses')
             showSummary: "=?"
         },
         link: function(scope) {
-            var buttons;
+            var buttons,
+                obsStatus,
+                siteId = $mmSite.getId();
 
+            // Check if actions should be shown.
             shouldShowActions(scope, false);
+
+            // Determine course prefetch icon.
+            scope.prefetchCourseIcon = 'spinner';
+            $mmCourseHelper.getCourseStatusIcon(scope.course.id).then(function(icon) {
+                scope.prefetchCourseIcon = icon;
+
+                if (icon == 'spinner') {
+                    // Course is being downloaded. Get the download promise.
+                    var promise = $mmCourseHelper.getCourseDownloadPromise(scope.course.id);
+                    if (promise) {
+                        // There is a download promise. If it fails, show an error.
+                        promise.catch(function(error) {
+                            if (!scope.$$destroyed) {
+                                $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+                            }
+                        });
+                    } else {
+                        // No download, this probably means that the app was closed while downloading. Set previous status.
+                        $mmCourse.setCoursePreviousStatus(courseId);
+                    }
+                }
+            });
+
+            // Listen for status change in course.
+            obsStatus = $mmEvents.on(mmCoreEventCourseStatusChanged, function(data) {
+                if (data.siteId == siteId && data.courseId == scope.course.id) {
+                    scope.prefetchCourseIcon = $mmCourseHelper.getCourseStatusIconFromStatus(data.status);
+                }
+            });
 
             scope.showCourseActions = function($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
 
                 // Get the list of handlers to display.
-                scope.loaded = false;
+                scope.actionsLoaded = false;
                 $mmCoursesDelegate.getNavHandlersToDisplay(scope.course, false, false, true).then(function(handlers) {
+
                     buttons = handlers.map(function(handler) {
                         var newScope = scope.$new();
                         $controller(handler.controller, {$scope: newScope});
@@ -91,9 +125,9 @@ angular.module('mm.core.courses')
                     }).sort(function(a, b) {
                         return b.priority - a.priority;
                     });
-                }).finally(function() {
+                }).then(function() {
                     // We have the list of buttons to show, show the action sheet.
-                    scope.loaded = true;
+                    scope.actionsLoaded = true;
 
                     $ionicActionSheet.show({
                         titleText: scope.course.fullname,
@@ -104,6 +138,7 @@ angular.module('mm.core.courses')
                                 // Execute the action and close the action sheet.
                                 return buttons[index].action($event, scope.course);
                             }
+
                             // Never close the action sheet. It will automatically be closed if success.
                             return false;
                         },
@@ -112,8 +147,47 @@ angular.module('mm.core.courses')
                             return true;
                         }
                     });
+                }).catch(function(error) {
+                    $mmUtil.showErrorModalDefault(error, 'Error loading options');
+                }).finally(function() {
+                    scope.loaded = true;
                 });
             };
+
+            scope.prefetchCourse = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                var course = scope.course,
+                    initialIcon = scope.prefetchCourseIcon;
+
+                scope.prefetchCourseIcon = 'spinner';
+
+                // Get the sections first.
+                $mmCourse.getSections(course.id, false, true).then(function(sections) {
+                    // Confirm the download.
+                    return $mmCourseHelper.confirmDownloadSize(course.id, undefined, sections, true).then(function() {
+                        // User confirmed, get the course actions and download.
+                        return $mmCoursesDelegate.getNavHandlersToDisplay(course, false, false, true).then(function(handlers) {
+                            return $mmCourseHelper.prefetchCourse(course, sections, handlers);
+                        });
+                    }, function() {
+                        // User cancelled.
+                        scope.prefetchCourseIcon = initialIcon;
+                    });
+                }).catch(function(error) {
+                    // Don't show error message if scope is destroyed.
+                    if (scope.$$destroyed) {
+                        return;
+                    }
+
+                    $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+                });
+            };
+
+            scope.$on('$destroy', function() {
+                obsStatus && obsStatus.off && obsStatus.off();
+            });
         }
     };
 });

@@ -257,7 +257,7 @@ angular.module('mm.core.course')
     // Prefetch the whole course, including the course options.
     $scope.prefetchCourse = function() {
         $scope.prefetchCourseIcon = 'spinner';
-        $mmCourseHelper.confirmDownloadSize(courseId, undefined, $scope.sections).then(function() {
+        $mmCourseHelper.confirmDownloadSize(courseId, undefined, $scope.sections, true).then(function() {
             // User confirmed, download course.
             $mmCourseHelper.prefetchCourse(course, $scope.sections, $scope.courseActions).catch(function(error) {
                 // Don't show error message if scope is destroyed.
