@@ -40,6 +40,11 @@
                 <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
+                <a class="item item-icon-left" ng-if="handlersShouldBeShown" ng-click="prefetchCourse()">
+                    <i ng-if="prefetchCourseIcon != 'spinner'" class="icon {{prefetchCourseIcon}}"></i>
+                    <ion-spinner ng-if="prefetchCourseIcon == 'spinner'" class="icon"></ion-spinner>
+                    <h2>{{ 'mm.course.downloadcourse' | translate }}</h2>
+                </a>
                 <a class="item item-icon-left item-icon-right" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
                     <i class="icon ion-briefcase"></i>
                     <h2><mm-format-text watch="true">{{ 'mm.course.contents' | translate }}</mm-format-text></h2>

@@ -24,7 +24,7 @@ angular.module('mm.core.course')
 .factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state, $mmText,
             mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmSitesManager, $mmAddonManager,
             $controller, $mmCourseDelegate, $translate, $mmEvents, mmCoreEventPackageStatusChanged, mmCoreNotDownloadable,
-            mmCoreDownloaded) {
+            mmCoreDownloaded, $mmCoursesDelegate) {
 
     var self = {},
         calculateSectionStatus = false,
@@ -865,6 +865,66 @@ angular.module('mm.core.course')
         });
 
         return courseDwnPromises[siteId][course.id];
+    };
+
+    /**
+     * Show a confirm and prefetch a course. It will retrieve the sections and the course options if not provided.
+     * This function will set the icon to "spinner" when starting and it will also set it back to the initial icon if the
+     * user cancels. All the other updates of the icon should be made when mmCoreEventCourseStatusChanged is received.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#confirmAndPrefetchCourse
+     * @param  {Object} scope             Scope to set the icon.
+     * @param  {Object} course            Course to prefetch.
+     * @param  {Object[]} [sections]      List of course sections.
+     * @param  {Object[]} [courseOptions] List of options. Each option should have a "prefetch" function if it's downloadable.
+     * @return {Promise}                  Promise resolved with true when the download finishes, resolved with false if user
+     *                                    doesn't confirm, rejected if an error occurs.
+     */
+    self.confirmAndPrefetchCourse = function(scope, course, sections, courseOptions) {
+        var initialIcon = scope.prefetchCourseIcon,
+            promise;
+
+        scope.prefetchCourseIcon = 'spinner';
+
+        // Get the sections first if needed.
+        if (sections) {
+            promise = $q.when(sections);
+        } else {
+            promise = $mmCourse.getSections(course.id, false, true);
+        }
+
+        return promise.then(function(sections) {
+            // Confirm the download.
+            return self.confirmDownloadSize(course.id, undefined, sections, true).then(function() {
+                // User confirmed, get the course actions if needed.
+                if (courseOptions) {
+                    promise = $q.when(courseOptions);
+                } else {
+                    promise = $mmCoursesDelegate.getNavHandlersToDisplay(course, false, false, true);
+                }
+
+                return promise.then(function(handlers) {
+                    // Now we have all the data, download the course.
+                    return self.prefetchCourse(course, sections, handlers);
+                }).then(function() {
+                    // Download successful.
+                    return true;
+                });
+            }, function() {
+                // User cancelled.
+                scope.prefetchCourseIcon = initialIcon;
+                return false;
+            });
+        }).catch(function(error) {
+            // Don't show error message if scope is destroyed.
+            if (!scope.$$destroyed) {
+                $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+            }
+
+            return $q.reject(error);
+        });
     };
 
     return self;

@@ -64,8 +64,7 @@ angular.module('mm.core.courses')
         },
         link: function(scope) {
             var buttons,
-                obsStatus,
-                siteId = $mmSite.getId();
+                obsStatus;
 
             // Check if actions should be shown.
             shouldShowActions(scope, false);
@@ -87,14 +86,14 @@ angular.module('mm.core.courses')
                         });
                     } else {
                         // No download, this probably means that the app was closed while downloading. Set previous status.
-                        $mmCourse.setCoursePreviousStatus(courseId);
+                        $mmCourse.setCoursePreviousStatus(scope.course.id);
                     }
                 }
             });
 
             // Listen for status change in course.
             obsStatus = $mmEvents.on(mmCoreEventCourseStatusChanged, function(data) {
-                if (data.siteId == siteId && data.courseId == scope.course.id) {
+                if (data.siteId == $mmSite.getId() && data.courseId == scope.course.id) {
                     scope.prefetchCourseIcon = $mmCourseHelper.getCourseStatusIconFromStatus(data.status);
                 }
             });
@@ -158,31 +157,7 @@ angular.module('mm.core.courses')
                 $event.preventDefault();
                 $event.stopPropagation();
 
-                var course = scope.course,
-                    initialIcon = scope.prefetchCourseIcon;
-
-                scope.prefetchCourseIcon = 'spinner';
-
-                // Get the sections first.
-                $mmCourse.getSections(course.id, false, true).then(function(sections) {
-                    // Confirm the download.
-                    return $mmCourseHelper.confirmDownloadSize(course.id, undefined, sections, true).then(function() {
-                        // User confirmed, get the course actions and download.
-                        return $mmCoursesDelegate.getNavHandlersToDisplay(course, false, false, true).then(function(handlers) {
-                            return $mmCourseHelper.prefetchCourse(course, sections, handlers);
-                        });
-                    }, function() {
-                        // User cancelled.
-                        scope.prefetchCourseIcon = initialIcon;
-                    });
-                }).catch(function(error) {
-                    // Don't show error message if scope is destroyed.
-                    if (scope.$$destroyed) {
-                        return;
-                    }
-
-                    $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
-                });
+                $mmCourseHelper.confirmAndPrefetchCourse(scope, scope.course);
             };
 
             scope.$on('$destroy', function() {
