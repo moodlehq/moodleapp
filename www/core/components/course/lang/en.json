@@ -11,6 +11,8 @@
     "contents": "Contents",
     "couldnotloadsectioncontent": "Could not load the section content. Please try again later.",
     "couldnotloadsections": "Could not load the sections. Please try again later.",
+    "downloadcourse": "Download course",
+    "errordownloadingcourse": "Error downloading course.",
     "errordownloadingsection": "Error downloading section.",
     "errorgetmodule": "Error getting activity data.",
     "hiddenfromstudents": "Hidden from students",

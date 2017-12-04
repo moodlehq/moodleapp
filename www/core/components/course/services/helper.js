@@ -27,7 +27,8 @@ angular.module('mm.core.course')
             mmCoreDownloaded) {
 
     var self = {},
-        calculateSectionStatus = false;
+        calculateSectionStatus = false,
+        courseDwnPromises = {};
 
 
     /**
@@ -174,16 +175,16 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#confirmDownloadSize
-     * @param {Number} courseid   Course ID the section belongs to.
-     * @param {Object} section    Section.
-     * @param {Object[]} sections List of sections. Used when downloading all the sections.
-     * @return {Promise}          Promise resolved if the user confirms or there's no need to confirm.
+     * @param {Number} courseid     Course ID the section belongs to.
+     * @param {Object} [section]    Section. If not provided, all sections.
+     * @param {Object[]} [sections] List of sections. Used when downloading all the sections.
+     * @return {Promise}            Promise resolved if the user confirms or there's no need to confirm.
      */
     self.confirmDownloadSize = function(courseid, section, sections) {
         var sizePromise;
 
         // Calculate the size of the download.
-        if (section.id != mmCoreCourseAllSectionsId) {
+        if (section && section.id != mmCoreCourseAllSectionsId) {
             sizePromise = $mmCoursePrefetchDelegate.getDownloadSize(section.modules, courseid);
         } else {
             var promises = [],
@@ -759,6 +760,110 @@ angular.module('mm.core.course')
                 });
             }
         });
+    };
+
+    /**
+     * Get a course download promise (if any).
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#getCourseDownloadPromise
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Download promise, undefined if not found:
+     */
+    self.getCourseDownloadPromise = function(courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return courseDwnPromises[siteId] && courseDwnPromises[siteId][courseId];
+    };
+
+    /**
+     * Get a course status icon.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#getCourseStatusIcon
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with the icon name.
+     */
+    self.getCourseStatusIcon = function(courseId, siteId) {
+        return $mmCourse.getCourseStatus(courseId, siteId).then(function(status) {
+            return self.getCourseStatusIconFromStatus(status);
+        });
+    };
+
+    /**
+     * Get a course status icon from status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#getCourseStatusIconFromStatus
+     * @param {String} status Course status.
+     * @return {String}       Icon name.
+     */
+    self.getCourseStatusIconFromStatus = function(status) {
+        if (status == mmCoreDownloaded) {
+            // Always show refresh icon, we cannot knew if there's anything new in course options.
+            return 'ion-android-refresh';
+        } else if (status == mmCoreDownloading) {
+            return 'spinner';
+        } else {
+            return 'ion-ios-cloud-download-outline';
+        }
+    };
+
+    /**
+     * Prefetch all the activities in a course and also the course options.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#prefetchCourse
+     * @param  {Object} course          The course to prefetch.
+     * @param  {Object[]} sections      List of course sections.
+     * @param  {Object[]} courseOptions List of course options. Each option should have a "prefetch" function if it's downloadable.
+     * @return {Promise}                Promise resolved when the download finishes.
+     */
+    self.prefetchCourse = function(course, sections, courseOptions) {
+        var siteId = $mmSite.getId();
+
+        if (courseDwnPromises[siteId] && courseDwnPromises[siteId][course.id]) {
+            // There's already a download ongoing for this course, return the promise.
+            return courseDwnPromises[siteId][course.id];
+        } else if (!courseDwnPromises[siteId]) {
+            courseDwnPromises[siteId] = {};
+        }
+
+        // First of all, mark the course as being downloaded.
+        courseDwnPromises[siteId][course.id] = $mmCourse.setCourseStatus(course.id, mmCoreDownloading, siteId).then(function() {
+            var promises = [],
+                allSectionsSection;
+
+            // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
+            allSectionsSection = sections[0].id == mmCoreCourseAllSectionsId ? sections[0] : {id: mmCoreCourseAllSectionsId};
+            promises.push(self.prefetch(allSectionsSection, course.id, sections));
+
+            // Prefetch course options.
+            angular.forEach(courseOptions, function(option) {
+                if (option.prefetch) {
+                    promises.push($q.when(option.prefetch(course)));
+                }
+            });
+
+            return $mmUtil.allPromises(promises);
+        }).then(function() {
+            // Download success, mark the course as downloaded.
+            return $mmCourse.setCourseStatus(course.id, mmCoreDownloaded, siteId);
+        }).catch(function(error) {
+            // Error, restore previous status.
+            return $mmCourse.setCoursePreviousStatus(course.id, siteId).then(function() {
+                return $q.reject(error);
+            });
+        }).finally(function() {
+            delete courseDwnPromises[siteId][course.id];
+        });
+
+        return courseDwnPromises[siteId][course.id];
     };
 
     return self;

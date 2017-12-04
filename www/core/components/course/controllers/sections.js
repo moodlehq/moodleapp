@@ -37,6 +37,7 @@ angular.module('mm.core.course')
     $scope.downloadSectionsIcon = getDownloadSectionIcon();
     $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
     $scope.courseActions = [];
+    $scope.prefetchCourseIcon = 'spinner'; // Show spinner while calculating it.
 
     function loadSections(refresh) {
         var promise;
@@ -76,7 +77,8 @@ angular.module('mm.core.course')
                                 // Fake event (already prevented) to avoid errors on app.
                                 var ev = document.createEvent("MouseEvent");
                                 return newScope.action(ev, course);
-                            }
+                            },
+                            prefetch: button.prefetch
                         };
 
                     newScope.$destroy();
@@ -142,6 +144,13 @@ angular.module('mm.core.course')
                     }
                 });
             }
+        });
+    }
+
+    // Determines the prefetch icon of a course.
+    function determineCoursePrefetchIcon() {
+        return $mmCourseHelper.getCourseStatusIcon(courseId).then(function(icon) {
+            $scope.prefetchCourseIcon = icon;
         });
     }
 
@@ -245,9 +254,63 @@ angular.module('mm.core.course')
         });
     };
 
+    // Prefetch the whole course, including the course options.
+    $scope.prefetchCourse = function() {
+        $scope.prefetchCourseIcon = 'spinner';
+        $mmCourseHelper.confirmDownloadSize(courseId, undefined, $scope.sections).then(function() {
+            // User confirmed, download course.
+            $mmCourseHelper.prefetchCourse(course, $scope.sections, $scope.courseActions).catch(function(error) {
+                // Don't show error message if scope is destroyed.
+                if ($scope.$$destroyed) {
+                    return;
+                }
+
+                $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+            }).finally(function() {
+                if (!$scope.$$destroyed) {
+                    determineCoursePrefetchIcon();
+
+                    if ($scope.downloadSectionsEnabled) {
+                        // Recalculate the status.
+                        calculateSectionStatus(false);
+                    }
+                }
+            });
+        }).catch(function() {
+            // User cancelled, ignore.
+            determineCoursePrefetchIcon();
+        });
+    };
+
+    // Load the sections.
     loadSections().finally(function() {
         autoloadSection();
         $scope.sectionsLoaded = true;
+
+        // Determine the course prefetch status.
+        determineCoursePrefetchIcon().then(function() {
+            if ($scope.prefetchCourseIcon == 'spinner') {
+                // Course is being downloaded. Get the download promise.
+                var promise = $mmCourseHelper.getCourseDownloadPromise(courseId);
+                if (promise) {
+                    // There is a download promise. Once it finishes, determine the icon again.
+                    promise.catch(function(error) {
+                        if (!$scope.$$destroyed) {
+                            $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+                        }
+                    }).finally(function() {
+                        if (!$scope.$$destroyed) {
+                            determineCoursePrefetchIcon();
+                        }
+                    });
+                } else {
+                    // No download, this probably means that the app was closed while downloading. Set previous status.
+                    $mmCourse.setCoursePreviousStatus(courseId).then(function(status) {
+                        $scope.prefetchCourseIcon = $mmCourseHelper.getCourseStatusIconFromStatus(status);
+                    });
+                }
+            }
+        });
     });
 
     // Listen for section status changes.

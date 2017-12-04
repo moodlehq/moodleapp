@@ -50,6 +50,8 @@ angular.module('mm.core.courses')
      *                                                                for the list of scope variables expected.
      *                             - invalidateEnabledForCourse(courseId, navOptions, admOptions) (Promise) Optional. Should
      *                                               invalidate data to determine if handler is enabled for a certain course.
+     *                             - prefetch(course) (Promise) Optional. Will be called when a course is downloaded, and it
+     *                                               should prefetch all the data to be able to see the addon in offline.
      */
     self.registerNavHandler = function(addon, handler, priority) {
         if (typeof navHandlers[addon] !== 'undefined') {
@@ -305,7 +307,8 @@ angular.module('mm.core.courses')
                         if (enabled) {
                             handlersToDisplay.push({
                                 controller: handler.instance.getController(course.id),
-                                priority: handler.priority
+                                priority: handler.priority,
+                                prefetch: handler.instance.prefetch
                             });
                         }
                     }));
