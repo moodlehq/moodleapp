@@ -823,10 +823,11 @@ angular.module('mm.core.course')
      * @param  {Object} course          The course to prefetch.
      * @param  {Object[]} sections      List of course sections.
      * @param  {Object[]} courseOptions List of course options. Each option should have a "prefetch" function if it's downloadable.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when the download finishes.
      */
-    self.prefetchCourse = function(course, sections, courseOptions) {
-        var siteId = $mmSite.getId();
+    self.prefetchCourse = function(course, sections, courseOptions, siteId) {
+        siteId = siteId || $mmSite.getId();
 
         if (courseDwnPromises[siteId] && courseDwnPromises[siteId][course.id]) {
             // There's already a download ongoing for this course, return the promise.
@@ -884,7 +885,8 @@ angular.module('mm.core.course')
      */
     self.confirmAndPrefetchCourse = function(scope, course, sections, courseOptions) {
         var initialIcon = scope.prefetchCourseIcon,
-            promise;
+            promise,
+            siteId = $mmSite.getId();
 
         scope.prefetchCourseIcon = 'spinner';
 
@@ -907,7 +909,7 @@ angular.module('mm.core.course')
 
                 return promise.then(function(handlers) {
                     // Now we have all the data, download the course.
-                    return self.prefetchCourse(course, sections, handlers);
+                    return self.prefetchCourse(course, sections, handlers, siteId);
                 }).then(function() {
                     // Download successful.
                     return true;
@@ -924,6 +926,103 @@ angular.module('mm.core.course')
             }
 
             return $q.reject(error);
+        });
+    };
+
+    /**
+     * Confirm and prefetches a list of courses.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#confirmAndPrefetchCourses
+     * @param  {Object[]} courses List of courses to download.
+     * @return {Promise} Promise resolved with true when downloaded, resolved with false if user cancels, rejected if error.
+     *                   It will send a "progress" everytime a course is downloaded or fails to download.
+     */
+    self.confirmAndPrefetchCourses = function(courses) {
+        var siteId = $mmSite.getId();
+
+        // Confirm the download without checking size because it could take a while.
+        return $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
+            var deferred = $q.defer(), // Use a deferred to be able to notify the progress.
+                promises = [],
+                total = courses.length,
+                count = 0;
+
+            // Notify the start of the download.
+            setTimeout(function() {
+                deferred.notify({
+                    count: count,
+                    total: total
+                });
+            });
+
+            angular.forEach(courses, function(course) {
+                var subPromises = [],
+                    sections,
+                    handlers,
+                    success = true;
+
+                // Get the sections and the handlers.
+                subPromises.push($mmCourse.getSections(course.id, false, true).then(function(courseSections) {
+                    sections = courseSections;
+                }));
+                subPromises.push($mmCoursesDelegate.getNavHandlersToDisplay(course, false, false, true).then(function(cHandlers) {
+                    handlers = cHandlers;
+                }));
+
+                promises.push($q.all(subPromises).then(function() {
+                    return self.prefetchCourse(course, sections, handlers, siteId);
+                }).catch(function(error) {
+                    success = false;
+                    return $q.reject(error);
+                }).finally(function() {
+                    // Course downloaded or failed, notify the progress.
+                    count++;
+                    deferred.notify({
+                        count: count,
+                        total: total,
+                        course: course.id,
+                        success: success
+                    });
+                }));
+            });
+
+            $mmUtil.allPromises(promises).then(function() {
+                deferred.resolve(true);
+            }, deferred.reject);
+
+            return deferred.promise;
+        }, function() {
+            // User cancelled.
+            return false;
+        });
+    };
+
+    /**
+     * Determine the status of a list of courses.
+     *
+     * @ngdoc method
+     * @name $mmCourseHelper#determineCoursesStatus
+     * @param  {Object[]} courses Courses
+     * @return {Promise}          Promise resolved with the status.
+     */
+    self.determineCoursesStatus = function(courses) {
+        // Get the status of each course.
+        var promises = [],
+            siteId = $mmSite.getId();
+
+        angular.forEach(courses, function(course) {
+            promises.push($mmCourse.getCourseStatus(course.id, siteId));
+        });
+
+        return $q.all(promises).then(function(statuses) {
+            // Now determine the status of the whole list.
+            var status = statuses[0];
+            for (var i = 1; i < statuses.length; i++) {
+                status = $mmFilepool.determinePackagesStatus(status, statuses[i]);
+            }
+            return status;
         });
     };
 

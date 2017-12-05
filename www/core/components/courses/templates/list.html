@@ -1,13 +1,17 @@
 <ion-view view-title="{{ 'mm.courses.mycourses' | translate }}">
     <ion-nav-buttons side="secondary">
         <a ui-sref="site.mm_searchcourses" ng-if="searchEnabled" class="button button-icon ion-ios-search-strong"></a>
+        <mm-context-menu>
+            <mm-context-menu-item ng-show="courses && courses.length > 1" priority="800" content="'mm.courses.downloadcourses' | translate" action="downloadCourses()" icon-action="prefetchCoursesData.icon" close-on-click="false" badge="prefetchCoursesData.badge"></mm-context-menu-item>
+            <mm-context-menu-item ng-show="courses && courses.length > 5" priority="700" content="'mm.courses.filtermycourses' | translate" action="switchFilter()" icon-action="'ion-funnel'"></mm-context-menu-item>
+        </mm-context-menu>
     </ion-nav-buttons>
     <ion-content padding="true" mm-state-class>
         <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="coursesLoaded" on-refresh="refreshCourses()">
         </ion-refresher>
         <mm-loading hide-until="coursesLoaded">
-            <div ng-if="courses && courses.length > 5" class="item item-transparent item-input-inset">
+            <div ng-if="showFilter" class="item item-transparent item-input-inset">
                 <ion-input class="item-input-wrapper">
                     <i class="icon ion-funnel placeholder-icon"></i>
                     <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="filter.filterText">
