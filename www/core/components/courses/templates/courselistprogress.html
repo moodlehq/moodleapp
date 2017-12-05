@@ -19,10 +19,9 @@
         <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
         <mm-progress-bar ng-if="!roundProgress && course.progress !== false" progress="course.progress"></mm-progress-bar>
         <!-- Course options. -->
-        <i ng-if="showActions && actionsLoaded" class="icon ion-android-more-vertical mm-animate-show-hide" ng-click="showCourseActions($event)"></i>
+        <i ng-if="actionsLoaded" class="icon ion-android-more-vertical mm-animate-show-hide" ng-click="showCourseActions($event)"></i>
         <ion-spinner ng-if="!actionsLoaded" class="mm-animate-show-hide"></ion-spinner>
-        <!-- Download course. -->
-        <i ng-if="prefetchCourseIcon != 'spinner'" class="icon {{prefetchCourseIcon}} mm-animate-show-hide mm-course-download-spinner" ng-click="prefetchCourse($event)"></i>
+        <!-- Download course spinner. -->
         <ion-spinner ng-if="prefetchCourseIcon == 'spinner'" class="mm-course-download-spinner"></ion-spinner>
     </a>
     <div class="item item-text-wrap item-borderless" ng-show="course.summary" ng-if="showSummary">
