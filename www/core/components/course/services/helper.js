@@ -695,9 +695,9 @@ angular.module('mm.core.course')
 
         scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
         // We need to call getDownloadSize, the package might have been updated.
-        return $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+        return $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId, true).then(function(size) {
             return $mmUtil.confirmDownloadSize(size).then(function() {
-                return $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function(error) {
+                return $mmCoursePrefetchDelegate.prefetchModule(module, courseId, true).catch(function(error) {
                     return failPrefetch(!scope.$$destroyed, error);
                 });
             }, function() {
@@ -914,8 +914,11 @@ angular.module('mm.core.course')
                     // Download successful.
                     return true;
                 });
-            }, function() {
-                // User cancelled.
+            }, function(error) {
+                // User cancelled or there was an error calculating the size.
+                if (error) {
+                    $mmUtil.showErrorModal(error);
+                }
                 scope.prefetchCourseIcon = initialIcon;
                 return false;
             });

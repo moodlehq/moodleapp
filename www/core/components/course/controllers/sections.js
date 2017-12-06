@@ -249,6 +249,11 @@ angular.module('mm.core.course')
         section.isCalculating = true;
         $mmCourseHelper.confirmDownloadSize(courseId, section, $scope.sections).then(function() {
             prefetch(section, true);
+        }, function(error) {
+            // User cancelled or there was an error calculating the size.
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            }
         }).finally(function() {
             section.isCalculating = false;
         });

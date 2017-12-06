@@ -162,21 +162,20 @@ angular.module('mm.addons.mod_lesson')
      * @name $mmaModLessonPrefetchHandler#getDownloadSize
      * @param  {Object} module       Module to get the size.
      * @param  {Number} courseId     Course ID the module belongs to.
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Object}              With the file size and a boolean to indicate if it is the total size or only partial.
+     * @param  {Boolean} single      True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}             Resolved With the file size and a boolean to indicate if it is the total size or only partial.
      */
-    self.getDownloadSize = function(module, courseId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.getDownloadSize = function(module, courseId, single) {
         var lesson,
             password,
-            result;
+            result,
+            siteId = $mmSite.getId();
 
         return $mmaModLesson.getLesson(courseId, module.id, siteId).then(function(lessonData) {
             lesson = lessonData;
 
             // Get the lesson password if it's needed.
-            return self.gatherLessonPassword(lesson.id, false, true, true, siteId);
+            return self.gatherLessonPassword(lesson.id, false, true, single, siteId);
         }).then(function(data) {
             password = data.password;
             lesson = data.lesson || lesson;
