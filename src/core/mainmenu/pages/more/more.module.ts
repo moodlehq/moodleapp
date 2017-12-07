@@ -13,17 +13,23 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreMainMenuDelegate } from './providers/delegate';
-import { CoreMainMenuProvider } from './providers/mainmenu';
+import { IonicPageModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreMainMenuMorePage } from './more';
+import { CoreMainMenuModule } from '../../mainmenu.module';
+import { CoreComponentsModule } from '../../../../components/components.module';
+import { CoreDirectivesModule } from '../../../../directives/directives.module';
 
 @NgModule({
     declarations: [
+        CoreMainMenuMorePage,
     ],
     imports: [
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        CoreMainMenuModule,
+        IonicPageModule.forChild(CoreMainMenuMorePage),
+        TranslateModule.forChild()
     ],
-    providers: [
-        CoreMainMenuDelegate,
-        CoreMainMenuProvider
-    ]
 })
-export class CoreMainMenuModule {}
+export class CoreMainMenuPageModule {}

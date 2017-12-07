@@ -853,10 +853,10 @@ export class CoreSite {
     /**
      * Returns the URL to the documentation of the app, based on Moodle version and current language.
      *
-     * @param {string} [page]    Docs page to go to.
-     * @return {Promise}         Promise resolved with the Moodle docs URL.
+     * @param {string} [page] Docs page to go to.
+     * @return {Promise<string>} Promise resolved with the Moodle docs URL.
      */
-    getDocsUrl(page: string) : Promise<string> {
+    getDocsUrl(page?: string) : Promise<string> {
         const release = this.infos.release ? this.infos.release : undefined;
         return this.urlUtils.getDocsUrl(release, page);
     }

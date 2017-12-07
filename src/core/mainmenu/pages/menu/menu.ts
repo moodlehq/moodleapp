@@ -16,6 +16,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreMainMenuProvider } from '../../providers/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
 
 /**
@@ -56,7 +57,7 @@ export class CoreMainMenuPage implements OnDestroy {
         }
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
-            this.tabs = handlers.slice(0, 4); // Get first 4.
+            this.tabs = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
             this.tabs.push(this.moreTabData); // Add "More" tab.
             this.loaded = this.menuDelegate.areHandlersLoaded();
         });
