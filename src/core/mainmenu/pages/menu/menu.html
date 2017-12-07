@@ -1,0 +1,3 @@
+<ion-tabs *ngIf="loaded">
+    <ion-tab *ngFor="let tab of tabs" [root]="tab.page" [tabTitle]="tab.title | translate" [tabIcon]="tab.icon" class="{{tab.class}}"></ion-tab>
+</ion-tabs>

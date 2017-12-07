@@ -379,49 +379,54 @@ export class CoreLoginHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     goToSiteInitialPage(navCtrl: NavController, setRoot?: boolean) : Promise<any> {
-        return this.isMyOverviewEnabled().then((myOverview) => {
-            let myCourses = !myOverview && this.isMyCoursesEnabled(),
-                site = this.sitesProvider.getCurrentSite(),
-                promise;
+        if (setRoot) {
+            return navCtrl.setRoot('CoreMainMenuPage', {}, {animate: false});
+        } else {
+            return navCtrl.push('CoreMainMenuPage');
+        }
+        // return this.isMyOverviewEnabled().then((myOverview) => {
+        //     let myCourses = !myOverview && this.isMyCoursesEnabled(),
+        //         site = this.sitesProvider.getCurrentSite(),
+        //         promise;
 
-            if (!site) {
-                return Promise.reject(null);
-            }
+        //     if (!site) {
+        //         return Promise.reject(null);
+        //     }
 
-            // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
-            if ((site.getInfo() && site.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
-                promise = this.isFrontpageEnabled();
-            } else {
-                promise = Promise.resolve(false);
-            }
+        //     // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
+        //     if ((site.getInfo() && site.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
+        //         promise = this.isFrontpageEnabled();
+        //     } else {
+        //         promise = Promise.resolve(false);
+        //     }
 
-            return promise.then((frontpage) => {
-                // Check avalaibility in priority order.
-                let pageName,
-                    params;
+        //     return promise.then((frontpage) => {
+        //         // Check avalaibility in priority order.
+        //         let pageName,
+        //             params;
 
-                // @todo Use real pages names when they are implemented.
-                if (frontpage) {
-                    pageName = 'Frontpage';
-                } else if (myOverview) {
-                    pageName = 'MyOverview';
-                } else if (myCourses) {
-                    pageName = 'MyCourses';
-                } else {
-                    // Anything else available, go to the user profile.
-                    pageName = 'User';
-                    params = {
-                        userId: site.getUserId()
-                    };
-                }
+        //         // @todo Use real pages names when they are implemented.
+        //         if (frontpage) {
+        //             pageName = 'Frontpage';
+        //         } else if (myOverview) {
+        //             pageName = 'MyOverview';
+        //         } else if (myCourses) {
+        //             pageName = 'MyCourses';
+        //         } else {
+        //             // Anything else available, go to the user profile.
+        //             pageName = 'User';
+        //             params = {
+        //                 userId: site.getUserId()
+        //             };
+        //         }
 
-                if (setRoot) {
-                    return navCtrl.setRoot(pageName, params, {animate: false});
-                } else {
-                    return navCtrl.push(pageName, params);
-                }
-            });
-        });
+        //         if (setRoot) {
+        //             return navCtrl.setRoot(pageName, params, {animate: false});
+        //         } else {
+        //             return navCtrl.push(pageName, params);
+        //         }
+        //     });
+        // });
     }
 
     /**
