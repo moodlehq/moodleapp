@@ -116,9 +116,9 @@ export class CoreWSProvider {
         let siteUrl;
 
         if (!preSets) {
-            return Promise.reject(this.createFakeWSError('mm.core.unexpectederror', true));
+            return Promise.reject(this.createFakeWSError('core.unexpectederror', true));
         } else if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.createFakeWSError('mm.core.networkerrormsg', true));
+            return Promise.reject(this.createFakeWSError('core.networkerrormsg', true));
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
@@ -161,9 +161,9 @@ export class CoreWSProvider {
             ajaxData;
 
         if (typeof preSets.siteUrl == 'undefined') {
-            return rejectWithError(this.translate.instant('mm.core.unexpectederror'));
+            return rejectWithError(this.translate.instant('core.unexpectederror'));
         } else if (!this.appProvider.isOnline()) {
-            return rejectWithError(this.translate.instant('mm.core.networkerrormsg'));
+            return rejectWithError(this.translate.instant('core.networkerrormsg'));
         }
 
         if (typeof preSets.responseExpected == 'undefined') {
@@ -188,7 +188,7 @@ export class CoreWSProvider {
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
             if (!data || typeof data != 'object') {
-                return rejectWithError(this.translate.instant('mm.core.serverconnection'));
+                return rejectWithError(this.translate.instant('core.serverconnection'));
             } else if (data.error) {
                 return rejectWithError(data.error, data.errorcode);
             }
@@ -203,7 +203,7 @@ export class CoreWSProvider {
             return data.data;
         }, (data) => {
             let available = data.status == 404 ? -1 : 0;
-            return rejectWithError(this.translate.instant('mm.core.serverconnection'), '', available);
+            return rejectWithError(this.translate.instant('core.serverconnection'), '', available);
         });
 
         // Convenience function to return an error.
@@ -286,7 +286,7 @@ export class CoreWSProvider {
         this.logger.debug('Downloading file', url, path, addExtension);
 
         if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.translate.instant('mm.core.networkerrormsg'));
+            return Promise.reject(this.translate.instant('core.networkerrormsg'));
         }
 
         // Use a tmp path to download the file and then move it to final location. This is because if the download fails,
@@ -463,10 +463,10 @@ export class CoreWSProvider {
             }
 
             if (!data) {
-                return Promise.reject(this.createFakeWSError('mm.core.serverconnection', true));
+                return Promise.reject(this.createFakeWSError('core.serverconnection', true));
             } else if (typeof data != preSets.typeExpected) {
                 this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
-                return Promise.reject(this.createFakeWSError('mm.core.errorinvalidresponse', true));
+                return Promise.reject(this.createFakeWSError('core.errorinvalidresponse', true));
             }
 
             if (typeof data.exception !== 'undefined') {
@@ -502,7 +502,7 @@ export class CoreWSProvider {
                 return retryPromise;
             }
 
-            return Promise.reject(this.createFakeWSError('mm.core.serverconnection', true));
+            return Promise.reject(this.createFakeWSError('core.serverconnection', true));
         });
 
         promise = this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);
@@ -574,10 +574,10 @@ export class CoreWSProvider {
             };
 
         if (!preSets) {
-            errorResponse.message = this.translate.instant('mm.core.unexpectederror');
+            errorResponse.message = this.translate.instant('core.unexpectederror');
             return errorResponse;
         } else if (!this.appProvider.isOnline()) {
-            errorResponse.message = this.translate.instant('mm.core.networkerrormsg');
+            errorResponse.message = this.translate.instant('core.networkerrormsg');
             return errorResponse;
         }
 
@@ -590,7 +590,7 @@ export class CoreWSProvider {
             data = this.convertValuesToString(data, preSets.cleanUnicode);
         } catch (e) {
             // Empty cleaned text found.
-            errorResponse.message = this.translate.instant('mm.core.unicodenotsupportedcleanerror');
+            errorResponse.message = this.translate.instant('core.unicodenotsupportedcleanerror');
             return errorResponse;
         }
 
@@ -631,10 +631,10 @@ export class CoreWSProvider {
         }
 
         if (!data) {
-            errorResponse.message = this.translate.instant('mm.core.serverconnection');
+            errorResponse.message = this.translate.instant('core.serverconnection');
         } else if (typeof data != preSets.typeExpected) {
             this.logger.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
-            errorResponse.message = this.translate.instant('mm.core.errorinvalidresponse');
+            errorResponse.message = this.translate.instant('core.errorinvalidresponse');
         }
 
         if (typeof data.exception != 'undefined' || typeof data.debuginfo != 'undefined') {
@@ -666,7 +666,7 @@ export class CoreWSProvider {
         }
 
         if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.translate.instant('mm.core.networkerrormsg'));
+            return Promise.reject(this.translate.instant('core.networkerrormsg'));
         }
 
         let uploadUrl = preSets.siteUrl + '/webservice/upload.php',
@@ -691,14 +691,14 @@ export class CoreWSProvider {
                 data = JSON.parse(data);
             } catch(err) {
                 this.logger.error('Error parsing response from upload:', err, data);
-                return Promise.reject(this.translate.instant('mm.core.errorinvalidresponse'));
+                return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
             }
 
             if (!data) {
-                return Promise.reject(this.translate.instant('mm.core.serverconnection'));
+                return Promise.reject(this.translate.instant('core.serverconnection'));
             } else if (typeof data != 'object') {
                 this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
-                return Promise.reject(this.translate.instant('mm.core.errorinvalidresponse'));
+                return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
             }
 
             if (typeof data.exception !== 'undefined') {
@@ -714,7 +714,7 @@ export class CoreWSProvider {
             return data[0];
         }).catch((error) => {
             this.logger.error('Error while uploading file', filePath, error);
-            return Promise.reject(this.translate.instant('mm.core.errorinvalidresponse'));
+            return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
         });
     }
 }

@@ -1,24 +1,24 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>{{ 'mm.core.error' | translate }}</ion-title>
+        <ion-title>{{ 'core.error' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'mm.core.close' | translate">
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon name="close"></ion-icon>
             </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content padding>
-    <h3>{{ 'mm.core.whoops' | translate }}</h3>
-    <p>{{ 'mm.login.problemconnectingerror' | translate }}</p>
+    <h3>{{ 'core.whoops' | translate }}</h3>
+    <p>{{ 'core.login.problemconnectingerror' | translate }}</p>
     <p padding>{{siteUrl}}</p>
-    <p>{{ 'mm.login.problemconnectingerrorcontinue' | translate }}</p>
-    <button ion-button block (click)="closeModal()">{{ 'mm.core.tryagain' | translate }}</button>
-    <h3>{{ 'mm.login.stillcantconnect' | translate }}</h3>
-    <p>{{ 'mm.login.contactyouradministrator' | translate }}</p>
+    <p>{{ 'core.login.problemconnectingerrorcontinue' | translate }}</p>
+    <button ion-button block (click)="closeModal()">{{ 'core.tryagain' | translate }}</button>
+    <h3>{{ 'core.login.stillcantconnect' | translate }}</h3>
+    <p>{{ 'core.login.contactyouradministrator' | translate }}</p>
     <p *ngIf="issue">
-        {{ 'mm.login.contactyouradministratorissue' | translate:{$a: ''} }}
+        {{ 'core.login.contactyouradministratorissue' | translate:{$a: ''} }}
     </p>
     <p *ngIf="issue">
         <core-format-text [text]="issue"></core-format-text>

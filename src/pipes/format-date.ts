@@ -34,8 +34,8 @@ export class CoreFormatDatePipe implements PipeTransform {
      * Format a date.
      *
      * @param {string|number} timestamp Timestamp to format (in milliseconds). If not defined, use current time.
-     * @param {string} format Format to use. It should be a string code to handle i18n (e.g. mm.core.dftimedate). If the code
-     *                        doesn't have a prefix, 'mm.core' will be used by default. E.g. 'dftimedate' -> 'mm.core.dftimedate'.
+     * @param {string} format Format to use. It should be a string code to handle i18n (e.g. core.dftimedate). If the code
+     *                        doesn't have a prefix, 'core' will be used by default. E.g. 'dftimedate' -> 'core.dftimedate'.
      * @return {String} Formatted date.
      */
     transform(timestamp: string|number, format: string) {
@@ -52,7 +52,7 @@ export class CoreFormatDatePipe implements PipeTransform {
         }
 
         if (format.indexOf('.') == -1) {
-            format = 'mm.core.' + format;
+            format = 'core.' + format;
         }
         return moment(timestamp).format(this.translate.instant(format));
     }

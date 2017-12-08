@@ -91,7 +91,7 @@ export class CoreDomUtilsProvider {
      * If the download size is higher than a certain threshold shows a confirm dialog.
      *
      * @param {any} size Object containing size to download and a boolean to indicate if its totally or partialy calculated.
-     * @param {string} [message] Code of the message to show. Default: 'mm.course.confirmdownload'.
+     * @param {string} [message] Code of the message to show. Default: 'core.course.confirmdownload'.
      * @param {string} [unknownMessage] ID of the message to show if size is unknown.
      * @param {number} [wifiThreshold] Threshold to show confirm in WiFi connection. Default: CoreWifiDownloadThreshold.
      * @param {number} [limitedThreshold] Threshold to show confirm in limited connection. Default: CoreDownloadThreshold.
@@ -104,14 +104,14 @@ export class CoreDomUtilsProvider {
 
         if (size.size < 0 || (size.size == 0 && !size.total)) {
             // Seems size was unable to be calculated. Show a warning.
-            unknownMessage = unknownMessage || 'mm.course.confirmdownloadunknownsize';
+            unknownMessage = unknownMessage || 'core.course.confirmdownloadunknownsize';
             return this.showConfirm(this.translate.instant(unknownMessage));
         } else if (!size.total) {
             // Filesize is only partial.
             let readableSize = this.textUtils.bytesToSize(size.size, 2);
-            return this.showConfirm(this.translate.instant('mm.course.confirmpartialdownloadsize', {size: readableSize}));
+            return this.showConfirm(this.translate.instant('core.course.confirmpartialdownloadsize', {size: readableSize}));
         } else if (size.size >= wifiThreshold || (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
-            message = message || 'mm.course.confirmdownload';
+            message = message || 'core.course.confirmdownload';
             let readableSize = this.textUtils.bytesToSize(size.size, 2);
             return this.showConfirm(this.translate.instant(message, {size: readableSize}));
         }
@@ -380,12 +380,12 @@ export class CoreDomUtilsProvider {
      * @return {string} Title.
      */
     private getErrorTitle(message: string) : string {
-        if (message == this.translate.instant('mm.core.networkerrormsg') ||
-                message == this.translate.instant('mm.fileuploader.errormustbeonlinetoupload')) {
+        if (message == this.translate.instant('core.networkerrormsg') ||
+                message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
             return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
                 <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
         }
-        return this.textUtils.decodeHTML(this.translate.instant('mm.core.error'));
+        return this.textUtils.decodeHTML(this.translate.instant('core.error'));
     }
 
     /**
@@ -610,7 +610,7 @@ export class CoreDomUtilsProvider {
         let alert = this.alertCtrl.create({
                 title: title,
                 message: this.addFormatTextIfNeeded(message), // Add format-text to handle links.
-                buttons: [buttonText || this.translate.instant('mm.core.ok')]
+                buttons: [buttonText || this.translate.instant('core.ok')]
             });
 
         alert.present();
@@ -662,14 +662,14 @@ export class CoreDomUtilsProvider {
             }
             options.buttons = [
                 {
-                    text: cancelText || this.translate.instant('mm.core.cancel'),
+                    text: cancelText || this.translate.instant('core.cancel'),
                     role: 'cancel',
                     handler: () => {
                         reject();
                     }
                 },
                 {
-                    text: okText || this.translate.instant('mm.core.ok'),
+                    text: okText || this.translate.instant('core.ok'),
                     handler: () => {
                         resolve();
                     }
@@ -734,7 +734,7 @@ export class CoreDomUtilsProvider {
     /**
      * Displays a loading modal window.
      *
-     * @param {string} [text] The text of the modal window. Default: mm.core.loading.
+     * @param {string} [text] The text of the modal window. Default: core.loading.
      * @param {boolean} [needsTranslate] Whether the 'text' needs to be translated.
      * @return {Loading} Loading modal instance.
      * @description
@@ -745,7 +745,7 @@ export class CoreDomUtilsProvider {
      */
     showModalLoading(text?: string, needsTranslate?: boolean) : Loading {
         if (!text) {
-            text = this.translate.instant('mm.core.loading');
+            text = this.translate.instant('core.loading');
         } else if (needsTranslate) {
             text = this.translate.instant(text);
         }
@@ -776,20 +776,20 @@ export class CoreDomUtilsProvider {
                 inputs: [
                     {
                         name: 'promptinput',
-                        placeholder: placeholder || this.translate.instant('mm.login.password'),
+                        placeholder: placeholder || this.translate.instant('core.login.password'),
                         type: type
                     }
                 ],
                 buttons: [
                     {
-                        text: this.translate.instant('mm.core.cancel'),
+                        text: this.translate.instant('core.cancel'),
                         role: 'cancel',
                         handler: () => {
                             reject();
                         }
                     },
                     {
-                        text: this.translate.instant('mm.core.ok'),
+                        text: this.translate.instant('core.ok'),
                         handler: (data) => {
                             resolve(data.promptinput);
                         }

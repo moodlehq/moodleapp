@@ -103,7 +103,7 @@ export class CoreLoginSitePolicyPage {
      * Accept the site policy.
      */
     accept() : void {
-        let modal = this.domUtils.showModalLoading('mm.core.sending', true);
+        let modal = this.domUtils.showModalLoading('core.sending', true);
         this.loginHelper.acceptSitePolicy(this.siteId).then(() => {
             // Success accepting, go to site initial page.
             // Invalidate cache since some WS don't return error if site policy is not accepted.

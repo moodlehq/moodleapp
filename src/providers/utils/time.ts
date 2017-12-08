@@ -44,11 +44,11 @@ export class CoreTimeUtilsProvider {
 
         let mins = Math.floor(remainder / CoreConstants.secondsMinute),
             secs      = remainder - (mins * CoreConstants.secondsMinute),
-            ss = this.translate.instant('mm.core.' + (secs == 1 ? 'sec' : 'secs')),
-            sm = this.translate.instant('mm.core.' + (mins == 1 ? 'min' : 'mins')),
-            sh = this.translate.instant('mm.core.' + (hours == 1 ? 'hour' : 'hours')),
-            sd = this.translate.instant('mm.core.' + (days == 1 ? 'day' : 'days')),
-            sy = this.translate.instant('mm.core.' + (years == 1 ? 'year' : 'years')),
+            ss = this.translate.instant('core.' + (secs == 1 ? 'sec' : 'secs')),
+            sm = this.translate.instant('core.' + (mins == 1 ? 'min' : 'mins')),
+            sh = this.translate.instant('core.' + (hours == 1 ? 'hour' : 'hours')),
+            sd = this.translate.instant('core.' + (days == 1 ? 'day' : 'days')),
+            sy = this.translate.instant('core.' + (years == 1 ? 'year' : 'years')),
             oyears = '',
             odays = '',
             ohours = '',
@@ -87,7 +87,7 @@ export class CoreTimeUtilsProvider {
             return osecs;
         }
 
-        return this.translate.instant('mm.core.now');
+        return this.translate.instant('core.now');
     }
 
     /**

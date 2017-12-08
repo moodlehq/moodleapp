@@ -25,7 +25,7 @@ import { CoreUtilsProvider } from '../../providers/utils/utils';
  *
  * This directive should be applied in the label. Example:
  *
- * <ion-label core-mark-required="{{field.required}}">{{ 'mm.login.username' | translate }}</ion-label>
+ * <ion-label core-mark-required="{{field.required}}">{{ 'core.login.username' | translate }}</ion-label>
  */
 @Component({
     selector: '[core-mark-required]',
@@ -39,7 +39,7 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
     constructor(element: ElementRef, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider) {
         this.element = element.nativeElement;
-        this.requiredLabel = this.translate.instant('mm.core.required');
+        this.requiredLabel = this.translate.instant('core.required');
     }
 
     /**

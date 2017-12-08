@@ -58,12 +58,12 @@ export class CoreLoginSitePage {
         this.appProvider.closeKeyboard();
 
         if (!url) {
-            this.domUtils.showErrorModal('mm.login.siteurlrequired', true);
+            this.domUtils.showErrorModal('core.login.siteurlrequired', true);
             return;
         }
 
         if (!this.appProvider.isOnline()) {
-            this.domUtils.showErrorModal('mm.core.networkerrormsg', true);
+            this.domUtils.showErrorModal('core.networkerrormsg', true);
             return;
         }
 

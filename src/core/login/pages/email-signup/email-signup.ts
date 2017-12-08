@@ -68,11 +68,11 @@ export class CoreLoginEmailSignupPage {
         });
 
         // Setup validation errors.
-        this.usernameErrors = this.loginHelper.getErrorMessages('mm.login.usernamerequired');
-        this.passwordErrors = this.loginHelper.getErrorMessages('mm.login.passwordrequired');
-        this.emailErrors = this.loginHelper.getErrorMessages('mm.login.missingemail');
-        this.email2Errors = this.loginHelper.getErrorMessages('mm.login.missingemail', null, 'mm.login.emailnotmatch');
-        this.policyErrors = this.loginHelper.getErrorMessages('mm.login.policyagree');
+        this.usernameErrors = this.loginHelper.getErrorMessages('core.login.usernamerequired');
+        this.passwordErrors = this.loginHelper.getErrorMessages('core.login.passwordrequired');
+        this.emailErrors = this.loginHelper.getErrorMessages('core.login.missingemail');
+        this.email2Errors = this.loginHelper.getErrorMessages('core.login.missingemail', null, 'core.login.emailnotmatch');
+        this.policyErrors = this.loginHelper.getErrorMessages('core.login.policyagree');
     }
 
     /**
@@ -139,7 +139,7 @@ export class CoreLoginEmailSignupPage {
             this.namefieldsErrors = {};
             if (settings.namefields) {
                 settings.namefields.forEach((field) => {
-                    this.namefieldsErrors[field] = this.loginHelper.getErrorMessages('mm.login.missing' + field);
+                    this.namefieldsErrors[field] = this.loginHelper.getErrorMessages('core.login.missing' + field);
                 });
             }
 
@@ -162,7 +162,7 @@ export class CoreLoginEmailSignupPage {
             return true;
         } else {
             this.domUtils.showErrorModal(
-                this.translate.instant('mm.login.signupplugindisabled', {$a: this.translate.instant('mm.login.auth_email')}));
+                this.translate.instant('core.login.signupplugindisabled', {$a: this.translate.instant('core.login.auth_email')}));
             this.navCtrl.pop();
             return false;
         }
@@ -203,7 +203,7 @@ export class CoreLoginEmailSignupPage {
             // Form not valid. Scroll to the first element with errors.
             if (!this.domUtils.scrollToInputError(this.content, document.body)) {
                 // Input not found, show an error modal.
-                this.domUtils.showErrorModal('mm.core.errorinvalidform', true);
+                this.domUtils.showErrorModal('core.errorinvalidform', true);
             }
         } else {
             let params: any = {
@@ -215,7 +215,7 @@ export class CoreLoginEmailSignupPage {
                     city: this.textUtils.cleanTags(this.signupForm.value.city),
                     country: this.signupForm.value.country
                 },
-                modal = this.domUtils.showModalLoading('mm.core.sending', true);
+                modal = this.domUtils.showModalLoading('core.sending', true);
 
             if (this.siteConfig.launchurl) {
                 let service = this.sitesProvider.determineService(this.siteUrl);
@@ -235,21 +235,21 @@ export class CoreLoginEmailSignupPage {
             this.wsProvider.callAjax('auth_email_signup_user', params, {siteUrl: this.siteUrl}).then((result) => {
                 if (result.success) {
                     // Show alert and ho back.
-                    let message = this.translate.instant('mm.login.emailconfirmsent', {$a: params.email});
-                    this.domUtils.showAlert('mm.core.success', message);
+                    let message = this.translate.instant('core.login.emailconfirmsent', {$a: params.email});
+                    this.domUtils.showAlert('core.success', message);
                     this.navCtrl.pop();
                 } else {
                     if (result.warnings && result.warnings.length) {
                         this.domUtils.showErrorModal(result.warnings[0].message);
                     } else {
-                        this.domUtils.showErrorModal('mm.login.usernotaddederror', true);
+                        this.domUtils.showErrorModal('core.login.usernotaddederror', true);
                     }
 
                     // Error sending, request another capctha since the current one is probably invalid now.
                     this.requestCaptcha(true);
                 }
             }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error && error.error, 'mm.login.usernotaddederror', true);
+                this.domUtils.showErrorModalDefault(error && error.error, 'core.login.usernotaddederror', true);
 
                 // Error sending, request another capctha since the current one is probably invalid now.
                 this.requestCaptcha(true);
@@ -263,6 +263,6 @@ export class CoreLoginEmailSignupPage {
      * Show authentication instructions.
      */
     protected showAuthInstructions() {
-        this.textUtils.expandText(this.translate.instant('mm.login.instructions'), this.authInstructions, true);
+        this.textUtils.expandText(this.translate.instant('core.login.instructions'), this.authInstructions, true);
     }
 }

@@ -117,12 +117,12 @@ export class CoreLoginReconnectPage {
             password = this.credForm.value.password;
 
         if (!password) {
-            this.domUtils.showErrorModal('mm.login.passwordrequired', true);
+            this.domUtils.showErrorModal('core.login.passwordrequired', true);
             return;
         }
 
         if (!this.appProvider.isOnline()) {
-            this.domUtils.showErrorModal('mm.core.networkerrormsg', true);
+            this.domUtils.showErrorModal('core.networkerrormsg', true);
             return;
         }
 
@@ -144,7 +144,7 @@ export class CoreLoginReconnectPage {
                     }
                 }).catch((error) => {
                     // Site deleted? Go back to login page.
-                    this.domUtils.showErrorModal('mm.login.errorupdatesite', true);
+                    this.domUtils.showErrorModal('core.login.errorupdatesite', true);
                     this.cancel();
                 });
             });

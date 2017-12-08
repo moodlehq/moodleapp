@@ -138,7 +138,7 @@ export class CoreGroupsProvider {
                 groupInfo.visibleGroups = false;
             } else {
                 if (addAllParts || groupInfo.visibleGroups) {
-                    groupInfo.groups.push({id: 0, name: this.translate.instant('mm.core.allparticipants')});
+                    groupInfo.groups.push({id: 0, name: this.translate.instant('core.allparticipants')});
                 }
                 groupInfo.groups = groupInfo.groups.concat(groups);
             }

@@ -62,13 +62,13 @@ function treatMergedData(data) {
 
         if (filepath.indexOf('lang/') === 0 || filepath.indexOf('core/lang') === 0) {
 
-            addProperties(merged, data[filepath], 'mm.core.');
+            addProperties(merged, data[filepath], 'core.');
 
         } else if (filepath.indexOf('core/') === 0) {
 
             var componentName = filepath.replace('core/', '');
             componentName = componentName.substr(0, componentName.indexOf('/'));
-            addProperties(merged, data[filepath], 'mm.'+componentName+'.');
+            addProperties(merged, data[filepath], 'core.'+componentName+'.');
 
         } else if (filepath.indexOf('addons') === 0) {
 
@@ -86,11 +86,11 @@ function treatMergedData(data) {
 
         } else if (filepath.indexOf('assets/countries') === 0) {
 
-            addProperties(merged, data[filepath], 'mm.core.country-');
+            addProperties(merged, data[filepath], 'core.country-');
 
         } else if (filepath.indexOf('assets/mimetypes') === 0) {
 
-            addProperties(merged, data[filepath], 'mm.core.mimetype-');
+            addProperties(merged, data[filepath], 'core.mimetype-');
 
         }
     }

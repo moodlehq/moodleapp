@@ -90,7 +90,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * Set label, icon name and input type.
      */
     protected setData() {
-        this.label = this.shown ? 'mm.core.hide' : 'mm.core.show';
+        this.label = this.shown ? 'core.hide' : 'core.show';
         this.iconName = this.shown ? 'eye-off' : 'eye';
         if (this.input) {
             this.input.type = this.shown ? 'text' : 'password';

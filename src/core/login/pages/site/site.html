@@ -1,9 +1,9 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>{{ 'mm.login.connecttomoodle' | translate }}</ion-title>
+        <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button ion-button icon-only (click)="showHelp()" [attr.aria-label]="'mm.core.help' | translate">
+            <button ion-button icon-only (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
                 <ion-icon name="help-circle"></ion-icon>
             </button>
         </ion-buttons>
@@ -18,9 +18,9 @@
 
             <!-- Form to input the site URL if there are no fixed sites. -->
             <div *ngIf="!fixedSites">
-                <p padding>{{ 'mm.login.newsitedescription' | translate }}</p>
+                <p padding>{{ 'core.login.newsitedescription' | translate }}</p>
                 <ion-item>
-                    <ion-input type="url" name="url" placeholder="{{ 'mm.login.siteaddress' | translate }}" formControlName="siteUrl" core-auto-focus></ion-input>
+                    <ion-input type="url" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" formControlName="siteUrl" core-auto-focus></ion-input>
                 </ion-item>
             </div>
 
@@ -29,21 +29,21 @@
                 <!-- Display them using a select. -->
                 <ion-item *ngIf="!displayAsButtons">
                     <!-- @todo: Display label and select in different lines. -->
-                    <ion-label for="siteSelect">{{ 'mm.login.selectsite' | translate }}</ion-label>
-                    <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'mm.login.siteaddress' | translate }}">
+                    <ion-label for="siteSelect">{{ 'core.login.selectsite' | translate }}</ion-label>
+                    <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}">
                         <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
                     </ion-select>
                 </ion-item>
 
                 <!-- Display them using buttons. -->
                 <div *ngIf="displayAsButtons">
-                    <p class="padding no-padding-bottom">{{ 'mm.login.selectsite' | translate }}</p>
+                    <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
                     <a *ngFor="let site of fixedSites" ion-button block (click)="connect(site.url)" title="{{site.name}}">{{site.name}}</a>
                 </div>
             </div>
 
             <div *ngIf="!fixedSites || !displayAsButtons">
-                <button ion-button block color="primary" [disabled]="!siteForm.valid">{{ 'mm.login.connect' | translate }}</button>
+                <button ion-button block color="primary" [disabled]="!siteForm.valid">{{ 'core.login.connect' | translate }}</button>
             </div>
         </ion-list>
     </form>

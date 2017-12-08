@@ -124,7 +124,7 @@ export class CoreFormatTextDirective implements OnInit {
 
         if (imgWidth > elWidth) {
             let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
-                label = this.textUtils.escapeHTML(this.translate.instant('mm.core.openfullimage'));
+                label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage'));
 
             // @todo: Implement image viewer. Maybe we can add the listener here directly?
             container.innerHTML += '<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
@@ -170,7 +170,7 @@ export class CoreFormatTextDirective implements OnInit {
                 if (!height || height > this.maxHeight) {
                     let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false;
 
-                    this.element.innerHTML += '<div class="mm-show-more">' + this.translate.instant('mm.core.showmore') + '</div>';
+                    this.element.innerHTML += '<div class="mm-show-more">' + this.translate.instant('core.showmore') + '</div>';
 
                     if (expandInFullview) {
                         this.element.classList.add('mm-expand-in-fullview');
@@ -195,7 +195,7 @@ export class CoreFormatTextDirective implements OnInit {
 
                         // Open a new state with the contents.
                         // @todo: brOnFull is needed?
-                        this.textUtils.expandText(this.fullTitle || this.translate.instant('mm.core.description'), this.text,
+                        this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
                             false, this.component, this.componentId);
                     });
                 }

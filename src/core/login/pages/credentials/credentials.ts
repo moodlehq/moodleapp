@@ -140,7 +140,7 @@ export class CoreLoginCredentialsPage {
         if (this.siteConfig) {
             this.siteName = this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
-            this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('mm.login.loginsteps');
+            this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
             this.canSignup = this.siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(this.siteConfig);
             this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
 
@@ -182,16 +182,16 @@ export class CoreLoginCredentialsPage {
         }
 
         if (!username) {
-            this.domUtils.showErrorModal('mm.login.usernamerequired', true);
+            this.domUtils.showErrorModal('core.login.usernamerequired', true);
             return;
         }
         if (!password) {
-            this.domUtils.showErrorModal('mm.login.passwordrequired', true);
+            this.domUtils.showErrorModal('core.login.passwordrequired', true);
             return;
         }
 
         if (!this.appProvider.isOnline()) {
-            this.domUtils.showErrorModal('mm.core.networkerrormsg', true);
+            this.domUtils.showErrorModal('core.networkerrormsg', true);
             return;
         }
 

@@ -130,7 +130,7 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        let modal = this.domUtils.showModalLoading('mm.login.authenticating', true),
+        let modal = this.domUtils.showModalLoading('core.login.authenticating', true),
             siteData: CoreLoginSSOData;
 
         // Wait for app to be ready.
@@ -198,7 +198,7 @@ export class CoreLoginHelperProvider {
             promise;
 
         if (showConfirmation) {
-            promise = this.domUtils.showConfirm(this.translate.instant('mm.login.logininsiterequired'));
+            promise = this.domUtils.showConfirm(this.translate.instant('core.login.logininsiterequired'));
         } else {
             promise = Promise.resolve();
         }
@@ -442,10 +442,10 @@ export class CoreLoginHelperProvider {
                     this.sitesProvider.updateSiteInfoByUrl(info.siteurl, info.username);
                 }).catch(() => {
                     // Error updating token, return proper error message.
-                    return Promise.reject(this.translate.instant('mm.login.errorupdatesite'));
+                    return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
                 });
             }
-            return Promise.reject(this.translate.instant('mm.login.errorupdatesite'));
+            return Promise.reject(this.translate.instant('core.login.errorupdatesite'));
         } else {
             return this.sitesProvider.newSite(siteUrl, token, privateToken);
         }
@@ -667,7 +667,7 @@ export class CoreLoginHelperProvider {
         if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
             let options = {
                 clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
-                closebuttoncaption: this.translate.instant('mm.login.cancel'),
+                closebuttoncaption: this.translate.instant('core.login.cancel'),
             }
             this.utils.openInApp(loginUrl, options);
         } else {
@@ -685,7 +685,7 @@ export class CoreLoginHelperProvider {
      * @param {string} error Error message.
      */
     openChangePassword(siteUrl: string, error: string) : void {
-        let alert = this.domUtils.showAlert(this.translate.instant('mm.core.notice'), error, null, 3000);
+        let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), error, null, 3000);
         alert.onDidDismiss(() => {
             this.utils.openInApp(siteUrl + '/login/change_password.php');
         });
@@ -728,7 +728,7 @@ export class CoreLoginHelperProvider {
             }
 
             // Open change password.
-            alertMessage = this.translate.instant(alertMessage) + '<br>' + this.translate.instant('mm.core.redirectingtosite');
+            alertMessage = this.translate.instant(alertMessage) + '<br>' + this.translate.instant('core.redirectingtosite');
             currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage).then(() => {
                 this.waitingForBrowser = true;
             }).finally(() => {
@@ -823,7 +823,7 @@ export class CoreLoginHelperProvider {
                     this.isSSOConfirmShown = true;
 
                     if (this.shouldShowSSOConfirm(result.code)) {
-                        promise = this.domUtils.showConfirm(this.translate.instant('mm.login.' +
+                        promise = this.domUtils.showConfirm(this.translate.instant('core.login.' +
                                 (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
                     } else {
                         promise = Promise.resolve();
@@ -857,7 +857,7 @@ export class CoreLoginHelperProvider {
             // Error checking site.
             if (currentSite.isLoggedOut()) {
                 // Site is logged out, show error and logout the user.
-                this.domUtils.showErrorModalDefault(error, 'mm.core.networkerrormsg', true);
+                this.domUtils.showErrorModalDefault(error, 'core.networkerrormsg', true);
                 this.sitesProvider.logout();
             }
         });
@@ -966,7 +966,7 @@ export class CoreLoginHelperProvider {
             } else {
                 this.logger.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '
                                 + signature + ' for passport ' + passport);
-                return Promise.reject(this.translate.instant('mm.core.unexpectederror'));
+                return Promise.reject(this.translate.instant('core.unexpectederror'));
             }
         });
     }

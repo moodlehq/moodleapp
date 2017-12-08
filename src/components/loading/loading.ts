@@ -20,7 +20,7 @@ import { TranslateService } from '@ngx-translate/core';
  *
  * It will show a spinner with a message and hide all the content until 'dataLoaded' variable is set to true.
  * If 'message' and 'dynMessage' attributes aren't set, default message "Loading" is shown.
- * 'message' attribute accepts hardcoded strings, variables, filters, etc. E.g. message="'mm.core.loading' | translate".
+ * 'message' attribute accepts hardcoded strings, variables, filters, etc. E.g. message="'core.loading' | translate".
  *
  * Usage:
  * <core-loading [message]="loadingMessage" [hideUntil]="dataLoaded">
@@ -43,7 +43,7 @@ export class CoreLoadingComponent implements OnInit {
     ngOnInit() {
         if (!this.message) {
             // Default loading message.
-            this.message = this.translate.instant('mm.core.loading');
+            this.message = this.translate.instant('core.loading');
         }
     }
 

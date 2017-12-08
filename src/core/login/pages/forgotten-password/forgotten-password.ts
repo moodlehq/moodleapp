@@ -49,11 +49,11 @@ export class CoreLoginForgottenPasswordPage {
             value = this.myForm.value.value;
 
         if (!value) {
-            this.domUtils.showErrorModal('mm.login.usernameoremail', true);
+            this.domUtils.showErrorModal('core.login.usernameoremail', true);
             return;
         }
 
-        let modal = this.domUtils.showModalLoading('mm.core.sending', true),
+        let modal = this.domUtils.showModalLoading('core.sending', true),
             isMail = field == 'email';
 
         this.loginHelper.requestPasswordReset(this.siteUrl, isMail ? '' : value, isMail ? value : '').then((response) => {
@@ -65,7 +65,7 @@ export class CoreLoginForgottenPasswordPage {
                 this.domUtils.showErrorModal(response.notice);
             } else {
                 // Success.
-                this.domUtils.showAlert(this.translate.instant('mm.core.success'), response.notice);
+                this.domUtils.showAlert(this.translate.instant('core.success'), response.notice);
                 this.navCtrl.pop();
             }
         }).catch((error) => {

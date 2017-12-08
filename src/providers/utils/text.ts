@@ -52,14 +52,14 @@ export class CoreTextUtilsProvider {
     bytesToSize(bytes: number, precision = 2) : string {
 
         if (typeof bytes == 'undefined' || bytes < 0) {
-            return this.translate.instant('mm.core.notapplicable');
+            return this.translate.instant('core.notapplicable');
         }
 
         if (precision < 0) {
             precision = 2;
         }
 
-        let keys = ['mm.core.sizeb', 'mm.core.sizekb', 'mm.core.sizemb', 'mm.core.sizegb', 'mm.core.sizetb'],
+        let keys = ['core.sizeb', 'core.sizekb', 'core.sizemb', 'core.sizegb', 'core.sizetb'],
             units = this.translate.instant(keys),
             pos = 0;
 
@@ -71,7 +71,7 @@ export class CoreTextUtilsProvider {
             // Round to "precision" decimals if needed.
             bytes = Number(Math.round(parseFloat(bytes + 'e+' + precision)) + 'e-' + precision);
         }
-        return this.translate.instant('mm.core.humanreadablesize', {size: bytes, unit: units[keys[pos]]});
+        return this.translate.instant('core.humanreadablesize', {size: bytes, unit: units[keys[pos]]});
     }
 
     /**

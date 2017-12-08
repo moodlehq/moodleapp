@@ -70,7 +70,7 @@ export class CoreIframeComponent implements OnInit {
 
             iframe.addEventListener('error', () => {
                 this.loading = false;
-                this.domUtils.showErrorModal('mm.core.errorloadingcontent', true);
+                this.domUtils.showErrorModal('core.errorloadingcontent', true);
             });
 
             setTimeout(() => {

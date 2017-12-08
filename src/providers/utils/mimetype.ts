@@ -323,7 +323,7 @@ export class CoreMimetypeUtilsProvider {
         let filename = '',
             mimetype = '',
             extension = '',
-            langPrefix = 'mm.core.mimetype-';
+            langPrefix = 'core.mimetype-';
 
         if (typeof obj == 'object' && typeof obj.file == 'function') {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
@@ -422,7 +422,7 @@ export class CoreMimetypeUtilsProvider {
      * @return {string} Translated name.
      */
     getTranslatedGroupName(name: string) : string {
-        let key = 'mm.core.mimetype-group:' + name,
+        let key = 'core.mimetype-group:' + name,
             translated = this.translate.instant(key);
         return translated != key ? translated : name;
     }

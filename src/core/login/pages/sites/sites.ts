@@ -101,7 +101,7 @@ export class CoreLoginSitesPage {
             siteName = site.siteName;
 
         this.textUtils.formatText(siteName).then((siteName) => {
-            this.domUtils.showConfirm(this.translate.instant('mm.login.confirmdeletesite', {sitename: siteName})).then(() => {
+            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', {sitename: siteName})).then(() => {
                 this.sitesProvider.deleteSite(site.id).then(() => {
                     this.sites.splice(index, 1);
                     this.showDelete = false;
@@ -113,7 +113,7 @@ export class CoreLoginSitesPage {
                 }).catch((error) => {
                     this.logger.error('Error deleting site ' + site.id, error);
                     this.domUtils.showErrorModalDefault(error, 'Delete site failed.');
-                    this.domUtils.showErrorModal('mm.login.errordeletesite', true);
+                    this.domUtils.showErrorModal('core.login.errordeletesite', true);
                 });
             }).catch(() => {
                 // User cancelled, nothing to do.

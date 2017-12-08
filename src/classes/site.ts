@@ -441,7 +441,7 @@ export class CoreSite {
                 method = compatibilityMethod;
             } else {
                 this.logger.error(`WS function '${method}' is not available, even in compatibility mode.`);
-                return Promise.reject(this.wsProvider.createFakeWSError('mm.core.wsfunctionnotavailable', true));
+                return Promise.reject(this.wsProvider.createFakeWSError('core.wsfunctionnotavailable', true));
             }
         }
 
@@ -455,7 +455,7 @@ export class CoreSite {
 
         if (wsPreSets.cleanUnicode && this.textUtils.hasUnicodeData(data)) {
             // Data will be cleaned, notify the user.
-            this.domUtils.showToast('mm.core.unicodenotsupported', true, 3000);
+            this.domUtils.showToast('core.unicodenotsupported', true, 3000);
         } else {
             // No need to clean data in this call.
             wsPreSets.cleanUnicode = false;
@@ -470,7 +470,7 @@ export class CoreSite {
             data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
         } catch (e) {
             // Empty cleaned text found.
-            return Promise.reject(this.wsProvider.createFakeWSError('mm.core.unicodenotsupportedcleanerror', true));
+            return Promise.reject(this.wsProvider.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
 
         return this.getFromCache(method, data, preSets).catch(() => {
@@ -499,26 +499,26 @@ export class CoreSite {
                     // Session expired, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {siteId: this.id});
                     // Change error message. We'll try to get data from cache.
-                    error.message = this.translate.instant('mm.core.lostconnection');
+                    error.message = this.translate.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.USER_DELETED, {siteId: this.id, params: data});
-                    error.message = this.translate.instant('mm.core.userdeleted');
+                    error.message = this.translate.instant('core.userdeleted');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
                     // Password Change Forced, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {siteId: this.id});
-                    error.message = this.translate.instant('mm.core.forcepasswordchangenotice');
+                    error.message = this.translate.instant('core.forcepasswordchangenotice');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'usernotfullysetup') {
                     // User not fully setup, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {siteId: this.id});
-                    error.message = this.translate.instant('mm.core.usernotfullysetup');
+                    error.message = this.translate.instant('core.usernotfullysetup');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {siteId: this.id});
-                    error.message = this.translate.instant('mm.core.sitepolicynotagreederror');
+                    error.message = this.translate.instant('core.sitepolicynotagreederror');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'dmlwriteexception' && this.textUtils.hasUnicodeData(data)) {
                     if (!this.cleanUnicode) {
@@ -527,7 +527,7 @@ export class CoreSite {
                         return this.request(method, data, preSets);
                     }
                     // This should not happen.
-                    error.message = this.translate.instant('mm.core.unicodenotsupported');
+                    error.message = this.translate.instant('core.unicodenotsupported');
                     return Promise.reject(error);
                 } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
@@ -887,7 +887,7 @@ export class CoreSite {
                 }
             } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
                 // local_mobile returned something we didn't expect. Let's assume it's not installed.
-                return {code: 0, warning: 'mm.login.localmobileunexpectedresponse'};
+                return {code: 0, warning: 'core.login.localmobileunexpectedresponse'};
             }
 
             const code = parseInt(data.code, 10);
@@ -895,18 +895,18 @@ export class CoreSite {
                 switch (code) {
                     case 1:
                         // Site in maintenance mode.
-                        return Promise.reject(this.translate.instant('mm.login.siteinmaintenance'));
+                        return Promise.reject(this.translate.instant('core.login.siteinmaintenance'));
                     case 2:
                         // Web services not enabled.
-                        return Promise.reject(this.translate.instant('mm.login.webservicesnotenabled'));
+                        return Promise.reject(this.translate.instant('core.login.webservicesnotenabled'));
                     case 3:
                         // Extended service not enabled, but the official is enabled.
                         return {code: 0};
                     case 4:
                         // Neither extended or official services enabled.
-                        return Promise.reject(this.translate.instant('mm.login.mobileservicesnotenabled'));
+                        return Promise.reject(this.translate.instant('core.login.mobileservicesnotenabled'));
                     default:
-                        return Promise.reject(this.translate.instant('mm.core.unexpectederror'));
+                        return Promise.reject(this.translate.instant('core.unexpectederror'));
                 }
             } else {
                 return {code: code, service: service, coresupported: !!data.coresupported};
@@ -1054,7 +1054,7 @@ export class CoreSite {
                 }
 
                 if (alertMessage) {
-                    let alert = this.domUtils.showAlert('mm.core.notice', alertMessage, null, 3000);
+                    let alert = this.domUtils.showAlert('core.notice', alertMessage, null, 3000);
                     alert.onDidDismiss(() => {
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));

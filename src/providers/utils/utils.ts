@@ -286,7 +286,7 @@ export class CoreUtilsProvider {
     copyToClipboard(text: string) : Promise<any> {
         return this.clipboard.copy(text).then(() => {
             // Show toast using ionicLoading.
-            return this.domUtils.showToast('mm.core.copiedtoclipboard', true);
+            return this.domUtils.showToast('core.copiedtoclipboard', true);
         }).catch(() => {
             // Ignore errors.
         });
@@ -453,7 +453,7 @@ export class CoreUtilsProvider {
             return '';
         }
 
-        let localeSeparator = this.translate.instant('mm.core.decsep');
+        let localeSeparator = this.translate.instant('core.decsep');
 
         // Convert float to string.
         float += '';
@@ -525,7 +525,7 @@ export class CoreUtilsProvider {
      * @return {string} Country name. If the country is not found, return the country code.
      */
     getCountryName(code: string) : string {
-        let countryKey = 'mm.core.country-' + code,
+        let countryKey = 'core.country-' + code,
             countryName = this.translate.instant(countryKey);
 
         return countryName !== countryKey ? countryName : code;
@@ -553,8 +553,8 @@ export class CoreUtilsProvider {
             let countries = {};
 
             for (let name in table) {
-                if (name.indexOf('mm.core.country-') === 0) {
-                    let code = name.replace('mm.core.country-', '');
+                if (name.indexOf('core.country-') === 0) {
+                    let code = name.replace('core.country-', '');
                     countries[code] = table[name];
                 }
             }
@@ -580,7 +580,7 @@ export class CoreUtilsProvider {
         for (let i = 0; i < files.length; i++) {
             let name = files[i].filename || files[i].name;
             if (names.indexOf(name) > -1) {
-                return this.translate.instant('mm.core.filenameexist', {$a: name});
+                return this.translate.instant('core.filenameexist', {$a: name});
             } else {
                 names.push(name);
             }
@@ -641,17 +641,17 @@ export class CoreUtilsProvider {
      */
     isWebServiceError(error: string) : boolean {
         let localErrors = [
-            this.translate.instant('mm.core.wsfunctionnotavailable'),
-            this.translate.instant('mm.core.lostconnection'),
-            this.translate.instant('mm.core.userdeleted'),
-            this.translate.instant('mm.core.unexpectederror'),
-            this.translate.instant('mm.core.networkerrormsg'),
-            this.translate.instant('mm.core.serverconnection'),
-            this.translate.instant('mm.core.errorinvalidresponse'),
-            this.translate.instant('mm.core.sitemaintenance'),
-            this.translate.instant('mm.core.upgraderunning'),
-            this.translate.instant('mm.core.nopasswordchangeforced'),
-            this.translate.instant('mm.core.unicodenotsupported')
+            this.translate.instant('core.wsfunctionnotavailable'),
+            this.translate.instant('core.lostconnection'),
+            this.translate.instant('core.userdeleted'),
+            this.translate.instant('core.unexpectederror'),
+            this.translate.instant('core.networkerrormsg'),
+            this.translate.instant('core.serverconnection'),
+            this.translate.instant('core.errorinvalidresponse'),
+            this.translate.instant('core.sitemaintenance'),
+            this.translate.instant('core.upgraderunning'),
+            this.translate.instant('core.nopasswordchangeforced'),
+            this.translate.instant('core.unicodenotsupported')
         ];
         return error && localErrors.indexOf(error) == -1;
     }
@@ -687,7 +687,7 @@ export class CoreUtilsProvider {
                 if (require('electron').ipcRenderer.sendSync('openItem', path)) {
                     resolve();
                 } else {
-                    reject(this.translate.instant('mm.core.erroropenfilenoapp'));
+                    reject(this.translate.instant('core.erroropenfilenoapp'));
                 }
             } else if ((<any>window).plugins) {
                 // @todo
@@ -717,9 +717,9 @@ export class CoreUtilsProvider {
 
                 //             if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
                 //                 // Extension not found.
-                //                 $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                //                 $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoextension');
                 //             } else {
-                //                 $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+                //                 $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoapp');
                 //             }
                 //         }
                 //     );
@@ -859,7 +859,7 @@ export class CoreUtilsProvider {
             //     }).then(function(mimetype) {
             //         if (!mimetype) {
             //             // Couldn't retrieve mimetype. Return error.
-            //             $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+            //             $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoextension');
             //             return;
             //         }
 
@@ -881,7 +881,7 @@ export class CoreUtilsProvider {
             //                 $log.debug('url: ' + iParams.url);
             //                 $log.debug('type: ' + iParams.type);
 
-            //                 $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+            //                 $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoapp');
             //             }
             //         );
             //     });
@@ -1120,7 +1120,7 @@ export class CoreUtilsProvider {
             return '';
         }
 
-        let localeSeparator = this.translate.instant('mm.core.decsep');
+        let localeSeparator = this.translate.instant('core.decsep');
 
         localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
         localeFloat = localeFloat.replace(localeSeparator, '.');

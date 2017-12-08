@@ -33,7 +33,7 @@ import { TranslateService } from '@ngx-translate/core';
  * Example usage:
  *
  * <ion-item text-wrap>
- *     <ion-label stacked core-mark-required="true">{{ 'mm.login.username' | translate }}</ion-label>
+ *     <ion-label stacked core-mark-required="true">{{ 'core.login.username' | translate }}</ion-label>
  *     <ion-input type="text" name="username" formControlName="username"></ion-input>
  *     <core-input-errors item-content [control]="myForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
  * </ion-item>
@@ -64,13 +64,13 @@ export class CoreInputErrorsComponent implements OnInit {
     protected initErrorMessages() {
         this.errorMessages = this.errorMessages || {};
 
-        this.errorMessages.required = this.errorMessages.required || this.translate.instant('mm.core.required');
-        this.errorMessages.email = this.errorMessages.email || this.translate.instant('mm.login.invalidemail');
-        this.errorMessages.date = this.errorMessages.date || this.translate.instant('mm.login.invaliddate');
-        this.errorMessages.datetime = this.errorMessages.datetime || this.translate.instant('mm.login.invaliddate');
-        this.errorMessages.datetimelocal = this.errorMessages.datetimelocal || this.translate.instant('mm.login.invaliddate');
-        this.errorMessages.time = this.errorMessages.time || this.translate.instant('mm.login.invalidtime');
-        this.errorMessages.url = this.errorMessages.url || this.translate.instant('mm.login.invalidurl');
+        this.errorMessages.required = this.errorMessages.required || this.translate.instant('core.required');
+        this.errorMessages.email = this.errorMessages.email || this.translate.instant('core.login.invalidemail');
+        this.errorMessages.date = this.errorMessages.date || this.translate.instant('core.login.invaliddate');
+        this.errorMessages.datetime = this.errorMessages.datetime || this.translate.instant('core.login.invaliddate');
+        this.errorMessages.datetimelocal = this.errorMessages.datetimelocal || this.translate.instant('core.login.invaliddate');
+        this.errorMessages.time = this.errorMessages.time || this.translate.instant('core.login.invalidtime');
+        this.errorMessages.url = this.errorMessages.url || this.translate.instant('core.login.invalidurl');
 
         // @todo: Check how to handle min/max errors once we have a test case to use. Also, review previous errors.
         // ['min', 'max'].forEach((type) => {
@@ -81,13 +81,13 @@ export class CoreInputErrorsComponent implements OnInit {
         //             if (input.type == 'date' || input.type == 'datetime' || input.type == 'datetime-local') {
         //                 var date = moment(value);
         //                 if (date.isValid()) {
-        //                     value = moment(value).format($translate.instant('mm.core.dfdaymonthyear'));
+        //                     value = moment(value).format($translate.instant('core.dfdaymonthyear'));
         //                 }
         //             }
 
-        //             scope.errorMessages[type] = $translate.instant('mm.login.invalidvalue' + type, {$a: value});
+        //             scope.errorMessages[type] = $translate.instant('core.login.invalidvalue' + type, {$a: value});
         //         } else {
-        //             scope.errorMessages[type] = $translate.instant('mm.login.profileinvaliddata');
+        //             scope.errorMessages[type] = $translate.instant('core.login.profileinvaliddata');
         //         }
         //     }
         // });

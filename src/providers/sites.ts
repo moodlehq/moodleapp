@@ -168,9 +168,9 @@ export class CoreSitesProvider {
         siteUrl = this.urlUtils.formatURL(siteUrl);
 
         if (!this.urlUtils.isHttpURL(siteUrl)) {
-            return Promise.reject(this.translate.instant('mm.login.invalidsite'));
+            return Promise.reject(this.translate.instant('core.login.invalidsite'));
         } else if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.translate.instant('mm.core.networkerrormsg'));
+            return Promise.reject(this.translate.instant('core.networkerrormsg'));
         } else {
             return this.checkSiteWithProtocol(siteUrl, protocol).catch((error) => {
                 // Do not continue checking if a critical error happened.
@@ -187,7 +187,7 @@ export class CoreSitesProvider {
                     } else if (error.error) {
                         return Promise.reject(error.error);
                     }
-                    return Promise.reject(this.translate.instant('mm.login.checksiteversion'));
+                    return Promise.reject(this.translate.instant('core.login.checksiteversion'));
                 });
             });
         }
@@ -241,11 +241,11 @@ export class CoreSitesProvider {
 
                         // Check that the user can authenticate.
                         if (!config.enablewebservices) {
-                            return rejectWithCriticalError(this.translate.instant('mm.login.webservicesnotenabled'));
+                            return rejectWithCriticalError(this.translate.instant('core.login.webservicesnotenabled'));
                         } else if (!config.enablemobilewebservice) {
-                            return rejectWithCriticalError(this.translate.instant('mm.login.mobileservicesnotenabled'));
+                            return rejectWithCriticalError(this.translate.instant('core.login.mobileservicesnotenabled'));
                         } else if (config.maintenanceenabled) {
-                            let message = this.translate.instant('mm.core.sitemaintenance');
+                            let message = this.translate.instant('core.sitemaintenance');
                             if (config.maintenancemessage) {
                                 message += config.maintenancemessage;
                             }
@@ -327,7 +327,7 @@ export class CoreSitesProvider {
     getUserToken(siteUrl: string, username: string, password: string, service?: string, retry?: boolean)
             : Promise<CoreSiteUserTokenResponse> {
         if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.translate.instant('mm.core.networkerrormsg'));
+            return Promise.reject(this.translate.instant('core.networkerrormsg'));
         }
 
         if (!service) {
@@ -343,7 +343,7 @@ export class CoreSitesProvider {
 
         return this.utils.observableToPromise(observable).then((data: any) : any => {
             if (typeof data == 'undefined') {
-                return Promise.reject(this.translate.instant('mm.core.cannotconnect'));
+                return Promise.reject(this.translate.instant('core.cannotconnect'));
             } else {
                 if (typeof data.token != 'undefined') {
                     return {token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken};
@@ -359,12 +359,12 @@ export class CoreSitesProvider {
                             return Promise.reject(data.error);
                         }
                     } else {
-                        return Promise.reject(this.translate.instant('mm.login.invalidaccount'));
+                        return Promise.reject(this.translate.instant('core.login.invalidaccount'));
                     }
                 }
             }
         }, () => {
-            return Promise.reject(this.translate.instant('mm.core.cannotconnect'));
+            return Promise.reject(this.translate.instant('core.cannotconnect'));
         });
     }
 
@@ -410,7 +410,7 @@ export class CoreSitesProvider {
             } else if (result == this.LEGACY_APP_VERSION) {
                 return Promise.reject(this.translate.instant('mm.login.legacymoodleversion'));
             } else {
-                return Promise.reject(this.translate.instant('mm.login.invalidmoodleversion'));
+                return Promise.reject(this.translate.instant('core.login.invalidmoodleversion'));
             }
         });
     }
@@ -508,7 +508,7 @@ export class CoreSitesProvider {
     protected validateSiteInfo(info: any) : any {
         if (!info.firstname || !info.lastname) {
             const moodleLink = `<a mm-link href="${info.siteurl}">${info.siteurl}</a>`;
-            return {error: 'mm.core.requireduserdatamissing', params: {'$a': moodleLink}};
+            return {error: 'core.requireduserdatamissing', params: {'$a': moodleLink}};
         }
         return true;
     }

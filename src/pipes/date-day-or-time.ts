@@ -58,9 +58,9 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
         }
 
         return moment(timestamp * 1000).calendar(null, {
-            sameDay: this.translate.instant('mm.core.dftimedate'),
-            lastDay: this.translate.instant('mm.core.dflastweekdate'),
-            lastWeek: this.translate.instant('mm.core.dflastweekdate')
+            sameDay: this.translate.instant('core.dftimedate'),
+            lastDay: this.translate.instant('core.dflastweekdate'),
+            lastWeek: this.translate.instant('core.dflastweekdate')
         });
     }
 }
