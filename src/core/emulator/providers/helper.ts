@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreAppProvider } from '../../../providers/app';
 import { CoreFileProvider } from '../../../providers/file';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { File } from '@ionic-native/file';
@@ -31,61 +30,7 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
     blocking = true;
 
     constructor(private file: File, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
-            initDelegate: CoreInitDelegate, private localNotif: LocalNotifications, private appProvider: CoreAppProvider) {}
-
-    /**
-     * Check if the app is running in a Linux environment.
-     *
-     * @return {boolean} Whether it's running in a Linux environment.
-     */
-    isLinux() : boolean {
-        if (!this.appProvider.isDesktop()) {
-            return false;
-        }
-
-        try {
-            var os = require('os');
-            return os.platform().indexOf('linux') === 0;
-        } catch(ex) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if the app is running in a Mac OS environment.
-     *
-     * @return {boolean} Whether it's running in a Mac OS environment.
-     */
-    isMac() : boolean {
-        if (!this.appProvider.isDesktop()) {
-            return false;
-        }
-
-        try {
-            var os = require('os');
-            return os.platform().indexOf('darwin') === 0;
-        } catch(ex) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if the app is running in a Windows environment.
-     *
-     * @return {boolean} Whether it's running in a Windows environment.
-     */
-    isWindows() : boolean {
-        if (!this.appProvider.isDesktop()) {
-            return false;
-        }
-
-        try {
-            var os = require('os');
-            return os.platform().indexOf('win') === 0;
-        } catch(ex) {
-            return false;
-        }
-    }
+            initDelegate: CoreInitDelegate, private localNotif: LocalNotifications) {}
 
     /**
      * Load the Mocks that need it.
@@ -98,7 +43,7 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
         promises.push((<any>this.file).load().then((basePath: string) => {
             this.fileProvider.setHTMLBasePath(basePath);
         }));
-        promises.push((<any>this.localNotif).load(this.isWindows()));
+        promises.push((<any>this.localNotif).load());
 
         (<any>window).FileTransferError = FileTransferErrorMock;
 

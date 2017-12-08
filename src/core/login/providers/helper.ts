@@ -28,7 +28,6 @@ import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '../../constants';
-import { CoreEmulatorHelperProvider } from '../../emulator/providers/helper';
 import { Md5 } from 'ts-md5/dist/md5';
 
 export interface CoreLoginSSOData {
@@ -55,7 +54,7 @@ export class CoreLoginHelperProvider {
             private wsProvider: CoreWSProvider, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider,private configProvider: CoreConfigProvider, private platform: Platform,
-            private emulatorHelper: CoreEmulatorHelperProvider, private initDelegate: CoreInitDelegate) {
+            private initDelegate: CoreInitDelegate) {
         this.logger = logger.getInstance('CoreLoginHelper');
     }
 
@@ -591,7 +590,7 @@ export class CoreLoginHelperProvider {
      * @return {boolean} True if embedded browser, false othwerise.
      */
     isSSOEmbeddedBrowser(code: number) : boolean {
-        if (this.appProvider.isDesktop() && this.emulatorHelper.isLinux()) {
+        if (this.appProvider.isLinux()) {
             // In Linux desktop apps, always use embedded browser.
             return true;
         }
@@ -635,7 +634,7 @@ export class CoreLoginHelperProvider {
 
         loginUrl += '&oauthsso=' + params.id;
 
-        if (this.appProvider.isDesktop() && this.emulatorHelper.isLinux()) {
+        if (this.appProvider.isLinux()) {
             // In Linux desktop apps, always use embedded browser.
             this.utils.openInApp(loginUrl);
         } else {

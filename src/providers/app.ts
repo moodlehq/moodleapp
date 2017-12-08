@@ -116,6 +116,42 @@ export class CoreAppProvider {
     };
 
     /**
+     * Check if the app is running in a Linux environment.
+     *
+     * @return {boolean} Whether it's running in a Linux environment.
+     */
+    isLinux() : boolean {
+        if (!this.isDesktop()) {
+            return false;
+        }
+
+        try {
+            var os = require('os');
+            return os.platform().indexOf('linux') === 0;
+        } catch(ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the app is running in a Mac OS environment.
+     *
+     * @return {boolean} Whether it's running in a Mac OS environment.
+     */
+    isMac() : boolean {
+        if (!this.isDesktop()) {
+            return false;
+        }
+
+        try {
+            var os = require('os');
+            return os.platform().indexOf('darwin') === 0;
+        } catch(ex) {
+            return false;
+        }
+    }
+
+    /**
      * Checks if the app is running in a mobile or tablet device (Cordova).
      *
      * @return {boolean} Whether the app is running in a mobile or tablet device.
@@ -153,6 +189,24 @@ export class CoreAppProvider {
         let limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
         return limited.indexOf(type) > -1;
     };
+
+    /**
+     * Check if the app is running in a Windows environment.
+     *
+     * @return {boolean} Whether it's running in a Windows environment.
+     */
+    isWindows() : boolean {
+        if (!this.isDesktop()) {
+            return false;
+        }
+
+        try {
+            var os = require('os');
+            return os.platform().indexOf('win') === 0;
+        } catch(ex) {
+            return false;
+        }
+    }
 
     /**
      * Open the keyboard.

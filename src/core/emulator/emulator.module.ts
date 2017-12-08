@@ -19,6 +19,7 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { File } from '@ionic-native/file';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Network } from '@ionic-native/network';
 import { Zip } from '@ionic-native/zip';
@@ -27,16 +28,17 @@ import { ClipboardMock } from './providers/clipboard';
 import { FileMock } from './providers/file';
 import { FileTransferMock } from './providers/file-transfer';
 import { GlobalizationMock } from './providers/globalization';
+import { InAppBrowserMock } from './providers/inappbrowser';
 import { LocalNotificationsMock } from './providers/local-notifications';
 import { NetworkMock } from './providers/network';
 import { ZipMock } from './providers/zip';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { CoreEmulatorHelperProvider } from './providers/helper';
 import { CoreAppProvider } from '../../providers/app';
 import { CoreFileProvider } from '../../providers/file';
 import { CoreTextUtilsProvider } from '../../providers/utils/text';
 import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
+import { CoreUrlUtilsProvider } from '../../providers/utils/url';
 import { CoreUtilsProvider } from '../../providers/utils/utils';
 import { CoreInitDelegate } from '../../providers/init';
 
@@ -78,6 +80,13 @@ import { CoreInitDelegate } from '../../providers/init';
             }
         },
         {
+            provide: InAppBrowser,
+            deps: [CoreAppProvider, CoreFileProvider, CoreUrlUtilsProvider],
+            useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider, urlUtils: CoreUrlUtilsProvider) => {
+                return !appProvider.isDesktop() ? new InAppBrowser() : new InAppBrowserMock(appProvider, fileProvider, urlUtils);
+            }
+        },
+        {
             provide: LocalNotifications,
             deps: [CoreAppProvider, CoreUtilsProvider],
             useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider) => {
@@ -101,7 +110,6 @@ import { CoreInitDelegate } from '../../providers/init';
                 return appProvider.isMobile() ? new Zip() : new ZipMock(file, mimeUtils);
             }
         },
-        InAppBrowser
     ]
 })
 export class CoreEmulatorModule {

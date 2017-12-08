@@ -436,15 +436,14 @@ export class LocalNotificationsMock extends LocalNotifications {
     /**
      * Loads an initialize the API for desktop.
      *
-     * @param {boolean} isWindows Whether the app is running in a Windows environment.
      * @return {Promise<any>} Promise resolved when done.
      */
-    load(isWindows: boolean) : Promise<any> {
+    load() : Promise<any> {
         if (!this.appProvider.isDesktop()) {
             return Promise.resolve();
         }
 
-        if (isWindows) {
+        if (this.appProvider.isWindows()) {
             try {
                 this.winNotif = require('electron-windows-notifications');
             } catch(ex) {}
