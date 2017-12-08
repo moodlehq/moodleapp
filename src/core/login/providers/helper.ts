@@ -112,7 +112,7 @@ export class CoreLoginHelperProvider {
 
         // App opened using custom URL scheme. Probably an SSO authentication.
         this.appProvider.startSSOAuthentication();
-        this.logger.debug('App launched by URL');
+        this.logger.debug('App launched by URL with an SSO');
 
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
@@ -205,6 +205,8 @@ export class CoreLoginHelperProvider {
 
         promise.then(() => {
             this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl);
+        }, () => {
+            // User cancelled, ignore.
         });
     }
 
@@ -934,7 +936,7 @@ export class CoreLoginHelperProvider {
                 return Promise.reject(null);
             }
 
-            let launchSiteURL = data.siteurl,
+            let launchSiteURL = data.siteUrl,
                 passport = data.passport;
 
             // Reset temporary values.

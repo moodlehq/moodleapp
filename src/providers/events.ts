@@ -45,6 +45,7 @@ export class CoreEventsProvider {
     public static LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
     public static IAB_LOAD_START = 'inappbrowser_load_start';
     public static IAB_EXIT = 'inappbrowser_exit';
+    public static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
 
     logger;
     observables = {};

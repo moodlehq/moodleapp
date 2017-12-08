@@ -790,17 +790,27 @@ export class CoreUtilsProvider {
             options.location = 'no';
         }
 
+        // Convert the options to a string.
+        let optionsArray = [],
+            optionsString;
+        for (let name in options) {
+            optionsArray.push(`${name}=${options[name]}`)
+        }
+        optionsString = optionsArray.join(',');
+
         this.iabInstance = this.iab.create(url, '_blank', options);
 
-        // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
-        let loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
-            this.eventsProvider.trigger(CoreEventsProvider.IAB_LOAD_START, event);
-        });
-        let exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
-            loadStartSubscription.unsubscribe();
-            exitSubscription.unsubscribe();
-            this.eventsProvider.trigger(CoreEventsProvider.IAB_EXIT, event);
-        });
+        if (this.appProvider.isDesktop() || this.appProvider.isMobile()) {
+            // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
+            let loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
+                this.eventsProvider.trigger(CoreEventsProvider.IAB_LOAD_START, event);
+            });
+            let exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
+                loadStartSubscription.unsubscribe();
+                exitSubscription.unsubscribe();
+                this.eventsProvider.trigger(CoreEventsProvider.IAB_EXIT, event);
+            });
+        }
 
         return this.iabInstance;
     }

@@ -17,6 +17,7 @@ import { Platform, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { CoreEventsProvider } from '../providers/events';
+import { CoreLoggerProvider } from '../providers/logger';
 import { CoreLoginHelperProvider } from '../core/login/providers/helper';
 
 @Component({
@@ -25,9 +26,13 @@ import { CoreLoginHelperProvider } from '../core/login/providers/helper';
 export class MyApp implements AfterViewInit {
     @ViewChild(Nav) navCtrl;
     rootPage:any = 'CoreLoginInitPage';
+    protected logger;
+    protected lastUrls = {};
 
-    constructor(private platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen,
+    constructor(private platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, logger: CoreLoggerProvider,
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider) {
+        this.logger = logger.getInstance('AppComponent');
+
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
@@ -86,8 +91,25 @@ export class MyApp implements AfterViewInit {
             }, 1000);
         });
 
-        // @todo: Register observer to check if the app was launched via URL scheme.
-        // $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);
+        // Handle app launched with a certain URL (custom URL scheme).
+        (<any>window).handleOpenURL = (url: string) => {
+            // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
+            if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
+                // Function called more than once, stop.
+                return;
+            }
+
+            this.logger.debug('App launched by URL ', url);
+
+            this.lastUrls[url] = Date.now();
+
+            this.eventsProvider.trigger(CoreEventsProvider.APP_LAUNCHED_URL, url);
+        };
+
+        // Listen for app launched URLs. If we receive one, check if it's a SSO authentication.
+        this.eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, (url) => {
+            this.loginHelper.appLaunchedByURL(url);
+        });
     }
 }
 

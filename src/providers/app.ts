@@ -224,19 +224,24 @@ export class CoreAppProvider {
      * NOT when the browser is opened.
      */
     startSSOAuthentication() : void {
+        let cancelTimeout,
+            resolvePromise;
+
         this.ssoAuthenticationPromise = new Promise((resolve, reject) => {
-            // Store the resolve function in the promise itself.
-            (<any>this.ssoAuthenticationPromise).resolve = resolve;
+            resolvePromise = resolve;
 
             // Resolve it automatically after 10 seconds (it should never take that long).
-            let cancel = setTimeout(() => {
+            cancelTimeout = setTimeout(() => {
                 this.finishSSOAuthentication();
             }, 10000);
+        });
 
-            // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
-            this.ssoAuthenticationPromise.then(() => {
-                clearTimeout(cancel);
-            });
+        // Store the resolve function in the promise itself.
+        (<any>this.ssoAuthenticationPromise).resolve = resolvePromise;
+
+        // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
+        this.ssoAuthenticationPromise.then(() => {
+            clearTimeout(cancelTimeout);
         });
     };
 
