@@ -2269,8 +2269,8 @@ export class CoreFilepoolProvider {
      *
      * @return {Promise} Resolved on success. Rejected on failure.
      */
-    protected processImportantQueueItem() : void {
-        this.appDB.getRecords(this.QUEUE_TABLE, null, 'priority DESC, added ASC', null, 0, 1).then((items) => {
+    protected processImportantQueueItem() : Promise<any> {
+        return this.appDB.getRecords(this.QUEUE_TABLE, null, 'priority DESC, added ASC', null, 0, 1).then((items) => {
             let item = items.pop();
             if (!item) {
                 return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
