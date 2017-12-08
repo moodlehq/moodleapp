@@ -43,6 +43,8 @@ export class CoreEventsProvider {
     public static REMOTE_ADDONS_LOADED = 'remote_addons_loaded';
     public static LOGIN_SITE_CHECKED = 'login_site_checked';
     public static LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
+    public static IAB_LOAD_START = 'inappbrowser_load_start';
+    public static IAB_EXIT = 'inappbrowser_exit';
 
     logger;
     observables = {};

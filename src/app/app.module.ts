@@ -53,6 +53,8 @@ import { CoreFilepoolProvider } from '../providers/filepool';
 import { CoreUpdateManagerProvider } from '../providers/update-manager';
 import { CorePluginFileDelegate } from '../providers/plugin-file-delegate';
 
+import { CoreLoginModule } from '../core/login/login.module';
+
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/lang/', '.json');
@@ -76,7 +78,8 @@ export function createTranslateLoader(http: HttpClient) {
                 deps: [HttpClient]
             }
         }),
-        CoreEmulatorModule
+        CoreEmulatorModule,
+        CoreLoginModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -119,18 +122,26 @@ export function createTranslateLoader(http: HttpClient) {
     ]
 })
 export class AppModule {
-    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider) {
-        // Create a handler for platform ready and register it in the init delegate.
-        let handler = {
+    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,
+            sitesProvider: CoreSitesProvider) {
+        // Register a handler for platform ready.
+        initDelegate.registerProcess({
             name: 'CorePlatformReady',
             priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 400,
             blocking: true,
             load: platform.ready
-        };
-        initDelegate.registerProcess(handler);
+        });
 
         // Register the update manager as an init process.
         initDelegate.registerProcess(updateManager);
+
+        // Restore the user's session during the init process.
+        initDelegate.registerProcess({
+            name: 'CoreRestoreSession',
+            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 200,
+            blocking: false,
+            load: sitesProvider.restoreSession.bind(sitesProvider)
+        });
 
         // Execute the init processes.
         initDelegate.executeInitProcesses();

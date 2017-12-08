@@ -30,6 +30,7 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
 import { CoreConstants } from '../core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { InAppBrowserObject } from '@ionic-native/in-app-browser';
 
 export interface CoreSiteWSPreSets {
     getFromCache?: boolean; // Get the value from the cache if it's still valid.
@@ -1017,9 +1018,9 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {any} [options] Override default options passed to InAppBrowser.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
-     * @return {Promise<any>} Promise resolved when done, rejected otherwise.
+     * @return {Promise<InAppBrowserObject>} Promise resolved when done.
      */
-    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string) : Promise<any> {
+    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
         return this.openWithAutoLogin(true, url, options, alertMessage);
     }
 
@@ -1029,9 +1030,9 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {object} [options] Override default options passed to inappbrowser.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
-     * @return {Promise<any>} Promise resolved when done, rejected otherwise.
+     * @return {Promise<InAppBrowserObject>} Promise resolved when done.
      */
-    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string) : Promise<any> {
+    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
         return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
     }
 
@@ -1042,39 +1043,40 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {object} [options] Override default options passed to $cordovaInAppBrowser#open.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
-     * @return {Promise<any>}               Promise resolved when done, rejected otherwise.
+     * @return {Promise<InAppBrowserObject>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string) : Promise<any> {
+    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
         // Convenience function to open the URL.
         let open = (url) => {
-            if (modal) {
-                modal.dismiss();
-            }
-
-            if (alertMessage) {
-                let alert = this.domUtils.showAlert('mm.core.notice', alertMessage, null, 3000);
-                alert.onDidDismiss(() => {
-                    if (inApp) {
-                        this.utils.openInApp(url, options);
-                    } else {
-                        this.utils.openInBrowser(url);
-                    }
-                });
-            } else {
-                if (inApp) {
-                    this.utils.openInApp(url, options);
-                } else {
-                    this.utils.openInBrowser(url);
+            return new Promise<InAppBrowserObject>((resolve, reject) => {
+                if (modal) {
+                    modal.dismiss();
                 }
-            }
+
+                if (alertMessage) {
+                    let alert = this.domUtils.showAlert('mm.core.notice', alertMessage, null, 3000);
+                    alert.onDidDismiss(() => {
+                        if (inApp) {
+                            resolve(this.utils.openInApp(url, options));
+                        } else {
+                            resolve(this.utils.openInBrowser(url));
+                        }
+                    });
+                } else {
+                    if (inApp) {
+                        resolve(this.utils.openInApp(url, options));
+                    } else {
+                        resolve(this.utils.openInBrowser(url));
+                    }
+                }
+            });
         };
 
         if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
                 (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.secondsMinute)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago.
             // Open the final URL without auto-login.
-            open(url);
-            return Promise.resolve();
+            return Promise.resolve(open(url));
         }
 
         const userId = this.getUserId(),
@@ -1087,16 +1089,15 @@ export class CoreSite {
         return this.write('tool_mobile_get_autologin_key', params).then((data) => {
             if (!data.autologinurl || !data.key) {
                 // Not valid data, open the final URL without auto-login.
-                open(url);
-                return;
+                return open(url);
             }
 
             this.lastAutoLogin = this.timeUtils.timestamp();
 
-            open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
+            return open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
         }).catch(() => {
             // Couldn't get autologin key, open the final URL without auto-login.
-            open(url);
+            return open(url);
         });
     }
 
@@ -1107,9 +1108,9 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {object} [options] Override default options passed to inappbrowser.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
-     * @return {Promise<any>} Promise resolved when done, rejected otherwise.
+     * @return {Promise<InAppBrowserObject>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string) : Promise<any> {
+    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
         if (this.containsUrl(url)) {
             return this.openWithAutoLogin(inApp, url, options, alertMessage);
         } else {
@@ -1118,7 +1119,7 @@ export class CoreSite {
             } else {
                 this.utils.openInBrowser(url);
             }
-            return Promise.resolve();
+            return Promise.resolve(null);
         }
     }
 

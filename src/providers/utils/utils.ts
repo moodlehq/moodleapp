@@ -19,6 +19,7 @@ import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
+import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
@@ -39,7 +40,7 @@ export class CoreUtilsProvider {
 
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
-            private platform: Platform, private langProvider: CoreLangProvider) {
+            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -249,7 +250,7 @@ export class CoreUtilsProvider {
      *
      * @param {boolean} [closeAll] Desktop only. True to close all secondary windows, false to close only the "current" one.
      */
-    closeInAppBrowser(closeAll: boolean) : void {
+    closeInAppBrowser(closeAll?: boolean) : void {
         if (this.iabInstance) {
             this.iabInstance.close();
             if (closeAll && this.appProvider.isDesktop()) {
@@ -790,6 +791,17 @@ export class CoreUtilsProvider {
         }
 
         this.iabInstance = this.iab.create(url, '_blank', options);
+
+        // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
+        let loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
+            this.eventsProvider.trigger(CoreEventsProvider.IAB_LOAD_START, event);
+        });
+        let exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
+            loadStartSubscription.unsubscribe();
+            exitSubscription.unsubscribe();
+            this.eventsProvider.trigger(CoreEventsProvider.IAB_EXIT, event);
+        });
+
         return this.iabInstance;
     }
 

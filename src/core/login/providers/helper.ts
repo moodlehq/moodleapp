@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../../../providers/app';
 import { CoreConfigProvider } from '../../../providers/config';
 import { CoreEventsProvider } from '../../../providers/events';
+import { CoreInitDelegate } from '../../../providers/init';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreWSProvider } from '../../../providers/ws';
@@ -44,12 +45,17 @@ export interface CoreLoginSSOData {
 @Injectable()
 export class CoreLoginHelperProvider {
     protected logger;
+    protected isSSOConfirmShown = false;
+    protected isOpenEditAlertShown = false;
+    protected navCtrl: NavController;
+    lastInAppUrl: string;
+    waitingForBrowser = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private wsProvider: CoreWSProvider, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
-            private urlUtils: CoreUrlUtilsProvider,private configProvider: CoreConfigProvider,
-            private emulatorHelper: CoreEmulatorHelperProvider) {
+            private urlUtils: CoreUrlUtilsProvider,private configProvider: CoreConfigProvider, private platform: Platform,
+            private emulatorHelper: CoreEmulatorHelperProvider, private initDelegate: CoreInitDelegate) {
         this.logger = logger.getInstance('CoreLoginHelper');
     }
 
@@ -85,6 +91,75 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Function to handle URL received by Custom URL Scheme. If it's a SSO login, perform authentication.
+     *
+     * @param {string} url URL received.
+     * @return {boolean} True if it's a SSO URL, false otherwise.
+     */
+    appLaunchedByURL(url: string) : boolean {
+        let ssoScheme = CoreConfigConstants.customurlscheme + '://token=';
+        if (url.indexOf(ssoScheme) == -1) {
+            return false;
+        }
+
+        if (this.appProvider.isSSOAuthenticationOngoing()) {
+            // Authentication ongoing, probably duplicated request.
+            return true;
+        }
+        if (this.appProvider.isDesktop()) {
+            // In desktop, make sure InAppBrowser is closed.
+            this.utils.closeInAppBrowser(true);
+        }
+
+        // App opened using custom URL scheme. Probably an SSO authentication.
+        this.appProvider.startSSOAuthentication();
+        this.logger.debug('App launched by URL');
+
+        // Delete the sso scheme from the URL.
+        url = url.replace(ssoScheme, '');
+
+        // Some platforms like Windows add a slash at the end. Remove it.
+        // Some sites add a # at the end of the URL. If it's there, remove it.
+        url = url.replace(/\/?#?\/?$/, '');
+
+        // Decode from base64.
+        try {
+            url = atob(url);
+        } catch(err) {
+            // Error decoding the parameter.
+            this.logger.error('Error decoding parameter received for login SSO');
+            return false;
+        }
+
+        let modal = this.domUtils.showModalLoading('mm.login.authenticating', true),
+            siteData: CoreLoginSSOData;
+
+        // Wait for app to be ready.
+        this.initDelegate.ready().then(() => {
+            return this.validateBrowserSSOLogin(url);
+        }).then((data) => {
+            siteData = data;
+            return this.handleSSOLoginAuthentication(siteData.siteUrl, siteData.token, siteData.privateToken);
+        }).then(() => {
+            if (siteData.pageName) {
+                // State defined, go to that state instead of site initial page.
+                this.navCtrl.push(siteData.pageName, siteData.pageParams);
+            } else {
+                this.goToSiteInitialPage(this.navCtrl, true);
+            }
+        }).catch((errorMessage) => {
+            if (typeof errorMessage == 'string' && errorMessage != '') {
+                this.domUtils.showErrorModal(errorMessage);
+            }
+        }).finally(() => {
+            modal.dismiss();
+            this.appProvider.finishSSOAuthentication();
+        });
+
+        return true;
+    }
+
+    /**
      * Check if a site allows requesting a password reset through the app.
      *
      * @param {string} siteUrl URL of the site.
@@ -96,6 +171,17 @@ export class CoreLoginHelperProvider {
         }).catch((error) => {
             return error.available == 1 || error.errorcode != 'invalidrecord';
         });
+    }
+
+    /**
+     * Function called when an SSO InAppBrowser is closed or the app is resumed. Check if user needs to be logged out.
+     */
+    checkLogout() {
+        if (!this.appProvider.isSSOAuthenticationOngoing() && this.sitesProvider.isLoggedIn() &&
+                this.sitesProvider.getCurrentSite().isLoggedOut() && this.navCtrl.getActive().name == 'CoreLoginReconnectPage') {
+            // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
+            this.sitesProvider.logout();
+        }
     }
 
     /**
@@ -375,6 +461,39 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Function called when a page starts loading in any InAppBrowser window.
+     *
+     * @param {string} url Loaded url.
+     */
+    inAppBrowserLoadStart(url: string) : void {
+        // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
+        url = url.replace(/^https?:\/\//, '');
+
+        if (this.appLaunchedByURL(url)) {
+            // Close the browser if it's a valid SSO URL.
+            this.utils.closeInAppBrowser(false);
+        } else if (this.platform.is('android')) {
+            // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
+            const urlScheme = this.urlUtils.getUrlProtocol(url);
+            if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
+                // Open in browser should launch the right app if found and do nothing if not found.
+                this.utils.openInBrowser(url);
+
+                // At this point the InAppBrowser is showing a "Webpage not available" error message.
+                // Try to navigate to last loaded URL so this error message isn't found.
+                if (this.lastInAppUrl) {
+                    this.utils.openInApp(this.lastInAppUrl);
+                } else {
+                    // No last URL loaded, close the InAppBrowser.
+                    this.utils.closeInAppBrowser(false);
+                }
+            } else {
+                this.lastInAppUrl = url;
+            }
+        }
+    }
+
+    /**
      * Given a site public config, check if email signup is disabled.
      *
      * @param {any} config Site public config.
@@ -580,6 +699,43 @@ export class CoreLoginHelperProvider {
         this.utils.openInApp(siteUrl + '/login/forgot_password.php');
     }
 
+    /*
+     * Function to open in app browser to change password or complete user profile.
+     *
+     * @param {string} siteId The site ID.
+     * @param {string} path The relative path of the URL to open.
+     * @param {string} alertMessage The key of the message to display before opening the in app browser.
+     * @param {boolean} [invalidateCache] Whether to invalidate site's cache (e.g. when the user is forced to change password).
+     */
+    openInAppForEdit(siteId: string, path: string, alertMessage: string, invalidateCache?: boolean) : void {
+        if (!siteId || siteId !== this.sitesProvider.getCurrentSiteId()) {
+            // Site that triggered the event is not current site, nothing to do.
+            return;
+        }
+
+        let currentSite = this.sitesProvider.getCurrentSite(),
+            siteUrl = currentSite && currentSite.getURL();
+        if (!currentSite || !siteUrl) {
+            return;
+        }
+
+        if (!this.isOpenEditAlertShown && !this.waitingForBrowser) {
+            this.isOpenEditAlertShown = true;
+
+            if (invalidateCache) {
+                currentSite.invalidateWsCache();
+            }
+
+            // Open change password.
+            alertMessage = this.translate.instant(alertMessage) + '<br>' + this.translate.instant('mm.core.redirectingtosite');
+            currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage).then(() => {
+                this.waitingForBrowser = true;
+            }).finally(() => {
+                this.isOpenEditAlertShown = false;
+            });
+        }
+    }
+
     /**
      * Prepare the app to perform SSO login.
      *
@@ -634,6 +790,88 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Function that should be called when the session expires. Reserved for core use.
+     *
+     * @param {any} data Data received by the SESSION_EXPIRED event.
+     */
+    sessionExpired(data: any) : void {
+        let siteId = data && data.siteId,
+            currentSite = this.sitesProvider.getCurrentSite(),
+            siteUrl = currentSite && currentSite.getURL(),
+            promise;
+
+        if (!currentSite || !siteUrl) {
+            return;
+        }
+
+        if (siteId && siteId !== currentSite.getId()) {
+            return; // Site that triggered the event is not current site.
+        }
+
+        // Check authentication method.
+        this.sitesProvider.checkSite(siteUrl).then((result) => {
+
+            if (result.warning) {
+                this.domUtils.showErrorModal(result.warning, true, 4000);
+            }
+
+            if (this.isSSOLoginNeeded(result.code)) {
+                // SSO. User needs to authenticate in a browser. Prevent showing the message several times
+                // or show it again if the user is already authenticating using SSO.
+                if (!this.appProvider.isSSOAuthenticationOngoing() && !this.isSSOConfirmShown && !this.waitingForBrowser) {
+                    this.isSSOConfirmShown = true;
+
+                    if (this.shouldShowSSOConfirm(result.code)) {
+                        promise = this.domUtils.showConfirm(this.translate.instant('mm.login.' +
+                                (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
+                    } else {
+                        promise = Promise.resolve();
+                    }
+
+                    promise.then(() => {
+                        this.waitingForBrowser = true;
+                        this.openBrowserForSSOLogin(result.siteUrl, result.code, result.service,
+                                result.config && result.config.launchurl, data.pageName, data.params);
+                    }).catch(() => {
+                        // User cancelled, logout him.
+                        this.sitesProvider.logout();
+                    }).finally(() => {
+                        this.isSSOConfirmShown = false;
+                    });
+                }
+            } else {
+                let info = currentSite.getInfo();
+                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
+                    this.navCtrl.setRoot('CoreLoginReconnectPage', {
+                        infoSiteUrl: info.siteurl,
+                        siteUrl: result.siteUrl,
+                        siteId: siteId,
+                        pageName: data.pageName,
+                        pageParams: data.params,
+                        siteConfig: result.config
+                    });
+                }
+            }
+        }).catch((error) => {
+            // Error checking site.
+            if (currentSite.isLoggedOut()) {
+                // Site is logged out, show error and logout the user.
+                this.domUtils.showErrorModalDefault(error, 'mm.core.networkerrormsg', true);
+                this.sitesProvider.logout();
+            }
+        });
+    }
+
+    /**
+     * Set a NavController to use.
+     *
+     * @param {NavController} navCtrl Nav controller.
+     */
+    setNavCtrl(navCtrl: NavController) : void {
+        this.navCtrl = navCtrl;
+    }
+
+    /**
      * Check if a confirm should be shown to open a SSO authentication.
      *
      * @param {number} typeOfLogin CoreConstants.loginSSOCode or CoreConstants.loginSSOInAppCode.
@@ -642,6 +880,26 @@ export class CoreLoginHelperProvider {
     shouldShowSSOConfirm(typeOfLogin: number) : boolean {
         return !this.isSSOEmbeddedBrowser(typeOfLogin) &&
                     (!CoreConfigConstants.skipssoconfirmation || String(CoreConfigConstants.skipssoconfirmation) === 'false');
+    }
+
+    /**
+     * Function called when site policy is not agreed. Reserved for core use.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     */
+    sitePolicyNotAgreed(siteId?: string) : void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        if (!siteId || siteId != this.sitesProvider.getCurrentSiteId()) {
+            // Only current site allowed.
+            return;
+        }
+
+        if (!this.sitesProvider.getCurrentSite().wsAvailable('core_user_agree_site_policy')) {
+            // WS not available, stop.
+            return;
+        }
+
+        this.navCtrl.setRoot('CoreLoginSitePolicyPage', {siteId: siteId});
     }
 
     /**
