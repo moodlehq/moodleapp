@@ -1,0 +1,28 @@
+/* Un-comment the following, for initial RTL UI support.
+.scroll-content {
+   direction: rtl;
+   text-align: right;
+}
+*/
+
+.bar-side-menu {
+    background-color: #673ab7;
+}
+
+.bar-content {
+    background-color: #673ab7;
+}
+
+.button.button-positive {
+    border-color: #673ab7;
+    background-color: #673ab7;
+    color: #fff;
+}
+
+.item-divider {
+    background-color: #fafafa;
+}
+.mm-bglogo{
+    background: #673ab7;
+    background-color: #673ab7;
+}
