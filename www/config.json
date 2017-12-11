@@ -1,7 +1,7 @@
 {
     "app_id" : "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "desktopappname": "Moodle Desktop",
+    "appname": "Leannow",
+    "desktopappname": "learnow Desktop",
     "versioncode" : "2021",
     "versionname" : "3.4.0",
     "cache_expiration_time" : 300000,
@@ -12,8 +12,8 @@
     "demo_sites": {"student": {"url": "https://school.demo.moodle.net", "username": "student", "password": "moodle"}, "teacher": {"url": "https://school.demo.moodle.net", "username": "teacher", "password": "moodle"}},
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
-    "multisitesdisplay": "select",
+    "siteurl": "lms.learnow.ir",
+    "multisitesdisplay": "",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
     "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
