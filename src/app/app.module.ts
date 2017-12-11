@@ -54,6 +54,7 @@ import { CoreUpdateManagerProvider } from '../providers/update-manager';
 import { CorePluginFileDelegate } from '../providers/plugin-file-delegate';
 
 import { CoreLoginModule } from '../core/login/login.module';
+import { CoreMainMenuModule } from '../core/mainmenu/mainmenu.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -79,7 +80,8 @@ export function createTranslateLoader(http: HttpClient) {
             }
         }),
         CoreEmulatorModule,
-        CoreLoginModule
+        CoreLoginModule,
+        CoreMainMenuModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

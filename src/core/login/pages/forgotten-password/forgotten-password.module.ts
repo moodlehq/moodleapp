@@ -15,7 +15,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoreLoginForgottenPasswordPage } from './forgotten-password';
-import { CoreLoginModule } from '../../login.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
@@ -23,7 +22,6 @@ import { TranslateModule } from '@ngx-translate/core';
         CoreLoginForgottenPasswordPage
     ],
     imports: [
-        CoreLoginModule,
         IonicPageModule.forChild(CoreLoginForgottenPasswordPage),
         TranslateModule.forChild()
     ]
