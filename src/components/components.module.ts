@@ -21,6 +21,7 @@ import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreIframeComponent } from './iframe/iframe';
+import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 
 @NgModule({
     declarations: [
@@ -28,7 +29,8 @@ import { CoreIframeComponent } from './iframe/iframe';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
-        CoreIframeComponent
+        CoreIframeComponent,
+        CoreProgressBarComponent
     ],
     imports: [
         IonicModule,
@@ -40,7 +42,8 @@ import { CoreIframeComponent } from './iframe/iframe';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
-        CoreIframeComponent
+        CoreIframeComponent,
+        CoreProgressBarComponent
     ]
 })
 export class CoreComponentsModule {}

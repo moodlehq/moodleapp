@@ -14,14 +14,19 @@
 
 import { NgModule } from '@angular/core';
 import { CoreCoursesProvider } from './providers/courses';
+import { CoreCoursesCourseProgressComponent } from './components/course-progress/course-progress';
 
 @NgModule({
     declarations: [
+        CoreCoursesCourseProgressComponent
     ],
     imports: [
     ],
     providers: [
         CoreCoursesProvider
+    ],
+    exports: [
+        CoreCoursesCourseProgressComponent
     ]
 })
 export class CoreCoursesModule {}

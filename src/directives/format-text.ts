@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../providers/app';
@@ -38,7 +38,7 @@ import { CoreExternalContentDirective } from '../directives/external-content';
 @Directive({
     selector: 'core-format-text'
 })
-export class CoreFormatTextDirective implements OnInit {
+export class CoreFormatTextDirective implements OnChanges {
     @Input() text: string; // The text to format.
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component for CoreExternalContentDirective.
@@ -68,10 +68,12 @@ export class CoreFormatTextDirective implements OnInit {
     }
 
     /**
-     * Function executed when the directive is initialized.
+     * Detect changes on input properties.
      */
-    ngOnInit() : void {
-        this.formatAndRenderContents();
+    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+        if (changes.text) {
+            this.formatAndRenderContents();
+        }
     }
 
     /**
