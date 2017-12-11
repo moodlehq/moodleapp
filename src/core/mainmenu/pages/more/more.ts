@@ -110,7 +110,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
      * @param {CoreMainMenuCustomItem} item Item to open.
      */
     openItem(item: CoreMainMenuCustomItem) {
-        // @todo.
+        this.navCtrl.push('CoreViewerIframePage', {title: item.label, url: item.url});
     }
 
     /**
