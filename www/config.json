@@ -13,7 +13,7 @@
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
     "siteurl": "http://www.learnow.ir",
-    "multisitesdisplay": "select",
+    "multisitesdisplay": "",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
     "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
