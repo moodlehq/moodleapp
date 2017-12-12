@@ -1,0 +1,19 @@
+{
+    "allowguests": "Bu derse konuk olarak girilebilir",
+    "availablecourses": "Mevcut dersler",
+    "categories": "Ders Kategorileri",
+    "courses": "Dersler",
+    "enrolme": "Beni kaydet",
+    "frontpage": "Ön sayfa",
+    "mycourses": "Derslerim",
+    "nocourses": "Gösterilecek ders bilgisi yok",
+    "nocoursesyet": "Bu kategoride ders yok",
+    "nosearchresults": "Aramanızla ilgili sonuç yok",
+    "notenroled": "Bu derse kayıtlı değilsiniz",
+    "password": "Şifre",
+    "paymentrequired": "Bu derse giriş için ödeme yapmanız gerekir.",
+    "paypalaccepted": "PayPal ödemeleri kabul edilir",
+    "search": "Arama...",
+    "searchcourses": "Dersleri ara",
+    "sendpaymentbutton": "Ödemeyi PayPal ile yap"
+}

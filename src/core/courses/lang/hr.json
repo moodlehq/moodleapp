@@ -1,0 +1,22 @@
+{
+    "allowguests": "Ovaj e-kolegij dopušta pristup gostima (anonimnim korisnicima)",
+    "availablecourses": "Dostupni e-kolegiji",
+    "categories": "Popis e-kolegija",
+    "courses": "E-kolegiji",
+    "enrolme": "Upiši me",
+    "filtermycourses": "Filtriraj moje e-kolegije",
+    "frontpage": "Naslovnica",
+    "mycourses": "Moji e-kolegiji",
+    "nocourses": "Nema podataka o e-kolegijima za prikaz.",
+    "nocoursesyet": "U ovoj kategoriji nema e-kolegija",
+    "nosearchresults": "Nije bilo rezultata za vaše pretraživanje",
+    "notenroled": "Niste upisani kao student na ovom e-kolegiju",
+    "notenrollable": "Ne možete se samostalno upisati na ovaj e-kolegij.",
+    "password": "Lozinka",
+    "paymentrequired": "Ovaj e-kolegij zahtjeva plaćanje za pristup.",
+    "paypalaccepted": "Plaćanje PayPalom omogućeno",
+    "search": "Pretraži",
+    "searchcourses": "Pretraži e-kolegije",
+    "sendpaymentbutton": "Pošalji uplatu kroz PayPal",
+    "totalcoursesearchresults": "Ukupni broj e-kolegija: {{$a}}"
+}

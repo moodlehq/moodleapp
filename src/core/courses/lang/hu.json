@@ -1,0 +1,19 @@
+{
+    "allowguests": "Ez a kurzus megengedi vendégek belépését",
+    "availablecourses": "Felvehető kurzusok",
+    "categories": "Kurzuskategóriák",
+    "courses": "Kurzusok",
+    "enrolme": "Iratkoztasson be",
+    "frontpage": "Kezdőoldal",
+    "mycourses": "Kurzusaim",
+    "nocourses": "Nincs megjelenítendő kurzusinformáció.",
+    "nocoursesyet": "Ebben a kategóriában nincsenek kurzusok",
+    "nosearchresults": "Keresése nem adott eredményt",
+    "notenroled": "Ezt a kurzust nem vette föl",
+    "password": "Megosztott titkos jel",
+    "paymentrequired": "Ebbe a kurzusba csak fizetés után léphet be.",
+    "paypalaccepted": "PayPal-lel való fizetést elfogadunk",
+    "search": "Keresés...",
+    "searchcourses": "Kurzusok keresése",
+    "sendpaymentbutton": "Fizetés küldése Paypal-lel"
+}

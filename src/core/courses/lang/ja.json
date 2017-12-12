@@ -1,0 +1,19 @@
+{
+    "allowguests": "このコースにはゲストユーザも入ることができます。",
+    "availablecourses": "コース一覧",
+    "categories": "コースカテゴリ",
+    "courses": "コース",
+    "enrolme": "私を登録する",
+    "frontpage": "フロントページ",
+    "mycourses": "マイコース",
+    "nocourses": "表示するコース情報はありません。",
+    "nocoursesyet": "このカテゴリにコースはありません。",
+    "nosearchresults": "あなたの検索の該当データは見つかりませんでした。",
+    "notenroled": "あなたはこのコースに登録されていません。",
+    "password": "共有秘密鍵",
+    "paymentrequired": "このコースへの登録は有料です。",
+    "paypalaccepted": "PayPal支払済み",
+    "search": "検索 ...",
+    "searchcourses": "コースを検索する",
+    "sendpaymentbutton": "PayPalで支払いを送信する"
+}
