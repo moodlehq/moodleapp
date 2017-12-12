@@ -22,6 +22,7 @@ import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreIframeComponent } from './iframe/iframe';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
+import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,8 @@ import { CoreProgressBarComponent } from './progress-bar/progress-bar';
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
         CoreIframeComponent,
-        CoreProgressBarComponent
+        CoreProgressBarComponent,
+        CoreEmptyBoxComponent
     ],
     imports: [
         IonicModule,
@@ -43,7 +45,8 @@ import { CoreProgressBarComponent } from './progress-bar/progress-bar';
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
         CoreIframeComponent,
-        CoreProgressBarComponent
+        CoreProgressBarComponent,
+        CoreEmptyBoxComponent
     ]
 })
 export class CoreComponentsModule {}

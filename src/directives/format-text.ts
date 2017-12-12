@@ -177,7 +177,8 @@ export class CoreFormatTextDirective implements OnChanges {
                     if (expandInFullview) {
                         this.element.classList.add('mm-expand-in-fullview');
                     }
-                    this.element.classList.add('mm-text-formatted mm-shortened');
+                    this.element.classList.add('mm-text-formatted');
+                    this.element.classList.add('mm-shortened');
                     this.element.style.maxHeight = this.maxHeight + 'px';
 
                     this.element.addEventListener('click', (e) => {

@@ -113,3 +113,105 @@ ion-avatar ion-img, ion-avatar img {
   font-style: italic;
 }
 
+/** Format Text */
+core-format-text[maxHeight], *[core-format-text][maxHeight] {
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // This is to allow clicks in radio/checkbox content.
+  &.mm-text-formatted {
+    cursor: pointer;
+
+    .mm-show-more {
+      display: none;
+    }
+
+    &:not(.mm-shortened) {
+      max-height: none !important;
+    }
+
+    &.mm-shortened {
+      color: $gray-darker;
+      overflow: hidden;
+      min-height: 50px;
+
+      .mm-show-more {
+        color: color($colors, dark);
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+        background-color: $white;
+        padding-left: 10px;
+
+        /* @todo
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+        */
+      }
+
+      &.mm-expand-in-fullview .mm-show-more:after {
+        // content: $ionicon-var-chevron-right; @todo
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
+    }
+  }
+}
+
+core-format-text, *[core-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
+
+  // Fix lists styles in core-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+
+  .badge {
+    position: initial !important;
+  }
+}
+
+// Message item.
+.item-message {
+  core-format-text > p:only-child {
+    display: inline;
+  }
+}

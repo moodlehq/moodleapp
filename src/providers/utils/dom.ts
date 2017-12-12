@@ -726,6 +726,9 @@ export class CoreDomUtilsProvider {
      */
     showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number) : Alert {
         if (error != CoreConstants.dontShowError) {
+            if (error && typeof error != 'string') {
+                error = error.message || error.error;
+            }
             error = typeof error == 'string' ? error : defaultError;
             return this.showErrorModal(error, needsTranslate, autocloseTime);
         }

@@ -13,22 +13,21 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreCoursesProvider } from './providers/courses';
-import { CoreCoursesMainMenuHandler } from './providers/handlers';
-import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
+import { IonicPageModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreCoursesMyCoursesPage } from './my-courses';
+import { CoreComponentsModule } from '../../../../components/components.module';
+import { CoreCoursesComponentsModule } from '../../components/components.module';
 
 @NgModule({
-    declarations: [],
+    declarations: [
+        CoreCoursesMyCoursesPage,
+    ],
     imports: [
+        CoreComponentsModule,
+        CoreCoursesComponentsModule,
+        IonicPageModule.forChild(CoreCoursesMyCoursesPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-        CoreCoursesProvider,
-        CoreCoursesMainMenuHandler
-    ],
-    exports: []
 })
-export class CoreCoursesModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreCoursesMainMenuHandler) {
-        mainMenuDelegate.registerHandler(mainMenuHandler);
-    }
-}
+export class CoreCoursesMyCoursesPageModule {}

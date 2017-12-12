@@ -28,7 +28,7 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/d
     templateUrl: 'menu.html',
 })
 export class CoreMainMenuPage implements OnDestroy {
-    tabs: CoreMainMenuHandlerData[];
+    tabs: CoreMainMenuHandlerData[] = [];
     loaded: boolean;
     protected subscription;
     protected moreTabData = {
@@ -36,6 +36,7 @@ export class CoreMainMenuPage implements OnDestroy {
         title: 'core.more',
         icon: 'more'
     };
+    protected moreTabAdded = false;
     protected logoutObserver;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
@@ -58,7 +59,31 @@ export class CoreMainMenuPage implements OnDestroy {
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
             this.tabs = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
-            this.tabs.push(this.moreTabData); // Add "More" tab.
+
+            // Check if handlers are already in tabs. Add the ones that aren't.
+            // @todo: https://github.com/ionic-team/ionic/issues/13633
+            for (let i in handlers) {
+                let handler = handlers[i],
+                    found = false;
+
+                for (let j in this.tabs) {
+                    let tab = this.tabs[j];
+                    if (tab.title == handler.title && tab.icon == handler.icon) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    this.tabs.push(handler);
+                }
+            }
+
+            if (!this.moreTabAdded) {
+                this.moreTabAdded = true;
+                this.tabs.push(this.moreTabData); // Add "More" tab.
+            }
+
             this.loaded = this.menuDelegate.areHandlersLoaded();
         });
     }

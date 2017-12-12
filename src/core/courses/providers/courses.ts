@@ -144,7 +144,7 @@ export class CoreCoursesProvider {
      * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether it's disabled.
      */
-    isMyCoursesDisabledInSite(site: CoreSite) : boolean {
+    isMyCoursesDisabledInSite(site?: CoreSite) : boolean {
         site = site || this.sitesProvider.getCurrentSite();
         return site.isFeatureDisabled('$mmSideMenuDelegate_mmCourses');
     }
@@ -167,7 +167,7 @@ export class CoreCoursesProvider {
      * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether it's disabled.
      */
-    isSearchCoursesDisabledInSite(site: CoreSite) : boolean {
+    isSearchCoursesDisabledInSite(site?: CoreSite) : boolean {
         site = site || this.sitesProvider.getCurrentSite();
         return site.isFeatureDisabled('$mmCoursesDelegate_search');
     }
