@@ -25,6 +25,7 @@ exports.config = {
         "../../../www/**/e2e/mod_glossary.spec.js",
         "../../../www/**/e2e/mod_wiki.spec.js",
         "../../../www/**/e2e/mod_data.spec.js",
+        "../../../www/**/e2e/mod_workshop.spec.js",
         "../../../www/**/e2e/notifications.spec.js",
         "../../../www/**/e2e/contacts.spec.js",
         "../../../www/**/e2e/messages.spec.js",
