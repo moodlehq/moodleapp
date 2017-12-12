@@ -1,0 +1,10 @@
+<ion-card>
+    <form #f="ngForm" (ngSubmit)="submitForm(f.value.search)">
+        <ion-item>
+            <ion-input type="text" name="search" ngModel [placeholder]="placeholder" [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus"></ion-input>
+            <button item-right ion-button clear icon-only type="submit" class="button-small" [attr.aria-label]="searchLabel" [disabled]="!f.value.search || (f.value.search.length < lengthCheck)">
+                <ion-icon name="search"></ion-icon>
+            </button>
+        </ion-item>
+    </form>
+</ion-card>

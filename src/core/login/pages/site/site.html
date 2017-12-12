@@ -19,7 +19,7 @@
             <div *ngIf="!fixedSites">
                 <p padding>{{ 'core.login.newsitedescription' | translate }}</p>
                 <ion-item>
-                    <ion-input type="url" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" formControlName="siteUrl" core-auto-focus></ion-input>
+                    <ion-input type="url" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" formControlName="siteUrl" [core-auto-focus]></ion-input>
                 </ion-item>
             </div>
 

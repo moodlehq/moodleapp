@@ -23,6 +23,7 @@ import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreIframeComponent } from './iframe/iframe';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
+import { CoreSearchBoxComponent } from './search-box/search-box';
 
 @NgModule({
     declarations: [
@@ -32,7 +33,8 @@ import { CoreEmptyBoxComponent } from './empty-box/empty-box';
         CoreShowPasswordComponent,
         CoreIframeComponent,
         CoreProgressBarComponent,
-        CoreEmptyBoxComponent
+        CoreEmptyBoxComponent,
+        CoreSearchBoxComponent
     ],
     imports: [
         IonicModule,
@@ -46,7 +48,8 @@ import { CoreEmptyBoxComponent } from './empty-box/empty-box';
         CoreShowPasswordComponent,
         CoreIframeComponent,
         CoreProgressBarComponent,
-        CoreEmptyBoxComponent
+        CoreEmptyBoxComponent,
+        CoreSearchBoxComponent
     ]
 })
 export class CoreComponentsModule {}
