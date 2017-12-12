@@ -87,7 +87,7 @@ exports.config = {
         global.DEVICEURL = 'http://localhost:8100/';
         global.DEVICEVERSION = undefined;
         global.SITEURL = 'http://school.demo.moodle.net';
-        global.SITEVERSION = 3.3;
+        global.SITEVERSION = 3.4;
         global.SITEHASLM = false;
         global.USERS = {
             "STUDENT": {
