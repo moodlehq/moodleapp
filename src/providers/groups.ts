@@ -50,15 +50,6 @@ export class CoreGroupsProvider {
     }
 
     /**
-     * Check if current site allows getting activity group mode.
-     *
-     * @return {boolean} Whether it can get activity group mode.
-     */
-    canGetActivityGroupMode() : boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_group_get_activity_groupmode');
-    }
-
-    /**
      * Get the groups allowed in an activity.
      *
      * @param {number} cmId Course module ID.

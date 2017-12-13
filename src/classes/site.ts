@@ -110,33 +110,6 @@ export class CoreSite {
         '3.3': 2017051503,
         '3.4': 2017111300
     };
-    protected deprecatedFunctions = {
-        "core_grade_get_definitions": "core_grading_get_definitions",
-        "moodle_course_create_courses": "core_course_create_courses",
-        "moodle_course_get_courses": "core_course_get_courses",
-        "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
-        "moodle_file_get_files": "core_files_get_files",
-        "moodle_file_upload": "core_files_upload",
-        "moodle_group_add_groupmembers": "core_group_add_group_members",
-        "moodle_group_create_groups": "core_group_create_groups",
-        "moodle_group_delete_groupmembers": "core_group_delete_group_members",
-        "moodle_group_delete_groups": "core_group_delete_groups",
-        "moodle_group_get_course_groups": "core_group_get_course_groups",
-        "moodle_group_get_groupmembers": "core_group_get_group_members",
-        "moodle_group_get_groups": "core_group_get_groups",
-        "moodle_message_send_instantmessages": "core_message_send_instant_messages",
-        "moodle_notes_create_notes": "core_notes_create_notes",
-        "moodle_role_assign": "core_role_assign_role",
-        "moodle_role_unassign": "core_role_unassign_role",
-        "moodle_user_create_users": "core_user_create_users",
-        "moodle_user_delete_users": "core_user_delete_users",
-        "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
-        "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
-        // Both *_user_get_users_by_id are deprecated, but there is no equivalent available in the Mobile service.
-        "moodle_user_get_users_by_id": "core_user_get_users_by_id",
-        "moodle_user_update_users": "core_user_update_users",
-        "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
-    };
 
     /**
      * Create a site.
@@ -457,9 +430,6 @@ export class CoreSite {
     request(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean) : Promise<any> {
         let initialToken = this.token;
         data = data || {};
-
-        // Get the method to use based on the available ones.
-        method = this.getCompatibleFunction(method);
 
         // Check if the method is available, use a prefixed version if possible.
         // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
@@ -1236,38 +1206,6 @@ export class CoreSite {
 
         const regEx = new RegExp('(,|^)' + this.textUtils.escapeForRegex(name) + '(,|$)', 'g');
         return !!disabledFeatures.match(regEx);
-    }
-
-    /**
-     * Return the function to be used, based on the available functions in the site. It'll try to use non-deprecated
-     * functions first, and fallback to deprecated ones if needed.
-     *
-     * @param {string} method WS function to check.
-     * @return {string} Method to use based in the available functions.
-     */
-    getCompatibleFunction(method: string) : string {
-        const newFunction = this.deprecatedFunctions[method];
-        if (typeof newFunction != 'undefined') {
-            // Deprecated function is being used. Warn the developer.
-            if (this.wsAvailable(newFunction)) {
-                this.logger.warn('You are using deprecated Web Services: ' + method +
-                    ' you must replace it with the newer function: ' + newFunction);
-                return newFunction;
-            } else {
-                this.logger.warn('You are using deprecated Web Services. ' +
-                    'Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.');
-            }
-        } else if (!this.wsAvailable(method)) {
-            // Method not available. Check if there is a deprecated method to use.
-            for (let oldFunc in this.deprecatedFunctions) {
-                if (this.deprecatedFunctions[oldFunc] === method && this.wsAvailable(oldFunc)) {
-                    this.logger.warn('Your remote site doesn\'t support the function ' + method +
-                        ', it seems to be outdated, consider upgrade it to the latest Moodle version.');
-                    return oldFunc; // Use deprecated function.
-                }
-            }
-        }
-        return method;
     }
 
     /**
