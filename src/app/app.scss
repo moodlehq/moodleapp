@@ -42,6 +42,7 @@
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
   @extend h6;
+  margin: 0;
 }
 
 .mm-oauth-icon, .item.mm-oauth-icon, .list .item.mm-oauth-icon {

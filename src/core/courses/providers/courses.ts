@@ -24,6 +24,7 @@ import { CoreSite } from '../../../classes/site';
 export class CoreCoursesProvider {
     public static SEARCH_PER_PAGE = 20;
     public static ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
+    public static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {

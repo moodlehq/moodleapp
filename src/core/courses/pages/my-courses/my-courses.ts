@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
@@ -27,7 +27,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
     selector: 'page-core-courses-my-courses',
     templateUrl: 'my-courses.html',
 })
-export class CoreCoursesMyCoursesPage {
+export class CoreCoursesMyCoursesPage implements OnDestroy {
     courses: any[];
     filteredCourses: any[];
     searchEnabled: boolean;
