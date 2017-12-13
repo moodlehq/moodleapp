@@ -19,6 +19,7 @@ import { CoreEventsProvider } from './events';
 import { CoreFileProvider } from './file';
 import { CoreInitDelegate } from './init';
 import { CoreLoggerProvider } from './logger';
+import { CorePluginFileDelegate } from './plugin-file-delegate';
 import { CoreSitesProvider } from './sites';
 import { CoreWSProvider } from './ws';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
@@ -276,7 +277,6 @@ export class CoreFilepoolProvider {
         new RegExp('(\\?|&)preview=[A-Za-z0-9]+'),
         new RegExp('(\\?|&)offline=[0-1]', 'g')
     ];
-    protected revisionRegex = new RegExp('/content/([0-9]+)/');
     protected queueDeferreds = {}; // To handle file downloads using the queue.
     protected sizeCache = {}; // A "cache" to store file sizes to prevent performing too many HEAD requests.
     // Variables to prevent downloading packages/files twice at the same time.
@@ -287,7 +287,7 @@ export class CoreFilepoolProvider {
             private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider,
             private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
             private timeUtils: CoreTimeUtilsProvider, private eventsProvider: CoreEventsProvider, initDelegate: CoreInitDelegate,
-            network: Network) {
+            network: Network, private pluginFileDelegate: CorePluginFileDelegate) {
         this.logger = logger.getInstance('CoreFilepoolProvider');
 
         this.appDB = this.appProvider.getDB();
@@ -1785,6 +1785,29 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Return the array of arguments of the pluginfile url.
+     *
+     * @param {string} url URL to get the args.
+     * @return {string[]} The args found, undefined if not a pluginfile.
+     */
+    protected getPluginFileArgs(url: string) : string[] {
+        if (!this.urlUtils.isPluginFileUrl(url)) {
+            // Not pluginfile, return.
+            return;
+        }
+
+        let relativePath = url.substr(url.indexOf('/pluginfile.php') + 16),
+            args = relativePath.split('/');
+
+        if (args.length < 3) {
+            // To be a plugin file it should have at least contextId, Component and Filearea.
+            return;
+        }
+
+        return args;
+    }
+
+    /**
      * Get the deferred object for a file in the queue.
      *
      * @param {string} siteId The site ID.
@@ -1862,11 +1885,22 @@ export class CoreFilepoolProvider {
      * @return {number} Revision number.
      */
     protected getRevisionFromUrl(url: string) : number {
-        const matches = url.match(this.revisionRegex);
+        let args = this.getPluginFileArgs(url);
+        if (!args) {
+            // Not a pluginfile, no revision will be found.
+            return 0;
+        }
+
+        let revisionRegex = this.pluginFileDelegate.getComponentRevisionRegExp(args);
+        if (!revisionRegex) {
+            return 0;
+        }
+
+        let matches = url.match(revisionRegex);
         if (matches && typeof matches[1] != 'undefined') {
             return parseInt(matches[1], 10);
         }
-        return -1;
+        return 0;
     }
 
     /**
@@ -1959,7 +1993,7 @@ export class CoreFilepoolProvider {
             filename = 'gravatar_' + this.urlUtils.getLastFileWithoutParams(fileUrl);
         } else if (this.urlUtils.isThemeImageUrl(fileUrl)) {
             // Extract user ID.
-            const matches = fileUrl.match(/clean\/core\/([^\/]*)\//);
+            const matches = fileUrl.match(/\/core\/([^\/]*)\//);
             if (matches && matches[1]) {
                 filename = matches[1];
             }
@@ -2431,7 +2465,13 @@ export class CoreFilepoolProvider {
      * The revision is used to know if a file has changed. We remove it from the URL to prevent storing a file per revision.
      */
     protected removeRevisionFromUrl(url: string) : string {
-        return url.replace(this.revisionRegex, '/content/0/');
+        let args = this.getPluginFileArgs(url);
+        if (!args) {
+            // Not a pluginfile, no revision will be found.
+            return url;
+        }
+
+        return this.pluginFileDelegate.removeRevisionFromUrl(url, args);
     }
 
     /**
