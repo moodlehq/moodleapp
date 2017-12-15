@@ -18,26 +18,31 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '../../../components/components.module';
 import { CoreDirectivesModule } from '../../../directives/directives.module';
+import { CorePipesModule } from '../../../pipes/pipes.module';
 import { CoreCoursesCourseProgressComponent } from '../components/course-progress/course-progress';
 import { CoreCoursesCourseListItemComponent } from '../components/course-list-item/course-list-item';
+import { CoreCoursesOverviewEventsComponent } from '../components/overview-events/overview-events';
 
 @NgModule({
     declarations: [
         CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        CoreCoursesCourseListItemComponent,
+        CoreCoursesOverviewEventsComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule
+        CoreDirectivesModule,
+        CorePipesModule
     ],
     providers: [
     ],
     exports: [
         CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseListItemComponent
+        CoreCoursesCourseListItemComponent,
+        CoreCoursesOverviewEventsComponent
     ]
 })
 export class CoreCoursesComponentsModule {}

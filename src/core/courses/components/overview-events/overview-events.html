@@ -1,0 +1,66 @@
+<ng-template #eventTemplate let-event="event">
+    <a ion-item core-link captureLink="true" class="mm-course-module-handler item-media" [href]="event.url" [title]="event.name" [class.item-badge-right-phone]="event.action && event.action.showitemcount">
+        <img [src]="event.iconUrl" core-external-content alt="" role="presentation" *ngIf="event.iconUrl">
+        <button ion-button clear class="item-note hidden-phone text-right" (click)="action($event, event.action.url)" [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
+            {{event.action.name}}
+            <ion-badge color="dark" class="badge-inline text-center" item-end *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+        </button>
+        <ion-badge color="dark" class="hidden-tablet" item-end *ngIf="event.action.showitemcount">{{event.action.itemcount}}</ion-badge>
+        <p class="item-heading"><core-format-text [text]="event.name"></core-format-text></p>
+        <p>{{event.timesort * 1000 | coreFormatDate:"dfmediumdate" }} <core-format-text *ngIf="showCourse" [text]="event.course.fullnamedisplay"></core-format-text></p>
+    </a>
+</ng-template>
+
+<ng-container *ngIf="recentlyOverdue.length > 0">
+    <h5 class="assertive mm-timelinetitle">{{ 'core.courses.recentlyoverdue' | translate }}</h5>
+    <ul ion-list class="block">
+        <li *ngFor="let event of recentlyOverdue">
+            <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+        </li>
+    </ul>
+</ng-container>
+
+<ng-container *ngIf="today.length > 0">
+    <h5 class="mm-timelinetitle">{{ 'core.today' | translate }}</h5>
+    <ul ion-list class="block">
+        <li *ngFor="let event of today">
+            <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+        </li>
+    </ul>
+</ng-container>
+
+<ng-container *ngIf="next7Days.length > 0">
+    <h5 class="mm-timelinetitle">{{ 'core.courses.next7days' | translate }}</h5>
+    <ul ion-list class="block">
+        <li *ngFor="let event of next7Days">
+            <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+        </li>
+    </ul>
+</ng-container>
+
+<ng-container *ngIf="next30Days.length > 0">
+    <h5 class="mm-timelinetitle">{{ 'core.courses.next30days' | translate }}</h5>
+    <ul ion-list class="block">
+        <li *ngFor="let event of next30Days">
+            <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+        </li>
+    </ul>
+</ng-container>
+
+<ng-container *ngIf="future.length > 0">
+    <h5 class="mm-timelinetitle">{{ 'core.courses.future' | translate }}</h5>
+    <ul ion-list class="block">
+        <li *ngFor="let event of future">
+            <ng-container *ngTemplateOutlet="eventTemplate; context: {event: event}"></ng-container>
+        </li>
+    </ul>
+</ng-container>
+
+<div padding class="text-center" *ngIf="canLoadMore && !empty">
+    <!-- Button and spinner to show more attempts. -->
+    <button *ngIf="!loadingMore" ion-button block (click)="loadMoreEvents()">{{ 'core.loadmore' | translate }}</button>
+    <ion-spinner *ngIf="loadingMore"></ion-spinner>
+</div>
+
+<core-empty-box *ngIf="empty && showCourse" image="assets/img/icons/activities.svg" [message]="'core.courses.noevents' | translate"></core-empty-box>
+<core-empty-box *ngIf="empty && !showCourse" [message]="'core.courses.noevents' | translate"></core-empty-box>

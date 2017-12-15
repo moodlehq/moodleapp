@@ -7,7 +7,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg">
                         <g>
                             <title>{{course.progress}}&#37;</title>
-                            <circle class="circle percent-{{course.progress}}" r="27.5" cx="35" cy="35"/>
+                            <!-- Commenting circle because it throws an error in console:
+                                Cannot assign to read only property 'className' of object '[object SVGCircleElement]'
+                                <circle class="circle percent-{{course.progress}}" r="27.5" cx="35" cy="35"/> -->
                         </g>
                     </svg>
                 </div>

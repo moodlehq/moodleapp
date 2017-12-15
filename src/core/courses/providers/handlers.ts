@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCoursesProvider } from './courses';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../mainmenu/providers/delegate';
+import { CoreCoursesMyOverviewProvider } from '../providers/my-overview';
 
 /**
  * Handler to inject an option into main menu.
@@ -23,8 +24,9 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../mainmenu/pro
 export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
     name = 'mmCourses';
     priority = 1100;
+    isOverviewEnabled: boolean;
 
-    constructor(private coursesProvider: CoreCoursesProvider) {}
+    constructor(private coursesProvider: CoreCoursesProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider) {}
 
     /**
      * Check if the handler is enabled on a site level.
@@ -32,21 +34,16 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
      * @return {boolean} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean|Promise<boolean> {
-        let myCoursesDisabled = this.coursesProvider.isMyCoursesDisabledInSite();
+        // Check if my overview is enabled.
+        return this.myOverviewProvider.isEnabled().then((enabled) => {
+            this.isOverviewEnabled = enabled;
+            if (enabled) {
+                return true;
+            }
 
-        // Check if overview side menu is available, so it won't show My courses.
-        // var $mmaMyOverview = $mmAddonManager.get('$mmaMyOverview');
-        // if ($mmaMyOverview) {
-        //     return $mmaMyOverview.isSideMenuAvailable().then(function(enabled) {
-        //         if (enabled) {
-        //             return false;
-        //         }
-        //         // Addon not enabled, check my courses.
-        //         return !myCoursesDisabled;
-        //     });
-        // }
-        // Addon not present, check my courses.
-        return !myCoursesDisabled;
+            // My overview not enabled, check if my courses is enabled.
+            return !this.coursesProvider.isMyCoursesDisabledInSite();
+        });
     }
 
     /**
@@ -55,11 +52,20 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
      * @return {CoreMainMenuHandlerData} Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
-        return {
-            icon: 'ionic',
-            title: 'core.courses.mycourses',
-            page: 'CoreCoursesMyCoursesPage',
-            class: 'mm-mycourses-handler'
-        };
+        if (this.isOverviewEnabled) {
+            return {
+                icon: 'ionic',
+                title: 'core.courses.courseoverview',
+                page: 'CoreCoursesMyOverviewPage',
+                class: 'mm-courseoverview-handler'
+            };
+        } else {
+            return {
+                icon: 'ionic',
+                title: 'core.courses.mycourses',
+                page: 'CoreCoursesMyCoursesPage',
+                class: 'mm-mycourses-handler'
+            };
+        }
     }
 }
