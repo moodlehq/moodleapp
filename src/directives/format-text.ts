@@ -151,6 +151,7 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected formatAndRenderContents() : void {
         if (!this.text) {
+            this.element.innerHTML = ''; // Remove current contents.
             this.finishRender();
             return;
         }
@@ -158,6 +159,8 @@ export class CoreFormatTextDirective implements OnChanges {
         this.text = this.text.trim();
 
         this.formatContents().then((div: HTMLElement) => {
+            this.element.innerHTML = ''; // Remove current contents.
+
             if (this.maxHeight && div.innerHTML != "") {
                 // Move the children to the current element to be able to calculate the height.
                 // @todo: Display the element?
