@@ -282,4 +282,5 @@ angular.module('mm.core.course')
     $scope.$on('$destroy', function() {
         statusObserver && statusObserver.off && statusObserver.off();
     });
+
 });

@@ -29,7 +29,11 @@
     <script src="build/mm.bundle.js"></script>
     <link rel="stylesheet" href="build/custom.css"> <!-- Empty style to make easier to test styles using Inspector. -->
   </head>
-  <body ng-app="mm" class="platform-android platform-cordova platform-webview">
+
+  <body ng-app="mm" id="body" class="platform-android platform-cordova platform-webview">
     <ion-nav-view></ion-nav-view>
+
+    <script src="build/custom.js" rel="script" type="application/javascript"></script>
+
   </body>
 </html>

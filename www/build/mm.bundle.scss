@@ -2260,6 +2260,7 @@ mm-course-mod-description .card .item {
   margin-top: 0;
 }
 
+
 $chart-size: 70px;
 $doughnut-border-size: 15px;
 $doughnut-dasharray: 173;
@@ -2388,102 +2389,6 @@ mm-course-list-item .item-icon-left {
   max-height: 34px;
 }
 
-.mm-capture-media-modal {
-    background-color: $gray-light;
-
-    .bar-header {
-        @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
-
-        .button {
-            color: $bar-content-text;
-            font-weight: normal;
-        }
-    }
-
-    .mm-capture-media-modal-content {
-        text-align: center;
-
-        .mm-av-wrapper {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: table;
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            clear: both;
-        }
-
-        audio, video, img {
-            width: 100%;
-            height: 100%;
-            display: table-cell;
-            text-align: center;
-            vertical-align: middle;
-            object-fit: contain;
-
-            &.mm-webcam-stream {
-                -webkit-transform: scaleX(-1);
-                transform: scaleX(-1);
-            }
-        }
-
-        .mm-webcam-image-canvas {
-            display: none;
-        }
-
-        .mm-audio-record-container {
-            width: 100%;
-            height: 100%;
-
-            .mm-audio-canvas {
-                width: 100%;
-                height: 100%;
-            }
-
-            .mm-audio-captured {
-                width: 100%;
-            }
-        }
-    }
-
-
-    .bar-footer {
-        background-color: $gray;
-        border-top-color: $gray-dark;
-
-        .col {
-            padding: 0;
-            line-height: $bar-height - $bar-padding-portrait * 2;
-
-            .button-icon {
-                color: $black;
-            }
-
-            .ion-record, .ion-trash-a {
-                color: $red;
-            }
-        }
-    }
-}
-
-.mm-fileuploader-file-handler {
-    input {
-        position: absolute;
-        top: 0;
-        right: 0;
-        min-width: 100%;
-        min-height: 100%;
-        opacity: 0;
-        outline: none;
-        z-index: 100;
-        cursor: pointer;
-    }
-}
-
 /* - User grades table (most of it extracted from MM1)
 -------------------------------------------------------------------------- */
 .mm-grades-container {
@@ -2589,6 +2494,20 @@ mm-course-list-item .item-icon-left {
   }
 }
 
+.mm-fileuploader-file-handler {
+    input {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        opacity: 0;
+        outline: none;
+        z-index: 100;
+        cursor: pointer;
+    }
+}
+
 
 .mm-mm_login_sites {
   .item-thumbnail-left .item-content {
@@ -2660,6 +2579,145 @@ mm-course-list-item .item-icon-left {
 }
 
 
+#mm-settings-languagelabel {
+  color: $base-color;
+}
+
+// Bar styles
+.bar-side-menu {
+  @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
+  height: $bar-side-menu-height !important; // MOBILE-959: Added !important to fix side menu header in iOS.
+  .item {
+    background: transparent;
+    border: none;
+  }
+  .item-avatar {
+    margin-top: 0px !important; // MOBILE-959: Added to fix side menu header in iOS.
+    h2,
+    p,
+    .icon {
+      color: $bar-side-menu-text-color;
+    }
+  }
+}
+
+.has-side-menu-header {
+  top: $bar-side-menu-height;
+}
+
+.mm-sidemenu-menu {
+  .item .badge {
+    right: 16px;
+  }
+}
+
+ion-side-menu li .item,
+ion-side-menu li.item {
+  border-color: $bar-side-menu-item-border-color;
+  background-color: $bar-side-menu-item-background-color;
+  color: $bar-side-menu-item-text-color;
+
+  .icon {
+    color: $bar-side-menu-item-icon-color;
+  }
+}
+
+ion-side-menu li.item.item-divider {
+  background-color: $bar-side-menu-item-divider-color;
+}
+.mm-capture-media-modal {
+    background-color: $gray-light;
+
+    .bar-header {
+        @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
+
+        .button {
+            color: $bar-content-text;
+            font-weight: normal;
+        }
+    }
+
+    .mm-capture-media-modal-content {
+        text-align: center;
+
+        .mm-av-wrapper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: table;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            clear: both;
+        }
+
+        audio, video, img {
+            width: 100%;
+            height: 100%;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            object-fit: contain;
+
+            &.mm-webcam-stream {
+                -webkit-transform: scaleX(-1);
+                transform: scaleX(-1);
+            }
+        }
+
+        .mm-webcam-image-canvas {
+            display: none;
+        }
+
+        .mm-audio-record-container {
+            width: 100%;
+            height: 100%;
+
+            .mm-audio-canvas {
+                width: 100%;
+                height: 100%;
+            }
+
+            .mm-audio-captured {
+                width: 100%;
+            }
+        }
+    }
+
+
+    .bar-footer {
+        background-color: $gray;
+        border-top-color: $gray-dark;
+
+        .col {
+            padding: 0;
+            line-height: $bar-height - $bar-padding-portrait * 2;
+
+            .button-icon {
+                color: $black;
+            }
+
+            .ion-record, .ion-trash-a {
+                color: $red;
+            }
+        }
+    }
+}
+
+
+.foreground-ion-edit.ion-edit:before {
+    position: relative;
+    left: 120px;
+    bottom: 15px;
+    font-size: 24px;
+}
+
+.mm-site_mm_user-profile .mm-tab-handlers {
+    padding-bottom: 16px;
+}
 
 $mm-question-correct-color:         $green-dark !default;
 $mm-question-correct-color-bg:      $green-light !default;
@@ -2797,63 +2855,6 @@ li.mm-question-answer-incorrect,
 
 .questioncorrectnessicon {
   font-size: 20px;
-}
-#mm-settings-languagelabel {
-  color: $base-color;
-}
-
-// Bar styles
-.bar-side-menu {
-  @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
-  height: $bar-side-menu-height !important; // MOBILE-959: Added !important to fix side menu header in iOS.
-  .item {
-    background: transparent;
-    border: none;
-  }
-  .item-avatar {
-    margin-top: 0px !important; // MOBILE-959: Added to fix side menu header in iOS.
-    h2,
-    p,
-    .icon {
-      color: $bar-side-menu-text-color;
-    }
-  }
-}
-
-.has-side-menu-header {
-  top: $bar-side-menu-height;
-}
-
-.mm-sidemenu-menu {
-  .item .badge {
-    right: 16px;
-  }
-}
-
-ion-side-menu li .item,
-ion-side-menu li.item {
-  border-color: $bar-side-menu-item-border-color;
-  background-color: $bar-side-menu-item-background-color;
-  color: $bar-side-menu-item-text-color;
-
-  .icon {
-    color: $bar-side-menu-item-icon-color;
-  }
-}
-
-ion-side-menu li.item.item-divider {
-  background-color: $bar-side-menu-item-divider-color;
-}
-
-.foreground-ion-edit.ion-edit:before {
-    position: relative;
-    left: 120px;
-    bottom: 15px;
-    font-size: 24px;
-}
-
-.mm-site_mm_user-profile .mm-tab-handlers {
-    padding-bottom: 16px;
 }
 
 .mm-site_frontpage {
@@ -3861,6 +3862,20 @@ ion-popover-view {
   }
 }
 
+.mm-site_mod_workshop,
+.mm-site_mod_workshop-submission,
+.mm-site_mod_workshop-assessment {
+
+  p.mm-overriden-grade {
+    color: $mm-success-color;
+  }
+
+  p.mm-has-overriden-grade {
+    color: $mm-error-color;
+    text-decoration: line-through;
+  }
+}
+
 $mma-mod-wiki-toc-level-padding:    12px !default;
 $mma-mod-wiki-newentry-link-color:  $red !default;
 $mma-mod-wiki-toc-title-color:      $gray-darker !default;
@@ -3918,20 +3933,6 @@ $mma-mod-wiki-subwiki-selected-background-color:   $gray-light !default;
 
   .mma-mod_wiki-subwiki-picker .item.item-selected .icon {
     font-size: 24px;
-  }
-}
-
-.mm-site_mod_workshop,
-.mm-site_mod_workshop-submission,
-.mm-site_mod_workshop-assessment {
-
-  p.mm-overriden-grade {
-    color: $mm-success-color;
-  }
-
-  p.mm-has-overriden-grade {
-    color: $mm-error-color;
-    text-decoration: line-through;
   }
 }
 

@@ -30,6 +30,14 @@ angular.module('mm.core.course')
         moduleId = $stateParams.mid,
         scrollView;
 
+
+    $scope.alert=function () {
+        return "hello world";
+    };
+    $scope.namee="amir";
+
+
+
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
     $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
 
@@ -92,6 +100,7 @@ angular.module('mm.core.course')
                         moduleId, completionStatus, $scope);
                     $scope.sections = sections;
 
+
                     // Add log in Moodle. The 'section' attribute was added in Moodle 3.2 so maybe it isn't available.
                     if (sectionId > 0 && sections[0] && typeof sections[0].section != 'undefined') {
                         $mmCourse.logView(courseId, sections[0].section);
@@ -104,6 +113,35 @@ angular.module('mm.core.course')
             });
         });
     }
+
+
+
+    // Create a function for accordion menu for sections **customize by amir721
+
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].onclick =accurdion();
+    }
+
+    function accurdion() {
+        /* Toggle between adding and removing the "active" class,
+       to highlight the button that controls the panel */
+        this.classList.toggle("active");
+
+        /* Toggle between hiding and showing the active panel */
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    }
+
+    // end of customization by amir721
+
+
 
     loadContent(sectionId).finally(function() {
         $scope.sectionLoaded = true;
@@ -176,4 +214,19 @@ angular.module('mm.core.course')
             observer.off();
         }
     });
+
+    ///////////////////////////////custom by amir 720/////////////////////////
+
+
+    // create accordion tabs//
+
+    $scope.showTab=function(index){
+        $scope.tab=index;
+
+    };
+
+
+    // $scope.sections.tab=-1;
+    //  // $scope.tab=false;
+
 });
