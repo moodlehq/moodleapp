@@ -12903,198 +12903,6 @@ mm-course-list-item div.item-icon-left.earlysubmission {
   max-width: 20px;
   max-height: 34px; }
 
-/* - User grades table (most of it extracted from MM1)
--------------------------------------------------------------------------- */
-.mm-grades-container {
-  padding-right: 2px;
-  background: white; }
-
-.mm-grades-table {
-  border-collapse: collapse;
-  line-height: 20px;
-  width: 100%;
-  font-size: 16px;
-  color: #444; }
-  .mm-grades-table tr {
-    border-bottom: 1px solid #dddddd; }
-  .mm-grades-table th,
-  .mm-grades-table td {
-    text-align: left;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-right: 10px;
-    vertical-align: top;
-    white-space: normal; }
-  .mm-grades-table thead th {
-    padding-left: 10px;
-    vertical-align: bottom;
-    font-weight: bold; }
-  .mm-grades-table tbody th {
-    font-weight: normal; }
-  .mm-grades-table .item, .mm-grades-table .itemcenter {
-    display: table-cell; }
-  .mm-grades-table th.b1b {
-    padding-left: 20px; }
-  .mm-grades-table th.item, .mm-grades-table th.itemcenter {
-    padding-left: 30px; }
-  .mm-grades-table th.baggt {
-    padding-left: 30px; }
-  .mm-grades-table th img {
-    margin-left: -20px;
-    float: left; }
-  .mm-grades-table .b1l {
-    width: 10px;
-    min-width: 10px; }
-  .mm-grades-table .b1t,
-  .mm-grades-table .baggt {
-    font-weight: bold; }
-  .mm-grades-table .itemcenter {
-    padding: 10px;
-    white-space: normal; }
-  .mm-grades-table .feedbacktext {
-    padding-left: 10px; }
-    .mm-grades-table .feedbacktext .no-overflow {
-      overflow: auto; }
-  .mm-grades-table .dimmed_text,
-  .mm-grades-table .hidden,
-  .mm-grades-table .hidden a {
-    color: #aaa; }
-  .mm-grades-table .oddd1,
-  .mm-grades-table .oddd3,
-  .mm-grades-table .evend3,
-  .mm-grades-table .levelodd {
-    background-color: #f5f5f5; }
-  .mm-grades-table .oddd2,
-  .mm-grades-table .evend2,
-  .mm-grades-table .oddd4,
-  .mm-grades-table .evend4 {
-    background-color: #f5f5f5; }
-  .mm-grades-table .leveleven {
-    background-color: #fff; }
-  .mm-grades-table .column-leader {
-    border-left: 1px solid #dddddd;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd; }
-    .mm-grades-table .column-leader.level1 {
-      border-left: 0; }
-  .mm-grades-table .column-itemname {
-    border-right: 1px solid #dddddd;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd; }
-
-.mm-fileuploader-file-handler input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  opacity: 0;
-  outline: none;
-  z-index: 100;
-  cursor: pointer; }
-
-.mm-mm_login_sites .item-thumbnail-left .item-content {
-  padding-top: 16px;
-  padding-right: 16px; }
-
-.mm-mm_login_sites .list-left-editing .item-thumbnail-left .item-content {
-  padding-right: 49px; }
-
-.mm-mm_login_sites .avatar {
-  margin: 0;
-  width: 80px;
-  height: 80px;
-  max-width: 80px;
-  max-height: 80px;
-  border-radius: 50%;
-  padding: 4px;
-  border: 1px solid #ddd;
-  text-indent: -99999px; }
-
-.mm-login-sitepolicy-iframe {
-  height: 300px; }
-
-.mm-oauth-icon, .item.mm-oauth-icon, .mm-grades-table .mm-oauth-icon.itemcenter {
-  padding: 8px; }
-  .mm-oauth-icon > img, .mm-oauth-icon > span, .item.mm-oauth-icon > img, .mm-grades-table .mm-oauth-icon.itemcenter > img, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
-    max-height: 32px;
-    max-width: 32px;
-    vertical-align: middle; }
-  .mm-oauth-icon > span, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
-    margin-left: 5px;
-    color: #626262; }
-
-.mm-mm_login_credentials, .mm-mm_login_reconnect, .mm-mm_login_site {
-  background: -webkit-radial-gradient(white, #eeeeee);
-  background: radial-gradient(white, #eeeeee); }
-  .mm-mm_login_credentials .mm-ioninput-password, .mm-mm_login_reconnect .mm-ioninput-password, .mm-mm_login_site .mm-ioninput-password {
-    padding-top: 0;
-    padding-bottom: 0; }
-  .mm-mm_login_credentials img, .mm-mm_login_reconnect img, .mm-mm_login_site img {
-    max-width: 100%; }
-  .mm-mm_login_credentials img.moodle-logo, .mm-mm_login_reconnect img.moodle-logo, .mm-mm_login_site img.moodle-logo {
-    width: 90%;
-    max-width: 300px; }
-  .mm-mm_login_credentials .box, .mm-mm_login_reconnect .box, .mm-mm_login_site .box {
-    padding: 16px;
-    background: #ffffff;
-    border: 1px solid #dddddd; }
-
-#mm-settings-languagelabel {
-  color: #3a3a3a; }
-
-.bar-side-menu {
-  border-color: transparent;
-  background-color: #f98012;
-  background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
-  color: #ffffff;
-  height: 80px !important; }
-  .bar-side-menu .title {
-    color: #ffffff; }
-  .bar-side-menu .item, .bar-side-menu .mm-grades-table .itemcenter, .mm-grades-table .bar-side-menu .itemcenter {
-    background: transparent;
-    border: none; }
-  .bar-side-menu .item-avatar, .bar-side-menu .item-media, .bar-side-menu .item-avatar-center, .bar-side-menu .item-progress {
-    margin-top: 0px !important; }
-    .bar-side-menu .item-avatar h2, .bar-side-menu .item-media h2, .bar-side-menu .item-avatar-center h2, .bar-side-menu .item-progress h2, .bar-side-menu .item-avatar .item .item-heading, .item .bar-side-menu .item-avatar .item-heading, .bar-side-menu .item-media .item .item-heading, .item .bar-side-menu .item-media .item-heading, .bar-side-menu .item-avatar-center .item .item-heading, .item .bar-side-menu .item-avatar-center .item-heading, .bar-side-menu .item-progress .item .item-heading, .item .bar-side-menu .item-progress .item-heading, .bar-side-menu .item-avatar .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-avatar .item-heading, .bar-side-menu .item-media .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-media .item-heading, .bar-side-menu .item-avatar-center .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-avatar-center .item-heading, .bar-side-menu .item-progress .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-progress .item-heading,
-    .bar-side-menu .item-avatar p,
-    .bar-side-menu .item-media p,
-    .bar-side-menu .item-avatar-center p,
-    .bar-side-menu .item-progress p,
-    .bar-side-menu .item-avatar .icon,
-    .bar-side-menu .item-media .icon,
-    .bar-side-menu .item-avatar-center .icon,
-    .bar-side-menu .item-progress .icon {
-      color: #ffffff; }
-
-.has-side-menu-header {
-  top: 80px; }
-
-.mm-sidemenu-menu .item .badge, .mm-sidemenu-menu .mm-grades-table .itemcenter .badge, .mm-grades-table .mm-sidemenu-menu .itemcenter .badge, .mm-sidemenu-menu .item .mma-messages-date span, .mma-messages-date .mm-sidemenu-menu .item span, .mm-sidemenu-menu .mm-grades-table .itemcenter .mma-messages-date span, .mma-messages-date .mm-sidemenu-menu .mm-grades-table .itemcenter span, .mm-grades-table .mm-sidemenu-menu .itemcenter .mma-messages-date span, .mma-messages-date .mm-grades-table .mm-sidemenu-menu .itemcenter span, .mm-sidemenu-menu .item
-.mma-messages-unreadfrom span,
-.mma-messages-unreadfrom .mm-sidemenu-menu .item span, .mm-sidemenu-menu .mm-grades-table .itemcenter
-.mma-messages-unreadfrom span,
-.mma-messages-unreadfrom .mm-sidemenu-menu .mm-grades-table .itemcenter span, .mm-grades-table .mm-sidemenu-menu .itemcenter
-.mma-messages-unreadfrom span,
-.mma-messages-unreadfrom .mm-grades-table .mm-sidemenu-menu .itemcenter span, .mm-sidemenu-menu .item .mma-chat-notice span, .mma-chat-notice .mm-sidemenu-menu .item span, .mm-sidemenu-menu .mm-grades-table .itemcenter .mma-chat-notice span, .mma-chat-notice .mm-sidemenu-menu .mm-grades-table .itemcenter span, .mm-grades-table .mm-sidemenu-menu .itemcenter .mma-chat-notice span, .mma-chat-notice .mm-grades-table .mm-sidemenu-menu .itemcenter span {
-  right: 16px; }
-
-ion-side-menu li .item, ion-side-menu li .mm-grades-table .itemcenter, .mm-grades-table ion-side-menu li .itemcenter,
-ion-side-menu li.item,
-ion-side-menu .mm-grades-table li.itemcenter, .mm-grades-table
-ion-side-menu li.itemcenter {
-  border-color: #dddddd;
-  background-color: #ffffff;
-  color: #3a3a3a; }
-  ion-side-menu li .item .icon, ion-side-menu li .mm-grades-table .itemcenter .icon, .mm-grades-table ion-side-menu li .itemcenter .icon,
-  ion-side-menu li.item .icon,
-  ion-side-menu .mm-grades-table li.itemcenter .icon, .mm-grades-table
-  ion-side-menu li.itemcenter .icon {
-    color: #626262; }
-
-ion-side-menu li.item.item-divider, ion-side-menu .mm-grades-table li.item-divider.itemcenter, .mm-grades-table ion-side-menu li.item-divider.itemcenter {
-  background-color: #f5f5f5; }
-
 .mm-capture-media-modal {
   background-color: #eeeeee; }
   .mm-capture-media-modal .bar-header {
@@ -13152,14 +12960,16 @@ ion-side-menu li.item.item-divider, ion-side-menu .mm-grades-table li.item-divid
       .mm-capture-media-modal .bar-footer .col .ion-record, .mm-capture-media-modal .bar-footer .mm-data-contents td .ion-record, .mm-data-contents .mm-capture-media-modal .bar-footer td .ion-record, .mm-capture-media-modal .bar-footer .mm-data-contents th .ion-record, .mm-data-contents .mm-capture-media-modal .bar-footer th .ion-record, .mm-capture-media-modal .bar-footer .col .ion-trash-a, .mm-capture-media-modal .bar-footer .mm-data-contents td .ion-trash-a, .mm-data-contents .mm-capture-media-modal .bar-footer td .ion-trash-a, .mm-capture-media-modal .bar-footer .mm-data-contents th .ion-trash-a, .mm-data-contents .mm-capture-media-modal .bar-footer th .ion-trash-a {
         color: #cb3d4d; }
 
-.foreground-ion-edit.ion-edit:before {
-  position: relative;
-  left: 120px;
-  bottom: 15px;
-  font-size: 24px; }
-
-.mm-site_mm_user-profile .mm-tab-handlers {
-  padding-bottom: 16px; }
+.mm-fileuploader-file-handler input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none;
+  z-index: 100;
+  cursor: pointer; }
 
 .mm-question-textarea {
   width: 100%;
@@ -13295,6 +13105,196 @@ li.mm-question-answer-incorrect,
 
 .questioncorrectnessicon {
   font-size: 20px; }
+
+/* - User grades table (most of it extracted from MM1)
+-------------------------------------------------------------------------- */
+.mm-grades-container {
+  padding-right: 2px;
+  background: white; }
+
+.mm-grades-table {
+  border-collapse: collapse;
+  line-height: 20px;
+  width: 100%;
+  font-size: 16px;
+  color: #444; }
+  .mm-grades-table tr {
+    border-bottom: 1px solid #dddddd; }
+  .mm-grades-table th,
+  .mm-grades-table td {
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+    white-space: normal; }
+  .mm-grades-table thead th {
+    padding-left: 10px;
+    vertical-align: bottom;
+    font-weight: bold; }
+  .mm-grades-table tbody th {
+    font-weight: normal; }
+  .mm-grades-table .item, .mm-grades-table .itemcenter {
+    display: table-cell; }
+  .mm-grades-table th.b1b {
+    padding-left: 20px; }
+  .mm-grades-table th.item, .mm-grades-table th.itemcenter {
+    padding-left: 30px; }
+  .mm-grades-table th.baggt {
+    padding-left: 30px; }
+  .mm-grades-table th img {
+    margin-left: -20px;
+    float: left; }
+  .mm-grades-table .b1l {
+    width: 10px;
+    min-width: 10px; }
+  .mm-grades-table .b1t,
+  .mm-grades-table .baggt {
+    font-weight: bold; }
+  .mm-grades-table .itemcenter {
+    padding: 10px;
+    white-space: normal; }
+  .mm-grades-table .feedbacktext {
+    padding-left: 10px; }
+    .mm-grades-table .feedbacktext .no-overflow {
+      overflow: auto; }
+  .mm-grades-table .dimmed_text,
+  .mm-grades-table .hidden,
+  .mm-grades-table .hidden a {
+    color: #aaa; }
+  .mm-grades-table .oddd1,
+  .mm-grades-table .oddd3,
+  .mm-grades-table .evend3,
+  .mm-grades-table .levelodd {
+    background-color: #f5f5f5; }
+  .mm-grades-table .oddd2,
+  .mm-grades-table .evend2,
+  .mm-grades-table .oddd4,
+  .mm-grades-table .evend4 {
+    background-color: #f5f5f5; }
+  .mm-grades-table .leveleven {
+    background-color: #fff; }
+  .mm-grades-table .column-leader {
+    border-left: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd; }
+    .mm-grades-table .column-leader.level1 {
+      border-left: 0; }
+  .mm-grades-table .column-itemname {
+    border-right: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd; }
+
+.mm-mm_login_sites .item-thumbnail-left .item-content {
+  padding-top: 16px;
+  padding-right: 16px; }
+
+.mm-mm_login_sites .list-left-editing .item-thumbnail-left .item-content {
+  padding-right: 49px; }
+
+.mm-mm_login_sites .avatar {
+  margin: 0;
+  width: 80px;
+  height: 80px;
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 50%;
+  padding: 4px;
+  border: 1px solid #ddd;
+  text-indent: -99999px; }
+
+.mm-login-sitepolicy-iframe {
+  height: 300px; }
+
+.mm-oauth-icon, .item.mm-oauth-icon, .mm-grades-table .mm-oauth-icon.itemcenter {
+  padding: 8px; }
+  .mm-oauth-icon > img, .mm-oauth-icon > span, .item.mm-oauth-icon > img, .mm-grades-table .mm-oauth-icon.itemcenter > img, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
+    max-height: 32px;
+    max-width: 32px;
+    vertical-align: middle; }
+  .mm-oauth-icon > span, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
+    margin-left: 5px;
+    color: #626262; }
+
+.mm-mm_login_credentials, .mm-mm_login_reconnect, .mm-mm_login_site {
+  background: -webkit-radial-gradient(white, #eeeeee);
+  background: radial-gradient(white, #eeeeee); }
+  .mm-mm_login_credentials .mm-ioninput-password, .mm-mm_login_reconnect .mm-ioninput-password, .mm-mm_login_site .mm-ioninput-password {
+    padding-top: 0;
+    padding-bottom: 0; }
+  .mm-mm_login_credentials img, .mm-mm_login_reconnect img, .mm-mm_login_site img {
+    max-width: 100%; }
+  .mm-mm_login_credentials img.moodle-logo, .mm-mm_login_reconnect img.moodle-logo, .mm-mm_login_site img.moodle-logo {
+    width: 90%;
+    max-width: 300px; }
+  .mm-mm_login_credentials .box, .mm-mm_login_reconnect .box, .mm-mm_login_site .box {
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #dddddd; }
+
+#mm-settings-languagelabel {
+  color: #3a3a3a; }
+
+.bar-side-menu {
+  border-color: transparent;
+  background-color: #f98012;
+  background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
+  color: #ffffff;
+  height: 80px !important; }
+  .bar-side-menu .title {
+    color: #ffffff; }
+  .bar-side-menu .item, .bar-side-menu .mm-grades-table .itemcenter, .mm-grades-table .bar-side-menu .itemcenter {
+    background: transparent;
+    border: none; }
+  .bar-side-menu .item-avatar, .bar-side-menu .item-media, .bar-side-menu .item-avatar-center, .bar-side-menu .item-progress {
+    margin-top: 0px !important; }
+    .bar-side-menu .item-avatar h2, .bar-side-menu .item-media h2, .bar-side-menu .item-avatar-center h2, .bar-side-menu .item-progress h2, .bar-side-menu .item-avatar .item .item-heading, .item .bar-side-menu .item-avatar .item-heading, .bar-side-menu .item-media .item .item-heading, .item .bar-side-menu .item-media .item-heading, .bar-side-menu .item-avatar-center .item .item-heading, .item .bar-side-menu .item-avatar-center .item-heading, .bar-side-menu .item-progress .item .item-heading, .item .bar-side-menu .item-progress .item-heading, .bar-side-menu .item-avatar .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-avatar .item-heading, .bar-side-menu .item-media .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-media .item-heading, .bar-side-menu .item-avatar-center .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-avatar-center .item-heading, .bar-side-menu .item-progress .mm-grades-table .itemcenter .item-heading, .mm-grades-table .itemcenter .bar-side-menu .item-progress .item-heading,
+    .bar-side-menu .item-avatar p,
+    .bar-side-menu .item-media p,
+    .bar-side-menu .item-avatar-center p,
+    .bar-side-menu .item-progress p,
+    .bar-side-menu .item-avatar .icon,
+    .bar-side-menu .item-media .icon,
+    .bar-side-menu .item-avatar-center .icon,
+    .bar-side-menu .item-progress .icon {
+      color: #ffffff; }
+
+.has-side-menu-header {
+  top: 80px; }
+
+.mm-sidemenu-menu .item .badge, .mm-sidemenu-menu .mm-grades-table .itemcenter .badge, .mm-grades-table .mm-sidemenu-menu .itemcenter .badge, .mm-sidemenu-menu .item .mma-messages-date span, .mma-messages-date .mm-sidemenu-menu .item span, .mm-sidemenu-menu .mm-grades-table .itemcenter .mma-messages-date span, .mma-messages-date .mm-sidemenu-menu .mm-grades-table .itemcenter span, .mm-grades-table .mm-sidemenu-menu .itemcenter .mma-messages-date span, .mma-messages-date .mm-grades-table .mm-sidemenu-menu .itemcenter span, .mm-sidemenu-menu .item
+.mma-messages-unreadfrom span,
+.mma-messages-unreadfrom .mm-sidemenu-menu .item span, .mm-sidemenu-menu .mm-grades-table .itemcenter
+.mma-messages-unreadfrom span,
+.mma-messages-unreadfrom .mm-sidemenu-menu .mm-grades-table .itemcenter span, .mm-grades-table .mm-sidemenu-menu .itemcenter
+.mma-messages-unreadfrom span,
+.mma-messages-unreadfrom .mm-grades-table .mm-sidemenu-menu .itemcenter span, .mm-sidemenu-menu .item .mma-chat-notice span, .mma-chat-notice .mm-sidemenu-menu .item span, .mm-sidemenu-menu .mm-grades-table .itemcenter .mma-chat-notice span, .mma-chat-notice .mm-sidemenu-menu .mm-grades-table .itemcenter span, .mm-grades-table .mm-sidemenu-menu .itemcenter .mma-chat-notice span, .mma-chat-notice .mm-grades-table .mm-sidemenu-menu .itemcenter span {
+  right: 16px; }
+
+ion-side-menu li .item, ion-side-menu li .mm-grades-table .itemcenter, .mm-grades-table ion-side-menu li .itemcenter,
+ion-side-menu li.item,
+ion-side-menu .mm-grades-table li.itemcenter, .mm-grades-table
+ion-side-menu li.itemcenter {
+  border-color: #dddddd;
+  background-color: #ffffff;
+  color: #3a3a3a; }
+  ion-side-menu li .item .icon, ion-side-menu li .mm-grades-table .itemcenter .icon, .mm-grades-table ion-side-menu li .itemcenter .icon,
+  ion-side-menu li.item .icon,
+  ion-side-menu .mm-grades-table li.itemcenter .icon, .mm-grades-table
+  ion-side-menu li.itemcenter .icon {
+    color: #626262; }
+
+ion-side-menu li.item.item-divider, ion-side-menu .mm-grades-table li.item-divider.itemcenter, .mm-grades-table ion-side-menu li.item-divider.itemcenter {
+  background-color: #f5f5f5; }
+
+.foreground-ion-edit.ion-edit:before {
+  position: relative;
+  left: 120px;
+  bottom: 15px;
+  font-size: 24px; }
+
+.mm-site_mm_user-profile .mm-tab-handlers {
+  padding-bottom: 16px; }
 
 .mm-site_frontpage .mma-frontpage-item-container .item-media {
   min-height: 55px;
@@ -14145,17 +14145,6 @@ ion-popover-view {
   .mm-site_mod_survey select.mma-mod_survey-select .mma-mod_survey-defaultoption {
     display: none; }
 
-.mm-site_mod_workshop p.mm-overriden-grade,
-.mm-site_mod_workshop-submission p.mm-overriden-grade,
-.mm-site_mod_workshop-assessment p.mm-overriden-grade {
-  color: #5e8100; }
-
-.mm-site_mod_workshop p.mm-has-overriden-grade,
-.mm-site_mod_workshop-submission p.mm-has-overriden-grade,
-.mm-site_mod_workshop-assessment p.mm-has-overriden-grade {
-  color: #cb3d4d;
-  text-decoration: line-through; }
-
 .mm-site_mod_wiki {
   background-color: white;
   /* Hide edit section links */ }
@@ -14187,6 +14176,17 @@ ion-popover-view {
     background-color: #eeeeee; }
   .mm-site_mod_wiki .mma-mod_wiki-subwiki-picker .item.item-selected .icon, .mm-site_mod_wiki .mma-mod_wiki-subwiki-picker .mm-grades-table .item-selected.itemcenter .icon, .mm-grades-table .mm-site_mod_wiki .mma-mod_wiki-subwiki-picker .item-selected.itemcenter .icon {
     font-size: 24px; }
+
+.mm-site_mod_workshop p.mm-overriden-grade,
+.mm-site_mod_workshop-submission p.mm-overriden-grade,
+.mm-site_mod_workshop-assessment p.mm-overriden-grade {
+  color: #5e8100; }
+
+.mm-site_mod_workshop p.mm-has-overriden-grade,
+.mm-site_mod_workshop-submission p.mm-has-overriden-grade,
+.mm-site_mod_workshop-assessment p.mm-has-overriden-grade {
+  color: #cb3d4d;
+  text-decoration: line-through; }
 
 .qbehaviour_deferredcbm_actual_percentage {
   font-weight: bold; }

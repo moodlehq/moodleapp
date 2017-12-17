@@ -219,10 +219,10 @@ angular.module('mm.core.course')
 
 
     // create accordion tabs//
-
+    $scope.active=[];
     $scope.showTab=function(index){
         $scope.tab=index;
-
+        $scope.active[index]=!active;
     };
 
 

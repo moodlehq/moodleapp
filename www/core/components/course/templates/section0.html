@@ -14,24 +14,20 @@
 
             <!-- this part change all sessions views. -->
 
-            <section  ng-class="{'card': allSections}" ng-repeat="section in sections" ng-if="sectionHasContent(section)">
+            <section ng-class="{'card': allSections}" ng-repeat="section in sections" ng-if="sectionHasContent(section)">
                 <!-- Title and summary are displayed when multiple sections per page. -->
-                <div class=" item item-divider" ng-if="allSections && section.name" ng-init="section.tab=$index" ng-click="section.tab=1">
+                <div class=" item item-divider customItem tab{{$index}} " ng-if="allSections && section.name" ng-click="showTab($index)" >
                     <h2><mm-format-text watch="true">{{ section.name }}</mm-format-text></h2>
                 </div>
 
 
-                <div class="item item-text-wrap clearfix " ng-if="allSections && section.summary">
+                <div class="item item-text-wrap clearfix  " ng-if="allSections && section.summary">
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
-                <div class="tab" ng-show="section.tab==tabShow">
+                <div class="tab{{$index}}" ng-show="$index==tab">
                     <mm-course-module ng-if="module.visibleoncoursepage !== 0" class="item item-complex " ng-repeat="module in section.modules" module="module" completion-changed="completionChanged"></mm-course-module>
                 </div>
-
-
             </section>
-            
-
 
             <mm-empty-box ng-if="!hasContent" icon="ion-qr-scanner" message="{{ 'mm.course.nocontentavailable' | translate }}"></mm-empty-box>
         </mm-loading>

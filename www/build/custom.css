@@ -1,24 +1,14 @@
-/* Un-comment the following, for initial RTL UI support.
-.scroll-content {
-   direction: rtl;
-   text-align: right;
-}
-*/
-
 .bar-side-menu {
     background-color: #673ab7;
 }
-
 .bar-content {
     background-color: #673ab7;
 }
-
 .button.button-positive {
     border-color: #673ab7;
     background-color: #673ab7;
     color: #fff;
 }
-
 .item-divider {
     background-color: #fafafa;
 }
@@ -26,15 +16,19 @@
     background: #673ab7;
     background-color: #673ab7;
 }
-
 /*/////////////////ACCORDION PANEL THAT CREATE CUSTOM/////////////////////////////*/
 
-
 /* Style the buttons that are used to open and close the accordion panel for course template*/
-
 .customItem{
     border-radius: 10px;
     height: 60px;
+    opacity: .75;
+    transition: .5s;
+}
+
+.activeTab{
+    opacity: 1;
+    transition: .5s;
 }
 .customItem span{
     text-shadow: 2px 2px 8px white;
@@ -42,31 +36,46 @@
     background-color: whitesmoke;
     border-radius: 50px;
     padding: 4px;
-
-}
-
-.customItem:active{
-    opacity: 1;
-}
-.customSection{
-    transition: max-height 2s ;
 }
 
 .pane{
-    background: url("../img/costum/AmirHossein.jpg") ;
-
+    background: url("../img/costum/AmirHossein.jpg") round;
 }
-
 .tab0{
-    background: url("../img/costum/1.jpg");
-    opacity: .8
+    background: url("../img/costum/1.jpg") round;
 }
-
 .tab1{
-    background: url("../img/costum/2.jpg");
-    opacity: .8
+    background: url("../img/costum/2.jpg") round;
 }
 
 
 
-/*///////////////////////////////////////////////////////////////////////////*/
+
+.div1 {
+    transition: all linear 0.5s;
+    background-color: lightblue;
+    height: auto;
+    width: 100%;
+    position: relative;
+    top: 0;
+    /*left: 0;*/
+}
+
+.ng-hide {
+    height: 0;
+    width: 0;
+    background-color: transparent;
+    /*top:0px;*/
+    /*left: 200px;*/
+}
+
+
+
+
+
+
+
+
+
+
+
