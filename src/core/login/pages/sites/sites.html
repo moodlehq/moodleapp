@@ -6,25 +6,27 @@
             <button *ngIf="sites && sites.length > 0" ion-button icon-only (click)="toggleDelete()" [attr.aria-label]="'core.delete' | translate">
                 <ion-icon name="create" ios="md-create"></ion-icon>
             </button>
-            <button ion-button icon-only (click)="add()" [attr.aria-label]="'core.add' | translate">
-                <ion-icon name="add"></ion-icon>
-            </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content>
     <ion-list>
-            <ion-item (click)="login(site.id)" *ngFor="let site of sites; let idx = index">
-                <ion-avatar item-start>
-                    <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
-                </ion-avatar>
-                <h2>{{site.fullName}}</h2>
-                <p><core-format-text [text]="site.siteName" clean="true" watch="true" [siteId]="site.id"></core-format-text></p>
-                <p>{{site.siteUrl}}</p>
-                <ion-badge item-end *ngIf="!showDelete && site.badge">{{site.badge}}</ion-badge>
-                <button *ngIf="showDelete" item-end ion-button icon-only clear color="danger" (click)="deleteSite($event, idx)" [attr.aria-label]="'core.delete' | translate">
-                    <ion-icon name="trash"></ion-icon>
-                </button>
-            </ion-item>
+        <ion-item (click)="login(site.id)" *ngFor="let site of sites; let idx = index">
+            <ion-avatar item-start>
+                <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+            </ion-avatar>
+            <h2>{{site.fullName}}</h2>
+            <p><core-format-text [text]="site.siteName" clean="true" watch="true" [siteId]="site.id"></core-format-text></p>
+            <p>{{site.siteUrl}}</p>
+            <ion-badge item-end *ngIf="!showDelete && site.badge">{{site.badge}}</ion-badge>
+            <button *ngIf="showDelete" item-end ion-button icon-only clear color="danger" (click)="deleteSite($event, idx)" [attr.aria-label]="'core.delete' | translate">
+                <ion-icon name="trash"></ion-icon>
+            </button>
+        </ion-item>
     </ion-list>
+    <ion-fab bottom right>
+        <button ion-fab (click)="add()" [attr.aria-label]="'core.add' | translate">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
 </ion-content>

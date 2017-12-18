@@ -1,0 +1,74 @@
+
+.button-md {
+  min-height: $button-md-height;
+}
+
+// Light buttons color.
+.button-md-light {
+  color: color($colors, primary, base);
+}
+
+// Highlights inside the input element.
+@if ($mm-text-input-md-show-highlight) {
+  .card-md, .list-md {
+    // In order to get a 2px border we need to add an inset
+    // box-shadow 1px (this is to avoid the div resizing)
+
+    // The last item in a list has a border on the item, not the
+    // inner item, so add it to the item itself
+    .item-input.item-input-has-focus:last-child,
+    .item-input.input-has-focus:last-child {
+      @include md-input-highlight($text-input-md-highlight-color);
+
+      .item-inner ion-input {
+        box-shadow: none;
+      }
+    }
+
+    .item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus):last-child,
+    .item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus):last-child {
+      @include md-input-highlight($text-input-md-highlight-color-valid);
+
+      .item-inner ion-input {
+        box-shadow: none;
+      }
+    }
+
+    .item-input.ng-invalid.ng-touched:not(.input-has-focus):not(.item-input-has-focus):last-child {
+      @include md-input-highlight($text-input-md-highlight-color-invalid);
+
+      .item-inner ion-input {
+        box-shadow: none;
+      }
+    }
+  }
+
+  .item-md.item-input {
+    .item-inner {
+      border: 0;
+    }
+
+    &.item-block .item-inner ion-input {
+      border-bottom: 1px solid $list-border-color;
+    }
+
+    // TODO remove all uses of input-has-focus in v4
+    &.item-input-has-focus .item-inner ion-input,
+    &.input-has-focus .item-inner ion-input {
+      @include md-input-highlight($text-input-md-highlight-color);
+    }
+
+    // Show the valid highlight when it has the .ng-valid class and a value
+    // TODO remove all uses of input-has-focus in v4
+    // TODO remove all uses of input-has-value in v4
+    &.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner ion-input,
+    &.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .item-inner ion-input {
+      @include md-input-highlight($text-input-md-highlight-color-valid);
+    }
+
+    // Show the invalid highlight when it has the invalid class and has been touched
+    &.ng-invalid.ng-touched:not(.input-has-focus):not(.item-input-has-focus) .item-inner ion-input {
+      @include md-input-highlight($text-input-md-highlight-color-invalid);
+    }
+  }
+}

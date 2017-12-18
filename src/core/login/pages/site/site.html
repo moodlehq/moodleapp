@@ -9,13 +9,12 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content id="mm-login-site" class="mm-center-view">
-    <form class="mm-view-content" [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl)">
-        <ion-list class="box">
-            <div class="text-center" padding>
-                <img src="assets/img/logo.png" class="avatar-full moodle-logo" role="presentation">
-            </div>
-
+<ion-content class="mm-center-view">
+    <div class="box">
+        <div text-center padding>
+            <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
+        </div>
+        <form ion-list no-lines [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl)">
             <!-- Form to input the site URL if there are no fixed sites. -->
             <div *ngIf="!fixedSites">
                 <p padding>{{ 'core.login.newsitedescription' | translate }}</p>
@@ -42,9 +41,7 @@
                 </div>
             </div>
 
-            <div *ngIf="!fixedSites || !displayAsButtons">
-                <button ion-button block color="primary" [disabled]="!siteForm.valid">{{ 'core.login.connect' | translate }}</button>
-            </div>
-        </ion-list>
-    </form>
+            <button *ngIf="!fixedSites || !displayAsButtons" ion-button block [disabled]="!siteForm.valid">{{ 'core.login.connect' | translate }}</button>
+        </form>
+    </div>
 </ion-content>

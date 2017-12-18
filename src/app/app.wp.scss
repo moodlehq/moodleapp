@@ -1,0 +1,9 @@
+
+.button-wp {
+  min-height: $button-wp-height;
+}
+
+// Light buttons color.
+.button-wp-light {
+  color: color($colors, primary, base);
+}

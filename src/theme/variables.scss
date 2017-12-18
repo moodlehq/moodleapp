@@ -14,7 +14,6 @@ $app-direction: ltr;
 
 @import "ionic.globals";
 
-
 // Color palette
 $black:           #3a3a3a; // Headings, standard text.
 $gray-darker:     #626262; // Text (emphasis-detail), placeholder, background.
@@ -47,6 +46,10 @@ $yellow:          #fbad1a; // Accent (never text).
 $yellow-light:    mix($yellow, white, 20%);
 $yellow-dark:     mix($yellow, black, 40%);
 
+$mm-color:          $orange;
+$mm-color-light:    lighten($mm-color, 10%);
+$mm-color-dark:     darken($mm-color, 10%);
+
 
 // Shared Variables
 // --------------------------------------------------
@@ -69,33 +72,80 @@ $content-padding: 10px;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
-  secondary:  #32db64,
-  danger:     #f53d3d,
-  light:      #f4f4f4,
-  dark:       #222
+  primary:    $mm-color,
+  secondary:  $turquoise,
+  danger:     $red,
+  light:      $gray-lighter,
+  dark:       $black,
+  warning:    $yellow
 );
+
+$text-color:                 $black;
+$link-color:                 $blue;
+$background-color:           $gray-light;
+$subdued-text-color:         $gray-darker;
+
+$list-background-color:      $white;
+
+$tabs-background:            $gray-darker;
+$tabs-border-color:          #b2b2b2 !default;
+$tabs-tab-color-inactive:    #8c8c8c !default;
+$tabs-tab-color-active:      $mm-color;
+
+$text-input-highlight-color-valid: $green;
+$text-input-highlight-color-invalid: $red;
+
+$button-md-box-shadow: 0 2px 2px 1px rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12) ;
+
+
+// Moodle Mobile variables
+// --------------------------------------------------
+
+// Variables copied from Ionic 1.
+$item-icon-accessory-color:       #ccc !default;
+$item-icon-accessory-font-size:   16px !default;
+
+// Init screen.
+$mm-color-init-screen:          #ff5c00;
+$mm-color-init-screen-alt:      #ff7600;
+$mm-init-screen-spinner-color:  $white;
+$mm-init-screen-logo-width:     60%;
+$mm-init-screen-logo-max-width: 300px;
+
+$mm-fixed-url:                  false;
+
+
+// Branded apps customization
+// --------------------------------------------------
+@import "bmma";
 
 
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
-
+$text-input-ios-show-focus-highlight: false;
+$mm-text-input-ios-show-highlight: false;
+$item-ios-avatar-size: 54px;
 
 
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
 
-
+$text-input-md-show-focus-highlight: false;
+$mm-text-input-md-show-highlight: true;
+$item-md-detail-push-show: true;
+$item-md-avatar-size: 54px;
 
 
 // App Windows Variables
 // --------------------------------------------------
 // Windows only Sass variables can go here
 
-
+$text-input-wp-show-focus-highlight: true;
+$item-wp-detail-push-show: true;
+$item-wp-avatar-size: 54px;
 
 
 // App Theme
@@ -121,20 +171,3 @@ $colors: (
 
 @import "roboto";
 @import "noto-sans";
-
-
-// Moodle Mobile variables
-// --------------------------------------------------
-
-// Variables copied from Ionic 1.
-$item-icon-accessory-color:       #ccc !default;
-$item-icon-accessory-font-size:   16px !default;
-
-// Init screen.
-$mm-color-init-screen:          #ff5c00;
-$mm-color-init-screen-alt:      #ff7600;
-$mm-init-screen-spinner-color:  $white;
-$mm-init-screen-logo-width:     60%;
-$mm-init-screen-logo-max-width: 300px;
-
-$mm-fixed-url:                  false;

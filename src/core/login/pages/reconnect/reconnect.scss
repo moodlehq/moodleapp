@@ -1,47 +1,51 @@
 page-core-login-reconnect {
     .content {
-        .mm-ioninput-password {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
         background: -webkit-radial-gradient(white, $gray-light);
         background: radial-gradient(white, $gray-light);
+    }
 
-        img {
-            max-width: 100%;
+    .mm-ioninput-password {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    img.login-logo {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .box {
+        padding: 16px;
+        margin: 8px;
+        background: $white;
+        border: 1px solid $gray;
+    }
+
+    .mm-sitename, .mm-siteurl {
+        @if $mm-fixed-url { display: none; }
+    }
+
+    .list .mm-username {
+        &.item-md {
+            @include padding-horizontal($item-md-padding-left, $content-padding);
+        }
+        &.item-ios {
+            @include padding-horizontal($item-ios-padding-left, $content-padding);
+        }
+        &.item-wp {
+            @include padding-horizontal($item-wp-padding-left, $content-padding);
         }
 
-        img.moodle-logo {
-            width: 90%;
-            max-width: 300px;
+        .item-inner {
+            padding-left: 8px;
         }
+    }
 
-        .box {
-            padding: 16px;
-            background: $white;
-            border: 1px solid $gray;
-        }
-
-        .mm-sitename, .mm-siteurl {
-            @if $mm-fixed-url { display: none; }
-        }
-
-        .list .item-input, .list .mm-username {
-            border: 1px solid $list-border-color;
-            margin-bottom: 20px;
-
-            .label {
-                margin: 0;
-            }
-        }
-
-        .list .mm-username {
-            &.item-md {
-                @include padding-horizontal($item-md-padding-left * 1.5, $content-padding);
-            }
-            &.item-ios {
-                @include padding-horizontal($item-ios-padding-left * 1.5, $content-padding);
-            }
-        }
+    .item-input {
+        margin-bottom: 20px;
     }
 }

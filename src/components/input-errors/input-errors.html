@@ -1,5 +1,5 @@
 <div class="core-input-error-container" *ngIf="formControl.dirty && !formControl.valid" role="alert">
-    <div *ngFor="let error of errorKeys">
+    <ng-container *ngFor="let error of errorKeys">
         <div *ngIf="formControl.hasError(error)" class="core-input-error">{{errorMessages[error]}}</div>
-    </div>
+    </ng-container>
 </div>

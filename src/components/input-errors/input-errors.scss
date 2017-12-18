@@ -4,8 +4,13 @@ core-input-errors {
     .core-input-error-container {
         .core-input-error {
             padding: 4px;
-            color: red;
+            color: $red;
             font-size: 12px;
+            display: none;
+
+            &:first-child {
+                display: block;
+            }
         }
     }
 }

@@ -2,24 +2,21 @@ page-core-login-site {
     .content {
         background: -webkit-radial-gradient(white, $gray-light);
         background: radial-gradient(white, $gray-light);
+    }
 
-        img {
-            max-width: 100%;
-        }
+    img.login-logo {
+        width: 90%;
+        max-width: 300px;
+    }
 
-        img.moodle-logo {
-            width: 90%;
-            max-width: 300px;
-        }
+    .box {
+        padding: 16px;
+        margin: 8px;
+        background: $white;
+        border: 1px solid $gray;
+    }
 
-        .box {
-            padding: 16px;
-            background: $white;
-            border: 1px solid $gray;
-        }
-
-        .item-input {
-            border: 1px solid $list-border-color;
-        }
+    .item-input:last-child {
+        margin-bottom: 20px;
     }
 }

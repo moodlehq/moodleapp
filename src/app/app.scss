@@ -22,59 +22,21 @@
 .text-left           { text-align: left; }
 .text-right          { text-align: right; }
 .text-center         { text-align: center; }
-
-/**
- * App Branding
- */
-.mm-bglogo {
-    background-color: $mm-color-init-screen; /* Change this to add a bg image or change color */
-    background: -webkit-radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
-    background: radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
-    background-repeat: no-repeat;
-    background-position: center center;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    display: table;
-
-    .mm-logo {
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    img {
-        width: $mm-init-screen-logo-width;
-        max-width: $mm-init-screen-logo-max-width;
-        display: block;
-        margin: 0 auto;
-        margin-bottom: 30px;
-    }
-
-    .spinner circle {
-        stroke: $mm-init-screen-spinner-color;
-    }
-}
+.text-justify        { text-align: justify; }
 
 
 @media only screen and (min-width: 430px) {
   .mm-center-view .scroll-content {
-    margin: 0 auto;
-    max-width: 600px;
-    /* display: table !important; */
-    width: 100% !important;
-    height: 100% !important;
-    .mm-view-content {
-      /* display: table-cell;
-      vertical-align: middle; */
-      display: block; // Added this style and commented some others to make scroll work. Box isn't centered vertically.
+    display: flex!important;
+    align-content: center !important;
+    align-items: center !important;
+    > * {
+      margin: 0 auto;
+      max-width: 600px;
     }
   }
 }
+
 
 // Define an alternative way to set a heading in an item without using a heading tag.
 // This is done for accessibility reasons when a heading is semantically incorrect.
@@ -83,52 +45,29 @@
 }
 
 .mm-oauth-icon, .item.mm-oauth-icon, .list .item.mm-oauth-icon {
-  padding: ($content-padding / 2);
-  border: 1px solid $list-border-color;
-
-  img, span {
+  min-height: 32px;
+  img, .label {
     max-height: 32px;
     vertical-align: middle;
   }
   img {
     max-width: 32px;
   }
-  span {
+  .label {
     margin-left: 5px;
     color: $gray-darker;
   }
-
-  .label {
-    margin: 0;
-  }
-}
-
-.icon-accessory,
-ion-icon.icon-accessory {
-  color: $item-icon-accessory-color;
-  font-size: $item-icon-accessory-font-size;
 }
 
 .mm-bold, .mm-bold .label {
   font-weight: bold;
 }
 
-.item .core-input-footnote {
-  width: 100%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  font-style: italic;
-}
-
-.content {
-  // Set bgcolor in content instead of overriding $background-color because that variable is applied to a lot of places.
-  background-color: $gray-light;
-}
-
-// Large centered avatar.
+// Avatar
+// -------------------------
+// Large centered avatar
 .item-avatar-center {
     text-align: center;
-    padding-left: 16px;
 
     &.item-complex .item-content {
         text-align: center;
@@ -158,3 +97,19 @@ ion-icon.icon-accessory {
         }
     }
 }
+
+ion-avatar ion-img, ion-avatar img {
+  text-indent: -99999px;
+  background-color: $gray-light;
+}
+
+// Form items
+// -------------------------
+
+.item .core-input-footnote {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
