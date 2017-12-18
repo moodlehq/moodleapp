@@ -71,7 +71,7 @@ export class CoreLoginEmailSignupPage {
         this.usernameErrors = this.loginHelper.getErrorMessages('core.login.usernamerequired');
         this.passwordErrors = this.loginHelper.getErrorMessages('core.login.passwordrequired');
         this.emailErrors = this.loginHelper.getErrorMessages('core.login.missingemail');
-        this.email2Errors = this.loginHelper.getErrorMessages('core.login.missingemail', null, 'core.login.emailnotmatch');
+        this.email2Errors = this.loginHelper.getErrorMessages('core.login.missingemail', undefined, 'core.login.emailnotmatch');
         this.policyErrors = this.loginHelper.getErrorMessages('core.login.policyagree');
     }
 

@@ -262,7 +262,7 @@ export class SQLiteDB {
      * @return {Promise<any>} Promise resolved when done.
      */
     deleteRecords(table: string, conditions?: object) : Promise<any> {
-        if (conditions === null) {
+        if (conditions === null || typeof conditions == 'undefined') {
             // No conditions, delete the whole table.
             return this.execute(`DELETE FROM TABLE ${table}`);
         }
@@ -674,10 +674,10 @@ export class SQLiteDB {
      */
     normaliseLimitFromNum(limitFrom: any, limitNum: any) : number[] {
         // We explicilty treat these cases as 0.
-        if (limitFrom === null || limitFrom === '' || limitFrom === -1) {
+        if (typeof limitFrom == 'undefined' || limitFrom === null || limitFrom === '' || limitFrom === -1) {
             limitFrom = 0;
         }
-        if (limitNum === null || limitNum === '' || limitNum === -1) {
+        if (typeof limitNum == 'undefined' || limitNum === null || limitNum === '' || limitNum === -1) {
             limitNum = 0;
         }
 

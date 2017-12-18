@@ -690,7 +690,7 @@ export class CoreLoginHelperProvider {
      * @param {string} error Error message.
      */
     openChangePassword(siteUrl: string, error: string) : void {
-        let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), error, null, 3000);
+        let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), error, undefined, 3000);
         alert.onDidDismiss(() => {
             this.utils.openInApp(siteUrl + '/login/change_password.php');
         });

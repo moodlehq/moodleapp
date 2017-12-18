@@ -712,7 +712,7 @@ export class CoreDomUtilsProvider {
         }
 
         let message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
-        return this.showAlert(this.getErrorTitle(message), message, null, autocloseTime);
+        return this.showAlert(this.getErrorTitle(message), message, undefined, autocloseTime);
     }
 
     /**

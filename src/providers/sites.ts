@@ -1043,7 +1043,7 @@ export class CoreSitesProvider {
             return Promise.resolve();
         }
 
-        return site.getConfig(null, true);
+        return site.getConfig(undefined, true);
     }
 
     /**
