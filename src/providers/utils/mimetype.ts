@@ -185,7 +185,7 @@ export class CoreMimetypeUtilsProvider {
             }
         }
 
-        return 'img/files/' + icon + '-64.png';
+        return 'assets/img/files/' + icon + '-64.png';
     }
 
     /**
@@ -194,7 +194,7 @@ export class CoreMimetypeUtilsProvider {
      * @return {string} The path to a folder icon.
      */
     getFolderIcon() : string {
-        return 'img/files/folder-64.png';
+        return 'assets/img/files/folder-64.png';
     }
 
     /**

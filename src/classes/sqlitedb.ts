@@ -330,6 +330,21 @@ export class SQLiteDB {
     }
 
     /**
+     * Format the data to insert in the database. Removes undefined entries so they are stored as null instead of 'undefined'.
+     *
+     * @param {object} data Data to insert.
+     */
+    protected formatDataToInsert(data: object) : void {
+        // Remove undefined entries and convert null to "NULL".
+        for (let name in data) {
+            let value = data[name];
+            if (typeof value == 'undefined') {
+                delete data[name];
+            }
+        }
+    }
+
+    /**
      * Get all the records from a table.
      *
      * @param {string} table The table to query.
@@ -585,6 +600,8 @@ export class SQLiteDB {
      * @return {any[]} Array with the SQL query and the params.
      */
     protected getSqlInsertQuery(table: string, data: object) : any[] {
+        this.formatDataToInsert(data);
+
         let keys = Object.keys(data),
             fields = keys.join(','),
             questionMarks = ',?'.repeat(keys.length).substr(1);
@@ -772,6 +789,8 @@ export class SQLiteDB {
             sets = [],
             sql,
             params;
+
+        this.formatDataToInsert(data);
 
         for (let key in data) {
             sets.push(`${key} = ?`);

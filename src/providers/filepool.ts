@@ -327,7 +327,7 @@ export class CoreFilepoolProvider {
                 component: component,
                 componentId: componentId || ''
             };
-            return db.insertOrUpdateRecord(this.LINKS_TABLE, newEntry, null);
+            return db.insertOrUpdateRecord(this.LINKS_TABLE, newEntry, undefined);
         });
     }
 
@@ -410,7 +410,7 @@ export class CoreFilepoolProvider {
      * @return {Promise<any>} Promise resolved when the file is downloaded.
      */
     protected addToQueue(siteId: string, fileId: string, url: string, priority: number, revision: number, timemodified: number,
-            filePath: string, options: any = {}, link?: any) : Promise<any> {
+            filePath: string, onProgress?: (event: any) => any, options: any = {}, link?: any) : Promise<any> {
         this.logger.debug(`Adding ${fileId} to the queue`);
 
         return this.appDB.insertRecord(this.QUEUE_TABLE, {
@@ -429,7 +429,7 @@ export class CoreFilepoolProvider {
             // Check if the queue is running.
             this.checkQueueProcessing();
             this.notifyFileDownloading(siteId, fileId);
-            return this.getQueuePromise(siteId, fileId);
+            return this.getQueuePromise(siteId, fileId, true, onProgress);
         });
     }
 
@@ -479,8 +479,7 @@ export class CoreFilepoolProvider {
 
                 // Retrieve the queue deferred now if it exists to prevent errors if file is removed from queue
                 // while we're checking if the file is in queue.
-                queueDeferred = this.getQueueDeferred(siteId, fileId, false);
-                queueDeferred.onProgress = onProgress;
+                queueDeferred = this.getQueueDeferred(siteId, fileId, false, onProgress);
 
                 return this.hasFileInQueue(siteId, fileId).then((entry: CoreFilepoolQueueEntry) => {
                     let foundLink = false,
@@ -530,7 +529,7 @@ export class CoreFilepoolProvider {
                             // Update only when required.
                             this.logger.debug(`Updating file ${fileId} which is already in queue`);
                             return this.appDB.updateRecords(this.QUEUE_TABLE, newData, primaryKey).then(() => {
-                                return this.getQueuePromise(siteId, fileId);
+                                return this.getQueuePromise(siteId, fileId, true, onProgress);
                             });
                         }
 
@@ -540,14 +539,17 @@ export class CoreFilepoolProvider {
                             // might have finished now and the deferred wouldn't be in the array anymore.
                             return queueDeferred.promise;
                         } else {
-                            return this.getQueuePromise(siteId, fileId);
+                            // Create a new deferred and return its promise.
+                            return this.getQueuePromise(siteId, fileId, true, onProgress);
                         }
                     } else {
-                        return this.addToQueue(siteId, fileId, fileUrl, priority, revision, timemodified, filePath, options, link);
+                        return this.addToQueue(
+                            siteId, fileId, fileUrl, priority, revision, timemodified, filePath, onProgress, options, link);
                     }
                 }, () => {
                     // Unsure why we could not get the record, let's add to the queue anyway.
-                    return this.addToQueue(siteId, fileId, fileUrl, priority, revision, timemodified, filePath, options, link);
+                    return this.addToQueue(
+                        siteId, fileId, fileUrl, priority, revision, timemodified, filePath, onProgress, options, link);
                 });
             });
         });
@@ -596,15 +598,17 @@ export class CoreFilepoolProvider {
                 // Check if the file should be downloaded.
                 if (sizeUnknown) {
                     if (downloadUnknown && isWifi) {
-                        return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, null, null, 0, options);
+                        return this.addToQueueByUrl(
+                            siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options);
                     }
                 } else if (size <= this.DOWNLOAD_THRESHOLD || (isWifi && size <= this.WIFI_DOWNLOAD_THRESHOLD)) {
-                    return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, null, null, 0, options);
+                    return this.addToQueueByUrl(
+                        siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options);
                 }
             });
         } else {
             // No need to check size, just add it to the queue.
-            return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, null, null, 0, options);
+            return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0, options);
         }
     }
 
@@ -817,9 +821,11 @@ export class CoreFilepoolProvider {
                 }
 
             if (prefetch) {
-                promises.push(this.addToQueueByUrl(siteId, url, component, componentId, timemodified, null, null, 0, options));
+                promises.push(this.addToQueueByUrl(
+                    siteId, url, component, componentId, timemodified, undefined, undefined, 0, options));
             } else {
-                promises.push(this.downloadUrl(siteId, url, ignoreStale, component, componentId, timemodified, null, null, options));
+                promises.push(this.downloadUrl(
+                    siteId, url, ignoreStale, component, componentId, timemodified, undefined, undefined, options));
             }
         });
 
@@ -901,7 +907,7 @@ export class CoreFilepoolProvider {
 
                 if (prefetch) {
                     promise = this.addToQueueByUrl(
-                            siteId, fileUrl, component, componentId, file.timemodified, path, null, 0, options);
+                            siteId, fileUrl, component, componentId, file.timemodified, path, undefined, 0, options);
                 } else {
                     promise = this.downloadUrl(
                             siteId, fileUrl, false, component, componentId, file.timemodified, onFileProgress, path, options);
@@ -1816,9 +1822,10 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      * @param {boolean} [create=true] True if it should create a new deferred if it doesn't exist.
+     * @param {Function} [onProgress] Function to call on progress.
      * @return {any} Deferred.
      */
-    protected getQueueDeferred(siteId: string, fileId: string, create = true): any {
+    protected getQueueDeferred(siteId: string, fileId: string, create = true, onProgress?: (event: any) => any): any {
         if (!this.queueDeferreds[siteId]) {
             if (!create) {
                 return;
@@ -1831,6 +1838,11 @@ export class CoreFilepoolProvider {
             }
             this.queueDeferreds[siteId][fileId] = this.utils.promiseDefer();
         }
+
+        if (onProgress) {
+            this.queueDeferreds[siteId][fileId].onProgress = onProgress;
+        }
+
         return this.queueDeferreds[siteId][fileId];
     }
 
@@ -1854,10 +1866,11 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      * @param {boolean} [create=true] True if it should create a new promise if it doesn't exist.
+     * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise.
      */
-    protected getQueuePromise(siteId: string, fileId: string, create = true) : Promise<any> {
-        return this.getQueueDeferred(siteId, fileId, create).promise;
+    protected getQueuePromise(siteId: string, fileId: string, create = true, onProgress?: (event: any) => any) : Promise<any> {
+        return this.getQueueDeferred(siteId, fileId, create, onProgress).promise;
     }
 
     /**
@@ -2248,7 +2261,9 @@ export class CoreFilepoolProvider {
 
         promise.then(() => {
             // All good, we schedule next execution.
-            setTimeout(this.processQueue, this.QUEUE_PROCESS_INTERVAL);
+            setTimeout(() => {
+                this.processQueue();
+            }, this.QUEUE_PROCESS_INTERVAL);
 
         }, (error) => {
 
@@ -2270,7 +2285,7 @@ export class CoreFilepoolProvider {
      * @return {Promise} Resolved on success. Rejected on failure.
      */
     protected processImportantQueueItem() : Promise<any> {
-        return this.appDB.getRecords(this.QUEUE_TABLE, null, 'priority DESC, added ASC', null, 0, 1).then((items) => {
+        return this.appDB.getRecords(this.QUEUE_TABLE, undefined, 'priority DESC, added ASC', undefined, 0, 1).then((items) => {
             let item = items.pop();
             if (!item) {
                 return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
@@ -2290,16 +2305,17 @@ export class CoreFilepoolProvider {
      * @return {Promise<any>} Resolved on success. Rejected on failure.
      */
     protected processQueueItem(item: CoreFilepoolQueueEntry) : Promise<any> {
+        // Cast optional fields to undefined instead of null.
         let siteId = item.siteId,
             fileId = item.fileId,
             fileUrl = item.url,
             options = {
-                revision: item.revision,
-                timemodified: item.timemodified,
-                isexternalfile: item.isexternalfile,
-                repositorytype: item.repositorytype
+                revision: item.revision || undefined,
+                timemodified: item.timemodified || undefined,
+                isexternalfile: item.isexternalfile || undefined,
+                repositorytype: item.repositorytype || undefined
             },
-            filePath = item.path,
+            filePath = item.path || undefined,
             links = item.links || [];
 
         this.logger.debug('Processing queue item: ' + siteId + ', ' + fileId);
@@ -2335,7 +2351,7 @@ export class CoreFilepoolProvider {
                 // Whoops, we have an error...
                 let dropFromQueue = false;
 
-                if (typeof errorObject != 'undefined' && errorObject.source === fileUrl) {
+                if (errorObject && errorObject.source === fileUrl) {
                     // This is most likely a FileTransfer error.
                     if (errorObject.code === 1) { // FILE_NOT_FOUND_ERR.
                         // The file was not found, most likely a 404, we remove from queue.

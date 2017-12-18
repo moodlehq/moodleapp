@@ -171,3 +171,10 @@ $item-wp-avatar-size: 54px;
 
 @import "roboto";
 @import "noto-sans";
+
+// Moodle Mobile variables
+// --------------------------------------------------
+
+// Small avatar ideal for icons.
+$item-media-width: 32px !default;
+$item-media-height: 32px !default;

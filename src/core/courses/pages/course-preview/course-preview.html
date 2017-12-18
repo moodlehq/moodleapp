@@ -25,7 +25,7 @@
                 <p class="item-heading">{{ 'core.teachers' | translate }}</p>
                 <p *ngFor="let contact of course.contacts">{{contact.fullname}}</p>
             </a>
-            <!-- <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file> -->
+            <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
             <div *ngIf="!isEnrolled">
                 <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
                     <p class="item-heading">{{ instance.name }}</p>

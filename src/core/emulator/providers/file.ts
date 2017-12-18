@@ -350,7 +350,6 @@ export class FileMock extends File {
                 (<any>navigator).webkitPersistentStorage.requestQuota(500 * 1024 * 1024, (granted) => {
                     window.requestFileSystem(LocalFileSystem.PERSISTENT, granted, (entry) => {
                         basePath = entry.root.toURL();
-                        // this.fileProvider.setHTMLBasePath(basePath);
                         resolve(basePath);
                     }, reject);
                 }, reject);

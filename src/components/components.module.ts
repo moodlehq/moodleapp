@@ -24,6 +24,7 @@ import { CoreIframeComponent } from './iframe/iframe';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreSearchBoxComponent } from './search-box/search-box';
+import { CoreFileComponent } from './file/file';
 
 @NgModule({
     declarations: [
@@ -34,7 +35,8 @@ import { CoreSearchBoxComponent } from './search-box/search-box';
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
-        CoreSearchBoxComponent
+        CoreSearchBoxComponent,
+        CoreFileComponent
     ],
     imports: [
         IonicModule,
@@ -49,7 +51,8 @@ import { CoreSearchBoxComponent } from './search-box/search-box';
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
-        CoreSearchBoxComponent
+        CoreSearchBoxComponent,
+        CoreFileComponent
     ]
 })
 export class CoreComponentsModule {}

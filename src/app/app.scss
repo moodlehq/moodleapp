@@ -216,3 +216,12 @@ core-format-text, *[core-format-text] {
     display: inline;
   }
 }
+
+// Media item, ideal for icons.
+.item-media {
+  min-height: $item-media-height + ($content-padding * 2);
+  > img:first-child {
+    max-width: $item-media-width;
+    max-height: $item-media-height;
+  }
+}
