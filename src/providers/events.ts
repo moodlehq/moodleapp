@@ -98,9 +98,9 @@ export class CoreEventsProvider {
      * Triggers an event, notifying all the observers.
      *
      * @param {string} event Name of the event to trigger.
-     * @param {any} data Data to pass to the observers.
+     * @param {any} [data] Data to pass to the observers.
      */
-    trigger(eventName: string, data: any) : void {
+    trigger(eventName: string, data?: any) : void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
             this.observables[eventName].next(data);

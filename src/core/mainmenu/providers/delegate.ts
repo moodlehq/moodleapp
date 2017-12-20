@@ -102,10 +102,10 @@ export class CoreMainMenuDelegate {
      */
     registerHandler(handler: CoreMainMenuHandler) : boolean {
         if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon 'handler.name' already registered`);
+            this.logger.log(`Addon '${handler.name}' already registered`);
             return false;
         }
-        this.logger.log(`Registered addon 'handler.name'`);
+        this.logger.log(`Registered addon '${handler.name}'`);
         this.handlers[handler.name] = handler;
         return true;
     }

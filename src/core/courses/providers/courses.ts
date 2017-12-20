@@ -25,6 +25,9 @@ export class CoreCoursesProvider {
     public static SEARCH_PER_PAGE = 20;
     public static ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
     public static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
+    public static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
+    public static ACCESS_GUEST = 'courses_access_guest';
+    public static ACCESS_DEFAULT = 'courses_access_default';
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {

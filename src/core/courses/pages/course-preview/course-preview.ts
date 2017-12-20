@@ -21,6 +21,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCoursesDelegate } from '../../providers/delegate';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
@@ -58,7 +59,8 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     constructor(private navCtrl: NavController, navParams: NavParams, private sitesProvider: CoreSitesProvider,
             private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider, appProvider: CoreAppProvider,
             private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
-            private translate: TranslateService, private eventsProvider: CoreEventsProvider) {
+            private translate: TranslateService, private eventsProvider: CoreEventsProvider,
+            private coursesDelegate: CoreCoursesDelegate) {
         this.course = navParams.get('course');
         this.isMobile = appProvider.isMobile();
         this.isDesktop = appProvider.isDesktop();
@@ -164,12 +166,12 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 this.course.fullname = course.fullname || this.course.fullname;
                 this.course.summary = course.summary || this.course.summary;
-                return this.loadCourseNavHandlers(refresh, false);
+                return this.loadCourseHandlers(refresh, false);
             }).catch(() => {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return this.canAccessAsGuest().then((passwordRequired) => {
                     if (!passwordRequired) {
-                        return this.loadCourseNavHandlers(refresh, true);
+                        return this.loadCourseHandlers(refresh, true);
                     } else {
                         return Promise.reject(null);
                     }
@@ -189,20 +191,12 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * @param {boolean} refresh Whether the user is refreshing the data.
      * @param {boolean} guest Whether it's guest access.
      */
-    protected loadCourseNavHandlers(refresh: boolean, guest: boolean) : Promise<any> {
-        // @todo: Get the handlers to be shown.
-        return new Promise((resolve, reject) => {
-            this.course._handlers = [];
+    protected loadCourseHandlers(refresh: boolean, guest: boolean) : Promise<any> {
+        return this.coursesDelegate.getHandlersToDisplay(this.course, refresh, guest, true).then((handlers) => {
+            this.course._handlers = handlers;
             this.handlersShouldBeShown = true;
             this.handlersLoaded = true;
-            resolve();
         });
-        // return $mmCoursesDelegate.getNavHandlersToDisplay(course, refresh, guest, true).then(function(handlers) {
-        //     course._handlers = handlers;
-        //     $scope.handlersShouldBeShown = true;
-        // }).catch(() => {
-
-        // });
     }
 
     /**

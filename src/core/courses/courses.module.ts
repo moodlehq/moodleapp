@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCoursesProvider } from './providers/courses';
 import { CoreCoursesMainMenuHandler } from './providers/handlers';
 import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
+import { CoreCoursesDelegate } from './providers/delegate';
 import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
 
 @NgModule({
@@ -25,7 +26,8 @@ import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
     providers: [
         CoreCoursesProvider,
         CoreCoursesMainMenuHandler,
-        CoreCoursesMyOverviewProvider
+        CoreCoursesMyOverviewProvider,
+        CoreCoursesDelegate
     ],
     exports: []
 })
