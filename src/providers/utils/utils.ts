@@ -552,7 +552,7 @@ export class CoreUtilsProvider {
      * @return {string} Country name. If the country is not found, return the country code.
      */
     getCountryName(code: string) : string {
-        let countryKey = 'core.country-' + code,
+        let countryKey = 'assets.countries.' + code,
             countryName = this.translate.instant(countryKey);
 
         return countryName !== countryKey ? countryName : code;
@@ -580,8 +580,8 @@ export class CoreUtilsProvider {
             let countries = {};
 
             for (let name in table) {
-                if (name.indexOf('core.country-') === 0) {
-                    let code = name.replace('core.country-', '');
+                if (name.indexOf('assets.countries.') === 0) {
+                    let code = name.replace('assets.countries.', '');
                     countries[code] = table[name];
                 }
             }

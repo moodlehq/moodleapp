@@ -3,7 +3,15 @@
     "no-duplicate-variable": true,
     "no-unused-variable": [
       true
-    ]
+    ],
+    "max-line-length": {
+      "options": [132]
+    },
+  },
+  "jsRules": {
+      "max-line-length": {
+        "options": [132]
+      }
   },
   "rulesDirectory": [
     "node_modules/tslint-eslint-rules/dist/rules"
