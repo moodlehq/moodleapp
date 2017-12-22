@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { AddonCalendarProvider } from './providers/calendar';
+import { AddonCalendarHelperProvider } from './providers/helper';
 import { AddonCalendarMainMenuHandler } from './providers/handlers';
 import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
 
@@ -24,6 +25,7 @@ import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
     ],
     providers: [
         AddonCalendarProvider,
+        AddonCalendarHelperProvider,
         AddonCalendarMainMenuHandler
     ]
 })

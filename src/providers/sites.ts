@@ -739,7 +739,7 @@ export class CoreSitesProvider {
      * @param  {number} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise}         Promise resolved with site home ID.
      */
-    getSiteHomeId(siteId: string) : Promise<number> {
+    getSiteHomeId(siteId?: string) : Promise<number> {
         return this.getSite(siteId).then((site) => {
             return site.getSiteHomeId();
         });

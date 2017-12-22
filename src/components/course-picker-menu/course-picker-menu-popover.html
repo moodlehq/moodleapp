@@ -1,0 +1,6 @@
+<ion-list radio-group [(ngModel)]="courseId">
+    <ion-item text-wrap *ngFor="let course of courses" >
+        <ion-label><core-format-text [text]="course.fullname"></core-format-text></ion-label>
+        <ion-radio value="{{course.id}}" (ionSelect)="coursePicked($event, course)" ></ion-radio>
+    </ion-item>
+</ion-list>

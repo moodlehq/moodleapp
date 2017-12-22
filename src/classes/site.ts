@@ -802,8 +802,8 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
-        let sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?%';
-        return this.db.execute(sql, [key]);
+        let sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+        return this.db.execute(sql, [key + "%"]);
     }
 
     /**

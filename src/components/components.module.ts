@@ -29,6 +29,7 @@ import { CoreFileComponent } from './file/file';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
+import { CoreCoursePickerMenuPopoverComponent } from './course-picker-menu/course-picker-menu-popover';
 import { CoreChronoComponent } from './chrono/chrono';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
@@ -47,12 +48,14 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
+        CoreCoursePickerMenuPopoverComponent,
         CoreChronoComponent,
         CoreLocalFileComponent,
         CoreSitePickerComponent
     ],
     entryComponents: [
-        CoreContextMenuPopoverComponent
+        CoreContextMenuPopoverComponent,
+        CoreCoursePickerMenuPopoverComponent
     ],
     imports: [
         IonicModule,
