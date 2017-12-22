@@ -1,0 +1,22 @@
+{
+    "activitydisabled": "Your organisation has disabled this activity in the mobile app.",
+    "activitynotyetviewableremoteaddon": "Your organisation installed a plugin that is not yet supported.",
+    "activitynotyetviewablesiteupgradeneeded": "Your organisation's Moodle installation needs to be updated.",
+    "allsections": "All sections",
+    "askadmintosupport": "Contact the site administrator and tell them you want to use this activity with the Moodle Mobile app.",
+    "confirmdeletemodulefiles": "Are you sure you want to delete these files?",
+    "confirmdownload": "You are about to download {{size}}. Are you sure you want to continue?",
+    "confirmdownloadunknownsize": "It was not possible to calculate the size of the download. Are you sure you want to continue?",
+    "confirmpartialdownloadsize": "You are about to download <strong>at least</strong> {{size}}. Are you sure you want to continue?",
+    "contents": "Contents",
+    "couldnotloadsectioncontent": "Could not load the section content. Please try again later.",
+    "couldnotloadsections": "Could not load the sections. Please try again later.",
+    "downloadcourse": "Download course",
+    "errordownloadingcourse": "Error downloading course.",
+    "errordownloadingsection": "Error downloading section.",
+    "errorgetmodule": "Error getting activity data.",
+    "hiddenfromstudents": "Hidden from students",
+    "nocontentavailable": "No content available at the moment.",
+    "overriddennotice": "Your final grade from this activity was manually adjusted.",
+    "useactivityonbrowser": "You can still use it using your device's web browser."
+}

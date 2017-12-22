@@ -80,6 +80,22 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Converts an array of objects to an object, using a property of each entry as the key.
+     * E.g. [{id: 10, name: 'A'}, {id: 11, name: 'B'}] => {10: {id: 10, name: 'A'}, 11: {id: 11, name: 'B'}}
+     *
+     * @param {any[]} array The array to convert.
+     * @param {string} propertyName The name of the property to use as the key.
+     * @return {any} The object.
+     */
+    arrayToObject(array: any[], propertyName: string) : any {
+        let result = {};
+        array.forEach((entry) => {
+            result[entry[propertyName]] = entry;
+        });
+        return result;
+    }
+
+    /**
      * Compare two objects. This function won't compare functions and proto properties, it's a basic compare.
      * Also, this will only check if itemA's properties are in itemB with same value. This function will still
      * return true if itemB has more properties than itemA.
