@@ -25,6 +25,9 @@ import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreSearchBoxComponent } from './search-box/search-box';
 import { CoreFileComponent } from './file/file';
+import { CoreContextMenuComponent } from './context-menu/context-menu';
+import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
+import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 
 @NgModule({
     declarations: [
@@ -36,7 +39,13 @@ import { CoreFileComponent } from './file/file';
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
         CoreSearchBoxComponent,
-        CoreFileComponent
+        CoreFileComponent,
+        CoreContextMenuComponent,
+        CoreContextMenuItemComponent,
+        CoreContextMenuPopoverComponent
+    ],
+    entryComponents: [
+        CoreContextMenuPopoverComponent
     ],
     imports: [
         IonicModule,
@@ -52,7 +61,9 @@ import { CoreFileComponent } from './file/file';
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
         CoreSearchBoxComponent,
-        CoreFileComponent
+        CoreFileComponent,
+        CoreContextMenuComponent,
+        CoreContextMenuItemComponent
     ]
 })
 export class CoreComponentsModule {}

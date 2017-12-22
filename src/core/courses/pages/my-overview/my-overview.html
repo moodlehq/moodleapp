@@ -49,7 +49,11 @@
                     </ion-item>
                 </ion-col>
                 <ion-col col-1 class="text-right" [hidden]="!courses[courses.selected] || !courses[courses.selected].length">
-                    <!-- @todo: Context menu. -->
+                    <core-context-menu>
+                        <core-context-menu-item [hidden]="!courses[courses.selected] || courses[courses.selected].length <= 5" [priority]="700" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" [iconAction]="'funnel'"></core-context-menu-item>
+                        <core-context-menu-item [hidden]="showGrid" [priority]="601" [content]="'core.layoutgrid' | translate" (action)="switchGrid()" [iconAction]="'apps'"></core-context-menu-item>
+                        <core-context-menu-item [hidden]="!showGrid" [priority]="600" [content]="'core.list' | translate" (action)="switchGrid()" [iconAction]="'list'"></core-context-menu-item>
+                    </core-context-menu>
                 </ion-col>
             </ion-row>
             <div [hidden]="!showFilter" class="mm-filter-box">
