@@ -25,4 +25,6 @@ angular.module('mm.core.settings')
     $scope.isIOS = ionic.Platform.isIOS();
     $scope.handlers = $mmSettingsDelegate.getHandlers();
     $scope.areHandlersLoaded = $mmSettingsDelegate.areHandlersLoaded;
+
+    $scope.ali="ali madad";
 });

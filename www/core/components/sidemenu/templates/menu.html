@@ -63,11 +63,16 @@
                             <i class="icon ion-gear-b"></i>{{ 'mm.sidemenu.appsettings' | translate}}
                         </a>
                     </li>
-                    <!--<li>-->
-                        <!--<a class="item item-icon-left" ng-click="logout()" title="{{ 'mm.sidemenu.changesite' | translate}}">-->
-                            <!--<i class="icon ion-log-out"></i>{{ logoutLabel | translate}}-->
-                        <!--</a>-->
-                    <!--</li>-->
+                    <li>
+                        <a menu-close class="item item-icon-left" ui-sref="site.mm_onlineTV">
+                            <i class="icon ion-network"></i>OnlineTV
+                        </a>
+                    </li>
+                    <li>
+                        <a class="item item-icon-left" ng-click="logout()" title="{{ 'mm.sidemenu.changesite' | translate}}">
+                            <i class="icon ion-log-out"></i>{{ logoutLabel | translate}}
+                        </a>
+                    </li>
                 </ul>
             </nav>
 

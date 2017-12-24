@@ -9,7 +9,7 @@
     "languages": { "en": "English", "fa": "فارسی"},
     "wsservice" : "moodle_mobile_app",
     "wsextservice" : "local_mobile",
-    "demo_sites":"",
+    "demo_sites":"http://lms.learnow.ir",
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
     "siteurl": "http://lms.learnow.ir",

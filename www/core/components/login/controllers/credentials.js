@@ -23,7 +23,7 @@ angular.module('mm.core.login')
  */
 .controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $mmEvents,
             $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate, mmCoreLoginSiteCheckedEvent, $state,
-            mmCoreLoginSiteUncheckedEvent) {
+            mmCoreLoginSiteUncheckedEvent,$window) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
@@ -212,4 +212,8 @@ angular.module('mm.core.login')
             config: siteConfig
         });
     });
+
+    $scope.register=function () {
+        $window.open('https://www.google.com'|embedded, '_blank');
+    }
 });

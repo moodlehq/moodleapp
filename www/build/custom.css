@@ -25,7 +25,6 @@
     opacity: .75;
     transition: .5s;
 }
-
 .activeTab{
     opacity: 1;
     transition: .5s;
@@ -37,7 +36,6 @@
     border-radius: 50px;
     padding: 4px;
 }
-
 .pane{
     background: url("../img/costum/AmirHossein.jpg") round;
 }
@@ -47,35 +45,37 @@
 .tab1{
     background: url("../img/costum/2.jpg") round;
 }
-
-
-
-
 .div1 {
-    transition: all linear 0.5s;
-    background-color: lightblue;
-    height: auto;
-    width: 100%;
+    /*transition: all linear 0.5s;*/
+    /*background-color: lightblue;*/
+    /*height: auto;*/
+    /*width: 100%;*/
     position: relative;
-    top: 0;
+    /*top: 0;*/
     /*left: 0;*/
-}
+    height: 200px;
+    background: #e5feff;
+    overflow: hidden;
+    -moz-transition: 1s;
+    -ms-transition: 1s;
+    -o-transition: 1s;
+    -webkit-transition: 1s;
+    transition: 1s;
 
+}
 .ng-hide {
-    height: 0;
-    width: 0;
+    /*height: 0;*/
+    /*width: 0;*/
     background-color: transparent;
     /*top:0px;*/
     /*left: 200px;*/
+
+    height:0px;
+    background: #e5feff;
+    overflow: hidden;
+    -moz-transition: 1s;
+    -ms-transition: 1s;
+    -o-transition: 1s;
+    -webkit-transition: 1s;
+    transition: 1s;
 }
-
-
-
-
-
-
-
-
-
-
-

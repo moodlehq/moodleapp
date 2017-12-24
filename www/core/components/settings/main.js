@@ -33,6 +33,16 @@ angular.module('mm.core.settings', [])
         }
     })
 
+        .state('site.mm_onlineTV', {
+            url: 'mm_onlineTV',
+            views: {
+                'site': {
+                    templateUrl: 'core/components/settings/templates/onlineTV.html',
+                    controller: 'mmOnlineTVCtrl'
+                }
+            }
+        })
+
     .state('site.mm_settings-about', {
         url: '/mm_settings-about',
         views: {

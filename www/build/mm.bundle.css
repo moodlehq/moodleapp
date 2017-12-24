@@ -12971,6 +12971,132 @@ mm-course-list-item div.item-icon-left.earlysubmission {
   z-index: 100;
   cursor: pointer; }
 
+/* - User grades table (most of it extracted from MM1)
+-------------------------------------------------------------------------- */
+.mm-grades-container {
+  padding-right: 2px;
+  background: white; }
+
+.mm-grades-table {
+  border-collapse: collapse;
+  line-height: 20px;
+  width: 100%;
+  font-size: 16px;
+  color: #444; }
+  .mm-grades-table tr {
+    border-bottom: 1px solid #dddddd; }
+  .mm-grades-table th,
+  .mm-grades-table td {
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+    white-space: normal; }
+  .mm-grades-table thead th {
+    padding-left: 10px;
+    vertical-align: bottom;
+    font-weight: bold; }
+  .mm-grades-table tbody th {
+    font-weight: normal; }
+  .mm-grades-table .item, .mm-grades-table .itemcenter {
+    display: table-cell; }
+  .mm-grades-table th.b1b {
+    padding-left: 20px; }
+  .mm-grades-table th.item, .mm-grades-table th.itemcenter {
+    padding-left: 30px; }
+  .mm-grades-table th.baggt {
+    padding-left: 30px; }
+  .mm-grades-table th img {
+    margin-left: -20px;
+    float: left; }
+  .mm-grades-table .b1l {
+    width: 10px;
+    min-width: 10px; }
+  .mm-grades-table .b1t,
+  .mm-grades-table .baggt {
+    font-weight: bold; }
+  .mm-grades-table .itemcenter {
+    padding: 10px;
+    white-space: normal; }
+  .mm-grades-table .feedbacktext {
+    padding-left: 10px; }
+    .mm-grades-table .feedbacktext .no-overflow {
+      overflow: auto; }
+  .mm-grades-table .dimmed_text,
+  .mm-grades-table .hidden,
+  .mm-grades-table .hidden a {
+    color: #aaa; }
+  .mm-grades-table .oddd1,
+  .mm-grades-table .oddd3,
+  .mm-grades-table .evend3,
+  .mm-grades-table .levelodd {
+    background-color: #f5f5f5; }
+  .mm-grades-table .oddd2,
+  .mm-grades-table .evend2,
+  .mm-grades-table .oddd4,
+  .mm-grades-table .evend4 {
+    background-color: #f5f5f5; }
+  .mm-grades-table .leveleven {
+    background-color: #fff; }
+  .mm-grades-table .column-leader {
+    border-left: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd; }
+    .mm-grades-table .column-leader.level1 {
+      border-left: 0; }
+  .mm-grades-table .column-itemname {
+    border-right: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd; }
+
+.mm-mm_login_sites .item-thumbnail-left .item-content {
+  padding-top: 16px;
+  padding-right: 16px; }
+
+.mm-mm_login_sites .list-left-editing .item-thumbnail-left .item-content {
+  padding-right: 49px; }
+
+.mm-mm_login_sites .avatar {
+  margin: 0;
+  width: 80px;
+  height: 80px;
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 50%;
+  padding: 4px;
+  border: 1px solid #ddd;
+  text-indent: -99999px; }
+
+.mm-login-sitepolicy-iframe {
+  height: 300px; }
+
+.mm-oauth-icon, .item.mm-oauth-icon, .mm-grades-table .mm-oauth-icon.itemcenter {
+  padding: 8px; }
+  .mm-oauth-icon > img, .mm-oauth-icon > span, .item.mm-oauth-icon > img, .mm-grades-table .mm-oauth-icon.itemcenter > img, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
+    max-height: 32px;
+    max-width: 32px;
+    vertical-align: middle; }
+  .mm-oauth-icon > span, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
+    margin-left: 5px;
+    color: #626262; }
+
+.mm-mm_login_credentials, .mm-mm_login_reconnect, .mm-mm_login_site {
+  background: -webkit-radial-gradient(white, #eeeeee);
+  background: radial-gradient(white, #eeeeee); }
+  .mm-mm_login_credentials .mm-ioninput-password, .mm-mm_login_reconnect .mm-ioninput-password, .mm-mm_login_site .mm-ioninput-password {
+    padding-top: 0;
+    padding-bottom: 0; }
+  .mm-mm_login_credentials img, .mm-mm_login_reconnect img, .mm-mm_login_site img {
+    max-width: 100%; }
+  .mm-mm_login_credentials img.moodle-logo, .mm-mm_login_reconnect img.moodle-logo, .mm-mm_login_site img.moodle-logo {
+    width: 90%;
+    max-width: 300px; }
+  .mm-mm_login_credentials .box, .mm-mm_login_reconnect .box, .mm-mm_login_site .box {
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #dddddd; }
+
 .mm-question-textarea {
   width: 100%;
   height: 250px;
@@ -13105,132 +13231,6 @@ li.mm-question-answer-incorrect,
 
 .questioncorrectnessicon {
   font-size: 20px; }
-
-/* - User grades table (most of it extracted from MM1)
--------------------------------------------------------------------------- */
-.mm-grades-container {
-  padding-right: 2px;
-  background: white; }
-
-.mm-grades-table {
-  border-collapse: collapse;
-  line-height: 20px;
-  width: 100%;
-  font-size: 16px;
-  color: #444; }
-  .mm-grades-table tr {
-    border-bottom: 1px solid #dddddd; }
-  .mm-grades-table th,
-  .mm-grades-table td {
-    text-align: left;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-right: 10px;
-    vertical-align: top;
-    white-space: normal; }
-  .mm-grades-table thead th {
-    padding-left: 10px;
-    vertical-align: bottom;
-    font-weight: bold; }
-  .mm-grades-table tbody th {
-    font-weight: normal; }
-  .mm-grades-table .item, .mm-grades-table .itemcenter {
-    display: table-cell; }
-  .mm-grades-table th.b1b {
-    padding-left: 20px; }
-  .mm-grades-table th.item, .mm-grades-table th.itemcenter {
-    padding-left: 30px; }
-  .mm-grades-table th.baggt {
-    padding-left: 30px; }
-  .mm-grades-table th img {
-    margin-left: -20px;
-    float: left; }
-  .mm-grades-table .b1l {
-    width: 10px;
-    min-width: 10px; }
-  .mm-grades-table .b1t,
-  .mm-grades-table .baggt {
-    font-weight: bold; }
-  .mm-grades-table .itemcenter {
-    padding: 10px;
-    white-space: normal; }
-  .mm-grades-table .feedbacktext {
-    padding-left: 10px; }
-    .mm-grades-table .feedbacktext .no-overflow {
-      overflow: auto; }
-  .mm-grades-table .dimmed_text,
-  .mm-grades-table .hidden,
-  .mm-grades-table .hidden a {
-    color: #aaa; }
-  .mm-grades-table .oddd1,
-  .mm-grades-table .oddd3,
-  .mm-grades-table .evend3,
-  .mm-grades-table .levelodd {
-    background-color: #f5f5f5; }
-  .mm-grades-table .oddd2,
-  .mm-grades-table .evend2,
-  .mm-grades-table .oddd4,
-  .mm-grades-table .evend4 {
-    background-color: #f5f5f5; }
-  .mm-grades-table .leveleven {
-    background-color: #fff; }
-  .mm-grades-table .column-leader {
-    border-left: 1px solid #dddddd;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd; }
-    .mm-grades-table .column-leader.level1 {
-      border-left: 0; }
-  .mm-grades-table .column-itemname {
-    border-right: 1px solid #dddddd;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd; }
-
-.mm-mm_login_sites .item-thumbnail-left .item-content {
-  padding-top: 16px;
-  padding-right: 16px; }
-
-.mm-mm_login_sites .list-left-editing .item-thumbnail-left .item-content {
-  padding-right: 49px; }
-
-.mm-mm_login_sites .avatar {
-  margin: 0;
-  width: 80px;
-  height: 80px;
-  max-width: 80px;
-  max-height: 80px;
-  border-radius: 50%;
-  padding: 4px;
-  border: 1px solid #ddd;
-  text-indent: -99999px; }
-
-.mm-login-sitepolicy-iframe {
-  height: 300px; }
-
-.mm-oauth-icon, .item.mm-oauth-icon, .mm-grades-table .mm-oauth-icon.itemcenter {
-  padding: 8px; }
-  .mm-oauth-icon > img, .mm-oauth-icon > span, .item.mm-oauth-icon > img, .mm-grades-table .mm-oauth-icon.itemcenter > img, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
-    max-height: 32px;
-    max-width: 32px;
-    vertical-align: middle; }
-  .mm-oauth-icon > span, .item.mm-oauth-icon > span, .mm-grades-table .mm-oauth-icon.itemcenter > span {
-    margin-left: 5px;
-    color: #626262; }
-
-.mm-mm_login_credentials, .mm-mm_login_reconnect, .mm-mm_login_site {
-  background: -webkit-radial-gradient(white, #eeeeee);
-  background: radial-gradient(white, #eeeeee); }
-  .mm-mm_login_credentials .mm-ioninput-password, .mm-mm_login_reconnect .mm-ioninput-password, .mm-mm_login_site .mm-ioninput-password {
-    padding-top: 0;
-    padding-bottom: 0; }
-  .mm-mm_login_credentials img, .mm-mm_login_reconnect img, .mm-mm_login_site img {
-    max-width: 100%; }
-  .mm-mm_login_credentials img.moodle-logo, .mm-mm_login_reconnect img.moodle-logo, .mm-mm_login_site img.moodle-logo {
-    width: 90%;
-    max-width: 300px; }
-  .mm-mm_login_credentials .box, .mm-mm_login_reconnect .box, .mm-mm_login_site .box {
-    padding: 16px;
-    background: #ffffff;
-    border: 1px solid #dddddd; }
 
 #mm-settings-languagelabel {
   color: #3a3a3a; }
@@ -14047,6 +14047,27 @@ p.mma-mod-quiz-warning {
 #mma-mod-quiz-toc .item, #mma-mod-quiz-toc .mm-grades-table .itemcenter, .mm-grades-table #mma-mod-quiz-toc .itemcenter {
   border-color: #9e9e9e; }
 
+.mm-site_mod_survey .row, .mm-site_mod_survey .mm-data-contents tr, .mm-data-contents .mm-site_mod_survey tr, .mm-site_mod_survey .input-label {
+  font-size: 14px; }
+
+.mm-site_mod_survey .mma-mod_survey-darkbg {
+  background-color: #f5f5f5; }
+
+.mm-site_mod_survey .mma-mod_survey-padding-top {
+  padding-top: 20px; }
+
+.mm-site_mod_survey textarea.mma-mod_survey-textarea {
+  height: 100px;
+  border: 1px solid #dddddd; }
+
+.mm-site_mod_survey select.mma-mod_survey-select {
+  background-color: transparent;
+  padding-left: 0px;
+  padding-right: 32px;
+  max-width: 100%; }
+  .mm-site_mod_survey select.mma-mod_survey-select .mma-mod_survey-defaultoption {
+    display: none; }
+
 .mma-scorm-level-0 {
   padding-left: 16px; }
 
@@ -14123,27 +14144,6 @@ ion-popover-view {
 .platform-ios ion-popover-view.mma-scorm-popover {
   padding-top: 10px;
   padding-bottom: 10px; }
-
-.mm-site_mod_survey .row, .mm-site_mod_survey .mm-data-contents tr, .mm-data-contents .mm-site_mod_survey tr, .mm-site_mod_survey .input-label {
-  font-size: 14px; }
-
-.mm-site_mod_survey .mma-mod_survey-darkbg {
-  background-color: #f5f5f5; }
-
-.mm-site_mod_survey .mma-mod_survey-padding-top {
-  padding-top: 20px; }
-
-.mm-site_mod_survey textarea.mma-mod_survey-textarea {
-  height: 100px;
-  border: 1px solid #dddddd; }
-
-.mm-site_mod_survey select.mma-mod_survey-select {
-  background-color: transparent;
-  padding-left: 0px;
-  padding-right: 32px;
-  max-width: 100%; }
-  .mm-site_mod_survey select.mma-mod_survey-select .mma-mod_survey-defaultoption {
-    display: none; }
 
 .mm-site_mod_wiki {
   background-color: white;
