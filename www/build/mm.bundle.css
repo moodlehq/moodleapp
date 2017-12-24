@@ -12562,6 +12562,17 @@ mm-format-text .badge, mm-format-text .mma-messages-date span, .mma-messages-dat
 .cke_inner.cke_maximized .cke_toolbox_main {
   margin: 0; }
 
+.mm-fileuploader-file-handler input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none;
+  z-index: 100;
+  cursor: pointer; }
+
 .item.item-button-right .badge.mm-course-download, .mm-grades-table .item-button-right.itemcenter .badge.mm-course-download, .item.item-button-right .mma-messages-date span.mm-course-download, .mma-messages-date .item.item-button-right span.mm-course-download, .mm-grades-table .item-button-right.itemcenter .mma-messages-date span.mm-course-download, .mma-messages-date .mm-grades-table .item-button-right.itemcenter span.mm-course-download, .item.item-button-right
 .mma-messages-unreadfrom span.mm-course-download,
 .mma-messages-unreadfrom .item.item-button-right span.mm-course-download, .mm-grades-table .item-button-right.itemcenter
@@ -12577,6 +12588,201 @@ mm-course-mod-description .card .item, mm-course-mod-description .card .mm-grade
 
 .padding mm-course-mod-description .card, .item .item-heading.padding mm-course-mod-description .card, .mm-grades-table .itemcenter .item-heading.padding mm-course-mod-description .card {
   margin-top: 0; }
+
+.mm-question-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none; }
+
+.mm-question-answer-correct,
+select.mm-question-answer-correct,
+input.mm-question-answer-correct,
+input[readonly]:not(.cloned-text-input).mm-question-answer-correct,
+textarea.mm-question-answer-correct,
+textarea[readonly]:not(.cloned-text-input).mm-question-answer-correct,
+label.mm-question-answer-correct,
+li.mm-question-answer-correct,
+.mm-question-answer-correct p,
+.mm-question-answer-correct input,
+.mm-question-answer-correct select,
+.mm-question-answer-correct .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-correct.item-radio input:checked + .radio-content .item-content,
+.mm-question-comment,
+.mm-question-comment p {
+  color: #394e00;
+  -webkit-text-fill-color: #394e00;
+  /* Override iOS / Android font color change */
+  background-color: #dfe6cc; }
+
+.mm-question-answer-correct .checkbox input:disabled:checked:before,
+.mm-question-answer-correct .checkbox input:disabled:checked + .checkbox-icon:before,
+.mm-question-answer-correct.item-radio input:checked + .radio-content .radio-icon:before {
+  background-color: #394e00;
+  border-color: #394e00; }
+
+.mm-question-answer-incorrect,
+select.mm-question-answer-incorrect,
+input.mm-question-answer-incorrect,
+input[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
+textarea.mm-question-answer-incorrect,
+textarea[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
+label.mm-question-answer-incorrect,
+li.mm-question-answer-incorrect,
+.mm-question-answer-incorrect p,
+.mm-question-answer-incorrect input,
+.mm-question-answer-incorrect select,
+.mm-question-answer-incorrect .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-incorrect.item-radio input:checked + .radio-content .item-content,
+.mm-question-incorrect,
+.mm-question-incorrect p {
+  color: #cb3d4d;
+  -webkit-text-fill-color: #cb3d4d;
+  /* Override iOS / Android font color change */
+  background-color: #f5d8db; }
+
+.mm-question-answer-incorrect .checkbox input:disabled:checked:before,
+.mm-question-answer-incorrect .checkbox input:disabled:checked + .checkbox-icon:before,
+.mm-question-answer-incorrect.item-radio input:checked + .radio-content .radio-icon:before {
+  background-color: #cb3d4d;
+  border-color: #cb3d4d; }
+
+.mm-question-answer-correct input:disabled,
+.mm-question-answer-incorrect input:disabled {
+  opacity: 1; }
+
+.mm-question-feedback-container,
+.mm-question-feedback-container p {
+  background-color: #feefd1;
+  color: #64450a; }
+  .mm-question-feedback-container .specificfeedback, .mm-question-feedback-container .rightanswer, .mm-question-feedback-container .im-feedback, .mm-question-feedback-container .feedback, .mm-question-feedback-container .generalfeedback,
+  .mm-question-feedback-container p .specificfeedback,
+  .mm-question-feedback-container p .rightanswer,
+  .mm-question-feedback-container p .im-feedback,
+  .mm-question-feedback-container p .feedback,
+  .mm-question-feedback-container p .generalfeedback {
+    margin: 0 0 .5em; }
+  .mm-question-feedback-container .correctness,
+  .mm-question-feedback-container p .correctness {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #9e9e9e;
+    -webkit-border-radius: 3px;
+    border-radius: 3px; }
+    .mm-question-feedback-container .correctness.incorrect,
+    .mm-question-feedback-container p .correctness.incorrect {
+      background-color: #cb3d4d; }
+    .mm-question-feedback-container .correctness.correct,
+    .mm-question-feedback-container p .correctness.correct {
+      background-color: #5e8100; }
+
+.mm-question-feedback-inline {
+  display: inline-block; }
+
+.mm-question-feedback-padding {
+  padding: 8px 35px 8px 14px; }
+
+.item.mm-question-correct, .mm-grades-table .mm-question-correct.itemcenter,
+.platform-android .item.mm-question-correct,
+.platform-android .mm-grades-table .mm-question-correct.itemcenter, .mm-grades-table
+.platform-android .mm-question-correct.itemcenter,
+.platform-ios .item.mm-question-correct,
+.platform-ios .mm-grades-table .mm-question-correct.itemcenter, .mm-grades-table
+.platform-ios .mm-question-correct.itemcenter {
+  background-color: #dfe6cc; }
+
+.item.mm-question-partiallycorrect, .mm-grades-table .mm-question-partiallycorrect.itemcenter,
+.platform-android .item.mm-question-partiallycorrect,
+.platform-android .mm-grades-table .mm-question-partiallycorrect.itemcenter, .mm-grades-table
+.platform-android .mm-question-partiallycorrect.itemcenter,
+.platform-ios .item.mm-question-partiallycorrect,
+.platform-ios .mm-grades-table .mm-question-partiallycorrect.itemcenter, .mm-grades-table
+.platform-ios .mm-question-partiallycorrect.itemcenter {
+  background-color: #feefd1; }
+
+.item.mm-question-notanswered, .mm-grades-table .mm-question-notanswered.itemcenter, .item.mm-question-incorrect, .mm-grades-table .mm-question-incorrect.itemcenter,
+.platform-android .item.mm-question-notanswered,
+.platform-android .mm-grades-table .mm-question-notanswered.itemcenter, .mm-grades-table
+.platform-android .mm-question-notanswered.itemcenter,
+.platform-android .item.mm-question-incorrect,
+.platform-android .mm-grades-table .mm-question-incorrect.itemcenter, .mm-grades-table
+.platform-android .mm-question-incorrect.itemcenter,
+.platform-ios .item.mm-question-notanswered,
+.platform-ios .mm-grades-table .mm-question-notanswered.itemcenter, .mm-grades-table
+.platform-ios .mm-question-notanswered.itemcenter,
+.platform-ios .item.mm-question-incorrect,
+.platform-ios .mm-grades-table .mm-question-incorrect.itemcenter, .mm-grades-table
+.platform-ios .mm-question-incorrect.itemcenter {
+  background-color: #f5d8db; }
+
+.mm-question-warning, p.mm-question-warning, .item .mm-question-warning, .mm-grades-table .itemcenter .mm-question-warning {
+  color: #cb3d4d; }
+
+.questioncorrectnessicon {
+  font-size: 20px; }
+
+.mm-capture-media-modal {
+  background-color: #eeeeee; }
+  .mm-capture-media-modal .bar-header {
+    border-color: transparent;
+    background-color: #f98012;
+    background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
+    color: #ffffff; }
+    .mm-capture-media-modal .bar-header .title {
+      color: #ffffff; }
+    .mm-capture-media-modal .bar-header .button {
+      color: #ffffff;
+      font-weight: normal; }
+  .mm-capture-media-modal .mm-capture-media-modal-content {
+    text-align: center; }
+    .mm-capture-media-modal .mm-capture-media-modal-content .mm-av-wrapper {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: table;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      clear: both; }
+    .mm-capture-media-modal .mm-capture-media-modal-content audio, .mm-capture-media-modal .mm-capture-media-modal-content video, .mm-capture-media-modal .mm-capture-media-modal-content img {
+      width: 100%;
+      height: 100%;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+      object-fit: contain; }
+      .mm-capture-media-modal .mm-capture-media-modal-content audio.mm-webcam-stream, .mm-capture-media-modal .mm-capture-media-modal-content video.mm-webcam-stream, .mm-capture-media-modal .mm-capture-media-modal-content img.mm-webcam-stream {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1); }
+    .mm-capture-media-modal .mm-capture-media-modal-content .mm-webcam-image-canvas {
+      display: none; }
+    .mm-capture-media-modal .mm-capture-media-modal-content .mm-audio-record-container {
+      width: 100%;
+      height: 100%; }
+      .mm-capture-media-modal .mm-capture-media-modal-content .mm-audio-record-container .mm-audio-canvas {
+        width: 100%;
+        height: 100%; }
+      .mm-capture-media-modal .mm-capture-media-modal-content .mm-audio-record-container .mm-audio-captured {
+        width: 100%; }
+  .mm-capture-media-modal .bar-footer {
+    background-color: #dddddd;
+    border-top-color: #9e9e9e; }
+    .mm-capture-media-modal .bar-footer .col, .mm-capture-media-modal .bar-footer .mm-data-contents td, .mm-data-contents .mm-capture-media-modal .bar-footer td, .mm-capture-media-modal .bar-footer .mm-data-contents th, .mm-data-contents .mm-capture-media-modal .bar-footer th {
+      padding: 0;
+      line-height: 34px; }
+      .mm-capture-media-modal .bar-footer .col .button-icon, .mm-capture-media-modal .bar-footer .mm-data-contents td .button-icon, .mm-data-contents .mm-capture-media-modal .bar-footer td .button-icon, .mm-capture-media-modal .bar-footer .mm-data-contents th .button-icon, .mm-data-contents .mm-capture-media-modal .bar-footer th .button-icon {
+        color: #3a3a3a; }
+      .mm-capture-media-modal .bar-footer .col .ion-record, .mm-capture-media-modal .bar-footer .mm-data-contents td .ion-record, .mm-data-contents .mm-capture-media-modal .bar-footer td .ion-record, .mm-capture-media-modal .bar-footer .mm-data-contents th .ion-record, .mm-data-contents .mm-capture-media-modal .bar-footer th .ion-record, .mm-capture-media-modal .bar-footer .col .ion-trash-a, .mm-capture-media-modal .bar-footer .mm-data-contents td .ion-trash-a, .mm-data-contents .mm-capture-media-modal .bar-footer td .ion-trash-a, .mm-capture-media-modal .bar-footer .mm-data-contents th .ion-trash-a, .mm-data-contents .mm-capture-media-modal .bar-footer th .ion-trash-a {
+        color: #cb3d4d; }
+
+#mm-settings-languagelabel {
+  color: #3a3a3a; }
 
 .item-course > .icon, .item-course > ion-spinner {
   height: 40px;
@@ -12903,73 +13109,14 @@ mm-course-list-item div.item-icon-left.earlysubmission {
   max-width: 20px;
   max-height: 34px; }
 
-.mm-capture-media-modal {
-  background-color: #eeeeee; }
-  .mm-capture-media-modal .bar-header {
-    border-color: transparent;
-    background-color: #f98012;
-    background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
-    color: #ffffff; }
-    .mm-capture-media-modal .bar-header .title {
-      color: #ffffff; }
-    .mm-capture-media-modal .bar-header .button {
-      color: #ffffff;
-      font-weight: normal; }
-  .mm-capture-media-modal .mm-capture-media-modal-content {
-    text-align: center; }
-    .mm-capture-media-modal .mm-capture-media-modal-content .mm-av-wrapper {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: table;
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      clear: both; }
-    .mm-capture-media-modal .mm-capture-media-modal-content audio, .mm-capture-media-modal .mm-capture-media-modal-content video, .mm-capture-media-modal .mm-capture-media-modal-content img {
-      width: 100%;
-      height: 100%;
-      display: table-cell;
-      text-align: center;
-      vertical-align: middle;
-      object-fit: contain; }
-      .mm-capture-media-modal .mm-capture-media-modal-content audio.mm-webcam-stream, .mm-capture-media-modal .mm-capture-media-modal-content video.mm-webcam-stream, .mm-capture-media-modal .mm-capture-media-modal-content img.mm-webcam-stream {
-        -webkit-transform: scaleX(-1);
-        transform: scaleX(-1); }
-    .mm-capture-media-modal .mm-capture-media-modal-content .mm-webcam-image-canvas {
-      display: none; }
-    .mm-capture-media-modal .mm-capture-media-modal-content .mm-audio-record-container {
-      width: 100%;
-      height: 100%; }
-      .mm-capture-media-modal .mm-capture-media-modal-content .mm-audio-record-container .mm-audio-canvas {
-        width: 100%;
-        height: 100%; }
-      .mm-capture-media-modal .mm-capture-media-modal-content .mm-audio-record-container .mm-audio-captured {
-        width: 100%; }
-  .mm-capture-media-modal .bar-footer {
-    background-color: #dddddd;
-    border-top-color: #9e9e9e; }
-    .mm-capture-media-modal .bar-footer .col, .mm-capture-media-modal .bar-footer .mm-data-contents td, .mm-data-contents .mm-capture-media-modal .bar-footer td, .mm-capture-media-modal .bar-footer .mm-data-contents th, .mm-data-contents .mm-capture-media-modal .bar-footer th {
-      padding: 0;
-      line-height: 34px; }
-      .mm-capture-media-modal .bar-footer .col .button-icon, .mm-capture-media-modal .bar-footer .mm-data-contents td .button-icon, .mm-data-contents .mm-capture-media-modal .bar-footer td .button-icon, .mm-capture-media-modal .bar-footer .mm-data-contents th .button-icon, .mm-data-contents .mm-capture-media-modal .bar-footer th .button-icon {
-        color: #3a3a3a; }
-      .mm-capture-media-modal .bar-footer .col .ion-record, .mm-capture-media-modal .bar-footer .mm-data-contents td .ion-record, .mm-data-contents .mm-capture-media-modal .bar-footer td .ion-record, .mm-capture-media-modal .bar-footer .mm-data-contents th .ion-record, .mm-data-contents .mm-capture-media-modal .bar-footer th .ion-record, .mm-capture-media-modal .bar-footer .col .ion-trash-a, .mm-capture-media-modal .bar-footer .mm-data-contents td .ion-trash-a, .mm-data-contents .mm-capture-media-modal .bar-footer td .ion-trash-a, .mm-capture-media-modal .bar-footer .mm-data-contents th .ion-trash-a, .mm-data-contents .mm-capture-media-modal .bar-footer th .ion-trash-a {
-        color: #cb3d4d; }
+.foreground-ion-edit.ion-edit:before {
+  position: relative;
+  left: 120px;
+  bottom: 15px;
+  font-size: 24px; }
 
-.mm-fileuploader-file-handler input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  opacity: 0;
-  outline: none;
-  z-index: 100;
-  cursor: pointer; }
+.mm-site_mm_user-profile .mm-tab-handlers {
+  padding-bottom: 16px; }
 
 /* - User grades table (most of it extracted from MM1)
 -------------------------------------------------------------------------- */
@@ -13097,144 +13244,6 @@ mm-course-list-item div.item-icon-left.earlysubmission {
     background: #ffffff;
     border: 1px solid #dddddd; }
 
-.mm-question-textarea {
-  width: 100%;
-  height: 250px;
-  resize: none; }
-
-.mm-question-answer-correct,
-select.mm-question-answer-correct,
-input.mm-question-answer-correct,
-input[readonly]:not(.cloned-text-input).mm-question-answer-correct,
-textarea.mm-question-answer-correct,
-textarea[readonly]:not(.cloned-text-input).mm-question-answer-correct,
-label.mm-question-answer-correct,
-li.mm-question-answer-correct,
-.mm-question-answer-correct p,
-.mm-question-answer-correct input,
-.mm-question-answer-correct select,
-.mm-question-answer-correct .item-radio input:checked + .radio-content .item-content,
-.mm-question-answer-correct.item-radio input:checked + .radio-content .item-content,
-.mm-question-comment,
-.mm-question-comment p {
-  color: #394e00;
-  -webkit-text-fill-color: #394e00;
-  /* Override iOS / Android font color change */
-  background-color: #dfe6cc; }
-
-.mm-question-answer-correct .checkbox input:disabled:checked:before,
-.mm-question-answer-correct .checkbox input:disabled:checked + .checkbox-icon:before,
-.mm-question-answer-correct.item-radio input:checked + .radio-content .radio-icon:before {
-  background-color: #394e00;
-  border-color: #394e00; }
-
-.mm-question-answer-incorrect,
-select.mm-question-answer-incorrect,
-input.mm-question-answer-incorrect,
-input[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
-textarea.mm-question-answer-incorrect,
-textarea[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
-label.mm-question-answer-incorrect,
-li.mm-question-answer-incorrect,
-.mm-question-answer-incorrect p,
-.mm-question-answer-incorrect input,
-.mm-question-answer-incorrect select,
-.mm-question-answer-incorrect .item-radio input:checked + .radio-content .item-content,
-.mm-question-answer-incorrect.item-radio input:checked + .radio-content .item-content,
-.mm-question-incorrect,
-.mm-question-incorrect p {
-  color: #cb3d4d;
-  -webkit-text-fill-color: #cb3d4d;
-  /* Override iOS / Android font color change */
-  background-color: #f5d8db; }
-
-.mm-question-answer-incorrect .checkbox input:disabled:checked:before,
-.mm-question-answer-incorrect .checkbox input:disabled:checked + .checkbox-icon:before,
-.mm-question-answer-incorrect.item-radio input:checked + .radio-content .radio-icon:before {
-  background-color: #cb3d4d;
-  border-color: #cb3d4d; }
-
-.mm-question-answer-correct input:disabled,
-.mm-question-answer-incorrect input:disabled {
-  opacity: 1; }
-
-.mm-question-feedback-container,
-.mm-question-feedback-container p {
-  background-color: #feefd1;
-  color: #64450a; }
-  .mm-question-feedback-container .specificfeedback, .mm-question-feedback-container .rightanswer, .mm-question-feedback-container .im-feedback, .mm-question-feedback-container .feedback, .mm-question-feedback-container .generalfeedback,
-  .mm-question-feedback-container p .specificfeedback,
-  .mm-question-feedback-container p .rightanswer,
-  .mm-question-feedback-container p .im-feedback,
-  .mm-question-feedback-container p .feedback,
-  .mm-question-feedback-container p .generalfeedback {
-    margin: 0 0 .5em; }
-  .mm-question-feedback-container .correctness,
-  .mm-question-feedback-container p .correctness {
-    display: inline-block;
-    padding: 2px 4px;
-    font-weight: bold;
-    line-height: 14px;
-    color: #ffffff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    background-color: #9e9e9e;
-    -webkit-border-radius: 3px;
-    border-radius: 3px; }
-    .mm-question-feedback-container .correctness.incorrect,
-    .mm-question-feedback-container p .correctness.incorrect {
-      background-color: #cb3d4d; }
-    .mm-question-feedback-container .correctness.correct,
-    .mm-question-feedback-container p .correctness.correct {
-      background-color: #5e8100; }
-
-.mm-question-feedback-inline {
-  display: inline-block; }
-
-.mm-question-feedback-padding {
-  padding: 8px 35px 8px 14px; }
-
-.item.mm-question-correct, .mm-grades-table .mm-question-correct.itemcenter,
-.platform-android .item.mm-question-correct,
-.platform-android .mm-grades-table .mm-question-correct.itemcenter, .mm-grades-table
-.platform-android .mm-question-correct.itemcenter,
-.platform-ios .item.mm-question-correct,
-.platform-ios .mm-grades-table .mm-question-correct.itemcenter, .mm-grades-table
-.platform-ios .mm-question-correct.itemcenter {
-  background-color: #dfe6cc; }
-
-.item.mm-question-partiallycorrect, .mm-grades-table .mm-question-partiallycorrect.itemcenter,
-.platform-android .item.mm-question-partiallycorrect,
-.platform-android .mm-grades-table .mm-question-partiallycorrect.itemcenter, .mm-grades-table
-.platform-android .mm-question-partiallycorrect.itemcenter,
-.platform-ios .item.mm-question-partiallycorrect,
-.platform-ios .mm-grades-table .mm-question-partiallycorrect.itemcenter, .mm-grades-table
-.platform-ios .mm-question-partiallycorrect.itemcenter {
-  background-color: #feefd1; }
-
-.item.mm-question-notanswered, .mm-grades-table .mm-question-notanswered.itemcenter, .item.mm-question-incorrect, .mm-grades-table .mm-question-incorrect.itemcenter,
-.platform-android .item.mm-question-notanswered,
-.platform-android .mm-grades-table .mm-question-notanswered.itemcenter, .mm-grades-table
-.platform-android .mm-question-notanswered.itemcenter,
-.platform-android .item.mm-question-incorrect,
-.platform-android .mm-grades-table .mm-question-incorrect.itemcenter, .mm-grades-table
-.platform-android .mm-question-incorrect.itemcenter,
-.platform-ios .item.mm-question-notanswered,
-.platform-ios .mm-grades-table .mm-question-notanswered.itemcenter, .mm-grades-table
-.platform-ios .mm-question-notanswered.itemcenter,
-.platform-ios .item.mm-question-incorrect,
-.platform-ios .mm-grades-table .mm-question-incorrect.itemcenter, .mm-grades-table
-.platform-ios .mm-question-incorrect.itemcenter {
-  background-color: #f5d8db; }
-
-.mm-question-warning, p.mm-question-warning, .item .mm-question-warning, .mm-grades-table .itemcenter .mm-question-warning {
-  color: #cb3d4d; }
-
-.questioncorrectnessicon {
-  font-size: 20px; }
-
-#mm-settings-languagelabel {
-  color: #3a3a3a; }
-
 .bar-side-menu {
   border-color: transparent;
   background-color: #f98012;
@@ -13286,15 +13295,6 @@ ion-side-menu li.itemcenter {
 
 ion-side-menu li.item.item-divider, ion-side-menu .mm-grades-table li.item-divider.itemcenter, .mm-grades-table ion-side-menu li.item-divider.itemcenter {
   background-color: #f5f5f5; }
-
-.foreground-ion-edit.ion-edit:before {
-  position: relative;
-  left: 120px;
-  bottom: 15px;
-  font-size: 24px; }
-
-.mm-site_mm_user-profile .mm-tab-handlers {
-  padding-bottom: 16px; }
 
 .mm-site_frontpage .mma-frontpage-item-container .item-media {
   min-height: 55px;
