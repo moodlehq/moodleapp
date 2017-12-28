@@ -153,16 +153,16 @@ core-format-text[maxHeight], *[core-format-text][maxHeight] {
       display: none;
     }
 
-    &:not(.core-shortened) {
+    &:not(.mm-shortened) {
       max-height: none !important;
     }
 
-    &.core-shortened {
+    &.mm-shortened {
       color: $gray-darker;
       overflow: hidden;
       min-height: 50px;
 
-      .core-show-more {
+      .mm-show-more {
         color: color($colors, dark);
         text-align: right;
         font-size: 14px;

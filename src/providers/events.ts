@@ -64,9 +64,10 @@ export class CoreEventsProvider {
      *
      * @param {string} eventName Name of the event to listen to.
      * @param {Function} callBack Function to call when the event is triggered.
+     * @param {string} [siteId] Site where to trigger the event. Undefined won't check the site.
      * @return {CoreEventObserver} Observer to stop listening.
      */
-    on(eventName: string, callBack: (value: any) => void) : CoreEventObserver {
+    on(eventName: string, callBack: (value: any) => void, siteId?: string) : CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
@@ -84,7 +85,11 @@ export class CoreEventsProvider {
             this.observables[eventName] = new Subject<any>();
         }
 
-        let subscription = this.observables[eventName].subscribe(callBack);
+        let subscription = this.observables[eventName].subscribe((value: any) => {
+            if (!siteId || value.siteId == siteId) {
+                callBack(value);
+            }
+        });
 
         // Create and return a CoreEventObserver.
         return {
@@ -100,10 +105,17 @@ export class CoreEventsProvider {
      *
      * @param {string} event Name of the event to trigger.
      * @param {any} [data] Data to pass to the observers.
+     * @param {string} [siteId] Site where to trigger the event. Undefined means no Site.
      */
-    trigger(eventName: string, data?: any) : void {
+    trigger(eventName: string, data?: any, siteId?: string) : void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
+            if (siteId) {
+                if (!data) {
+                    data = {};
+                }
+                data.siteId = siteId;
+            }
             this.observables[eventName].next(data);
         }
     }
@@ -113,12 +125,21 @@ export class CoreEventsProvider {
      *
      * @param {string} event Name of the event to trigger.
      * @param {any} data Data to pass to the observers.
+     * @param {string} [siteId] Site where to trigger the event. Undefined means no Site.
      */
-    triggerUnique(eventName: string, data: any) : void {
+    triggerUnique(eventName: string, data: any, siteId?: string) : void {
         if (this.uniqueEvents[eventName]) {
             this.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
         } else {
             this.logger.debug(`Unique event '${eventName}' triggered.`);
+
+            if (siteId) {
+                if (!data) {
+                    data = {};
+                }
+                data.siteId = siteId;
+            }
+
             // Store the data so it can be passed to observers that register from now on.
             this.uniqueEvents[eventName] = {
                 data: data

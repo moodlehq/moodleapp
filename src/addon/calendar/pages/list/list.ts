@@ -67,12 +67,12 @@ export class AddonCalendarListPage implements OnDestroy {
             private eventsProvider: CoreEventsProvider, private navCtrl: NavController) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
-        this.notificationsEnabled = localNotificationsProvider.isAvailable();
+        this.notificationsEnabled = true;//localNotificationsProvider.isAvailable();
         if (this.notificationsEnabled) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
                 calendarProvider.scheduleEventsNotifications(this.events);
-            });
+            }, sitesProvider.getCurrentSiteId());
         }
 
         // @TODO: Split view once single event is done.
@@ -297,7 +297,6 @@ export class AddonCalendarListPage implements OnDestroy {
      * Open calendar events settings.
      */
     openSettings() {
-        // @TODO: Check the settings page name.
         this.navCtrl.push('AddonCalendarSettingsPage');
     };
 

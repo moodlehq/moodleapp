@@ -351,6 +351,20 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Set the default notification time.
+     *
+     * @param  {number} time     New default time.
+     * @param  {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<any[]>}    Promise resolved when stored.
+     */
+    setDefaultNotificationTime(time: number, siteId?: string) : Promise<any[]> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        let key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        return this.configProvider.set(key, time);
+    }
+
+    /**
      * Store events in local DB.
      *
      * @param {any[]} events  Events to store.

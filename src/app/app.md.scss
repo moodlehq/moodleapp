@@ -12,8 +12,12 @@
   height: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
 }
 
+.bar-buttons core-context-menu .button-clear-md {
+  color: $toolbar-md-button-color;
+}
+
 // Highlights inside the input element.
-@if ($core-text-input-md-show-highlight) {
+@if ($mm-text-input-md-show-highlight) {
   .card-md, .list-md {
     // In order to get a 2px border we need to add an inset
     // box-shadow 1px (this is to avoid the div resizing)
