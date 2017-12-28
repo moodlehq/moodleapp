@@ -53,17 +53,13 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
             this.coursesLoaded = true;
         });
 
-        this.myCoursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, (data) => {
-            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
-                this.fetchCourses();
-            }
-        });
+        this.myCoursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
+            this.fetchCourses();
+        }, this.sitesProvider.getCurrentSiteId());
 
-        this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
-            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
-                this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
-            }
-        });
+        this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
+        }, this.sitesProvider.getCurrentSiteId());
     }
 
     /**

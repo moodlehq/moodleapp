@@ -84,10 +84,7 @@ export class CoreLoginCredentialsPage {
      */
     ionViewDidLeave() {
         this.viewLeft =  true;
-        this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, {
-            siteId: this.siteId,
-            config: this.siteConfig
-        });
+        this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, {config: this.siteConfig}, this.siteId);
     }
 
     /**
@@ -146,9 +143,7 @@ export class CoreLoginCredentialsPage {
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;
-                this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, {
-                    config: this.siteConfig
-                });
+                this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, {config: this.siteConfig});
             }
         } else {
             this.siteName = null;

@@ -2692,12 +2692,11 @@ export class CoreFilepoolProvider {
      */
     protected triggerPackageStatusChanged(siteId: string, status: string, component: string, componentId?: string|number) : void {
         const data = {
-            siteid: siteId,
             component: component,
             componentId: this.fixComponentId(componentId),
             status: status
         }
-        this.eventsProvider.trigger(CoreEventsProvider.PACKAGE_STATUS_CHANGED, data);
+        this.eventsProvider.trigger(CoreEventsProvider.PACKAGE_STATUS_CHANGED, data, siteId);
     }
 
     /**
