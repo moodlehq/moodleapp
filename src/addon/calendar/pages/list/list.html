@@ -21,10 +21,10 @@
         </core-empty-box>
 
         <ion-list *ngIf="filteredEvents && filteredEvents.length">
-            <a ion-item text-wrap *ngFor="let event of filteredEvents" [title]="event.name">
+            <a ion-item text-wrap *ngFor="let event of filteredEvents" [title]="event.name" (click)="gotoEvent(event.id)">
                 <!-- mm-split-view-link="site.calendar-event({id: event.id})" -->
-                <img *ngIf="event.moduleicon" src="{{event.moduleicon}}" item-start>
-                <ion-icon *ngIf="!event.moduleicon" name="{{event.icon}}" item-start></ion-icon>
+                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start>
+                <ion-icon *ngIf="!event.moduleIcon" name="{{event.icon}}" item-start></ion-icon>
                 <h2><core-format-text [text]="event.name"></core-format-text></h2>
                 <p>{{ event.timestart | coreToLocaleString }}</p>
             </a>

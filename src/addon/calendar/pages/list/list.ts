@@ -24,6 +24,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreLocalNotificationsProvider } from '../../../../providers/local-notifications';
 import { CoreCoursePickerMenuPopoverComponent } from '../../../../components/course-picker-menu/course-picker-menu-popover';
 import { CoreEventsProvider } from '../../../../providers/events';
+import { CoreAppProvider } from '../../../../providers/app';
 
 /**
  * Page that displays the list of calendar events.
@@ -48,6 +49,7 @@ export class AddonCalendarListPage implements OnDestroy {
     protected categories = {};
     protected siteHomeId: number;
     protected obsDefaultTimeChange: any;
+    protected eventId: number;
 
     courses: any[];
     eventsLoaded = false;
@@ -64,10 +66,10 @@ export class AddonCalendarListPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
             private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
-            private eventsProvider: CoreEventsProvider, private navCtrl: NavController) {
+            private eventsProvider: CoreEventsProvider, private navCtrl: NavController, private appProvider: CoreAppProvider) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
-        this.notificationsEnabled = true;//localNotificationsProvider.isAvailable();
+        this.notificationsEnabled = localNotificationsProvider.isAvailable();
         if (this.notificationsEnabled) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = eventsProvider.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
@@ -75,16 +77,24 @@ export class AddonCalendarListPage implements OnDestroy {
             }, sitesProvider.getCurrentSiteId());
         }
 
-        // @TODO: Split view once single event is done.
-        // let eventId = navParams.get('eventid') || false;
+        this.eventId = navParams.get('eventid') || false;
     }
 
     /**
      * View loaded.
      */
     ionViewDidLoad() {
-        this.fetchData().then(() => {
+        if (this.eventId && !this.appProvider.isWide()) {
+            // There is an event to load and it's a phone device, open the event in a new state.
+            this.gotoEvent(this.eventId);
+        }
 
+        this.fetchData().then(() => {
+            // @TODO: Split view once single event is done.
+            if (this.eventId && this.appProvider.isWide()) {
+                // There is an event to load and it's a phone device, open the event in a new state.
+                this.gotoEvent(this.eventId);
+            }
         }).finally(() => {
             this.eventsLoaded = true;
         });
@@ -151,7 +161,7 @@ export class AddonCalendarListPage implements OnDestroy {
             }
 
             // Resize the content so infinite loading is able to calculate if it should load more items or not.
-            // @TODO: Infinite loading is not working if content is not high enough.
+            // @todo: Infinite loading is not working if content is not high enough.
             this.content.resize();
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
@@ -298,7 +308,14 @@ export class AddonCalendarListPage implements OnDestroy {
      */
     openSettings() {
         this.navCtrl.push('AddonCalendarSettingsPage');
-    };
+    }
+
+    /**
+     * Navigate to a particular event.
+     */
+    gotoEvent(eventId) {
+        this.navCtrl.push('AddonCalendarEventPage', {id: eventId});
+    }
 
     /**
      * Page destroyed.

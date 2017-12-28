@@ -184,7 +184,7 @@ export class CoreAppProvider {
         return online;
     }
 
-    /*
+    /**
      * Check if device uses a limited connection.
      *
      * @return {boolean} Whether the device uses a limited connection.
@@ -198,6 +198,16 @@ export class CoreAppProvider {
 
         let limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
         return limited.indexOf(type) > -1;
+    }
+
+    /**
+     * Check if device is wide enough. It's used i.e. to show split view.
+     *
+     * @return {boolean} Whether the device uses a limited connection.
+     */
+    isWide() : boolean {
+        //@todo Should use media querys like splitpane
+        return this.platform.is('tablet');
     }
 
     /**

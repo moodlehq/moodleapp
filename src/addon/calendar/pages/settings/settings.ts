@@ -19,7 +19,7 @@ import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 
 /**
- * Page that displays the list of calendar events.
+ * Page that displays the calendar settings.
  */
 @IonicPage()
 @Component({

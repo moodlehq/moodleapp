@@ -125,6 +125,44 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get a calendar event. If the server request fails and data is not cached, try to get it from local DB.
+     *
+     * @param {number}  id        Event ID.
+     * @param {boolean} [refresh] True when we should update the event data.
+     * @param {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the event data is retrieved.
+     */
+    getEvent(id: number, siteId?: string) : Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            let presets = {
+                    cacheKey: this.getEventCacheKey(id)
+                },
+                data = {
+                    "options[userevents]": 0,
+                    "options[siteevents]": 0,
+                    "events[eventids][0]": id
+                };
+            return site.read('core_calendar_get_calendar_events', data, presets).then((response) => {
+                // The WebService returns all category events. Check the response to search for the event we want.
+                let event = response.events.find((e) => {return e.id == id});
+                return event || this.getEventFromLocalDb(id);
+            }).catch(() => {
+                return this.getEventFromLocalDb(id);
+            });
+        });
+    }
+
+    /**
+     * Get cache key for a single event WS call.
+     *
+     * @param {number} id Event ID.
+     * @return {string} Cache key.
+     */
+    protected getEventCacheKey(id: number): string {
+        return 'mmaCalendar:events:' + id;
+    }
+
+    /**
      * Get a calendar event from local Db.
      *
      * @param  {number} id       Event ID.
@@ -245,14 +283,14 @@ export class AddonCalendarProvider {
         return 'mmaCalendar:';
     }
 
-     /**
+    /**
      * Invalidates events list and all the single events and related info.
      *
      * @param {any[]} courses List of courses or course ids.
      * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     * @return {Promise<any[]>} Promise resolved when the list is invalidated.
      */
-    invalidateEventsList(courses: any[], siteId?: string) {
+    invalidateEventsList(courses: any[], siteId?: string) : Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
@@ -262,6 +300,19 @@ export class AddonCalendarProvider {
             promises.push(this.groupsProvider.invalidateUserGroups(courses, siteId));
             promises.push(site.invalidateWsCacheForKeyStartingWith(this.getRootCacheKey()));
             return Promise.all(promises);
+        });
+    }
+
+     /**
+     * Invalidates a single event.
+     *
+     * @param {number} eventId List of courses or course ids.
+     * @param {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     */
+    invalidateEvent(eventId: number, siteId?: string) : Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getEventCacheKey(eventId));
         });
     }
 
@@ -406,6 +457,29 @@ export class AddonCalendarProvider {
             });
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Updates an event notification time and schedule a new notification.
+     *
+     * @param  {any} event Event to update its notification time.
+     * @param  {number} time  New notification setting time (in minutes). E.g. 10 means "notificate 10 minutes before start".
+     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<void>} Promise resolved when the notification is updated.
+     */
+    updateNotificationTime(event: any, time: number, siteId?: string) : Promise<void> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (!this.sitesProvider.isLoggedIn()) {
+                // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+                return Promise.reject(null);
+            }
+
+            event.notificationtime = time;
+
+            return site.getDb().insertOrUpdateRecord(AddonCalendarProvider.EVENTS_TABLE, event, {id: event.id}).then(() => {
+                return this.scheduleEventNotification(event, time);
+            });
         });
     }
 }

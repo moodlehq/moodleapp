@@ -32,7 +32,7 @@ export class AddonCalendarHelperProvider {
         'category': 'albums'
     };
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider/*, private courseProvider: CoreCourseProvider*/) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
 
@@ -42,12 +42,11 @@ export class AddonCalendarHelperProvider {
      * @param {any} e Event to format.
      */
     formatEventData(e: any) {
-        let icon = AddonCalendarHelperProvider.eventicons[e.eventtype] || false;
-        if (!icon) {
-            // @TODO: It's a module event.
-            //icon = this.courseProvider.getModuleIconSrc(e.modulename);
-            e.moduleicon = icon;
+        e.icon = AddonCalendarHelperProvider.eventicons[e.eventtype] || false;
+        if (!e.icon) {
+            // @todo: It's a module event.
+            //e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
+            e.moduleIcon = e.icon;
         }
-        e.icon = icon;
     };
 }
