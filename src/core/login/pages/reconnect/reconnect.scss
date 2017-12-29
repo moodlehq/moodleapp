@@ -4,11 +4,6 @@ page-core-login-reconnect {
         background: radial-gradient(white, $gray-light);
     }
 
-    .mm-ioninput-password {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
     img {
         max-width: 100%;
     }
@@ -25,11 +20,11 @@ page-core-login-reconnect {
         border: 1px solid $gray;
     }
 
-    .mm-sitename, .mm-siteurl {
-        @if $mm-fixed-url { display: none; }
+    .core-sitename, .core-siteurl {
+        @if $core-fixed-url { display: none; }
     }
 
-    .list .mm-username {
+    .list .core-username {
         &.item-md {
             @include padding-horizontal($item-md-padding-left, $content-padding);
         }

@@ -36,14 +36,15 @@ export class CoreDomUtilsProvider {
         private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider) {}
 
     /**
-     * Wraps a message with mm-format-text if the message contains HTML tags.
+     * Wraps a message with core-format-text if the message contains HTML tags.
+     * @todo Finish the adaptation
      *
      * @param {string} message Message to wrap.
      * @return {string} Result message.
      */
     private addFormatTextIfNeeded(message: string) : string {
         if (this.textUtils.hasHTMLTags(message)) {
-            return '<mm-format-text watch="true">' + message + '</mm-format-text>';
+            return '<core-format-text watch="true">' + message + '</core-format-text>';
         }
         return message;
     }
@@ -382,8 +383,8 @@ export class CoreDomUtilsProvider {
     private getErrorTitle(message: string) : string {
         if (message == this.translate.instant('core.networkerrormsg') ||
                 message == this.translate.instant('core.fileuploader.errormustbeonlinetoupload')) {
-            return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
-                <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
+            return '<span class="core-icon-with-badge"><i class="icon ion-wifi"></i>\
+                <i class="icon ion-alert-circled core-icon-badge"></i></span>';
         }
         return this.textUtils.decodeHTML(this.translate.instant('core.error'));
     }
@@ -496,7 +497,7 @@ export class CoreDomUtilsProvider {
      *
      * @param {HTMLElement} element DOM element.
      * @param {any} map Mapping of the classes to replace. Keys must be the value to replace, values must be
-     *            the new class name. Example: {'correct': 'mm-question-answer-correct'}.
+     *            the new class name. Example: {'correct': 'core-question-answer-correct'}.
      */
     replaceClassesInElement(element: HTMLElement, map: any) : void {
         for (let key in map) {
@@ -582,7 +583,7 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Search for an input with error (mm-input-error directive) and scrolls to it if found.
+     * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
      * @param {Content|HTMLElement} scrollEl The element that must be scrolled.
      * @param {HTMLElement} container Element to search in.
@@ -658,7 +659,7 @@ export class CoreDomUtilsProvider {
             options.message = this.addFormatTextIfNeeded(message); // Add format-text to handle links.
             options.title = title;
             if (!title) {
-                options.cssClass = 'mm-nohead';
+                options.cssClass = 'core-nohead';
             }
             options.buttons = [
                 {

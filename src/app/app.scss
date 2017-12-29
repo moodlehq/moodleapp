@@ -23,10 +23,16 @@
 .text-right          { text-align: right; }
 .text-center         { text-align: center; }
 .text-justify        { text-align: justify; }
-
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
 
 @media only screen and (min-width: 430px) {
-  .mm-center-view .scroll-content {
+  .core-center-view .scroll-content {
     display: flex!important;
     align-content: center !important;
     align-items: center !important;
@@ -34,6 +40,18 @@
       margin: 0 auto;
       max-width: 600px;
     }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .hidden-phone {
+    display: none !important;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .hidden-tablet {
+    display: none !important;
   }
 }
 
@@ -45,7 +63,7 @@
   margin: 0;
 }
 
-.mm-oauth-icon, .item.mm-oauth-icon, .list .item.mm-oauth-icon {
+.core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
   min-height: 32px;
   img, .label {
     max-height: 32px;
@@ -60,7 +78,7 @@
   }
 }
 
-.mm-bold, .mm-bold .label {
+.core-bold, .core-bold .label {
   font-weight: bold;
 }
 
@@ -128,23 +146,23 @@ core-format-text[maxHeight], *[core-format-text][maxHeight] {
   }
 
   // This is to allow clicks in radio/checkbox content.
-  &.mm-text-formatted {
+  &.core-text-formatted {
     cursor: pointer;
 
-    .mm-show-more {
+    .core-show-more {
       display: none;
     }
 
-    &:not(.mm-shortened) {
+    &:not(.core-shortened) {
       max-height: none !important;
     }
 
-    &.mm-shortened {
+    &.core-shortened {
       color: $gray-darker;
       overflow: hidden;
       min-height: 50px;
 
-      .mm-show-more {
+      .core-show-more {
         color: color($colors, dark);
         text-align: right;
         font-size: 14px;
@@ -166,7 +184,7 @@ core-format-text[maxHeight], *[core-format-text][maxHeight] {
         */
       }
 
-      &.mm-expand-in-fullview .mm-show-more:after {
+      &.core-expand-in-fullview .core-show-more:after {
         // content: $ionicon-var-chevron-right; @todo
       }
 
@@ -223,5 +241,36 @@ core-format-text, *[core-format-text] {
   > img:first-child {
     max-width: $item-media-width;
     max-height: $item-media-height;
+  }
+}
+
+// Ionic fix. Button can occupy all page if not.
+ion-select {
+  position: relative
+}
+
+// Top tabs
+// -------------------------
+
+.core-top-tabbar {
+  @include position(null, null, 0, 0);
+
+  z-index: $z-index-toolbar;
+  display: flex;
+  width: 100%;
+  background: $core-top-tabs-background;
+
+  > a {
+    @extend .tab-button;
+
+    background: $core-top-tabs-background;
+    color: $core-top-tabs-color !important;
+    border-bottom: 1px solid $core-top-tabs-border;
+    font-size: 1.6rem;
+
+    &[aria-selected=true] {
+      color: $core-top-tabs-color-active !important;
+      border-bottom: 2px solid $core-top-tabs-color-active;
+    }
   }
 }

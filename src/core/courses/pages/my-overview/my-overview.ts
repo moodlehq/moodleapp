@@ -48,7 +48,6 @@ export class CoreCoursesMyOverviewPage {
         inprogress: [],
         future: []
     };
-    showGrid = true;
     showFilter = false;
     searchEnabled: boolean;
     filteredCourses: any[];
@@ -202,13 +201,6 @@ export class CoreCoursesMyOverviewPage {
                 return course.fullname.indexOf(newValue) > -1;
             });
         }
-    }
-
-    /**
-     * Switch grid/list view.
-     */
-    switchGrid() {
-        this.showGrid = !this.showGrid;
     }
 
     /**

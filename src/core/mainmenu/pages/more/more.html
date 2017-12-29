@@ -12,17 +12,17 @@
             <p>{{siteInfo.fullname}}</p>
         </a>
         <ion-item-divider color="light"></ion-item-divider>
-        <ion-item class="text-center" *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
+        <ion-item text-center *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
             <ion-spinner></ion-spinner>
         </ion-item>
-        <ion-item *ngFor="let handler of handlers" class="mm-sidemenu-handler {{handler.class}}" (click)="openHandler(handler)" title="{{ handler.title | translate }}">
+        <ion-item *ngFor="let handler of handlers" class="core-moremenu-handler {{handler.class}}" (click)="openHandler(handler)" title="{{ handler.title | translate }}">
             <ion-icon [name]="handler.icon" item-start></ion-icon>
             <p>{{ handler.title | translate}}</p>
             <!-- @todo: Badge. -->
             <!-- <span ng-show="!loading && badge" class="badge badge-positive">{{badge}}</span>
             <ion-spinner ng-if="loading" class="icon"></ion-spinner> -->
         </ion-item>
-        <div *ngFor="let item of customItems" class="mm-sidemenu-customitem">
+        <div *ngFor="let item of customItems" class="core-moremenu-customitem">
             <a ion-item *ngIf="item.type != 'embedded'" [href]="item.url" core-link [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" title="{{item.label}}">
                 <ion-icon [name]="item.icon" item-start></ion-icon>
                 <p>{{item.label}}</p>

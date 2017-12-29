@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="dataLoaded">
 
         <ion-list *ngIf="course">
-            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname">
+            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!handlersShouldBeShown">
                 <ion-icon name="ionic" item-start></ion-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
                 <p *ngIf="course.categoryname">{{course.categoryname}}</p>
@@ -29,13 +29,13 @@
             <div *ngIf="!isEnrolled">
                 <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
                     <p class="item-heading">{{ instance.name }}</p>
-                    <button ion-button block (click)="selfEnrolClicked(instance.id)">{{ 'core.courses.enrolme' | translate }}</button>
+                    <button ion-button block margin-top (click)="selfEnrolClicked(instance.id)">{{ 'core.courses.enrolme' | translate }}</button>
                 </ion-item>
             </div>
             <ion-item text-wrap *ngIf="!isEnrolled && paypalEnabled">
                 <p class="item-heading">{{ 'core.courses.paypalaccepted' | translate }}</p>
                 <p>{{ 'core.paymentinstant' | translate }}</p>
-                <button ion-button block (click)="paypalEnrol()">{{ 'core.courses.sendpaymentbutton' | translate }}</button>
+                <button ion-button block margin-top (click)="paypalEnrol()">{{ 'core.courses.sendpaymentbutton' | translate }}</button>
             </ion-item>
             <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
                 <p>{{ 'core.courses.notenrollable' | translate }}</p>
@@ -49,16 +49,14 @@
             <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="handlersShouldBeShown">
                 <ion-icon name="briefcase" item-start></ion-icon>
                 <h2>{{ 'core.course.contents' | translate }}</h2>
-                <ion-icon name="arrow-forward" md="ios-arrow-forward" class="icon-accessory" item-end></ion-icon>
             </a>
-            <div class="mm-course-handlers" *ngIf="handlersShouldBeShown && course._handlers && course._handlers.length">
-                <a ion-item text-wrap *ngFor="let handler of course._handlers" class="mm-courses-handler {{handler.class}}">
+            <div class="core-course-handlers" *ngIf="handlersShouldBeShown && course._handlers && course._handlers.length">
+                <a ion-item text-wrap *ngFor="let handler of course._handlers" class="core-courses-handler {{handler.class}}">
                     <ion-icon [name]="icon" item-start></ion-icon>
                     <h2><core-format-text [text]="title | translate"></core-format-text></h2>
-                    <ion-icon name="arrow-forward" md="ios-arrow-forward" class="icon-accessory" item-end></ion-icon>
                 </a>
             </div>
-            <ion-item class="mm-loading-course-handlers text-center" *ngIf="handlersShouldBeShown && !handlersLoaded">
+            <ion-item class="core-loading-course-handlers" text-center *ngIf="handlersShouldBeShown && !handlersLoaded">
                 <ion-spinner></ion-spinner>
             </ion-item>
         </ion-list>

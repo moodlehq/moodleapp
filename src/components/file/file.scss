@@ -1,28 +1,2 @@
-core-loading {
-    .mm-loading-container {
-        width: 100%;
-        text-align: center;
-        padding-top: 10px;
-        clear: both;
-    }
-
-    .mm-loading-content {
-        padding-bottom: 1px; /* This makes height be real */
-    }
-
-    &.mm-loading-noheight .mm-loading-content {
-        height: auto;
-    }
-}
-
-.scroll-content > .padding > core-loading > .mm-loading-container,
-ion-content[padding] > .scroll-content > core-loading > .mm-loading-container,
-.mm-loading-center .mm-loading-container {
-    display: table;
-
-    .mm-loading-spinner {
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle;
-    }
+core-file {
 }

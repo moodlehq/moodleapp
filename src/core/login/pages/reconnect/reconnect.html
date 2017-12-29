@@ -3,7 +3,7 @@
         <ion-title>{{ 'core.login.reconnect' | translate }}</ion-title>
     </ion-navbar>
 </ion-header>
-<ion-content padding class="mm-center-view">
+<ion-content padding class="core-center-view">
     <div class="box">
         <div *ngIf="site" text-wrap text-center [ngClass]="{'item-avatar-center': site.avatar}">
             <ion-avatar *ngIf="site.avatar">
@@ -16,24 +16,24 @@
             <img *ngIf="!site.avatar && !logoUrl" src="assets/img/login_logo.png" class="login-logo" role="presentation">
 
             <!-- If no sitename show big siteurl. -->
-            <p *ngIf="!siteName" class="item-heading mm-siteurl">{{siteUrl}}</p>
+            <p *ngIf="!siteName" class="item-heading core-siteurl">{{siteUrl}}</p>
             <!-- If sitename, show big sitename and small siteurl. -->
-            <p *ngIf="siteName" class="item-heading mm-sitename">{{siteName}}</p>
-            <p *ngIf="siteName" class="mm-siteurl">{{siteUrl}}</p>
+            <p *ngIf="siteName" class="item-heading core-sitename">{{siteName}}</p>
+            <p *ngIf="siteName" class="core-siteurl">{{siteUrl}}</p>
 
             <p *ngIf="!isLoggedOut">
                 <ion-icon padding name="alert"></ion-icon> {{ 'core.login.reconnectdescription' | translate }}
             </p>
         </div>
         <ion-list>
-            <ion-item padding text-wrap class="mm-username">
+            <ion-item padding text-wrap class="core-username">
                 <p class="item-heading">{{ 'core.login.username' | translate }}</p>
                 <p>{{username}}</p>
             </ion-item>
             <form [formGroup]="credForm" (ngSubmit)="login()">
                 <ion-item>
                     <core-show-password item-content [name]="'password'">
-                        <ion-input class="mm-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" mm-show-password core-auto-focus></ion-input>
+                        <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" core-show-password core-auto-focus></ion-input>
                     </core-show-password>
                 </ion-item>
                 <ion-grid>
@@ -52,7 +52,7 @@
         <!-- Identity providers. -->
         <ion-list *ngIf="identityProviders && identityProviders.length" padding-top>
             <ion-list-header text-wrap>{{ 'core.login.potentialidps' | translate }}</ion-list-header>
-            <button ion-item *ngFor="let provider of identityProviders" text-wrap class="mm-oauth-icon" (click)="oauthClicked(provider)" title="{{provider.name}}">
+            <button ion-item *ngFor="let provider of identityProviders" text-wrap class="core-oauth-icon" (click)="oauthClicked(provider)" title="{{provider.name}}">
                 <img [src]="provider.iconurl" alt="{{provider.name}}" item-start>
                 {{provider.name}}
             </button>

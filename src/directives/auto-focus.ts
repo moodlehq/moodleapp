@@ -20,7 +20,7 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
 /**
  * Directive to auto focus an element when a view is loaded.
  *
- * You can apply it conditionallity assigning it a boolean value: <ion-input [mm-auto-focus]="{{showKeyboard}}">
+ * You can apply it conditionallity assigning it a boolean value: <ion-input [core-auto-focus]="{{showKeyboard}}">
  */
 @Directive({
     selector: '[core-auto-focus]'

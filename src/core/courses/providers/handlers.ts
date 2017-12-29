@@ -57,14 +57,14 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
                 icon: 'ionic',
                 title: 'core.courses.courseoverview',
                 page: 'CoreCoursesMyOverviewPage',
-                class: 'mm-courseoverview-handler'
+                class: 'core-courseoverview-handler'
             };
         } else {
             return {
                 icon: 'ionic',
                 title: 'core.courses.mycourses',
                 page: 'CoreCoursesMyCoursesPage',
-                class: 'mm-mycourses-handler'
+                class: 'core-mycourses-handler'
             };
         }
     }

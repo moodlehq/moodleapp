@@ -507,7 +507,7 @@ export class CoreSitesProvider {
      */
     protected validateSiteInfo(info: any) : any {
         if (!info.firstname || !info.lastname) {
-            const moodleLink = `<a mm-link href="${info.siteurl}">${info.siteurl}</a>`;
+            const moodleLink = `<a core-link href="${info.siteurl}">${info.siteurl}</a>`;
             return {error: 'core.requireduserdatamissing', params: {'$a': moodleLink}};
         }
         return true;

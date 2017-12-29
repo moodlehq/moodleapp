@@ -15,14 +15,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 
 /**
  * This component is meant to display a course for a list of courses with progress.
  *
  * Example usage:
  *
- * <core-courses-course-progress *ngFor="let course of filteredCourses" [course]="course" showSummary="true">
+ * <core-courses-course-progress [course]="course">
  * </core-courses-course-progress>
  */
 @Component({
@@ -31,22 +30,20 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 })
 export class CoreCoursesCourseProgressComponent implements OnInit {
     @Input() course: any; // The course to render.
-    @Input() showSummary?: boolean|string; // Whether to show the summary.
 
-    actionsLoaded = true;
-    prefetchCourseIcon: string;
+    isDownloading: boolean;
 
     protected obsStatus;
     protected downloadText;
     protected downloadingText;
     protected downloadButton = {
         isDownload: true,
-        className: 'mm-download-course',
+        className: 'core-download-course',
         priority: 1000
     };
     protected buttons;
 
-    constructor(private navCtrl: NavController, private translate: TranslateService, private utils: CoreUtilsProvider) {
+    constructor(private navCtrl: NavController, private translate: TranslateService) {
         this.downloadText = this.translate.instant('core.course.downloadcourse');
         this.downloadingText = this.translate.instant('core.downloading');
     }
@@ -56,7 +53,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit {
      */
     ngOnInit() {
         // @todo: Handle course prefetch.
-        this.showSummary = this.utils.isTrueOrOne(this.showSummary);
     }
 
     /**

@@ -1,3 +1,57 @@
 core-empty-box {
+  .core-empty-box {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: table;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    margin: 0;
+    padding: 0;
+    clear: both;
 
+    .core-empty-box-content {
+      color: $black;
+      margin: 0;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    &.core-empty-box-inline {
+      position: relative;
+      top: initial;
+      left: initial;
+      right: initial;
+      z-index: initial;
+    }
+
+    .icon {
+      font-size: 120px;
+    }
+    img {
+      height: 125px;
+      width: 145px;
+    }
+    p {
+      font-size: 120%;
+    }
+  }
+
+  @media only screen and (max-height: 420px) {
+    .core-empty-box {
+      position: relative;
+
+      .icon {
+        font-size: 100px;
+      }
+      img {
+        height: 104px;
+        width: 121px;
+      }
+    }
+  }
 }
