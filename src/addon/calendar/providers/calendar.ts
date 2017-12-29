@@ -29,10 +29,10 @@ import { CoreConfigProvider } from '../../../providers/config';
 @Injectable()
 export class AddonCalendarProvider {
     public static DAYS_INTERVAL = 30;
+    public static COMPONENT = 'AddonCalendarEvents';
     public static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
-    protected static DEFAULT_NOTIFICATION_TIME_SETTING = 'AddonCalendarDefaultNotifTime';
+    protected static DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
     protected static DEFAULT_NOTIFICATION_TIME = 60;
-    protected static COMPONENT = 'AddonCalendarEvents';
 
     // Variables for database.
     protected static EVENTS_TABLE = 'calendar_events'; // Queue of files to download.
@@ -220,7 +220,7 @@ export class AddonCalendarProvider {
      * @param {string} [siteId]          Site to get the events from. If not defined, use current site.
      * @return {Promise<any[]>}          Promise to be resolved when the participants are retrieved.
      */
-    getEventsList(daysToStart = 0, daysInterval=AddonCalendarProvider.DAYS_INTERVAL, siteId?: string) : Promise<any[]> {
+    getEventsList(daysToStart = 0, daysInterval = AddonCalendarProvider.DAYS_INTERVAL, siteId?: string) : Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
@@ -325,6 +325,50 @@ export class AddonCalendarProvider {
     isCalendarDisabledInSite(site?: CoreSite) : boolean {
         site = site || this.sitesProvider.getCurrentSite();
         return site.isFeatureDisabled('$mmSideMenuDelegate_mmaCalendar');
+    }
+
+    /**
+     * Check if Calendar is disabled in a certain site.
+     *
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    isDisabled(siteId?: string) : Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isCalendarDisabledInSite(site);
+        });
+    }
+
+
+    /**
+     * Get the next events for all the sites and schedules their notifications.
+     * If an event notification time is 0, cancel its scheduled notification (if any).
+     * If local notification plugin is not enabled, resolve the promise.
+     *
+     * @return {Promise}         Promise resolved when all the notifications have been scheduled.
+     */
+    scheduleAllSitesEventsNotifications() : Promise<any[]> {
+        if (this.localNotificationsProvider.isAvailable()) {
+            return this.sitesProvider.getSitesIds().then((siteIds) => {
+                let promises = [];
+
+                siteIds.forEach((siteId) => {
+                    // Check if calendar is disabled for the site.
+                    promises.push(this.isDisabled(siteId).then((disabled) => {
+                        if (!disabled) {
+                            // Get first events.
+                            return this.getEventsList(undefined, undefined, siteId).then((events) => {
+                                return this.scheduleEventsNotifications(events, siteId);
+                            });
+                        }
+                    }));
+                });
+
+                return Promise.all(promises);
+            });
+        } else {
+            return Promise.resolve([]);
+        }
     }
 
     /**

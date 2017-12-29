@@ -92,8 +92,18 @@ export class AddonCalendarListPage implements OnDestroy {
         this.fetchData().then(() => {
             // @TODO: Split view once single event is done.
             if (this.eventId && this.appProvider.isWide()) {
-                // There is an event to load and it's a phone device, open the event in a new state.
-                this.gotoEvent(this.eventId);
+                // There is an event to load and it's a tablet device. Search the position of the event in the list and load it.
+                let found = this.events.findIndex((e) => {return e.id == this.eventId});
+
+                if (found > 0) {
+                    this.eventToLoad = found + 1;
+                } else {
+                    // Event not found in the list, open it in a new state. Use a $timeout to open the state after the
+                    // split view is loaded.
+                    //$timeout(function() {
+                        this.gotoEvent(this.eventId);
+                    //});
+                }
             }
         }).finally(() => {
             this.eventsLoaded = true;

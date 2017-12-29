@@ -40,7 +40,7 @@ export class AddonCalendarEventPage {
     eventLoaded: boolean;
     notificationTime: number;
     defaultTimeReadable: string;
-    event = {};
+    event: any = {};
     title: string;
     courseName: string;
     notificationsEnabled = false;

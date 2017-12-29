@@ -17,6 +17,9 @@ import { AddonCalendarProvider } from './providers/calendar';
 import { AddonCalendarHelperProvider } from './providers/helper';
 import { AddonCalendarMainMenuHandler } from './providers/handlers';
 import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
+import { CoreInitDelegate } from '../../providers/init';
+import { CoreLocalNotificationsProvider } from '../../providers/local-notifications';
+import { CoreLoginHelperProvider } from '../../core/login/providers/helper';
 
 @NgModule({
     declarations: [
@@ -30,7 +33,29 @@ import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
     ]
 })
 export class AddonCalendarModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler) {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, calendarHandler: AddonCalendarMainMenuHandler,
+            initDelegate: CoreInitDelegate, calendarProvider: AddonCalendarProvider, loginHelper: CoreLoginHelperProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider) {
         mainMenuDelegate.registerHandler(calendarHandler);
+
+        initDelegate.ready().then(() => {
+            calendarProvider.scheduleAllSitesEventsNotifications();
+        });
+
+
+        localNotificationsProvider.registerClick(AddonCalendarProvider.COMPONENT, (data) => {
+            if (data.eventid) {
+                initDelegate.ready().then(() => {
+                    calendarProvider.isDisabled(data.siteId).then(function(disabled) {
+                        if (disabled) {
+                            // The calendar is disabled in the site, don't open it.
+                            return;
+                        }
+
+                        loginHelper.redirect('AddonCalendarListPage', {eventid: data.eventid}, data.siteId);
+                    });
+                });
+            }
+        });
     }
 }
