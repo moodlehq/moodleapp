@@ -27,6 +27,8 @@ import { CoreConstants } from '../../constants';
  */
 @Injectable()
 export class CoreCourseProvider {
+    public static ALL_SECTIONS_ID = -1;
+
     // Variables for database.
     protected COURSE_STATUS_TABLE = 'course_status';
     protected courseStatusTableSchema = {

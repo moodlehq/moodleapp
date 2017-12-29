@@ -15,6 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
 
 /**
  * This component is meant to display a course for a list of courses with progress.
@@ -43,7 +44,8 @@ export class CoreCoursesCourseProgressComponent implements OnInit {
     };
     protected buttons;
 
-    constructor(private navCtrl: NavController, private translate: TranslateService) {
+    constructor(private navCtrl: NavController, private translate: TranslateService,
+            private courseFormatDelegate: CoreCourseFormatDelegate) {
         this.downloadText = this.translate.instant('core.course.downloadcourse');
         this.downloadingText = this.translate.instant('core.downloading');
     }
@@ -59,7 +61,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit {
      * Open a course.
      */
     openCourse(course) {
-        this.navCtrl.push('CoreCourseSectionPage', {course: course});
+        this.courseFormatDelegate.openCourse(this.navCtrl, course);
     }
 
 }

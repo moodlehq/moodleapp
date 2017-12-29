@@ -1,0 +1,65 @@
+<!-- Default course format. -->
+<div *ngIf="!componentInstances.courseFormat">
+    <!-- Course summary. -->
+    <ion-list no-lines *ngIf="!componentInstances.courseSummary">
+        <summary ion-item text-wrap *ngIf="course.summary">
+            <core-format-text [text]="course.summary" maxHeight="60"></core-format-text>
+        </summary>
+        <ion-item *ngIf="course.progress !== false">
+            <core-progress-bar [progress]="course.progress"></core-progress-bar>
+        </ion-item>
+    </ion-list>
+    <ng-template #courseSummary></ng-template>
+
+    <!-- Section selector. -->
+    <ion-row *ngIf="!componentInstances.sectionSelector && displaySectionSelector && sections && sections.length">
+        <ion-col col-11>
+            <ion-item>
+                <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions">
+                    <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-col>
+        <ion-col col-1 class="text-right">
+            <!-- @todo Download button. -->
+        </ion-col>
+    </ion-row>
+    <ng-template #sectionSelector></ng-template>
+
+    <!-- Single section. -->
+    <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
+        <ng-container *ngIf="!componentInstances.singleSection">
+            <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
+            <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+        </ng-container>
+        <ng-template #singleSection></ng-template>
+    </div>
+
+    <!-- Multiple sections. -->
+    <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
+        <ng-container *ngIf="!componentInstances.allSections">
+            <ng-container *ngFor="let section of sections">
+                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+            </ng-container>
+        </ng-container>
+        <ng-template #allSections></ng-template>
+    </div>
+</div>
+
+<ng-template #sectionTemplate let-section="section">
+    <section ion-list *ngIf="section.hasContent">
+        <!-- Title is only displayed when viewing all sections. -->
+        <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">
+            <core-format-text [text]="section.name"></core-format-text>
+        </ion-item-divider>
+
+        <ion-item text-wrap *ngIf="section.summary">
+            <core-format-text [text]="section.summary" maxHeight="60"></core-format-text>
+        </ion-item>
+
+        <!-- <mm-course-module ng-if="module.visibleoncoursepage !== 0" class="item item-complex" ng-repeat="module in section.modules" module="module" completion-changed="completionChanged"></mm-course-module> -->
+    </section>
+</ng-template>
+
+<!-- Custom course format that overrides the default one. -->
+<ng-template #courseFormat></ng-template>
