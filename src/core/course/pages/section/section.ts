@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { IonicPage, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCourseProvider } from '../../providers/course';
@@ -30,19 +31,31 @@ import { CoreCoursesDelegate } from '../../../courses/providers/delegate';
     selector: 'page-core-course-section',
     templateUrl: 'section.html',
 })
-export class CoreCourseSectionPage {
+export class CoreCourseSectionPage implements OnDestroy {
+    @ViewChild(Content) content: Content;
+
     title: string;
     course: any;
     sections: any[];
     courseHandlers: any[];
     dataLoaded: boolean;
 
+    protected moduleId;
+    protected completionObserver;
+
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private coursesDelegate: CoreCoursesDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, eventsProvider: CoreEventsProvider) {
         this.course = navParams.get('course');
         this.title = courseFormatDelegate.getCourseTitle(this.course);
+        this.moduleId = navParams.get('moduleId');
+
+        this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
+            if (data && data.courseId == this.course.id) {
+                this.refreshAfterCompletionChange();
+            }
+        });
     }
 
     /**
@@ -51,6 +64,7 @@ export class CoreCourseSectionPage {
     ionViewDidLoad() {
         this.loadData().finally(() => {
             this.dataLoaded = true;
+            delete this.moduleId; // Only load module automatically the first time.
         });
     }
 
@@ -75,6 +89,8 @@ export class CoreCourseSectionPage {
         promises.push(promise.then((completionStatus) => {
             // Get all the sections.
             promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
+                this.courseHelper.addHandlerDataForModules(sections, this.course.id, this.moduleId, completionStatus);
+
                 // Format the name of each section and check if it has content.
                 this.sections = sections.map((section) => {
                     this.textUtils.formatText(section.name.trim(), true, true).then((name) => {
@@ -124,5 +140,41 @@ export class CoreCourseSectionPage {
                 refresher.complete();
             });
         });
+    }
+
+    /**
+     * The completion of any of the modules have changed.
+     */
+    onCompletionChange() {
+        this.courseProvider.invalidateSections(this.course.id).finally(() => {
+            this.refreshAfterCompletionChange();
+        });
+    }
+
+    /**
+     * Refresh list after a completion change since there could be new activities.
+     */
+    protected refreshAfterCompletionChange() {
+        // Save scroll position to restore it once done.
+        let scrollElement = this.content.getScrollElement(),
+            scrollTop = scrollElement.scrollTop || 0,
+            scrollLeft = scrollElement.scrollLeft || 0;
+
+        this.dataLoaded = false;
+        this.content.scrollToTop(); // Scroll top so the spinner is seen.
+
+        this.loadData().finally(() => {
+            this.dataLoaded = true;
+            this.content.scrollTo(scrollLeft, scrollTop);
+        });
+    }
+
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy() {
+        if (this.completionObserver) {
+            this.completionObserver.off();
+        }
     }
 }

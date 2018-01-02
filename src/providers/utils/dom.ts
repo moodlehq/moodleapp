@@ -43,6 +43,7 @@ export class CoreDomUtilsProvider {
      * @return {string} Result message.
      */
     private addFormatTextIfNeeded(message: string) : string {
+        // @todo
         if (this.textUtils.hasHTMLTags(message)) {
             return '<core-format-text watch="true">' + message + '</core-format-text>';
         }
@@ -837,5 +838,18 @@ export class CoreDomUtilsProvider {
     supportsInputKeyboard(el: any) : boolean {
         return el && !el.disabled && (el.tagName.toLowerCase() == 'textarea' ||
             (el.tagName.toLowerCase() == 'input' && this.inputSupportKeyboard.indexOf(el.type) != -1));
+    }
+
+    /**
+     * Wrap an HTMLElement with another element.
+     *
+     * @param {HTMLElement} el The element to wrap.
+     * @param {HTMLElement} wrapper Wrapper.
+     */
+    wrapElement(el: HTMLElement, wrapper: HTMLElement) : void {
+        // Insert the wrapper before the element.
+        el.parentNode.insertBefore(wrapper, el);
+        // Now move the element into the wrapper.
+        wrapper.appendChild(el);
     }
 }

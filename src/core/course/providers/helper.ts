@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 import { CoreCourseProvider } from './course';
+import { CoreCourseModuleDelegate } from './module-delegate';
 
 /**
  * Helper to gather some common course functions.
@@ -21,7 +23,84 @@ import { CoreCourseProvider } from './course';
 @Injectable()
 export class CoreCourseHelperProvider {
 
-    constructor() {}
+    constructor(private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
+            private moduleDelegate: CoreCourseModuleDelegate) {}
+
+    /**
+     * This function treats every module on the sections provided to load the handler data, treat completion
+     * and navigate to a module page if required. It also returns if sections has content.
+     *
+     * @param {any[]} sections List of sections to treat modules.
+     * @param {number} courseId Course ID of the modules.
+     * @param {number} [moduleId] Module to navigate to if needed.
+     * @param {any[]} [completionStatus] List of completion status.
+     * @return {boolean} Whether the sections have content.
+     */
+    addHandlerDataForModules(sections: any[], courseId: number, moduleId?: number, completionStatus?: any) {
+        let hasContent = false;
+
+        sections.forEach((section) => {
+            if (!section || !this.sectionHasContent(section) || !section.modules) {
+                return;
+            }
+
+            hasContent = true;
+
+            section.modules.forEach((module) => {
+                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id);
+
+                if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                    // Check if activity has completions and if it's marked.
+                    module.completionstatus = completionStatus[module.id];
+                    module.completionstatus.courseId = courseId;
+                }
+
+                if (module.id == moduleId) {
+                    // This is the module we're looking for. Open it.
+                    module.handlerData.action(new Event('click'), module, courseId);
+                }
+            });
+        });
+
+        return hasContent;
+    }
+
+    /**
+     * Get the course ID from a module instance ID, showing an error message if it can't be retrieved.
+     *
+     * @param {number} id Instance ID.
+     * @param {string} module Name of the module. E.g. 'glossary'.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<number>} Promise resolved with the module's course ID.
+     */
+    getModuleCourseIdByInstance(id: number, module: any, siteId?: string) : Promise<number> {
+        return this.courseProvider.getModuleBasicInfoByInstance(id, module, siteId).then((cm) => {
+            return cm.course;
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            return Promise.reject(null);
+        });
+    }
+
+    /**
+     * Given a list of sections, returns the list of modules in the sections.
+     *
+     * @param {any[]} sections Sections.
+     * @return {any[]} Modules.
+     */
+    getSectionsModules(sections: any[]) : any[] {
+        if (!sections || !sections.length) {
+            return [];
+        }
+
+        let modules = [];
+        sections.forEach((section) => {
+            if (section.modules) {
+                modules = modules.concat(section.modules);
+            }
+        });
+        return modules;
+    }
 
     /**
      * Check if a section has content.

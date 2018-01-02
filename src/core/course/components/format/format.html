@@ -57,7 +57,9 @@
             <core-format-text [text]="section.summary" maxHeight="60"></core-format-text>
         </ion-item>
 
-        <!-- <mm-course-module ng-if="module.visibleoncoursepage !== 0" class="item item-complex" ng-repeat="module in section.modules" module="module" completion-changed="completionChanged"></mm-course-module> -->
+        <ng-container *ngFor="let module of section.modules">
+            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" (completionChanged)="completionChanged.emit()"></core-course-module>
+        </ng-container>
     </section>
 </ng-template>
 

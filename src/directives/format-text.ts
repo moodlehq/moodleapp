@@ -103,16 +103,14 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Create a container for an image to adapt its width.
+     * Wrap an image with a container to adapt its width and, if needed, add an anchor to view it in full size.
      *
      * @param {number} elWidth Width of the directive's element.
      * @param {HTMLElement} img Image to adapt.
-     * @return {HTMLElement} Container.
      */
-    protected createMagnifyingGlassContainer(elWidth: number, img: HTMLElement) : HTMLElement {
-        // Check if image width has been adapted. If so, add an icon to view the image at full size.
+    protected adaptImage(elWidth: number, img: HTMLElement) : void {
         let imgWidth = this.getElementWidth(img),
-            // Wrap the image in a new div with position relative.
+            // Element to wrap the image.
             container = document.createElement('span');
 
         container.classList.add('core-adapted-img-container');
@@ -122,9 +120,11 @@ export class CoreFormatTextDirective implements OnChanges {
         } else if (img.classList.contains('atto_image_button_left')) {
             container.classList.add('atto_image_button_left');
         }
-        container.appendChild(img);
+
+        this.domUtils.wrapElement(img, container);
 
         if (imgWidth > elWidth) {
+            // The image has been adapted, add an anchor to view it in full size.
             let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
                 label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage'));
 
@@ -132,8 +132,6 @@ export class CoreFormatTextDirective implements OnChanges {
             container.innerHTML += '<a href="#" class="core-image-viewer-icon" core-image-viewer img="' + imgSrc +
                             '" aria-label="' + label + '"><ion-icon name="search"></ion-icon></a>';
         }
-
-        return container;
     }
 
     /**
@@ -233,7 +231,6 @@ export class CoreFormatTextDirective implements OnChanges {
             // Apply format text function.
             return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean), this.utils.isTrueOrOne(this.singleLine));
         }).then((formatted) => {
-
             let div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
                 images,
@@ -271,9 +268,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     this.addMediaAdaptClass(img);
                     this.addExternalContent(img);
                     if (this.utils.isTrueOrOne(this.adaptImg)) {
-                        // Create a container for the image and use it instead of the image.
-                        let container = this.createMagnifyingGlassContainer(elWidth, img);
-                        div.replaceChild(container, img);
+                        this.adaptImage(elWidth, img);
                     }
                 });
             }

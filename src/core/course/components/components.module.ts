@@ -19,10 +19,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '../../../components/components.module';
 import { CoreDirectivesModule } from '../../../directives/directives.module';
 import { CoreCourseFormatComponent } from './format/format';
+import { CoreCourseModuleComponent } from './module/module';
 
 @NgModule({
     declarations: [
-        CoreCourseFormatComponent
+        CoreCourseFormatComponent,
+        CoreCourseModuleComponent
     ],
     imports: [
         CommonModule,
@@ -34,7 +36,8 @@ import { CoreCourseFormatComponent } from './format/format';
     providers: [
     ],
     exports: [
-        CoreCourseFormatComponent
+        CoreCourseFormatComponent,
+        CoreCourseModuleComponent
     ]
 })
 export class CoreCourseComponentsModule {}

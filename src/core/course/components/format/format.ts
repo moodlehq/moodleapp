@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnChanges, ViewContainerRef, ComponentFactoryResolver, ViewChild, ChangeDetectorRef,
-         SimpleChange } from '@angular/core';
+         SimpleChange, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '../../../../providers/logger';
 import { CoreCourseProvider } from '../../../course/providers/course';
@@ -27,7 +27,7 @@ import { CoreCourseFormatDelegate } from '../../../course/providers/format-deleg
  *
  * Example usage:
  *
- * <core-course-format [course]="course" [sections]="sections"></core-course-format>
+ * <core-course-format [course]="course" [sections]="sections" (completionChanged)="onCompletionChange()"></core-course-format>
  */
 @Component({
     selector: 'core-course-format',
@@ -36,6 +36,7 @@ import { CoreCourseFormatDelegate } from '../../../course/providers/format-deleg
 export class CoreCourseFormatComponent implements OnInit, OnChanges {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
+    @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
     // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
     @ViewChild('courseFormat', { read: ViewContainerRef }) set courseFormat(el: ViewContainerRef) {
@@ -74,6 +75,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
             private factoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef) {
         this.logger = logger.getInstance('CoreCourseFormatComponent');
         this.selectOptions.title = translate.instant('core.course.sections');
+        this.completionChanged = new EventEmitter();
     }
 
     /**

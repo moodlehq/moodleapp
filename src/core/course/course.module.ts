@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
+import { CoreCourseModuleDelegate } from './providers/module-delegate';
 
 @NgModule({
     declarations: [],
@@ -24,7 +25,8 @@ import { CoreCourseFormatDelegate } from './providers/format-delegate';
     providers: [
         CoreCourseProvider,
         CoreCourseHelperProvider,
-        CoreCourseFormatDelegate
+        CoreCourseFormatDelegate,
+        CoreCourseModuleDelegate
     ],
     exports: []
 })
