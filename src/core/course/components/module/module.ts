@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { CoreCourseModuleHandlerButton } from '../../providers/module-delegate';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -30,7 +32,7 @@ export class CoreCourseModuleComponent implements OnInit {
     @Input() courseId: number; // The course the module belongs to.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when the module completion changes.
 
-    constructor() {
+    constructor(private navCtrl: NavController) {
         this.completionChanged = new EventEmitter();
     }
 
@@ -51,7 +53,19 @@ export class CoreCourseModuleComponent implements OnInit {
      */
     moduleClicked(event: Event) {
         if (this.module.uservisible !== false && this.module.handlerData.action) {
-            this.module.handlerData.action(event, this.module, this.courseId);
+            this.module.handlerData.action(event, this.navCtrl, this.module, this.courseId);
+        }
+    }
+
+    /**
+     * Function called when a button is clicked.
+     *
+     * @param {Event} event Click event.
+     * @param {CoreCourseModuleHandlerButton} button The clicked button.
+     */
+    buttonClicked(event: Event, button: CoreCourseModuleHandlerButton) {
+        if (button && button.action) {
+            button.action(event, this.navCtrl, this.module, this.courseId);
         }
     }
 }

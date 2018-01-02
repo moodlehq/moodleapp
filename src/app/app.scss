@@ -226,6 +226,12 @@ core-format-text, *[core-format-text] {
   .badge {
     position: initial !important;
   }
+
+  // Images in ion-card have width 100% and display block. Remove that when the image is in core-format-text.
+  img {
+    width: initial;
+    display: inline;
+  }
 }
 
 // Message item.

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '../../../providers/events';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
@@ -91,10 +92,11 @@ export interface CoreCourseModuleHandlerData {
      * Action to perform when the module is clicked.
      *
      * @param {Event} event The click event.
+     * @param {NavController} navCtrl NavController instance.
      * @param {any} module The module object.
      * @param {number} courseId The course ID.
      */
-    action?(event: Event, module: any, courseId: number) : void;
+    action?(event: Event, navCtrl: NavController, module: any, courseId: number) : void;
 };
 
 /**
@@ -135,10 +137,11 @@ export interface CoreCourseModuleHandlerButton {
      * Action to perform when the button is clicked.
      *
      * @param {Event} event The click event.
+     * @param {NavController} navCtrl NavController instance.
      * @param {any} module The module object.
      * @param {number} courseId The course ID.
      */
-    action?(event: Event, module: any, courseId: number) : void;
+    action(event: Event, navCtrl: NavController, module: any, courseId: number) : void;
 };
 
 /**
@@ -179,10 +182,11 @@ export class CoreCourseModuleDelegate {
             icon: this.courseProvider.getModuleIconSrc(module.modname),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, module: any, courseId: number) => {
+            action: (event: Event, navCtrl: NavController, module: any, courseId: number) => {
                 event.preventDefault();
                 event.stopPropagation();
-                // @todo: Default content.
+
+                navCtrl.push('CoreCourseUnsupportedModulePage', {module: module});
             }
         };
 

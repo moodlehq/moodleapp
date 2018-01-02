@@ -171,9 +171,12 @@ export class CoreFormatTextDirective implements OnChanges {
 
                 // If cannot calculate height, shorten always.
                 if (!height || height > this.maxHeight) {
-                    let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false;
+                    let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false,
+                        showMoreDiv = document.createElement('div');
 
-                    this.element.innerHTML += '<div class="core-show-more">' + this.translate.instant('core.showmore') + '</div>';
+                    showMoreDiv.classList.add('core-show-more');
+                    showMoreDiv.innerHTML = this.translate.instant('core.showmore');
+                    this.element.appendChild(showMoreDiv);
 
                     if (expandInFullview) {
                         this.element.classList.add('core-expand-in-fullview');
