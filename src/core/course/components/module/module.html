@@ -5,7 +5,7 @@
     <core-format-text [text]="module.handlerData.title"></core-format-text>
 
     <div item-end *ngIf="module.uservisible !== false && ((module.handlerData.buttons && module.handlerData.buttons.length > 0) || spinner || module.completionstatus)" class="buttons mm-module-buttons" [ngClass]="{'mm-button-completion': module.completionstatus}">
-        <!-- <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="module.name" after-change="completionChanged"></mm-completion> -->
+        <core-course-module-completion *ngIf="module.completionstatus" [completion]="module.completionstatus" [moduleName]="module.name" (completionChanged)="completionChanged.emit()"></core-course-module-completion>
 
         <button ion-button icon-only clear *ngFor="let button of module.handlerData.buttons" [hidden]="button.hidden" (click)="button.action($event, module, courseId)" class="mm-animate-show-hide" [attr.aria-label]="button.label | translate">
             <ion-icon [name]="button.icon" [ios]="button.iosIcon || ''" [md]="button.mdIcon || ''"></ion-icon>

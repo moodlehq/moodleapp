@@ -2,9 +2,6 @@
 <div *ngIf="!componentInstances.courseFormat">
     <!-- Course summary. -->
     <ion-list no-lines *ngIf="!componentInstances.courseSummary">
-        <summary ion-item text-wrap *ngIf="course.summary">
-            <core-format-text [text]="course.summary" maxHeight="60"></core-format-text>
-        </summary>
         <ion-item *ngIf="course.progress !== false">
             <core-progress-bar [progress]="course.progress"></core-progress-bar>
         </ion-item>

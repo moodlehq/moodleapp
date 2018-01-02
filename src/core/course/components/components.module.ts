@@ -20,11 +20,13 @@ import { CoreComponentsModule } from '../../../components/components.module';
 import { CoreDirectivesModule } from '../../../directives/directives.module';
 import { CoreCourseFormatComponent } from './format/format';
 import { CoreCourseModuleComponent } from './module/module';
+import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 
 @NgModule({
     declarations: [
         CoreCourseFormatComponent,
-        CoreCourseModuleComponent
+        CoreCourseModuleComponent,
+        CoreCourseModuleCompletionComponent
     ],
     imports: [
         CommonModule,
@@ -37,7 +39,8 @@ import { CoreCourseModuleComponent } from './module/module';
     ],
     exports: [
         CoreCourseFormatComponent,
-        CoreCourseModuleComponent
+        CoreCourseModuleComponent,
+        CoreCourseModuleCompletionComponent
     ]
 })
 export class CoreCourseComponentsModule {}

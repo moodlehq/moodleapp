@@ -22,6 +22,7 @@ import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCoursesDelegate } from '../../../courses/providers/delegate';
+import { CoreCoursesProvider } from '../../../courses/providers/courses';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -45,8 +46,8 @@ export class CoreCourseSectionPage implements OnDestroy {
 
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private coursesDelegate: CoreCoursesDelegate,
-            private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
-            private textUtils: CoreTextUtilsProvider, eventsProvider: CoreEventsProvider) {
+            private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
+            private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider) {
         this.course = navParams.get('course');
         this.title = courseFormatDelegate.getCourseTitle(this.course);
         this.moduleId = navParams.get('moduleId');
@@ -72,52 +73,57 @@ export class CoreCourseSectionPage implements OnDestroy {
      * Fetch and load all the data required for the view.
      */
     protected loadData(refresh?: boolean) {
-        let promises = [],
-            promise;
+        // First of all, get the course because the data might have changed.
+        return this.coursesProvider.getUserCourse(this.course.id).then((course) => {
+            let promises = [],
+                promise;
 
-        // Get the completion status.
-        if (this.course.enablecompletion === false) {
-            // Completion not enabled.
-            promise = Promise.resolve({});
-        } else {
-            promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
-                // It failed, don't use completion.
-                return {};
-            });
-        }
+            this.course = course;
 
-        promises.push(promise.then((completionStatus) => {
-            // Get all the sections.
-            promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
-                this.courseHelper.addHandlerDataForModules(sections, this.course.id, this.moduleId, completionStatus);
-
-                // Format the name of each section and check if it has content.
-                this.sections = sections.map((section) => {
-                    this.textUtils.formatText(section.name.trim(), true, true).then((name) => {
-                        section.formattedName = name;
-                    });
-                    section.hasContent = this.courseHelper.sectionHasContent(section);
-                    return section;
+            // Get the completion status.
+            if (this.course.enablecompletion === false) {
+                // Completion not enabled.
+                promise = Promise.resolve({});
+            } else {
+                promise = this.courseProvider.getActivitiesCompletionStatus(this.course.id).catch(() => {
+                    // It failed, don't use completion.
+                    return {};
                 });
+            }
 
+            promises.push(promise.then((completionStatus) => {
+                // Get all the sections.
+                promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
+                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, this.moduleId, completionStatus);
 
-                if (this.courseFormatDelegate.canViewAllSections(this.course)) {
-                    // Add a fake first section (all sections).
-                    this.sections.unshift({
-                        name: this.translate.instant('core.course.allsections'),
-                        id: CoreCourseProvider.ALL_SECTIONS_ID
+                    // Format the name of each section and check if it has content.
+                    this.sections = sections.map((section) => {
+                        this.textUtils.formatText(section.name.trim(), true, true).then((name) => {
+                            section.formattedName = name;
+                        });
+                        section.hasContent = this.courseHelper.sectionHasContent(section);
+                        return section;
                     });
-                }
+
+
+                    if (this.courseFormatDelegate.canViewAllSections(this.course)) {
+                        // Add a fake first section (all sections).
+                        this.sections.unshift({
+                            name: this.translate.instant('core.course.allsections'),
+                            id: CoreCourseProvider.ALL_SECTIONS_ID
+                        });
+                    }
+                }));
             }));
-        }));
 
-        // Load the course handlers.
-        promises.push(this.coursesDelegate.getHandlersToDisplay(this.course, refresh, false).then((handlers) => {
-            this.courseHandlers = handlers;
-        }));
+            // Load the course handlers.
+            promises.push(this.coursesDelegate.getHandlersToDisplay(this.course, refresh, false).then((handlers) => {
+                this.courseHandlers = handlers;
+            }));
 
-        return Promise.all(promises).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'mm.course.couldnotloadsectioncontent', true);
+            return Promise.all(promises).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
+            });
         });
     }
 
@@ -127,15 +133,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      * @param {any} refresher Refresher.
      */
     doRefresh(refresher: any) {
-        let promises = [];
-
-        promises.push(this.courseProvider.invalidateSections(this.course.id));
-
-        // if ($scope.sections) {
-        //     promises.push($mmCoursePrefetchDelegate.invalidateCourseUpdates(courseId));
-        // }
-
-        Promise.all(promises).finally(() => {
+        this.invalidateData().finally(() => {
             this.loadData(true).finally(() => {
                 refresher.complete();
             });
@@ -146,9 +144,25 @@ export class CoreCourseSectionPage implements OnDestroy {
      * The completion of any of the modules have changed.
      */
     onCompletionChange() {
-        this.courseProvider.invalidateSections(this.course.id).finally(() => {
+        this.invalidateData().finally(() => {
             this.refreshAfterCompletionChange();
         });
+    }
+
+    /**
+     * Invalidate the data.
+     */
+    protected invalidateData() {
+        let promises = [];
+
+        promises.push(this.courseProvider.invalidateSections(this.course.id));
+        promises.push(this.coursesProvider.invalidateUserCourses());
+
+        // if ($scope.sections) {
+        //     promises.push($mmCoursePrefetchDelegate.invalidateCourseUpdates(courseId));
+        // }
+
+        return Promise.all(promises);
     }
 
     /**

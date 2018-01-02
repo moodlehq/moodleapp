@@ -92,13 +92,27 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}) {
-        if (!this.selectedSection && changes.sections && this.sections) {
-            this.sectionChanged(this.cfDelegate.getCurrentSection(this.course, this.sections));
-        }
+        if (changes.sections && this.sections) {
+            if (!this.selectedSection) {
+                // There is no selected section yet, calculate which one to get.
+                this.sectionChanged(this.cfDelegate.getCurrentSection(this.course, this.sections));
+            } else {
+                // We have a selected section, but the list has changed. Search the section in the list.
+                let newSection;
+                for (let i = 0; i < this.sections.length; i++) {
+                    let section = this.sections[i];
+                    if (this.compareSections(section, this.selectedSection)) {
+                        newSection = section;
+                        break;
+                    }
+                }
 
-        if (!Object.keys(this.componentInstances).length) {
-            // We haven't created any component dynamically, stop.
-            return;
+                if (!newSection) {
+                    // Section not found, calculate which one to use.
+                    newSection = this.cfDelegate.getCurrentSection(this.course, this.sections);
+                }
+                this.sectionChanged(newSection);
+            }
         }
 
         // Apply the changes to the components and call ngOnChanges if it exists.
