@@ -126,6 +126,8 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
+        data = data || {};
+        data = this.utils.clone(data); // Clone the data so the changes don't affect the original data.
         data.wsfunction = method;
         data.wstoken = preSets.wsToken;
         siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';

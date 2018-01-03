@@ -307,15 +307,14 @@ export class CoreUtilsProvider {
      *
      * @param {any} from Object to copy the properties from.
      * @param {any} to Object where to store the properties.
+     * @param {boolean} [clone=true] Whether the properties should be cloned (so they are different instances).
      */
-    copyProperties(from: any, to: any) : void {
+    copyProperties(from: any, to: any, clone = true) : void {
         for (let name in from) {
-            let value = from[name];
-            if (typeof value == 'object') {
-                // Clone the object.
-                to[name] = Object.assign({}, value);
+            if (clone) {
+                to[name] = this.clone(from[name]);
             } else {
-                to[name] = value;
+                to[name] = from[name];
             }
         }
     }
@@ -413,15 +412,16 @@ export class CoreUtilsProvider {
         for (let name in obj) {
             if (!obj.hasOwnProperty(name)) continue;
 
-            if (typeof obj[name] == 'object') {
-                let flatObject = this.flattenObject(obj[name]);
+            let value = obj[name];
+            if (typeof value == 'object' && !Array.isArray(value)) {
+                let flatObject = this.flattenObject(value);
                 for (let subName in flatObject) {
                     if (!flatObject.hasOwnProperty(subName)) continue;
 
                     toReturn[name + '.' + subName] = flatObject[subName];
                 }
             } else {
-                toReturn[name] = obj[name];
+                toReturn[name] = value;
             }
         }
 
@@ -1109,7 +1109,26 @@ export class CoreUtilsProvider {
      * @return {string} Stringified object.
      */
     sortAndStringify(obj: object) : string {
-        return JSON.stringify(obj, Object.keys(this.flattenObject(obj)).sort());
+        return JSON.stringify(this.sortProperties(obj));
+    }
+
+    /**
+     * Given an object, sort its properties and the properties of all the nested objects.
+     *
+     * @param {object} obj The object to sort. If it isn't an object, the original value will be returned.
+     * @return {object} Sorted object.
+     */
+    sortProperties(obj: object) : object {
+        if (typeof obj == 'object' && !Array.isArray(obj)) {
+            // It's an object, sort it.
+            return Object.keys(obj).sort().reduce((accumulator, key) => {
+                // Always call sort with the value. If it isn't an object, the original value will be returned.
+                accumulator[key] = this.sortProperties(obj[key]);
+                return accumulator;
+            }, {});
+        } else {
+            return obj;
+        }
     }
 
     /**

@@ -482,14 +482,7 @@ export class CoreSite {
 
                 // We pass back a clone of the original object, this may
                 // prevent errors if in the callback the object is modified.
-                if (typeof response == 'object') {
-                    if (Array.isArray(response)) {
-                        return Array.from(response);
-                    } else {
-                        return Object.assign({}, response);
-                    }
-                }
-                return response;
+                return this.utils.clone(response);
             }).catch((error) => {
                 if (error.errorcode == 'invalidtoken' ||
                         (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
