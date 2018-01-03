@@ -17,6 +17,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreUtilsProvider } from '../../../../providers/utils/utils';
+import { CoreCourseProvider } from '../../../course/providers/course';
 import * as moment from 'moment';
 
 /**
@@ -41,7 +42,8 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     future: any[] = [];
 
     constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider) {
+            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
+            private courseProvider: CoreCourseProvider) {
         this.loadMore = new EventEmitter();
     }
 
@@ -73,7 +75,7 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
 
             return start <= event.timesort;
         }).map((event) => {
-            // @todo: event.iconUrl = this.courseProvider.getModuleIconSrc(event.icon.component);
+            event.iconUrl = this.courseProvider.getModuleIconSrc(event.icon.component);
             return event;
         });
     }

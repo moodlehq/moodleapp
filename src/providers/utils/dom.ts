@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content } from 'ionic-angular';
+import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
+        NavController, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
@@ -33,7 +34,8 @@ export class CoreDomUtilsProvider {
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
         private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
-        private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider) {}
+        private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
+        private modalCtrl: ModalController) {}
 
     /**
      * Wraps a message with core-format-text if the message contains HTML tags.
@@ -838,6 +840,40 @@ export class CoreDomUtilsProvider {
     supportsInputKeyboard(el: any) : boolean {
         return el && !el.disabled && (el.tagName.toLowerCase() == 'textarea' ||
             (el.tagName.toLowerCase() == 'input' && this.inputSupportKeyboard.indexOf(el.type) != -1));
+    }
+
+    /**
+     * View an image in a new page or modal.
+     *
+     * @param {string} image URL of the image.
+     * @param {string} title Title of the page or modal.
+     * @param {boolean} [isModal] Whether it should be opened in a modal (true) or in a new page (false).
+     * @param {string} [component] Component to link the image to if needed.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {NavController} [navCtrl] The NavController instance to use.
+     */
+    viewImage(image: string, title?: string, isModal?: boolean, component?: string, componentId?: string|number,
+            navCtrl?: NavController) : void {
+        if (image) {
+            let params: any = {
+                title: title,
+                image: image,
+                component: component,
+                componentId: componentId
+            };
+
+            if (isModal) {
+                // Open a modal with the contents.
+                params.isModal = true;
+
+                let modal = this.modalCtrl.create('CoreViewerImagePage', params);
+                modal.present();
+            } else if (navCtrl) {
+                // Open a new page with the contents.
+                navCtrl.push('CoreViewerImagePage', params);
+            }
+        }
+
     }
 
     /**

@@ -125,13 +125,33 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (imgWidth > elWidth) {
             // The image has been adapted, add an anchor to view it in full size.
-            let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
-                label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage'));
-
-            // @todo: Implement image viewer. Maybe we can add the listener here directly?
-            container.innerHTML += '<a href="#" class="core-image-viewer-icon" core-image-viewer img="' + imgSrc +
-                            '" aria-label="' + label + '"><ion-icon name="search"></ion-icon></a>';
+            this.addMagnifyingGlass(container, img);
         }
+    }
+
+    /**
+     * Add a magnifying glass icon to view an image at full size.
+     *
+     * @param {HTMLElement} container The container of the image.
+     * @param {HTMLElement} img The image.
+     */
+    addMagnifyingGlass(container: HTMLElement, img: HTMLElement) : void {
+        let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
+            label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage')),
+            anchor = document.createElement('a');
+
+        anchor.classList.add('core-image-viewer-icon');
+        anchor.setAttribute('aria-label', label);
+        // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
+        anchor.innerHTML = '<ion-icon name="search" class="icon icon-md ion-md-search"></ion-icon>';
+
+        anchor.addEventListener('click', (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), true, this.component, this.componentId);
+        });
+
+        container.appendChild(anchor);
     }
 
     /**
