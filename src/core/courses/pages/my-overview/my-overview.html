@@ -6,6 +6,9 @@
             <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
                 <ion-icon name="search"></ion-icon>
             </button>
+            <button *ngIf="tabShown == 'courses' && courses[courses.selected] && courses[courses.selected].length > 5" ion-button icon-only (click)="switchFilter()" [attr.aria-label]="'core.courses.filtermycourses' | translate">
+                <ion-icon name="funnel"></ion-icon>
+            </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
@@ -14,6 +17,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
+    <!-- @todo: Use a component to render the tabs. -->
     <div class="tabs tabs-striped tabs-free mm-tabs-color">
         <a ion-button class="tab-item" [class.active]="tabShown == 'timeline'" (click)="switchTab('timeline')">{{ 'core.courses.timeline' | translate }}</a>
         <a ion-button class="tab-item" [class.active]="tabShown == 'courses'" (click)="switchTab('courses')">{{ 'core.courses.courses' | translate }}</a>
@@ -31,7 +35,7 @@
         </core-loading>
         <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="tabShown != 'timeline' || timeline.sort != 'sortbycourses'" class="block mm-loading-center">
             <div class="block mm-course-grid">
-                <core-courses-course-progress *ngFor="let course of timelineCourses.courses" [course]="course" roundProgress="true" showSummary="true">
+                <core-courses-course-progress *ngFor="let course of timelineCourses.courses" [course]="course" showSummary="true">
                     <core-courses-overview-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMoreCourse(course)"></core-courses-overview-events>
                 </core-courses-course-progress>
             </div>
@@ -49,11 +53,7 @@
                     </ion-item>
                 </ion-col>
                 <ion-col col-1 class="text-right" [hidden]="!courses[courses.selected] || !courses[courses.selected].length">
-                    <core-context-menu>
-                        <core-context-menu-item [hidden]="!courses[courses.selected] || courses[courses.selected].length <= 5" [priority]="700" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" [iconAction]="'funnel'"></core-context-menu-item>
-                        <core-context-menu-item [hidden]="showGrid" [priority]="601" [content]="'core.layoutgrid' | translate" (action)="switchGrid()" [iconAction]="'apps'"></core-context-menu-item>
-                        <core-context-menu-item [hidden]="!showGrid" [priority]="600" [content]="'core.list' | translate" (action)="switchGrid()" [iconAction]="'list'"></core-context-menu-item>
-                    </core-context-menu>
+                    <!-- @todo: Download button. -->
                 </ion-col>
             </ion-row>
             <div [hidden]="!showFilter" class="mm-filter-box">
@@ -67,7 +67,7 @@
             </div>
 
             <div [class.mm-course-grid]="showGrid">
-                <core-courses-course-progress *ngFor="let course of filteredCourses" [course]="course" [roundProgress]="showGrid" [showSummary]="showGrid"></core-courses-course-progress>
+                <core-courses-course-progress *ngFor="let course of filteredCourses" [course]="course" [showSummary]="showGrid"></core-courses-course-progress>
             </div>
 
             <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesinprogress' | translate"></core-empty-box>

@@ -1,26 +1,8 @@
 <ion-card>
-    <a ion-item text-wrap class="item-course" [class.item-progress]="roundProgress" (click)="openCourse(course)" [title]="course.fullname">
-        <div class="progress-chart-container" *ngIf="roundProgress">
-            <div *ngIf="course.progress !== false" class="progress-doughnut">
-                <div class="progress-text has-percent">{{course.progress}}&#37;</div>
-                <div class="progress-indicator">
-                    <svg xmlns="http://www.w3.org/2000/svg">
-                        <g>
-                            <title>{{course.progress}}&#37;</title>
-                            <!-- Commenting circle because it throws an error in console:
-                                Cannot assign to read only property 'className' of object '[object SVGCircleElement]'
-                                <circle class="circle percent-{{course.progress}}" r="27.5" cx="35" cy="35"/> -->
-                        </g>
-                    </svg>
-                </div>
-            </div>
-            <div *ngIf="course.progress === false" class="no-progress">
-                <ion-icon name="ionic"></ion-icon>
-            </div>
-        </div>
+    <a ion-item text-wrap class="item-course" (click)="openCourse(course)" [title]="course.fullname">
         <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
-        <core-progress-bar *ngIf="!roundProgress && course.progress !== false" [progress]="course.progress"></core-progress-bar>
-        <!-- Course options. -->
+        <core-progress-bar *ngIf="course.progress !== false" [progress]="course.progress"></core-progress-bar>
+        <!-- @todo: Download button. -->
         <!-- <i *ngIf="actionsLoaded" class="icon ion-android-more-vertical mm-animate-show-hide" ng-click="showCourseActions($event)"></i>
         <ion-spinner *ngIf="!actionsLoaded" class="mm-animate-show-hide"></ion-spinner> -->
         <!-- Download course spinner. -->

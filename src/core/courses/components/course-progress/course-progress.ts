@@ -31,7 +31,6 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 })
 export class CoreCoursesCourseProgressComponent implements OnInit {
     @Input() course: any; // The course to render.
-    @Input() roundProgress?: boolean|string; // Whether to show the progress.
     @Input() showSummary?: boolean|string; // Whether to show the summary.
 
     actionsLoaded = true;
@@ -57,8 +56,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit {
      */
     ngOnInit() {
         // @todo: Handle course prefetch.
-        // @todo: Handle course handlers (participants, etc.).
-        this.roundProgress = this.utils.isTrueOrOne(this.roundProgress);
         this.showSummary = this.utils.isTrueOrOne(this.showSummary);
     }
 
