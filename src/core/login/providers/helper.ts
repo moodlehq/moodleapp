@@ -616,6 +616,42 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Load a site and load a certain page in that site.
+     *
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     * @param {string} siteId Site to load.
+     */
+    protected loadSiteAndPage(page: string, params: any, siteId: string) : void {
+        if (siteId == CoreConstants.noSiteId) {
+            // Page doesn't belong to a site, just load the page.
+            this.navCtrl.setRoot(page, params);
+        } else {
+            let modal = this.domUtils.showModalLoading();
+            this.sitesProvider.loadSite(siteId).then(() => {
+                if (!this.isSiteLoggedOut(page, params)) {
+                    this.loadPageInMainMenu(page, params);
+                }
+            }).catch(() => {
+                // Site doesn't exist.
+                this.navCtrl.setRoot('CoreLoginSitesPage')
+            }).finally(() => {
+                modal.dismiss();
+            });
+        }
+    }
+
+    /**
+     * Load a certain page in the main menu page.
+     *
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     */
+    protected loadPageInMainMenu(page: string, params: any) : void {
+        this.navCtrl.setRoot('CoreMainMenuPage', {redirectPage: page, redirectParams: params})
+    }
+
+    /**
      * Open a browser to perform OAuth login (Google, Facebook, Microsoft).
      *
      * @param {string} siteUrl URL of the site where the login will be performed.
@@ -771,6 +807,41 @@ export class CoreLoginHelperProvider {
         }));
 
         return loginUrl;
+    }
+
+    /**
+     * Redirect to a new page, setting it as the root page and loading the right site if needed.
+     *
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     * @param {string} [siteId] Site to load. If not defined, current site.
+     */
+    redirect(page: string, params?: any, siteId?: string) : void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (this.sitesProvider.isLoggedIn()) {
+            if (siteId && siteId != this.sitesProvider.getCurrentSiteId()) {
+                // Target page belongs to a different site. Change site.
+                // @todo Once we have addon manager.
+                // if ($mmAddonManager.hasRemoteAddonsLoaded()) {
+                //     // The site has remote addons so the app will be restarted. Store the data and logout.
+                //     this.appProvider.storeRedirect(siteId, page, params);
+                //     this.sitesProvider.logout();
+                // } else {
+                    this.sitesProvider.logout().then(() => {
+                        this.loadSiteAndPage(page, params, siteId);
+                    });
+                // }
+            } else {
+                this.loadPageInMainMenu(page, params);
+            }
+        } else {
+            if (siteId) {
+                this.loadSiteAndPage(page, params, siteId);
+            } else {
+                this.navCtrl.setRoot('CoreLoginSitesPage')
+            }
+        }
     }
 
     /**

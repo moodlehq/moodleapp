@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreMainMenuProvider } from '../../providers/mainmenu';
@@ -28,8 +28,33 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/d
     templateUrl: 'menu.html',
 })
 export class CoreMainMenuPage implements OnDestroy {
+    // Use a setter to wait for ion-tabs to be loaded because it's inside a ngIf.
+    @ViewChild('mainTabs') set mainTabs(ionTabs: Tabs) {
+        if (ionTabs && this.redirectPage && !this.redirectPageLoaded) {
+            // Tabs ready and there is a redirect page set. Load it.
+            this.redirectPageLoaded = true;
+
+            // Check if the page is the root page of any of the tabs.
+            let indexToSelect = 0;
+            for (let i = 0; i < this.tabs.length; i++) {
+                if (this.tabs[i].page == this.redirectPage) {
+                    indexToSelect = i + 1;
+                    break;
+                }
+            }
+
+            // Use a setTimeout, otherwise loading the first tab opens a new state for some reason.
+            setTimeout(() => {
+                ionTabs.select(indexToSelect);
+            });
+        }
+    };
+
     tabs: CoreMainMenuHandlerData[] = [];
     loaded: boolean;
+    redirectPage: string;
+    redirectParams: any;
+
     protected subscription;
     protected moreTabData = {
         page: 'CoreMainMenuMorePage',
@@ -37,15 +62,12 @@ export class CoreMainMenuPage implements OnDestroy {
         icon: 'more'
     };
     protected moreTabAdded = false;
-    protected logoutObserver;
+    protected redirectPageLoaded = false;
 
-    constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
+    constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
             private navCtrl: NavController, eventsProvider: CoreEventsProvider) {
-
-        // Go to sites page when user is logged out.
-        this.logoutObserver = eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
-            this.navCtrl.setRoot('CoreLoginSitesPage');
-        });
+        this.redirectPage = navParams.get('redirectPage');
+        this.redirectParams = navParams.get('redirectParams');
     }
 
     /**
@@ -93,6 +115,5 @@ export class CoreMainMenuPage implements OnDestroy {
      */
     ngOnDestroy() {
         this.subscription && this.subscription.unsubscribe();
-        this.logoutObserver && this.logoutObserver.off();
     }
 }
