@@ -54,6 +54,9 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
             seconds = numberSeconds;
         }
 
+        // Don't allow decimals.
+        seconds = Math.floor(seconds);
+
         hours = Math.floor(seconds / CoreConstants.secondsHour);
         seconds -= hours * CoreConstants.secondsHour;
         minutes = Math.floor(seconds / CoreConstants.secondsMinute);
