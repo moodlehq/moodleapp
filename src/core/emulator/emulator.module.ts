@@ -15,6 +15,8 @@
 import { NgModule } from '@angular/core';
 import { Platform } from 'ionic-angular';
 
+// Ionic Native services.
+import { Camera } from '@ionic-native/camera';
 import { Clipboard } from '@ionic-native/clipboard';
 import { File } from '@ionic-native/file';
 import { FileTransfer } from '@ionic-native/file-transfer';
@@ -22,22 +24,27 @@ import { Globalization } from '@ionic-native/globalization';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Keyboard } from '@ionic-native/keyboard';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { MediaCapture } from '@ionic-native/media-capture';
 import { Network } from '@ionic-native/network';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SQLite } from '@ionic-native/sqlite';
 import { Zip } from '@ionic-native/zip';
 
+// Services that Mock Ionic Native in browser an desktop.
+import { CameraMock } from './providers/camera';
 import { ClipboardMock } from './providers/clipboard';
 import { FileMock } from './providers/file';
 import { FileTransferMock } from './providers/file-transfer';
 import { GlobalizationMock } from './providers/globalization';
 import { InAppBrowserMock } from './providers/inappbrowser';
 import { LocalNotificationsMock } from './providers/local-notifications';
+import { MediaCaptureMock } from './providers/media-capture';
 import { NetworkMock } from './providers/network';
 import { ZipMock } from './providers/zip';
 
 import { CoreEmulatorHelperProvider } from './providers/helper';
+import { CoreEmulatorCaptureHelperProvider } from './providers/capture-helper';
 import { CoreAppProvider } from '../../providers/app';
 import { CoreFileProvider } from '../../providers/file';
 import { CoreTextUtilsProvider } from '../../providers/utils/text';
@@ -46,6 +53,15 @@ import { CoreUrlUtilsProvider } from '../../providers/utils/url';
 import { CoreUtilsProvider } from '../../providers/utils/utils';
 import { CoreInitDelegate } from '../../providers/init';
 
+/**
+ * This module handles the emulation of Cordova plugins in browser and desktop.
+ *
+ * It includes the "mock" of all the Ionic Native services that should be supported in browser and desktop,
+ * otherwise those features would only work in a Cordova environment.
+ *
+ * This module also determines if the app should use the original service or the mock. In each of the "useFactory"
+ * functions we check if the app is running in mobile or not, and then provide the right service to use.
+ */
 @NgModule({
     declarations: [
     ],
@@ -53,6 +69,14 @@ import { CoreInitDelegate } from '../../providers/init';
     ],
     providers: [
         CoreEmulatorHelperProvider,
+        CoreEmulatorCaptureHelperProvider,
+        {
+            provide: Camera,
+            deps: [CoreAppProvider, CoreEmulatorCaptureHelperProvider],
+            useFactory: (appProvider: CoreAppProvider, captureHelper: CoreEmulatorCaptureHelperProvider) => {
+                return appProvider.isMobile() ? new Camera() : new CameraMock(captureHelper);
+            }
+        },
         {
             provide: Clipboard,
             deps: [CoreAppProvider],
@@ -97,6 +121,13 @@ import { CoreInitDelegate } from '../../providers/init';
             useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider) => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new LocalNotifications() : new LocalNotificationsMock(appProvider, utils);
+            }
+        },
+        {
+            provide: MediaCapture,
+            deps: [CoreAppProvider, CoreEmulatorCaptureHelperProvider],
+            useFactory: (appProvider: CoreAppProvider, captureHelper: CoreEmulatorCaptureHelperProvider) => {
+                return appProvider.isMobile() ? new MediaCapture() : new MediaCaptureMock(captureHelper);
             }
         },
         {
