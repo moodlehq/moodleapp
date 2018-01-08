@@ -78,7 +78,6 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
             return this.coursesProvider.getCoursesOptions(courseIds).then((options) => {
                 courses.forEach((course) => {
-                    course.progress = isNaN(parseInt(course.progress, 10)) ? false : parseInt(course.progress, 10);
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
                 });

@@ -45,15 +45,23 @@ export class CoreProgressBarComponent implements OnChanges {
 
         if (changes.progress) {
             // Progress has changed.
-            this.width = this.sanitizer.bypassSecurityTrustStyle(this.progress + '%');
             if (typeof this.progress == 'string') {
                 this.progress = parseInt(this.progress, 10);
             }
 
             if (this.progress < 0 || isNaN(this.progress)) {
                 this.progress = -1;
-            } else if (!this.textSupplied) {
-                this.text = String(this.progress);
+            }
+
+            if (this.progress != -1) {
+                // Remove decimals.
+                this.progress = Math.floor(this.progress);
+
+                if (!this.textSupplied) {
+                    this.text = String(this.progress);
+                }
+
+                this.width = this.sanitizer.bypassSecurityTrustStyle(this.progress + '%');
             }
         }
     }

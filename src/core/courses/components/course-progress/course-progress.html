@@ -1,7 +1,7 @@
 <ion-card>
     <a ion-item text-wrap class="item-course" (click)="openCourse(course)" [title]="course.fullname">
         <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
-        <core-progress-bar *ngIf="course.progress !== false" [progress]="course.progress"></core-progress-bar>
+        <core-progress-bar *ngIf="course.progress != null && course.progress >= 0" [progress]="course.progress"></core-progress-bar>
         <!-- @todo: Download button. -->
         <!-- <i *ngIf="actionsLoaded" class="icon ion-android-more-vertical mm-animate-show-hide" ng-click="showCourseActions($event)"></i>
         <ion-spinner *ngIf="!actionsLoaded" class="mm-animate-show-hide"></ion-spinner> -->
