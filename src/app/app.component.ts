@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { Platform, Nav } from 'ionic-angular';
+import { Component, OnInit } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { CoreAppProvider } from '../providers/app';
 import { CoreEventsProvider } from '../providers/events';
 import { CoreLoggerProvider } from '../providers/logger';
 import { CoreLoginHelperProvider } from '../core/login/providers/helper';
@@ -23,8 +24,7 @@ import { CoreLoginHelperProvider } from '../core/login/providers/helper';
 @Component({
     templateUrl: 'app.html'
 })
-export class MyApp implements AfterViewInit {
-    @ViewChild(Nav) navCtrl;
+export class MoodleMobileApp implements OnInit {
     // Use the page name (string) because the page is lazy loaded (Ionic feature). That way we can load pages without
     // having to import them. The downside is that each page needs to implement a ngModule.
     rootPage:any = 'CoreLoginInitPage';
@@ -32,7 +32,8 @@ export class MyApp implements AfterViewInit {
     protected lastUrls = {};
 
     constructor(private platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, logger: CoreLoggerProvider,
-            private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider) {
+            private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider,
+            private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -45,14 +46,12 @@ export class MyApp implements AfterViewInit {
     }
 
     /**
-     * View has been initialized.
+     * Component being initialized.
      */
-    ngAfterViewInit() {
-        this.loginHelper.setNavCtrl(this.navCtrl);
-
+    ngOnInit() {
         // Go to sites page when user is logged out.
         this.eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
-            this.navCtrl.setRoot('CoreLoginSitesPage');
+            this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
         });
 
         // Listen for session expired events.

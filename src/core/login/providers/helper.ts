@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../../../providers/app';
 import { CoreConfigProvider } from '../../../providers/config';
@@ -46,7 +46,6 @@ export class CoreLoginHelperProvider {
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    protected navCtrl: NavController;
     lastInAppUrl: string;
     waitingForBrowser = false;
 
@@ -142,9 +141,9 @@ export class CoreLoginHelperProvider {
         }).then(() => {
             if (siteData.pageName) {
                 // State defined, go to that state instead of site initial page.
-                this.navCtrl.push(siteData.pageName, siteData.pageParams);
+                this.appProvider.getRootNavController().push(siteData.pageName, siteData.pageParams);
             } else {
-                this.goToSiteInitialPage(this.navCtrl, true);
+                this.goToSiteInitialPage();
             }
         }).catch((errorMessage) => {
             if (typeof errorMessage == 'string' && errorMessage != '') {
@@ -176,8 +175,9 @@ export class CoreLoginHelperProvider {
      * Function called when an SSO InAppBrowser is closed or the app is resumed. Check if user needs to be logged out.
      */
     checkLogout() {
+        let navCtrl = this.appProvider.getRootNavController();
         if (!this.appProvider.isSSOAuthenticationOngoing() && this.sitesProvider.isLoggedIn() &&
-                this.sitesProvider.getCurrentSite().isLoggedOut() && this.navCtrl.getActive().name == 'CoreLoginReconnectPage') {
+                this.sitesProvider.getCurrentSite().isLoggedOut() && navCtrl.getActive().name == 'CoreLoginReconnectPage') {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
             this.sitesProvider.logout();
         }
@@ -345,11 +345,10 @@ export class CoreLoginHelperProvider {
      * Go to the page to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
-     * @param {NavController} navCtrl The NavController instance to use.
      * @param {boolean} [setRoot] True to set the new page as root, false to add it to the stack.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToAddSite(navCtrl: NavController, setRoot?: boolean) : Promise<any> {
+    goToAddSite(setRoot?: boolean) : Promise<any> {
         let pageName,
             params;
 
@@ -365,25 +364,19 @@ export class CoreLoginHelperProvider {
         }
 
         if (setRoot) {
-            return navCtrl.setRoot(pageName, params, {animate: false});
+            return this.appProvider.getRootNavController().setRoot(pageName, params, {animate: false});
         } else {
-            return navCtrl.push(pageName, params);
+            return this.appProvider.getRootNavController().push(pageName, params);
         }
     }
 
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
-     * @param {NavController} navCtrl The NavController instance to use.
-     * @param {boolean} [setRoot] True to set the new page as root, false to add it to the stack.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToSiteInitialPage(navCtrl: NavController, setRoot?: boolean) : Promise<any> {
-        if (setRoot) {
-            return navCtrl.setRoot('CoreMainMenuPage', {}, {animate: false});
-        } else {
-            return navCtrl.push('CoreMainMenuPage');
-        }
+    goToSiteInitialPage() : Promise<any> {
+        return this.appProvider.getRootNavController().setRoot('CoreMainMenuPage');
         // return this.isMyOverviewEnabled().then((myOverview) => {
         //     let myCourses = !myOverview && this.isMyCoursesEnabled(),
         //         site = this.sitesProvider.getCurrentSite(),
@@ -625,7 +618,7 @@ export class CoreLoginHelperProvider {
     protected loadSiteAndPage(page: string, params: any, siteId: string) : void {
         if (siteId == CoreConstants.noSiteId) {
             // Page doesn't belong to a site, just load the page.
-            this.navCtrl.setRoot(page, params);
+            this.appProvider.getRootNavController().setRoot(page, params);
         } else {
             let modal = this.domUtils.showModalLoading();
             this.sitesProvider.loadSite(siteId).then(() => {
@@ -634,7 +627,7 @@ export class CoreLoginHelperProvider {
                 }
             }).catch(() => {
                 // Site doesn't exist.
-                this.navCtrl.setRoot('CoreLoginSitesPage')
+                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage')
             }).finally(() => {
                 modal.dismiss();
             });
@@ -648,7 +641,7 @@ export class CoreLoginHelperProvider {
      * @param {any} params Params to pass to the page.
      */
     protected loadPageInMainMenu(page: string, params: any) : void {
-        this.navCtrl.setRoot('CoreMainMenuPage', {redirectPage: page, redirectParams: params})
+        this.appProvider.getRootNavController().setRoot('CoreMainMenuPage', {redirectPage: page, redirectParams: params})
     }
 
     /**
@@ -839,7 +832,7 @@ export class CoreLoginHelperProvider {
             if (siteId) {
                 this.loadSiteAndPage(page, params, siteId);
             } else {
-                this.navCtrl.setRoot('CoreLoginSitesPage')
+                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage')
             }
         }
     }
@@ -919,7 +912,7 @@ export class CoreLoginHelperProvider {
             } else {
                 let info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined') {
-                    this.navCtrl.setRoot('CoreLoginReconnectPage', {
+                    this.appProvider.getRootNavController().setRoot('CoreLoginReconnectPage', {
                         infoSiteUrl: info.siteurl,
                         siteUrl: result.siteUrl,
                         siteId: siteId,
@@ -937,15 +930,6 @@ export class CoreLoginHelperProvider {
                 this.sitesProvider.logout();
             }
         });
-    }
-
-    /**
-     * Set a NavController to use.
-     *
-     * @param {NavController} navCtrl Nav controller.
-     */
-    setNavCtrl(navCtrl: NavController) : void {
-        this.navCtrl = navCtrl;
     }
 
     /**
@@ -976,7 +960,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        this.navCtrl.setRoot('CoreLoginSitePolicyPage', {siteId: siteId});
+        this.appProvider.getRootNavController().setRoot('CoreLoginSitePolicyPage', {siteId: siteId});
     }
 
     /**

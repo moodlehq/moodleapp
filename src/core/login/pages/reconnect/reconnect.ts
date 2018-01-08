@@ -140,7 +140,7 @@ export class CoreLoginReconnectPage {
                         // Page defined, go to that page instead of site initial page.
                         return this.navCtrl.setRoot(this.pageName, this.pageParams);
                     } else {
-                        return this.loginHelper.goToSiteInitialPage(this.navCtrl, true);
+                        return this.loginHelper.goToSiteInitialPage();
                     }
                 }).catch((error) => {
                     // Site deleted? Go back to login page.

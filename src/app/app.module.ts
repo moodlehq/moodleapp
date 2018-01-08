@@ -25,7 +25,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { MyApp } from './app.component';
+import { MoodleMobileApp } from './app.component';
 import { CoreInterceptor } from '../classes/interceptor';
 import { CoreLoggerProvider } from '../providers/logger';
 import { CoreDbProvider } from '../providers/db';
@@ -66,13 +66,13 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
     declarations: [
-        MyApp
+        MoodleMobileApp
     ],
     imports: [
         BrowserModule,
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         HttpModule,
-        IonicModule.forRoot(MyApp, {
+        IonicModule.forRoot(MoodleMobileApp, {
             pageTransition: 'ios-transition'
         }),
         TranslateModule.forRoot({
@@ -90,7 +90,7 @@ export function createTranslateLoader(http: HttpClient) {
     ],
     bootstrap: [IonicApp],
     entryComponents: [
-        MyApp
+        MoodleMobileApp
     ],
     providers: [
         {

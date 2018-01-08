@@ -110,7 +110,7 @@ export class CoreLoginSitePolicyPage {
             return this.currentSite.invalidateWsCache().catch(() => {
                 // Ignore errors.
             }).then(() => {
-                return this.loginHelper.goToSiteInitialPage(this.navCtrl, true);
+                return this.loginHelper.goToSiteInitialPage();
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error.message, 'Error accepting site policy.');

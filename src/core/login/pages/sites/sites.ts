@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '../../../../providers/logger';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '../../../../providers/sites';
@@ -34,7 +34,7 @@ export class CoreLoginSitesPage {
     showDelete: boolean;
     protected logger;
 
-    constructor(private navCtrl: NavController, private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
+    constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private translate: TranslateService, logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreLoginSitesPage');
@@ -85,7 +85,7 @@ export class CoreLoginSitesPage {
      * Go to the page to add a site.
      */
     add() : void {
-        this.loginHelper.goToAddSite(this.navCtrl, false);
+        this.loginHelper.goToAddSite(false);
     }
 
     /**
@@ -108,7 +108,7 @@ export class CoreLoginSitesPage {
 
                     // If there are no sites left, go to add site.
                     this.sitesProvider.hasNoSites().then(() => {
-                        this.loginHelper.goToAddSite(this.navCtrl, true);
+                        this.loginHelper.goToAddSite(true);
                     });
                 }).catch((error) => {
                     this.logger.error('Error deleting site ' + site.id, error);
@@ -131,7 +131,7 @@ export class CoreLoginSitesPage {
 
         this.sitesProvider.loadSite(siteId).then(() => {
             if (!this.loginHelper.isSiteLoggedOut()) {
-                return this.loginHelper.goToSiteInitialPage(this.navCtrl, true);
+                return this.loginHelper.goToSiteInitialPage();
             }
         }).catch((error) => {
             this.logger.error('Error loading site ' + siteId, error);
