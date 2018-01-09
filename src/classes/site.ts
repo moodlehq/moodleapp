@@ -717,9 +717,10 @@ export class CoreSite {
      *
      * @param {string} filePath File path.
      * @param {CoreWSFileUploadOptions} options File upload options.
+     * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when uploaded.
      */
-    uploadFile(filePath: string, options: CoreWSFileUploadOptions) : Promise<any> {
+    uploadFile(filePath: string, options: CoreWSFileUploadOptions, onProgress?: (event: ProgressEvent) => any) : Promise<any> {
         if (!options.fileArea) {
             options.fileArea = 'draft';
         }
@@ -727,7 +728,7 @@ export class CoreSite {
         return this.wsProvider.uploadFile(filePath, options, {
             siteUrl: this.siteUrl,
             wsToken: this.token
-        });
+        }, onProgress);
     }
 
     /**
