@@ -63,11 +63,16 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Copy a file or directory.
+     *
+     * @param {Entry} srce The Entry to copy.
+     * @param {DirectoryEntry} destDir The directory where to put the copy.
+     * @param {string} newName New name of the file/dir.
+     * @returns {Promise<Entry>} Returns a Promise that resolves to the new Entry object or rejects with an error.
      */
-    private copyMock(srce: Entry, destdir: DirectoryEntry, newName: string): Promise<Entry> {
+    private copyMock(srce: Entry, destDir: DirectoryEntry, newName: string): Promise<Entry> {
         return new Promise<Entry>((resolve, reject) => {
-            srce.copyTo(destdir, newName, (deste) => {
+            srce.copyTo(destDir, newName, (deste) => {
                 resolve(deste);
             }, (err) => {
                 this.fillErrorMessageMock(err);
@@ -165,7 +170,10 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Create a file writer for a certain file.
+     *
+     * @param {FileEntry} fe File entry object.
+     * @returns {Promise<FileWriter>} Promise resolved with the FileWriter.
      */
     private createWriterMock(fe: FileEntry): Promise<FileWriter> {
         return new Promise<FileWriter>((resolve, reject) => {
@@ -179,7 +187,9 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Fill the message for an error.
+     *
+     * @param {any} err Error.
      */
     private fillErrorMessageMock(err: any): void {
         try {
@@ -350,11 +360,16 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Move a file or directory.
+     *
+     * @param {Entry} srce The Entry to copy.
+     * @param {DirectoryEntry} destDir The directory where to move the file/dir.
+     * @param {string} newName New name of the file/dir.
+     * @returns {Promise<Entry>} Returns a Promise that resolves to the new Entry object or rejects with an error.
      */
-    private moveMock(srce: Entry, destdir: DirectoryEntry, newName: string): Promise<Entry> {
+    private moveMock(srce: Entry, destDir: DirectoryEntry, newName: string): Promise<Entry> {
         return new Promise<Entry>((resolve, reject) => {
-            srce.moveTo(destdir, newName, (deste) => {
+            srce.moveTo(destDir, newName, (deste) => {
                 resolve(deste);
             }, (err) => {
                 this.fillErrorMessageMock(err);
@@ -448,7 +463,10 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Read all the files and directories inside a directory.
+     *
+     * @param {DirectoryReader} dr The directory reader.
+     * @return {Promise<Entry[]>} Promise resolved with the list of files/dirs.
      */
     private readEntriesMock(dr: DirectoryReader): Promise<Entry[]> {
         return new Promise<Entry[]>((resolve, reject) => {
@@ -485,7 +503,7 @@ export class FileMock extends File {
                     }
                 };
 
-                fileEntry.file(file => {
+                fileEntry.file((file) => {
                     reader[`readAs${readAs}`].call(reader, file);
                 }, error => {
                     reject(error);
@@ -495,7 +513,10 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Delete a file.
+     *
+     * @param {Entry} fe The file to remove.
+     * @return {Promise<any>} Promise resolved when done.
      */
     private removeMock(fe: Entry): Promise<any> {
         return new Promise<any>((resolve, reject) => {
@@ -592,7 +613,10 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Remove a directory and all its contents.
+     *
+     * @param {DirectoryEntry} de Directory to remove.
+     * @return {Promise<any>} Promise resolved when done.
      */
     private rimrafMock(de: DirectoryEntry): Promise<any> {
         return new Promise<any>((resolve, reject) => {
@@ -606,11 +630,15 @@ export class FileMock extends File {
     }
 
     /**
-     * @hidden
+     * Write some data in a file.
+     *
+     * @param {FileWriter} writer File writer.
+     * @param {any} data The data to write.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    private writeMock(writer: FileWriter, gu: any): Promise<any> {
-        if (gu instanceof Blob) {
-            return this.writeFileInChunksMock(writer, gu);
+    private writeMock(writer: FileWriter, data: any): Promise<any> {
+        if (data instanceof Blob) {
+            return this.writeFileInChunksMock(writer, data);
         }
 
         return new Promise<any>((resolve, reject) => {
@@ -621,7 +649,7 @@ export class FileMock extends File {
                     resolve(evt);
                 }
             };
-            writer.write(gu);
+            writer.write(data);
         });
     }
 
@@ -661,7 +689,6 @@ export class FileMock extends File {
     /**
      * Write content to FileEntry.
      *
-     * @hidden
      * @param {FileEntry} fe File entry object.
      * @param {string | Blob} text Content or blob to write.
      * @param {IWriteOptions} options replace file if set to true. See WriteOptions for more information.
@@ -682,15 +709,19 @@ export class FileMock extends File {
     }
 
     /**
-    * @hidden
-    */
-    private writeFileInChunksMock(writer: FileWriter, file: Blob) {
+     * Write a file in chunks.
+     *
+     * @param {FileWriter} writer File writer.
+     * @param {Blob} data Data to write.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    private writeFileInChunksMock(writer: FileWriter, data: Blob) : Promise<any> {
         const BLOCK_SIZE = 1024 * 1024;
         let writtenSize = 0;
 
         function writeNextChunk() {
-            const size = Math.min(BLOCK_SIZE, file.size - writtenSize);
-            const chunk = file.slice(writtenSize, writtenSize + size);
+            const size = Math.min(BLOCK_SIZE, data.size - writtenSize);
+            const chunk = data.slice(writtenSize, writtenSize + size);
 
             writtenSize += size;
             writer.write(chunk);
@@ -699,7 +730,7 @@ export class FileMock extends File {
         return new Promise<any>((resolve, reject) => {
             writer.onerror = reject;
             writer.onwrite = () => {
-                if (writtenSize < file.size) {
+                if (writtenSize < data.size) {
                     writeNextChunk();
                 } else {
                     resolve();

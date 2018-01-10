@@ -25,6 +25,8 @@ import { CoreLoginHelperProvider } from '../core/login/providers/helper';
 })
 export class MyApp implements AfterViewInit {
     @ViewChild(Nav) navCtrl;
+    // Use the page name (string) because the page is lazy loaded (Ionic feature). That way we can load pages without
+    // having to import them. The downside is that each page needs to implement a ngModule.
     rootPage:any = 'CoreLoginInitPage';
     protected logger;
     protected lastUrls = {};

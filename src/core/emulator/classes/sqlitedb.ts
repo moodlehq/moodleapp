@@ -46,7 +46,7 @@ export class SQLiteDBMock extends SQLiteDB {
      */
     emptyDatabase() : Promise<any> {
         return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
+            this.db.transaction((tx) => {
                 // Query all tables from sqlite_master that we have created and can modify.
                 let args = [],
                     query = `SELECT * FROM sqlite_master
