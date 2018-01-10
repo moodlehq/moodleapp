@@ -1,0 +1,29 @@
+<a ion-item text-wrap class="item-media" (click)="fileClicked($event)" detail-none>
+    <img [src]="fileIcon" alt="{{fileExtension}}" role="presentation" item-start />
+
+    <!-- File name and edit button (if editable). -->
+    <p *ngIf="!editMode" class="core-text-with-icon-right">
+        {{fileName}}
+        <a ion-button icon-only clear *ngIf="manage" (click)="activateEdit($event)" [attr.aria-label]="'core.edit' | translate">
+            <ion-icon name="create" ios="md-create"></ion-icon>
+        </a>
+    </p>
+
+    <!-- Form to edit the file's name. -->
+    <form *ngIf="editMode" (ngSubmit)="changeName(newFileName)">
+        <ion-input type="text" name="filename" [(ngModel)]="newFileName" [placeholder]="'core.filename' | translate" autocapitalize="none" autocorrect="off" (click)="$event.stopPropagation()" [core-auto-focus]></ion-input>
+        <button type="submit" ion-button icon-only clear class="core-button-icon-small" [attr.aria-label]="'core.save' | translate">
+            <ion-icon name="checkmark"></ion-icon>
+        </button>
+    </form>
+
+    <!-- More data about the file. -->
+    <p *ngIf="size">{{ size }}</p>
+    <p *ngIf="timemodified">{{ timemodified }}</p>
+
+    <div class="buttons" item-end *ngIf="manage">
+        <button ion-button clear icon-only (click)="deleteFile($event)" [attr.aria-label]="'core.delete' | translate" color="danger">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+    </div>
+</a>

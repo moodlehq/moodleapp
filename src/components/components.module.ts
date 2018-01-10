@@ -30,6 +30,8 @@ import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 import { CoreChronoComponent } from './chrono/chrono';
+import { CoreLocalFileComponent } from './local-file/local-file';
+import { CoreSitePickerComponent } from './site-picker/site-picker';
 
 @NgModule({
     declarations: [
@@ -45,7 +47,9 @@ import { CoreChronoComponent } from './chrono/chrono';
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
-        CoreChronoComponent
+        CoreChronoComponent,
+        CoreLocalFileComponent,
+        CoreSitePickerComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent
@@ -68,7 +72,9 @@ import { CoreChronoComponent } from './chrono/chrono';
         CoreFileComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
-        CoreChronoComponent
+        CoreChronoComponent,
+        CoreLocalFileComponent,
+        CoreSitePickerComponent
     ]
 })
 export class CoreComponentsModule {}
