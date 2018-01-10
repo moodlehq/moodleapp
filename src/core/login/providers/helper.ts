@@ -39,7 +39,7 @@ export interface CoreLoginSSOData {
 };
 
 /**
- * Emulates the Cordova Zip plugin in desktop apps and in browser.
+ * Helper provider that provides some common features regarding authentication.
  */
 @Injectable()
 export class CoreLoginHelperProvider {
