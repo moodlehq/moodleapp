@@ -21,6 +21,7 @@ import { CoreLoadingComponent } from './loading/loading';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreShowPasswordComponent } from './show-password/show-password';
+import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreIframeComponent } from './iframe/iframe';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
@@ -40,6 +41,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
+        CoreSplitViewComponent,
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
@@ -68,6 +70,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
+        CoreSplitViewComponent,
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,

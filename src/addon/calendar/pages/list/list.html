@@ -11,27 +11,27 @@
         </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content>
-    <ion-refresher [enabled]="eventsLoaded" (ionRefresh)="refreshEvents($event)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-    </ion-refresher>
-    <core-loading [hideUntil]="eventsLoaded" class="core-loading-center">
-        <!-- @todo: Split view. -->
-        <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
-        </core-empty-box>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="eventsLoaded" (ionRefresh)="refreshEvents($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="eventsLoaded" class="core-loading-center">
+            <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
+            </core-empty-box>
 
-        <ion-list *ngIf="filteredEvents && filteredEvents.length">
-            <a ion-item text-wrap *ngFor="let event of filteredEvents" [title]="event.name" (click)="gotoEvent(event.id)">
-                <!-- core-split-view-link="site.calendar-event({id: event.id})" -->
-                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start>
-                <ion-icon *ngIf="!event.moduleIcon" name="{{event.icon}}" item-start></ion-icon>
-                <h2><core-format-text [text]="event.name"></core-format-text></h2>
-                <p>{{ event.timestart | coreToLocaleString }}</p>
-            </a>
-        </ion-list>
+            <ion-list *ngIf="filteredEvents && filteredEvents.length">
+                <a ion-item text-wrap *ngFor="let event of filteredEvents" [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId">
+                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start>
+                    <ion-icon *ngIf="!event.moduleIcon" name="{{event.icon}}" item-start></ion-icon>
+                    <h2><core-format-text [text]="event.name"></core-format-text></h2>
+                    <p>{{ event.timestart | coreToLocaleString }}</p>
+                </a>
+            </ion-list>
 
-        <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchEvents())">
-           <ion-infinite-scroll-content></ion-infinite-scroll-content>
-        </ion-infinite-scroll>
-    </core-loading>
-</ion-content>
+            <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="$event.waitFor(fetchEvents())">
+               <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </core-loading>
+    </ion-content>
+</core-split-view>

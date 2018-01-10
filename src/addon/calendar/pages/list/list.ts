@@ -25,6 +25,7 @@ import { CoreLocalNotificationsProvider } from '../../../../providers/local-noti
 import { CoreCoursePickerMenuPopoverComponent } from '../../../../components/course-picker-menu/course-picker-menu-popover';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreAppProvider } from '../../../../providers/app';
+import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
 
 /**
  * Page that displays the list of calendar events.
@@ -36,6 +37,7 @@ import { CoreAppProvider } from '../../../../providers/app';
 })
 export class AddonCalendarListPage implements OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     protected daysLoaded = 0;
     protected emptyEventsTimes = 0; // Variable to identify consecutive calls returning 0 events.
@@ -56,7 +58,6 @@ export class AddonCalendarListPage implements OnDestroy {
     events = [];
     notificationsEnabled = false;
     filteredEvents = [];
-    eventToLoad = 1;
     canLoadMore = false;
     filter = {
         course: this.allCourses
@@ -84,26 +85,15 @@ export class AddonCalendarListPage implements OnDestroy {
      * View loaded.
      */
     ionViewDidLoad() {
-        if (this.eventId && !this.appProvider.isWide()) {
-            // There is an event to load and it's a phone device, open the event in a new state.
+        if (this.eventId) {
+            // There is an event to load, open the event in a new state.
             this.gotoEvent(this.eventId);
         }
 
         this.fetchData().then(() => {
-            // @TODO: Split view once single event is done.
-            if (this.eventId && this.appProvider.isWide()) {
-                // There is an event to load and it's a tablet device. Search the position of the event in the list and load it.
-                let found = this.events.findIndex((e) => {return e.id == this.eventId});
-
-                if (found > 0) {
-                    this.eventToLoad = found + 1;
-                } else {
-                    // Event not found in the list, open it in a new state. Use a $timeout to open the state after the
-                    // split view is loaded.
-                    //$timeout(function() {
-                        this.gotoEvent(this.eventId);
-                    //});
-                }
+            if (!this.eventId && this.splitviewCtrl.isOn() && this.events.length > 0) {
+                // Take first and load it.
+                this.gotoEvent(this.events[0].id);
             }
         }).finally(() => {
             this.eventsLoaded = true;
@@ -324,7 +314,8 @@ export class AddonCalendarListPage implements OnDestroy {
      * Navigate to a particular event.
      */
     gotoEvent(eventId) {
-        this.navCtrl.push('AddonCalendarEventPage', {id: eventId});
+        this.eventId = eventId;
+        this.splitviewCtrl.push('AddonCalendarEventPage', {id: eventId});
     }
 
     /**

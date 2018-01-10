@@ -201,16 +201,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Check if device is wide enough. It's used i.e. to show split view.
-     *
-     * @return {boolean} Whether the device uses a limited connection.
-     */
-    isWide() : boolean {
-        //@todo Should use media querys like splitpane
-        return this.platform.is('tablet');
-    }
-
-    /**
      * Check if the app is running in a Windows environment.
      *
      * @return {boolean} Whether it's running in a Windows environment.
