@@ -236,7 +236,7 @@ export class CoreLoginEmailSignupPage {
                 if (result.success) {
                     // Show alert and ho back.
                     let message = this.translate.instant('core.login.emailconfirmsent', {$a: params.email});
-                    this.domUtils.showAlert('core.success', message);
+                    this.domUtils.showAlert(this.translate.instant('core.success'), message);
                     this.navCtrl.pop();
                 } else {
                     if (result.warnings && result.warnings.length) {

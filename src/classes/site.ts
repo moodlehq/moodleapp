@@ -1062,7 +1062,7 @@ export class CoreSite {
                 }
 
                 if (alertMessage) {
-                    let alert = this.domUtils.showAlert('core.notice', alertMessage, undefined, 3000);
+                    let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000);
                     alert.onDidDismiss(() => {
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));

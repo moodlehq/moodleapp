@@ -13,7 +13,11 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { CoreSharedFilesProvider } from './providers/sharedfiles';
+import { CoreSharedFilesHelperProvider } from './providers/helper';
+import { CoreSharedFilesUploadHandler } from './providers/upload-handler';
+import { CoreFileUploaderDelegate } from '../fileuploader/providers/delegate';
 
 @NgModule({
     declarations: [
@@ -21,7 +25,23 @@ import { CoreSharedFilesProvider } from './providers/sharedfiles';
     imports: [
     ],
     providers: [
-        CoreSharedFilesProvider
+        CoreSharedFilesProvider,
+        CoreSharedFilesHelperProvider,
+        CoreSharedFilesUploadHandler
     ]
 })
-export class CoreSharedFilesModule {}
+export class CoreSharedFilesModule {
+    constructor(platform: Platform, delegate: CoreFileUploaderDelegate, handler: CoreSharedFilesUploadHandler,
+            helper: CoreSharedFilesHelperProvider) {
+        // Register the handler.
+        delegate.registerHandler(handler);
+
+        if (platform.is('ios')) {
+            // Check if there are new files at app start and when the app is resumed.
+            helper.searchIOSNewSharedFiles();
+            platform.resume.subscribe(() => {
+                helper.searchIOSNewSharedFiles();
+            });
+        }
+    }
+}
