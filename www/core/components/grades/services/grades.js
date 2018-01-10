@@ -78,12 +78,13 @@ angular.module('mm.core.grades')
      * @ngdoc method
      * @name $mmGrades#invalidateGradesTableData
      * @param {Number} courseId Course ID.
-     * @param {Number} userId   User ID.
+     * @param {Number} [userId] User ID (empty for current user in the site).
      * @param {Number}  [siteId]   Site id (empty for current site).
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateGradesTableData = function(courseId, userId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getGradesTableCacheKey(courseId, userId));
         });
     };

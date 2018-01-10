@@ -52,12 +52,12 @@ angular.module('mm.addons.mod_wiki')
      * @name $mmaModWikiPrefetchHandler#getDownloadSize
      * @param  {Object} module    Module to get the size.
      * @param  {Number} courseId  Course ID the module belongs to.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @param  {Boolean} single   True if we're downloading a single module, false if we're downloading a whole section.
      * @return {Promise}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
-    self.getDownloadSize = function(module, courseId, siteId) {
-        var promises = [];
-        siteId = siteId || $mmSite.getId();
+    self.getDownloadSize = function(module, courseId, single) {
+        var promises = [],
+            siteId = $mmSite.getId();
 
         promises.push(self.getFiles(module, courseId, siteId).then(function(files) {
             return $mmUtil.sumFileSizes(files);

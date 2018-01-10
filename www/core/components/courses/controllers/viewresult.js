@@ -23,7 +23,7 @@ angular.module('mm.core.courses')
  */
 .controller('mmCoursesViewResultCtrl', function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
             $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated,
-            $timeout, $mmFS, $rootScope, $mmApp, $ionicPlatform) {
+            $timeout, $mmFS, $rootScope, $mmApp, $ionicPlatform, $mmCourseHelper, $mmCourse, mmCoreEventCourseStatusChanged) {
 
     var course = angular.copy($stateParams.course || {}), // Copy the object to prevent modifying the one from the previous view.
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
@@ -38,7 +38,8 @@ angular.module('mm.core.courses')
         inAppLoadListener,
         inAppFinishListener,
         inAppExitListener,
-        appResumeListener;
+        appResumeListener,
+        obsStatus;
 
     $scope.course = course;
     $scope.component = mmCoursesSearchComponent;
@@ -163,13 +164,46 @@ angular.module('mm.core.courses')
         });
     }
 
-    getCourse();
+    getCourse().finally(function() {
+        // Determine course prefetch icon.
+        $scope.prefetchCourseIcon = 'spinner';
+        $mmCourseHelper.getCourseStatusIcon(course.id).then(function(icon) {
+            $scope.prefetchCourseIcon = icon;
+
+            if (icon == 'spinner') {
+                // Course is being downloaded. Get the download promise.
+                var promise = $mmCourseHelper.getCourseDownloadPromise(course.id);
+                if (promise) {
+                    // There is a download promise. If it fails, show an error.
+                    promise.catch(function(error) {
+                        if (!scope.$$destroyed) {
+                            $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+                        }
+                    });
+                } else {
+                    // No download, this probably means that the app was closed while downloading. Set previous status.
+                    $mmCourse.setCoursePreviousStatus(courseId);
+                }
+            }
+        });
+    });
 
     $scope.doRefresh = function() {
         refreshData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
+
+    $scope.prefetchCourse = function() {
+        $mmCourseHelper.confirmAndPrefetchCourse($scope, course, undefined, course._handlers);
+    };
+
+    // Listen for status change in course.
+    obsStatus = $mmEvents.on(mmCoreEventCourseStatusChanged, function(data) {
+        if (data.siteId == $mmSite.getId() && data.courseId == course.id) {
+            $scope.prefetchCourseIcon = $mmCourseHelper.getCourseStatusIconFromStatus(data.status);
+        }
+    });
 
     if (selfEnrolWSAvailable && course.enrollmentmethods && course.enrollmentmethods.indexOf('self') > -1) {
         // Setup password modal for self-enrolment.
@@ -325,4 +359,8 @@ angular.module('mm.core.courses')
             }
         };
     }
+
+    $scope.$on('$destroy', function() {
+        obsStatus && obsStatus.off && obsStatus.off();
+    });
 });

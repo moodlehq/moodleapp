@@ -260,6 +260,21 @@ angular.module('mm.addons.coursecompletion')
             });
         };
 
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmaCourseCompletion.invalidateCourseCompletion(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmaCourseCompletion.getCompletion(course.id);
+            });
+        };
+
         return self;
     };
 

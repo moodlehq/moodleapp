@@ -28,6 +28,34 @@ angular.module('mm.addons.participants')
     var self = {};
 
     /**
+     * Get all the participants for a certain course, performing 1 request per page until there are no more participants.
+     *
+     * @module mm.addons.participants
+     * @ngdoc method
+     * @name $mmaParticipants#getAllParticipants
+     * @param  {Number} courseId      ID of the course.
+     * @param  {Number} [limitFrom]   Position of the first participant to get.
+     * @param  {Number} [limitNumber] Number of participants to get in each request.
+     * @param  {String} [siteId]      Site Id. If not defined, use current site.
+     * @return {Promise}              Promise to be resolved when the participants are retrieved.
+     */
+    self.getAllParticipants = function(courseId, limitFrom, limitNumber, siteId) {
+        siteId = siteId || $mmSite.getId();
+        limitFrom = limitFrom || 0;
+
+        return self.getParticipants(courseId, limitFrom, limitNumber, siteId).then(function(data) {
+            if (data.canLoadMore) {
+                // Load the next "page".
+                limitFrom = limitFrom + data.participants.length;
+                return self.getAllParticipants(courseId, limitFrom, limitNumber, siteId).then(function(nextParts) {
+                    return data.participants.concat(nextParts);
+                });
+            }
+            return data.participants;
+        });
+    };
+
+    /**
      * Get cache key for participant list WS calls.
      *
      * @param  {Number} courseId Course ID.
@@ -43,7 +71,7 @@ angular.module('mm.addons.participants')
      * @module mm.addons.participants
      * @ngdoc method
      * @name $mmaParticipants#getParticipants
-     * @param  {String} courseId    ID of the course.
+     * @param  {Number} courseId    ID of the course.
      * @param  {Number} limitFrom   Position of the first participant to get.
      * @param  {Number} limitNumber Number of participants to get.
      * @param  {String} [siteId]    Site Id. If not defined, use current site.
