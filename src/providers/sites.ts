@@ -408,7 +408,7 @@ export class CoreSitesProvider {
                     return siteId;
                 });
             } else if (result == this.LEGACY_APP_VERSION) {
-                return Promise.reject(this.translate.instant('mm.login.legacymoodleversion'));
+                return Promise.reject(this.translate.instant('core.login.legacymoodleversion'));
             } else {
                 return Promise.reject(this.translate.instant('core.login.invalidmoodleversion'));
             }

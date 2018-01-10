@@ -3,7 +3,7 @@
         <ion-title>{{ 'core.courses.courseoverview' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button *ngIf="tabShown == 'courses' && (courses[courses.selected] || courses[courses.selected].length > 5)" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
+            <button *ngIf="tabShown == 'courses' && courses[courses.selected] && courses[courses.selected].length > 5" ion-button icon-only [attr.aria-label]="'core.courses.filtermycourses' | translate" (click)="switchFilter()">
                 <ion-icon name="funnel"></ion-icon>
             </button>
             <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
@@ -48,7 +48,7 @@
     </div>
     <core-loading [hideUntil]="courses.loaded" [hidden]="tabShown != 'courses'" class="core-loading-center">
         <div no-padding class="clearfix" [hidden]="showFilter">
-            <ion-select [title]="'core.show' | translate" [(ngModel)]="courses.selected" float-start>
+            <ion-select [title]="'core.show' | translate" [(ngModel)]="courses.selected" float-start (ngModelChange)="selectedChanged()">
                 <ion-option value="inprogress">{{ 'core.courses.inprogress' | translate }}</ion-option>
                 <ion-option value="future">{{ 'core.courses.future' | translate }}</ion-option>
                 <ion-option value="past">{{ 'core.courses.past' | translate }}</ion-option>

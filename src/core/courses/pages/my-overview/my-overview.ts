@@ -198,7 +198,7 @@ export class CoreCoursesMyOverviewPage {
             this.filteredCourses = this.courses[this.courses.selected];
         } else {
             this.filteredCourses = this.courses[this.courses.selected].filter((course) => {
-                return course.fullname.indexOf(newValue) > -1;
+                return course.fullname.toLowerCase().indexOf(newValue.toLowerCase()) > -1;
             });
         }
     }
@@ -308,5 +308,12 @@ export class CoreCoursesMyOverviewPage {
      */
     openSearch() {
         this.navCtrl.push('CoreCoursesSearchPage');
+    }
+
+    /**
+     * The selected courses have changed.
+     */
+    selectedChanged() {
+        this.filteredCourses = this.courses[this.courses.selected];
     }
 }
