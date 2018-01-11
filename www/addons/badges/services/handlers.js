@@ -57,14 +57,15 @@ angular.module('mm.addons.badges')
          * @param {Number} courseId Course ID.
          * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
          * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
-         * @return {Promise}        Promise resolved with true if enabled, resolved with false otherwise.
+         * @return {Promise}        Promise resolved with true if enabled.
          */
         self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
 
             if (navOptions && typeof navOptions.badges != 'undefined') {
                 return navOptions.badges;
             }
-            return false;
+            // If we reach here, it means we are opening the user site profile.
+            return true;
         };
 
         /**

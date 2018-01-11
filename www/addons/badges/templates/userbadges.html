@@ -8,6 +8,9 @@
                     <li ng-repeat="badge in badges">
                         <a class="item item-avatar" mm-split-view-link="site.issuedbadge({cid: courseId, uid: userId, uniquehash: badge.uniquehash})" title="{{badge.name}}">
                             <img ng-src="{{badge.badgeurl}}" alt="{{badge.name}}" mm-external-content>
+                            <span ng-if="badge.dateexpire && currentTime >= badge.dateexpire" class="badge badge-assertive">
+                                {{ 'mma.badges.expired' | translate }}
+                            </span>
                             <h2><mm-format-text>{{badge.name}}</mm-format-text></h2>
                             <p>{{ badge.dateissued | mmToLocaleString }}</p>
                         </a>

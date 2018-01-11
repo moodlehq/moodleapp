@@ -6,6 +6,9 @@
             <div class="list">
                 <div class="item item-text-wrap item-avatar-center">
                     <img ng-if="badge.badgeurl" class="avatar" ng-src="{{badge.badgeurl}}" mm-external-content alt="{{badge.name}}" role="presentation">
+                    <span ng-if="badge.dateexpire && currentTime >= badge.dateexpire" class="badge badge-assertive">
+                            {{ 'mma.badges.expired' | translate }}
+                    </span>
                 </div>
             </div>
 
