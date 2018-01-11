@@ -30,7 +30,7 @@ import { CoreSplitViewComponent } from '../../../../components/split-view/split-
 /**
  * Page that displays the list of calendar events.
  */
-@IonicPage()
+@IonicPage({segment: "addon-calendar-list"})
 @Component({
     selector: 'page-addon-calendar-list',
     templateUrl: 'list.html',

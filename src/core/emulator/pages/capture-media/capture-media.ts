@@ -22,7 +22,7 @@ import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
 /**
  * Page to capture media in browser or desktop.
  */
-@IonicPage()
+@IonicPage({segment: "core-emulator-capture-media"})
 @Component({
     selector: 'page-core-emulator-capture-media',
     templateUrl: 'capture-media.html',

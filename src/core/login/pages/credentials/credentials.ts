@@ -26,7 +26,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to enter the user credentials.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-credentials"})
 @Component({
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',

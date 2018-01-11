@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 /**
  * Page that displays the calendar settings.
  */
-@IonicPage()
+@IonicPage({segment: "addon-calendar-settings"})
 @Component({
     selector: 'page-addon-calendar-settings',
     templateUrl: 'settings.html',

@@ -22,7 +22,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that displays the list of courses the user is enrolled in.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-my-courses"})
 @Component({
     selector: 'page-core-courses-my-courses',
     templateUrl: 'my-courses.html',

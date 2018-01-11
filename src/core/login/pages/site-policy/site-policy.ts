@@ -23,7 +23,7 @@ import { CoreSite } from '../../../../classes/site';
 /**
  * Page to accept a site policy.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-site-policy"})
 @Component({
     selector: 'page-core-login-site-policy',
     templateUrl: 'site-policy.html',

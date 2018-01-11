@@ -22,7 +22,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to recover a forgotten password.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-forgotten-password"})
 @Component({
     selector: 'page-core-login-forgotten-password',
     templateUrl: 'forgotten-password.html',

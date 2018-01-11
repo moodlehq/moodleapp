@@ -20,7 +20,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that allows searching for courses.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-search"})
 @Component({
     selector: 'page-core-courses-search',
     templateUrl: 'search.html',

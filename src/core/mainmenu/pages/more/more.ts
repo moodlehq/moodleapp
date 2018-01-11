@@ -22,7 +22,7 @@ import { CoreMainMenuProvider, CoreMainMenuCustomItem } from '../../providers/ma
 /**
  * Page that displays the list of main menu options that aren't in the tabs.
  */
-@IonicPage()
+@IonicPage({segment: "core-mainmenu-more"})
 @Component({
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',

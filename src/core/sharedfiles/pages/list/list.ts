@@ -24,7 +24,7 @@ import { CoreSharedFilesProvider } from '../../providers/sharedfiles';
 /**
  * Modal to display the list of shared files.
  */
-@IonicPage()
+@IonicPage({segment: "core-shared-files-list"})
 @Component({
     selector: 'page-core-shared-files-list',
     templateUrl: 'list.html',

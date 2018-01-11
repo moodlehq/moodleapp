@@ -22,7 +22,7 @@ import { CoreSharedFilesHelperProvider } from '../../providers/helper';
 /**
  * Modal to display the list of sites to choose one to store a shared file.
  */
-@IonicPage()
+@IonicPage({segment: "core-shared-files-choose-site"})
 @Component({
     selector: 'page-core-shared-files-choose-site',
     templateUrl: 'choose-site.html',

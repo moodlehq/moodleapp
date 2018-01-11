@@ -26,7 +26,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to signup using email.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-email-signup"})
 @Component({
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',

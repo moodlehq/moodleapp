@@ -23,7 +23,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that displays a list of categories and the courses in the current category if any.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-categories"})
 @Component({
     selector: 'page-core-courses-categories',
     templateUrl: 'categories.html',

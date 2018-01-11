@@ -18,7 +18,7 @@ import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 /**
  * Component that displays an error when trying to connect to a site.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-site-error"})
 @Component({
     selector: 'page-core-login-site-error',
     templateUrl: 'site-error.html',

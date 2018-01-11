@@ -4,7 +4,7 @@ import {
     NavController,
     NavParams } from 'ionic-angular';
 
-@IonicPage()
+@IonicPage({segment: "core-placeholder"})
 @Component({
     selector: 'core-placeholder',
     templateUrl: 'placeholder.html',

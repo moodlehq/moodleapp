@@ -26,7 +26,7 @@ import { CoreCoursesDelegate } from '../../providers/delegate';
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-course-preview"})
 @Component({
     selector: 'page-core-courses-course-preview',
     templateUrl: 'course-preview.html',

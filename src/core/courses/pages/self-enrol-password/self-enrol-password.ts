@@ -18,7 +18,7 @@ import { IonicPage, ViewController } from 'ionic-angular';
 /**
  * Page that displays a form to enter a password to self enrol in a course.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-self-enrol-password"})
 @Component({
     selector: 'page-core-courses-self-enrol-password',
     templateUrl: 'self-enrol-password.html',

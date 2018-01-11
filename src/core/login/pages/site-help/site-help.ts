@@ -18,7 +18,7 @@ import { IonicPage, ViewController } from 'ionic-angular';
 /**
  * Component that displays some help regarding the CoreLoginSitePage.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-site-help"})
 @Component({
     selector: 'page-core-login-site-help',
     templateUrl: 'site-help.html',

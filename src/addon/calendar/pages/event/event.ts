@@ -27,7 +27,7 @@ import * as moment from 'moment';
 /**
  * Page that displays a single calendar event.
  */
-@IonicPage()
+@IonicPage({segment: "addon-calendar-event"})
 @Component({
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
