@@ -157,6 +157,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         promises.push(this.courseProvider.invalidateSections(this.course.id));
         promises.push(this.coursesProvider.invalidateUserCourses());
+        promises.push(this.courseFormatDelegate.invalidateData(this.course, this.sections));
 
         // if ($scope.sections) {
         //     promises.push($mmCoursePrefetchDelegate.invalidateCourseUpdates(courseId));

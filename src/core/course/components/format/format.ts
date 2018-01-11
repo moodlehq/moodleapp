@@ -68,6 +68,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
     selectedSection: any;
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     selectOptions: any = {};
+    loaded: boolean;
 
     protected logger;
 
@@ -95,7 +96,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
         if (changes.sections && this.sections) {
             if (!this.selectedSection) {
                 // There is no selected section yet, calculate which one to get.
-                this.sectionChanged(this.cfDelegate.getCurrentSection(this.course, this.sections));
+                this.cfDelegate.getCurrentSection(this.course, this.sections).then((section) => {
+                    this.loaded = true;
+                    this.sectionChanged(section);
+                });
             } else {
                 // We have a selected section, but the list has changed. Search the section in the list.
                 let newSection;

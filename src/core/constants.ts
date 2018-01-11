@@ -17,6 +17,7 @@
  */
 export class CoreConstants {
     public static secondsYear = 31536000;
+    public static secondsWeek = 604800;
     public static secondsDay = 86400;
     public static secondsHour = 3600;
     public static secondsMinute = 60;

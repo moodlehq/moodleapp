@@ -1,6 +1,6 @@
 <!-- Default course format. -->
 <div *ngIf="!componentInstances.courseFormat">
-    <!-- Course summary. -->
+    <!-- Course summary. By default we only display the course progress. -->
     <ion-list no-lines *ngIf="!componentInstances.courseSummary">
         <ion-item *ngIf="course.progress !== false">
             <core-progress-bar [progress]="course.progress"></core-progress-bar>
@@ -8,39 +8,41 @@
     </ion-list>
     <ng-template #courseSummary></ng-template>
 
-    <!-- Section selector. -->
-    <ion-row *ngIf="!componentInstances.sectionSelector && displaySectionSelector && sections && sections.length">
-        <ion-col col-11>
-            <ion-item>
-                <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions">
-                    <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
-                </ion-select>
-            </ion-item>
-        </ion-col>
-        <ion-col col-1 class="text-right">
-            <!-- @todo Download button. -->
-        </ion-col>
-    </ion-row>
-    <ng-template #sectionSelector></ng-template>
+    <core-loading [hideUntil]="loaded">
+        <!-- Section selector. -->
+        <ion-row *ngIf="!componentInstances.sectionSelector && displaySectionSelector && sections && sections.length">
+            <ion-col col-11>
+                <ion-item>
+                    <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions">
+                        <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
+                    </ion-select>
+                </ion-item>
+            </ion-col>
+            <ion-col col-1 class="text-right">
+                <!-- @todo Download button. -->
+            </ion-col>
+        </ion-row>
+        <ng-template #sectionSelector></ng-template>
 
-    <!-- Single section. -->
-    <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
-        <ng-container *ngIf="!componentInstances.singleSection">
-            <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
-            <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
-        </ng-container>
-        <ng-template #singleSection></ng-template>
-    </div>
-
-    <!-- Multiple sections. -->
-    <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
-        <ng-container *ngIf="!componentInstances.allSections">
-            <ng-container *ngFor="let section of sections">
-                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+        <!-- Single section. -->
+        <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
+            <ng-container *ngIf="!componentInstances.singleSection">
+                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
+                <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
             </ng-container>
-        </ng-container>
-        <ng-template #allSections></ng-template>
-    </div>
+            <ng-template #singleSection></ng-template>
+        </div>
+
+        <!-- Multiple sections. -->
+        <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
+            <ng-container *ngIf="!componentInstances.allSections">
+                <ng-container *ngFor="let section of sections">
+                    <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+                </ng-container>
+            </ng-container>
+            <ng-template #allSections></ng-template>
+        </div>
+    </core-loading>
 </div>
 
 <ng-template #sectionTemplate let-section="section">

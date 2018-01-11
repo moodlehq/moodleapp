@@ -17,16 +17,22 @@ import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
 import { CoreCourseModuleDelegate } from './providers/module-delegate';
+import { CoreCourseFormatDefaultHandler } from './providers/default-format';
+import { CoreCourseFormatTopicsModule} from './formats/topics/topics.module';
+import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 
 @NgModule({
     declarations: [],
     imports: [
+        CoreCourseFormatTopicsModule,
+        CoreCourseFormatWeeksModule
     ],
     providers: [
         CoreCourseProvider,
         CoreCourseHelperProvider,
         CoreCourseFormatDelegate,
-        CoreCourseModuleDelegate
+        CoreCourseModuleDelegate,
+        CoreCourseFormatDefaultHandler
     ],
     exports: []
 })
