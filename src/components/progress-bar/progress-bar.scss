@@ -1,0 +1,53 @@
+$core-progress-bar-height: 5px !default;
+
+core-progress-bar {
+    padding-right: 55px;
+    position: relative;
+    display: block;
+    @extend .clearfix;
+
+    .core-progress-text {
+        margin-left: 10px;
+        line-height: normal;
+        font-size: 1.4rem;
+        color: $gray-darker;
+        right: 0;
+        top: -6px;
+        position: absolute;
+    }
+
+    progress {
+        -webkit-appearance: none;
+        appearance: none;
+        height: $core-progress-bar-height;
+        margin: 15px 0;
+        padding: 0;
+        display: block;
+        width: 100%;
+
+        .progress-bar-fallback,
+        &[value]::-webkit-progress-bar {
+            background-color: $gray-light;
+            border-radius: 2px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+        }
+
+        .progress-bar-fallback span,
+        &[value]::-webkit-progress-value {
+            background-color: $core-color-light;
+            border-radius: 2px;
+        }
+
+        .progress-bar-fallback {
+            width: 100%;
+            height: $core-progress-bar-height;
+            display: block;
+            position: relative;
+
+            span {
+                height: $core-progress-bar-height;
+                display: block;
+            }
+        }
+    }
+}

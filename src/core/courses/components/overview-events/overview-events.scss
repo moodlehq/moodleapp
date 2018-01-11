@@ -1,0 +1,24 @@
+core-courses-course-progress {
+
+    .core-course-module-handler.item-md.item-block .item-inner {
+      border-bottom: 1px solid $list-md-border-color;
+    }
+
+    .core-course-module-handler.item-ios.item-block .item-inner {
+      border-bottom: $hairlines-width solid $list-ios-border-color;
+    }
+
+    .core-course-module-handler.item-wp.item-block .item-inner {
+      border-bottom: 1px solid $list-wp-border-color;
+    }
+
+    .core-course-module-handler.item:last-child .item-inner {
+        border-bottom: 0;
+    }
+
+    .core-course-module-handler.item .item-heading:first-child {
+        margin-top: 0;
+    }
+}
+
+

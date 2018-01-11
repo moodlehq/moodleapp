@@ -23,10 +23,16 @@
 .text-right          { text-align: right; }
 .text-center         { text-align: center; }
 .text-justify        { text-align: justify; }
-
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
 
 @media only screen and (min-width: 430px) {
-  .mm-center-view .scroll-content {
+  .core-center-view .scroll-content {
     display: flex!important;
     align-content: center !important;
     align-items: center !important;
@@ -37,14 +43,27 @@
   }
 }
 
+@media only screen and (max-width: 768px) {
+  .hidden-phone {
+    display: none !important;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .hidden-tablet {
+    display: none !important;
+  }
+}
+
 
 // Define an alternative way to set a heading in an item without using a heading tag.
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
   @extend h6;
+  margin: 0;
 }
 
-.mm-oauth-icon, .item.mm-oauth-icon, .list .item.mm-oauth-icon {
+.core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
   min-height: 32px;
   img, .label {
     max-height: 32px;
@@ -59,7 +78,7 @@
   }
 }
 
-.mm-bold, .mm-bold .label {
+.core-bold, .core-bold .label {
   font-weight: bold;
 }
 
@@ -113,3 +132,145 @@ ion-avatar ion-img, ion-avatar img {
   font-style: italic;
 }
 
+/** Format Text */
+core-format-text[maxHeight], *[core-format-text][maxHeight] {
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // This is to allow clicks in radio/checkbox content.
+  &.core-text-formatted {
+    cursor: pointer;
+
+    .core-show-more {
+      display: none;
+    }
+
+    &:not(.core-shortened) {
+      max-height: none !important;
+    }
+
+    &.core-shortened {
+      color: $gray-darker;
+      overflow: hidden;
+      min-height: 50px;
+
+      .core-show-more {
+        color: color($colors, dark);
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+        background-color: $white;
+        padding-left: 10px;
+
+        /* @todo
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+        */
+      }
+
+      &.core-expand-in-fullview .core-show-more:after {
+        // content: $ionicon-var-chevron-right; @todo
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
+    }
+  }
+}
+
+core-format-text, *[core-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
+
+  // Fix lists styles in core-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+
+  .badge {
+    position: initial !important;
+  }
+}
+
+// Message item.
+.item-message {
+  core-format-text > p:only-child {
+    display: inline;
+  }
+}
+
+// Media item, ideal for icons.
+.item-media {
+  min-height: $item-media-height + ($content-padding * 2);
+  > img:first-child {
+    max-width: $item-media-width;
+    max-height: $item-media-height;
+  }
+}
+
+// Ionic fix. Button can occupy all page if not.
+ion-select {
+  position: relative
+}
+
+// Top tabs
+// -------------------------
+
+.core-top-tabbar {
+  @include position(null, null, 0, 0);
+
+  z-index: $z-index-toolbar;
+  display: flex;
+  width: 100%;
+  background: $core-top-tabs-background;
+
+  > a {
+    @extend .tab-button;
+
+    background: $core-top-tabs-background;
+    color: $core-top-tabs-color !important;
+    border-bottom: 1px solid $core-top-tabs-border;
+    font-size: 1.6rem;
+
+    &[aria-selected=true] {
+      color: $core-top-tabs-color-active !important;
+      border-bottom: 2px solid $core-top-tabs-color-active;
+    }
+  }
+}

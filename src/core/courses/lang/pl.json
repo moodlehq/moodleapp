@@ -1,0 +1,19 @@
+{
+    "allowguests": "W tym kursie mogą uczestniczyć również goście",
+    "availablecourses": "Dostępne kursy",
+    "categories": "Kategorie kursów",
+    "courses": "Kursy",
+    "enrolme": "Zapisz mnie",
+    "frontpage": "Strona startowa",
+    "mycourses": "Moje kursy",
+    "nocourses": "Nie ma informacji do pokazania",
+    "nocoursesyet": "Brak kursów w tej kategorii",
+    "nosearchresults": "Brak rezultatów wyszukiwania",
+    "notenroled": "Nie jesteś zapisany w tym kursie",
+    "password": "Wspólne tajne hasło",
+    "paymentrequired": "Ten kurs wymaga opłaty",
+    "paypalaccepted": "Płatności PayPal są akceptowane",
+    "search": "Wyszukaj",
+    "searchcourses": "Przeszukaj kursy",
+    "sendpaymentbutton": "Wyślij płatności za pośrednictwem PayPal"
+}

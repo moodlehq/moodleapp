@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, App, NavController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
 
@@ -46,7 +46,7 @@ export class CoreAppProvider {
     ssoAuthenticationPromise : Promise<any>;
     isKeyboardShown: boolean = false;
 
-    constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard,
+    constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
@@ -76,7 +76,7 @@ export class CoreAppProvider {
      */
     canRecordMedia() : boolean {
         return !!(<any>window).MediaRecorder;
-    };
+    }
 
     /**
      * Closes the keyboard.
@@ -85,7 +85,7 @@ export class CoreAppProvider {
         if (this.isMobile()) {
             this.keyboard.close();
         }
-    };
+    }
 
     /**
      * Get the application global database.
@@ -94,7 +94,17 @@ export class CoreAppProvider {
      */
     getDB() : SQLiteDB {
         return this.db;
-    };
+    }
+
+    /**
+     * Get the app's root NavController.
+     *
+     * @return {NavController} Root NavController.
+     */
+    getRootNavController() : NavController {
+        // getRootNav is deprecated. Get the first root nav, there should always be one.
+        return this.appCtrl.getRootNavs()[0];
+    }
 
     /**
      * Checks if the app is running in a desktop environment (not browser).
@@ -104,7 +114,7 @@ export class CoreAppProvider {
     isDesktop() : boolean {
         let process = (<any>window).process;
         return !!(process && process.versions && typeof process.versions.electron != 'undefined');
-    };
+    }
 
     /**
      * Check if the keyboard is visible.
@@ -113,7 +123,7 @@ export class CoreAppProvider {
      */
     isKeyboardVisible() : boolean {
         return this.isKeyboardShown;
-    };
+    }
 
     /**
      * Check if the app is running in a Linux environment.
@@ -158,7 +168,7 @@ export class CoreAppProvider {
      */
     isMobile() : boolean {
         return this.platform.is('cordova');
-    };
+    }
 
     /**
      * Returns whether we are online.
@@ -172,7 +182,7 @@ export class CoreAppProvider {
             online = true;
         }
         return online;
-    };
+    }
 
     /*
      * Check if device uses a limited connection.
@@ -188,7 +198,7 @@ export class CoreAppProvider {
 
         let limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
         return limited.indexOf(type) > -1;
-    };
+    }
 
     /**
      * Check if the app is running in a Windows environment.
@@ -216,7 +226,7 @@ export class CoreAppProvider {
         if (this.isMobile() && !this.platform.is('ios')) {
             this.keyboard.show();
         }
-    };
+    }
 
     /**
      * Start an SSO authentication process.
@@ -243,7 +253,7 @@ export class CoreAppProvider {
         this.ssoAuthenticationPromise.then(() => {
             clearTimeout(cancelTimeout);
         });
-    };
+    }
 
     /**
      * Finish an SSO authentication process.
@@ -253,7 +263,7 @@ export class CoreAppProvider {
             (<any>this.ssoAuthenticationPromise).resolve && (<any>this.ssoAuthenticationPromise).resolve();
             this.ssoAuthenticationPromise = undefined;
         }
-    };
+    }
 
     /**
      * Check if there's an ongoing SSO authentication process.
@@ -262,7 +272,7 @@ export class CoreAppProvider {
      */
     isSSOAuthenticationOngoing() : boolean {
         return !!this.ssoAuthenticationPromise;
-    };
+    }
 
     /**
      * Returns a promise that will be resolved once SSO authentication finishes.
@@ -271,7 +281,7 @@ export class CoreAppProvider {
      */
     waitForSSOAuthentication() : Promise<any> {
         return this.ssoAuthenticationPromise || Promise.resolve();
-    };
+    }
 
     /**
      * Retrieve redirect data.
@@ -299,7 +309,7 @@ export class CoreAppProvider {
         }
 
         return {};
-    };
+    }
 
     /**
      * Store redirect params.
@@ -317,5 +327,5 @@ export class CoreAppProvider {
                 localStorage.setItem('mmCoreRedirectTime', String(Date.now()));
             } catch(ex) {}
         }
-    };
+    }
 }

@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'core.courses.mycourses' | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button *ngIf="searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+                <ion-icon name="search"></ion-icon>
+            </button>
+            <core-context-menu>
+                <core-context-menu-item [hidden]="!courses || courses.length <= 5" [priority]="700" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" [iconAction]="'funnel'"></core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="coursesLoaded" (ionRefresh)="refreshCourses($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="coursesLoaded">
+        <ion-item *ngIf="showFilter" class="item-transparent">
+            <ion-icon name="funnel" class="placeholder-icon" item-start></ion-icon>
+            <ion-input type="text" name="filter" placeholder="{{ 'core.courses.filtermycourses' | translate }}" [(ngModel)]="filter" (ngModelChange)="filterChanged($event)"></ion-input>
+        </ion-item>
+        <core-courses-course-progress *ngFor="let course of filteredCourses" [course]="course" showSummary="true"></core-courses-course-progress>
+        <core-empty-box *ngIf="!courses || !courses.length" icon="ionic" [message]="'core.courses.nocourses' | translate">
+            <p *ngIf="searchEnabled">{{ 'core.courses.searchcoursesadvice' | translate }}</p>
+        </core-empty-box>
+    </core-loading>
+</ion-content>

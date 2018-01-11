@@ -1,0 +1,18 @@
+{
+    "allowguests": "Dette kurset tillater besøk av gjester",
+    "availablecourses": "Tilgjengelige kurs",
+    "categories": "Kurskategorier",
+    "courses": "Kurs",
+    "enrolme": "Meld meg på",
+    "mycourses": "Mine kurs",
+    "nocourses": "Ingen kursinformasjon å vise.",
+    "nocoursesyet": "Ingen kurs i denne kategorien",
+    "nosearchresults": "Søket ditt ga ingen resultater",
+    "notenroled": "Du er ikke påmeldt dette kurset",
+    "password": "Passord",
+    "paymentrequired": "Dette er et kurs som krever betaling",
+    "paypalaccepted": "PayPal betalingsformer som er godkjent",
+    "search": "Søk...",
+    "searchcourses": "Søk etter studiesider",
+    "sendpaymentbutton": "Send betaling via PayPal"
+}

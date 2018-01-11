@@ -29,7 +29,7 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
  *
  * Example usage:
  *
- * <textarea [mm-keep-keyboard]="'#mma-messages-send-message-button'"></textarea>
+ * <textarea [core-keep-keyboard]="'#mma-messages-send-message-button'"></textarea>
  * <button id="mma-messages-send-message-button">Send</button>
  *
  * Alternatively, this directive can be applied to the button. The value of the directive needs to be a selector to identify
@@ -38,7 +38,7 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
  * Example usage:
  *
  * <textarea id="send-message-input"></textarea>
- * <button [mm-keep-keyboard]="'#send-message-input'" [inButton]="true">Send</button>
+ * <button [core-keep-keyboard]="'#send-message-input'" [inButton]="true">Send</button>
  */
 @Directive({
     selector: '[core-keep-keyboard]'

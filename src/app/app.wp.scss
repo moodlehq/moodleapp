@@ -7,3 +7,7 @@
 .button-wp-light {
   color: color($colors, primary, base);
 }
+
+.col[align-self-stretch] .card-wp {
+  height: calc(100% - #{($card-wp-margin-end + $card-wp-margin-start)});
+}

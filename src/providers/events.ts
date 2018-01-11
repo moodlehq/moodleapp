@@ -48,7 +48,7 @@ export class CoreEventsProvider {
     public static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
 
     logger;
-    observables = {};
+    observables: {[s: string] : Subject<any>} = {};
     uniqueEvents = {};
 
     constructor(logger: CoreLoggerProvider) {
@@ -65,7 +65,7 @@ export class CoreEventsProvider {
      * @param {Function} callBack Function to call when the event is triggered.
      * @return {CoreEventObserver} Observer to stop listening.
      */
-    on(eventName: string, callBack: Function) : CoreEventObserver {
+    on(eventName: string, callBack: (value: any) => void) : CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
@@ -83,13 +83,13 @@ export class CoreEventsProvider {
             this.observables[eventName] = new Subject<any>();
         }
 
-        this.observables[eventName].subscribe(callBack);
+        let subscription = this.observables[eventName].subscribe(callBack);
 
         // Create and return a CoreEventObserver.
         return {
             off: () => {
                 this.logger.debug(`Stop listening to event '${eventName}'`);
-                this.observables[eventName].unsubscribe(callBack);
+                subscription.unsubscribe();
             }
         };
     }
@@ -98,9 +98,9 @@ export class CoreEventsProvider {
      * Triggers an event, notifying all the observers.
      *
      * @param {string} event Name of the event to trigger.
-     * @param {any} data Data to pass to the observers.
+     * @param {any} [data] Data to pass to the observers.
      */
-    trigger(eventName: string, data: any) : void {
+    trigger(eventName: string, data?: any) : void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
             this.observables[eventName].next(data);

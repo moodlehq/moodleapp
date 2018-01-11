@@ -15,7 +15,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoreLoginEmailSignupPage } from './email-signup';
-import { CoreLoginModule } from '../../login.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '../../../../components/components.module';
 import { CoreDirectivesModule } from '../../../../directives/directives.module';
@@ -27,7 +26,6 @@ import { CoreDirectivesModule } from '../../../../directives/directives.module';
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
-        CoreLoginModule,
         IonicPageModule.forChild(CoreLoginEmailSignupPage),
         TranslateModule.forChild()
     ]

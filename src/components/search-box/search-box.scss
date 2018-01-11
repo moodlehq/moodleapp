@@ -1,0 +1,9 @@
+core-search-box {
+    .button.item-button[icon-only] {
+        margin: 0;
+        padding: ($content-padding / 2) $content-padding;
+    }
+    .item.item-input.item-block .item-inner ion-input {
+       border-bottom: 0;
+    }
+}

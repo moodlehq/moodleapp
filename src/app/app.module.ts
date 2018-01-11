@@ -18,20 +18,15 @@ import { IonicApp, IonicModule, Platform } from 'ionic-angular';
 import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
-import { SQLite } from '@ionic-native/sqlite';
-import { Keyboard } from '@ionic-native/keyboard';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { MyApp } from './app.component';
+import { MoodleMobileApp } from './app.component';
 import { CoreInterceptor } from '../classes/interceptor';
 import { CoreLoggerProvider } from '../providers/logger';
 import { CoreDbProvider } from '../providers/db';
 import { CoreAppProvider } from '../providers/app';
 import { CoreConfigProvider } from '../providers/config';
-import { CoreEmulatorModule } from '../core/emulator/emulator.module';
 import { CoreLangProvider } from '../providers/lang';
 import { CoreTextUtilsProvider } from '../providers/utils/text';
 import { CoreDomUtilsProvider } from '../providers/utils/dom';
@@ -53,7 +48,12 @@ import { CoreFilepoolProvider } from '../providers/filepool';
 import { CoreUpdateManagerProvider } from '../providers/update-manager';
 import { CorePluginFileDelegate } from '../providers/plugin-file-delegate';
 
+import { CoreComponentsModule } from '../components/components.module';
+import { CoreEmulatorModule } from '../core/emulator/emulator.module';
 import { CoreLoginModule } from '../core/login/login.module';
+import { CoreMainMenuModule } from '../core/mainmenu/mainmenu.module';
+import { CoreCoursesModule } from '../core/courses/courses.module';
+
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -62,13 +62,13 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
     declarations: [
-        MyApp
+        MoodleMobileApp
     ],
     imports: [
         BrowserModule,
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         HttpModule,
-        IonicModule.forRoot(MyApp, {
+        IonicModule.forRoot(MoodleMobileApp, {
             pageTransition: 'ios-transition'
         }),
         TranslateModule.forRoot({
@@ -79,11 +79,14 @@ export function createTranslateLoader(http: HttpClient) {
             }
         }),
         CoreEmulatorModule,
-        CoreLoginModule
+        CoreLoginModule,
+        CoreMainMenuModule,
+        CoreCoursesModule,
+        CoreComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
-        MyApp
+        MoodleMobileApp
     ],
     providers: [
         {
@@ -91,10 +94,6 @@ export function createTranslateLoader(http: HttpClient) {
             useClass: CoreInterceptor,
             multi: true,
         },
-        StatusBar,
-        SplashScreen,
-        SQLite,
-        Keyboard,
         CoreLoggerProvider,
         CoreDbProvider,
         CoreAppProvider,

@@ -8,9 +8,25 @@
   color: color($colors, primary, base);
 }
 
+.col[align-self-stretch] .card-ios {
+  height: calc(100% - #{($card-ios-margin-end + $card-ios-margin-start)});
+}
+
+// Top tabs
+// -------------------------
+.ios .core-top-tabbar {
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  > a {
+    font-size: 1.6rem;
+  }
+}
+
 
 // Highlights inside the input element.
-@if ($mm-text-input-ios-show-highlight) {
+@if ($core-text-input-ios-show-highlight) {
   .card-ios, .list-ios {
     // In order to get a 2px border we need to add an inset
     // box-shadow 1px (this is to avoid the div resizing)

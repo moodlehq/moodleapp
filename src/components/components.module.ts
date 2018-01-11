@@ -21,6 +21,13 @@ import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreIframeComponent } from './iframe/iframe';
+import { CoreProgressBarComponent } from './progress-bar/progress-bar';
+import { CoreEmptyBoxComponent } from './empty-box/empty-box';
+import { CoreSearchBoxComponent } from './search-box/search-box';
+import { CoreFileComponent } from './file/file';
+import { CoreContextMenuComponent } from './context-menu/context-menu';
+import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
+import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 
 @NgModule({
     declarations: [
@@ -28,7 +35,17 @@ import { CoreIframeComponent } from './iframe/iframe';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
-        CoreIframeComponent
+        CoreIframeComponent,
+        CoreProgressBarComponent,
+        CoreEmptyBoxComponent,
+        CoreSearchBoxComponent,
+        CoreFileComponent,
+        CoreContextMenuComponent,
+        CoreContextMenuItemComponent,
+        CoreContextMenuPopoverComponent
+    ],
+    entryComponents: [
+        CoreContextMenuPopoverComponent
     ],
     imports: [
         IonicModule,
@@ -40,7 +57,13 @@ import { CoreIframeComponent } from './iframe/iframe';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
-        CoreIframeComponent
+        CoreIframeComponent,
+        CoreProgressBarComponent,
+        CoreEmptyBoxComponent,
+        CoreSearchBoxComponent,
+        CoreFileComponent,
+        CoreContextMenuComponent,
+        CoreContextMenuItemComponent
     ]
 })
 export class CoreComponentsModule {}

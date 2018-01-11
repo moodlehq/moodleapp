@@ -34,7 +34,7 @@ export class ClipboardMock extends Clipboard {
         } else {
             // In browser the text must be selected in order to copy it. Create a hidden textarea to put the text in it.
             this.copyTextarea = document.createElement('textarea');
-            this.copyTextarea.className = 'mm-browser-copy-area';
+            this.copyTextarea.className = 'core-browser-copy-area';
             this.copyTextarea.setAttribute('aria-hidden', 'true');
             document.body.appendChild(this.copyTextarea);
         }

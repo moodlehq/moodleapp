@@ -1,26 +1,37 @@
 core-loading {
-    .mm-loading-container {
+    .core-loading-container {
         width: 100%;
         text-align: center;
         padding-top: 10px;
         clear: both;
     }
 
-    .mm-loading-content {
+    .core-loading-content {
         padding-bottom: 1px; /* This makes height be real */
     }
 
-    &.mm-loading-noheight .mm-loading-content {
+    &.core-loading-noheight .core-loading-content {
         height: auto;
     }
 }
 
-.scroll-content > .padding > core-loading > .mm-loading-container,
-ion-content[padding] > .scroll-content > core-loading > .mm-loading-container,
-.mm-loading-center .mm-loading-container {
+.scroll-content > .padding > core-loading > .core-loading-container,
+ion-content[padding] > .scroll-content > core-loading > .core-loading-container,
+.core-loading-center .core-loading-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: table;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    clear: both;
 
-    .mm-loading-spinner {
+    .core-loading-spinner {
         display: table-cell;
         text-align: center;
         vertical-align: middle;

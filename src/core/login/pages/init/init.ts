@@ -74,13 +74,13 @@ export class CoreLoginInitPage {
     protected loadPage() : void {
         if (this.sitesProvider.isLoggedIn()) {
             if (!this.loginHelper.isSiteLoggedOut()) {
-                this.loginHelper.goToSiteInitialPage(this.navCtrl, true);
+                this.loginHelper.goToSiteInitialPage();
             }
         } else {
             this.sitesProvider.hasSites().then(() => {
                 this.navCtrl.setRoot('CoreLoginSitesPage');
             }, () => {
-                this.loginHelper.goToAddSite(this.navCtrl, true);
+                this.loginHelper.goToAddSite(true);
             });
         }
     }

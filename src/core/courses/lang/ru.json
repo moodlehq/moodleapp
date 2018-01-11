@@ -1,0 +1,21 @@
+{
+    "allowguests": "Курс доступен гостю",
+    "availablecourses": "Доступные курсы",
+    "categories": "Категории курсов",
+    "courses": "Курсы",
+    "enrolme": "Записаться на курс",
+    "errorloadcourses": "При загрузке курсов произошла ошибка.",
+    "filtermycourses": "Поиск моих курсов",
+    "frontpage": "Главная страница",
+    "mycourses": "Мои курсы",
+    "nocourses": "Нет информации для отображения.",
+    "nocoursesyet": "В этой категории нет курсов",
+    "nosearchresults": "Поиск не дал результатов",
+    "notenroled": "Вы не записаны на этот курс",
+    "password": "Общий секретный ключ",
+    "paymentrequired": "Для регистрации на этом курсе требуется оплата",
+    "paypalaccepted": "Принятые платежи PayPal",
+    "search": "Найти",
+    "searchcourses": "Поиск курса",
+    "sendpaymentbutton": "Оплатить через PayPal"
+}

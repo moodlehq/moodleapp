@@ -74,7 +74,7 @@ export class CoreLoginSitePage {
             // It's a demo site.
             this.sitesProvider.getUserToken(siteData.url, siteData.username, siteData.password).then((data) => {
                 return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken).then(() => {
-                    return this.loginHelper.goToSiteInitialPage(this.navCtrl, true);
+                    return this.loginHelper.goToSiteInitialPage();
                 }, (error) => {
                     this.domUtils.showErrorModal(error);
                 });

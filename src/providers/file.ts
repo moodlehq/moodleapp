@@ -98,7 +98,7 @@ export class CoreFileProvider {
      * @return {boolean} Whether the plugin is available.
      */
     isAvailable() : boolean {
-        return typeof window.resolveLocalFileSystemURL !== 'undefined' && typeof FileTransfer !== 'undefined';
+        return typeof window.resolveLocalFileSystemURL !== 'undefined';
     }
 
     /**

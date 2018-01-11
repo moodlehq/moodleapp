@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../providers/app';
@@ -38,7 +38,7 @@ import { CoreExternalContentDirective } from '../directives/external-content';
 @Directive({
     selector: 'core-format-text'
 })
-export class CoreFormatTextDirective implements OnInit {
+export class CoreFormatTextDirective implements OnChanges {
     @Input() text: string; // The text to format.
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component for CoreExternalContentDirective.
@@ -68,10 +68,12 @@ export class CoreFormatTextDirective implements OnInit {
     }
 
     /**
-     * Function executed when the directive is initialized.
+     * Detect changes on input properties.
      */
-    ngOnInit() : void {
-        this.formatAndRenderContents();
+    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+        if (changes.text) {
+            this.formatAndRenderContents();
+        }
     }
 
     /**
@@ -97,7 +99,7 @@ export class CoreFormatTextDirective implements OnInit {
      * @param {HTMLElement} element Element to add the class to.
      */
     protected addMediaAdaptClass(element: HTMLElement) : void {
-        element.classList.add('mm-media-adapt-width');
+        element.classList.add('core-media-adapt-width');
     }
 
     /**
@@ -113,7 +115,7 @@ export class CoreFormatTextDirective implements OnInit {
             // Wrap the image in a new div with position relative.
             container = document.createElement('span');
 
-        container.classList.add('mm-adapted-img-container');
+        container.classList.add('core-adapted-img-container');
         container.style.cssFloat = img.style.cssFloat; // Copy the float to correctly position the search icon.
         if (img.classList.contains('atto_image_button_right')) {
             container.classList.add('atto_image_button_right');
@@ -127,7 +129,7 @@ export class CoreFormatTextDirective implements OnInit {
                 label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage'));
 
             // @todo: Implement image viewer. Maybe we can add the listener here directly?
-            container.innerHTML += '<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
+            container.innerHTML += '<a href="#" class="core-image-viewer-icon" core-image-viewer img="' + imgSrc +
                             '" aria-label="' + label + '"><ion-icon name="search"></ion-icon></a>';
         }
 
@@ -149,6 +151,7 @@ export class CoreFormatTextDirective implements OnInit {
      */
     protected formatAndRenderContents() : void {
         if (!this.text) {
+            this.element.innerHTML = ''; // Remove current contents.
             this.finishRender();
             return;
         }
@@ -156,6 +159,8 @@ export class CoreFormatTextDirective implements OnInit {
         this.text = this.text.trim();
 
         this.formatContents().then((div: HTMLElement) => {
+            this.element.innerHTML = ''; // Remove current contents.
+
             if (this.maxHeight && div.innerHTML != "") {
                 // Move the children to the current element to be able to calculate the height.
                 // @todo: Display the element?
@@ -170,12 +175,13 @@ export class CoreFormatTextDirective implements OnInit {
                 if (!height || height > this.maxHeight) {
                     let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false;
 
-                    this.element.innerHTML += '<div class="mm-show-more">' + this.translate.instant('core.showmore') + '</div>';
+                    this.element.innerHTML += '<div class="core-show-more">' + this.translate.instant('core.showmore') + '</div>';
 
                     if (expandInFullview) {
-                        this.element.classList.add('mm-expand-in-fullview');
+                        this.element.classList.add('core-expand-in-fullview');
                     }
-                    this.element.classList.add('mm-text-formatted mm-shortened');
+                    this.element.classList.add('core-text-formatted');
+                    this.element.classList.add('core-shortened');
                     this.element.style.maxHeight = this.maxHeight + 'px';
 
                     this.element.addEventListener('click', (e) => {
@@ -188,7 +194,7 @@ export class CoreFormatTextDirective implements OnInit {
                                 !target.getAttribute('href'))) {
                             if (!expandInFullview) {
                                 // Change class.
-                                this.element.classList.toggle('mm-shortened');
+                                this.element.classList.toggle('core-shortened');
                                 return;
                             }
                         }
@@ -203,7 +209,7 @@ export class CoreFormatTextDirective implements OnInit {
                 this.domUtils.moveChildren(div, this.element);
             }
 
-            this.element.classList.add('mm-enabled-media-adapt');
+            this.element.classList.add('core-enabled-media-adapt');
 
             this.finishRender();
         });
@@ -246,7 +252,7 @@ export class CoreFormatTextDirective implements OnInit {
             buttons = Array.from(div.querySelectorAll('.button'));
 
             // Walk through the content to find the links and add our directive to it.
-            // Important: We need to look for links first because in 'img' we add new links without mm-link.
+            // Important: We need to look for links first because in 'img' we add new links without core-link.
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
                 let linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils);
@@ -295,7 +301,7 @@ export class CoreFormatTextDirective implements OnInit {
             buttons.forEach((button: HTMLElement) => {
                 // Check if it has a link inside.
                 if (button.querySelector('a')) {
-                    button.classList.add('mm-button-with-inner-link');
+                    button.classList.add('core-button-with-inner-link');
                 }
             });
 
@@ -342,11 +348,11 @@ export class CoreFormatTextDirective implements OnInit {
         let height;
 
         // Disable media adapt to correctly calculate the height.
-        element.classList.remove('mm-enabled-media-adapt');
+        element.classList.remove('core-enabled-media-adapt');
 
         height = this.domUtils.getElementHeight(element);
 
-        element.classList.add('mm-enabled-media-adapt');
+        element.classList.add('core-enabled-media-adapt');
 
         return height || 0;
     }

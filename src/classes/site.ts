@@ -482,7 +482,14 @@ export class CoreSite {
 
                 // We pass back a clone of the original object, this may
                 // prevent errors if in the callback the object is modified.
-                return Object.assign({}, response);
+                if (typeof response == 'object') {
+                    if (Array.isArray(response)) {
+                        return Array.from(response);
+                    } else {
+                        return Object.assign({}, response);
+                    }
+                }
+                return response;
             }).catch((error) => {
                 if (error.errorcode == 'invalidtoken' ||
                         (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
@@ -853,10 +860,10 @@ export class CoreSite {
     /**
      * Returns the URL to the documentation of the app, based on Moodle version and current language.
      *
-     * @param {string} [page]    Docs page to go to.
-     * @return {Promise}         Promise resolved with the Moodle docs URL.
+     * @param {string} [page] Docs page to go to.
+     * @return {Promise<string>} Promise resolved with the Moodle docs URL.
      */
-    getDocsUrl(page: string) : Promise<string> {
+    getDocsUrl(page?: string) : Promise<string> {
         const release = this.infos.release ? this.infos.release : undefined;
         return this.urlUtils.getDocsUrl(release, page);
     }
@@ -1054,7 +1061,7 @@ export class CoreSite {
                 }
 
                 if (alertMessage) {
-                    let alert = this.domUtils.showAlert('core.notice', alertMessage, null, 3000);
+                    let alert = this.domUtils.showAlert('core.notice', alertMessage, undefined, 3000);
                     alert.onDidDismiss(() => {
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));

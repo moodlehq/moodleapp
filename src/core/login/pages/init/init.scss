@@ -1,8 +1,8 @@
 page-core-login-init {
-    .mm-bglogo {
-        background-color: $mm-color-init-screen; /* Change this to add a bg image or change color */
-        background: -webkit-radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
-        background: radial-gradient($mm-color-init-screen-alt, $mm-color-init-screen);
+    .core-bglogo {
+        background-color: $core-color-init-screen; /* Change this to add a bg image or change color */
+        background: -webkit-radial-gradient($core-color-init-screen-alt, $core-color-init-screen);
+        background: radial-gradient($core-color-init-screen-alt, $core-color-init-screen);
         background-repeat: no-repeat;
         background-position: center center;
         position: absolute;
@@ -14,22 +14,22 @@ page-core-login-init {
         width: 100%;
         display: table;
 
-        .mm-logo {
+        .core-logo {
             display: table-cell;
             text-align: center;
             vertical-align: middle;
         }
 
         img {
-            width: $mm-init-screen-logo-width;
-            max-width: $mm-init-screen-logo-max-width;
+            width: $core-init-screen-logo-width;
+            max-width: $core-init-screen-logo-max-width;
             display: block;
             margin: 0 auto;
             margin-bottom: 30px;
         }
 
         .spinner circle {
-            stroke: $mm-init-screen-spinner-color;
+            stroke: $core-init-screen-spinner-color;
         }
     }
 }

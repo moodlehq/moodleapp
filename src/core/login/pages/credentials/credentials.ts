@@ -219,7 +219,7 @@ export class CoreLoginCredentialsPage {
                     //     }
                     // });
                 } else {
-                    return this.loginHelper.goToSiteInitialPage(this.navCtrl, true);
+                    return this.loginHelper.goToSiteInitialPage();
                 }
             });
         }).catch((error) => {

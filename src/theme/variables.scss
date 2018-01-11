@@ -46,9 +46,9 @@ $yellow:          #fbad1a; // Accent (never text).
 $yellow-light:    mix($yellow, white, 20%);
 $yellow-dark:     mix($yellow, black, 40%);
 
-$mm-color:          $orange;
-$mm-color-light:    lighten($mm-color, 10%);
-$mm-color-dark:     darken($mm-color, 10%);
+$core-color:          $orange;
+$core-color-light:    lighten($core-color, 10%);
+$core-color-dark:     darken($core-color, 10%);
 
 
 // Shared Variables
@@ -72,10 +72,11 @@ $content-padding: 10px;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    $mm-color,
+  primary:    $core-color,
   secondary:  $turquoise,
   danger:     $red,
   light:      $gray-lighter,
+  gray:       $gray-dark,
   dark:       $black,
   warning:    $yellow
 );
@@ -89,13 +90,15 @@ $list-background-color:      $white;
 
 $tabs-background:            $gray-darker;
 $tabs-border-color:          #b2b2b2 !default;
-$tabs-tab-color-inactive:    #8c8c8c !default;
-$tabs-tab-color-active:      $mm-color;
+$tabs-tab-color-active:      $core-color;
+$tabs-tab-color-inactive:    $white;
 
 $text-input-highlight-color-valid: $green;
 $text-input-highlight-color-invalid: $red;
 
 $button-md-box-shadow: 0 2px 2px 1px rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12) ;
+
+$refresher-icon-color: $core-color;
 
 
 // Moodle Mobile variables
@@ -106,13 +109,13 @@ $item-icon-accessory-color:       #ccc !default;
 $item-icon-accessory-font-size:   16px !default;
 
 // Init screen.
-$mm-color-init-screen:          #ff5c00;
-$mm-color-init-screen-alt:      #ff7600;
-$mm-init-screen-spinner-color:  $white;
-$mm-init-screen-logo-width:     60%;
-$mm-init-screen-logo-max-width: 300px;
+$core-color-init-screen:          #ff5c00;
+$core-color-init-screen-alt:      #ff7600;
+$core-init-screen-spinner-color:  $white;
+$core-init-screen-logo-width:     60%;
+$core-init-screen-logo-max-width: 300px;
 
-$mm-fixed-url:                  false;
+$core-fixed-url:                  false;
 
 
 // Branded apps customization
@@ -125,8 +128,11 @@ $mm-fixed-url:                  false;
 // iOS only Sass variables can go here
 
 $text-input-ios-show-focus-highlight: false;
-$mm-text-input-ios-show-highlight: false;
+$core-text-input-ios-show-highlight: false;
 $item-ios-avatar-size: 54px;
+$loading-ios-spinner-color: $core-color;
+$spinner-ios-ios-color: $core-color;
+$tabs-ios-tab-color-inactive: $tabs-tab-color-inactive;
 
 
 // App Material Design Variables
@@ -134,9 +140,12 @@ $item-ios-avatar-size: 54px;
 // Material Design only Sass variables can go here
 
 $text-input-md-show-focus-highlight: false;
-$mm-text-input-md-show-highlight: true;
+$core-text-input-md-show-highlight: true;
 $item-md-detail-push-show: true;
 $item-md-avatar-size: 54px;
+$loading-md-spinner-color: $core-color;
+$spinner-md-crescent-color: $core-color;
+$tabs-md-tab-color-inactive: $tabs-tab-color-inactive;
 
 
 // App Windows Variables
@@ -146,6 +155,9 @@ $item-md-avatar-size: 54px;
 $text-input-wp-show-focus-highlight: true;
 $item-wp-detail-push-show: true;
 $item-wp-avatar-size: 54px;
+$loading-wp-spinner-color: $core-color;
+$spinner-wp-circles-color: $core-color;
+$tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
 
 
 // App Theme
@@ -171,3 +183,15 @@ $item-wp-avatar-size: 54px;
 
 @import "roboto";
 @import "noto-sans";
+
+// Moodle Mobile variables
+// --------------------------------------------------
+
+// Small avatar ideal for icons.
+$item-media-width: 32px !default;
+$item-media-height: 32px !default;
+
+$core-top-tabs-background: $white;
+$core-top-tabs-color: $gray-dark;
+$core-top-tabs-border: $gray;
+$core-top-tabs-color-active: $core-color;

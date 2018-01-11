@@ -15,14 +15,12 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoreLoginInitPage } from './init';
-import { CoreLoginModule } from '../../login.module';
 
 @NgModule({
     declarations: [
         CoreLoginInitPage,
     ],
     imports: [
-        CoreLoginModule,
         IonicPageModule.forChild(CoreLoginInitPage),
     ],
 })

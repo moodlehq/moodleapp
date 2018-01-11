@@ -262,7 +262,7 @@ export class SQLiteDB {
      * @return {Promise<any>} Promise resolved when done.
      */
     deleteRecords(table: string, conditions?: object) : Promise<any> {
-        if (conditions === null) {
+        if (conditions === null || typeof conditions == 'undefined') {
             // No conditions, delete the whole table.
             return this.execute(`DELETE FROM TABLE ${table}`);
         }
@@ -327,6 +327,21 @@ export class SQLiteDB {
         return this.ready().then(() => {
             return this.db.sqlBatch(sqlStatements);
         });
+    }
+
+    /**
+     * Format the data to insert in the database. Removes undefined entries so they are stored as null instead of 'undefined'.
+     *
+     * @param {object} data Data to insert.
+     */
+    protected formatDataToInsert(data: object) : void {
+        // Remove undefined entries and convert null to "NULL".
+        for (let name in data) {
+            let value = data[name];
+            if (typeof value == 'undefined') {
+                delete data[name];
+            }
+        }
     }
 
     /**
@@ -585,6 +600,8 @@ export class SQLiteDB {
      * @return {any[]} Array with the SQL query and the params.
      */
     protected getSqlInsertQuery(table: string, data: object) : any[] {
+        this.formatDataToInsert(data);
+
         let keys = Object.keys(data),
             fields = keys.join(','),
             questionMarks = ',?'.repeat(keys.length).substr(1);
@@ -674,10 +691,10 @@ export class SQLiteDB {
      */
     normaliseLimitFromNum(limitFrom: any, limitNum: any) : number[] {
         // We explicilty treat these cases as 0.
-        if (limitFrom === null || limitFrom === '' || limitFrom === -1) {
+        if (typeof limitFrom == 'undefined' || limitFrom === null || limitFrom === '' || limitFrom === -1) {
             limitFrom = 0;
         }
-        if (limitNum === null || limitNum === '' || limitNum === -1) {
+        if (typeof limitNum == 'undefined' || limitNum === null || limitNum === '' || limitNum === -1) {
             limitNum = 0;
         }
 
@@ -772,6 +789,8 @@ export class SQLiteDB {
             sets = [],
             sql,
             params;
+
+        this.formatDataToInsert(data);
 
         for (let key in data) {
             sets.push(`${key} = ?`);

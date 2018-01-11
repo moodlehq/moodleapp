@@ -1,0 +1,64 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="course.fullname"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="dataLoaded">
+
+        <ion-list *ngIf="course">
+            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!handlersShouldBeShown">
+                <ion-icon name="ionic" item-start></ion-icon>
+                <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
+                <p *ngIf="course.categoryname">{{course.categoryname}}</p>
+                <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
+            </a>
+
+            <ion-item text-wrap *ngIf="course.summary">
+                <core-format-text [text]="course.summary" maxHeight="120"></core-format-text>
+            </ion-item>
+
+            <a ion-item text-wrap *ngIf="course.contacts && course.contacts.length" core-user-link [attr.aria-label]="'core.viewprofile' | translate">
+                <p class="item-heading">{{ 'core.teachers' | translate }}</p>
+                <p *ngFor="let contact of course.contacts">{{contact.fullname}}</p>
+            </a>
+            <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
+            <div *ngIf="!isEnrolled">
+                <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
+                    <p class="item-heading">{{ instance.name }}</p>
+                    <button ion-button block margin-top (click)="selfEnrolClicked(instance.id)">{{ 'core.courses.enrolme' | translate }}</button>
+                </ion-item>
+            </div>
+            <ion-item text-wrap *ngIf="!isEnrolled && paypalEnabled">
+                <p class="item-heading">{{ 'core.courses.paypalaccepted' | translate }}</p>
+                <p>{{ 'core.paymentinstant' | translate }}</p>
+                <button ion-button block margin-top (click)="paypalEnrol()">{{ 'core.courses.sendpaymentbutton' | translate }}</button>
+            </ion-item>
+            <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
+                <p>{{ 'core.courses.notenrollable' | translate }}</p>
+            </ion-item>
+            <!-- @todo: Prefetch course.
+            <a class="item item-icon-left" ng-if="handlersShouldBeShown" ng-click="prefetchCourse()">
+                <i ng-if="prefetchCourseIcon != 'spinner'" class="icon {{prefetchCourseIcon}}"></i>
+                <ion-spinner ng-if="prefetchCourseIcon == 'spinner'" class="icon"></ion-spinner>
+                <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
+            </a> -->
+            <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="handlersShouldBeShown">
+                <ion-icon name="briefcase" item-start></ion-icon>
+                <h2>{{ 'core.course.contents' | translate }}</h2>
+            </a>
+            <div class="core-course-handlers" *ngIf="handlersShouldBeShown && course._handlers && course._handlers.length">
+                <a ion-item text-wrap *ngFor="let handler of course._handlers" class="core-courses-handler {{handler.class}}">
+                    <ion-icon [name]="icon" item-start></ion-icon>
+                    <h2><core-format-text [text]="title | translate"></core-format-text></h2>
+                </a>
+            </div>
+            <ion-item class="core-loading-course-handlers" text-center *ngIf="handlersShouldBeShown && !handlersLoaded">
+                <ion-spinner></ion-spinner>
+            </ion-item>
+        </ion-list>
+    </core-loading>
+</ion-content>

@@ -261,7 +261,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<Array<ILocalNotification>>}
      */
     getAll(): Promise<Array<ILocalNotification>> {
-        return Promise.resolve(this.getNotifications(null, true, true));
+        return Promise.resolve(this.getNotifications(undefined, true, true));
     }
 
     /**
@@ -292,7 +292,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<Array<ILocalNotification>>}
      */
     getAllScheduled(): Promise<Array<ILocalNotification>> {
-        return Promise.resolve(this.getNotifications(null, true, false));
+        return Promise.resolve(this.getNotifications(undefined, true, false));
     }
 
     /**
@@ -301,7 +301,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<Array<ILocalNotification>>}
      */
     getAllTriggered(): Promise<Array<ILocalNotification>> {
-        return Promise.resolve(this.getNotifications(null, false, true));
+        return Promise.resolve(this.getNotifications(undefined, false, true));
     }
 
     /**

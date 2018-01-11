@@ -408,7 +408,7 @@ export class CoreSitesProvider {
                     return siteId;
                 });
             } else if (result == this.LEGACY_APP_VERSION) {
-                return Promise.reject(this.translate.instant('mm.login.legacymoodleversion'));
+                return Promise.reject(this.translate.instant('core.login.legacymoodleversion'));
             } else {
                 return Promise.reject(this.translate.instant('core.login.invalidmoodleversion'));
             }
@@ -507,7 +507,7 @@ export class CoreSitesProvider {
      */
     protected validateSiteInfo(info: any) : any {
         if (!info.firstname || !info.lastname) {
-            const moodleLink = `<a mm-link href="${info.siteurl}">${info.siteurl}</a>`;
+            const moodleLink = `<a core-link href="${info.siteurl}">${info.siteurl}</a>`;
             return {error: 'core.requireduserdatamissing', params: {'$a': moodleLink}};
         }
         return true;
@@ -1043,7 +1043,7 @@ export class CoreSitesProvider {
             return Promise.resolve();
         }
 
-        return site.getConfig(null, true);
+        return site.getConfig(undefined, true);
     }
 
     /**

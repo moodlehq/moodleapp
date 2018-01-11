@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../../../providers/app';
 import { CoreConfigProvider } from '../../../providers/config';
@@ -46,7 +46,6 @@ export class CoreLoginHelperProvider {
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    protected navCtrl: NavController;
     lastInAppUrl: string;
     waitingForBrowser = false;
 
@@ -142,9 +141,9 @@ export class CoreLoginHelperProvider {
         }).then(() => {
             if (siteData.pageName) {
                 // State defined, go to that state instead of site initial page.
-                this.navCtrl.push(siteData.pageName, siteData.pageParams);
+                this.appProvider.getRootNavController().push(siteData.pageName, siteData.pageParams);
             } else {
-                this.goToSiteInitialPage(this.navCtrl, true);
+                this.goToSiteInitialPage();
             }
         }).catch((errorMessage) => {
             if (typeof errorMessage == 'string' && errorMessage != '') {
@@ -176,8 +175,9 @@ export class CoreLoginHelperProvider {
      * Function called when an SSO InAppBrowser is closed or the app is resumed. Check if user needs to be logged out.
      */
     checkLogout() {
+        let navCtrl = this.appProvider.getRootNavController();
         if (!this.appProvider.isSSOAuthenticationOngoing() && this.sitesProvider.isLoggedIn() &&
-                this.sitesProvider.getCurrentSite().isLoggedOut() && this.navCtrl.getActive().name == 'CoreLoginReconnectPage') {
+                this.sitesProvider.getCurrentSite().isLoggedOut() && navCtrl.getActive().name == 'CoreLoginReconnectPage') {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
             this.sitesProvider.logout();
         }
@@ -345,11 +345,10 @@ export class CoreLoginHelperProvider {
      * Go to the page to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
-     * @param {NavController} navCtrl The NavController instance to use.
      * @param {boolean} [setRoot] True to set the new page as root, false to add it to the stack.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToAddSite(navCtrl: NavController, setRoot?: boolean) : Promise<any> {
+    goToAddSite(setRoot?: boolean) : Promise<any> {
         let pageName,
             params;
 
@@ -365,63 +364,62 @@ export class CoreLoginHelperProvider {
         }
 
         if (setRoot) {
-            return navCtrl.setRoot(pageName, params, {animate: false});
+            return this.appProvider.getRootNavController().setRoot(pageName, params, {animate: false});
         } else {
-            return navCtrl.push(pageName, params);
+            return this.appProvider.getRootNavController().push(pageName, params);
         }
     }
 
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
-     * @param {NavController} navCtrl The NavController instance to use.
-     * @param {boolean} [setRoot] True to set the new page as root, false to add it to the stack.
      * @return {Promise<any>} Promise resolved when done.
      */
-    goToSiteInitialPage(navCtrl: NavController, setRoot?: boolean) : Promise<any> {
-        return this.isMyOverviewEnabled().then((myOverview) => {
-            let myCourses = !myOverview && this.isMyCoursesEnabled(),
-                site = this.sitesProvider.getCurrentSite(),
-                promise;
+    goToSiteInitialPage() : Promise<any> {
+        return this.appProvider.getRootNavController().setRoot('CoreMainMenuPage');
+        // return this.isMyOverviewEnabled().then((myOverview) => {
+        //     let myCourses = !myOverview && this.isMyCoursesEnabled(),
+        //         site = this.sitesProvider.getCurrentSite(),
+        //         promise;
 
-            if (!site) {
-                return Promise.reject(null);
-            }
+        //     if (!site) {
+        //         return Promise.reject(null);
+        //     }
 
-            // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
-            if ((site.getInfo() && site.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
-                promise = this.isFrontpageEnabled();
-            } else {
-                promise = Promise.resolve(false);
-            }
+        //     // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
+        //     if ((site.getInfo() && site.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
+        //         promise = this.isFrontpageEnabled();
+        //     } else {
+        //         promise = Promise.resolve(false);
+        //     }
 
-            return promise.then((frontpage) => {
-                // Check avalaibility in priority order.
-                let pageName,
-                    params;
+        //     return promise.then((frontpage) => {
+        //         // Check avalaibility in priority order.
+        //         let pageName,
+        //             params;
 
-                // @todo Use real pages names when they are implemented.
-                if (frontpage) {
-                    pageName = 'Frontpage';
-                } else if (myOverview) {
-                    pageName = 'MyOverview';
-                } else if (myCourses) {
-                    pageName = 'MyCourses';
-                } else {
-                    // Anything else available, go to the user profile.
-                    pageName = 'User';
-                    params = {
-                        userId: site.getUserId()
-                    };
-                }
+        //         // @todo Use real pages names when they are implemented.
+        //         if (frontpage) {
+        //             pageName = 'Frontpage';
+        //         } else if (myOverview) {
+        //             pageName = 'MyOverview';
+        //         } else if (myCourses) {
+        //             pageName = 'MyCourses';
+        //         } else {
+        //             // Anything else available, go to the user profile.
+        //             pageName = 'User';
+        //             params = {
+        //                 userId: site.getUserId()
+        //             };
+        //         }
 
-                if (setRoot) {
-                    return navCtrl.setRoot(pageName, params, {animate: false});
-                } else {
-                    return navCtrl.push(pageName, params);
-                }
-            });
-        });
+        //         if (setRoot) {
+        //             return navCtrl.setRoot(pageName, params, {animate: false});
+        //         } else {
+        //             return navCtrl.push(pageName, params);
+        //         }
+        //     });
+        // });
     }
 
     /**
@@ -611,6 +609,42 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Load a site and load a certain page in that site.
+     *
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     * @param {string} siteId Site to load.
+     */
+    protected loadSiteAndPage(page: string, params: any, siteId: string) : void {
+        if (siteId == CoreConstants.noSiteId) {
+            // Page doesn't belong to a site, just load the page.
+            this.appProvider.getRootNavController().setRoot(page, params);
+        } else {
+            let modal = this.domUtils.showModalLoading();
+            this.sitesProvider.loadSite(siteId).then(() => {
+                if (!this.isSiteLoggedOut(page, params)) {
+                    this.loadPageInMainMenu(page, params);
+                }
+            }).catch(() => {
+                // Site doesn't exist.
+                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage')
+            }).finally(() => {
+                modal.dismiss();
+            });
+        }
+    }
+
+    /**
+     * Load a certain page in the main menu page.
+     *
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     */
+    protected loadPageInMainMenu(page: string, params: any) : void {
+        this.appProvider.getRootNavController().setRoot('CoreMainMenuPage', {redirectPage: page, redirectParams: params})
+    }
+
+    /**
      * Open a browser to perform OAuth login (Google, Facebook, Microsoft).
      *
      * @param {string} siteUrl URL of the site where the login will be performed.
@@ -685,7 +719,7 @@ export class CoreLoginHelperProvider {
      * @param {string} error Error message.
      */
     openChangePassword(siteUrl: string, error: string) : void {
-        let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), error, null, 3000);
+        let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), error, undefined, 3000);
         alert.onDidDismiss(() => {
             this.utils.openInApp(siteUrl + '/login/change_password.php');
         });
@@ -769,6 +803,41 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Redirect to a new page, setting it as the root page and loading the right site if needed.
+     *
+     * @param {string} page Name of the page to load.
+     * @param {any} params Params to pass to the page.
+     * @param {string} [siteId] Site to load. If not defined, current site.
+     */
+    redirect(page: string, params?: any, siteId?: string) : void {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (this.sitesProvider.isLoggedIn()) {
+            if (siteId && siteId != this.sitesProvider.getCurrentSiteId()) {
+                // Target page belongs to a different site. Change site.
+                // @todo Once we have addon manager.
+                // if ($mmAddonManager.hasRemoteAddonsLoaded()) {
+                //     // The site has remote addons so the app will be restarted. Store the data and logout.
+                //     this.appProvider.storeRedirect(siteId, page, params);
+                //     this.sitesProvider.logout();
+                // } else {
+                    this.sitesProvider.logout().then(() => {
+                        this.loadSiteAndPage(page, params, siteId);
+                    });
+                // }
+            } else {
+                this.loadPageInMainMenu(page, params);
+            }
+        } else {
+            if (siteId) {
+                this.loadSiteAndPage(page, params, siteId);
+            } else {
+                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage')
+            }
+        }
+    }
+
+    /**
      * Request a password reset.
      *
      * @param {string} siteUrl URL of the site.
@@ -843,7 +912,7 @@ export class CoreLoginHelperProvider {
             } else {
                 let info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined') {
-                    this.navCtrl.setRoot('CoreLoginReconnectPage', {
+                    this.appProvider.getRootNavController().setRoot('CoreLoginReconnectPage', {
                         infoSiteUrl: info.siteurl,
                         siteUrl: result.siteUrl,
                         siteId: siteId,
@@ -861,15 +930,6 @@ export class CoreLoginHelperProvider {
                 this.sitesProvider.logout();
             }
         });
-    }
-
-    /**
-     * Set a NavController to use.
-     *
-     * @param {NavController} navCtrl Nav controller.
-     */
-    setNavCtrl(navCtrl: NavController) : void {
-        this.navCtrl = navCtrl;
     }
 
     /**
@@ -900,7 +960,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        this.navCtrl.setRoot('CoreLoginSitePolicyPage', {siteId: siteId});
+        this.appProvider.getRootNavController().setRoot('CoreLoginSitePolicyPage', {siteId: siteId});
     }
 
     /**
