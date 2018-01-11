@@ -27,7 +27,7 @@ angular.module('mm.addons.badges')
     $scope.userId = $stateParams.userid || $mmSite.getUserId();
 
     function fetchBadges() {
-
+        $scope.currentTime = $mmUtil.timestamp();
         return $mmaBadges.getUserBadges($scope.courseId, $scope.userId).then(function(badges) {
             $scope.badges = badges;
         }).catch(function(message) {
