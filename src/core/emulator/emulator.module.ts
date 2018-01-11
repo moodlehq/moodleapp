@@ -20,8 +20,12 @@ import { File } from '@ionic-native/file';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { Keyboard } from '@ionic-native/keyboard';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Network } from '@ionic-native/network';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SQLite } from '@ionic-native/sqlite';
 import { Zip } from '@ionic-native/zip';
 
 import { ClipboardMock } from './providers/clipboard';
@@ -86,6 +90,7 @@ import { CoreInitDelegate } from '../../providers/init';
                 return !appProvider.isDesktop() ? new InAppBrowser() : new InAppBrowserMock(appProvider, fileProvider, urlUtils);
             }
         },
+        Keyboard,
         {
             provide: LocalNotifications,
             deps: [CoreAppProvider, CoreUtilsProvider],
@@ -102,6 +107,9 @@ import { CoreInitDelegate } from '../../providers/init';
                 return platform.is('cordova') ? new Network() : new NetworkMock();
             }
         },
+        SplashScreen,
+        StatusBar,
+        SQLite,
         {
             provide: Zip,
             deps: [CoreAppProvider, File, CoreMimetypeUtilsProvider, CoreTextUtilsProvider],
