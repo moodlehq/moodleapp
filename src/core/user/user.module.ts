@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 import { CoreUserDelegate } from './providers/delegate';
 import { CoreUserProvider } from './providers/user';
+import { CoreUserHelperProvider } from './providers/helper';
 
 @NgModule({
     declarations: [
@@ -23,7 +24,8 @@ import { CoreUserProvider } from './providers/user';
     ],
     providers: [
         CoreUserDelegate,
-        CoreUserProvider
+        CoreUserProvider,
+        CoreUserHelperProvider
     ]
 })
 export class CoreUserModule {}

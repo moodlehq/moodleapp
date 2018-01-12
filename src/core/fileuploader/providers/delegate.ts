@@ -196,14 +196,14 @@ export class CoreFileUploaderDelegate {
             if (mimetypes) {
                 if (!handler.getSupportedMimetypes) {
                     // Handler doesn't implement a required function, don't add it.
-                    return;
+                    continue;
                 }
 
                 supportedMimetypes = handler.getSupportedMimetypes(mimetypes);
 
                 if (!supportedMimetypes.length) {
                     // Handler doesn't support any mimetype, don't add it.
-                    return;
+                    continue;
                 }
             }
 

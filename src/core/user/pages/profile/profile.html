@@ -4,4 +4,35 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
+    <ion-refresher [enabled]="userLoaded" (ionRefresh)="refreshUser($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="userLoaded" class="core-loading-center">
+        <ion-list *ngIf="user && !isDeleted">
+            <ion-item text-center>
+                <div class="item-avatar-center">
+                    <img *ngIf="user.profileimageurl" class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <img *ngIf="!user.profileimageurl" class="avatar" src="assets/img/user-avatar.png" alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
+                </div>
+                <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+                <p><core-format-text *ngIf="user.address" [text]="user.address"></core-format-text></p>
+                <p *ngIf="user.roles">
+                    <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
+                    <core-format-text [text]="user.roles"></core-format-text>
+                </p>
+            </ion-item>
+
+            <a ion-item text-wrap class="core-user-profile-handler" [navPush]="CoreUserAboutPage" [navParams]="{courseId: courseId, userId: userId}" title="{{ 'core.user.details' | translate }}">
+                <ion-icon name="person" item-start></ion-icon>
+                <h2>{{ 'core.user.details' | translate }}</h2>
+            </a>
+            <ion-item text-center *ngIf="isLoadingHandlers">
+                <ion-spinner></ion-spinner>
+            </ion-item>
+        </ion-list>
+        <core-empty-box *ngIf="!user && !isDeleted" icon="person" [message]=" 'core.user.detailsnotavailable' | translate"></core-empty-box>
+
+        <core-empty-box *ngIf="isDeleted" icon="person" [message]="'core.userdeleted' | translate"></core-empty-box>
+    </core-loading>
 </ion-content>

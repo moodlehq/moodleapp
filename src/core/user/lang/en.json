@@ -1,3 +1,11 @@
 {
-
+    "details": "Details",
+    "detailsnotavailable": "The details of this user are not available to you.",
+    "editingteacher": "Teacher",
+    "errorloaduser": "Error loading user.",
+    "manager": "Manager",
+    "newpicture": "New picture",
+    "roles": "Roles",
+    "student": "Student",
+    "teacher": "Non-editing teacher"
 }
