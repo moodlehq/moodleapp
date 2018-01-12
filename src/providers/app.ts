@@ -40,11 +40,11 @@ export interface CoreRedirectData {
  */
 @Injectable()
 export class CoreAppProvider {
-    DBNAME = 'MoodleMobile';
-    db: SQLiteDB;
-    logger;
-    ssoAuthenticationPromise : Promise<any>;
-    isKeyboardShown: boolean = false;
+    protected DBNAME = 'MoodleMobile';
+    protected db: SQLiteDB;
+    protected logger;
+    protected ssoAuthenticationPromise : Promise<any>;
+    protected isKeyboardShown: boolean = false;
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider) {

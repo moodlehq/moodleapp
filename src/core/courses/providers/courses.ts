@@ -28,6 +28,7 @@ export class CoreCoursesProvider {
     public static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
     public static ACCESS_GUEST = 'courses_access_guest';
     public static ACCESS_DEFAULT = 'courses_access_default';
+    protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
@@ -68,7 +69,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getCategoriesCacheKey(categoryId: number, addSubcategories?: boolean) : string {
-        return this.getRootCacheKey() + 'categories:' + categoryId + ':' + !!addSubcategories;
+        return this.ROOT_CACHE_KEY + 'categories:' + categoryId + ':' + !!addSubcategories;
     }
 
     /**
@@ -119,15 +120,6 @@ export class CoreCoursesProvider {
                 return courseIds;
             }
         });
-    }
-
-    /**
-     * Get the root cache key for the WS calls related to courses.
-     *
-     * @return {string} Root cache key.
-     */
-    protected getRootCacheKey() : string {
-        return 'mmCourses:';
     }
 
     /**
@@ -219,7 +211,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getCourseEnrolmentMethodsCacheKey(id: number) : string {
-        return this.getRootCacheKey() + 'enrolmentmethods:' + id;
+        return this.ROOT_CACHE_KEY + 'enrolmentmethods:' + id;
     }
 
     /**
@@ -251,7 +243,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getCourseGuestEnrolmentInfoCacheKey(instanceId: number) : string {
-        return this.getRootCacheKey() + 'guestinfo:' + instanceId;
+        return this.ROOT_CACHE_KEY + 'guestinfo:' + instanceId;
     }
 
     /**
@@ -291,7 +283,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getCoursesCacheKey(ids: number[]) : string {
-        return this.getRootCacheKey() + 'course:' + JSON.stringify(ids);
+        return this.ROOT_CACHE_KEY + 'course:' + JSON.stringify(ids);
     }
 
     /**
@@ -352,7 +344,7 @@ export class CoreCoursesProvider {
     protected getCoursesByFieldCacheKey(field?: string, value?: any) : string {
         field = field || '';
         value = field ? value : '';
-        return this.getRootCacheKey() + 'coursesbyfield:' + field + ':' + value;
+        return this.ROOT_CACHE_KEY + 'coursesbyfield:' + field + ':' + value;
     }
 
     /**
@@ -408,7 +400,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getUserAdministrationOptionsCommonCacheKey() : string {
-        return this.getRootCacheKey() + 'administrationOptions:';
+        return this.ROOT_CACHE_KEY + 'administrationOptions:';
     }
 
     /**
@@ -451,7 +443,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getUserNavigationOptionsCommonCacheKey() : string {
-        return this.getRootCacheKey() + 'navigationOptions:';
+        return this.ROOT_CACHE_KEY + 'navigationOptions:';
     }
 
     /**
@@ -566,7 +558,7 @@ export class CoreCoursesProvider {
      * @return {string} Cache key.
      */
     protected getUserCoursesCacheKey() : string {
-        return this.getRootCacheKey() + 'usercourses';
+        return this.ROOT_CACHE_KEY + 'usercourses';
     }
 
     /**

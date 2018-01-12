@@ -234,7 +234,7 @@ export class CoreSitesProvider {
                 this.services[siteUrl] = data.service; // No need to store it in DB.
 
                 if (data.coreSupported ||
-                        (data.code != CoreConstants.loginSSOCode && data.code != CoreConstants.loginSSOInAppCode)) {
+                        (data.code != CoreConstants.LOGIN_SSO_CODE && data.code != CoreConstants.LOGIN_SSO_INAPP_CODE)) {
                     // SSO using local_mobile not needed, try to get the site public config.
                     return temporarySite.getPublicConfig().then((config) : any => {
                         publicConfig = config;
@@ -301,7 +301,7 @@ export class CoreSitesProvider {
             data.service = 'c';
         }
 
-        const observable = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.wsTimeout);
+        const observable = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT);
         return this.utils.observableToPromise(observable).catch((error) => {
             return Promise.reject(error.message);
         }).then((data: any) => {
@@ -339,7 +339,7 @@ export class CoreSitesProvider {
                 password: password,
                 service: service
             },
-            observable = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.wsTimeout);
+            observable = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.WS_TIMEOUT);
 
         return this.utils.observableToPromise(observable).then((data: any) : any => {
             if (typeof data == 'undefined') {

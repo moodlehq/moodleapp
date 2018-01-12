@@ -648,7 +648,7 @@ export class CoreFilepoolProvider {
                 return site.getDb().deleteRecords(this.PACKAGES_TABLE).then(() => {
                     entries.forEach((entry) => {
                         // Trigger module status changed, setting it as not downloaded.
-                        this.triggerPackageStatusChanged(siteId, CoreConstants.notDownloaded, entry.component, entry.componentId);
+                        this.triggerPackageStatusChanged(siteId, CoreConstants.NOT_DOWNLOADED, entry.component, entry.componentId);
                     });
                 });
             });
@@ -693,13 +693,13 @@ export class CoreFilepoolProvider {
     /**
      * Given the current status of a list of packages and the status of one of the packages,
      * determine the new status for the list of packages. The status of a list of packages is:
-     *     - CoreConstants.nowDownloadable if there are no downloadable packages.
-     *     - CoreConstants.notDownloaded if at least 1 package has status CoreConstants.notDownloaded.
-     *     - CoreConstants.downloaded if ALL the downloadable packages have status CoreConstants.downloaded.
-     *     - CoreConstants.downloading if ALL the downloadable packages have status CoreConstants.downloading or
-     *                                     CoreConstants.downloaded, with at least 1 package with CoreConstants.downloading.
-     *     - CoreConstants.outdated if ALL the downloadable packages have status CoreConstants.outdated or CoreConstants.downloaded
-     *                                     or CoreConstants.downloading, with at least 1 package with CoreConstants.outdated.
+     *     - CoreConstants.NOT_DOWNLOADABLE if there are no downloadable packages.
+     *     - CoreConstants.NOT_DOWNLOADED if at least 1 package has status CoreConstants.NOT_DOWNLOADED.
+     *     - CoreConstants.DOWNLOADED if ALL the downloadable packages have status CoreConstants.DOWNLOADED.
+     *     - CoreConstants.DOWNLOADING if ALL the downloadable packages have status CoreConstants.DOWNLOADING or
+     *                                     CoreConstants.DOWNLOADED, with at least 1 package with CoreConstants.DOWNLOADING.
+     *     - CoreConstants.OUTDATED if ALL the downloadable packages have status CoreConstants.OUTDATED or CoreConstants.DOWNLOADED
+     *                                     or CoreConstants.DOWNLOADING, with at least 1 package with CoreConstants.OUTDATED.
      *
      * @param {string} current Current status of the list of packages.
      * @param {string} packagestatus Status of one of the packages.
@@ -707,22 +707,22 @@ export class CoreFilepoolProvider {
      */
     determinePackagesStatus(current: string, packageStatus: string) : string {
         if (!current) {
-            current = CoreConstants.notDownloadable;
+            current = CoreConstants.NOT_DOWNLOADABLE;
         }
 
-        if (packageStatus === CoreConstants.notDownloaded) {
+        if (packageStatus === CoreConstants.NOT_DOWNLOADED) {
             // If 1 package is not downloaded the status of the whole list will always be not downloaded.
-            return CoreConstants.notDownloaded;
-        } else if (packageStatus === CoreConstants.downloaded && current === CoreConstants.notDownloadable) {
+            return CoreConstants.NOT_DOWNLOADED;
+        } else if (packageStatus === CoreConstants.DOWNLOADED && current === CoreConstants.NOT_DOWNLOADABLE) {
             // If all packages are downloaded or not downloadable with at least 1 downloaded, status will be downloaded.
-            return CoreConstants.downloaded;
-        } else if (packageStatus === CoreConstants.downloading &&
-                (current === CoreConstants.notDownloadable || current === CoreConstants.downloaded)) {
+            return CoreConstants.DOWNLOADED;
+        } else if (packageStatus === CoreConstants.DOWNLOADING &&
+                (current === CoreConstants.NOT_DOWNLOADABLE || current === CoreConstants.DOWNLOADED)) {
             // If all packages are downloading/downloaded/notdownloadable with at least 1 downloading, status will be downloading.
-            return CoreConstants.downloading;
-        } else if (packageStatus === CoreConstants.outdated && current !== CoreConstants.notDownloaded) {
+            return CoreConstants.DOWNLOADING;
+        } else if (packageStatus === CoreConstants.OUTDATED && current !== CoreConstants.NOT_DOWNLOADED) {
             // If there are no packages notdownloaded and there is at least 1 outdated, status will be outdated.
-            return CoreConstants.outdated;
+            return CoreConstants.OUTDATED;
         }
 
         // Status remains the same.
@@ -865,7 +865,7 @@ export class CoreFilepoolProvider {
         timemodified = timemodified || this.getTimemodifiedFromFileList(fileList);
 
         // Set package as downloading.
-        promise = this.storePackageStatus(siteId, CoreConstants.downloading, component, componentId).then(() => {
+        promise = this.storePackageStatus(siteId, CoreConstants.DOWNLOADING, component, componentId).then(() => {
             let promises = [],
                 packageLoaded = 0;
 
@@ -919,7 +919,7 @@ export class CoreFilepoolProvider {
 
             return Promise.all(promises).then(() => {
                 // Success prefetching, store package as downloaded.
-                return this.storePackageStatus(siteId, CoreConstants.downloaded, component, componentId, revision, timemodified);
+                return this.storePackageStatus(siteId, CoreConstants.DOWNLOADED, component, componentId, revision, timemodified);
             }).catch(() => {
                 // Error downloading, go back to previous status and reject the promise.
                 return this.setPackagePreviousStatus(siteId, component, componentId).then(() => {
@@ -1391,7 +1391,7 @@ export class CoreFilepoolProvider {
 
             // Check if the file is in queue (waiting to be downloaded).
             return this.hasFileInQueue(siteId, fileId).then(() => {
-                return CoreConstants.downloading;
+                return CoreConstants.DOWNLOADING;
             }).catch(() => {
                 // Check if the file is being downloaded right now.
                 let extension = this.mimeUtils.guessExtensionFromUrl(fileUrl),
@@ -1400,18 +1400,18 @@ export class CoreFilepoolProvider {
                 return Promise.resolve(path).then((filePath) => {
                     const downloadId = this.getFileDownloadId(fileUrl, filePath);
                     if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
-                        return CoreConstants.downloading;
+                        return CoreConstants.DOWNLOADING;
                     }
 
                     // File is not being downloaded. Check if it's downloaded and if it's outdated.
                     return this.hasFileInPool(siteId, fileId).then((entry) => {
                         if (this.isFileOutdated(entry, revision, timemodified)) {
-                            return CoreConstants.outdated;
+                            return CoreConstants.OUTDATED;
                         } else {
-                            return CoreConstants.downloaded;
+                            return CoreConstants.DOWNLOADED;
                         }
                     }).catch(() => {
-                        return CoreConstants.notDownloaded;
+                        return CoreConstants.NOT_DOWNLOADED;
                     });
                 });
             });
@@ -1584,9 +1584,9 @@ export class CoreFilepoolProvider {
      */
     getPackageCurrentStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.status || CoreConstants.notDownloaded;
+            return entry.status || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
-            return CoreConstants.notDownloaded;
+            return CoreConstants.NOT_DOWNLOADED;
         });
     }
 
@@ -1705,9 +1705,9 @@ export class CoreFilepoolProvider {
      */
     getPackagePreviousStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.previous || CoreConstants.notDownloaded;
+            return entry.previous || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
-            return CoreConstants.notDownloaded;
+            return CoreConstants.NOT_DOWNLOADED;
         });
     }
 
@@ -1745,34 +1745,34 @@ export class CoreFilepoolProvider {
 
             // Get status.
             return site.getDb().getRecord(this.PACKAGES_TABLE, conditions).then((entry: CoreFilepoolPackageEntry) => {
-                if (entry.status === CoreConstants.downloaded) {
+                if (entry.status === CoreConstants.DOWNLOADED) {
                     if (revision != entry.revision || timemodified > entry.timemodified) {
                         // File is outdated. Let's change its status.
                         let newData: CoreFilepoolPackageEntry = {
-                            status: CoreConstants.outdated,
+                            status: CoreConstants.OUTDATED,
                             updated: Date.now()
                         };
                         site.getDb().updateRecords(this.PACKAGES_TABLE, newData, conditions).then(() => {
                             // Success inserting, trigger event.
-                            this.triggerPackageStatusChanged(siteId, CoreConstants.outdated, component, componentId);
+                            this.triggerPackageStatusChanged(siteId, CoreConstants.OUTDATED, component, componentId);
                         });
                     }
-                } else if (entry.status === CoreConstants.outdated) {
+                } else if (entry.status === CoreConstants.OUTDATED) {
                     if (revision === entry.revision && timemodified === entry.timemodified) {
                         // File isn't outdated anymore. Let's change its status.
                         let newData: CoreFilepoolPackageEntry = {
-                            status: CoreConstants.downloaded,
+                            status: CoreConstants.DOWNLOADED,
                             updated: Date.now()
                         };
                         site.getDb().updateRecords(this.PACKAGES_TABLE, newData, conditions).then(() => {
                             // Success inserting, trigger event.
-                            this.triggerPackageStatusChanged(siteId, CoreConstants.downloaded, component, componentId);
+                            this.triggerPackageStatusChanged(siteId, CoreConstants.DOWNLOADED, component, componentId);
                         });
                     }
                 }
                 return entry.status;
             }, () => {
-                return CoreConstants.notDownloaded;
+                return CoreConstants.NOT_DOWNLOADED;
             });
         });
     }
@@ -2511,11 +2511,11 @@ export class CoreFilepoolProvider {
             // Get current stored data, we'll only update 'status' and 'updated' fields.
             return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId}).then((entry: CoreFilepoolPackageEntry) => {
                 let newData: CoreFilepoolPackageEntry = {};
-                if (entry.status == CoreConstants.downloading) {
+                if (entry.status == CoreConstants.DOWNLOADING) {
                     // Going back from downloading to previous status, restore previous download time.
                     newData.downloadTime = entry.previousDownloadTime;
                 }
-                newData.status = entry.previous || CoreConstants.downloaded;
+                newData.status = entry.previous || CoreConstants.DOWNLOADED;
                 newData.updated = Date.now();
                 this.logger.debug(`Set previous status '${entry.status}' for package ${component} ${componentId}`);
 
@@ -2582,7 +2582,7 @@ export class CoreFilepoolProvider {
                 downloadTime,
                 previousDownloadTime;
 
-            if (status == CoreConstants.downloading) {
+            if (status == CoreConstants.DOWNLOADING) {
                 // Set download time if package is now downloading.
                 downloadTime = this.timeUtils.timestamp();
             }

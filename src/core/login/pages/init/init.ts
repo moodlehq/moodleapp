@@ -47,7 +47,7 @@ export class CoreLoginInitPage {
 
                 // Only accept the redirect if it was stored less than 20 seconds ago.
                 if (Date.now() - redirectData.timemodified < 20000) {
-                    if (redirectData.siteId != CoreConstants.noSiteId) {
+                    if (redirectData.siteId != CoreConstants.NO_SITE_ID) {
                         // The redirect is pointing to a site, load it.
                         return this.sitesProvider.loadSite(redirectData.siteId).then(() => {
                             if (!this.loginHelper.isSiteLoggedOut(redirectData.page, redirectData.params)) {

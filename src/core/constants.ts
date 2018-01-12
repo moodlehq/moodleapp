@@ -16,34 +16,34 @@
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
-    public static secondsYear = 31536000;
-    public static secondsWeek = 604800;
-    public static secondsDay = 86400;
-    public static secondsHour = 3600;
-    public static secondsMinute = 60;
-    public static wifiDownloadThreshold = 104857600; // 100MB.
-    public static downloadThreshold = 10485760; // 10MB.
-    public static dontShowError = 'CoreDontShowError';
-    public static noSiteId = 'NoSite';
+    public static SECONDS_YEAR = 31536000;
+    public static SECONDS_WEEK = 604800;
+    public static SECONDS_DAY = 86400;
+    public static SECONDS_HOUR = 3600;
+    public static SECONDS_MINUTE = 60;
+    public static WIFI_DOWNLOAD_THRESHOLD = 104857600; // 100MB.
+    public static DOWNLOAD_THRESHOLD = 10485760; // 10MB.
+    public static DONT_SHOW_ERROR = 'CoreDontShowError';
+    public static NO_SITE_ID = 'NoSite';
 
     // Settings constants.
-    public static settingsRichTextEditor = 'CoreSettingsRichTextEditor';
-    public static settingsNotificationSound = 'CoreSettingsNotificationSound';
-    public static settingsSyncOnlyOnWifi = 'mmCoreSyncOnlyOnWifi';
+    public static SETTINGS_RICH_TEXT_EDITOR = 'CoreSettingsRichTextEditor';
+    public static SETTINGS_NOTIFICATION_SOUND = 'CoreSettingsNotificationSound';
+    public static SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';
 
     // WS constants.
-    public static wsTimeout = 30000;
-    public static wsPrefix = 'local_mobile_';
+    public static WS_TIMEOUT = 30000;
+    public static WS_PREFIX = 'local_mobile_';
 
     // Login constants.
-    public static loginSSOCode = 2; // SSO in browser window is required.
-    public static loginSSOInAppCode = 3; // SSO in embedded browser is required.
-    public static loginLaunchData = 'mmLoginLaunchData';
+    public static LOGIN_SSO_CODE = 2; // SSO in browser window is required.
+    public static LOGIN_SSO_INAPP_CODE = 3; // SSO in embedded browser is required.
+    public static LOGIN_LAUNCH_DATA = 'CoreLoginLaunchData';
 
     // Download status constants.
-    public static downloaded = 'downloaded';
-    public static downloading = 'downloading';
-    public static notDownloaded = 'notdownloaded';
-    public static outdated = 'outdated';
-    public static notDownloadable = 'notdownloadable';
+    public static DOWNLOADED = 'downloaded';
+    public static DOWNLOADING = 'downloading';
+    public static NOT_DOWNLOADED = 'notdownloaded';
+    public static OUTDATED = 'outdated';
+    public static NOT_DOWNLOADABLE = 'notdownloadable';
 }

@@ -78,10 +78,10 @@ export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
         startDate = startDate + 7200;
 
         let dates = {
-            start: startDate + (CoreConstants.secondsWeek * (section.section - 1)),
+            start: startDate + (CoreConstants.SECONDS_WEEK * (section.section - 1)),
             end: 0
         };
-        dates.end = dates.start + CoreConstants.secondsWeek;
+        dates.end = dates.start + CoreConstants.SECONDS_WEEK;
         return dates;
     }
 }

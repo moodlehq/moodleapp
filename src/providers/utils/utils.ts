@@ -35,8 +35,8 @@ export interface PromiseDefer {
  */
 @Injectable()
 export class CoreUtilsProvider {
-    logger;
-    iabInstance: InAppBrowserObject;
+    protected logger;
+    protected iabInstance: InAppBrowserObject;
 
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,

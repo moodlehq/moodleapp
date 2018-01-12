@@ -22,9 +22,9 @@ import { SQLiteDB } from '../classes/sqlitedb';
  */
 @Injectable()
 export class CoreConfigProvider {
-    appDB: SQLiteDB;
-    TABLE_NAME = 'core_config';
-    tableSchema = {
+    protected appDB: SQLiteDB;
+    protected TABLE_NAME = 'core_config';
+    protected tableSchema = {
         name: this.TABLE_NAME,
         columns: [
             {

@@ -31,6 +31,7 @@ export class CoreGroupsProvider {
     public static NOGROUPS       = 0;
     public static SEPARATEGROUPS = 1;
     public static VISIBLEGROUPS  = 2;
+    protected ROOT_CACHE_KEY = 'mmGroups:';
 
     constructor(private sitesProvider: CoreSitesProvider, private translate: TranslateService) {}
 
@@ -86,7 +87,7 @@ export class CoreGroupsProvider {
      * @return {string} Cache key.
      */
     protected getActivityAllowedGroupsCacheKey(cmId: number, userId: number) : string {
-        return this.getRootCacheKey() + 'allowedgroups:' + cmId + ':' + userId;
+        return this.ROOT_CACHE_KEY + 'allowedgroups:' + cmId + ':' + userId;
     }
 
     /**
@@ -178,16 +179,7 @@ export class CoreGroupsProvider {
      * @return {string} Cache key.
      */
     protected getActivityGroupModeCacheKey(cmId: number) : string {
-        return this.getRootCacheKey() + 'groupmode:' + cmId;
-    }
-
-    /**
-     * Get the "root" cache key for WS calls.
-     *
-     * @return {string} Cache key.
-     */
-    protected getRootCacheKey() : string {
-        return 'mmGroups:';
+        return this.ROOT_CACHE_KEY + 'groupmode:' + cmId;
     }
 
     /**
@@ -249,7 +241,7 @@ export class CoreGroupsProvider {
      * @return {string} Cache key.
      */
     protected getUserGroupsInCourseCacheKey(courseId: number, userId: number) : string {
-        return this.getRootCacheKey() + 'courseGroups:' + courseId + ':' + userId;
+        return this.ROOT_CACHE_KEY + 'courseGroups:' + courseId + ':' + userId;
     }
 
     /**

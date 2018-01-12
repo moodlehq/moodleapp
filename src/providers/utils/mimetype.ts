@@ -23,12 +23,12 @@ import { CoreTextUtilsProvider } from './text';
  */
 @Injectable()
 export class CoreMimetypeUtilsProvider {
-    logger;
-    extToMime = {}; // Object to map extensions -> mimetypes.
-    mimeToExt = {}; // Object to map mimetypes -> extensions.
-    groupsMimeInfo = {}; // Object to hold extensions and mimetypes that belong to a certain "group" (audio, video, ...).
-    extensionRegex = /^[a-z0-9]+$/;
-    wsProvider: any = {}; // @todo
+    protected logger;
+    protected extToMime = {}; // Object to map extensions -> mimetypes.
+    protected mimeToExt = {}; // Object to map mimetypes -> extensions.
+    protected groupsMimeInfo = {}; // Object to hold extensions and mimetypes that belong to a certain "group" (audio, video, ...).
+    protected extensionRegex = /^[a-z0-9]+$/;
+    protected wsProvider: any = {}; // @todo
 
     constructor(http: HttpClient, logger: CoreLoggerProvider, private translate: TranslateService,
             private textUtils: CoreTextUtilsProvider) {

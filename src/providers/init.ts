@@ -32,9 +32,9 @@ export class CoreInitDelegate {
     public static DEFAULT_PRIORITY = 100; // Default priority for init processes.
     public static MAX_RECOMMENDED_PRIORITY = 600;
 
-    initProcesses = {};
-    logger;
-    readiness;
+    protected initProcesses = {};
+    protected logger;
+    protected readiness;
 
     constructor(logger: CoreLoggerProvider, platform: Platform, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreInitDelegate');

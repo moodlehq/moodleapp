@@ -432,7 +432,7 @@ export class CoreLocalNotificationsProvider {
         return this.isTriggered(notification).then((triggered) => {
             if (!triggered) {
                 // Check if sound is enabled for notifications.
-                return this.configProvider.get(CoreConstants.settingsNotificationSound, true).then((soundEnabled) => {
+                return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
                     if (!soundEnabled) {
                         notification.sound = null;
                     } else {

@@ -102,10 +102,10 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         return this.filepoolProvider.getFileStateByUrl(this.siteId, this.fileUrl, this.timemodified).then((state) => {
             let canDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
 
-            this.isDownloaded = state === CoreConstants.downloaded || state === CoreConstants.outdated;
-            this.isDownloading = canDownload && state === CoreConstants.downloading;
-            this.showDownload = canDownload && (state === CoreConstants.notDownloaded || state === CoreConstants.outdated ||
-                    (this.alwaysDownload && state === CoreConstants.downloaded));
+            this.isDownloaded = state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
+            this.isDownloading = canDownload && state === CoreConstants.DOWNLOADING;
+            this.showDownload = canDownload && (state === CoreConstants.NOT_DOWNLOADED || state === CoreConstants.OUTDATED ||
+                    (this.alwaysDownload && state === CoreConstants.DOWNLOADED));
         });
     }
 
@@ -207,7 +207,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
                     let subPromise;
 
-                    if (status === CoreConstants.notDownloaded) {
+                    if (status === CoreConstants.NOT_DOWNLOADED) {
                         // File is not downloaded, download and then return the local URL.
                         subPromise = this.downloadFile();
                     } else {

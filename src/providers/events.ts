@@ -49,9 +49,9 @@ export class CoreEventsProvider {
     public static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     public static FILE_SHARED = 'file_shared';
 
-    logger;
-    observables: {[s: string] : Subject<any>} = {};
-    uniqueEvents = {};
+    protected logger;
+    protected observables: {[s: string] : Subject<any>} = {};
+    protected uniqueEvents = {};
 
     constructor(logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreEventsProvider');

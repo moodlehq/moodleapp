@@ -109,7 +109,7 @@ export class CoreCronDelegate {
 
         if (isSync) {
             // Check network connection.
-            promise = this.configProvider.get(CoreConstants.settingsSyncOnlyOnWifi, false).then((syncOnlyOnWifi) => {
+            promise = this.configProvider.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false).then((syncOnlyOnWifi) => {
                 return !syncOnlyOnWifi || !this.appProvider.isNetworkAccessLimited();
             });
         } else {

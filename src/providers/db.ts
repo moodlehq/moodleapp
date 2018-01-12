@@ -24,7 +24,7 @@ import { SQLiteDBMock } from '../core/emulator/classes/sqlitedb';
 @Injectable()
 export class CoreDbProvider {
 
-    dbInstances = {};
+    protected dbInstances = {};
 
     constructor(private sqlite: SQLite, private platform: Platform) {}
 

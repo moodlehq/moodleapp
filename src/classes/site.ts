@@ -435,7 +435,7 @@ export class CoreSite {
         // Check if the method is available, use a prefixed version if possible.
         // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
         if (this.getInfo() && !this.wsAvailable(method, false)) {
-            const compatibilityMethod = CoreConstants.wsPrefix + method;
+            const compatibilityMethod = CoreConstants.WS_PREFIX + method;
             if (this.wsAvailable(compatibilityMethod, false)) {
                 this.logger.info(`Using compatibility WS method '${compatibilityMethod}'`);
                 method = compatibilityMethod;
@@ -565,7 +565,7 @@ export class CoreSite {
 
         // Let's try again with the compatibility prefix.
         if (checkPrefix) {
-            return this.wsAvailable(CoreConstants.wsPrefix + method, false);
+            return this.wsAvailable(CoreConstants.WS_PREFIX + method, false);
         }
 
         return false;
@@ -877,7 +877,7 @@ export class CoreSite {
             return Promise.resolve({code: 0});
         }
 
-        let observable = this.http.post(checkUrl, {service: service}).timeout(CoreConstants.wsTimeout);
+        let observable = this.http.post(checkUrl, {service: service}).timeout(CoreConstants.WS_TIMEOUT);
         return this.utils.observableToPromise(observable).then((data: any) => {
             if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
                 if (!retrying) {
@@ -930,7 +930,7 @@ export class CoreSite {
         }
 
         this.infos.functions.forEach((func) => {
-            if (func.name.indexOf(CoreConstants.wsPrefix) != -1) {
+            if (func.name.indexOf(CoreConstants.WS_PREFIX) != -1) {
                 appUsesLocalMobile = true;
             }
         });
@@ -1074,7 +1074,7 @@ export class CoreSite {
         };
 
         if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
-                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.secondsMinute)) {
+                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.SECONDS_MINUTE)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago.
             // Open the final URL without auto-login.
             return Promise.resolve(open(url));

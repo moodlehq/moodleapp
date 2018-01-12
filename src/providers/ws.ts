@@ -68,11 +68,11 @@ export interface CoreWSFileUploadOptions extends FileUploadOptions {
  */
 @Injectable()
 export class CoreWSProvider {
-    logger;
-    mimeTypeCache = {}; // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
-    ongoingCalls = {};
-    retryCalls = [];
-    retryTimeout = 0;
+    protected logger;
+    protected mimeTypeCache = {}; // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
+    protected ongoingCalls = {};
+    protected retryCalls = [];
+    protected retryTimeout = 0;
 
     constructor(private http: HttpClient, private translate: TranslateService, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, logger: CoreLoggerProvider, private utils: CoreUtilsProvider,
@@ -180,7 +180,7 @@ export class CoreWSProvider {
 
         siteUrl = preSets.siteUrl + '/lib/ajax/service.php';
 
-        let observable = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.wsTimeout);
+        let observable = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.WS_TIMEOUT);
         return this.utils.observableToPromise(observable).then((data: any) => {
             // Some moodle web services return null. If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
@@ -436,7 +436,7 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.utils.observableToPromise(this.commonHttp.head(url).timeout(CoreConstants.wsTimeout));
+            promise = this.utils.observableToPromise(this.commonHttp.head(url).timeout(CoreConstants.WS_TIMEOUT));
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -454,7 +454,7 @@ export class CoreWSProvider {
      */
     performPost(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets) : Promise<any> {
         // Perform the post request.
-        let observable = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.wsTimeout),
+        let observable = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.WS_TIMEOUT),
             promise;
 
         promise = this.utils.observableToPromise(observable).then((data: any) => {
@@ -547,7 +547,7 @@ export class CoreWSProvider {
         // HTTP not finished, but we should delete the promise after timeout.
         timeout = setTimeout(() => {
             delete this.ongoingCalls[queueItemId];
-        }, CoreConstants.wsTimeout);
+        }, CoreConstants.WS_TIMEOUT);
 
         // HTTP finished, delete from ongoing.
         return promise.finally(() => {

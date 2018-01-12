@@ -22,7 +22,7 @@ import { CoreLangProvider } from '../lang';
 */
 @Injectable()
 export class CoreTextUtilsProvider {
-    element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
+    protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
 
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) {}
 

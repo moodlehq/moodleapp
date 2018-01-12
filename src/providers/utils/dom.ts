@@ -27,10 +27,12 @@ import { CoreConstants } from '../../core/constants';
  */
 @Injectable()
 export class CoreDomUtilsProvider {
-    element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
-    matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
-    inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
+    // List of input types that support keyboard.
+    protected INPUT_SUPPORT_KEYBOARD = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
                 'search', 'tel', 'text', 'time', 'url', 'week'];
+
+    protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
+    protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
         private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
@@ -103,8 +105,8 @@ export class CoreDomUtilsProvider {
      */
     confirmDownloadSize(size: any, message?: string, unknownMessage?: string, wifiThreshold?: number, limitedThreshold?: number)
             : Promise<void> {
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.wifiDownloadThreshold : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.downloadThreshold : limitedThreshold;
+        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
+        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
         if (size.size < 0 || (size.size == 0 && !size.total)) {
             // Seems size was unable to be calculated. Show a warning.
@@ -424,7 +426,7 @@ export class CoreDomUtilsProvider {
      */
     isRichTextEditorEnabled() : Promise<boolean> {
         if (this.isRichTextEditorSupported()) {
-            return this.configProvider.get(CoreConstants.settingsRichTextEditor, true);
+            return this.configProvider.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
         }
 
         return Promise.resolve(false);
@@ -729,7 +731,7 @@ export class CoreDomUtilsProvider {
      * @return {Alert} The alert modal.
      */
     showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number) : Alert {
-        if (error != CoreConstants.dontShowError) {
+        if (error != CoreConstants.DONT_SHOW_ERROR) {
             if (error && typeof error != 'string') {
                 error = error.message || error.error;
             }
@@ -839,7 +841,7 @@ export class CoreDomUtilsProvider {
      */
     supportsInputKeyboard(el: any) : boolean {
         return el && !el.disabled && (el.tagName.toLowerCase() == 'textarea' ||
-            (el.tagName.toLowerCase() == 'input' && this.inputSupportKeyboard.indexOf(el.type) != -1));
+            (el.tagName.toLowerCase() == 'input' && this.INPUT_SUPPORT_KEYBOARD.indexOf(el.type) != -1));
     }
 
     /**

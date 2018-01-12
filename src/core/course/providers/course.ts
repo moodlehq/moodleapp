@@ -28,6 +28,7 @@ import { CoreConstants } from '../../constants';
 @Injectable()
 export class CoreCourseProvider {
     public static ALL_SECTIONS_ID = -1;
+    protected ROOT_CACHE_KEY = 'mmCourse:';
 
     // Variables for database.
     protected COURSE_STATUS_TABLE = 'course_status';
@@ -64,7 +65,7 @@ export class CoreCourseProvider {
     }
 
     protected logger;
-    protected coreModules = [
+    protected CORE_MODULES = [
         'assign', 'assignment', 'book', 'chat', 'choice', 'data', 'database', 'date', 'external-tool',
         'feedback', 'file', 'folder', 'forum', 'glossary', 'ims', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz',
         'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'
@@ -103,7 +104,7 @@ export class CoreCourseProvider {
             this.logger.debug('Clear all course status for site ' + site.id);
 
             return site.getDb().deleteRecords(this.COURSE_STATUS_TABLE).then(() => {
-                this.triggerCourseStatusChanged(-1, CoreConstants.notDownloaded, site.id);
+                this.triggerCourseStatusChanged(-1, CoreConstants.NOT_DOWNLOADED, site.id);
             });
         });
     }
@@ -147,7 +148,7 @@ export class CoreCourseProvider {
      * @return {string} Cache key.
      */
     protected getActivitiesCompletionCacheKey(courseId: number, userId: number) : string {
-        return this.getRootCacheKey() + 'activitiescompletion:' + courseId + ':' + userId;
+        return this.ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
     }
 
     /**
@@ -177,9 +178,9 @@ export class CoreCourseProvider {
      */
     getCourseStatus(courseId: number, siteId?: string) : Promise<string> {
         return this.getCourseStatusData(courseId, siteId).then((entry) => {
-            return entry.status || CoreConstants.notDownloaded;
+            return entry.status || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
-            return CoreConstants.notDownloaded;
+            return CoreConstants.NOT_DOWNLOADED;
         });
     }
 
@@ -352,7 +353,7 @@ export class CoreCourseProvider {
      * @return {string} Cache key.
      */
     protected getModuleBasicInfoByInstanceCacheKey(id: number, module: string) : string {
-        return this.getRootCacheKey() + 'moduleByInstance:' + module + ':' + id;
+        return this.ROOT_CACHE_KEY + 'moduleByInstance:' + module + ':' + id;
     }
 
     /**
@@ -362,7 +363,7 @@ export class CoreCourseProvider {
      * @return {string} Cache key.
      */
     protected getModuleCacheKey(moduleId: number) : string {
-        return this.getRootCacheKey() + 'module:' + moduleId;
+        return this.ROOT_CACHE_KEY + 'module:' + moduleId;
     }
 
     /**
@@ -372,7 +373,7 @@ export class CoreCourseProvider {
      * @return {string} The IMG src.
      */
     getModuleIconSrc(moduleName: string) : string {
-        if (this.coreModules.indexOf(moduleName) < 0) {
+        if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             moduleName = 'external-tool';
         }
 
@@ -391,15 +392,6 @@ export class CoreCourseProvider {
         return this.getModuleBasicInfo(moduleId, siteId).then((module) => {
             return module.section;
         });
-    }
-
-    /**
-     * Get the root cache key for the WS calls related to courses.
-     *
-     * @return {string} Root cache key.
-     */
-    protected getRootCacheKey() : string {
-        return 'mmCourse:';
     }
 
     /**
@@ -487,7 +479,7 @@ export class CoreCourseProvider {
      * @return {string} Cache key.
      */
     protected getSectionsCacheKey(courseId) : string {
-        return this.getRootCacheKey() + 'sections:' + courseId;
+        return this.ROOT_CACHE_KEY + 'sections:' + courseId;
     }
 
     /**
@@ -609,9 +601,9 @@ export class CoreCourseProvider {
             return this.getCourseStatusData(courseId, siteId).then((entry) => {
                 this.logger.debug(`Set previous status '${entry.status}' for course ${courseId}`);
 
-                newData.status = entry.previous || CoreConstants.notDownloaded;
+                newData.status = entry.previous || CoreConstants.NOT_DOWNLOADED;
                 newData.updated = Date.now();
-                if (entry.status == CoreConstants.downloading) {
+                if (entry.status == CoreConstants.DOWNLOADING) {
                     // Going back from downloading to previous status, restore previous download time.
                     newData.downloadTime = entry.previousDownloadTime;
                 }
@@ -642,7 +634,7 @@ export class CoreCourseProvider {
             let downloadTime,
                 previousDownloadTime;
 
-            if (status == CoreConstants.downloading) {
+            if (status == CoreConstants.DOWNLOADING) {
                 // Set download time if course is now downloading.
                 downloadTime = this.timeUtils.timestamp();
             }
@@ -689,7 +681,7 @@ export class CoreCourseProvider {
      * @return {string} Translated name.
      */
     translateModuleName(moduleName: string) : string {
-        if (this.coreModules.indexOf(moduleName) < 0) {
+        if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             moduleName = 'external-tool';
         }
 
