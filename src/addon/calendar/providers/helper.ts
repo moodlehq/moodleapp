@@ -24,7 +24,7 @@ import { CoreSitesProvider } from '../../../providers/sites';
 export class AddonCalendarHelperProvider {
     protected logger;
 
-    private static eventicons = {
+    private EVENTICONS = {
         'course': 'ionic',
         'group': 'people',
         'site': 'globe',
@@ -42,7 +42,7 @@ export class AddonCalendarHelperProvider {
      * @param {any} e Event to format.
      */
     formatEventData(e: any) {
-        e.icon = AddonCalendarHelperProvider.eventicons[e.eventtype] || false;
+        e.icon = this.EVENTICONS[e.eventtype] || false;
         if (!e.icon) {
             // @todo: It's a module event.
             //e.icon = this.courseProvider.getModuleIconSrc(e.modulename);

@@ -21,7 +21,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/main
  */
 @Injectable()
 export class AddonCalendarMainMenuHandler implements CoreMainMenuHandler {
-    name = 'mmaCalendar';
+    name = 'AddonCalendar';
     priority = 400;
 
     constructor(private calendarProvider: AddonCalendarProvider) {}
@@ -46,7 +46,7 @@ export class AddonCalendarMainMenuHandler implements CoreMainMenuHandler {
             icon: 'calendar',
             title: 'addon.calendar.calendar',
             page: 'AddonCalendarListPage',
-            class: 'mma-calendar-handler'
+            class: 'addon-calendar-handler'
         };
     }
 }

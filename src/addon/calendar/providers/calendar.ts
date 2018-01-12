@@ -31,14 +31,15 @@ export class AddonCalendarProvider {
     public static DAYS_INTERVAL = 30;
     public static COMPONENT = 'AddonCalendarEvents';
     public static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
-    protected static DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
-    protected static DEFAULT_NOTIFICATION_TIME = 60;
+    protected DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
+    protected ROOT_CACHE_KEY = 'mmaCalendar:';
+    protected DEFAULT_NOTIFICATION_TIME = 60;
 
     // Variables for database.
-    protected static EVENTS_TABLE = 'calendar_events'; // Queue of files to download.
-    protected static tablesSchema = [
+    protected EVENTS_TABLE = 'calendar_events';
+    protected tablesSchema = [
         {
-            name: AddonCalendarProvider.EVENTS_TABLE,
+            name: this.EVENTS_TABLE,
             columns: [
                 {
                     name: 'id',
@@ -108,7 +109,7 @@ export class AddonCalendarProvider {
             private coursesProvider: CoreCoursesProvider, private timeUtils: CoreTimeUtilsProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private configProvider: CoreConfigProvider) {
         this.logger = logger.getInstance('AddonCalendarProvider');
-        this.sitesProvider.createTablesFromSchema(AddonCalendarProvider.tablesSchema);
+        this.sitesProvider.createTablesFromSchema(this.tablesSchema);
     }
 
     /**
@@ -120,8 +121,8 @@ export class AddonCalendarProvider {
     getDefaultNotificationTime(siteId?: string) : Promise<number> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
-        return this.configProvider.get(key, AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME);
+        let key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        return this.configProvider.get(key, this.DEFAULT_NOTIFICATION_TIME);
     }
 
     /**
@@ -159,7 +160,7 @@ export class AddonCalendarProvider {
      * @return {string} Cache key.
      */
     protected getEventCacheKey(id: number): string {
-        return 'mmaCalendar:events:' + id;
+        return this.ROOT_CACHE_KEY + 'events:' + id;
     }
 
     /**
@@ -171,7 +172,7 @@ export class AddonCalendarProvider {
      */
     getEventFromLocalDb(id: number, siteId?: string) : Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(AddonCalendarProvider.EVENTS_TABLE, {id: id});
+            return site.getDb().getRecord(this.EVENTS_TABLE, {id: id});
         });
     }
 
@@ -264,6 +265,15 @@ export class AddonCalendarProvider {
     }
 
     /**
+     * Get prefix cache key for events list WS calls.
+     *
+     * @return {string} Prefix Cache key.
+     */
+    protected getEventsListPrefixCacheKey() : string {
+        return this.ROOT_CACHE_KEY + 'eventslist:';
+    }
+
+    /**
      * Get cache key for events list WS calls.
      *
      * @param {number} daysToStart  Number of days from now to start getting events.
@@ -271,16 +281,7 @@ export class AddonCalendarProvider {
      * @return {string} Cache key.
      */
     protected getEventsListCacheKey(daysToStart: number, daysInterval: number) : string {
-        return this.getRootCacheKey() + 'eventslist:' + daysToStart + ':' + daysInterval;
-    }
-
-    /**
-     * Get the root cache key for the WS calls related to this provider.
-     *
-     * @return {string} Root cache key.
-     */
-    protected getRootCacheKey() : string {
-        return 'mmaCalendar:';
+        return this.getEventsListPrefixCacheKey() + daysToStart + ':' + daysInterval;
     }
 
     /**
@@ -298,7 +299,7 @@ export class AddonCalendarProvider {
 
             promises.push(this.coursesProvider.invalidateUserCourses(siteId));
             promises.push(this.groupsProvider.invalidateUserGroups(courses, siteId));
-            promises.push(site.invalidateWsCacheForKeyStartingWith(this.getRootCacheKey()));
+            promises.push(site.invalidateWsCacheForKeyStartingWith(this.getEventsListPrefixCacheKey()));
             return Promise.all(promises);
         });
     }
@@ -393,8 +394,8 @@ export class AddonCalendarProvider {
             let promise = time == -1 ? this.getDefaultNotificationTime(siteId) : Promise.resolve(time);
 
             return promise.then((time) => {
-                let timeend = (event.timestart + event.timeduration) * 1000;
-                if (timeend <= new Date().getTime()) {
+                let timeEnd = (event.timestart + event.timeduration) * 1000;
+                if (timeEnd <= new Date().getTime()) {
                     // The event has finished already, don't schedule it.
                     return Promise.resolve();
                 }
@@ -455,7 +456,7 @@ export class AddonCalendarProvider {
     setDefaultNotificationTime(time: number, siteId?: string) : Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        let key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
         return this.configProvider.set(key, time);
     }
 
@@ -496,7 +497,7 @@ export class AddonCalendarProvider {
                         notificationtime: e.notificationtime || -1
                     };
 
-                    return db.insertOrUpdateRecord(AddonCalendarProvider.EVENTS_TABLE, eventRecord, {id: eventRecord.id});
+                    return db.insertOrUpdateRecord(this.EVENTS_TABLE, eventRecord, {id: eventRecord.id});
                 }));
             });
 
@@ -521,7 +522,7 @@ export class AddonCalendarProvider {
 
             event.notificationtime = time;
 
-            return site.getDb().insertOrUpdateRecord(AddonCalendarProvider.EVENTS_TABLE, event, {id: event.id}).then(() => {
+            return site.getDb().insertOrUpdateRecord(this.EVENTS_TABLE, event, {id: event.id}).then(() => {
                 return this.scheduleEventNotification(event, time);
             });
         });

@@ -22,7 +22,7 @@ import { CoreCoursesMyOverviewProvider } from '../providers/my-overview';
  */
 @Injectable()
 export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
-    name = 'mmCourses';
+    name = 'CoreCourses';
     priority = 1100;
     isOverviewEnabled: boolean;
 

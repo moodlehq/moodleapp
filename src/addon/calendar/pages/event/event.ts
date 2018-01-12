@@ -86,8 +86,6 @@ export class AddonCalendarEventPage {
 
     /**
      * Fetches the event and updates the view.
-     *
-     * @param {boolean} refresh Empty events array first.
      */
     fetchEvent() {
         return this.calendarProvider.getEvent(this.eventId).then((event) => {

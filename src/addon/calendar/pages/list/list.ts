@@ -103,7 +103,7 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Fetch all the data required for the view.
      *
-     * @param {boolean} refresh Empty events array first.
+     * @param {boolean} [refresh] Empty events array first.
      */
     fetchData(refresh = false) {
         this.daysLoaded = 0;
@@ -121,7 +121,7 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Fetches the events and updates the view.
      *
-     * @param {boolean} refresh Empty events array first.
+     * @param {boolean} [refresh] Empty events array first.
      */
     fetchEvents(refresh = false) {
         return this.calendarProvider.getEventsList(this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL).then((events) => {
@@ -144,7 +144,7 @@ export class AddonCalendarListPage implements OnDestroy {
                     return a.timestart - b.timestart;
                 });
 
-                events.forEach(this.calendarHelper.formatEventData);
+                events.forEach(this.calendarHelper.formatEventData.bind(this.calendarHelper));
                 this.getCategories = this.shouldLoadCategories(events);
 
                 if (refresh) {
@@ -253,7 +253,7 @@ export class AddonCalendarListPage implements OnDestroy {
             this.categoriesRetrieved = true;
             this.categories = {};
             // Index categories by ID.
-            cats.forEach(function(category) {
+            cats.forEach((category) => {
                 this.categories[category.id] = category;
             });
         }).catch(() => {
@@ -291,7 +291,7 @@ export class AddonCalendarListPage implements OnDestroy {
     openCourseFilter(event: MouseEvent) : void {
         let popover = this.popoverCtrl.create(CoreCoursePickerMenuPopoverComponent, {courses: this.courses,
             courseId: this.filter.course.id});
-        popover.onDidDismiss(course => {
+        popover.onDidDismiss((course) => {
             if (course) {
                 this.filter.course = course;
                 this.content.scrollToTop();
@@ -322,6 +322,6 @@ export class AddonCalendarListPage implements OnDestroy {
      * Page destroyed.
      */
     ngOnDestroy() {
-        this.obsDefaultTimeChange && this.obsDefaultTimeChange.off && this.obsDefaultTimeChange.off();
+        this.obsDefaultTimeChange && this.obsDefaultTimeChange.off();
     }
 }
