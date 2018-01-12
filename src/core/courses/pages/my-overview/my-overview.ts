@@ -51,6 +51,7 @@ export class CoreCoursesMyOverviewPage {
     showFilter = false;
     searchEnabled: boolean;
     filteredCourses: any[];
+    tabs = [];
 
     protected prefetchIconInitialized = false;
     protected myCoursesObserver;
@@ -64,8 +65,6 @@ export class CoreCoursesMyOverviewPage {
      */
     ionViewDidLoad() {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
-
-        this.switchTab(this.tabShown);
 
         // @todo: Course download.
     }
@@ -260,11 +259,11 @@ export class CoreCoursesMyOverviewPage {
     }
 
     /**
-     * Change tab being viewed.
+     * The tab has changed.
      *
-     * @param {string} tab Tab to display.
+     * @param {string} tab Name of the new tab.
      */
-    switchTab(tab: string) {
+    tabChanged(tab: string) {
         this.tabShown = tab;
         switch (this.tabShown) {
             case 'timeline':

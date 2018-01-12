@@ -34,6 +34,8 @@ import { CoreCoursePickerMenuPopoverComponent } from './course-picker-menu/cours
 import { CoreChronoComponent } from './chrono/chrono';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
+import { CoreTabsComponent } from './tabs/tabs';
+import { CoreTabComponent } from './tabs/tab';
 
 @NgModule({
     declarations: [
@@ -53,7 +55,9 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreCoursePickerMenuPopoverComponent,
         CoreChronoComponent,
         CoreLocalFileComponent,
-        CoreSitePickerComponent
+        CoreSitePickerComponent,
+        CoreTabsComponent,
+        CoreTabComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -80,7 +84,9 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreContextMenuItemComponent,
         CoreChronoComponent,
         CoreLocalFileComponent,
-        CoreSitePickerComponent
+        CoreSitePickerComponent,
+        CoreTabsComponent,
+        CoreTabComponent
     ]
 })
 export class CoreComponentsModule {}
