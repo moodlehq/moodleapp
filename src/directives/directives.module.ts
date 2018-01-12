@@ -18,6 +18,7 @@ import { CoreExternalContentDirective } from './external-content';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
 import { CoreKeepKeyboardDirective } from './keep-keyboard';
+import { CoreUserLinkDirective } from './user-link';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { CoreKeepKeyboardDirective } from './keep-keyboard';
         CoreExternalContentDirective,
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
-        CoreLinkDirective
+        CoreLinkDirective,
+        CoreUserLinkDirective
     ],
     imports: [],
     exports: [
@@ -33,7 +35,8 @@ import { CoreKeepKeyboardDirective } from './keep-keyboard';
         CoreExternalContentDirective,
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
-        CoreLinkDirective
+        CoreLinkDirective,
+        CoreUserLinkDirective
     ]
 })
 export class CoreDirectivesModule {}
