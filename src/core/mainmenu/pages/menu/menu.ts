@@ -80,7 +80,7 @@ export class CoreMainMenuPage implements OnDestroy {
         }
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
-            this.tabs = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
+            handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
 
             // Check if handlers are already in tabs. Add the ones that aren't.
             // @todo: https://github.com/ionic-team/ionic/issues/13633
