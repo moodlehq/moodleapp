@@ -296,7 +296,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                     }
                 }
 
-                (<any>xhr).onprogress = (xhr, ev) => {
+                xhr.onprogress = (ev: ProgressEvent) : any => {
                     if (this.progressListener) {
                         this.progressListener(ev);
                     }

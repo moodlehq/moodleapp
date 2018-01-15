@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end *ngIf="isModal">
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="filesLoaded" (ionRefresh)="refreshFiles($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <!-- Allow selecting the site to view. -->
+    <core-site-picker [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)"></core-site-picker>
+    <ion-item-divider color="light"></ion-item-divider>
+    <core-loading [hideUntil]="filesLoaded">
+        <ion-list *ngIf="files && files.length > 0">
+            <div *ngFor="let file of files; let idx = index">
+                <core-local-file *ngIf="file.isFile" [file]="file" [manage]="manage" [overrideClick]="pick" (onClick)="filePicked(file)" (onDelete)="fileDeleted(idx)" (onRename)="fileRenamed(idx, $event)"></core-local-file>
+                <a ion-item text-wrap class="item-media" *ngIf="!file.isFile" (click)="openFolder(file)">
+                    <img src="assets/img/files/folder-64.png" alt="{{ 'core.folder' | translate }}" role="presentation" item-start>
+                    <p>{{ file.name }}</p>
+                </a>
+            </div>
+        </ion-list>
+        <core-empty-box *ngIf="files && !files.length && manage" icon="folder" [message]="'core.sharedfiles.nosharedfiles' | translate"></core-empty-box>
+        <core-empty-box *ngIf="files && !files.length && !manage" icon="folder" [message]="'core.sharedfiles.nosharedfilestoupload' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>

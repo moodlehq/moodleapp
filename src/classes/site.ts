@@ -717,9 +717,10 @@ export class CoreSite {
      *
      * @param {string} filePath File path.
      * @param {CoreWSFileUploadOptions} options File upload options.
+     * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when uploaded.
      */
-    uploadFile(filePath: string, options: CoreWSFileUploadOptions) : Promise<any> {
+    uploadFile(filePath: string, options: CoreWSFileUploadOptions, onProgress?: (event: ProgressEvent) => any) : Promise<any> {
         if (!options.fileArea) {
             options.fileArea = 'draft';
         }
@@ -727,7 +728,7 @@ export class CoreSite {
         return this.wsProvider.uploadFile(filePath, options, {
             siteUrl: this.siteUrl,
             wsToken: this.token
-        });
+        }, onProgress);
     }
 
     /**
@@ -1061,7 +1062,7 @@ export class CoreSite {
                 }
 
                 if (alertMessage) {
-                    let alert = this.domUtils.showAlert('core.notice', alertMessage, undefined, 3000);
+                    let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000);
                     alert.onDidDismiss(() => {
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));

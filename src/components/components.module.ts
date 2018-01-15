@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '../directives/directives.module';
+import { CorePipesModule } from '../pipes/pipes.module';
 import { CoreLoadingComponent } from './loading/loading';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
@@ -28,6 +29,9 @@ import { CoreFileComponent } from './file/file';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
+import { CoreChronoComponent } from './chrono/chrono';
+import { CoreLocalFileComponent } from './local-file/local-file';
+import { CoreSitePickerComponent } from './site-picker/site-picker';
 
 @NgModule({
     declarations: [
@@ -42,7 +46,10 @@ import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-pop
         CoreFileComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
-        CoreContextMenuPopoverComponent
+        CoreContextMenuPopoverComponent,
+        CoreChronoComponent,
+        CoreLocalFileComponent,
+        CoreSitePickerComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent
@@ -50,7 +57,8 @@ import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-pop
     imports: [
         IonicModule,
         TranslateModule.forChild(),
-        CoreDirectivesModule
+        CoreDirectivesModule,
+        CorePipesModule
     ],
     exports: [
         CoreLoadingComponent,
@@ -63,7 +71,10 @@ import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-pop
         CoreSearchBoxComponent,
         CoreFileComponent,
         CoreContextMenuComponent,
-        CoreContextMenuItemComponent
+        CoreContextMenuItemComponent,
+        CoreChronoComponent,
+        CoreLocalFileComponent,
+        CoreSitePickerComponent
     ]
 })
 export class CoreComponentsModule {}

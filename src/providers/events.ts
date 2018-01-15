@@ -46,6 +46,7 @@ export class CoreEventsProvider {
     public static IAB_LOAD_START = 'inappbrowser_load_start';
     public static IAB_EXIT = 'inappbrowser_exit';
     public static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
+    public static FILE_SHARED = 'file_shared';
 
     logger;
     observables: {[s: string] : Subject<any>} = {};

@@ -19,9 +19,10 @@ import { File } from '@ionic-native/file';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { CoreInitDelegate, CoreInitHandler } from '../../../providers/init';
 import { FileTransferErrorMock } from './file-transfer';
+import { CoreEmulatorCaptureHelperProvider } from './capture-helper';
 
 /**
- * Emulates the Cordova Zip plugin in desktop apps and in browser.
+ * Helper service for the emulator feature. It also acts as an init handler.
  */
 @Injectable()
 export class CoreEmulatorHelperProvider implements CoreInitHandler {
@@ -30,7 +31,8 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
     blocking = true;
 
     constructor(private file: File, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
-            initDelegate: CoreInitDelegate, private localNotif: LocalNotifications) {}
+            initDelegate: CoreInitDelegate, private localNotif: LocalNotifications,
+            private captureHelper: CoreEmulatorCaptureHelperProvider) {}
 
     /**
      * Load the Mocks that need it.
@@ -44,6 +46,7 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
             this.fileProvider.setHTMLBasePath(basePath);
         }));
         promises.push((<any>this.localNotif).load());
+        promises.push(this.captureHelper.load());
 
         (<any>window).FileTransferError = FileTransferErrorMock;
 

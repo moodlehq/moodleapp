@@ -457,7 +457,7 @@ export class CoreFileProvider {
 
             // Create file (and parent folders) to prevent errors.
             return this.createFile(path).then((fileEntry) => {
-                if (this.isHTMLAPI && this.appProvider.isDesktop() &&
+                if (this.isHTMLAPI && !this.appProvider.isDesktop() &&
                         (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
                     // We need to write Blobs.
                     let type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(path));
@@ -832,7 +832,7 @@ export class CoreFileProvider {
      * @param {string} [defaultExt] Default extension to use if no extension found in the file.
      * @return {Promise<string>} Promise resolved with the unique file name.
      */
-    getUniqueNameInFolder(dirPath: string, fileName: string, defaultExt: string) : Promise<string> {
+    getUniqueNameInFolder(dirPath: string, fileName: string, defaultExt?: string) : Promise<string> {
         // Get existing files in the folder.
         return this.getDirectoryContents(dirPath).then((entries) => {
             let files = {},
@@ -922,5 +922,15 @@ export class CoreFileProvider {
         }).catch(() => {
             // Ignore errors, maybe it doesn't exist.
         });
+    }
+
+    /**
+     * Check if a file is inside the app's folder.
+     *
+     * @param {string} path The absolute path of the file to check.
+     * @return {boolean} Whether the file is in the app's folder.
+     */
+    isFileInAppFolder(path: string) : boolean {
+        return path.indexOf(this.basePath) != -1;
     }
 }

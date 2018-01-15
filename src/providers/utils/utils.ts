@@ -260,6 +260,33 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Clone a variable. It should be an object, array or primitive type.
+     *
+     * @param {any} source The variable to clone.
+     * @return {any} Cloned variable.
+     */
+    clone(source: any) : any {
+        if (Array.isArray(source)) {
+            // Clone the array and all the entries.
+            let newArray = [];
+            for (let i = 0; i < source.length; i++) {
+                newArray[i] = this.clone(source[i]);
+            }
+            return newArray;
+        } else if (typeof source == 'object') {
+            // Clone the object and all the subproperties.
+            let newObject = {};
+            for (let name in source) {
+                newObject[name] = this.clone(source[name]);
+            }
+            return newObject;
+        } else {
+            // Primitive type or unknown, return it as it is.
+            return source;
+        }
+    }
+
+    /**
      * Copy properties from one object to another.
      *
      * @param {any} from Object to copy the properties from.
