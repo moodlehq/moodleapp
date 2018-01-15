@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreUserDelegate } from './providers/delegate';
 import { CoreUserProvider } from './providers/user';
 import { CoreUserHelperProvider } from './providers/helper';
+import { CoreUserProfileMailHandler } from './providers/user-handler';
 
 @NgModule({
     declarations: [
@@ -24,8 +25,13 @@ import { CoreUserHelperProvider } from './providers/helper';
     ],
     providers: [
         CoreUserDelegate,
+        CoreUserProfileMailHandler,
         CoreUserProvider,
         CoreUserHelperProvider
     ]
 })
-export class CoreUserModule {}
+export class CoreUserModule {
+    constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler) {
+        userDelegate.registerHandler(userProfileMailHandler);
+    }
+}

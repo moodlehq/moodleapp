@@ -23,6 +23,7 @@ import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreMimetypeUtilsProvider } from '../../../../providers/utils/mimetype';
 import { CoreFileUploaderHelperProvider } from '../../../fileuploader/providers/helper';
+import { CoreUserDelegate } from '../../providers/delegate';
 
 /**
  * Page that displays an user profile page.
@@ -44,11 +45,15 @@ export class CoreUserProfilePage {
     title: string;
     isDeleted: boolean = false;
     canChangeProfilePicture: boolean = false;
+    actionHandlers = [];
+    newPageHandlers = [];
+    communicationHandlers = [];
 
     constructor(private navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider,
-            private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider) {
+            private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider,
+            private userDelegate: CoreUserDelegate) {
         this.userId = navParams.get('userId');
         this.courseId = navParams.get('courseId');
 
@@ -96,6 +101,29 @@ export class CoreUserProfilePage {
             this.title = user.fullname;
 
             this.isLoadingHandlers = true;
+
+            this.userDelegate.getProfileHandlersFor(user, this.courseId).then((handlers) => {
+                console.error(handlers);
+                this.actionHandlers = [];
+                this.newPageHandlers = [];
+                this.communicationHandlers = [];
+                handlers.forEach((handler) => {
+                    switch (handler.type) {
+                        case CoreUserDelegate.TYPE_COMMUNICATION:
+                            this.communicationHandlers.push(handler.data);
+                            break;
+                        case CoreUserDelegate.TYPE_ACTION:
+                            this.actionHandlers.push(handler.data);
+                            break;
+                        case CoreUserDelegate.TYPE_NEW_PAGE:
+                        default:
+                            this.newPageHandlers.push(handler.data);
+                            break;
+                    }
+                });
+            }).finally(() => {
+                this.isLoadingHandlers = false;
+            });
 
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.user.errorloaduser', true);

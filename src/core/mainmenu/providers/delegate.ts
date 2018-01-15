@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from '../../../providers/events';
+import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { Subject, BehaviorSubject } from 'rxjs';
@@ -21,25 +22,12 @@ import { Subject, BehaviorSubject } from 'rxjs';
 /**
  * Interface that all main menu handlers must implement.
  */
-export interface CoreMainMenuHandler {
-    /**
-     * Name of the handler.
-     * @type {string}
-     */
-    name: string;
-
+export interface CoreMainMenuHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
      * @type {number}
      */
     priority: number;
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    isEnabled(): boolean|Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.
@@ -96,20 +84,17 @@ export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
  * and notify an update in the data.
  */
 @Injectable()
-export class CoreMainMenuDelegate {
-    protected logger;
+export class CoreMainMenuDelegate extends CoreDelegate  {
     protected handlers: {[s: string]: CoreMainMenuHandler} = {};
     protected enabledHandlers: {[s: string]: CoreMainMenuHandler} = {};
     protected loaded = false;
-    protected lastUpdateHandlersStart: number;
-    protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
+    protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerData[]>([]);
+    protected featurePrefix = '$mmSideMenuDelegate_';
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
-        this.logger = logger.getInstance('CoreMainMenuDelegate');
+    constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
+            protected eventsProvider: CoreEventsProvider) {
+        super('CoreMainMenuDelegate', loggerProvider, sitesProvider, eventsProvider);
 
-        eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
         eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearSiteHandlers.bind(this));
     }
 
@@ -133,131 +118,39 @@ export class CoreMainMenuDelegate {
     /**
      * Get the handlers for the current site.
      *
-     * @return {Subject<CoreMainMenuHandlerData[]>} An observable that will receive the handlers.
+     * @return {Subject<CoreMainMenuHandlerToDisplay[]>} An observable that will receive the handlers.
      */
     getHandlers() : Subject<CoreMainMenuHandlerToDisplay[]> {
         return this.siteHandlers;
     }
 
     /**
-     * Check if a time belongs to the last update handlers call.
-     * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
-     *
-     * @param {number} time Time to check.
-     * @return {boolean} Whether it's the last call.
+     * Update handlers Data.
      */
-    isLastUpdateCall(time: number) : boolean {
-        if (!this.lastUpdateHandlersStart) {
-            return true;
-        }
-        return time == this.lastUpdateHandlersStart;
-    }
+    updateData() {
+        let handlersData: any[] = [];
 
-    /**
-     * Register a handler.
-     *
-     * @param {CoreInitHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
-     */
-    registerHandler(handler: CoreMainMenuHandler) : boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon '${handler.name}' already registered`);
-            return false;
-        }
-        this.logger.log(`Registered addon '${handler.name}'`);
-        this.handlers[handler.name] = handler;
-        return true;
-    }
+        for (let name in this.enabledHandlers) {
+            let handler = this.enabledHandlers[name],
+                data = handler.getDisplayData();
 
-    /**
-     * Update the handler for the current site.
-     *
-     * @param {CoreInitHandler} handler The handler to check.
-     * @param {number} time Time this update process started.
-     * @return {Promise<void>} Resolved when done.
-     */
-    protected updateHandler(handler: CoreMainMenuHandler, time: number) : Promise<void> {
-        let promise,
-            siteId = this.sitesProvider.getCurrentSiteId(),
-            currentSite = this.sitesProvider.getCurrentSite();
-
-        if (!this.sitesProvider.isLoggedIn()) {
-            promise = Promise.reject(null);
-        } else if (currentSite.isFeatureDisabled('$mmSideMenuDelegate_' + handler.name)) {
-            promise = Promise.resolve(false);
-        } else {
-            promise = Promise.resolve(handler.isEnabled());
+            handlersData.push({
+                data: data,
+                priority: handler.priority
+            });
         }
 
-        // Checks if the handler is enabled.
-        return promise.catch(() => {
-            return false;
-        }).then((enabled: boolean) => {
-            // Verify that this call is the last one that was started.
-            // Check that site hasn't changed since the check started.
-            if (this.isLastUpdateCall(time) && this.sitesProvider.getCurrentSiteId() === siteId) {
-                if (enabled) {
-                    this.enabledHandlers[handler.name] = handler;
-                } else {
-                    delete this.enabledHandlers[handler.name];
-                }
-            }
+        // Sort them by priority.
+        handlersData.sort((a, b) => {
+            return b.priority - a.priority;
         });
-    }
 
-    /**
-     * Update the handlers for the current site.
-     *
-     * @return {Promise<void>} Resolved when done.
-     */
-    protected updateHandlers() : Promise<void> {
-        let promises = [],
-            now = Date.now();
-
-        this.logger.debug('Updating handlers for current site.');
-
-        this.lastUpdateHandlersStart = now;
-
-        // Loop over all the handlers.
-        for (let name in this.handlers) {
-            promises.push(this.updateHandler(this.handlers[name], now));
-        }
-
-        return Promise.all(promises).then(() => {
-            return true;
-        }, () => {
-            // Never reject.
-            return true;
-        }).then(() => {
-            // Verify that this call is the last one that was started.
-            if (this.isLastUpdateCall(now)) {
-                let handlersData: any[] = [];
-
-                for (let name in this.enabledHandlers) {
-                    let handler = this.enabledHandlers[name],
-                        data: CoreMainMenuHandlerToDisplay = handler.getDisplayData();
-
-                    data.name = handler.name;
-
-                    handlersData.push({
-                        data: data,
-                        priority: handler.priority
-                    });
-                }
-
-                // Sort them by priority.
-                handlersData.sort((a, b) => {
-                    return b.priority - a.priority;
-                });
-
-                // Return only the display data.
-                let displayData = handlersData.map((item) => {
-                    return item.data;
-                });
-
-                this.loaded = true;
-                this.siteHandlers.next(displayData);
-            }
+        // Return only the display data.
+        let displayData = handlersData.map((item) => {
+            return item.data;
         });
+
+        this.loaded = true;
+        this.siteHandlers.next(displayData);
     }
 }

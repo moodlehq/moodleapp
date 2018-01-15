@@ -5,4 +5,26 @@ page-core-user-profile {
         bottom: 30px;
         font-size: 24px;
     }
+    .core-user-communication-handlers {
+        padding: 6px 2px;
+        background: $list-background-color;
+
+        .core-user-profile-handler {
+            background: $list-background-color;
+            border: 0;
+            color: $core-user-profile-communication-icons-color;
+
+            .icon {
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                max-width: 32px;
+                font-size: 22px;
+                line-height: 32px;
+                color: white;
+                background-color: $core-user-profile-communication-icons-color;
+                margin-bottom: 5px;
+          }
+        }
+    }
 }
