@@ -19,33 +19,132 @@ import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreUtilsProvider, PromiseDefer } from '../../../providers/utils/utils';
 import { CoreCoursesProvider } from './courses';
 
+/**
+ * Interface that all courses handlers must implement.
+ */
 export interface CoreCoursesHandler {
-    name: string; // Name of the handler.
-    priority: number; // The highest priority is displayed first.
-    isEnabled(): boolean|Promise<boolean>; // Whether or not the handler is enabled on a site level.
-    isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) :
-            boolean|Promise<boolean>; // Whether the handler is enabled on a course level. For perfomance reasons, do NOT call
-                                      // WebServices in here, call them in shouldDisplayForCourse.
-    shouldDisplayForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) :
-            boolean|Promise<boolean>; // Whether the handler should be displayed in a course. If not implemented, assume it's true.
-    getDisplayData?(courseId: number): CoreCoursesHandlerData; // Returns the data needed to render the handler.
-    invalidateEnabledForCourse?(courseId: number, navOptions?: any, admOptions?: any) : Promise<any>; // Should invalidate data
-                                               // to determine if handler is enabled for a certain course.
-    prefetch?(course: any) : Promise<any>; // Will be called when a course is downloaded, and it should prefetch all the data
-                                           // to be able to see the addon in offline.
+    /**
+     * Name of the handler.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * The highest priority is displayed first.
+     * @type {number}
+     */
+    priority: number;
+
+    /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     */
+    isEnabled(): boolean|Promise<boolean>;
+
+    /**
+     * Whether or not the handler is enabled for a certain course.
+     * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
+     *
+     * @param {number} courseId The course ID.
+     * @param {any} accessData Access type and data. Default, guest, ...
+     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     */
+    isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) : boolean|Promise<boolean>;
+
+    /**
+     * Whether or not the handler should be displayed for a course. If not implemented, assume it's true.
+     *
+     * @param {number} courseId The course ID.
+     * @param {any} accessData Access type and data. Default, guest, ...
+     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     */
+    shouldDisplayForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) : boolean|Promise<boolean>;
+
+    /**
+     * Returns the data needed to render the handler.
+     *
+     * @param {number} courseId The course ID.
+     * @return {CoreCoursesHandlerData} Data.
+     */
+    getDisplayData?(courseId: number): CoreCoursesHandlerData;
+
+    /**
+     * Should invalidate the data to determine if the handler is enabled for a certain course.
+     *
+     * @param {number} courseId The course ID.
+     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    invalidateEnabledForCourse?(courseId: number, navOptions?: any, admOptions?: any) : Promise<any>;
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch?(course: any) : Promise<any>;
 };
 
+/**
+ * Data needed to render a course handler. It's returned by the handler.
+ */
 export interface CoreCoursesHandlerData {
-    title: string; // Title to display for the handler.
-    icon: string; // Name of the icon to display for the handler.
-    class?: string; // Class to add to the displayed handler.
-    action(course: any): void; // Action to perform when the handler is clicked.
+    /**
+     * Title to display for the handler.
+     * @type {string}
+     */
+    title: string;
+
+    /**
+     * Name of the icon to display for the handler.
+     * @type {string}
+     */
+    icon: string;
+
+    /**
+     * Class to add to the displayed handler.
+     * @type {string}
+     */
+    class?: string;
+
+    /**
+     * Action to perform when the handler is clicked.
+     *
+     * @param {any} course The course.
+     */
+    action(course: any): void;
 };
 
+/**
+ * Data returned by the delegate for each handler.
+ */
 export interface CoreCoursesHandlerToDisplay {
-    data: CoreCoursesHandlerData; // Data to display.
-    priority?: number; // Handler's priority.
-    prefetch?(course: any) : Promise<any>; // Function to prefetch the handler.
+    /**
+     * Data to display.
+     * @type {CoreCoursesHandlerData}
+     */
+    data: CoreCoursesHandlerData;
+
+    /**
+     * The highest priority is displayed first.
+     * @type {number}
+     */
+    priority?: number;
+
+    /**
+     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
+     *
+     * @param {any} course The course.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch?(course: any) : Promise<any>;
 };
 
 /**

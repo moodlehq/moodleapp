@@ -28,39 +28,95 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreInterceptor } from '../classes/interceptor';
 
 /**
- * Interface of the presets accepted by the WS call.
+ * PreSets accepted by the WS call.
  */
 export interface CoreWSPreSets {
-    siteUrl: string; // The site URL.
-    wsToken: string; // The Webservice token.
-    responseExpected?: boolean; // Defaults to true. Set to false when the expected response is null.
-    typeExpected?: string; // Defaults to 'object'. Use it when you expect a type that's not an object|array.
-    cleanUnicode?: boolean; // Defaults to false. Clean multibyte Unicode chars from data.
+    /**
+     * The site URL.
+     * @type {string}
+     */
+    siteUrl: string;
+
+    /**
+     * The Webservice token.
+     * @type {string}
+     */
+    wsToken: string;
+
+    /**
+     * Defaults to true. Set to false when the expected response is null.
+     * @type {boolean}
+     */
+    responseExpected?: boolean;
+
+    /**
+     * Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     * @type {string}
+     */
+    typeExpected?: string;
+
+    /**
+     * Defaults to false. Clean multibyte Unicode chars from data.
+     * @type {string}
+     */
+    cleanUnicode?: boolean;
 };
 
 /**
- * Interface of the presets accepted by AJAX WS calls.
+ * PreSets accepted by AJAX WS calls.
  */
 export interface CoreWSAjaxPreSets {
-    siteUrl: string; // The site URL.
-    responseExpected?: boolean; // Defaults to true. Set to false when the expected response is null.
+    /**
+     * The site URL.
+     * @type {string}
+     */
+    siteUrl: string;
+
+    /**
+     * Defaults to true. Set to false when the expected response is null.
+     * @type {boolean}
+     */
+    responseExpected?: boolean;
 };
 
 /**
- * Interface for WS Errors.
+ * Error returned by a WS call.
  */
 export interface CoreWSError {
-    message: string; // The error message.
-    exception?: string; // Name of the exception. Undefined for local errors (fake WS errors).
-    errorcode?: string; // The error code. Undefined for local errors (fake WS errors).
+    /**
+     * The error message.
+     * @type {string}
+     */
+    message: string;
+
+    /**
+     * Name of the exception. Undefined for local errors (fake WS errors).
+     * @type {string}
+     */
+    exception?: string;
+
+    /**
+     * The error code. Undefined for local errors (fake WS errors).
+     * @type {string}
+     */
+    errorcode?: string;
 };
 
 /**
- * Interface for file upload options.
+ * File upload options.
  */
 export interface CoreWSFileUploadOptions extends FileUploadOptions {
-    fileArea?: string; // The file area where to put the file. By default, 'draft'.
-    itemId?: number; // Item ID of the area where to put the file. By default, 0.
+    /**
+     * The file area where to put the file. By default, 'draft'.
+     * @type {string}
+     */
+    fileArea?: string;
+
+    /**
+     * Item ID of the area where to put the file. By default, 0.
+     * @type {number}
+     */
+    itemId?: number;
 };
 
 /**

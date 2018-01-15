@@ -31,46 +31,204 @@ import { SQLiteDB } from '../classes/sqlitedb';
 import { CoreConstants } from '../core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
-// Entry from filepool.
+/**
+ * Entry from filepool.
+ */
 export interface CoreFilepoolFileEntry {
+    /**
+     * The fileId to identify the file.
+     * @type {string}
+     */
     fileId?: string;
+
+    /**
+     * File's URL.
+     * @type {string}
+     */
     url?: string;
+
+    /**
+     * File's revision.
+     * @type {number}
+     */
     revision?: number;
+
+    /**
+     * File's timemodified.
+     * @type {number}
+     */
     timemodified?: number;
-    stale?: number; // 1 if stale, 0 otherwise.
+
+    /**
+     * 1 if file is stale (needs to be updated), 0 otherwise.
+     * @type {number}
+     */
+    stale?: number;
+
+    /**
+     * Timestamp when this file was downloaded.
+     * @type {number}
+     */
     downloadTime?: number;
-    isexternalfile?: number; // 1 if external, 0 otherwise.
+
+    /**
+     * 1 if it's a external file (from an external repository), 0 otherwise.
+     * @type {number}
+     */
+    isexternalfile?: number;
+
+    /**
+     * Type of the repository this file belongs to.
+     * @type {string}
+     */
     repositorytype?: string;
+
+    /**
+     * File's path.
+     * @type {string}
+     */
     path?: string;
+
+    /**
+     * File's extension.
+     * @type {string}
+     */
     extension?: string;
 };
 
-// Entry from files queue.
+/**
+ * Entry from the file's queue.
+ */
 export interface CoreFilepoolQueueEntry {
+    /**
+     * The site the file belongs to.
+     * @type {string}
+     */
     siteId?: string;
+
+    /**
+     * The fileId to identify the file.
+     * @type {string}
+     */
     fileId?: string;
+
+    /**
+     * Timestamp when the file was added to the queue.
+     * @type {number}
+     */
     added?: number;
+
+    /**
+     * The priority of the file.
+     * @type {number}
+     */
     priority?: number;
+
+    /**
+     * File's URL.
+     * @type {string}
+     */
     url?: string;
+
+    /**
+     * File's revision.
+     * @type {number}
+     */
     revision?: number;
+
+    /**
+     * File's timemodified.
+     * @type {number}
+     */
     timemodified?: number;
-    isexternalfile?: number; // 1 if external, 0 otherwise.
+
+    /**
+     * 1 if it's a external file (from an external repository), 0 otherwise.
+     * @type {number}
+     */
+    isexternalfile?: number;
+
+    /**
+     * Type of the repository this file belongs to.
+     * @type {string}
+     */
     repositorytype?: string;
+
+    /**
+     * File's path.
+     * @type {string}
+     */
     path?: string;
+
+    /**
+     * File links (to link the file to components and componentIds).
+     * @type {any[]}
+     */
     links?: any[];
 };
 
-// Entry from packages table.
+/**
+ * Entry from packages table.
+ */
 export interface CoreFilepoolPackageEntry {
+    /**
+     * Package id.
+     * @type {string}
+     */
     id?: string;
+
+    /**
+     * The component to link the files to.
+     * @type {string}
+     */
     component?: string;
+
+    /**
+     * An ID to use in conjunction with the component.
+     * @type {string|number}
+     */
     componentId?: string|number;
+
+    /**
+     * Package status.
+     * @type {string}
+     */
     status?: string;
+
+    /**
+     * Package previous status.
+     * @type {string}
+     */
     previous?: string;
+
+    /**
+     * Package revision.
+     * @type {string}
+     */
     revision?: string;
+
+    /**
+     * Package timemodified.
+     * @type {number}
+     */
     timemodified?: number;
+
+    /**
+     * Timestamp when this package was updated.
+     * @type {number}
+     */
     updated?: number;
+
+    /**
+     * Timestamp when this package was downloaded.
+     * @type {number}
+     */
     downloadTime?: number;
+
+    /**
+     * Previous download time.
+     * @type {number}
+     */
     previousDownloadTime?: number;
 };
 

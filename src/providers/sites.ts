@@ -27,26 +27,102 @@ import { CoreSite } from '../classes/site';
 import { SQLiteDB } from '../classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 
+/**
+ * Response of checking if a site exists and its configuration.
+ */
 export interface CoreSiteCheckResponse {
-    code: number; // Code to identify the authentication method to use.
-    siteUrl: string; // Site url to use (might have changed during the process).
-    service: string; // Service used.
-    warning?: string; // Code of the warning message to show to the user.
-    config?: any; // Site public config (if available).
-};
+    /**
+     * Code to identify the authentication method to use.
+     * @type {number}
+     */
+    code: number;
 
-export interface CoreSiteUserTokenResponse {
-    token: string; // User token.
-    siteUrl: string; // Site URL to use.
-    privateToken?: string; // User private token.
-};
-
-export interface CoreSiteBasicInfo {
-    id: string;
+    /**
+     * Site url to use (might have changed during the process).
+     * @type {string}
+     */
     siteUrl: string;
+
+    /**
+     * Service used.
+     * @type {string}
+     */
+    service: string;
+
+    /**
+     * Code of the warning message to show to the user.
+     * @type {string}
+     */
+    warning?: string;
+
+    /**
+     * Site public config (if available).
+     * @type {any}
+     */
+    config?: any;
+};
+
+/**
+ * Response of getting user token.
+ */
+export interface CoreSiteUserTokenResponse {
+    /**
+     * User token.
+     * @type {string}
+     */
+    token: string;
+
+    /**
+     * Site URL to use.
+     * @type {string}
+     */
+    siteUrl: string;
+
+    /**
+     * User private token.
+     * @type {string}
+     */
+    privateToken?: string;
+};
+
+/**
+ * Site's basic info.
+ */
+export interface CoreSiteBasicInfo {
+    /**
+     * Site ID.
+     * @type {string}
+     */
+    id: string;
+
+    /**
+     * Site URL.
+     * @type {string}
+     */
+    siteUrl: string;
+
+    /**
+     * User's full name.
+     * @type {string}
+     */
     fullName: string;
+
+    /**
+     * Site's name.
+     * @type {string}
+     */
     siteName: string;
+
+    /**
+     * User's avatar.
+     * @type {string}
+     */
     avatar: string;
+
+    /**
+     * Badge to display in the site.
+     * @type {number}
+     */
     badge?: number;
 };
 

@@ -21,7 +21,7 @@ import { CoreCourseProvider } from './course';
 import { CoreSite } from '../../../classes/site';
 
 /**
- * Interface that all course module handlers should implement.
+ * Interface that all course module handlers must implement.
  */
 export interface CoreCourseModuleHandler {
     /**

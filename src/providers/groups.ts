@@ -16,10 +16,27 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from './sites';
 
+/**
+ * Group info for an activity.
+ */
 export interface CoreGroupInfo {
-    groups?: any[]; // List of groups.
-    separateGroups?: boolean; // Whether it's separate groups.
-    visibleGroups?: boolean; // Whether it's visible groups.
+    /**
+     * List of groups.
+     * @type {any[]}
+     */
+    groups?: any[];
+
+    /**
+     * Whether it's separate groups.
+     * @type {boolean}
+     */
+    separateGroups?: boolean;
+
+    /**
+     * Whether it's visible groups.
+     * @type {boolean}
+     */
+    visibleGroups?: boolean;
 };
 
 /*

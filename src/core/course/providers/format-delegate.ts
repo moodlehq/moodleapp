@@ -21,7 +21,7 @@ import { CoreCourseProvider } from './course';
 import { CoreCourseFormatDefaultHandler } from './default-format';
 
 /**
- * Interface that all course format handlers should implement.
+ * Interface that all course format handlers must implement.
  */
 export interface CoreCourseFormatHandler {
     /**

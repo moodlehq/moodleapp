@@ -15,10 +15,31 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from './logger';
 
+/**
+ * Interface that all plugin file handlers must implement.
+ */
 export interface CorePluginFileHandler {
-    name: string; // Name of the handler.
-    getComponentRevisionRegExp?(args: string[]): RegExp; // Should return the RegExp to match revision on pluginfile url.
-    getComponentRevisionReplace?(args: string[]): string; // Should return the String to remove the revision on pluginfile url.
+    /**
+     * A name to identify the handler. It should match the "component" of pluginfile URLs.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Return the RegExp to match the revision on pluginfile URLs.
+     *
+     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return {RegExp} RegExp to match the revision on pluginfile URLs.
+     */
+    getComponentRevisionRegExp?(args: string[]): RegExp;
+
+    /**
+     * Should return the string to remove the revision on pluginfile url.
+     *
+     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return {string} String to remove the revision on pluginfile url.
+     */
+    getComponentRevisionReplace?(args: string[]): string;
 };
 
 /**

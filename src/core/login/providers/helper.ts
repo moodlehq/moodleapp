@@ -30,11 +30,38 @@ import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
+/**
+ * Data related to a SSO authentication.
+ */
 export interface CoreLoginSSOData {
+    /**
+     * The site's URL.
+     * @type {string}
+     */
     siteUrl?: string;
+
+    /**
+     * User's token.
+     * @type {string}
+     */
     token?: string;
+
+    /**
+     * User's private token.
+     * @type {string}
+     */
     privateToken?: string;
+
+    /**
+     * Name of the page to go after authenticated.
+     * @type {string}
+     */
     pageName?: string;
+
+    /**
+     * Params to page to the page.
+     * @type {string}
+     */
     pageParams?: any
 };
 

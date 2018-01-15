@@ -24,10 +24,29 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 
+/**
+ * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
+ */
 export interface PromiseDefer {
-    promise?: Promise<any>; // Promise created.
-    resolve?: (value?: any) => any; // Function to resolve the promise.
-    reject?: (reason?: any) => any; // Function to reject the promise.
+    /**
+     * The promise.
+     * @type {Promise<any>}
+     */
+    promise?: Promise<any>;
+
+    /**
+     * Function to resolve the promise.
+     *
+     * @param {any} [value] The resolve value.
+     */
+    resolve?: (value?: any) => void; // Function to resolve the promise.
+
+    /**
+     * Function to reject the promise.
+     *
+     * @param {any} [reason] The reject param.
+     */
+    reject?: (reason?: any) => void;
 }
 
 /*

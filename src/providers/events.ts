@@ -16,8 +16,14 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { CoreLoggerProvider } from '../providers/logger';
 
+/**
+ * Observer instance to stop listening to an event.
+ */
 export interface CoreEventObserver {
-    off: () => void; // Unsubscribe.
+    /**
+     * Stop the observer.
+     */
+    off: () => void;
 };
 
 /*

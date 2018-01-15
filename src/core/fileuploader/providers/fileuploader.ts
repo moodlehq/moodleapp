@@ -27,10 +27,14 @@ import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreWSFileUploadOptions } from '../../../providers/ws';
 
 /**
- * Interface for file upload options.
+ * File upload options.
  */
 export interface CoreFileUploaderOptions extends CoreWSFileUploadOptions {
-    deleteAfterUpload?: boolean; // Whether the file should be deleted after the upload (if success).
+    /**
+     * Whether the file should be deleted after the upload (if success).
+     * @type {boolean}
+     */
+    deleteAfterUpload?: boolean;
 };
 
 /**

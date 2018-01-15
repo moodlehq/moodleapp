@@ -32,26 +32,110 @@ import { CoreConfigConstants } from '../configconstants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { InAppBrowserObject } from '@ionic-native/in-app-browser';
 
+/**
+ * PreSets accepted by the WS call.
+ */
 export interface CoreSiteWSPreSets {
-    getFromCache?: boolean; // Get the value from the cache if it's still valid.
-    saveToCache?: boolean; // Save the result to the cache.
-    omitExpires?: boolean; // Ignore cache expiration.
-    emergencyCache?: boolean; // Use the cache when a request fails. Defaults to true.
-    cacheKey?: string; // Extra key to add to the cache when storing this call, to identify the entry.
-    getCacheUsingCacheKey?: boolean; // Whether it should use cache key to retrieve the cached data instead of the request params.
-    getEmergencyCacheUsingCacheKey?: boolean; // Same as getCacheUsingCacheKey, but for emergency cache.
-    uniqueCacheKey?: boolean; // Whether it should only be 1 entry for this cache key (all entries with same key will be deleted).
-    filter?: boolean; // Whether to filter WS response (moodlewssettingfilter). Defaults to true.
-    rewriteurls?: boolean; // Whether to rewrite URLs (moodlewssettingfileurl). Defaults to true.
-    responseExpected?: boolean; // Defaults to true. Set to false when the expected response is null.
-    typeExpected?: string; // Defaults to 'object'. Use it when you expect a type that's not an object|array.
+    /**
+     * Get the value from the cache if it's still valid.
+     * @type {boolean}
+     */
+    getFromCache?: boolean;
+
+    /**
+     * Save the result to the cache.
+     * @type {boolean}
+     */
+    saveToCache?: boolean;
+
+    /**
+     * Ignore cache expiration.
+     * @type {boolean}
+     */
+    omitExpires?: boolean;
+
+    /**
+     * Use the cache when a request fails. Defaults to true.
+     * @type {boolean}
+     */
+    emergencyCache?: boolean;
+
+    /**
+     * Extra key to add to the cache when storing this call, to identify the entry.
+     * @type {string}
+     */
+    cacheKey?: string;
+
+    /**
+     * Whether it should use cache key to retrieve the cached data instead of the request params.
+     * @type {boolean}
+     */
+    getCacheUsingCacheKey?: boolean;
+
+    /**
+     * Same as getCacheUsingCacheKey, but for emergency cache.
+     * @type {boolean}
+     */
+    getEmergencyCacheUsingCacheKey?: boolean;
+
+    /**
+     * Whether it should only be 1 entry for this cache key (all entries with same key will be deleted).
+     * @type {boolean}
+     */
+    uniqueCacheKey?: boolean;
+
+    /**
+     * Whether to filter WS response (moodlewssettingfilter). Defaults to true.
+     * @type {boolean}
+     */
+    filter?: boolean;
+
+    /**
+     * Whether to rewrite URLs (moodlewssettingfileurl). Defaults to true.
+     * @type {boolean}
+     */
+    rewriteurls?: boolean;
+
+    /**
+     * Defaults to true. Set to false when the expected response is null.
+     * @type {boolean}
+     */
+    responseExpected?: boolean;
+
+    /**
+     * Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     * @type {string}
+     */
+    typeExpected?: string;
 };
 
+/**
+ * Response of checking local_mobile status.
+ */
 export interface LocalMobileResponse {
-    code: number; // Code to identify the authentication method to use.
-    service?: string; // Name of the service to use.
-    warning?: string; // Code of the warning message.
-    coreSupported?: boolean; // Whether core SSO is supported.
+    /**
+     * Code to identify the authentication method to use.
+     * @type {number}
+     */
+    code: number;
+
+    /**
+     * Name of the service to use.
+     * @type {string}
+     */
+    service?: string;
+
+    /**
+     * Code of the warning message.
+     * @type {string}
+     */
+    warning?: string;
+
+    /**
+     * Whether core SSO is supported.
+     * @type {boolean}
+     */
+    coreSupported?: boolean;
 }
 
 /**
