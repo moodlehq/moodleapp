@@ -23,7 +23,7 @@
                 </p>
             </ion-item>
 
-            <a ion-item text-wrap class="core-user-profile-handler" [navPush]="CoreUserAboutPage" [navParams]="{courseId: courseId, userId: userId}" title="{{ 'core.user.details' | translate }}">
+            <a ion-item text-wrap class="core-user-profile-handler" navPush="CoreUserAboutPage" [navParams]="{courseId: courseId, userId: userId}" title="{{ 'core.user.details' | translate }}">
                 <ion-icon name="person" item-start></ion-icon>
                 <h2>{{ 'core.user.details' | translate }}</h2>
             </a>

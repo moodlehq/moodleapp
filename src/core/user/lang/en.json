@@ -1,11 +1,21 @@
 {
+    "address": "Address",
+    "city": "City/town",
+    "contact": "Contact",
+    "country": "Country",
+    "description": "Description",
     "details": "Details",
     "detailsnotavailable": "The details of this user are not available to you.",
     "editingteacher": "Teacher",
+    "email": "Email address",
     "errorloaduser": "Error loading user.",
+    "interests": "Interests",
     "manager": "Manager",
     "newpicture": "New picture",
+    "phone1": "Phone",
+    "phone2": "Mobile phone",
     "roles": "Roles",
     "student": "Student",
-    "teacher": "Non-editing teacher"
+    "teacher": "Non-editing teacher",
+    "webpage": "Web page"
 }
