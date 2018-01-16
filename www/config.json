@@ -11,7 +11,7 @@
     "wsextservice" : "local_mobile",
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "https://jmp-sbox.moonami.com/",
+    "siteurl": "https://mobile-sbox.moonami.com/",
     "multisitesdisplay": "select",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
