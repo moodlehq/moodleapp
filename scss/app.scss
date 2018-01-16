@@ -62,7 +62,7 @@ $mm-buttons-color: $positive;
 
 // Change Ionic default elements colors.
 $base-color: $black !default;
-$base-background-color: $gray-light !default;
+$base-background-color: blue !default;
 
 $item-default-text: $black;
 $sheet-options-text-color: $mm-buttons-color;
@@ -85,7 +85,7 @@ $bar-side-menu-text-color: $bar-content-text !default;
 
 $bar-side-menu-item-border-color: $button-light-border;
 $bar-side-menu-item-divider-color: $item-divider-bg;
-$bar-side-menu-item-background-color: $item-default-bg;
+$bar-side-menu-item-background-color: blue;
 $bar-side-menu-item-text-color: $item-default-text;
 $bar-side-menu-item-icon-color: $gray-darker;
 
