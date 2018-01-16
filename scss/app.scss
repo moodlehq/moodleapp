@@ -29,16 +29,20 @@ $red:             #cb3d4d;
 $red-light:       mix($red, white, 20%);
 $red-dark:        darken($red, 10%);
 
-$orange:          #053271; // Accent (never text). Now Moonami Dark Blue
-$orange-light:    #075493; //Moonam light blue
+$orange:          #f98012; // Accent (never text).
+$orange-light:    lighten($orange, 10%);
 
 $yellow:          #fbad1a; // Accent (never text).
 $yellow-light:    mix($yellow, white, 20%);
 $yellow-dark:     mix($yellow, black, 40%);
 
+
+$moonami-dark:    #053271;
+$moonami-light:   #075493;
+
 // Change Ionic default colors.
 $dark: $black !default;
-$positive: $blue !default;
+$positive: $moonami-light !default;
 $balanced: $green !default;
 $assertive: $red !default;
 $energized: $yellow !default;
@@ -46,7 +50,7 @@ $stable: $gray-lighter !default;
 $royal: $orange !default;
 $calm: $turquoise !default;
 
-$mm-color:          $orange;
+$mm-color:          $moonami-light;
 $mm-color-light:    lighten($mm-color, 10%);
 $mm-color-dark:     darken($mm-color, 10%);
 
