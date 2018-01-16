@@ -202,18 +202,6 @@ export interface CoreFilepoolPackageEntry {
     previous?: string;
 
     /**
-     * Package revision.
-     * @type {string}
-     */
-    revision?: string;
-
-    /**
-     * Package timemodified.
-     * @type {number}
-     */
-    timemodified?: number;
-
-    /**
      * Timestamp when this package was updated.
      * @type {number}
      */
@@ -230,6 +218,12 @@ export interface CoreFilepoolPackageEntry {
      * @type {number}
      */
     previousDownloadTime?: number;
+
+    /**
+     * Extra data stored by the package.
+     * @type {string}
+     */
+    extra?: string;
 };
 
 /*
@@ -402,14 +396,6 @@ export class CoreFilepoolProvider {
                     type: 'TEXT'
                 },
                 {
-                    name: 'revision',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
                     name: 'updated',
                     type: 'INTEGER'
                 },
@@ -420,6 +406,10 @@ export class CoreFilepoolProvider {
                 {
                     name: 'previousDownloadTime',
                     type: 'INTEGER'
+                },
+                {
+                    name: 'extra',
+                    type: 'TEXT'
                 }
             ]
         },
@@ -991,23 +981,21 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Downloads or prefetches a list of files.
+     * Downloads or prefetches a list of files as a "package".
      *
      * @param {string} siteId The site ID.
      * @param {any[]} fileList List of files to download.
      * @param {boolean} [prefetch] True if should prefetch the contents (queue), false if they should be downloaded right now.
      * @param {string} [component] The component to link the file to.
      * @param {string|number} [componentId]  An ID to use in conjunction with the component.
-     * @param {string} [revision] Package's revision. If not defined, it will be calculated using the list of files.
-     * @param {number} [timemod] Package's timemodified. If not defined, it will be calculated using the list of files.
+     * @param {string} [extra] Extra data to store for the package.
      * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                           the files directly inside the filepool folder.
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when the package is downloaded.
      */
     protected downloadOrPrefetchPackage(siteId: string, fileList: any[], prefetch?: boolean, component?: string,
-            componentId?: string|number, revision?: string, timemodified?: number, dirPath?: string,
-            onProgress?: (event: any) => any) : Promise<any> {
+            componentId?: string|number, extra?: string, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
 
         let packageId = this.getPackageId(component, componentId),
             promise;
@@ -1018,9 +1006,6 @@ export class CoreFilepoolProvider {
         } else if (!this.packagesPromises[siteId]) {
             this.packagesPromises[siteId] = {};
         }
-
-        revision = revision || String(this.getRevisionFromFileList(fileList));
-        timemodified = timemodified || this.getTimemodifiedFromFileList(fileList);
 
         // Set package as downloading.
         promise = this.storePackageStatus(siteId, CoreConstants.DOWNLOADING, component, componentId).then(() => {
@@ -1077,7 +1062,7 @@ export class CoreFilepoolProvider {
 
             return Promise.all(promises).then(() => {
                 // Success prefetching, store package as downloaded.
-                return this.storePackageStatus(siteId, CoreConstants.DOWNLOADED, component, componentId, revision, timemodified);
+                return this.storePackageStatus(siteId, CoreConstants.DOWNLOADED, component, componentId, extra);
             }).catch(() => {
                 // Error downloading, go back to previous status and reject the promise.
                 return this.setPackagePreviousStatus(siteId, component, componentId).then(() => {
@@ -1101,17 +1086,15 @@ export class CoreFilepoolProvider {
      * @param {any[]} fileList List of files to download.
      * @param {string} component The component to link the file to.
      * @param {string|number} [componentId] An ID to identify the download.
-     * @param {string} [revision] Package's revision. If not defined, it will be calculated using the list of files.
-     * @param {number} [timemodified] Package's timemodified. If not defined, it will be calculated using the list of files.
+     * @param {string} [extra] Extra data to store for the package.
      * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                           the files directly inside the filepool folder.
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>}  Promise resolved when all files are downloaded.
      */
-    downloadPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, revision?: string,
-            timemodified?: number, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
-        return this.downloadOrPrefetchPackage(
-                siteId, fileList, false, component, componentId, revision, timemodified, dirPath, onProgress);
+    downloadPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, extra?: string,
+            dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+        return this.downloadOrPrefetchPackage(siteId, fileList, false, component, componentId, extra, dirPath, onProgress);
     }
 
     /**
@@ -1733,22 +1716,6 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get a package current status.
-     *
-     * @param {string} siteId Site ID.
-     * @param {string} component Package's component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise<string>} Promise resolved with the status.
-     */
-    getPackageCurrentStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
-        return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.status || CoreConstants.NOT_DOWNLOADED;
-        }).catch(() => {
-            return CoreConstants.NOT_DOWNLOADED;
-        });
-    }
-
-    /**
      * Get the data stored for a package.
      *
      * @param {string} siteId Site ID.
@@ -1841,6 +1808,19 @@ export class CoreFilepoolProvider {
             return this.packagesPromises[siteId][packageId];
         }
     }
+    /**
+     * Get a package extra data.
+     *
+     * @param {string} siteId Site ID.
+     * @param {string} component Package's component.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise<string>} Promise resolved with the extra data.
+     */
+    getPackageExtra(siteId: string, component: string, componentId?: string|number) : Promise<string> {
+        return this.getPackageData(siteId, component, componentId).then((entry) => {
+            return entry.extra;
+        });
+    }
 
     /**
      * Get the ID of a package.
@@ -1870,84 +1850,18 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get a package revision.
-     *
-     * @param {string} siteId       Site ID.
-     * @param {string} component    Package's component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise}            Promise resolved with the revision.
-     */
-    getPackageRevision(siteId: string, component: string, componentId?: string|number) : Promise<string> {
-        return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.revision;
-        });
-    }
-
-    /**
      * Get a package status.
      *
      * @param {string} siteId Site ID.
      * @param {string} component Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {string} [revision='0'] Package's revision.
-     * @param {number} [timemodified=0] Package's time modified.
      * @return {Promise<string>} Promise resolved with the status.
      */
-    getPackageStatus(siteId: string, component: string, componentId?: string|number, revision = '0', timemodified = 0)
-            : Promise<string> {
-        componentId = this.fixComponentId(componentId);
-
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const packageId = this.getPackageId(component, componentId),
-                conditions = {id: packageId};
-
-            // Get status.
-            return site.getDb().getRecord(this.PACKAGES_TABLE, conditions).then((entry: CoreFilepoolPackageEntry) => {
-                if (entry.status === CoreConstants.DOWNLOADED) {
-                    if (revision != entry.revision || timemodified > entry.timemodified) {
-                        // File is outdated. Let's change its status.
-                        let newData: CoreFilepoolPackageEntry = {
-                            status: CoreConstants.OUTDATED,
-                            updated: Date.now()
-                        };
-                        site.getDb().updateRecords(this.PACKAGES_TABLE, newData, conditions).then(() => {
-                            // Success inserting, trigger event.
-                            this.triggerPackageStatusChanged(siteId, CoreConstants.OUTDATED, component, componentId);
-                        });
-                    }
-                } else if (entry.status === CoreConstants.OUTDATED) {
-                    if (revision === entry.revision && timemodified === entry.timemodified) {
-                        // File isn't outdated anymore. Let's change its status.
-                        let newData: CoreFilepoolPackageEntry = {
-                            status: CoreConstants.DOWNLOADED,
-                            updated: Date.now()
-                        };
-                        site.getDb().updateRecords(this.PACKAGES_TABLE, newData, conditions).then(() => {
-                            // Success inserting, trigger event.
-                            this.triggerPackageStatusChanged(siteId, CoreConstants.DOWNLOADED, component, componentId);
-                        });
-                    }
-                }
-                return entry.status;
-            }, () => {
-                return CoreConstants.NOT_DOWNLOADED;
-            });
-        });
-    }
-
-    /**
-     * Get a package timemodified.
-     *
-     * @param {string} siteId Site ID.
-     * @param {string} component Package's component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise<number>} Promise resolved with the time modified.
-     */
-    getPackageTimemodified(siteId: string, component: string, componentId?: string|number) : Promise<number> {
+    getPackageStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.timemodified;
+            return entry.status || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
-            return -1;
+            return CoreConstants.NOT_DOWNLOADED;
         });
     }
 
@@ -2032,10 +1946,10 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get package revision number from a list of files.
+     * Get a revision number from a list of files (highest revision).
      *
      * @param {any[]} files Package files.
-     * @return {number} Package revision.
+     * @return {number} Highest revision.
      */
     getRevisionFromFileList(files: any[]) : number {
         let revision = 0;
@@ -2105,7 +2019,7 @@ export class CoreFilepoolProvider {
      * Get time modified from a list of files.
      *
      * @param {any[]} files List of files.
-     * @return {number} Rime modified.
+     * @return {number} Time modified.
      */
     getTimemodifiedFromFileList(files: any[]) : number {
         let timemodified = 0;
@@ -2383,17 +2297,15 @@ export class CoreFilepoolProvider {
      * @param {any[]} fileList List of files to download.
      * @param {string} component The component to link the file to.
      * @param {string|number} [componentId] An ID to identify the download.
-     * @param {string} [revision] Package's revision. If not defined, it will be calculated using the list of files.
-     * @param {number} [timemodified] Package's time modified. If not defined, it will be calculated using the list of files.
+     * @param {string} [extra] Extra data to store for the package.
      * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                           the files directly inside the filepool folder.
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>}  Promise resolved when all files are downloaded.
      */
-    prefetchPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, revision?: string,
-            timemodified?: number, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
-        return this.downloadOrPrefetchPackage(
-                siteId, fileList, true, component, componentId, revision, timemodified, dirPath, onProgress);
+    prefetchPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, extra?: string,
+            dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+        return this.downloadOrPrefetchPackage(siteId, fileList, true, component, componentId, extra, dirPath, onProgress);
     }
 
     /**
@@ -2726,12 +2638,11 @@ export class CoreFilepoolProvider {
      * @param {string} status New package status.
      * @param {string} component Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {string} [revision] Package's revision. If not provided, try to use the current value.
-     * @param {number} [timemodified] Package's time modified. If not provided, try to use the current value.
+     * @param {string} [extra] Extra data to store for the package. If you want to store more than 1 value, use JSON.stringify.
      * @return {Promise<any>} Promise resolved when status is stored.
      */
-    storePackageStatus(siteId: string, status: string, component: string, componentId?: string|number, revision?: string,
-            timemodified?: number) : Promise<any> {
+    storePackageStatus(siteId: string, status: string, component: string, componentId?: string|number, extra?: string)
+            : Promise<any> {
         this.logger.debug(`Set status '${status}'' for package ${component} ${componentId}`);
         componentId = this.fixComponentId(componentId);
 
@@ -2747,11 +2658,8 @@ export class CoreFilepoolProvider {
 
             // Search current status to set it as previous status.
             return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId}).then((entry: CoreFilepoolPackageEntry) => {
-                if (typeof revision == 'undefined' || revision === null) {
-                    revision = entry.revision;
-                }
-                if (typeof timemodified == 'undefined' || timemodified === null) {
-                    timemodified = entry.timemodified;
+                if (typeof extra == 'undefined' || extra === null) {
+                    extra = entry.extra;
                 }
                 if (typeof downloadTime == 'undefined') {
                     // Keep previous download time.
@@ -2772,11 +2680,10 @@ export class CoreFilepoolProvider {
                         componentId: componentId,
                         status: status,
                         previous: previousStatus,
-                        revision: revision || '0',
-                        timemodified: timemodified || 0,
                         updated: Date.now(),
                         downloadTime: downloadTime,
-                        previousDownloadTime: previousDownloadTime
+                        previousDownloadTime: previousDownloadTime,
+                        extra: extra
                     },
                     promise;
 
