@@ -64,6 +64,8 @@ import { CoreUserModule } from '../core/user/user.module';
 
 // Addon modules.
 import { AddonCalendarModule } from '../addon/calendar/calendar.module';
+import { AddonUserProfileFieldModule } from '../addon/userprofilefield/userprofilefield.module';
+
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient) {
@@ -99,7 +101,8 @@ export function createTranslateLoader(http: HttpClient) {
         CoreSiteHomeModule,
         CoreContentLinksModule,
         CoreUserModule,
-        AddonCalendarModule
+        AddonCalendarModule,
+        AddonUserProfileFieldModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

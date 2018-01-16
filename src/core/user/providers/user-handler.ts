@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from './delegate';
+import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from './user-delegate';
 import { CoreSitesProvider } from '../../../providers/sites';
 
 /**

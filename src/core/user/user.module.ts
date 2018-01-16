@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreUserDelegate } from './providers/delegate';
+import { CoreUserDelegate } from './providers/user-delegate';
+import { CoreUserProfileFieldDelegate } from './providers/user-profile-field-delegate';
 import { CoreUserProvider } from './providers/user';
 import { CoreUserHelperProvider } from './providers/helper';
 import { CoreUserProfileMailHandler } from './providers/user-handler';
@@ -25,6 +26,7 @@ import { CoreUserProfileMailHandler } from './providers/user-handler';
     ],
     providers: [
         CoreUserDelegate,
+        CoreUserProfileFieldDelegate,
         CoreUserProfileMailHandler,
         CoreUserProvider,
         CoreUserHelperProvider

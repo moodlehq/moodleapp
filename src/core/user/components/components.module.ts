@@ -13,23 +13,24 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreUserAboutPage } from './about';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreUserComponentsModule } from '../../components/components.module';
+import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 
 @NgModule({
     declarations: [
-        CoreUserAboutPage,
+        CoreUserProfileFieldComponent
     ],
     imports: [
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CoreUserComponentsModule,
-        IonicPageModule.forChild(CoreUserAboutPage),
-        TranslateModule.forChild()
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
     ],
+    providers: [
+    ],
+    exports: [
+        CoreUserProfileFieldComponent
+    ]
 })
-export class CoreUserAboutPageModule {}
+export class CoreUserComponentsModule {}

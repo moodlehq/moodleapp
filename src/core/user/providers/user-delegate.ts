@@ -124,7 +124,7 @@ export class CoreUserDelegate extends CoreDelegate {
     protected featurePrefix = '$mmUserDelegate_';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
-        private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
+            private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
         super('CoreUserDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 

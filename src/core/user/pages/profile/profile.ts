@@ -23,7 +23,7 @@ import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreMimetypeUtilsProvider } from '../../../../providers/utils/mimetype';
 import { CoreFileUploaderHelperProvider } from '../../../fileuploader/providers/helper';
-import { CoreUserDelegate } from '../../providers/delegate';
+import { CoreUserDelegate } from '../../providers/user-delegate';
 
 /**
  * Page that displays an user profile page.
@@ -103,7 +103,6 @@ export class CoreUserProfilePage {
             this.isLoadingHandlers = true;
 
             this.userDelegate.getProfileHandlersFor(user, this.courseId).then((handlers) => {
-                console.error(handlers);
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];

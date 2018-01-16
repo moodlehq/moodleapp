@@ -1,0 +1,10 @@
+<!-- Render (no edit). -->
+<ion-item *ngIf="!edit && field && field.name">
+    <h2>{{ field.name }}</h2>
+    <p><core-format-text [text]="field.value"></core-format-text></p>
+</ion-item>
+<!-- Edit. -->
+<ion-item *ngIf="edit && field && field.shortname" text-wrap>
+    <ion-label [core-mark-required]="field.required">{{ field.name }}</ion-label>
+    <ion-input [type]="field.inputType" [name]="field.modelName" [placeholder]="field.name" [(ngModel)]="model[field.modelName]" [disabled]="!signup && field.locked" maxlength="{{field.maxlength}}" [required]="field.required" core-input-errors></ion-input>
+</ion-item>
