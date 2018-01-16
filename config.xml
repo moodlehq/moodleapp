@@ -89,6 +89,9 @@
         <splash height="480" src="resources\ios\splash\Default~iphone.png" width="320" />
     </platform>
     <icon src="resources\android\icon\drawable-xhdpi-icon.png" />
+    <config-file platform="android" parent="/manifest">
+         <application android:debuggable="false" />
+    </config-file>
     <plugin name="cordova-plugin-file" spec="~4.3.3" />
     <plugin name="cordova-plugin-file-transfer" spec="~1.6.3" />
     <plugin name="cordova-plugin-console" spec="~1.0.0" />
