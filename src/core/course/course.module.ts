@@ -17,6 +17,7 @@ import { CoreCourseProvider } from './providers/course';
 import { CoreCourseHelperProvider } from './providers/helper';
 import { CoreCourseFormatDelegate } from './providers/format-delegate';
 import { CoreCourseModuleDelegate } from './providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from './providers/module-prefetch-delegate';
 import { CoreCourseFormatDefaultHandler } from './providers/default-format';
 import { CoreCourseFormatTopicsModule} from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
@@ -32,6 +33,7 @@ import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
         CoreCourseHelperProvider,
         CoreCourseFormatDelegate,
         CoreCourseModuleDelegate,
+        CoreCourseModulePrefetchDelegate,
         CoreCourseFormatDefaultHandler
     ],
     exports: []

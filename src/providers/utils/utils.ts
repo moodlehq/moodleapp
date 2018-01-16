@@ -104,10 +104,11 @@ export class CoreUtilsProvider {
      *
      * @param {any[]} array The array to convert.
      * @param {string} propertyName The name of the property to use as the key.
+     * @param {any} [result] Object where to put the properties. If not defined, a new object will be created.
      * @return {any} The object.
      */
-    arrayToObject(array: any[], propertyName: string) : any {
-        let result = {};
+    arrayToObject(array: any[], propertyName: string, result?: any) : any {
+        result = result || {};
         array.forEach((entry) => {
             result[entry[propertyName]] = entry;
         });
@@ -1154,9 +1155,9 @@ export class CoreUtilsProvider {
      * Sum the filesizes from a list of files checking if the size will be partial or totally calculated.
      *
      * @param {any[]} files List of files to sum its filesize.
-     * @return {object} Object with the file size and a boolean to indicate if it is the total size or only partial.
+     * @return {{size: number, total: boolean}} File size and a boolean to indicate if it is the total size or only partial.
      */
-    sumFileSizes(files: any[]) : object {
+    sumFileSizes(files: any[]) : {size: number, total: boolean} {
         let result = {
             size: 0,
             total: true

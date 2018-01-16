@@ -83,26 +83,6 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Given a list of sections, returns the list of modules in the sections.
-     *
-     * @param {any[]} sections Sections.
-     * @return {any[]} Modules.
-     */
-    getSectionsModules(sections: any[]) : any[] {
-        if (!sections || !sections.length) {
-            return [];
-        }
-
-        let modules = [];
-        sections.forEach((section) => {
-            if (section.modules) {
-                modules = modules.concat(section.modules);
-            }
-        });
-        return modules;
-    }
-
-    /**
      * Check if a section has content.
      *
      * @param {any} section Section to check.

@@ -62,7 +62,7 @@ export class CoreCourseProvider {
                 type: 'INTEGER'
             }
         ]
-    }
+    };
 
     protected logger;
     protected CORE_MODULES = [
@@ -480,6 +480,26 @@ export class CoreCourseProvider {
      */
     protected getSectionsCacheKey(courseId) : string {
         return this.ROOT_CACHE_KEY + 'sections:' + courseId;
+    }
+
+    /**
+     * Given a list of sections, returns the list of modules in the sections.
+     *
+     * @param {any[]} sections Sections.
+     * @return {any[]} Modules.
+     */
+    getSectionsModules(sections: any[]) : any[] {
+        if (!sections || !sections.length) {
+            return [];
+        }
+
+        let modules = [];
+        sections.forEach((section) => {
+            if (section.modules) {
+                modules = modules.concat(section.modules);
+            }
+        });
+        return modules;
     }
 
     /**
