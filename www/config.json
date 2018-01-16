@@ -1,13 +1,23 @@
 {
+<<<<<<< HEAD
     "app_id" : "net.elearning.ust",
     "appname": "University of Sciences and Technologies",
     "desktopappname": "UST",
+=======
+    "app_id" : "edu.ust.onlinelearning",
+    "appname": "Moodle Mobile",
+    "desktopappname": "Moodle Desktop",
+>>>>>>> 08b54dd0d7befd8cf44d252dccc0722c6e0244fc
     "versioncode" : "2021",
     "versionname" : "1.0.0",
     "cache_expiration_time" : 300000,
     "default_lang" : "en",
     "languages": {"ar": "عربي", "en": "English"},
+<<<<<<< HEAD
     "wsservice" : "ust_elearning_app",
+=======
+    "wsservice" : "moodle_mobile_app",
+>>>>>>> 08b54dd0d7befd8cf44d252dccc0722c6e0244fc
     "wsextservice" : "local_mobile",
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
@@ -15,5 +25,6 @@
     "multisitesdisplay": "select",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false",
-    "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
+    "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148",
+    "siteurl" : "https://ust-elearning.net"
 }
