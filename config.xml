@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<<<<<<< HEAD
+
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="net.elearning.ust" version="3.4.0">
   <name>University of Sciences and Technologies</name>
   <description>
         ust elearning official app
     </description>
-  <author href="http://ust-elearning.net" email="wailabualela@gmail.com">
-        Innovative Solutions team
-=======
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="edu.ust.onlinelearning" version="1.0.0">
   <name>University of Science and Technology</name>
   <description>
         ust electronic learning official app
     </description>
-  <author href="http://isco.co" email="innovative@isco.ca">
+  <author href="http://isco.ca" email="innovative@isco.ca">
         Innovative Developer team
->>>>>>> 08b54dd0d7befd8cf44d252dccc0722c6e0244fc
     </author>
   <content src="index.html"/>
   <access origin="*"/>
