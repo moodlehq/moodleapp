@@ -712,7 +712,7 @@ export class CoreCourseProvider {
     }
 
     /**
-     * Trigger mmCoreEventCourseStatusChanged with the right data.
+     * Trigger COURSE_STATUS_CHANGED with the right data.
      *
      * @param {number} courseId Course ID.
      * @param {string} status New course status.
@@ -720,9 +720,8 @@ export class CoreCourseProvider {
      */
     protected triggerCourseStatusChanged(courseId: number, status: string, siteId?: string) : void {
         this.eventsProvider.trigger(CoreEventsProvider.COURSE_STATUS_CHANGED, {
-            siteId: siteId,
             courseId: courseId,
             status: status
-        });
+        }, siteId);
     }
 }

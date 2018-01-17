@@ -38,7 +38,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() iconDescription?: string; // Name of the icon to be shown on the left side of the item.
     @Input() iconAction?: string; // Name of the icon to be shown on the right side of the item. It represents the action to do on
                                   // click. If is "spinner" an spinner will be shown. If no icon or spinner is selected, no action
-                                  // or link will work. If href but no iconAction is provided ion-arrow-right-c will be used.
+                                  // or link will work. If href but no iconAction is provided arrow-right will be used.
     @Input() ariaDescription?: string; // Aria label to add to iconDescription.
     @Input() ariaAction?: string; // Aria label to add to iconAction. If not set, it will be equal to content.
     @Input() href?: string; // Link to go if no action provided.

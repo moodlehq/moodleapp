@@ -15,6 +15,7 @@
 import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { CoreContextMenuItemComponent } from './context-menu-item';
+import { CoreLoggerProvider } from '../../providers/logger';
 
 /**
  * Component to display a list of items received by param in a popover.
@@ -26,10 +27,12 @@ import { CoreContextMenuItemComponent } from './context-menu-item';
 export class CoreContextMenuPopoverComponent {
     title: string;
     items: CoreContextMenuItemComponent[];
+    protected logger: any;
 
-    constructor(navParams: NavParams, private viewCtrl: ViewController) {
+    constructor(navParams: NavParams, private viewCtrl: ViewController, logger: CoreLoggerProvider) {
         this.title = navParams.get('title');
         this.items = navParams.get('items') || [];
+        this.logger = logger.getInstance('CoreContextMenuPopoverComponent');
     }
 
     /**
@@ -51,7 +54,10 @@ export class CoreContextMenuPopoverComponent {
             event.preventDefault();
             event.stopPropagation();
 
-            if (!item.iconAction || item.iconAction == 'spinner') {
+            if (!item.iconAction) {
+                this.logger.warn('Items with action must have an icon action to work', item);
+                return false;
+            } else if (item.iconAction == 'spinner') {
                 return false;
             }
 

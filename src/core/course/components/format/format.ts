@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, ViewContainerRef, ComponentFactoryResolver, ViewChild, ChangeDetectorRef,
+import { Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ComponentFactoryResolver, ViewChild, ChangeDetectorRef,
          SimpleChange, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreLoggerProvider } from '../../../../providers/logger';
+import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCourseProvider } from '../../../course/providers/course';
+import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
+import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -33,9 +38,10 @@ import { CoreCourseFormatDelegate } from '../../../course/providers/format-deleg
     selector: 'core-course-format',
     templateUrl: 'format.html'
 })
-export class CoreCourseFormatComponent implements OnInit, OnChanges {
+export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
+    @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
     // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
@@ -71,12 +77,53 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
     loaded: boolean;
 
     protected logger;
+    protected sectionStatusObserver;
 
     constructor(logger: CoreLoggerProvider, private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService,
-            private factoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef) {
+            private factoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef,
+            private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
+            eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+
         this.logger = logger.getInstance('CoreCourseFormatComponent');
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
+
+        // Listen for section status changes.
+        this.sectionStatusObserver = eventsProvider.on(CoreEventsProvider.SECTION_STATUS_CHANGED, (data) => {
+            if (this.downloadEnabled && this.sections && this.sections.length && this.course && data.sectionId &&
+                    data.courseId == this.course.id) {
+                // Check if the affected section is being downloaded. If so, we don't update section status
+                // because it'll already be updated when the download finishes.
+                let downloadId = this.courseHelper.getSectionDownloadId({id: data.sectionId});
+                if (prefetchDelegate.isBeingDownloaded(downloadId)) {
+                    return;
+                }
+
+                // Get the affected section.
+                let section;
+                for (let i = 0; i < this.sections.length; i++) {
+                    let s = this.sections[i];
+                    if (s.id === data.sectionId) {
+                        section = s;
+                        break;
+                    }
+                }
+
+                if (!section) {
+                    // Section not found, stop.
+                    return;
+                }
+
+                // Recalculate the status.
+                this.courseHelper.calculateSectionStatus(section, this.course.id, false).then(() => {
+                    if (section.isDownloading && !prefetchDelegate.isBeingDownloaded(downloadId)) {
+                        // All the modules are now downloading, set a download all promise.
+                        this.prefetch(section, false);
+                    }
+                });
+            }
+        }, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -117,6 +164,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
                 }
                 this.sectionChanged(newSection);
             }
+        }
+
+        if (changes.downloadEnabled && this.downloadEnabled) {
+            this.calculateSectionsStatus(false);
         }
 
         // Apply the changes to the components and call ngOnChanges if it exists.
@@ -164,6 +215,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
             // Set the Input data.
             this.componentInstances[type].course = this.course;
             this.componentInstances[type].sections = this.sections;
+            this.componentInstances[type].downloadEnabled = this.downloadEnabled;
 
             return true;
         } catch(ex) {
@@ -201,5 +253,66 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges {
      */
     compareSections(s1: any, s2: any) : boolean {
         return s1 && s2 ? s1.id === s2.id : s1 === s2;
+    }
+
+    /**
+     * Calculate the status of sections.
+     *
+     * @param {boolean} refresh [description]
+     */
+    protected calculateSectionsStatus(refresh?: boolean) : void {
+        this.courseHelper.calculateSectionsStatus(this.sections, this.course.id, refresh).catch(() => {
+            // Ignore errors (shouldn't happen).
+        });
+    }
+
+    /**
+     * Confirm and prefetch a section. If the section is "all sections", prefetch all the sections.
+     *
+     * @param {Event} e Click event.
+     * @param {any} section Section to download.
+     */
+    prefetch(e: Event, section: any) : void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        section.isCalculating = true;
+        this.courseHelper.confirmDownloadSizeSection(this.course.id, section, this.sections).then(() => {
+            this.prefetchSection(section, true);
+        }, (error) => {
+            // User cancelled or there was an error calculating the size.
+            if (error) {
+                this.domUtils.showErrorModal(error);
+            }
+        }).finally(() => {
+            section.isCalculating = false;
+        });
+    }
+
+    /**
+     * Prefetch a section.
+     *
+     * @param {any} section The section to download.
+     * @param {boolean} [manual] Whether the prefetch was started manually or it was automatically started because all modules
+     *                           are being downloaded.
+     */
+    protected prefetchSection(section: any, manual?: boolean) {
+        this.courseHelper.prefetchSection(section, this.course.id, this.sections).catch((error) => {
+            // Don't show error message if it's an automatic download.
+            if (!manual) {
+                return;
+            }
+
+            this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
+        });
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy() {
+        if (this.sectionStatusObserver) {
+            this.sectionStatusObserver.off();
+        }
     }
 }

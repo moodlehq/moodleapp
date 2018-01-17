@@ -101,10 +101,11 @@ export class CoreDomUtilsProvider {
      * @param {string} [unknownMessage] ID of the message to show if size is unknown.
      * @param {number} [wifiThreshold] Threshold to show confirm in WiFi connection. Default: CoreWifiDownloadThreshold.
      * @param {number} [limitedThreshold] Threshold to show confirm in limited connection. Default: CoreDownloadThreshold.
+     * @param {boolean} [alwaysConfirm] True to show a confirm even if the size isn't high, false otherwise.
      * @return {Promise<void>} Promise resolved when the user confirms or if no confirm needed.
      */
-    confirmDownloadSize(size: any, message?: string, unknownMessage?: string, wifiThreshold?: number, limitedThreshold?: number)
-            : Promise<void> {
+    confirmDownloadSize(size: any, message?: string, unknownMessage?: string, wifiThreshold?: number, limitedThreshold?: number,
+            alwaysConfirm?: boolean) : Promise<void> {
         wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
         limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
@@ -120,6 +121,8 @@ export class CoreDomUtilsProvider {
             message = message || 'core.course.confirmdownload';
             let readableSize = this.textUtils.bytesToSize(size.size, 2);
             return this.showConfirm(this.translate.instant(message, {size: readableSize}));
+        } else if (alwaysConfirm) {
+            return this.showConfirm(this.translate.instant('core.areyousure'));
         }
         return Promise.resolve();
     }

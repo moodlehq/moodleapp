@@ -26,6 +26,31 @@ import { CoreCache } from '../../../classes/cache';
 import { CoreSiteWSPreSets } from '../../../classes/site';
 import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { Subject, BehaviorSubject, Subscription } from 'rxjs';
+
+/**
+ * Progress of downloading a list of modules.
+ */
+export type CoreCourseModulesProgress = {
+    /**
+     * Number of modules downloaded so far.
+     * @type {number}
+     */
+    count: number;
+
+    /**
+     * Toal of modules to download.
+     * @type {number}
+     */
+    total: number;
+};
+
+/**
+ * Progress function for downloading a list of modules.
+ *
+ * @param {CoreCourseModulesProgress} data Progress data.
+ */
+export type CoreCourseModulesProgressFunction = (data: CoreCourseModulesProgress) => void;
 
 /**
  * Interface that all course prefetch handlers must implement.
@@ -203,9 +228,16 @@ export class CoreCourseModulePrefetchDelegate {
     protected statusCache = new CoreCache();
     protected lastUpdateHandlersStart: number;
 
-    // Promises for check updates and for prefetch.
+    // Promises for check updates, to prevent performing the same request twice at the same time.
     protected courseUpdatesPromises: {[s: string]: {[s: string]: Promise<any>}} = {};
-    protected prefetchPromises: {[s: string]: {[s: string]: Promise<any>}} = {};
+
+    // Promises and observables for prefetching, to prevent downloading the same section twice at the same time
+    // and notify the progress of the download.
+    protected prefetchData: {[s: string]: {[s: string]: {
+        promise: Promise<any>,
+        observable: Subject<CoreCourseModulesProgress>,
+        subscriptions: Subscription[]
+    }}} = {};
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
             private courseProvider: CoreCourseProvider, private filepoolProvider: CoreFilepoolProvider,
@@ -306,16 +338,15 @@ export class CoreCourseModulePrefetchDelegate {
      *
      * @param {any} module Module.
      * @param {string} status Current status.
-     * @param {boolean} [restoreDownloads] True if it should restore downloads if needed.
      * @param {boolean} [canCheck] True if updates can be checked using core_course_check_updates.
      * @return {string} Module status.
      */
-    determineModuleStatus(module: any, status: string, restoreDownloads?: boolean, canCheck?: boolean) : string {
+    determineModuleStatus(module: any, status: string, canCheck?: boolean) : string {
         const handler = this.getPrefetchHandlerFor(module),
             siteId = this.sitesProvider.getCurrentSiteId();
 
         if (handler) {
-            if (status == CoreConstants.DOWNLOADING && restoreDownloads) {
+            if (status == CoreConstants.DOWNLOADING) {
                 // Check if the download is being handled.
                 if (!this.filepoolProvider.getPackageDownloadPromise(siteId, handler.component, module.id)) {
                     // Not handled, the app was probably restarted or something weird happened.
@@ -624,13 +655,10 @@ export class CoreCourseModulePrefetchDelegate {
      * @param {any} [updates] Result of getCourseUpdates for all modules in the course. If not provided, it will be
      *                        calculated (slower). If it's false it means the site doesn't support check updates.
      * @param {boolean} [refresh] True if it should ignore the cache.
-     * @param {Boolean} [restoreDownloads] True if it should restore downloads. It's only used if refresh=false,
-     *                                     if refresh=true then it always tries to restore downloads.
      * @param {number} [sectionId] ID of the section the module belongs to.
      * @return {Promise<string>} Promise resolved with the status.
      */
-    getModuleStatus(module: any, courseId: number, updates?: any, refresh?: boolean, restoreDownloads?: boolean, sectionId?: number)
-            : Promise<string> {
+    getModuleStatus(module: any, courseId: number, updates?: any, refresh?: boolean, sectionId?: number) : Promise<string> {
         let handler = this.getPrefetchHandlerFor(module),
             siteId = this.sitesProvider.getCurrentSiteId(),
             canCheck = this.canCheckUpdates();
@@ -644,7 +672,7 @@ export class CoreCourseModulePrefetchDelegate {
                 promise;
 
             if (!refresh && typeof status != 'undefined') {
-                return Promise.resolve(this.determineModuleStatus(module, status, restoreDownloads, canCheck));
+                return Promise.resolve(this.determineModuleStatus(module, status, canCheck));
             }
 
             // Check if the module is downloadable.
@@ -694,7 +722,7 @@ export class CoreCourseModulePrefetchDelegate {
                         }).catch(() => {
                             // Error checking if module has updates.
                             const status = this.statusCache.getValue(packageId, 'status', true);
-                            return this.determineModuleStatus(module, status, restoreDownloads, canCheck);
+                            return this.determineModuleStatus(module, status, canCheck);
                         });
                     }, () => {
                         // Error getting updates, show the stored status.
@@ -704,9 +732,9 @@ export class CoreCourseModulePrefetchDelegate {
                 });
             }).then((status) => {
                 if (updateStatus) {
-                    this.updateStatusCache(component, module.id, status, sectionId);
+                    this.updateStatusCache(status, courseId, component, module.id, sectionId);
                 }
-                return this.determineModuleStatus(module, status, restoreDownloads, canCheck);
+                return this.determineModuleStatus(module, status, canCheck);
             });
         }
 
@@ -722,8 +750,6 @@ export class CoreCourseModulePrefetchDelegate {
      * @param {number} courseId Course ID the modules belong to.
      * @param {number} [sectionId] ID of the section the modules belong to.
      * @param {boolean} [refresh] True if it should always check the DB (slower).
-     * @param {Boolean} [restoreDownloads] True if it should restore downloads. It's only used if refresh=false,
-     *                                    if refresh=true then it always tries to restore downloads.
      * @return {Promise<any>} Promise resolved with an object with the following properties:
      *                                - status (string) Status of the module.
      *                                - total (number) Number of modules.
@@ -732,7 +758,7 @@ export class CoreCourseModulePrefetchDelegate {
      *                                - CoreConstants.DOWNLOADING (any[]) Modules with state DOWNLOADING.
      *                                - CoreConstants.OUTDATED (any[]) Modules with state OUTDATED.
      */
-    getModulesStatus(modules: any[], courseId: number, sectionId?: number, refresh?: boolean, restoreDownloads?: boolean) : any {
+    getModulesStatus(modules: any[], courseId: number, sectionId?: number, refresh?: boolean) : any {
         let promises = [],
             status = CoreConstants.NOT_DOWNLOADABLE,
             result: any = {
@@ -757,7 +783,7 @@ export class CoreCourseModulePrefetchDelegate {
                 if (handler) {
                     let packageId = this.filepoolProvider.getPackageId(handler.component, module.id);
 
-                    promises.push(this.getModuleStatus(module, courseId, updates, refresh, restoreDownloads).then((modStatus) => {
+                    promises.push(this.getModuleStatus(module, courseId, updates, refresh).then((modStatus) => {
                         if (modStatus != CoreConstants.NOT_DOWNLOADABLE) {
                             if (sectionId && sectionId > 0) {
                                 // Store the section ID.
@@ -906,7 +932,7 @@ export class CoreCourseModulePrefetchDelegate {
      */
     isBeingDownloaded(id: string) : boolean {
         const siteId = this.sitesProvider.getCurrentSiteId();
-        return !!(this.prefetchPromises[siteId] && this.prefetchPromises[siteId][id]);
+        return !!(this.prefetchData[siteId] && this.prefetchData[siteId][id]);
     }
 
     /**
@@ -1017,19 +1043,39 @@ export class CoreCourseModulePrefetchDelegate {
      * @param {string} id An ID to identify the download. It can be used to retrieve the download promise.
      * @param {any[]} modules List of modules to prefetch.
      * @param {number} courseId Course ID the modules belong to.
-     * @param {Function} [onProgress] Function to call everytime a module is downloaded.
+     * @param {CoreCourseModulesProgressFunction} [onProgress] Function to call everytime a module is downloaded.
      * @return {Promise<any>} Promise resolved when all modules have been prefetched.
      */
-    prefetchModules(id: string, modules: any[], courseId: number, onProgress?: (moduleId: number) => any) : Promise<any> {
+    prefetchModules(id: string, modules: any[], courseId: number, onProgress?: CoreCourseModulesProgressFunction) : Promise<any> {
 
-        const siteId = this.sitesProvider.getCurrentSiteId();
+        const siteId = this.sitesProvider.getCurrentSiteId(),
+            currentData = this.prefetchData[siteId] && this.prefetchData[siteId][id];
 
-        if (this.prefetchPromises[siteId] && this.prefetchPromises[siteId][id]) {
+        if (currentData) {
             // There's a prefetch ongoing, return the current promise.
-            return this.prefetchPromises[siteId][id];
+            if (onProgress) {
+                currentData.subscriptions.push(currentData.observable.subscribe(onProgress));
+            }
+            return currentData.promise;
         }
 
-        let promises = [];
+        let promises = [],
+            count = 0,
+            total = modules.length,
+            moduleIds = modules.map((module) => {
+                return module.id;
+            });
+
+        // Initialize the prefetch data.
+        const prefetchData = {
+            observable: new BehaviorSubject<CoreCourseModulesProgress>({count: count, total: total}),
+            promise: undefined,
+            subscriptions: []
+        };
+
+        if (onProgress) {
+            prefetchData.observable.subscribe(onProgress);
+        }
 
         modules.forEach((module) => {
             // Check if the module has a prefetch handler.
@@ -1041,23 +1087,34 @@ export class CoreCourseModulePrefetchDelegate {
                     }
 
                     return handler.prefetch(module, courseId).then(() => {
-                        if (onProgress) {
-                            onProgress(module.id);
+                        let index = moduleIds.indexOf(id);
+                        if (index > -1) {
+                            // It's one of the modules we were expecting to download.
+                            moduleIds.splice(index, 1);
+                            count++;
+                            prefetchData.observable.next({count: count, total: total});
                         }
                     });
                 }));
             }
         });
 
-        if (!this.prefetchPromises[siteId]) {
-            this.prefetchPromises[siteId] = {};
-        }
-
-        this.prefetchPromises[siteId][id] = Promise.all(promises).finally(() => {
-            delete this.prefetchPromises[siteId][id];
+        // Set the promise.
+        prefetchData.promise = Promise.all(promises).finally(() => {
+            // Unsubscribe all observers.
+            prefetchData.subscriptions.forEach((subscription: Subscription) => {
+                subscription.unsubscribe();
+            });
+            delete this.prefetchData[siteId][id];
         });
 
-        return this.prefetchPromises[siteId][id];
+        // Store the prefetch data in the list.
+        if (!this.prefetchData[siteId]) {
+            this.prefetchData[siteId] = {};
+        }
+        this.prefetchData[siteId][id] = prefetchData;
+
+        return prefetchData.promise;
     }
 
     /**
@@ -1113,6 +1170,22 @@ export class CoreCourseModulePrefetchDelegate {
                 this.filepoolProvider.storePackageStatus(siteId, handler.component, module.id, CoreConstants.NOT_DOWNLOADED);
             }
         });
+    }
+
+    /**
+     * Set an on progress function for the download of a list of modules.
+     *
+     * @param {string} id An ID to identify the download.
+     * @param {CoreCourseModulesProgressFunction} onProgress Function to call everytime a module is downloaded.
+     */
+    setOnProgress(id: string, onProgress: CoreCourseModulesProgressFunction) : void {
+        const siteId = this.sitesProvider.getCurrentSiteId(),
+            currentData = this.prefetchData[siteId] && this.prefetchData[siteId][id];
+
+        if (currentData) {
+            // There's a prefetch ongoing, return the current promise.
+            currentData.subscriptions.push(currentData.observable.subscribe(onProgress));
+        }
     }
 
     /**
@@ -1206,10 +1279,13 @@ export class CoreCourseModulePrefetchDelegate {
     /**
      * Update the status of a module in the "cache".
      *
+     * @param {string} status New status.
+     * @param {number} courseId Course ID of the module.
      * @param {string} component Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {number} [sectionId] Section ID of the module.
      */
-    updateStatusCache(component: string, componentId: string|number, status: string, sectionId?: number) : void {
+    updateStatusCache(status: string, courseId: number, component: string, componentId?: string|number, sectionId?: number) : void {
         let notify,
             packageId = this.filepoolProvider.getPackageId(component, componentId),
             cachedStatus = this.statusCache.getValue(packageId, 'status', true);
@@ -1230,7 +1306,8 @@ export class CoreCourseModulePrefetchDelegate {
                 this.statusCache.setValue(packageId, 'sectionId', sectionId);
 
                 this.eventsProvider.trigger(CoreEventsProvider.SECTION_STATUS_CHANGED, {
-                    sectionId: sectionId
+                    sectionId: sectionId,
+                    courseId: courseId
                 }, this.sitesProvider.getCurrentSiteId());
             }
         } else {

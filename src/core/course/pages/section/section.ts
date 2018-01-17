@@ -16,12 +16,13 @@ import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { IonicPage, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
+import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
-import { CoreCoursesDelegate } from '../../../courses/providers/delegate';
+import { CoreCoursesDelegate, CoreCoursesHandlerToDisplay } from '../../../courses/providers/delegate';
 import { CoreCoursesProvider } from '../../../courses/providers/courses';
 
 /**
@@ -38,16 +39,24 @@ export class CoreCourseSectionPage implements OnDestroy {
     title: string;
     course: any;
     sections: any[];
-    courseHandlers: any[];
+    courseHandlers: CoreCoursesHandlerToDisplay[];
     dataLoaded: boolean;
+    downloadEnabled: boolean;
+    downloadEnabledIcon: string = 'square-outline'; // Disabled by default.
+    prefetchCourseData = {
+        prefetchCourseIcon: 'spinner'
+    };
 
     protected moduleId;
     protected completionObserver;
+    protected courseStatusObserver;
+    protected isDestroyed = false;
 
     constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private coursesDelegate: CoreCoursesDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
-            private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider) {
+            private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
+            sitesProvider: CoreSitesProvider) {
         this.course = navParams.get('course');
         this.title = courseFormatDelegate.getCourseTitle(this.course);
         this.moduleId = navParams.get('moduleId');
@@ -57,6 +66,13 @@ export class CoreCourseSectionPage implements OnDestroy {
                 this.refreshAfterCompletionChange();
             }
         });
+
+        // Listen for changes in course status.
+        this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
+            if (data.courseId == this.course.id) {
+                this.prefetchCourseData.prefetchCourseIcon = this.courseHelper.getCourseStatusIconFromStatus(data.status);
+            }
+        }, sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -66,6 +82,27 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.loadData().finally(() => {
             this.dataLoaded = true;
             delete this.moduleId; // Only load module automatically the first time.
+
+            // Determine the course prefetch status.
+            this.determineCoursePrefetchIcon().then(() => {
+                if (this.prefetchCourseData.prefetchCourseIcon == 'spinner') {
+                    // Course is being downloaded. Get the download promise.
+                    const promise = this.courseHelper.getCourseDownloadPromise(this.course.id);
+                    if (promise) {
+                        // There is a download promise. Show an error if it fails.
+                        promise.catch((error) => {
+                            if (!this.isDestroyed) {
+                                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                            }
+                        });
+                    } else {
+                        // No download, this probably means that the app was closed while downloading. Set previous status.
+                        this.courseProvider.setCoursePreviousStatus(this.course.id).then((status) => {
+                            this.prefetchCourseData.prefetchCourseIcon = this.courseHelper.getCourseStatusIconFromStatus(status);
+                        });
+                    }
+                }
+            });
         });
     }
 
@@ -185,9 +222,42 @@ export class CoreCourseSectionPage implements OnDestroy {
     }
 
     /**
+     * Determines the prefetch icon of the course.
+     */
+    protected determineCoursePrefetchIcon() {
+        return this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
+            this.prefetchCourseData.prefetchCourseIcon = icon;
+        });
+    }
+
+    /**
+     * Prefetch the whole course.
+     */
+    prefetchCourse() {
+        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections, this.courseHandlers)
+                .then((downloaded) => {
+            if (downloaded && this.downloadEnabled) {
+                // Recalculate the status.
+                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
+                    // Ignore errors (shouldn't happen).
+                });
+            }
+        });
+    }
+
+    /**
+     * Toggle download enabled.
+     */
+    toggleDownload() {
+        this.downloadEnabled = !this.downloadEnabled;
+        this.downloadEnabledIcon = this.downloadEnabled ? 'checkbox-outline' : 'square-outline';
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy() {
+        this.isDestroyed = true;
         if (this.completionObserver) {
             this.completionObserver.off();
         }

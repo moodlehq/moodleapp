@@ -4,7 +4,8 @@
 
         <ion-buttons end>
             <core-context-menu>
-                <core-context-menu-item [priority]="900" [content]="'core.settings.enabledownloadsection' | translate" (action)="toggleDownload()" [iconAction]="'downloadSectionsIcon'"></core-context-menu-item>
+                <core-context-menu-item [priority]="900" [content]="'core.settings.enabledownloadsection' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+                <core-context-menu-item [priority]="850" [content]="'core.course.downloadcourse' | translate" (action)="prefetchCourse()" [iconAction]="prefetchCourseData.prefetchCourseIcon" [closeOnClick]="false"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
     </ion-navbar>
@@ -19,6 +20,6 @@
             <a ion-button class="tab-item">{{ 'core.course.contents' || translate }}</a>
             <a *ngFor="let handler of courseHandlers" ion-button class="tab-item">{{ handler.data.title || translate }}</a>
         </div>
-        <core-course-format [course]="course" [sections]="sections" (completionChanged)="onCompletionChange()"></core-course-format>
+        <core-course-format [course]="course" [sections]="sections" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange()"></core-course-format>
     </core-loading>
 </ion-content>
