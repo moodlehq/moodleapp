@@ -21,7 +21,7 @@ import { CoreCoursesProvider } from '../../../../core/courses/providers/courses'
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreLocalNotificationsProvider } from '../../../../providers/local-notifications';
-//import { CoreCourseProvider } from '../../../core/course/providers/course';
+import { CoreCourseProvider } from '../../../../core/course/providers/course';
 import * as moment from 'moment';
 
 /**
@@ -48,7 +48,7 @@ export class AddonCalendarEventPage {
     constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, private navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
             private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider/*, private courseProvider: CoreCourseProvider*/) {
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -95,8 +95,8 @@ export class AddonCalendarEventPage {
             // Guess event title.
             let title = this.translate.instant('addon.calendar.type' + event.eventtype);
             if (event.moduleIcon) {
-                // @todo: It's a module event, translate the module name to the current language.
-                let name = "" //this.courseProvider.translateModuleName(event.modulename);
+                // It's a module event, translate the module name to the current language.
+                let name = this.courseProvider.translateModuleName(event.modulename);
                 if (name.indexOf('core.mod_') === -1) {
                     event.moduleName = name;
                 }
