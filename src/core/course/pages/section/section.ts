@@ -242,6 +242,10 @@ export class CoreCourseSectionPage implements OnDestroy {
                     // Ignore errors (shouldn't happen).
                 });
             }
+        }).catch((error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+            }
         });
     }
 

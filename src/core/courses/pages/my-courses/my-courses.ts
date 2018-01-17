@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -34,14 +35,16 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     filter = '';
     showFilter = false;
     coursesLoaded = false;
+    prefetchCoursesData: any = {};
 
     protected prefetchIconInitialized = false;
     protected myCoursesObserver;
     protected siteUpdatedObserver;
+    protected isDestroyed = false;
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider) {}
+            private sitesProvider: CoreSitesProvider, private courseHelper: CoreCourseHelperProvider) {}
 
     /**
      * View loaded.
@@ -81,7 +84,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
                 this.filteredCourses = this.courses;
                 this.filter = '';
 
-                // this.initPrefetchCoursesIcon();
+                this.initPrefetchCoursesIcon();
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
@@ -140,9 +143,59 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     }
 
     /**
+     * Prefetch all the courses.
+     */
+    prefetchCourses() {
+        let initialIcon = this.prefetchCoursesData.icon;
+
+        this.prefetchCoursesData.icon = 'spinner';
+        this.prefetchCoursesData.badge = '';
+        return this.courseHelper.confirmAndPrefetchCourses(this.courses, (progress) => {
+            this.prefetchCoursesData.badge = progress.count + ' / ' + progress.total;
+        }).then((downloaded) => {
+            this.prefetchCoursesData.icon = downloaded ? 'ion-android-refresh' : initialIcon;
+        }, (error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                this.prefetchCoursesData.icon = initialIcon;
+            }
+        }).finally(() => {
+            this.prefetchCoursesData.badge = '';
+        });
+    }
+
+    /**
+     * Initialize the prefetch icon for the list of courses.
+     */
+    protected initPrefetchCoursesIcon() {
+        if (this.prefetchIconInitialized) {
+            // Already initialized.
+            return;
+        }
+
+        this.prefetchIconInitialized = true;
+
+        if (!this.courses || this.courses.length < 2) {
+            // Not enough courses.
+            this.prefetchCoursesData.icon = '';
+            return;
+        }
+
+        this.courseHelper.determineCoursesStatus(this.courses).then((status) => {
+            let icon = this.courseHelper.getCourseStatusIconFromStatus(status);
+            if (icon == 'spinner') {
+                // It seems all courses are being downloaded, show a download button instead.
+                icon = 'cloud-download';
+            }
+            this.prefetchCoursesData.icon = icon;
+        });
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy() {
+        this.isDestroyed = true;
         this.myCoursesObserver && this.myCoursesObserver.off();
         this.siteUpdatedObserver && this.siteUpdatedObserver.off();
     }

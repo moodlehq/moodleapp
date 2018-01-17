@@ -7,6 +7,7 @@
                 <ion-icon name="search"></ion-icon>
             </button>
             <core-context-menu>
+                <core-context-menu-item [hidden]="!courses || courses.length < 2" [priority]="800" [content]="'core.courses.downloadcourses' | translate" (action)="prefetchCourses()" [iconAction]="prefetchCoursesData.icon" [closeOnClick]="false" [badge]="prefetchCoursesData.badge"></core-context-menu-item>
                 <core-context-menu-item [hidden]="!courses || courses.length <= 5" [priority]="700" [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" [iconAction]="'funnel'"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
