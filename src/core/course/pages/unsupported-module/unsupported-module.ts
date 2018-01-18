@@ -13,11 +13,9 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
-import { CoreCourseProvider } from '../../providers/course';
-import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
 
 /**
  * Page that displays info about an unsupported module.
@@ -28,30 +26,18 @@ import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
     templateUrl: 'unsupported-module.html',
 })
 export class CoreCourseUnsupportedModulePage {
-
     module: any;
-    isDisabledInSite: boolean;
-    isSupportedByTheApp: boolean;
-    moduleName: string;
 
     constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
-            private moduleDelegate: CoreCourseModuleDelegate, private courseProvider: CoreCourseProvider) {
+            private navCtrl: NavController) {
         this.module = navParams.get('module') || {};
-    }
-
-    /**
-     * View loaded.
-     */
-    ionViewDidLoad() {
-        this.isDisabledInSite = this.moduleDelegate.isModuleDisabledInSite(this.module.modname);
-        this.isSupportedByTheApp = this.moduleDelegate.hasHandler(this.module.modname);
-        this.moduleName = this.courseProvider.translateModuleName(this.module.modname);
     }
 
     /**
      * Expand the description.
      */
     expandDescription() {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.module.description, false);
+        this.textUtils.expandText(this.translate.instant('core.description'), this.module.description, false,
+                undefined, undefined, this.navCtrl);
     }
 }

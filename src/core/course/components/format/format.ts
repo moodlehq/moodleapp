@@ -210,16 +210,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             this.componentContainers[type] = container;
             this.componentInstances[type] = componentRef.instance;
-            this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.
 
             // Set the Input data.
             this.componentInstances[type].course = this.course;
             this.componentInstances[type].sections = this.sections;
             this.componentInstances[type].downloadEnabled = this.downloadEnabled;
 
+            this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.
+
             return true;
         } catch(ex) {
-            this.logger.error('Error creating component', type, ex, componentClass);
+            this.logger.error('Error creating component', type, ex);
             return false;
         }
     }

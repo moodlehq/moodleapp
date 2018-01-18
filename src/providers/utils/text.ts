@@ -251,7 +251,7 @@ export class CoreTextUtilsProvider {
      * @param {boolean} [isModal] Whether it should be opened in a modal (true) or in a new page (false).
      * @param {string} [component] Component to link the embedded files to.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {NavController} [navCtrl] The NavController instance to use.
+     * @param {NavController} [navCtrl] The NavController instance to use. Required if isModal is false.
      */
     expandText(title: string, text: string, isModal?: boolean, component?: string, componentId?: string|number,
             navCtrl?: NavController) : void {

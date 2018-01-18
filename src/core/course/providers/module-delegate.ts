@@ -52,6 +52,15 @@ export interface CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number) : CoreCourseModuleHandlerData;
+
+    /**
+     * Get the component to render the module. This is needed to support singleactivity course format.
+     *
+     * @param {any} course The course object.
+     * @param {any} module The module object.
+     * @return {any} The component to use, undefined if not found.
+     */
+    getMainComponent(course: any, module: any) : any;
 };
 
 /**
@@ -161,6 +170,23 @@ export class CoreCourseModuleDelegate {
         eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
         eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
         eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
+    }
+
+    /**
+     * Get the component to render the module.
+     *
+     * @param {any} course The course object.
+     * @param {any} module The module object.
+     * @return {any} The component to use, undefined if not found.
+     */
+    getMainComponent?(course: any, module: any) : any {
+        let handler = this.enabledHandlers[module.modname];
+        if (handler && handler.getMainComponent) {
+            let component = handler.getMainComponent(course, module);
+            if (component) {
+                return component;
+            }
+        }
     }
 
     /**

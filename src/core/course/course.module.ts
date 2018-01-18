@@ -19,12 +19,14 @@ import { CoreCourseFormatDelegate } from './providers/format-delegate';
 import { CoreCourseModuleDelegate } from './providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './providers/module-prefetch-delegate';
 import { CoreCourseFormatDefaultHandler } from './providers/default-format';
+import { CoreCourseFormatSingleActivityModule } from './formats/singleactivity/singleactivity.module';
 import { CoreCourseFormatTopicsModule} from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 
 @NgModule({
     declarations: [],
     imports: [
+        CoreCourseFormatSingleActivityModule,
         CoreCourseFormatTopicsModule,
         CoreCourseFormatWeeksModule
     ],

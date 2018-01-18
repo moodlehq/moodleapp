@@ -58,8 +58,10 @@ export class CoreCourseSectionPage implements OnDestroy {
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
             sitesProvider: CoreSitesProvider) {
         this.course = navParams.get('course');
-        this.title = courseFormatDelegate.getCourseTitle(this.course);
         this.moduleId = navParams.get('moduleId');
+
+        // Get the title to display. We dont't have sections yet.
+        this.title = courseFormatDelegate.getCourseTitle(this.course);
 
         this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
             if (data && data.courseId == this.course.id) {
@@ -150,6 +152,9 @@ export class CoreCourseSectionPage implements OnDestroy {
                             id: CoreCourseProvider.ALL_SECTIONS_ID
                         });
                     }
+
+                    // Get the title again now that we have sections.
+                    this.title = this.courseFormatDelegate.getCourseTitle(this.course, this.sections);
                 }));
             }));
 

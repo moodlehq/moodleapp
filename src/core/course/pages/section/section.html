@@ -16,9 +16,10 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="dataLoaded">
-        <div class="tabs tabs-striped tabs-free mm-tabs-color">
-            <a ion-button class="tab-item">{{ 'core.course.contents' || translate }}</a>
-            <a *ngFor="let handler of courseHandlers" ion-button class="tab-item">{{ handler.data.title || translate }}</a>
+        <!-- @todo: Use core-tabs or a new component. core-tabs might initialize all tabs at start, so we might require a new component. -->
+        <div class="core-tabs-bar">
+            <a aria-selected="true">{{ 'core.course.contents' | translate }}</a>
+            <a *ngFor="let handler of courseHandlers">{{ handler.data.title || translate }}</a>
         </div>
         <core-course-format [course]="course" [sections]="sections" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange()"></core-course-format>
     </core-loading>

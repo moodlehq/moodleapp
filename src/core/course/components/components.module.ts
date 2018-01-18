@@ -22,13 +22,15 @@ import { CoreCourseFormatComponent } from './format/format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
+import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 
 @NgModule({
     declarations: [
         CoreCourseFormatComponent,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
-        CoreCourseModuleDescriptionComponent
+        CoreCourseModuleDescriptionComponent,
+        CoreCourseUnsupportedModuleComponent
     ],
     imports: [
         CommonModule,
@@ -43,7 +45,11 @@ import { CoreCourseModuleDescriptionComponent } from './module-description/modul
         CoreCourseFormatComponent,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
-        CoreCourseModuleDescriptionComponent
+        CoreCourseModuleDescriptionComponent,
+        CoreCourseUnsupportedModuleComponent
+    ],
+    entryComponents: [
+        CoreCourseUnsupportedModuleComponent
     ]
 })
 export class CoreCourseComponentsModule {}

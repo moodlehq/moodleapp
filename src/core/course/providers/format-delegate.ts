@@ -39,11 +39,13 @@ export interface CoreCourseFormatHandler {
 
     /**
      * Get the title to use in course page. If not defined, course fullname.
+     * This function will be called without sections first, and then call it again when the sections are retrieved.
      *
      * @param {any} course The course.
+     * @param {any[]} [sections] List of sections.
      * @return {string} Title.
      */
-    getCourseTitle?(course: any) : string;
+    getCourseTitle?(course: any, sections?: any[]) : string;
 
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
@@ -227,10 +229,11 @@ export class CoreCourseFormatDelegate {
      * Given a course, return the title to use in the course page.
      *
      * @param {any} course The course to get the title.
+     * @param {any[]} [sections] List of sections.
      * @return {string} Course title.
      */
-    getCourseTitle(course: any) : string {
-        return this.executeFunction(course.format, 'getCourseTitle', [course]);
+    getCourseTitle(course: any, sections?: any[]) : string {
+        return this.executeFunction(course.format, 'getCourseTitle', [course, sections]);
     }
 
     /**
