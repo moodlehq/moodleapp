@@ -744,6 +744,20 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Show an alert modal with the first warning error message. It uses a default message if error is not a string.
+     *
+     * @param {any} warnings Warnings returned.
+     * @param {any} [defaultError] Message to show if the error is not a string.
+     * @param {boolean} [needsTranslate] Whether the error needs to be translated.
+     * @param {number} [autocloseTime] Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
+     * @return {Alert} The alert modal.
+     */
+    showErrorModalFirstWarning(warnings: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number) : Alert {
+        let error = warnings && warnings.length && warnings[0].message;
+        return this.showErrorModalDefault(error, defaultError, needsTranslate, autocloseTime);
+    }
+
+    /**
      * Displays a loading modal window.
      *
      * @param {string} [text] The text of the modal window. Default: core.loading.

@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '../../../../core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldTextareaComponent } from '../component/textarea';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 
 /**
  * Textarea user profile field handlers.
@@ -25,7 +24,7 @@ import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 export class AddonUserProfileFieldTextareaHandler implements CoreUserProfileFieldHandler {
     name = 'textarea';
 
-    constructor(private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider) {}
+    constructor(private textUtils: CoreTextUtilsProvider) {}
 
     /**
      * Whether or not the handler is enabled on a site level.
@@ -42,41 +41,34 @@ export class AddonUserProfileFieldTextareaHandler implements CoreUserProfileFiel
      * @param  {any}     field          User field to get the data for.
      * @param  {boolean} signup         True if user is in signup page.
      * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
-     * @return {Promise<CoreUserProfileFieldHandlerData>}  Data to send for the field.
+     * @param  {any}     formValues     Form Values.
+     * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
-    getData(field: any, signup: boolean, registerAuth: string, model: any): Promise<CoreUserProfileFieldHandlerData> {
+    getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
         let name = 'profile_field_' + field.shortname;
 
-        if (model[name]) {
-            return this.domUtils.isRichTextEditorEnabled().then((enabled) => {
-                let text = model[name].text || '';
-                if (!enabled) {
-                    // Rich text editor not enabled, add some HTML to the message if needed.
-                    text = this.textUtils.formatHtmlLines(text);
-                }
+        if (formValues[name]) {
+            let text = formValues[name] || '';
+            // Add some HTML to the message in case the user edited with textarea.
+            text = this.textUtils.formatHtmlLines(text);
 
-                return {
-                    type: 'textarea',
-                    name: name,
-                    value: JSON.stringify({
-                        text: text,
-                        format: model[name].format || 1
-                    })
-                };
-            });
+            return {
+                type: 'textarea',
+                name: name,
+                value: JSON.stringify({
+                    text: text,
+                    format: 1 // Always send this format.
+                })
+            };
         }
     }
 
     /**
      * Return the Component to use to display the user profile field.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean, registerAuth: string) {
+    getComponent() {
         return AddonUserProfileFieldTextareaComponent;
     }
 

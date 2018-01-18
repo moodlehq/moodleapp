@@ -40,17 +40,17 @@ export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHan
      * @param  {any}     field          User field to get the data for.
      * @param  {boolean} signup         True if user is in signup page.
      * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
+     * @param  {any}     formValues     Form Values.
      * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
-    getData(field: any, signup: boolean, registerAuth: string, model: any): CoreUserProfileFieldHandlerData {
+    getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
         let name = 'profile_field_' + field.shortname;
 
-        if (model[name]) {
+        if (formValues[name]) {
             return {
                 type: 'menu',
                 name: name,
-                value: model[name]
+                value: formValues[name]
             };
         }
     }
@@ -58,12 +58,9 @@ export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHan
     /**
      * Return the Component to use to display the user profile field.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean, registerAuth: string) {
+    getComponent() {
         return AddonUserProfileFieldMenuComponent;
     }
 

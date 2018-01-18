@@ -60,7 +60,6 @@ export class CoreUserHelperProvider {
         let separator = this.translate.instant('core.listsep');
 
         roles.map((value) => {
-            console.error(value);
             let translation = this.translate.instant('core.user.' + value.shortname);
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
         });

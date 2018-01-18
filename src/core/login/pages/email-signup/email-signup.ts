@@ -22,6 +22,7 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 import { CoreWSProvider } from '../../../../providers/ws';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoreUserProfileFieldDelegate } from '../../../user/providers/user-profile-field-delegate';
 
 /**
  * Page to signup using email.
@@ -55,7 +56,7 @@ export class CoreLoginEmailSignupPage {
     constructor(private navCtrl: NavController, navParams: NavParams, private fb: FormBuilder, private wsProvider: CoreWSProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, private userProfileFieldDelegate :CoreUserProfileFieldDelegate) {
 
         this.siteUrl = navParams.get('siteUrl');
 
@@ -228,26 +229,22 @@ export class CoreLoginEmailSignupPage {
             }
 
             // Get the data for the custom profile fields.
-            // @todo: Implement it once profile fields are implemented.
-            // $mmUserProfileFieldsDelegate.getDataForFields(fields, true, 'email', $scope.data).then(function(fieldsData) {
-            //     params.customprofilefields = fieldsData;
+            this.userProfileFieldDelegate.getDataForFields(this.settings.profilefields, true, 'email', this.signupForm.value).then((fieldsData) => {
+                params.customprofilefields = fieldsData;
 
-            this.wsProvider.callAjax('auth_email_signup_user', params, {siteUrl: this.siteUrl}).then((result) => {
-                if (result.success) {
-                    // Show alert and ho back.
-                    let message = this.translate.instant('core.login.emailconfirmsent', {$a: params.email});
-                    this.domUtils.showAlert(this.translate.instant('core.success'), message);
-                    this.navCtrl.pop();
-                } else {
-                    if (result.warnings && result.warnings.length) {
-                        this.domUtils.showErrorModal(result.warnings[0].message);
+                this.wsProvider.callAjax('auth_email_signup_user', params, {siteUrl: this.siteUrl}).then((result) => {
+                    if (result.success) {
+                        // Show alert and ho back.
+                        let message = this.translate.instant('core.login.emailconfirmsent', {$a: params.email});
+                        this.domUtils.showAlert(this.translate.instant('core.success'), message);
+                        this.navCtrl.pop();
                     } else {
-                        this.domUtils.showErrorModal('core.login.usernotaddederror', true);
-                    }
+                        this.domUtils.showErrorModalFirstWarning(result.warnings, 'core.login.usernotaddederror', true);
 
-                    // Error sending, request another capctha since the current one is probably invalid now.
-                    this.requestCaptcha(true);
-                }
+                        // Error sending, request another capctha since the current one is probably invalid now.
+                        this.requestCaptcha(true);
+                    }
+                });
             }).catch((error) => {
                 this.domUtils.showErrorModalDefault(error && error.error, 'core.login.usernotaddederror', true);
 

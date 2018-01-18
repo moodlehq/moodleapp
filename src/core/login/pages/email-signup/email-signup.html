@@ -75,14 +75,14 @@
                 </ion-select>
             </ion-item>
 
-            <!-- Other categories. @todo: Implement once user profile fields are implemented. -->
-            <!-- <div *ngFor="let category in categories">
-                <ion-item-divider text-wrap color="light">{{ category.name }}</div>
-                <core-user-profile-field *ngFor="let field in category.fields" field="field" edit="true" signup="true" register-auth="email" model="data" scroll-handle="mmLoginEmailSignupScroll"></core-user-profile-field>
-            </div> -->
+            <!-- Other categories. -->
+            <ng-container *ngFor="let category of categories">
+                <ion-item-divider text-wrap color="light">{{ category.name }}</ion-item-divider>
+                <core-user-profile-field *ngFor="let field of category.fields" [field]="field" edit="true" signup="true" registerAuth="email" [form]="signupForm"></core-user-profile-field>
+            </ng-container>
 
             <!-- ReCAPTCHA -->
-            <div *ngIf="settings.recaptchachallengehash && settings.recaptchachallengeimage">
+            <ng-container *ngIf="settings.recaptchachallengehash && settings.recaptchachallengeimage">
                 <ion-item-divider text-wrap color="light">{{ 'core.login.security_question' | translate }}</ion-item-divider>
                 <ion-item>
                     <img [src]="settings.recaptchachallengeimage" alt="{{ 'core.login.recaptchachallengeimage' | translate }}">
@@ -96,20 +96,20 @@
                     <!-- Use anchor instead of button to prevent marking form as submitted. -->
                     <a ion-button block (click)="requestCaptcha()">{{ 'core.login.getanothercaptcha' | translate }}</a>
                 </ion-item>
-            </div>
+            </ng-container>
 
             <!-- Site policy (if any). -->
-            <div *ngIf="settings.sitepolicy">
+            <ng-container *ngIf="settings.sitepolicy">
                 <ion-item-divider text-wrap color="light">{{ 'core.login.policyagreement' | translate }}</ion-item-divider>
                 <ion-item text-wrap>
                     <p><a [href]="settings.sitepolicy" core-link capture="false">{{ 'core.login.policyagreementclick' | translate }}</a></p>
                 </ion-item>
                 <ion-item text-wrap>
                     <ion-label core-mark-required="true">{{ 'core.login.policyaccept' | translate }}</ion-label>
-                    <ion-checkbox item-right name="policyagreed" formControlName="policyagreed"></ion-checkbox>
+                    <ion-checkbox item-end name="policyagreed" formControlName="policyagreed"></ion-checkbox>
                     <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors"></core-input-errors>
                 </ion-item>
-            </div>
+            </ng-container>
 
             <!-- Submit button. -->
             <ion-item padding>

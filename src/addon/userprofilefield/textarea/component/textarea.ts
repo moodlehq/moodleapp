@@ -13,18 +13,22 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, Validators, FormControl} from '@angular/forms';
 
 /**
  * Directive to render a textarea user profile field.
  */
 @Component({
-    selector: 'core-user-profile-field-textarea',
+    selector: 'addon-user-profile-field-textarea',
     templateUrl: 'textarea.html'
 })
 export class AddonUserProfileFieldTextareaComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
     @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() model?: any; // Model where to store the data. Required if edit=true or signup=true.
+    @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
+    @Input() form?: FormGroup; // Form where to add the form control.
+
+    control: FormControl
 
     constructor() {}
 
@@ -34,17 +38,17 @@ export class AddonUserProfileFieldTextareaComponent implements OnInit {
     ngOnInit() {
         let field = this.field;
 
-        if (field && this.edit && this.model) {
+        if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
-            this.model[field.modelName] = {
-                format: 1
-            };
-
-            // Initialize the value using default data.
-            if (typeof field.defaultdata != 'undefined' && typeof this.model[field.modelName].text == 'undefined') {
-                this.model[field.modelName].text = field.defaultdata;
-            }
         }
+
+        let formData = {
+            value: field.defaultdata,
+            disabled: this.disabled
+        };
+
+        this.control = new FormControl(formData, field.required && !field.locked ? Validators.required : null);
+        this.form.addControl(field.modelName, this.control);
     }
 
 }

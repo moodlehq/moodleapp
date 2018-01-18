@@ -93,6 +93,19 @@ export class CoreDelegate {
     }
 
     /**
+     * Execute a certain function in a enabled handler.
+     * If the handler isn't found or function isn't defined, call the same function in the default handler.
+     *
+     * @param {string} handlerName The handler name.
+     * @param {string} fnName Name of the function to execute.
+     * @param {any[]} params Parameters to pass to the function.
+     * @return {any} Function returned value or default value.
+     */
+    protected executeFunctionOnEnabled(handlerName: string, fnName: string, params?: any[]) : any {
+        return this.execute(this.enabledHandlers[handlerName], fnName, params);
+    }
+
+    /**
      * Execute a certain function in a handler.
      * If the handler isn't found or function isn't defined, call the same function in the default handler.
      *
@@ -102,7 +115,19 @@ export class CoreDelegate {
      * @return {any} Function returned value or default value.
      */
     protected executeFunction(handlerName: string, fnName: string, params?: any[]) : any {
-        let handler = this.enabledHandlers[handlerName];
+        return this.execute(this.handlers[handlerName], fnName, params);
+    }
+
+    /**
+     * Execute a certain function in a handler.
+     * If the handler isn't found or function isn't defined, call the same function in the default handler.
+     *
+     * @param {any} handler The handler.
+     * @param {string} fnName Name of the function to execute.
+     * @param {any[]} params Parameters to pass to the function.
+     * @return {any} Function returned value or default value.
+     */
+    private execute(handler: any, fnName: string, params?: any[]) : any {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
@@ -111,13 +136,25 @@ export class CoreDelegate {
     }
 
     /**
+     * Get a handler.
+     *
+     * @param  {string} handlerName The handler name.
+     * @param  {boolean} [enabled]  Only enabled, or any.
+     * @return {any}                Handler.
+     */
+    protected getHandler(handlerName: string, enabled = false): any {
+        return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
+    }
+
+    /**
      * Check if a handler name has a registered handler (not necessarily enabled).
      *
-     * @param {string} name The name of the handler.
+     * @param {string} name The handler name.
+     * @param  {boolean} [enabled]  Only enabled, or any.
      * @return {boolean} If the controller is installed or not.
      */
-    hasHandler(name: string) : boolean {
-        return typeof this.handlers[name] !== 'undefined';
+    hasHandler(name: string, enabled = false) : boolean {
+        return enabled ? typeof this.enabledHandlers[name] !== 'undefined' : typeof this.handlers[name] !== 'undefined';
     }
 
     /**
@@ -234,5 +271,4 @@ export class CoreDelegate {
     updateData() {
 
     }
-
 }

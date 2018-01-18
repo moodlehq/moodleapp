@@ -41,31 +41,18 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
      * @param  {any}     field          User field to get the data for.
      * @param  {boolean} signup         True if user is in signup page.
      * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
+     * @param  {any}     formValues     Form Values.
      * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
-    getData(field: any, signup: boolean, registerAuth: string, model: any): CoreUserProfileFieldHandlerData {
-        let hasTime = field.param3 && field.param3 !== '0' && field.param3 !== 'false',
-            modelName = 'profile_field_' + field.shortname,
-            date = JSON.parse(JSON.stringify(model[modelName + '_date'])),
-            time;
+    getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
+        let name = 'profile_field_' + field.shortname;
 
-        if (date) {
-            if (hasTime && this.platform.is('ios')) {
-                // In iOS the time is in a different input. Add it to the date.
-                time = model[modelName + '_time'];
-                if (!time) {
-                    return;
-                }
-
-                date.setHours(time.getHours());
-                date.setMinutes(time.getMinutes());
-            }
-
+        if (formValues[name]) {
+            let milliseconds = new Date(formValues[name]).getTime();
             return {
                 type: 'datetime',
                 name: 'profile_field_' + field.shortname,
-                value: Math.round(date.getTime() / 1000)
+                value: Math.round(milliseconds / 1000)
             };
         }
     }
@@ -73,12 +60,9 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
     /**
      * Return the Component to use to display the user profile field.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean, registerAuth: string) {
+    getComponent() {
         return AddonUserProfileFieldDatetimeComponent;
     }
 

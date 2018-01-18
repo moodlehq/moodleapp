@@ -9,8 +9,9 @@
     </p>
 </ion-item>
 <!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname">
+<ion-item *ngIf="edit && field && field.shortname" [formGroup]="form">
     <ion-label [core-mark-required]="field.required">{{ field.name }}</ion-label>
-    <ion-checkbox text-wrap [name]="field.modelName" [(ngModel)]="model[field.modelName]" [disabled]="!signup && field.locked" [required]="field.required" core-input-errors>
+    <ion-checkbox item-end [formControlName]="field.modelName">
     </ion-checkbox>
+    <core-input-errors [control]="form.controls[field.modelName]" [errorMessages]="errors"></core-input-errors>
 </ion-item>

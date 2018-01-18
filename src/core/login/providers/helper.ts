@@ -244,11 +244,11 @@ export class CoreLoginHelperProvider {
      * @return {any} Categories with the fields to show in each one.
      */
     formatProfileFieldsForSignup(profileFields: any[]) : any {
-        let categories = {};
-
         if (!profileFields) {
-            return categories;
+            return [];
         }
+
+        let categories = {};
 
         profileFields.forEach((field) => {
             if (!field.signup) {
@@ -267,7 +267,9 @@ export class CoreLoginHelperProvider {
             categories[field.categoryid].fields.push(field);
         });
 
-        return categories;
+        return Object.keys(categories).map((index) => {
+            return categories[index];
+        });
     }
 
     /**

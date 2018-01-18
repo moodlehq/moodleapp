@@ -15,6 +15,7 @@
 import { Component, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, ComponentRef, OnInit } from '@angular/core';
 import { CoreLoggerProvider } from '../../../../providers/logger';
 import { CoreUserProfileFieldDelegate } from '../../providers/user-profile-field-delegate';
+import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 
 /**
  * Directive to render user profile field.
@@ -27,13 +28,13 @@ export class CoreUserProfileFieldComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
     @Input() signup?: boolean = false; // True if editing the field in signup. Defaults to false.
     @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() model?: any; // Model where to store the data. Required if edit=true or signup=true.
+    @Input() form?: any; // Form where to add the form control. Required if edit=true or signup=true.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
 
     // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
     @ViewChild('userProfileField', { read: ViewContainerRef }) set userProfileField (el: ViewContainerRef) {
         if (this.field) {
-            this.createComponent(this.ufDelegate.getComponent(this.field, this.signup, this.registerAuth), el);
+            this.createComponent(this.ufDelegate.getComponent(this.field, this.signup), el);
         } else {
             // The component hasn't been initialized yet. Store the container.
             this.fieldContainer = el;
@@ -47,7 +48,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
     protected fieldInstance: any;
 
     constructor(logger: CoreLoggerProvider, private factoryResolver: ComponentFactoryResolver,
-            private ufDelegate: CoreUserProfileFieldDelegate) {
+            private ufDelegate: CoreUserProfileFieldDelegate, private utilsProvider: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreUserProfileFieldComponent');
     }
 
@@ -55,7 +56,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit() {
-        this.createComponent(this.ufDelegate.getComponent(this.field, this.signup, this.registerAuth), this.fieldContainer);
+        this.createComponent(this.ufDelegate.getComponent(this.field, this.signup), this.fieldContainer);
     }
 
     /**
@@ -86,8 +87,12 @@ export class CoreUserProfileFieldComponent implements OnInit {
 
             // Set the Input data.
             this.fieldInstance.field = this.field;
-            this.fieldInstance.edit = this.edit;
-            this.fieldInstance.model = this.model;
+            this.fieldInstance.edit = this.utilsProvider.isTrueOrOne(this.edit);
+            if (this.edit) {
+                this.fieldInstance.signup = this.utilsProvider.isTrueOrOne(this.signup);
+                this.fieldInstance.disabled = this.utilsProvider.isTrueOrOne(this.field.locked);
+                this.fieldInstance.form = this.form;
+            }
 
             return true;
         } catch(ex) {

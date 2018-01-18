@@ -4,7 +4,7 @@
     <p>{{ field.value * 1000 | coreFormatDate:"dfmediumdate"}}</p>
 </ion-item>
 <!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname" text-wrap>
-    <ion-label [core-mark-required]="field.required">{{ field.name }}</ion-label>
-    <ion-datetime [name]="field.modelName" [displayFormat]="field.format | translate" [disabled]="!signup && field.locked" [(ngModel)]="model[field.modelName]" [required]="field.required" core-input-errors [max]="field.max" [min]="field.min"></ion-datetime>
+<ion-item *ngIf="edit && field && field.shortname" text-wrap [formGroup]="form">
+    <ion-label stacked [core-mark-required]="field.required">{{ field.name }}</ion-label>
+    <ion-datetime [formControlName]="field.modelName" [placeholder]="'core.choosedots' | translate" [displayFormat]="field.format" core-input-errors [max]="field.max" [min]="field.min"></ion-datetime>
 </ion-item>

@@ -13,21 +13,23 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
 
 /**
  * Directive to render a datetime user profile field.
  */
 @Component({
-    selector: 'core-user-profile-field-datetime',
+    selector: 'addon-user-profile-field-datetime',
     templateUrl: 'datetime.html'
 })
 export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
     @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() model?: any; // Model where to store the data. Required if edit=true or signup=true.
+    @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
+    @Input() form?: FormGroup; // Form where to add the form control.
 
-
-    constructor() {}
+    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider) {}
 
     /**
      * Component being initialized.
@@ -35,12 +37,12 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     ngOnInit() {
         let field = this.field,
             year;
-        if (field && this.edit && this.model) {
+        if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
 
             // Check if it's only date or it has time too.
-            field.hasTime = field.param3 && field.param3 !== '0' && field.param3 !== 'false';
-            field.format = field.hasTime ? 'core.dffulldate' : 'core.dfdaymonthyear';
+            let hasTime = field.param3 && field.param3 !== '0' && field.param3 !== 'false';
+            field.format = hasTime ? this.timeUtils.getLocalizedDateFormat('LLL') : this.timeUtils.getLocalizedDateFormat('LL');
 
             // Check min value.
             if (field.param1) {
@@ -57,6 +59,12 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
                     field.max = year;
                 }
             }
+
+            let formData = {
+                value: field.defaultdata,
+                disabled: this.disabled
+            };
+            this.form.addControl(field.modelName, this.fb.control(formData, field.required && !field.locked ? Validators.required : null));
         }
     }
 

@@ -13,20 +13,22 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 /**
  * Directive to render a checkbox user profile field.
  */
 @Component({
-    selector: 'core-user-profile-field-checkbox',
+    selector: 'addon-user-profile-field-checkbox',
     templateUrl: 'checkbox.html'
 })
 export class AddonUserProfileFieldCheckboxComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
     @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() model?: any; // Model where to store the data. Required if edit=true or signup=true.
+    @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
+    @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor() {}
+    constructor(private fb: FormBuilder) {}
 
     /**
      * Component being initialized.
@@ -34,13 +36,15 @@ export class AddonUserProfileFieldCheckboxComponent implements OnInit {
     ngOnInit() {
         let field = this.field;
 
-        if (field && this.edit && this.model) {
+        if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
 
             // Initialize the value.
-            if (typeof field.defaultdata != 'undefined' && typeof this.model[field.modelName] == 'undefined') {
-                this.model[field.modelName] = field.defaultdata && field.defaultdata !== '0' && field.defaultdata !== 'false';
-            }
+            let formData = {
+                value: field.defaultdata && field.defaultdata !== '0' && field.defaultdata !== 'false',
+                disabled: this.disabled
+            };
+            this.form.addControl(field.modelName, this.fb.control(formData, field.required && !field.locked ? Validators.requiredTrue : null));
         }
     }
 

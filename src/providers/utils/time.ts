@@ -145,4 +145,12 @@ export class CoreTimeUtilsProvider {
         return Math.round(Date.now() / 1000);
     }
 
+    /**
+     * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
+     *
+     * @return {string} Localized ISO format
+     */
+    getLocalizedDateFormat(lozalizedFormat) : string {
+        return moment.localeData().longDateFormat(lozalizedFormat);
+    }
 }

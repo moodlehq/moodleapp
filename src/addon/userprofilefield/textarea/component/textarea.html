@@ -4,7 +4,7 @@
     <p><core-format-text [text]="field.value"></core-format-text></p>
 </ion-item>
 <!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname" text-wrap>
-    <ion-label [core-mark-required]="field.required">{{ field.name }}</ion-label>
-    <ion-textarea [name]="field.modelName" [(ngModel)]="model[field.modelName]" [placeholder]="field.name" [disabled]="!signup && field.locked" [required]="field.required"></ion-textarea>
+<ion-item *ngIf="edit && field && field.shortname" text-wrap [formGroup]="form">
+    <ion-label stacked [core-mark-required]="field.required">{{ field.name }}</ion-label>
+    <core-rich-text-editor item-content [control]="control" [placeholder]="field.name"></core-rich-text-editor>
 </ion-item>

@@ -41,28 +41,25 @@ export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHan
      * @param  {any}     field          User field to get the data for.
      * @param  {boolean} signup         True if user is in signup page.
      * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
+     * @param  {any}     formValues     Form Values.
      * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
-    getData(field: any, signup: boolean, registerAuth: string, model: any): CoreUserProfileFieldHandlerData {
+    getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
         let name = 'profile_field_' + field.shortname;
 
         return {
             type: 'text',
             name: name,
-            value: this.textUtils.cleanTags(model[name])
+            value: this.textUtils.cleanTags(formValues[name])
         };
     }
 
     /**
      * Return the Component to use to display the user profile field.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean, registerAuth: string) {
+    getComponent() {
         return AddonUserProfileFieldTextComponent;
     }
 

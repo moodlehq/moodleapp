@@ -23,22 +23,19 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler  {
     /**
      * Return the Component to use to display the user profile field.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} [signup]       True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
      * @return {any} The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean, registerAuth: string): any;
+    getComponent(): any;
 
     /**
      * Get the data to send for the field based on the input data.
      * @param  {any}     field          User field to get the data for.
      * @param  {boolean} signup         True if user is in signup page.
      * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
+     * @param  {any}     formValues     Form Values.
      * @return {Promise<CoreUserProfileFieldHandlerData>|CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
-    getData?(field: any, signup: boolean, registerAuth: string, model: any):
+    getData?(field: any, signup: boolean, registerAuth: string, formValues: any):
         Promise<CoreUserProfileFieldHandlerData> | CoreUserProfileFieldHandlerData;
 };
 
@@ -80,12 +77,15 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      *
      * @param  {any} field      User field to get the directive for.
      * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  registerAuth   Register auth method. E.g. 'email'
      * @return {any} The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean, registerAuth: string) : any {
+    getComponent(field: any, signup: boolean) : any {
         let type = field.type || field.datatype;
-        return this.executeFunction(type, 'getComponent', [field, signup, registerAuth]);
+        if (signup) {
+            return this.executeFunction(type, 'getComponent');
+        } else {
+            return this.executeFunctionOnEnabled(type, 'getComponent');
+        }
     }
 
     /**
@@ -94,22 +94,22 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      * @param  {any}     field          User field to get the data for.
      * @param  {boolean} signup         True if user is in signup page.
      * @param  {string}  registerAuth   Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
+     * @param  {any}     formValues     Form values.
      * @return {Promise<any>}           Data to send for the field.
      */
-    getDataForField(field: any, signup: boolean, registerAuth: string, model: any): Promise<any> {
-        let handler = this.getHandler(field, signup);
-
+    getDataForField(field: any, signup: boolean, registerAuth: string, formValues: any): Promise<any> {
+        let type = field.type || field.datatype,
+            handler = this.getHandler(type, !signup);
         if (handler) {
             let name = 'profile_field_' + field.shortname;
             if (handler.getData) {
-                return Promise.resolve(handler.getData(field, signup, registerAuth, model));
-            } else if (field.shortname && typeof model[name] != 'undefined') {
-                // Handler doesn't implement the function, but the model has data for the field.
+                return Promise.resolve(handler.getData(field, signup, registerAuth, formValues));
+            } else if (field.shortname && typeof formValues[name] != 'undefined') {
+                // Handler doesn't implement the function, but the form has data for the field.
                 return Promise.resolve({
-                    type: field.type || field.datatype,
+                    type: type,
                     name: name,
-                    value: model[name]
+                    value: formValues[name]
                 });
             }
         }
@@ -122,43 +122,25 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      * @param  {any[]}   fields           User fields to get the data for.
      * @param  {boolean} [signup]       True if user is in signup page.
      * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     model          Model with the input data.
+     * @param  {any}     formValues     Form values.
      * @return {Promise<any>}           Data to send.
      */
-    getDataForFields(fields: any[], signup = false, registerAuth = "", model: any): Promise<any> {
+    getDataForFields(fields: any[], signup = false, registerAuth = "", formValues: any): Promise<any> {
         let result = [],
             promises = [];
 
         fields.forEach((field) => {
-            this.getDataForField(field, signup, registerAuth, model).then((data) => {
-                result.push(data);
+            promises.push(this.getDataForField(field, signup, registerAuth, formValues).then((data) => {
+                if (data) {
+                    result.push(data);
+                }
             }).catch(() => {
                 // Ignore errors.
-            });
+            }));
         });
 
         return Promise.all(promises).then(() => {
             return result;
         });
-    }
-
-    /**
-     * Get a handler.
-     *
-     * @param  {any}     field      User field to get the directive for.
-     * @param  {boolean} signup     True if user is in signup page.
-     * @return {any}                Handler.
-     */
-    protected getHandler(field: any, signup: boolean): any {
-        let type = field.type || field.datatype;
-
-        if (signup) {
-            if (this.handlers[type]) {
-                return this.handlers[type];
-            }
-            return false;
-        }
-
-        return this.enabledHandlers[type];
     }
 }
