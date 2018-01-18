@@ -26,7 +26,7 @@ import { CoreCoursesDelegate } from '../../providers/delegate';
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-course-preview"})
 @Component({
     selector: 'page-core-courses-course-preview',
     templateUrl: 'course-preview.html',
@@ -307,7 +307,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 this.refreshData().finally(() => {
                     // My courses have been updated, trigger event.
                     this.eventsProvider.trigger(
-                            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {siteId: this.sitesProvider.getCurrentSiteId()});
+                            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {}, this.sitesProvider.getCurrentSiteId());
                 });
             });
         }).catch((error) => {

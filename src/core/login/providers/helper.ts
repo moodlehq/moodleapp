@@ -574,10 +574,9 @@ export class CoreLoginHelperProvider {
 
         if (site.isLoggedOut()) {
             this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {
-                siteId: site.getId(),
                 pageName: pageName,
                 params: params
-            });
+            }, site.getId());
             return true;
         }
         return false;

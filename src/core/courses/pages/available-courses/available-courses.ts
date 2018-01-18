@@ -21,7 +21,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that displays available courses in current site.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-available-courses"})
 @Component({
     selector: 'page-core-courses-available-courses',
     templateUrl: 'available-courses.html',

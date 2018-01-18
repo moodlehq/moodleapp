@@ -18,7 +18,7 @@ import { IonicPage, NavParams } from 'ionic-angular';
 /**
  * Page to display a URL in an iframe.
  */
-@IonicPage()
+@IonicPage({segment: "core-viewer-iframe"})
 @Component({
     selector: 'page-core-viewer-iframe',
     templateUrl: 'iframe.html',

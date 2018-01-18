@@ -23,7 +23,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to enter the user password to reconnect to a site.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-reconnect"})
 @Component({
     selector: 'page-core-login-reconnect',
     templateUrl: 'reconnect.html',

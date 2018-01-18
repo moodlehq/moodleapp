@@ -24,6 +24,9 @@
   }
 }
 
+.bar-buttons core-context-menu .button-clear-ios {
+  color: $toolbar-ios-button-color;
+}
 
 // Highlights inside the input element.
 @if ($core-text-input-ios-show-highlight) {

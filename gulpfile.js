@@ -59,39 +59,39 @@ function treatMergedData(data) {
     var mergedOrdered = {};
 
     for (var filepath in data) {
+        var pathSplit = filepath.split('/');
 
-        if (filepath.indexOf('lang/') === 0 || filepath.indexOf('core/lang') === 0) {
+        pathSplit.pop();
 
-            addProperties(merged, data[filepath], 'core.');
+        switch (pathSplit[0]) {
+            case 'lang':
+                prefix = 'core';
+                break;
+            case 'core':
+                if (pathSplit[1] == 'lang') {
+                    // Not used right now.
+                    prefix = 'core';
+                } else {
+                    prefix = 'core.' + pathSplit[1];
+                }
+                break;
+            case 'addon':
+                // Remove final item 'lang'.
+                pathSplit.pop();
+                // Remove first item 'addon'.
+                pathSplit.shift();
 
-        } else if (filepath.indexOf('core/') === 0) {
+                // For subplugins. We'll use plugin_subfolder_subfolder2_...
+                // E.g. 'mod_assign_feedback_comments'.
+                prefix = 'addon.' + pathSplit.join('_');
+                break;
+            case 'assets':
+                prefix = 'assets.' + pathSplit[1];
+                break;
+        }
 
-            var componentName = filepath.replace('core/', '');
-            componentName = componentName.substr(0, componentName.indexOf('/'));
-            addProperties(merged, data[filepath], 'core.'+componentName+'.');
-
-        } else if (filepath.indexOf('addons') === 0) {
-
-            var split = filepath.split('/'),
-                pluginName = split[1],
-                index = 2;
-
-            // Check if it's a subplugin. If so, we'll use plugin_subfolder_subfolder2_...
-            // E.g. 'mod_assign_feedback_comments'.
-            while (split[index] && split[index] != 'lang') {
-                pluginName = pluginName + '_' + split[index];
-                index++;
-            }
-            addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
-
-        } else if (filepath.indexOf('assets/countries') === 0) {
-
-            addProperties(merged, data[filepath], 'core.country-');
-
-        } else if (filepath.indexOf('assets/mimetypes') === 0) {
-
-            addProperties(merged, data[filepath], 'core.mimetype-');
-
+        if (prefix) {
+            addProperties(merged, data[filepath], prefix + '.');
         }
     }
 
@@ -181,7 +181,7 @@ var appLangFiles = ['ar.json', 'bg.json', 'ca.json', 'cs.json', 'da.json', 'de.j
         lang: [
             './src/lang/',
             './src/core/**/lang/',
-            './src/addons/**/lang/',
+            './src/addon/**/lang/',
             './src/assets/countries/',
             './src/assets/mimetypes/'
         ],

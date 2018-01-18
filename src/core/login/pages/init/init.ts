@@ -23,7 +23,7 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 /**
  * Page that displays a "splash screen" while the app is being initialized.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-init"})
 @Component({
     selector: 'page-core-login-init',
     templateUrl: 'init.html',

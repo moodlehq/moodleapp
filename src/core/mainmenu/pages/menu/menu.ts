@@ -22,7 +22,7 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/d
 /**
  * Page that displays the main menu of the app.
  */
-@IonicPage()
+@IonicPage({segment: "core-mainmenu"})
 @Component({
     selector: 'page-core-mainmenu',
     templateUrl: 'menu.html',

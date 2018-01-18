@@ -21,6 +21,7 @@ import { CoreLoadingComponent } from './loading/loading';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreShowPasswordComponent } from './show-password/show-password';
+import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreIframeComponent } from './iframe/iframe';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
@@ -29,6 +30,7 @@ import { CoreFileComponent } from './file/file';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
+import { CoreCoursePickerMenuPopoverComponent } from './course-picker-menu/course-picker-menu-popover';
 import { CoreChronoComponent } from './chrono/chrono';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
@@ -39,6 +41,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
+        CoreSplitViewComponent,
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
@@ -47,12 +50,14 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
+        CoreCoursePickerMenuPopoverComponent,
         CoreChronoComponent,
         CoreLocalFileComponent,
         CoreSitePickerComponent
     ],
     entryComponents: [
-        CoreContextMenuPopoverComponent
+        CoreContextMenuPopoverComponent,
+        CoreCoursePickerMenuPopoverComponent
     ],
     imports: [
         IonicModule,
@@ -65,6 +70,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreMarkRequiredComponent,
         CoreInputErrorsComponent,
         CoreShowPasswordComponent,
+        CoreSplitViewComponent,
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,

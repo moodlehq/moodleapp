@@ -398,7 +398,7 @@ export class CoreSitesProvider {
                     this.sites[siteId] = candidateSite;
                     // Store session.
                     this.login(siteId);
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, siteId);
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_ADDED, {}, siteId);
 
                     if (this.siteTablesSchemas.length) {
                         // Create tables in the site's database.
@@ -558,7 +558,7 @@ export class CoreSitesProvider {
             // Check if local_mobile was installed to Moodle.
             return site.checkIfLocalMobileInstalledAndNotUsed().then(() => {
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {siteId: siteId});
+                this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, siteId);
             }, () => {
                 // Update site info. We don't block the UI.
                 this.updateSiteInfo(siteId);
@@ -622,7 +622,7 @@ export class CoreSitesProvider {
                     // DB remove shouldn't fail, but we'll go ahead even if it does.
                     return site.deleteFolder();
                 }).then(() => {
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_DELETED, site);
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_DELETED, site, siteId);
                 });
             });
         });
@@ -739,7 +739,7 @@ export class CoreSitesProvider {
      * @param  {number} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise}         Promise resolved with site home ID.
      */
-    getSiteHomeId(siteId: string) : Promise<number> {
+    getSiteHomeId(siteId?: string) : Promise<number> {
         return this.getSite(siteId).then((site) => {
             return site.getSiteHomeId();
         });
@@ -801,7 +801,7 @@ export class CoreSitesProvider {
             siteId: siteId
         };
         return this.appDB.insertOrUpdateRecord(this.CURRENT_SITE_TABLE, entry, {id: 1}).then(() => {
-            this.eventsProvider.trigger(CoreEventsProvider.LOGIN, {siteId: siteId});
+            this.eventsProvider.trigger(CoreEventsProvider.LOGIN, {}, siteId);
         });
     }
 
@@ -829,7 +829,7 @@ export class CoreSitesProvider {
         promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, {id: 1}));
 
         return Promise.all(promises).finally(() => {
-            this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {siteId: siteId});
+            this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
         });
     }
 
@@ -936,7 +936,7 @@ export class CoreSitesProvider {
                     }
 
                     return this.appDB.updateRecords(this.SITES_TABLE, newValues, {id: siteId}).finally(() => {
-                        this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, {siteId: siteId});
+                        this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, {}, siteId);
                     });
                 });
             });

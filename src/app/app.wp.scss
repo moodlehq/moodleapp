@@ -11,3 +11,7 @@
 .col[align-self-stretch] .card-wp {
   height: calc(100% - #{($card-wp-margin-end + $card-wp-margin-start)});
 }
+
+.bar-buttons core-context-menu .button-clear-wp {
+  color: $toolbar-wp-button-color;
+}

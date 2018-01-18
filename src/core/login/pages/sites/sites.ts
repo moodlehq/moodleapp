@@ -24,7 +24,7 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 /**
  * Page that displays the list of stored sites.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-sites"})
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',

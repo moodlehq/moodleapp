@@ -184,7 +184,7 @@ export class CoreAppProvider {
         return online;
     }
 
-    /*
+    /**
      * Check if device uses a limited connection.
      *
      * @return {boolean} Whether the device uses a limited connection.

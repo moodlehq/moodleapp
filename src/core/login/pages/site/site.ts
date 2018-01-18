@@ -24,7 +24,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to enter or select the site URL to connect to.
  */
-@IonicPage()
+@IonicPage({segment: "core-login-site"})
 @Component({
     selector: 'page-core-login-site',
     templateUrl: 'site.html',

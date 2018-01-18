@@ -504,27 +504,27 @@ export class CoreSite {
                     }
 
                     // Session expired, trigger event.
-                    this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {siteId: this.id});
+                    this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, this.id);
                     // Change error message. We'll try to get data from cache.
                     error.message = this.translate.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
-                    this.eventsProvider.trigger(CoreEventsProvider.USER_DELETED, {siteId: this.id, params: data});
+                    this.eventsProvider.trigger(CoreEventsProvider.USER_DELETED, {params: data}, this.id);
                     error.message = this.translate.instant('core.userdeleted');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
                     // Password Change Forced, trigger event.
-                    this.eventsProvider.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {siteId: this.id});
+                    this.eventsProvider.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = this.translate.instant('core.forcepasswordchangenotice');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'usernotfullysetup') {
                     // User not fully setup, trigger event.
-                    this.eventsProvider.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {siteId: this.id});
+                    this.eventsProvider.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = this.translate.instant('core.usernotfullysetup');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {siteId: this.id});
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
                     error.message = this.translate.instant('core.sitepolicynotagreederror');
                     return Promise.reject(error);
                 } else if (error.errorcode === 'dmlwriteexception' && this.textUtils.hasUnicodeData(data)) {
@@ -802,8 +802,8 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
-        let sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?%';
-        return this.db.execute(sql, [key]);
+        let sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+        return this.db.execute(sql, [key + "%"]);
     }
 
     /**

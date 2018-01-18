@@ -22,7 +22,7 @@ import * as moment from 'moment';
 /**
  * Page that displays My Overview.
  */
-@IonicPage()
+@IonicPage({segment: "core-courses-my-overview"})
 @Component({
     selector: 'page-core-courses-my-overview',
     templateUrl: 'my-overview.html',

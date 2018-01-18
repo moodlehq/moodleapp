@@ -19,7 +19,7 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 /**
  * Page to render a certain text. If opened as a modal, it will have a button to close the modal.
  */
-@IonicPage()
+@IonicPage({segment: "core-viewer-text"})
 @Component({
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',

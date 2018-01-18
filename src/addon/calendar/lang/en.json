@@ -1,0 +1,20 @@
+{
+    "calendar": "Calendar",
+    "calendarevents": "Calendar events",
+    "defaultnotificationtime": "Default notification time",
+    "errorloadevent": "Error loading event.",
+    "errorloadevents": "Error loading events.",
+    "eventendtime": "End time",
+    "eventstarttime": "Start time",
+    "noevents": "There are no events",
+    "notifications": "Notifications",
+    "typeclose": "Close event",
+    "typecourse": "Course event",
+    "typecategory": "Category event",
+    "typedue": "Due event",
+    "typegradingdue": "Grading due event",
+    "typegroup": "Group event",
+    "typeopen": "Open event",
+    "typesite": "Site event",
+    "typeuser": "User event"
+}
