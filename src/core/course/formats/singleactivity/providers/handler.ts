@@ -17,7 +17,7 @@ import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
 import { CoreCourseFormatSingleActivityComponent } from '../components/format';
 
 /**
- * Handler to support weeks course format.
+ * Handler to support singleactivity course format.
  */
 @Injectable()
 export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHandler {

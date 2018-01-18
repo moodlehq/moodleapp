@@ -20,6 +20,7 @@ import { CoreCourseModuleDelegate } from './providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './providers/module-prefetch-delegate';
 import { CoreCourseFormatDefaultHandler } from './providers/default-format';
 import { CoreCourseFormatSingleActivityModule } from './formats/singleactivity/singleactivity.module';
+import { CoreCourseFormatSocialModule } from './formats/social/social.module';
 import { CoreCourseFormatTopicsModule} from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 
@@ -28,7 +29,8 @@ import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
     imports: [
         CoreCourseFormatSingleActivityModule,
         CoreCourseFormatTopicsModule,
-        CoreCourseFormatWeeksModule
+        CoreCourseFormatWeeksModule,
+        CoreCourseFormatSocialModule
     ],
     providers: [
         CoreCourseProvider,
