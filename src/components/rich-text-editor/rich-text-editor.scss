@@ -1,0 +1,71 @@
+core-rich-text-editor {
+    height: 40vh;
+    overflow: hidden;
+    min-height: 30vh;
+
+    > div {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .core-rte-editor, .core-textarea {
+        padding: 2px;
+        margin: 2px;
+        width: 100%;
+        resize: none;
+        background-color: $white;
+        flex-grow: 1;
+        * {
+            overflow: hidden;
+        }
+    }
+
+    .core-rte-editor {
+        -webkit-user-select: auto !important;
+        word-wrap: break-word;
+        overflow-x: hidden;
+        overflow-y: auto;
+        cursor: text;
+        img {
+            padding-left: 2px;
+            max-width: 95%;
+        }
+        &:empty:before {
+            content: attr(data-placeholder-text);
+            display: block;
+            color: $gray-light;
+            font-weight: bold;
+        }
+    }
+
+    .core-textarea textarea {
+        margin: 0 !important;
+        padding: 0;
+        height: 100% !important;
+        width: 100% !important;
+        resize: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    div.formatOptions {
+        background: $gray-dark;
+        margin: 5px 1px 15px 1px;
+        text-align: center;
+        flex-grow: 0;
+        width: 100%;
+        z-index: 1;
+        button {
+            background: $gray-dark;
+            color: $white;
+            font-size: 1.1em;
+            height: 35px;
+            min-width: 30px;
+            padding-left: 1px;
+            padding-right: 1px;
+        }
+    }
+
+}

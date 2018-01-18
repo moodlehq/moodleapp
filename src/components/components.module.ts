@@ -36,6 +36,7 @@ import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabComponent } from './tabs/tab';
+import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
 
 @NgModule({
     declarations: [
@@ -57,7 +58,8 @@ import { CoreTabComponent } from './tabs/tab';
         CoreLocalFileComponent,
         CoreSitePickerComponent,
         CoreTabsComponent,
-        CoreTabComponent
+        CoreTabComponent,
+        CoreRichTextEditorComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -86,7 +88,8 @@ import { CoreTabComponent } from './tabs/tab';
         CoreLocalFileComponent,
         CoreSitePickerComponent,
         CoreTabsComponent,
-        CoreTabComponent
+        CoreTabComponent,
+        CoreRichTextEditorComponent
     ]
 })
 export class CoreComponentsModule {}
