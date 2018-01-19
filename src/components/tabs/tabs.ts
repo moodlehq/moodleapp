@@ -26,7 +26,9 @@ import { CoreTabComponent } from './tab';
  *
  * <core-tabs selectedIndex="1">
  *     <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="switchTab('timeline')">
- *         <!-- Tab contents. -->
+ *         <ng-template> <!-- This ng-template is required, @see CoreTabComponent. -->
+ *             <!-- Tab contents. -->
+ *         </ng-template>
  *     </core-tab>
  * </core-tabs>
  *
@@ -171,7 +173,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
             index = 0;
         }
 
-        const currenTab = this.getSelected(),
+        const currentTab = this.getSelected(),
             newTab = this.tabs[index];
 
         if (!newTab.enabled || !newTab.show) {
@@ -179,14 +181,13 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
             return;
         }
 
-        if (currenTab) {
+        if (currentTab) {
             // Unselect previous selected tab.
-            currenTab.element.classList.remove('selected');
+            currentTab.unselectTab();
         }
 
         this.selected = index;
-        newTab.element.classList.add('selected');
-        newTab.ionSelect.emit(newTab);
+        newTab.selectTab();
         this.ionChange.emit(newTab);
     }
 

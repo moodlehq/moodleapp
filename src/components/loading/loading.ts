@@ -26,6 +26,14 @@ import { TranslateService } from '@ngx-translate/core';
  * <core-loading [message]="loadingMessage" [hideUntil]="dataLoaded">
  *     <!-- CONTENT TO HIDE UNTIL LOADED -->
  * </core-loading>
+ *
+ * IMPORTANT: Due to how ng-content works in Angular, the content of core-loading will be executed as soon as your view
+ * is loaded, even if the content hidden. So if you have the following code:
+ * <core-loading [hideUntil]="dataLoaded"><my-component></my-component></core-loading>
+ *
+ * The component "my-component" will be initialized immediately, even if dataLoaded is false, but it will be hidden. If you want
+ * your component to be initialized only if dataLoaded is true, then you should use ngIf:
+ * <core-loading [hideUntil]="dataLoaded"><my-component *ngIf="dataLoaded"></my-component></core-loading>
  */
 @Component({
     selector: 'core-loading',
