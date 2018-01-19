@@ -57,6 +57,7 @@ import { CoreCoursesModule } from '../core/courses/courses.module';
 import { CoreFileUploaderModule } from '../core/fileuploader/fileuploader.module';
 import { CoreSharedFilesModule } from '../core/sharedfiles/sharedfiles.module';
 import { CoreCourseModule } from '../core/course/course.module';
+import { CoreSiteHomeModule } from '../core/sitehome/sitehome.module';
 
 // Addon modules.
 import { AddonCalendarModule } from '../addon/calendar/calendar.module';
@@ -92,6 +93,7 @@ export function createTranslateLoader(http: HttpClient) {
         CoreFileUploaderModule,
         CoreSharedFilesModule,
         CoreCourseModule,
+        CoreSiteHomeModule,
         AddonCalendarModule
     ],
     bootstrap: [IonicApp],

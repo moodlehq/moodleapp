@@ -54,6 +54,7 @@ export class CoreMainMenuPage implements OnDestroy {
     loaded: boolean;
     redirectPage: string;
     redirectParams: any;
+    initialTab: number;
 
     protected subscription;
     protected moreTabData = {
@@ -79,25 +80,36 @@ export class CoreMainMenuPage implements OnDestroy {
             return;
         }
 
+        let site = this.sitesProvider.getCurrentSite(),
+            displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
+
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
             handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
 
             // Check if handlers are already in tabs. Add the ones that aren't.
             // @todo: https://github.com/ionic-team/ionic/issues/13633
-            for (let i in handlers) {
+            for (let i = 0; i < handlers.length; i++) {
                 let handler = handlers[i],
-                    found = false;
+                    found = false,
+                    shouldSelect = (displaySiteHome && handler.name == 'CoreSiteHome') ||
+                                   (!displaySiteHome && handler.name == 'CoreCourses');
 
-                for (let j in this.tabs) {
+                for (let j = 0; j < this.tabs.length; j++) {
                     let tab = this.tabs[j];
                     if (tab.title == handler.title && tab.icon == handler.icon) {
                         found = true;
+                        if (shouldSelect) {
+                            this.initialTab = j;
+                        }
                         break;
                     }
                 }
 
                 if (!found) {
                     this.tabs.push(handler);
+                    if (shouldSelect) {
+                        this.initialTab = this.tabs.length;
+                    }
                 }
             }
 

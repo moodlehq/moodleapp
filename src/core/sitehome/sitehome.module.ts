@@ -13,10 +13,8 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreCoursesProvider } from './providers/courses';
-import { CoreCoursesMainMenuHandler } from './providers/mainmenu-handler';
-import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
-import { CoreCoursesDelegate } from './providers/delegate';
+import { CoreSiteHomeProvider } from './providers/sitehome';
+import { CoreSiteHomeMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
 
 @NgModule({
@@ -24,15 +22,13 @@ import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
     imports: [
     ],
     providers: [
-        CoreCoursesProvider,
-        CoreCoursesMainMenuHandler,
-        CoreCoursesMyOverviewProvider,
-        CoreCoursesDelegate
+        CoreSiteHomeProvider,
+        CoreSiteHomeMainMenuHandler
     ],
     exports: []
 })
-export class CoreCoursesModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreCoursesMainMenuHandler) {
+export class CoreSiteHomeModule {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreSiteHomeMainMenuHandler) {
         mainMenuDelegate.registerHandler(mainMenuHandler);
     }
 }

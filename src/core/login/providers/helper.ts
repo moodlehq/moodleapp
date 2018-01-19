@@ -404,49 +404,6 @@ export class CoreLoginHelperProvider {
      */
     goToSiteInitialPage() : Promise<any> {
         return this.appProvider.getRootNavController().setRoot('CoreMainMenuPage');
-        // return this.isMyOverviewEnabled().then((myOverview) => {
-        //     let myCourses = !myOverview && this.isMyCoursesEnabled(),
-        //         site = this.sitesProvider.getCurrentSite(),
-        //         promise;
-
-        //     if (!site) {
-        //         return Promise.reject(null);
-        //     }
-
-        //     // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
-        //     if ((site.getInfo() && site.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
-        //         promise = this.isFrontpageEnabled();
-        //     } else {
-        //         promise = Promise.resolve(false);
-        //     }
-
-        //     return promise.then((frontpage) => {
-        //         // Check avalaibility in priority order.
-        //         let pageName,
-        //             params;
-
-        //         // @todo Use real pages names when they are implemented.
-        //         if (frontpage) {
-        //             pageName = 'Frontpage';
-        //         } else if (myOverview) {
-        //             pageName = 'MyOverview';
-        //         } else if (myCourses) {
-        //             pageName = 'MyCourses';
-        //         } else {
-        //             // Anything else available, go to the user profile.
-        //             pageName = 'User';
-        //             params = {
-        //                 userId: site.getUserId()
-        //             };
-        //         }
-
-        //         if (setRoot) {
-        //             return navCtrl.setRoot(pageName, params, {animate: false});
-        //         } else {
-        //             return navCtrl.push(pageName, params);
-        //         }
-        //     });
-        // });
     }
 
     /**
@@ -545,45 +502,6 @@ export class CoreLoginHelperProvider {
             return CoreConfigConstants.siteurl.length == 1;
         }
         return !!CoreConfigConstants.siteurl;
-    }
-
-    /**
-     * Check if the app is configured to use a fixed URL (only 1).
-     *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether there is 1 fixed URL.
-     */
-    protected isFrontpageEnabled() : Promise<boolean> {
-        // var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
-        // if ($mmaFrontpage && !$mmaFrontpage.isDisabledInSite()) {
-        //     return $mmaFrontpage.isFrontpageAvailable().then(() => {
-        //         return true;
-        //     }).catch(() => {
-        //         return false;
-        //     });
-        // }
-        // @todo: Implement it when front page is implemented.
-        return Promise.resolve(false);
-    }
-
-    /**
-     * Check if My Courses is enabled.
-     *
-     * @return {boolean} Whether My Courses is enabled.
-     */
-    protected isMyCoursesEnabled() : boolean {
-        // @todo: Implement it when My Courses is implemented.
-        return false;
-        // return !$mmCourses.isMyCoursesDisabledInSite();
-    }
-
-    /**
-     * Check if My Overview is enabled.
-     *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether My Overview is enabled.
-     */
-    protected isMyOverviewEnabled() : Promise<boolean> {
-        // @todo: Implement it when My Overview is implemented.
-        return Promise.resolve(false);
     }
 
     /**

@@ -17,7 +17,12 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-tabs selectedIndex="1">
+    <core-tabs [selectedIndex]="firstSelectedTab" [hideUntil]="tabsReady">
+        <!-- Site home tab. -->
+        <core-tab [show]="siteHomeEnabled" [title]="'core.sitehome.sitehome' | translate" (ionSelect)="tabChanged('sitehome')">
+            <!-- @todo. -->
+        </core-tab>
+
         <!-- Timeline tab. -->
         <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="tabChanged('timeline')">
             <div no-padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">

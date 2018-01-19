@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, AfterViewInit, ViewChild, ElementRef,
+         SimpleChange } from '@angular/core';
 import { CoreTabComponent } from './tab';
 
 /**
@@ -35,14 +36,17 @@ import { CoreTabComponent } from './tab';
     selector: 'core-tabs',
     templateUrl: 'tabs.html'
 })
-export class CoreTabsComponent implements OnInit, AfterViewInit {
+export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() selectedIndex?: number = 0; // Index of the tab to select.
+    @Input() hideUntil: boolean; // Determine when should the contents be shown.
     @Output() ionChange: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>(); // Emitted when the tab changes.
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
 
     tabs: CoreTabComponent[] = []; // List of tabs.
     selected: number; // Selected tab number.
     protected originalTabsContainer: HTMLElement; // The container of the original tabs. It will include each tab's content.
+    protected initialized = false;
+    protected afterViewInitTriggered = false;
 
     constructor() {}
 
@@ -57,22 +61,24 @@ export class CoreTabsComponent implements OnInit, AfterViewInit {
      * View has been initialized.
      */
     ngAfterViewInit() {
-        let selectedIndex = this.selectedIndex || 0,
-            selectedTab = this.tabs[selectedIndex];
-
-        if (!selectedTab.enabled || !selectedTab.show) {
-            // The tab is not enabled or not shown. Get the first tab that is enabled.
-            selectedTab = this.tabs.find((tab, index) => {
-                if (tab.enabled && tab.show) {
-                    selectedIndex = index;
-                    return true;
-                }
-                return false;
-            });
+        this.afterViewInitTriggered = true;
+        if (!this.initialized && this.hideUntil) {
+            // Tabs should be shown, initialize them.
+            this.initializeTabs();
         }
+    }
 
-        if (selectedTab) {
-            this.selectTab(selectedIndex);
+    /**
+     * Detect changes on input properties.
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+        // We need to wait for ngAfterViewInit because we need core-tab components to be executed.
+        if (!this.initialized && this.hideUntil && this.afterViewInitTriggered) {
+            // Tabs should be shown, initialize them.
+            // Use a setTimeout so child core-tab update their inputs before initializing the tabs.
+            setTimeout(() => {
+                this.initializeTabs();
+            });
         }
     }
 
@@ -112,6 +118,31 @@ export class CoreTabsComponent implements OnInit, AfterViewInit {
      */
     getSelected() : CoreTabComponent {
         return this.tabs[this.selected];
+    }
+
+    /**
+     * Initialize the tabs, determining the first tab to be shown.
+     */
+    protected initializeTabs() : void {
+        let selectedIndex = this.selectedIndex || 0,
+            selectedTab = this.tabs[selectedIndex];
+
+        if (!selectedTab.enabled || !selectedTab.show) {
+            // The tab is not enabled or not shown. Get the first tab that is enabled.
+            selectedTab = this.tabs.find((tab, index) => {
+                if (tab.enabled && tab.show) {
+                    selectedIndex = index;
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        if (selectedTab) {
+            this.selectTab(selectedIndex);
+        }
+
+        this.initialized = true;
     }
 
     /**

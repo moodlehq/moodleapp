@@ -1,12 +1,14 @@
-<div class="core-tabs-bar">
-    <ng-container *ngFor="let tab of tabs; let idx = index">
-        <a *ngIf="tab.show" [attr.aria-selected]="selected == idx" (click)="selectTab(idx)">
-            <ion-icon *ngIf="tab.icon" [name]="tab.icon"></ion-icon>
-            <span *ngIf="tab.title">{{ tab.title }}</span>
-            <ion-badge *ngIf="tab.badge" [color]="tab.badgeStyle" class="tab-badge">{{tab.badge}}</ion-badge>
-        </a>
-    </ng-container>
-</div>
-<div #originalTabs>
-    <ng-content></ng-content>
-</div>
+<core-loading [hideUntil]="hideUntil">
+    <div class="core-tabs-bar">
+        <ng-container *ngFor="let tab of tabs; let idx = index">
+            <a *ngIf="tab.show" [attr.aria-selected]="selected == idx" (click)="selectTab(idx)">
+                <ion-icon *ngIf="tab.icon" [name]="tab.icon"></ion-icon>
+                <span *ngIf="tab.title">{{ tab.title }}</span>
+                <ion-badge *ngIf="tab.badge" [color]="tab.badgeStyle" class="tab-badge">{{tab.badge}}</ion-badge>
+            </a>
+        </ng-container>
+    </div>
+    <div #originalTabs>
+        <ng-content></ng-content>
+    </div>
+</core-loading>
