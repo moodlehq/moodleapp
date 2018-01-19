@@ -5,6 +5,7 @@
 
     <core-loading [hideUntil]="dataLoaded">
 
+        <!-- Site home main contents. -->
         <ion-card *ngIf="section && section.hasContent">
             <ion-item text-wrap *ngIf="section.summary">
                 <core-format-text [text]="section.summary"></core-format-text>
@@ -13,9 +14,18 @@
             <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId"></core-course-module>
         </ion-card>
 
-        <!-- @todo: Frontpage items. -->
-        <!-- <mma-frontpage-item ng-repeat="item in items" name="{{item}}"></mma-frontpage-item> -->
+        <!-- Site home items: news, categories, courses, etc. -->
+        <ion-card *ngIf="items.length > 0">
+            <ng-container *ngFor="let item of items">
+                <core-sitehome-all-course-list *ngIf="item == 'all-course-list'"></core-sitehome-all-course-list>
+                <core-sitehome-categories  *ngIf="item == 'categories'"></core-sitehome-categories>
+                <core-sitehome-course-search *ngIf="item == 'course-search'"></core-sitehome-course-search>
+                <core-sitehome-enrolled-course-list *ngIf="item == 'enrolled-course-list'"></core-sitehome-enrolled-course-list>
+                <core-sitehome-news *ngIf="item == 'news'"></core-sitehome-news>
+            </ng-container>
+        </ion-card>
 
+        <!-- Site home block. -->
         <ion-card *ngIf="block && block.hasContent">
             <ion-item text-wrap *ngIf="block.summary">
                 <core-format-text [text]="block.summary"></core-format-text>

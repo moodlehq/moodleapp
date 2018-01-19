@@ -60,10 +60,16 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      * @param {any} refresher Refresher.
      */
     doRefresh(refresher: any) {
-        const promises = [];
+        const promises = [],
+            currentSite = this.sitesProvider.getCurrentSite();
 
         promises.push(this.courseProvider.invalidateSections(this.siteHomeId));
-        promises.push(this.sitesProvider.getCurrentSite().invalidateConfig());
+        promises.push(currentSite.invalidateConfig().then(() => {
+            // Config invalidated, fetch it again.
+            return currentSite.getConfig().then((config) => {
+                currentSite.setConfig(config);
+            });
+        }));
 
         if (this.sectionsLoaded) {
             // Invalidate modules prefetch data.
@@ -89,21 +95,21 @@ export class CoreSiteHomeIndexComponent implements OnInit {
         if (config.frontpageloggedin) {
             // Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
             let frontpageItems = [
-                    'mma-frontpage-item-news', // News items.
+                    'news', // News items.
                     false,
-                    'mma-frontpage-item-categories', // List of categories.
+                    'categories', // List of categories.
                     false,
-                    'mma-frontpage-item-categories', // Combo list.
-                    'mma-frontpage-item-enrolled-course-list', // Enrolled courses.
-                    'mma-frontpage-item-all-course-list', // List of courses.
-                    'mma-frontpage-item-course-search' // Course search box.
+                    'categories', // Combo list.
+                    'enrolled-course-list', // Enrolled courses.
+                    'all-course-list', // List of courses.
+                    'course-search' // Course search box.
                 ],
                 items = config.frontpageloggedin.split(',');
 
             this.items = [];
 
             items.forEach((itemNumber) => {
-                // Get the frontpage item directive to render itself.
+                // Get the frontpage item "name".
                 const item = frontpageItems[parseInt(itemNumber, 10)];
                 if (!item || this.items.indexOf(item) >= 0) {
                     return;
@@ -112,7 +118,6 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                 this.hasContent = true;
                 this.items.push(item);
             });
-
         }
 
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {

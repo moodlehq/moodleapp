@@ -20,10 +20,20 @@ import { CoreComponentsModule } from '../../../components/components.module';
 import { CoreDirectivesModule } from '../../../directives/directives.module';
 import { CoreCourseComponentsModule } from '../../course/components/components.module';
 import { CoreSiteHomeIndexComponent } from './index/index';
+import { CoreSiteHomeAllCourseListComponent } from './all-course-list/all-course-list';
+import { CoreSiteHomeCategoriesComponent } from './categories/categories';
+import { CoreSiteHomeCourseSearchComponent } from './course-search/course-search';
+import { CoreSiteHomeEnrolledCourseListComponent } from './enrolled-course-list/enrolled-course-list';
+import { CoreSiteHomeNewsComponent } from './news/news';
 
 @NgModule({
     declarations: [
-        CoreSiteHomeIndexComponent
+        CoreSiteHomeIndexComponent,
+        CoreSiteHomeAllCourseListComponent,
+        CoreSiteHomeCategoriesComponent,
+        CoreSiteHomeCourseSearchComponent,
+        CoreSiteHomeEnrolledCourseListComponent,
+        CoreSiteHomeNewsComponent
     ],
     imports: [
         CommonModule,
@@ -34,7 +44,12 @@ import { CoreSiteHomeIndexComponent } from './index/index';
         CoreCourseComponentsModule
     ],
     exports: [
-        CoreSiteHomeIndexComponent
+        CoreSiteHomeIndexComponent,
+        CoreSiteHomeAllCourseListComponent,
+        CoreSiteHomeCategoriesComponent,
+        CoreSiteHomeCourseSearchComponent,
+        CoreSiteHomeEnrolledCourseListComponent,
+        CoreSiteHomeNewsComponent
     ]
 })
 export class CoreSiteHomeComponentsModule {}
