@@ -22,8 +22,13 @@ core-tabs {
         }
     }
 
+    .core-tabs-content-container {
+        height: 100%;
+    }
+
     core-tab {
         display: none;
+        height: 100%;
 
         &.selected {
             display: block;

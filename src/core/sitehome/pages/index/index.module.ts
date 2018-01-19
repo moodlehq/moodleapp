@@ -15,21 +15,17 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreCoursesMyOverviewPage } from './my-overview';
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
-import { CoreSiteHomeComponentsModule } from '../../../sitehome/components/components.module';
+import { CoreSiteHomeIndexPage } from './index';
+import { CoreSiteHomeComponentsModule } from '../../components/components.module';
 
 @NgModule({
     declarations: [
-        CoreCoursesMyOverviewPage,
+        CoreSiteHomeIndexPage,
     ],
     imports: [
-        CoreComponentsModule,
-        CoreCoursesComponentsModule,
         CoreSiteHomeComponentsModule,
-        IonicPageModule.forChild(CoreCoursesMyOverviewPage),
+        IonicPageModule.forChild(CoreSiteHomeIndexPage),
         TranslateModule.forChild()
-    ],
+    ]
 })
-export class CoreCoursesMyOverviewPageModule {}
+export class CoreSiteHomeIndexPageModule {}

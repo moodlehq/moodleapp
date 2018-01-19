@@ -1,0 +1,29 @@
+<ion-content>
+    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="dataLoaded">
+
+        <ion-card *ngIf="section && section.hasContent">
+            <ion-item text-wrap *ngIf="section.summary">
+                <core-format-text [text]="section.summary"></core-format-text>
+            </ion-item>
+
+            <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId"></core-course-module>
+        </ion-card>
+
+        <!-- @todo: Frontpage items. -->
+        <!-- <mma-frontpage-item ng-repeat="item in items" name="{{item}}"></mma-frontpage-item> -->
+
+        <ion-card *ngIf="block && block.hasContent">
+            <ion-item text-wrap *ngIf="block.summary">
+                <core-format-text [text]="block.summary"></core-format-text>
+            </ion-item>
+
+            <core-course-module *ngFor="let module of block.modules" [module]="module" [courseId]="siteHomeId"></core-course-module>
+        </ion-card>
+
+        <core-empty-box *ngIf="!hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>

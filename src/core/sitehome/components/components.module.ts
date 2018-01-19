@@ -13,23 +13,28 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreCoursesMyOverviewPage } from './my-overview';
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
-import { CoreSiteHomeComponentsModule } from '../../../sitehome/components/components.module';
+import { CoreComponentsModule } from '../../../components/components.module';
+import { CoreDirectivesModule } from '../../../directives/directives.module';
+import { CoreCourseComponentsModule } from '../../course/components/components.module';
+import { CoreSiteHomeIndexComponent } from './index/index';
 
 @NgModule({
     declarations: [
-        CoreCoursesMyOverviewPage,
+        CoreSiteHomeIndexComponent
     ],
     imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreCoursesComponentsModule,
-        CoreSiteHomeComponentsModule,
-        IonicPageModule.forChild(CoreCoursesMyOverviewPage),
-        TranslateModule.forChild()
+        CoreDirectivesModule,
+        CoreCourseComponentsModule
     ],
+    exports: [
+        CoreSiteHomeIndexComponent
+    ]
 })
-export class CoreCoursesMyOverviewPageModule {}
+export class CoreSiteHomeComponentsModule {}
