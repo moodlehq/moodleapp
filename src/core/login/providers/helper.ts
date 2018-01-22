@@ -776,7 +776,7 @@ export class CoreLoginHelperProvider {
             if (siteId) {
                 this.loadSiteAndPage(page, params, siteId);
             } else {
-                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage')
+                this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
             }
         }
     }

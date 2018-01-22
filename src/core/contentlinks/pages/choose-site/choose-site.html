@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'core.contentlinks.chooseaccount' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-list>
+            <ion-item text-wrap>
+                <p class="item-heading">{{ 'core.contentlinks.chooseaccounttoopenlink' | translate }}</p>
+                <p>{{ url }}</p>
+            </ion-item>
+            <a ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)">
+                <img [src]="site.avatar" item-start>
+                <h2>{{site.fullName}}</h2>
+                <p><core-format-text clean="true" [text]="site.siteName"></core-format-text></p>
+                <p>{{site.siteUrl}}</p>
+            </a>
+            <ion-item>
+                <button ion-button block (click)="cancel()">{{ 'core.login.cancel' | translate }}</button>
+            </ion-item>
+        </ion-list>
+    </core-loading>
+</ion-content>
