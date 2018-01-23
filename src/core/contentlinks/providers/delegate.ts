@@ -68,7 +68,6 @@ export interface CoreContentLinksHandler {
      */
     handles(url: string) : boolean;
 
-
     /**
      * If the URL is handled by this handler, return the site URL.
      *

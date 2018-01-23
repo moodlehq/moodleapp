@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { IonicPage, NavParams, NavController } from 'ionic-angular';
+import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 
 /**
  * Page that displays site home index.
@@ -25,9 +27,11 @@ import { IonicPage, NavParams } from 'ionic-angular';
 })
 export class CoreSiteHomeIndexPage {
 
-    moduleId: number;
-
-    constructor(navParams: NavParams) {
-        this.moduleId = navParams.get('moduleId');
+    constructor(navParams: NavParams, navCtrl: NavController, courseHelper: CoreCourseHelperProvider,
+            sitesProvider: CoreSitesProvider) {
+        let module = navParams.get('module');
+        if (module) {
+            courseHelper.openModule(navCtrl, module, sitesProvider.getCurrentSite().getSiteHomeId());
+        }
     }
 }

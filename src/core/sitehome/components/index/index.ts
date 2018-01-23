@@ -28,8 +28,6 @@ import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/modu
     templateUrl: 'index.html',
 })
 export class CoreSiteHomeIndexComponent implements OnInit {
-    @Input() moduleId?: number;
-
     dataLoaded: boolean;
     section: any;
     block: any;
@@ -134,8 +132,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
                 this.block.hasContent = this.courseHelper.sectionHasContent(this.block);
             }
 
-            this.hasContent = this.courseHelper.addHandlerDataForModules(this.sectionsLoaded, this.siteHomeId, this.moduleId) ||
-                              this.hasContent;
+            this.hasContent = this.courseHelper.addHandlerDataForModules(this.sectionsLoaded, this.siteHomeId) || this.hasContent;
 
             // Add log in Moodle.
             this.courseProvider.logView(this.siteHomeId);

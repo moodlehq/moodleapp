@@ -42,6 +42,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
+    @Input() initialSectionId: number; // The section to load first.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
     // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
@@ -142,11 +143,24 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     ngOnChanges(changes: {[name: string]: SimpleChange}) {
         if (changes.sections && this.sections) {
             if (!this.selectedSection) {
-                // There is no selected section yet, calculate which one to get.
-                this.cfDelegate.getCurrentSection(this.course, this.sections).then((section) => {
-                    this.loaded = true;
-                    this.sectionChanged(section);
-                });
+                // There is no selected section yet, calculate which one to load.
+                if (this.initialSectionId) {
+                    // We have an input indicating the section ID to load. Search the section.
+                    for (let i = 0; i < this.sections.length; i++) {
+                        let section = this.sections[i];
+                        if (section.id == this.initialSectionId) {
+                            this.loaded = true;
+                            this.sectionChanged(section);
+                            break;
+                        }
+                    }
+                } else {
+                    // No section specified, get current section.
+                    this.cfDelegate.getCurrentSection(this.course, this.sections).then((section) => {
+                        this.loaded = true;
+                        this.sectionChanged(section);
+                    });
+                }
             } else {
                 // We have a selected section, but the list has changed. Search the section in the list.
                 let newSection;
@@ -214,6 +228,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // Set the Input data.
             this.componentInstances[type].course = this.course;
             this.componentInstances[type].sections = this.sections;
+            this.componentInstances[type].initialSectionId = this.initialSectionId;
             this.componentInstances[type].downloadEnabled = this.downloadEnabled;
 
             this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.

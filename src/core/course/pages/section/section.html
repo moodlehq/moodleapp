@@ -21,6 +21,6 @@
             <a aria-selected="true">{{ 'core.course.contents' | translate }}</a>
             <a *ngFor="let handler of courseHandlers">{{ handler.data.title || translate }}</a>
         </div>
-        <core-course-format [course]="course" [sections]="sections" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange()"></core-course-format>
+        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange()"></core-course-format>
     </core-loading>
 </ion-content>
