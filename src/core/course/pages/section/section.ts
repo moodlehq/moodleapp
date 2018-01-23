@@ -40,6 +40,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     course: any;
     sections: any[];
     sectionId: number;
+    sectionNumber: number;
     courseHandlers: CoreCoursesHandlerToDisplay[];
     dataLoaded: boolean;
     downloadEnabled: boolean;
@@ -59,6 +60,7 @@ export class CoreCourseSectionPage implements OnDestroy {
             sitesProvider: CoreSitesProvider, private navCtrl: NavController) {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
+        this.sectionNumber = navParams.get('sectionNumber');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);

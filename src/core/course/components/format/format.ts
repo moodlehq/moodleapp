@@ -42,7 +42,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
-    @Input() initialSectionId: number; // The section to load first.
+    @Input() initialSectionId?: number; // The section to load first (by ID).
+    @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
     // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
@@ -144,11 +145,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (changes.sections && this.sections) {
             if (!this.selectedSection) {
                 // There is no selected section yet, calculate which one to load.
-                if (this.initialSectionId) {
+                if (this.initialSectionId || this.initialSectionNumber) {
                     // We have an input indicating the section ID to load. Search the section.
                     for (let i = 0; i < this.sections.length; i++) {
                         let section = this.sections[i];
-                        if (section.id == this.initialSectionId) {
+                        if (section.id == this.initialSectionId || section.section == this.initialSectionNumber) {
                             this.loaded = true;
                             this.sectionChanged(section);
                             break;
@@ -229,6 +230,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.componentInstances[type].course = this.course;
             this.componentInstances[type].sections = this.sections;
             this.componentInstances[type].initialSectionId = this.initialSectionId;
+            this.componentInstances[type].initialSectionNumber = this.initialSectionNumber;
             this.componentInstances[type].downloadEnabled = this.downloadEnabled;
 
             this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.

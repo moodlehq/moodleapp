@@ -202,9 +202,10 @@ export class CoreContentLinksHelperProvider {
      * @param {string} url URL to handle.
      * @param {string} [username] Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
      *                            the username 'myuser'. Don't use it if you don't want to filter by username.
+     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
      * @return {Promise<boolean>} Promise resolved with a boolean: true if URL was treated, false otherwise.
      */
-    handleLink(url: string, username?: string) : Promise<boolean> {
+    handleLink(url: string, username?: string, navCtrl?: NavController) : Promise<boolean> {
         // Check if the link should be treated by some component/addon.
         return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
             const action = this.getFirstValidAction(actions);
@@ -212,18 +213,18 @@ export class CoreContentLinksHelperProvider {
                 if (!this.sitesProvider.isLoggedIn()) {
                     // No current site. Perform the action if only 1 site found, choose the site otherwise.
                     if (action.sites.length == 1) {
-                        action.action(action.sites[0]);
+                        action.action(action.sites[0], navCtrl);
                     } else {
                         this.goToChooseSite(url);
                     }
                 } else if (action.sites.length == 1 && action.sites[0] == this.sitesProvider.getCurrentSiteId()) {
                     // Current site.
-                    action.action(action.sites[0]);
+                    action.action(action.sites[0], navCtrl);
                 } else {
                     // Not current site or more than one site. Ask for confirmation.
                     this.domUtils.showConfirm(this.translate.instant('core.contentlinks.confirmurlothersite')).then(() => {
                         if (action.sites.length == 1) {
-                            action.action(action.sites[0]);
+                            action.action(action.sites[0], navCtrl);
                         } else {
                             this.goToChooseSite(url);
                         }

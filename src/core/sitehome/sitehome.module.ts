@@ -15,7 +15,9 @@
 import { NgModule } from '@angular/core';
 import { CoreSiteHomeProvider } from './providers/sitehome';
 import { CoreSiteHomeMainMenuHandler } from './providers/mainmenu-handler';
+import { CoreSiteHomeIndexLinkHandler } from './providers/index-link-handler';
 import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
 
 @NgModule({
     declarations: [],
@@ -23,12 +25,15 @@ import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
     ],
     providers: [
         CoreSiteHomeProvider,
-        CoreSiteHomeMainMenuHandler
+        CoreSiteHomeMainMenuHandler,
+        CoreSiteHomeIndexLinkHandler
     ],
     exports: []
 })
 export class CoreSiteHomeModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreSiteHomeMainMenuHandler) {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, contentLinksDelegate: CoreContentLinksDelegate,
+            mainMenuHandler: CoreSiteHomeMainMenuHandler, indexLinkHandler: CoreSiteHomeIndexLinkHandler) {
         mainMenuDelegate.registerHandler(mainMenuHandler);
+        contentLinksDelegate.registerHandler(indexLinkHandler);
     }
 }

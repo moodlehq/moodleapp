@@ -80,7 +80,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      * @param {string} siteId Site ID.
      */
     siteClicked(siteId: string) : void {
-        this.action.action(siteId);
+        this.action.action(siteId, this.navCtrl);
     }
 
     /**

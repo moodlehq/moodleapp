@@ -12,33 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreContentLinksAction } from '../providers/delegate';
-import { CoreContentLinksHandlerBase } from './base-handler';
-import { CoreCourseHelperProvider } from '../../course/providers/helper';
+import { Injectable } from '@angular/core';
+import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
+import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
+import { CoreLoginHelperProvider } from '../../login/providers/helper';
+import { CoreCoursesProvider } from './courses';
 
 /**
- * Handler to handle URLs pointing to the index of a module.
+ * Handler to treat links to my overview.
  */
-export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerBase {
+@Injectable()
+export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBase {
+    name = 'CoreCoursesMyOverviewLinkHandler';
+    featureName = '$mmSideMenuDelegate_mmCourses';
+    pattern = /\/my\/?$/;
 
-    /**
-     * Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
-     * @type {string}
-     */
-    addon: string;
-
-    /**
-     * Name of the module (assign, book, ...).
-     * @type {string}
-     */
-    modName: string;
-
-    constructor(private courseHelper: CoreCourseHelperProvider) {
+    constructor(private coursesProvider: CoreCoursesProvider, private loginHelper: CoreLoginHelperProvider) {
         super();
-
-        // Match the view.php URL with an id param.
-        this.pattern = new RegExp('\/mod\/' + this.modName + '\/view\.php.*([\&\?]id=\\d+)');
-        this.featureName = '$mmCourseDelegate_' + this.addon;
     }
 
     /**
@@ -52,11 +42,10 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number) :
             CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
-
-        courseId = courseId || params.courseid || params.cid;
         return [{
             action: (siteId, navCtrl?) => {
-                this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                this.loginHelper.redirect('CoreCoursesMyOverviewPage', undefined, siteId);
             }
         }];
     }

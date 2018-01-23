@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
@@ -115,8 +116,9 @@ export interface CoreContentLinksAction {
      * Action to perform when the link is clicked.
      *
      * @param {string} siteId The site ID.
+     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
      */
-    action(siteId: string) : void;
+    action(siteId: string, navCtrl?: NavController) : void;
 };
 
 /**

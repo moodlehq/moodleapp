@@ -21,6 +21,8 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 import { CoreLoginHelperProvider } from '../../providers/helper';
+import { CoreContentLinksDelegate } from '../../../contentlinks/providers/delegate';
+import { CoreContentLinksHelperProvider } from '../../../contentlinks/providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 /**
@@ -52,7 +54,8 @@ export class CoreLoginCredentialsPage {
     constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            private eventsProvider: CoreEventsProvider) {
+            private eventsProvider: CoreEventsProvider, private contentLinksDelegate: CoreContentLinksDelegate,
+            private contentLinksHelper: CoreContentLinksHelperProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
         this.siteConfig = navParams.get('siteConfig');
@@ -203,16 +206,15 @@ export class CoreLoginCredentialsPage {
 
                 if (this.urlToOpen) {
                     // There's a content link to open.
-                    // @todo: Implement this once content links delegate is implemented.
-                    // return $mmContentLinksDelegate.getActionsFor(urlToOpen, undefined, username).then((actions) => {
-                    //     action = $mmContentLinksHelper.getFirstValidAction(actions);
-                    //     if (action && action.sites.length) {
-                    //         // Action should only have 1 site because we're filtering by username.
-                    //         action.action(action.sites[0]);
-                    //     } else {
-                    //         return $mmLoginHelper.goToSiteInitialPage();
-                    //     }
-                    // });
+                    return this.contentLinksDelegate.getActionsFor(this.urlToOpen, undefined, username).then((actions) => {
+                        const action = this.contentLinksHelper.getFirstValidAction(actions);
+                        if (action && action.sites.length) {
+                            // Action should only have 1 site because we're filtering by username.
+                            action.action(action.sites[0]);
+                        } else {
+                            return this.loginHelper.goToSiteInitialPage();
+                        }
+                    });
                 } else {
                     return this.loginHelper.goToSiteInitialPage();
                 }

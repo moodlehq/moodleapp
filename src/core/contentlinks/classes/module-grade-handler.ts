@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavController } from 'ionic-angular';
 import { CoreContentLinksAction } from '../providers/delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreSitesProvider } from '../../../providers/sites';
@@ -64,7 +65,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
 
         courseId = courseId || params.courseid || params.cid;
         return [{
-            action: (siteId) : void => {
+            action: (siteId, navCtrl?) : void => {
                 // Check if userid is the site's current user.
                 const modal = this.domUtils.showModalLoading();
                 this.sitesProvider.getSite(siteId).then((site) => {
@@ -73,7 +74,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
                         this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
                     } else if (this.canReview) {
                         // Use the goToReview function.
-                        this.goToReview(url, params, courseId, siteId);
+                        this.goToReview(url, params, courseId, siteId, navCtrl);
                     } else {
                         // Not current user and cannot review it in the app, open it in browser.
                         site.openInBrowserWithAutoLogin(url);
@@ -91,10 +92,11 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
      * @param {string} url The URL to treat.
      * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param {number} courseId Course ID related to the URL.
-     * @param {string} siteId List of sites the URL belongs to.
+     * @param {string} siteId Site to use.
+     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected goToReview(url: string, params: any, courseId: number, siteId: string) : Promise<any> {
+    protected goToReview(url: string, params: any, courseId: number, siteId: string, navCtrl?: NavController) : Promise<any> {
         // This function should be overridden.
         return Promise.resolve();
     }

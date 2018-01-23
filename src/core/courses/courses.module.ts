@@ -17,7 +17,11 @@ import { CoreCoursesProvider } from './providers/courses';
 import { CoreCoursesMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
 import { CoreCoursesDelegate } from './providers/delegate';
+import { CoreCoursesCourseLinkHandler } from './providers/course-link-handler';
+import { CoreCoursesIndexLinkHandler } from './providers/courses-index-link-handler';
+import { CoreCoursesMyOverviewLinkHandler } from './providers/my-overview-link-handler';
 import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
 
 @NgModule({
     declarations: [],
@@ -27,12 +31,21 @@ import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
         CoreCoursesProvider,
         CoreCoursesMainMenuHandler,
         CoreCoursesMyOverviewProvider,
-        CoreCoursesDelegate
+        CoreCoursesDelegate,
+        CoreCoursesCourseLinkHandler,
+        CoreCoursesIndexLinkHandler,
+        CoreCoursesMyOverviewLinkHandler
     ],
     exports: []
 })
 export class CoreCoursesModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: CoreCoursesMainMenuHandler) {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, contentLinksDelegate: CoreContentLinksDelegate,
+            mainMenuHandler: CoreCoursesMainMenuHandler, courseLinkHandler: CoreCoursesCourseLinkHandler,
+            indexLinkHandler: CoreCoursesIndexLinkHandler, myOverviewLinkHandler: CoreCoursesMyOverviewLinkHandler) {
         mainMenuDelegate.registerHandler(mainMenuHandler);
+
+        contentLinksDelegate.registerHandler(courseLinkHandler);
+        contentLinksDelegate.registerHandler(indexLinkHandler);
+        contentLinksDelegate.registerHandler(myOverviewLinkHandler);
     }
 }
