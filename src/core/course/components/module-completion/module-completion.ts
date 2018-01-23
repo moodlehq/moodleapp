@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreUserProvider } from '../../../user/providers/user';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -39,8 +40,8 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     completionImage: string;
     completionDescription: string;
 
-    constructor(private textUtils: CoreTextUtilsProvider, private translate: TranslateService,
-            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
+            private translate: TranslateService, private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider) {
         this.completionChanged = new EventEmitter();
     }
 
@@ -130,13 +131,13 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
                 if (this.completion.overrideby > 0) {
                     langKey += '-override';
 
-                    // @todo: Get user profile.
-                    // promise = $mmUser.getProfile(scope.completion.overrideby, scope.completion.courseId, true).then(function(profile) {
-                    //     return {
-                    //         overrideuser: profile.fullname,
-                    //         modname: modNameFormatted
-                    //     };
-                    // });
+                    promise = this.userProvider.getProfile(this.completion.overrideby, this.completion.courseId, true).then(
+                            (profile) => {
+                        return {
+                            overrideuser: profile.fullname,
+                            modname: modNameFormatted
+                        };
+                     });
                 } else {
                     promise = Promise.resolve(modNameFormatted);
                 }

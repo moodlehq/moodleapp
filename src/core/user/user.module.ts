@@ -18,6 +18,8 @@ import { CoreUserProfileFieldDelegate } from './providers/user-profile-field-del
 import { CoreUserProvider } from './providers/user';
 import { CoreUserHelperProvider } from './providers/helper';
 import { CoreUserProfileMailHandler } from './providers/user-handler';
+import { CoreEventsProvider } from '../../providers/events';
+import { CoreSitesProvider } from '../../providers/sites';
 
 @NgModule({
     declarations: [
@@ -33,7 +35,27 @@ import { CoreUserProfileMailHandler } from './providers/user-handler';
     ]
 })
 export class CoreUserModule {
-    constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler) {
+    constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler,
+            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, userProvider: CoreUserProvider) {
         userDelegate.registerHandler(userProfileMailHandler);
+
+        eventsProvider.on(CoreEventsProvider.USER_DELETED, (data) => {
+            // Search for userid in params.
+            let params = data.params,
+                userId = 0;
+            if (params.userid) {
+                userId = params.userid;
+            } else if (params.userids) {
+                userId = params.userids[0];
+            } else if (params.field === 'id' && params.values && params.values.length) {
+                userId = params.values[0];
+            } else if (params.userlist && params.userlist.length) {
+                userId = params.userlist[0].userid;
+            }
+
+            if (userId > 0) {
+                userProvider.deleteStoredUser(userId, data.siteId);
+            }
+        }, sitesProvider.getCurrentSiteId());
     }
 }

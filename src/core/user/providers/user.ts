@@ -80,6 +80,32 @@ export class CoreUserProvider {
     }
 
     /**
+     * Store user basic information in local DB to be retrieved if the WS call fails.
+     *
+     * @param  {number} userId  User ID.
+     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise<any>}   Promise resolve when the user is deleted.
+     */
+    deleteStoredUser(userId: number, siteId?: string): Promise<any> {
+        if (isNaN(userId)) {
+            return Promise.reject(null);
+        }
+
+        let promises = [];
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Invalidate WS calls.
+        promises.push(this.invalidateUserCache(userId, siteId));
+
+        promises.push(this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().deleteRecords(this.USERS_TABLE, { id: userId });
+        }));
+
+        return Promise.all(promises);
+    }
+
+    /**
      * Get user profile. The type of profile retrieved depends on the params.
      *
      * @param  {number} userId      User's ID.
