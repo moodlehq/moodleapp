@@ -27,14 +27,12 @@ import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 export class CoreViewerImagePage {
     title: string; // Page title.
     image: string; // Image URL.
-    isModal: boolean; // Whether it should be opened in a modal or in a page.
     component: string; // Component to use in external-content.
     componentId: string|number; // Component ID to use in external-content.
 
     constructor(private viewCtrl: ViewController, params: NavParams, translate: TranslateService) {
         this.title = params.get('title') || translate.instant('core.imageviewer');
         this.image = params.get('image');
-        this.isModal = params.get('isModal');
         this.component = params.get('component');
         this.componentId = params.get('componentId');
     }

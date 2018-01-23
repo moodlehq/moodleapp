@@ -1224,10 +1224,9 @@ export class CoreCourseModulePrefetchDelegate {
     /**
      * Update the enabled handlers for the current site.
      *
-     * @param {string} handles The module this handler handles, e.g. forum, label.
-     * @param {Object} handlerInfo The handler details.
-     * @param  {Number} time Time this update process started.
-     * @return {Promise} Resolved when enabled, rejected when not.
+     * @param {CoreCourseModulePrefetchHandler} handler The handler to treat.
+     * @param {number} time Time this update process started.
+     * @return {Promise<void>} Resolved when done.
      */
     updateHandler(handler: CoreCourseModulePrefetchHandler, time: number) : Promise<void> {
         let promise,

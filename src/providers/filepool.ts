@@ -532,7 +532,7 @@ export class CoreFilepoolProvider {
      *
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
-     * @param {Object} data Additional information to store about the file (timemodified, url, ...). See mmFilepoolStore schema.
+     * @param {any} data Additional information to store about the file (timemodified, url, ...). See FILES_TABLE schema.
      * @return {Promise<any>} Promise resolved on success.
      */
     protected addFileToPool(siteId: string, fileId: string, data: any) : Promise<any> {
@@ -714,7 +714,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<any>} Promise resolved when the file is downloaded.
      */
     protected addToQueueIfNeeded(siteId: string, fileUrl: string, component: string, componentId?: string|number, timemodified = 0,
@@ -1571,7 +1571,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -2003,7 +2003,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -2045,7 +2045,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -2608,7 +2608,7 @@ export class CoreFilepoolProvider {
      * Convenience function to check if a file should be downloaded before opening it.
      *
      * The default behaviour in the app is to download first and then open the local file in the following cases:
-     *     - The file is small (less than mmFilepoolDownloadThreshold).
+     *     - The file is small (less than DOWNLOAD_THRESHOLD).
      *     - The file cannot be streamed.
      * If the file is big and can be streamed, the promise returned by this function will be rejected.
      */

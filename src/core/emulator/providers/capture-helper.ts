@@ -44,11 +44,9 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Capture media (image, audio, video).
      *
-     * @param  {String} type              Type of media: image, audio, video.
-     * @param  {Function} successCallback Function called when media taken.
-     * @param  {Function} errorCallback   Function called when error or cancel.
-     * @param  {Object} [options]         Optional options.
-     * @return {Void}
+     * @param {string} type Type of media: image, audio, video.
+     * @param {any} [options] Optional options.
+     * @return {Promise<any>} Promise resolved when captured, rejected if error.
      */
     captureMedia(type: string, options: any) : Promise<any> {
         options = options || {};

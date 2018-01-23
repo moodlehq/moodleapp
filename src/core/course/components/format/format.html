@@ -2,7 +2,7 @@
 <div *ngIf="!componentInstances.courseFormat">
     <!-- Course summary. By default we only display the course progress. -->
     <ion-list no-lines *ngIf="!componentInstances.courseSummary">
-        <ion-item *ngIf="course.progress !== false">
+        <ion-item *ngIf="course.progress != null && course.progress >= 0">
             <core-progress-bar [progress]="course.progress"></core-progress-bar>
         </ion-item>
     </ion-list>
@@ -52,7 +52,7 @@
         </ion-item-divider>
 
         <ion-item text-wrap *ngIf="section.summary">
-            <core-format-text [text]="section.summary" maxHeight="60"></core-format-text>
+            <core-format-text [text]="section.summary"></core-format-text>
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">

@@ -27,17 +27,14 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 export class CoreViewerTextPage {
     title: string; // Page title.
     content: string; // Page content.
-    isModal: boolean; // Whether it should be opened in a modal or in a page.
     component: string; // Component to use in format-text.
     componentId: string|number; // Component ID to use in format-text.
 
     constructor(private viewCtrl: ViewController, params: NavParams, textUtils: CoreTextUtilsProvider) {
         this.title = params.get('title');
         this.content = params.get('content');
-        this.isModal = params.get('isModal');
         this.component = params.get('component');
         this.componentId = params.get('componentId');
-        // @todo: Use replacelinebreaks param like in Ionic 1? format-text should do it by default.
     }
 
     /**

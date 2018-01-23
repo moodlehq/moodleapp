@@ -86,7 +86,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
 
     /**
      * List of download promises to prevent downloading the module twice at the same time.
-     * @type {Object}
+     * @type {{[s: string]: {[s: string]: Promise<any>}}}
      */
     protected downloadPromises: {[s: string]: {[s: string]: Promise<any>}} = {};
 
@@ -260,9 +260,9 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
     /**
      * Returns module intro files.
      *
-     * @param  {Object} module   The module object returned by WS.
-     * @param  {Number} courseId Course ID.
-     * @return {Promise}         Promise resolved with list of intro files.
+     * @param {any} module The module object returned by WS.
+     * @param {number} courseId Course ID.
+     * @return {Promise<any[]>} Promise resolved with list of intro files.
      */
     getIntroFiles(module: any, courseId: number) : Promise<any[]> {
         return Promise.resolve(this.getIntroFilesFromInstance(module));

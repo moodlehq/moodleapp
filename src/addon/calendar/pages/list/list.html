@@ -22,7 +22,7 @@
 
             <ion-list *ngIf="filteredEvents && filteredEvents.length">
                 <a ion-item text-wrap *ngFor="let event of filteredEvents" [title]="event.name" (click)="gotoEvent(event.id)" [class.core-split-item-selected]="event.id == eventId">
-                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start>
+                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
                     <ion-icon *ngIf="!event.moduleIcon" name="{{event.icon}}" item-start></ion-icon>
                     <h2><core-format-text [text]="event.name"></core-format-text></h2>
                     <p>{{ event.timestart | coreToLocaleString }}</p>

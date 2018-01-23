@@ -170,11 +170,11 @@ export class CoreUtilsProvider {
      * Blocks leaving a view. This function should be used in views that want to perform a certain action before
      * leaving (usually, ask the user if he wants to leave because some data isn't saved).
      *
-     * @param  {Object} scope         View's scope.
+     * @param  {object} scope         View's scope.
      * @param  {Function} canLeaveFn  Function called when the user wants to leave the view. Must return a promise
      *                                resolved if the view should be left, rejected if the user should stay in the view.
-     * @param  {Object} [currentView] Current view. Defaults to $ionicHistory.currentView().
-     * @return {Object}               Object with:
+     * @param  {object} [currentView] Current view. Defaults to $ionicHistory.currentView().
+     * @return {object}               Object with:
      *                                       -back: Original back function.
      *                                       -unblock: Function to unblock. It is called automatically when scope is destroyed.
      */

@@ -51,7 +51,6 @@ export class CoreFormatTextDirective implements OnChanges {
                                  // avoid this use class="inline" at the same time to use display: inline-block.
     @Input() fullOnClick?: boolean|string; // Whether it should open a new page with the full contents on click. Only if
                                            // "max-height" is set and the content has been collapsed.
-    @Input() brOnFull?: boolean|string; // Whether new lines should be replaced by <br> on full view.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
@@ -148,7 +147,7 @@ export class CoreFormatTextDirective implements OnChanges {
         anchor.addEventListener('click', (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
-            this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), true, this.component, this.componentId);
+            this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
         });
 
         container.appendChild(anchor);
@@ -177,8 +176,10 @@ export class CoreFormatTextDirective implements OnChanges {
         this.text = this.text.trim();
 
         this.formatContents().then((div: HTMLElement) => {
-            this.element.innerHTML = ''; // Remove current contents.
+            // Disable media adapt to correctly calculate the height.
+            this.element.classList.add('core-disable-media-adapt');
 
+            this.element.innerHTML = ''; // Remove current contents.
             if (this.maxHeight && div.innerHTML != "") {
                 // Move the children to the current element to be able to calculate the height.
                 // @todo: Display the element?
@@ -221,17 +222,15 @@ export class CoreFormatTextDirective implements OnChanges {
                         }
 
                         // Open a new state with the contents.
-                        // @todo: brOnFull is needed?
                         this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                            false, this.component, this.componentId);
+                            this.component, this.componentId);
                     });
                 }
             } else {
                 this.domUtils.moveChildren(div, this.element);
             }
 
-            this.element.classList.add('core-enabled-media-adapt');
-
+            this.element.classList.remove('core-disable-media-adapt');
             this.finishRender();
         });
     }
@@ -363,16 +362,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return {number} The height of the element in pixels. When 0 is returned it means the element is not visible.
      */
     protected getElementHeight(element: HTMLElement) : number {
-        let height;
-
-        // Disable media adapt to correctly calculate the height.
-        element.classList.remove('core-enabled-media-adapt');
-
-        height = this.domUtils.getElementHeight(element);
-
-        element.classList.add('core-enabled-media-adapt');
-
-        return height || 0;
+        return this.domUtils.getElementHeight(element) || 0;
     }
 
     /**

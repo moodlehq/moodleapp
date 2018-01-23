@@ -269,7 +269,7 @@ export class CoreDomUtilsProvider {
      * Returns height or width of an element.
      *
      * @param {any} element DOM element to measure.
-     * @param {boolean} [isWidth] Whether to get width or height.
+     * @param {boolean} [getWidth] Whether to get width or height.
      * @param {boolean} [usePadding] Whether to use padding to calculate the measure.
      * @param {boolean} [useMargin] Whether to use margin to calculate the measure.
      * @param {boolean} [useBorder] Whether to use borders to calculate the measure.
@@ -852,13 +852,10 @@ export class CoreDomUtilsProvider {
      *
      * @param {string} image URL of the image.
      * @param {string} title Title of the page or modal.
-     * @param {boolean} [isModal] Whether it should be opened in a modal (true) or in a new page (false).
      * @param {string} [component] Component to link the image to if needed.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {NavController} [navCtrl] The NavController instance to use.
      */
-    viewImage(image: string, title?: string, isModal?: boolean, component?: string, componentId?: string|number,
-            navCtrl?: NavController) : void {
+    viewImage(image: string, title?: string, component?: string, componentId?: string|number) : void {
         if (image) {
             let params: any = {
                 title: title,
@@ -867,16 +864,8 @@ export class CoreDomUtilsProvider {
                 componentId: componentId
             };
 
-            if (isModal) {
-                // Open a modal with the contents.
-                params.isModal = true;
-
-                let modal = this.modalCtrl.create('CoreViewerImagePage', params);
-                modal.present();
-            } else if (navCtrl) {
-                // Open a new page with the contents.
-                navCtrl.push('CoreViewerImagePage', params);
-            }
+            let modal = this.modalCtrl.create('CoreViewerImagePage', params);
+            modal.present();
         }
 
     }

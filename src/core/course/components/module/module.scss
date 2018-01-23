@@ -1,0 +1,30 @@
+core-course-module {
+
+    a.core-course-module-handler {
+        align-items: flex-start;
+        item-inner {
+            padding-right: 0;
+        }
+    }
+
+    .core-module-icon {
+        align-items: flex-start;
+    }
+
+    .core-module-buttons {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        z-index: 1;
+        cursor: pointer;
+        pointer-events: auto;
+        position: absolute;
+        right: 0;
+        top: 4px;
+
+        .spinner {
+            right: 7px;
+            position: absolute;
+        }
+    }
+}

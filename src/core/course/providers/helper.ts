@@ -293,9 +293,9 @@ export class CoreCourseHelperProvider {
     /**
      * Confirm and prefetches a list of courses.
      *
-     * @param  {Object[]} courses List of courses to download.
-     * @return {Promise} Promise resolved with true when downloaded, resolved with false if user cancels, rejected if error.
-     *                   It will send a "progress" everytime a course is downloaded or fails to download.
+     * @param {any[]} courses List of courses to download.
+     * @param {Function} [onProgress] Function to call everytime a course is downloaded.
+     * @return {Promise<boolean>} Resolved with true when downloaded, resolved with false if user cancels, rejected if error.
      */
     confirmAndPrefetchCourses(courses: any[], onProgress?: (data: CoreCourseCoursesProgress) => void) : Promise<boolean> {
         const siteId = this.sitesProvider.getCurrentSiteId();
