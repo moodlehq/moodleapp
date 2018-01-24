@@ -21,6 +21,13 @@
   @include margin-horizontal($item-md-padding-start + ($item-md-padding-start / 2) - 1, null);
 }
 
+@each $color-name, $color-base, $color-contrast in get-colors($colors-md) {
+  .md .core-#{$color-name}-card {
+    @extend .card-md;
+    @extend .card-content-md;
+  }
+}
+
 // Highlights inside the input element.
 @if ($core-text-input-md-show-highlight) {
   .card-md, .list-md {

@@ -78,13 +78,20 @@ $colors: (
   light:      $gray-lighter,
   gray:       $gray-dark,
   dark:       $black,
-  warning:    $yellow
+  warning:    $yellow,
+  success:    $green,
+  info:       $blue
 );
 
 $text-color:                 $black;
 $link-color:                 $blue;
 $background-color:           $gray-light;
 $subdued-text-color:         $gray-darker;
+
+$core-warning-color: colors($colors, warning) !default; // yellow.
+$core-success-color: colors($colors, success) !default; // green.
+$core-info-color: colors($colors, info) !default; // / blue.
+$core-error-color: colors($colors, alert) !default; // Red.
 
 $list-background-color:      $white;
 

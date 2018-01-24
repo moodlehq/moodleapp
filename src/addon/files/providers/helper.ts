@@ -68,7 +68,7 @@ export class AddonFilesHelperProvider {
                 modal.dismiss();
             });
         }).then(() => {
-            this.domUtils.showAlertTranslated('core.success', 'core.fileuploader.fileuploaded');
+            this.domUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
         });
     }
 }
