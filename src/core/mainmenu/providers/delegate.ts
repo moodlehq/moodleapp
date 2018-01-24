@@ -80,6 +80,18 @@ export interface CoreMainMenuHandlerData {
 };
 
 /**
+ * Data returned by the delegate for each handler.
+ */
+export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
+
+    /**
+     * Name of the handler.
+     * @type {string}
+     */
+    name?: string;
+};
+
+/**
  * Service to interact with plugins to be shown in the main menu. Provides functions to register a plugin
  * and notify an update in the data.
  */
@@ -90,7 +102,7 @@ export class CoreMainMenuDelegate {
     protected enabledHandlers: {[s: string]: CoreMainMenuHandler} = {};
     protected loaded = false;
     protected lastUpdateHandlersStart: number;
-    protected siteHandlers: Subject<CoreMainMenuHandlerData[]> = new BehaviorSubject<CoreMainMenuHandlerData[]>([]);
+    protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreMainMenuDelegate');
@@ -123,7 +135,7 @@ export class CoreMainMenuDelegate {
      *
      * @return {Subject<CoreMainMenuHandlerData[]>} An observable that will receive the handlers.
      */
-    getHandlers() : Subject<CoreMainMenuHandlerData[]> {
+    getHandlers() : Subject<CoreMainMenuHandlerToDisplay[]> {
         return this.siteHandlers;
     }
 
@@ -223,7 +235,9 @@ export class CoreMainMenuDelegate {
 
                 for (let name in this.enabledHandlers) {
                     let handler = this.enabledHandlers[name],
-                        data = handler.getDisplayData();
+                        data: CoreMainMenuHandlerToDisplay = handler.getDisplayData();
+
+                    data.name = handler.name;
 
                     handlersData.push({
                         data: data,

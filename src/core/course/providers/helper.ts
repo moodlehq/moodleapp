@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFilepoolProvider } from '../../../providers/filepool';
 import { CoreSitesProvider } from '../../../providers/sites';
@@ -21,10 +22,13 @@ import { CoreTextUtilsProvider } from '../../../providers/utils/text';
 import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreCoursesDelegate, CoreCoursesHandlerToDisplay } from '../../courses/providers/delegate';
+import { CoreSiteHomeProvider } from '../../sitehome/providers/sitehome';
 import { CoreCourseProvider } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from './module-prefetch-delegate';
+import { CoreLoginHelperProvider } from '../../login/providers/helper';
 import { CoreConstants } from '../../constants';
+import { CoreSite } from '../../../classes/site';
 import * as moment from 'moment';
 
 /**
@@ -109,7 +113,8 @@ export class CoreCourseHelperProvider {
             private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private utils: CoreUtilsProvider, private translate: TranslateService, private coursesDelegate: CoreCoursesDelegate) {}
+            private utils: CoreUtilsProvider, private translate: TranslateService, private coursesDelegate: CoreCoursesDelegate,
+            private loginHelper: CoreLoginHelperProvider, private siteHomeProvider: CoreSiteHomeProvider) {}
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -117,11 +122,10 @@ export class CoreCourseHelperProvider {
      *
      * @param {any[]} sections List of sections to treat modules.
      * @param {number} courseId Course ID of the modules.
-     * @param {number} [moduleId] Module to navigate to if needed.
      * @param {any[]} [completionStatus] List of completion status.
      * @return {boolean} Whether the sections have content.
      */
-    addHandlerDataForModules(sections: any[], courseId: number, moduleId?: number, completionStatus?: any) {
+    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any) {
         let hasContent = false;
 
         sections.forEach((section) => {
@@ -138,11 +142,6 @@ export class CoreCourseHelperProvider {
                     // Check if activity has completions and if it's marked.
                     module.completionstatus = completionStatus[module.id];
                     module.completionstatus.courseId = courseId;
-                }
-
-                if (module.id == moduleId) {
-                    // This is the module we're looking for. Open it.
-                    module.handlerData.action(new Event('click'), module, courseId);
                 }
             });
         });
@@ -576,6 +575,86 @@ export class CoreCourseHelperProvider {
      */
     getSectionDownloadId(section: any) : string {
         return 'Section-' + section.id;
+    }
+
+    /**
+     * Navigate to a module.
+     *
+     * @param {number} moduleId Module's ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param {number} [courseId] Course ID. If not defined we'll try to retrieve it from the site.
+     * @param {number} [sectionId] Section the module belongs to. If not defined we'll try to retrieve it from the site.
+     * @return {Promise<void>} Promise resolved when done.
+     */
+    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number) : Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        let modal = this.domUtils.showModalLoading(),
+            promise,
+            site: CoreSite;
+
+        if (courseId && sectionId) {
+            // No need to retrieve more data.
+            promise = Promise.resolve();
+        } else if (!courseId) {
+            // We don't have courseId.
+            promise = this.courseProvider.getModuleBasicInfo(moduleId, siteId).then((module) => {
+                courseId = module.course;
+                sectionId = module.section;
+            });
+        } else {
+            // We don't have sectionId but we have courseId.
+            promise = this.courseProvider.getModuleSectionId(moduleId, siteId).then((id) => {
+                sectionId = id;
+            });
+        }
+
+        return promise.then(() => {
+            // Get the site.
+            return this.sitesProvider.getSite(siteId);
+        }).then((s) => {
+            site = s;
+
+            // Get the module.
+            return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId);
+        }).then((module) => {
+            const params = {
+                course: {id: courseId},
+                module: module,
+                sectionId: sectionId
+            };
+
+            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
+
+            if (courseId == site.getSiteHomeId()) {
+                // Check if site home is available.
+                return this.siteHomeProvider.isAvailable().then(() => {
+                    this.loginHelper.redirect('CoreSiteHomeIndexPage', params, siteId);
+                });
+            } else {
+                this.loginHelper.redirect('CoreCourseSectionPage', params, siteId);
+            }
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+        }).finally(() => {
+            modal.dismiss();
+        });
+    }
+
+    /**
+     * Open a module.
+     *
+     * @param {NavController} navCtrl The NavController to use.
+     * @param {any} module The module to open.
+     * @param {number} courseId The course ID of the module.
+     * @param {number} [sectionId] The section ID of the module.
+     */
+    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number) : void {
+        if (!module.handlerData) {
+            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
+        }
+
+        module.handlerData.action(new Event('click'), navCtrl, module, courseId, {animate: false});
     }
 
     /**

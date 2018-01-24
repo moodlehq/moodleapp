@@ -12,7 +12,7 @@
         <!-- Section selector. -->
         <div *ngIf="!componentInstances.sectionSelector && displaySectionSelector && sections && sections.length" no-padding class="clearfix">
             <!-- @todo: How to display availabilityinfo and not visible messages? -->
-            <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions" float-start>
+            <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions" float-start interface="popover">
                 <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
             </ion-select>
             <!-- Section download. -->

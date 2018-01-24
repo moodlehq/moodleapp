@@ -15,8 +15,8 @@ core-loading {
     }
 }
 
-.scroll-content > .padding > core-loading > .core-loading-container,
-ion-content[padding] > .scroll-content > core-loading > .core-loading-container,
+.scroll-content > core-loading > .core-loading-container,
+ion-content > .scroll-content > core-loading > .core-loading-container,
 .core-loading-center .core-loading-container {
     position: absolute;
     top: 0;

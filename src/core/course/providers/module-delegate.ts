@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, NavOptions } from 'ionic-angular';
 import { CoreEventsProvider } from '../../../providers/events';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
@@ -104,8 +104,9 @@ export interface CoreCourseModuleHandlerData {
      * @param {NavController} navCtrl NavController instance.
      * @param {any} module The module object.
      * @param {number} courseId The course ID.
+     * @param {NavOptions} [options] Options for the navigation.
      */
-    action?(event: Event, navCtrl: NavController, module: any, courseId: number) : void;
+    action?(event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions) : void;
 };
 
 /**
@@ -208,11 +209,11 @@ export class CoreCourseModuleDelegate {
             icon: this.courseProvider.getModuleIconSrc(module.modname),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, navCtrl: NavController, module: any, courseId: number) => {
+            action: (event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                navCtrl.push('CoreCourseUnsupportedModulePage', {module: module});
+                navCtrl.push('CoreCourseUnsupportedModulePage', {module: module}, options);
             }
         };
 

@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '../providers/sites';
 import { CoreDomUtilsProvider } from '../providers/utils/dom';
 import { CoreUrlUtilsProvider } from '../providers/utils/url';
 import { CoreUtilsProvider } from '../providers/utils/utils';
+import { CoreContentLinksHelperProvider } from '../core/contentlinks/providers/helper';
 import { CoreConfigConstants } from '../configconstants';
 
 /**
@@ -36,7 +38,8 @@ export class CoreLinkDirective implements OnInit {
     protected element: HTMLElement;
 
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider) {
+            private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
+            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }
@@ -56,12 +59,11 @@ export class CoreLinkDirective implements OnInit {
                     event.stopPropagation();
 
                     if (this.utils.isTrueOrOne(this.capture)) {
-                        // @todo: Handle link using content links helper.
-                        // $mmContentLinksHelper.handleLink(href).then((treated) => {
-                        //     if (!treated) {
+                        this.contentLinksHelper.handleLink(href, undefined, this.navCtrl).then((treated) => {
+                            if (!treated) {
                                this.navigate(href);
-                        //     }
-                        // });
+                            }
+                        });
                     } else {
                         this.navigate(href);
                     }

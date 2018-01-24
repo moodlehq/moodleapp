@@ -14,10 +14,13 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCoursesDelegate } from '../../providers/delegate';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreSiteHomeProvider } from '../../../sitehome/providers/sitehome';
 import * as moment from 'moment';
 
 /**
@@ -29,6 +32,9 @@ import * as moment from 'moment';
     templateUrl: 'my-overview.html',
 })
 export class CoreCoursesMyOverviewPage implements OnDestroy {
+    firstSelectedTab: number;
+    siteHomeEnabled: boolean;
+    tabsReady: boolean = false;
     tabShown = 'courses';
     timeline = {
         sort: 'sortbydates',
@@ -64,13 +70,24 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
-            private courseHelper: CoreCourseHelperProvider) {}
+            private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
+            private siteHomeProvider: CoreSiteHomeProvider, private coursesDelegate: CoreCoursesDelegate) {}
 
     /**
      * View loaded.
      */
     ionViewDidLoad() {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
+
+        // Decide which tab to load first.
+        this.siteHomeProvider.isAvailable().then((enabled) => {
+            let site = this.sitesProvider.getCurrentSite(),
+                displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
+
+            this.siteHomeEnabled = enabled;
+            this.firstSelectedTab = displaySiteHome ? 0 : 2;
+            this.tabsReady = true;
+        });
     }
 
     /**
@@ -222,7 +239,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         }
 
         promises.push(this.coursesProvider.invalidateUserCourses());
-        // promises.push(this.coursesDelegate.clearAndInvalidateCoursesOptions());
+        promises.push(this.coursesDelegate.clearAndInvalidateCoursesOptions());
 
         return Promise.all(promises).finally(() => {
             switch (this.tabShown) {

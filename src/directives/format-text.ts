@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../providers/app';
 import { CoreFilepoolProvider } from '../providers/filepool';
@@ -26,6 +26,7 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
 import { CoreSite } from '../classes/site';
 import { CoreLinkDirective } from '../directives/link';
 import { CoreExternalContentDirective } from '../directives/external-content';
+import { CoreContentLinksHelperProvider } from '../core/contentlinks/providers/helper';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -60,7 +61,8 @@ export class CoreFormatTextDirective implements OnChanges {
     constructor(element: ElementRef, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
-            private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
+            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -274,7 +276,8 @@ export class CoreFormatTextDirective implements OnChanges {
             // Important: We need to look for links first because in 'img' we add new links without core-link.
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
-                let linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils);
+                let linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
+                        this.contentLinksHelper, this.navCtrl);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 

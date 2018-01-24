@@ -1,7 +1,6 @@
 core-tabs {
     .core-tabs-bar {
         @include position(null, null, 0, 0);
-
         z-index: $z-index-toolbar;
         display: flex;
         width: 100%;
@@ -21,12 +20,29 @@ core-tabs {
             }
         }
     }
+    .core-tabs-content-container {
+        height: 100%;
+    }
+
+    &.tabs-hidden {
+        .core-tabs-bar {
+            display: none !important;
+        }
+        .core-tabs-content-container {
+            padding-bottom: 0 !important;
+        }
+    }
 
     core-tab {
         display: none;
+        height: 100%;
 
         &.selected {
             display: block;
         }
     }
+}
+
+.scroll-content.no-scroll {
+    overflow: hidden !important;
 }

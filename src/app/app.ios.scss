@@ -16,6 +16,11 @@
   color: $toolbar-ios-button-color;
 }
 
+.item-ios ion-spinner[item-start],
+.item-ios ion-spinner[item-end] {
+  @include margin($item-ios-padding-icon-top, null, $item-ios-padding-icon-bottom, 0);
+}
+
 // Highlights inside the input element.
 @if ($core-text-input-ios-show-highlight) {
   .card-ios, .list-ios {

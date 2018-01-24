@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnDestroy } from '@angular/core';
-import { IonicPage, NavParams, Content } from 'ionic-angular';
+import { IonicPage, NavParams, Content, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
@@ -39,6 +39,8 @@ export class CoreCourseSectionPage implements OnDestroy {
     title: string;
     course: any;
     sections: any[];
+    sectionId: number;
+    sectionNumber: number;
     courseHandlers: CoreCoursesHandlerToDisplay[];
     dataLoaded: boolean;
     downloadEnabled: boolean;
@@ -47,18 +49,18 @@ export class CoreCourseSectionPage implements OnDestroy {
         prefetchCourseIcon: 'spinner'
     };
 
-    protected moduleId;
     protected completionObserver;
     protected courseStatusObserver;
     protected isDestroyed = false;
 
-    constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
+    constructor(private navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private coursesDelegate: CoreCoursesDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            sitesProvider: CoreSitesProvider) {
+            sitesProvider: CoreSitesProvider, private navCtrl: NavController) {
         this.course = navParams.get('course');
-        this.moduleId = navParams.get('moduleId');
+        this.sectionId = navParams.get('sectionId');
+        this.sectionNumber = navParams.get('sectionNumber');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -81,9 +83,14 @@ export class CoreCourseSectionPage implements OnDestroy {
      * View loaded.
      */
     ionViewDidLoad() {
+
+        let module = this.navParams.get('module');
+        if (module) {
+            this.courseHelper.openModule(this.navCtrl, module, this.course.id, this.sectionId);
+        }
+
         this.loadData().finally(() => {
             this.dataLoaded = true;
-            delete this.moduleId; // Only load module automatically the first time.
 
             // Determine the course prefetch status.
             this.determineCoursePrefetchIcon().then(() => {
@@ -133,7 +140,7 @@ export class CoreCourseSectionPage implements OnDestroy {
             promises.push(promise.then((completionStatus) => {
                 // Get all the sections.
                 promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
-                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, this.moduleId, completionStatus);
+                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus);
 
                     // Format the name of each section and check if it has content.
                     this.sections = sections.map((section) => {

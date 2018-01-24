@@ -13,11 +13,13 @@
 // limitations under the License.
 
 import { Component, Input, Output, OnChanges, EventEmitter, SimpleChange } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 import { CoreCourseProvider } from '../../../course/providers/course';
+import { CoreContentLinksHelperProvider } from '../../../contentlinks/providers/helper';
 import * as moment from 'moment';
 
 /**
@@ -41,9 +43,9 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     next30Days: any[] = [];
     future: any[] = [];
 
-    constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider,
+    constructor(private navCtrl: NavController, private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider,
             private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
-            private courseProvider: CoreCourseProvider) {
+            private courseProvider: CoreCourseProvider, private contentLinksHelper: CoreContentLinksHelperProvider) {
         this.loadMore = new EventEmitter();
     }
 
@@ -100,9 +102,6 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     loadMoreEvents() {
         this.loadingMore = true;
         this.loadMore.emit();
-        // this.loadMore().finally(function() {
-        //     scope.loadingMore = false;
-        // });
     }
 
     /**
@@ -119,18 +118,13 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
         url = this.textUtils.decodeHTMLEntities(url);
 
         let modal = this.domUtils.showModalLoading();
-        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url).finally(() => {
+        this.contentLinksHelper.handleLink(url, undefined, this.navCtrl).then((treated) => {
+            if (!treated) {
+                return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
+            }
+        }).finally(() => {
             modal.dismiss();
         });
-
-        // @todo
-        // $mmContentLinksHelper.handleLink(url).then((treated) => {
-        //     if (!treated) {
-                // return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
-            // }
-        // }).finally(() => {
-        //     modal.dismiss();
-        // });
 
         return false;
     }

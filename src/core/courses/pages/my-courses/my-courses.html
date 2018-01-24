@@ -19,11 +19,19 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="coursesLoaded">
-        <ion-item *ngIf="showFilter" class="item-transparent">
-            <ion-icon name="funnel" class="placeholder-icon" item-start></ion-icon>
-            <ion-input type="text" name="filter" placeholder="{{ 'core.courses.filtermycourses' | translate }}" [(ngModel)]="filter" (ngModelChange)="filterChanged($event)"></ion-input>
-        </ion-item>
-        <core-courses-course-progress *ngFor="let course of filteredCourses" [course]="course" showSummary="true"></core-courses-course-progress>
+        <div no-padding padding-bottom *ngIf="showFilter">
+            <ion-item class="item-transparent">
+                <ion-label item-start><ion-icon name="funnel" class="placeholder-icon"></ion-icon></ion-label>
+                <ion-input type="text" name="filter" clearInput [(ngModel)]="filter" (ngModelChange)="filterChanged($event)" [placeholder]="'core.courses.filtermycourses' | translate"></ion-input>
+            </ion-item>
+        </div>
+        <ion-grid no-padding>
+            <ion-row no-padding>
+                <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>
+                    <core-courses-course-progress [course]="course" class="core-courseoverview"></core-courses-course-progress>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
         <core-empty-box *ngIf="!courses || !courses.length" icon="ionic" [message]="'core.courses.nocourses' | translate">
             <p *ngIf="searchEnabled">{{ 'core.courses.searchcoursesadvice' | translate }}</p>
         </core-empty-box>

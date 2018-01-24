@@ -18,7 +18,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../mainmenu/pro
 import { CoreCoursesMyOverviewProvider } from '../providers/my-overview';
 
 /**
- * Handler to inject an option into main menu.
+ * Handler to add My Courses or My Overview into main menu.
  */
 @Injectable()
 export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {

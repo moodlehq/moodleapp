@@ -12,25 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef,
+    ViewChild } from '@angular/core';
 import { CoreTabsComponent } from './tabs';
+import { Content } from 'ionic-angular';
 
 /**
  * A tab to use inside core-tabs. The content of this tab will be displayed when the tab is selected.
  *
  * You must provide either a title or an icon for the tab.
  *
+ * The tab content MUST be surrounded by ng-template. This component uses ngTemplateOutlet instead of ng-content because the
+ * latter executes all the code immediately. This means that all the tabs would be initialized as soon as your view is
+ * loaded, leading to performance issues.
+ *
  * Example usage:
  *
  * <core-tabs selectedIndex="1">
  *     <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="switchTab('timeline')">
- *         <!-- Tab contents. -->
+ *         <ng-template> <!-- This ng-template is required. -->
+ *             <!-- Tab contents. -->
+ *         </ng-template>
  *     </core-tab>
  * </core-tabs>
  */
 @Component({
     selector: 'core-tab',
-    template: '<ng-content></ng-content>'
+    template: '<ng-container *ngIf="loaded" [ngTemplateOutlet]="template"></ng-container>'
 })
 export class CoreTabComponent implements OnInit, OnDestroy {
     @Input() title?: string; // The tab title.
@@ -42,7 +50,11 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     @Input() id?: string; // An ID to identify the tab.
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
+    @ContentChild(TemplateRef) template: TemplateRef<any> // Template defined by the content.
+    @ContentChild(Content) scroll: Content;
+
     element: HTMLElement; // The core-tab element.
+    loaded = false;
 
     constructor(private tabs: CoreTabsComponent, element: ElementRef) {
         this.element = element.nativeElement;
@@ -60,5 +72,31 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy() {
         this.tabs.removeTab(this);
+    }
+
+    /**
+     * Select tab.
+     */
+    selectTab() {
+        this.element.classList.add('selected');
+
+        this.loaded = true;
+        this.ionSelect.emit(this);
+
+        // Setup tab scrolling.
+        setTimeout(() => {
+            if (this.scroll) {
+                this.scroll.getScrollElement().onscroll = (e) => {
+                    this.tabs.showHideTabs(e);
+                }
+            }
+        }, 1);
+    }
+
+    /**
+     * Unselect tab.
+     */
+    unselectTab() {
+        this.element.classList.remove('selected');
     }
 }
