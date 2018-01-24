@@ -204,7 +204,7 @@ export class CoreUtilsProvider {
             }
 
             return newArray;
-        } else if (typeof source == 'object') {
+        } else if (typeof source == 'object' && source !== null) {
             // Clone the object and all the subproperties.
             const newObject = {};
             for (const name in source) {
