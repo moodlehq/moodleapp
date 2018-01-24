@@ -7,7 +7,7 @@
     <ion-list>
         <ion-item>
             <ion-label>{{ 'addon.calendar.defaultnotificationtime' | translate }}</ion-label>
-            <ion-select [(ngModel)]="defaultTime" (ionChange)="updateDefaultTime($event)">
+            <ion-select [(ngModel)]="defaultTime" (ionChange)="updateDefaultTime($event)" interface="popover">
                 <ion-option value="0">{{ 'core.settings.disabled' | translate }}</ion-option>
                 <ion-option value="10">{{ 600 | coreDuration }}</ion-option>
                 <ion-option value="30">{{ 1800 | coreDuration }}</ion-option>

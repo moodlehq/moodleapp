@@ -30,7 +30,7 @@
                     </ion-refresher>
 
                     <div no-padding [hidden]="!(timeline.loaded || timelineCourses.loaded)">
-                        <ion-select [(ngModel)]="timeline.sort" (ngModelChange)="switchSort()">
+                        <ion-select [(ngModel)]="timeline.sort" (ngModelChange)="switchSort()" interface="popover">
                             <ion-option value="sortbydates">{{ 'core.courses.sortbydates' | translate }}</ion-option>
                             <ion-option value="sortbycourses">{{ 'core.courses.sortbycourses' | translate }}</ion-option>
                         </ion-select>
@@ -65,7 +65,7 @@
                     <core-loading [hideUntil]="courses.loaded" class="core-loading-center">
                         <!-- "Time" selector. -->
                         <div no-padding class="clearfix" [hidden]="showFilter">
-                            <ion-select [title]="'core.show' | translate" [(ngModel)]="courses.selected" float-start (ngModelChange)="selectedChanged()">
+                            <ion-select [title]="'core.show' | translate" [(ngModel)]="courses.selected" float-start (ngModelChange)="selectedChanged()" interface="popover">
                                 <ion-option value="inprogress">{{ 'core.courses.inprogress' | translate }}</ion-option>
                                 <ion-option value="future">{{ 'core.courses.future' | translate }}</ion-option>
                                 <ion-option value="past">{{ 'core.courses.past' | translate }}</ion-option>

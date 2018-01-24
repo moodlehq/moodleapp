@@ -29,7 +29,7 @@
                 <ion-item *ngIf="!displayAsButtons">
                     <!-- @todo: Display label and select in different lines. -->
                     <ion-label for="siteSelect">{{ 'core.login.selectsite' | translate }}</ion-label>
-                    <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}">
+                    <ion-select formControlName="siteUrl" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" interface="popover">
                         <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
                     </ion-select>
                 </ion-item>
