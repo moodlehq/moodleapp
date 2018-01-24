@@ -16,6 +16,11 @@
   color: $toolbar-md-button-color;
 }
 
+.item-md ion-spinner[item-start] + .item-inner,
+.item-md ion-spinner[item-start] + .item-input {
+  @include margin-horizontal($item-md-padding-start + ($item-md-padding-start / 2) - 1, null);
+}
+
 // Highlights inside the input element.
 @if ($core-text-input-md-show-highlight) {
   .card-md, .list-md {

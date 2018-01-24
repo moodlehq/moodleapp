@@ -1,5 +1,5 @@
-<core-loading [hideUntil]="hideUntil">
-    <div class="core-tabs-bar">
+<core-loading [hideUntil]="hideUntil" class="core-loading-center">
+    <div class="core-tabs-bar" #topTabs>
         <ng-container *ngFor="let tab of tabs; let idx = index">
             <a *ngIf="tab.show" [attr.aria-selected]="selected == idx" (click)="selectTab(idx)">
                 <ion-icon *ngIf="tab.icon" [name]="tab.icon"></ion-icon>

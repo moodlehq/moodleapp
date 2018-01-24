@@ -15,6 +15,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, AfterViewInit, ViewChild, ElementRef,
          SimpleChange } from '@angular/core';
 import { CoreTabComponent } from './tab';
+import { Content } from 'ionic-angular';
 
 /**
  * This component displays some tabs that usually share data between them.
@@ -43,6 +44,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() hideUntil: boolean; // Determine when should the contents be shown.
     @Output() ionChange: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>(); // Emitted when the tab changes.
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
+    @ViewChild('topTabs') topTabs: ElementRef;
 
     tabs: CoreTabComponent[] = []; // List of tabs.
     selected: number; // Selected tab number.
@@ -50,13 +52,27 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     protected initialized = false;
     protected afterViewInitTriggered = false;
 
-    constructor() {}
+    protected topTabsElement: HTMLElement; // The container of the original tabs. It will include each tab's content.
+    protected tabBarHeight;
+    protected tabBarElement: HTMLElement; // Host element.
+    protected tabsShown = true;
+    protected scroll: HTMLElement; // Parent scroll element (if core-tabs is inside a ion-content).
+
+    constructor(element: ElementRef, content: Content) {
+        this.tabBarElement = element.nativeElement;
+        setTimeout(() => {
+            if (content) {
+                this.scroll = content.getScrollElement();
+            }
+        }, 1);
+    }
 
     /**
      * Component being initialized.
      */
     ngOnInit() {
         this.originalTabsContainer = this.originalTabsRef.nativeElement;
+        this.topTabsElement = this.topTabs.nativeElement;
     }
 
     /**
@@ -144,7 +160,33 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
             this.selectTab(selectedIndex);
         }
 
+        // Setup tab scrolling.
+        this.tabBarHeight = this.topTabsElement.offsetHeight;
+        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight  + 'px';
+        if (this.scroll) {
+            this.scroll.classList.add('no-scroll');
+        }
+
         this.initialized = true;
+    }
+
+    /**
+     * Show or hide the tabs. This is used when the user is scrolling inside a tab.
+     *
+     * @param {any} e Scroll event.
+     */
+    showHideTabs(e: any) : void {
+        if (e.target.scrollTop < this.tabBarHeight) {
+            if (!this.tabsShown) {
+                this.tabBarElement.classList.remove('tabs-hidden');
+                this.tabsShown = true;
+            }
+        } else {
+            if (this.tabsShown) {
+                this.tabBarElement.classList.add('tabs-hidden');
+                this.tabsShown = false;
+            }
+        }
     }
 
     /**

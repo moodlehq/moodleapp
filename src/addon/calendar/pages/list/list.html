@@ -16,7 +16,7 @@
         <ion-refresher [enabled]="eventsLoaded" (ionRefresh)="refreshEvents($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
-        <core-loading [hideUntil]="eventsLoaded" class="core-loading-center">
+        <core-loading [hideUntil]="eventsLoaded">
             <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="calendar" [message]="'addon.calendar.noevents' | translate">
             </core-empty-box>
 

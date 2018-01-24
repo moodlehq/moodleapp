@@ -7,7 +7,7 @@
     <ion-refresher [enabled]="eventLoaded" (ionRefresh)="refreshEvent($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="eventLoaded" class="core-loading-center">
+    <core-loading [hideUntil]="eventLoaded">
         <ion-card>
             <ion-card-content>
                 <ion-card-title text-wrap>

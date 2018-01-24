@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef,
+    ViewChild } from '@angular/core';
 import { CoreTabsComponent } from './tabs';
+import { Content } from 'ionic-angular';
 
 /**
  * A tab to use inside core-tabs. The content of this tab will be displayed when the tab is selected.
@@ -49,6 +51,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
     @ContentChild(TemplateRef) template: TemplateRef<any> // Template defined by the content.
+    @ContentChild(Content) scroll: Content;
 
     element: HTMLElement; // The core-tab element.
     loaded = false;
@@ -76,8 +79,18 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      */
     selectTab() {
         this.element.classList.add('selected');
+
         this.loaded = true;
         this.ionSelect.emit(this);
+
+        // Setup tab scrolling.
+        setTimeout(() => {
+            if (this.scroll) {
+                this.scroll.getScrollElement().onscroll = (e) => {
+                    this.tabs.showHideTabs(e);
+                }
+            }
+        }, 1);
     }
 
     /**

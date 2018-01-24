@@ -82,7 +82,7 @@
                         <!-- Filter courses. -->
                         <div no-padding padding-bottom [hidden]="!showFilter">
                             <ion-item>
-                                <ion-label><ion-icon name="funnel" class="placeholder-icon"></ion-icon></ion-label>
+                                <ion-label item-start><ion-icon name="funnel" class="placeholder-icon"></ion-icon></ion-label>
                                 <ion-input type="text" name="filter" clearInput [(ngModel)]="courses.filter" (ngModelChange)="filterChanged($event)" [placeholder]="'core.courses.filtermycourses' | translate"></ion-input>
                             </ion-item>
                         </div>

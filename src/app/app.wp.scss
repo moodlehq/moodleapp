@@ -15,3 +15,8 @@
 .bar-buttons core-context-menu .button-clear-wp {
   color: $toolbar-wp-button-color;
 }
+
+.item-wp ion-spinner[item-start] + .item-inner,
+.item-wp ion-spinner[item-start] + .item-input {
+  @include margin-horizontal(($item-wp-padding-start / 2), null);
+}
