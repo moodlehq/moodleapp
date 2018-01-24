@@ -47,6 +47,7 @@ import { CoreFileSessionProvider } from '../providers/file-session';
 import { CoreFilepoolProvider } from '../providers/filepool';
 import { CoreUpdateManagerProvider } from '../providers/update-manager';
 import { CorePluginFileDelegate } from '../providers/plugin-file-delegate';
+import { CoreSyncProvider } from '../providers/sync';
 
 // Core modules.
 import { CoreComponentsModule } from '../components/components.module';
@@ -131,7 +132,8 @@ export function createTranslateLoader(http: HttpClient) {
         CoreFileSessionProvider,
         CoreFilepoolProvider,
         CoreUpdateManagerProvider,
-        CorePluginFileDelegate
+        CorePluginFileDelegate,
+        CoreSyncProvider
     ]
 })
 export class AppModule {
