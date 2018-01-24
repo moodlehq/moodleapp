@@ -16,8 +16,14 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { CoreLoggerProvider } from '../providers/logger';
 
+/**
+ * Observer instance to stop listening to an event.
+ */
 export interface CoreEventObserver {
-    off: () => void; // Unsubscribe.
+    /**
+     * Stop the observer.
+     */
+    off: () => void;
 };
 
 /*
@@ -39,6 +45,7 @@ export class CoreEventsProvider {
     public static COMPLETION_MODULE_VIEWED = 'completion_module_viewed';
     public static USER_DELETED = 'user_deleted';
     public static PACKAGE_STATUS_CHANGED = 'package_status_changed';
+    public static COURSE_STATUS_CHANGED = 'course_status_changed';
     public static SECTION_STATUS_CHANGED = 'section_status_changed';
     public static REMOTE_ADDONS_LOADED = 'remote_addons_loaded';
     public static LOGIN_SITE_CHECKED = 'login_site_checked';
@@ -48,9 +55,9 @@ export class CoreEventsProvider {
     public static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     public static FILE_SHARED = 'file_shared';
 
-    logger;
-    observables: {[s: string] : Subject<any>} = {};
-    uniqueEvents = {};
+    protected logger;
+    protected observables: {[s: string] : Subject<any>} = {};
+    protected uniqueEvents = {};
 
     constructor(logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreEventsProvider');

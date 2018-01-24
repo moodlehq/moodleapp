@@ -165,7 +165,7 @@ export class CoreFileUploaderDelegate {
     protected lastUpdateHandlersStart: number;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
-        this.logger = logger.getInstance('CoreCourseModuleDelegate');
+        this.logger = logger.getInstance('CoreFileUploaderDelegate');
 
         eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
         eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));

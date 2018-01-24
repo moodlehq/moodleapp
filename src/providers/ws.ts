@@ -28,39 +28,95 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreInterceptor } from '../classes/interceptor';
 
 /**
- * Interface of the presets accepted by the WS call.
+ * PreSets accepted by the WS call.
  */
 export interface CoreWSPreSets {
-    siteUrl: string; // The site URL.
-    wsToken: string; // The Webservice token.
-    responseExpected?: boolean; // Defaults to true. Set to false when the expected response is null.
-    typeExpected?: string; // Defaults to 'object'. Use it when you expect a type that's not an object|array.
-    cleanUnicode?: boolean; // Defaults to false. Clean multibyte Unicode chars from data.
+    /**
+     * The site URL.
+     * @type {string}
+     */
+    siteUrl: string;
+
+    /**
+     * The Webservice token.
+     * @type {string}
+     */
+    wsToken: string;
+
+    /**
+     * Defaults to true. Set to false when the expected response is null.
+     * @type {boolean}
+     */
+    responseExpected?: boolean;
+
+    /**
+     * Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     * @type {string}
+     */
+    typeExpected?: string;
+
+    /**
+     * Defaults to false. Clean multibyte Unicode chars from data.
+     * @type {string}
+     */
+    cleanUnicode?: boolean;
 };
 
 /**
- * Interface of the presets accepted by AJAX WS calls.
+ * PreSets accepted by AJAX WS calls.
  */
 export interface CoreWSAjaxPreSets {
-    siteUrl: string; // The site URL.
-    responseExpected?: boolean; // Defaults to true. Set to false when the expected response is null.
+    /**
+     * The site URL.
+     * @type {string}
+     */
+    siteUrl: string;
+
+    /**
+     * Defaults to true. Set to false when the expected response is null.
+     * @type {boolean}
+     */
+    responseExpected?: boolean;
 };
 
 /**
- * Interface for WS Errors.
+ * Error returned by a WS call.
  */
 export interface CoreWSError {
-    message: string; // The error message.
-    exception?: string; // Name of the exception. Undefined for local errors (fake WS errors).
-    errorcode?: string; // The error code. Undefined for local errors (fake WS errors).
+    /**
+     * The error message.
+     * @type {string}
+     */
+    message: string;
+
+    /**
+     * Name of the exception. Undefined for local errors (fake WS errors).
+     * @type {string}
+     */
+    exception?: string;
+
+    /**
+     * The error code. Undefined for local errors (fake WS errors).
+     * @type {string}
+     */
+    errorcode?: string;
 };
 
 /**
- * Interface for file upload options.
+ * File upload options.
  */
 export interface CoreWSFileUploadOptions extends FileUploadOptions {
-    fileArea?: string; // The file area where to put the file. By default, 'draft'.
-    itemId?: number; // Item ID of the area where to put the file. By default, 0.
+    /**
+     * The file area where to put the file. By default, 'draft'.
+     * @type {string}
+     */
+    fileArea?: string;
+
+    /**
+     * Item ID of the area where to put the file. By default, 0.
+     * @type {number}
+     */
+    itemId?: number;
 };
 
 /**
@@ -68,11 +124,11 @@ export interface CoreWSFileUploadOptions extends FileUploadOptions {
  */
 @Injectable()
 export class CoreWSProvider {
-    logger;
-    mimeTypeCache = {}; // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
-    ongoingCalls = {};
-    retryCalls = [];
-    retryTimeout = 0;
+    protected logger;
+    protected mimeTypeCache = {}; // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
+    protected ongoingCalls = {};
+    protected retryCalls = [];
+    protected retryTimeout = 0;
 
     constructor(private http: HttpClient, private translate: TranslateService, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, logger: CoreLoggerProvider, private utils: CoreUtilsProvider,
@@ -126,6 +182,8 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
+        data = data || {};
+        data = this.utils.clone(data); // Clone the data so the changes don't affect the original data.
         data.wsfunction = method;
         data.wstoken = preSets.wsToken;
         siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';
@@ -178,7 +236,7 @@ export class CoreWSProvider {
 
         siteUrl = preSets.siteUrl + '/lib/ajax/service.php';
 
-        let observable = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.wsTimeout);
+        let observable = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.WS_TIMEOUT);
         return this.utils.observableToPromise(observable).then((data: any) => {
             // Some moodle web services return null. If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
@@ -434,7 +492,7 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.utils.observableToPromise(this.commonHttp.head(url).timeout(CoreConstants.wsTimeout));
+            promise = this.utils.observableToPromise(this.commonHttp.head(url).timeout(CoreConstants.WS_TIMEOUT));
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -452,7 +510,7 @@ export class CoreWSProvider {
      */
     performPost(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets) : Promise<any> {
         // Perform the post request.
-        let observable = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.wsTimeout),
+        let observable = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.WS_TIMEOUT),
             promise;
 
         promise = this.utils.observableToPromise(observable).then((data: any) => {
@@ -545,7 +603,7 @@ export class CoreWSProvider {
         // HTTP not finished, but we should delete the promise after timeout.
         timeout = setTimeout(() => {
             delete this.ongoingCalls[queueItemId];
-        }, CoreConstants.wsTimeout);
+        }, CoreConstants.WS_TIMEOUT);
 
         // HTTP finished, delete from ongoing.
         return promise.finally(() => {

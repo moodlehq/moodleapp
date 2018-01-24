@@ -30,11 +30,38 @@ import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
+/**
+ * Data related to a SSO authentication.
+ */
 export interface CoreLoginSSOData {
+    /**
+     * The site's URL.
+     * @type {string}
+     */
     siteUrl?: string;
+
+    /**
+     * User's token.
+     * @type {string}
+     */
     token?: string;
+
+    /**
+     * User's private token.
+     * @type {string}
+     */
     privateToken?: string;
+
+    /**
+     * Name of the page to go after authenticated.
+     * @type {string}
+     */
     pageName?: string;
+
+    /**
+     * Params to page to the page.
+     * @type {string}
+     */
     pageParams?: any
 };
 
@@ -187,7 +214,7 @@ export class CoreLoginHelperProvider {
      * Show a confirm modal if needed and open a browser to perform SSO login.
      *
      * @param  {string} siteurl     URL of the site where the SSO login will be performed.
-     * @param  {number} typeOfLogin CoreConstants.loginSSOCode or CoreConstants.loginSSOInAppCode.
+     * @param  {number} typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @param  {string} [service]   The service to use. If not defined, external service will be used.
      * @param  {string} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @return {Void}
@@ -594,7 +621,7 @@ export class CoreLoginHelperProvider {
             return true;
         }
 
-        return code == CoreConstants.loginSSOInAppCode;
+        return code == CoreConstants.LOGIN_SSO_INAPP_CODE;
     }
 
     /**
@@ -604,7 +631,7 @@ export class CoreLoginHelperProvider {
      * @return {boolean} True if SSO login is needed, false othwerise.
      */
     isSSOLoginNeeded(code: number) : boolean {
-        return code == CoreConstants.loginSSOCode || code == CoreConstants.loginSSOInAppCode;
+        return code == CoreConstants.LOGIN_SSO_CODE || code == CoreConstants.LOGIN_SSO_INAPP_CODE;
     }
 
     /**
@@ -615,7 +642,7 @@ export class CoreLoginHelperProvider {
      * @param {string} siteId Site to load.
      */
     protected loadSiteAndPage(page: string, params: any, siteId: string) : void {
-        if (siteId == CoreConstants.noSiteId) {
+        if (siteId == CoreConstants.NO_SITE_ID) {
             // Page doesn't belong to a site, just load the page.
             this.appProvider.getRootNavController().setRoot(page, params);
         } else {
@@ -687,7 +714,7 @@ export class CoreLoginHelperProvider {
      * Open a browser to perform SSO login.
      *
      * @param {string} siteurl URL of the site where the SSO login will be performed.
-     * @param {number} typeOfLogin CoreConstants.loginSSOCode or CoreConstants.loginSSOInAppCode.
+     * @param {number} typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @param {string} [service] The service to use. If not defined, external service will be used.
      * @param {string} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @param {string} [pageName] Name of the page to go once authenticated. If not defined, site initial page.
@@ -791,7 +818,7 @@ export class CoreLoginHelperProvider {
 
         // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
         // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
-        this.configProvider.set(CoreConstants.loginLaunchData, JSON.stringify({
+        this.configProvider.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify({
             siteUrl: siteUrl,
             passport: passport,
             pageName: pageName || '',
@@ -934,7 +961,7 @@ export class CoreLoginHelperProvider {
     /**
      * Check if a confirm should be shown to open a SSO authentication.
      *
-     * @param {number} typeOfLogin CoreConstants.loginSSOCode or CoreConstants.loginSSOInAppCode.
+     * @param {number} typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @return {boolean} True if confirm modal should be shown, false otherwise.
      */
     shouldShowSSOConfirm(typeOfLogin: number) : boolean {
@@ -988,7 +1015,7 @@ export class CoreLoginHelperProvider {
         // Split signature:::token
         const params = url.split(":::");
 
-        return this.configProvider.get(CoreConstants.loginLaunchData).then((data): any => {
+        return this.configProvider.get(CoreConstants.LOGIN_LAUNCH_DATA).then((data): any => {
             try {
                 data = JSON.parse(data);
             } catch(ex) {
@@ -999,7 +1026,7 @@ export class CoreLoginHelperProvider {
                 passport = data.passport;
 
             // Reset temporary values.
-            this.configProvider.delete(CoreConstants.loginLaunchData);
+            this.configProvider.delete(CoreConstants.LOGIN_LAUNCH_DATA);
 
             // Validate the signature.
             // We need to check both http and https.

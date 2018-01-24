@@ -22,6 +22,8 @@ import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesDelegate } from '../../providers/delegate';
+import { CoreCourseProvider } from '../../../course/providers/course';
+import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
@@ -40,7 +42,9 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     selfEnrolInstances: any[] = [];
     paypalEnabled: boolean;
     dataLoaded: boolean;
-    prefetchCourseIcon: string;
+    prefetchCourseData = {
+        prefetchCourseIcon: 'spinner'
+    };
 
     protected guestWSAvailable: boolean;
     protected isGuestEnabled: boolean = false;
@@ -55,15 +59,24 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     protected selfEnrolModal: Modal;
     protected pageDestroyed = false;
     protected currentInstanceId: number;
+    protected courseStatusObserver;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private sitesProvider: CoreSitesProvider,
             private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider, appProvider: CoreAppProvider,
             private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
-            private coursesDelegate: CoreCoursesDelegate) {
+            private coursesDelegate: CoreCoursesDelegate, private courseHelper: CoreCourseHelperProvider,
+            private courseProvider: CoreCourseProvider) {
         this.course = navParams.get('course');
         this.isMobile = appProvider.isMobile();
         this.isDesktop = appProvider.isDesktop();
+
+        // Listen for status change in course.
+        this.courseStatusObserver = eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
+            if (data.courseId == this.course.id) {
+                this.prefetchCourseData.prefetchCourseIcon = this.courseHelper.getCourseStatusIconFromStatus(data.status);
+            }
+        }, sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -88,7 +101,26 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         });
 
         this.getCourse().finally(() => {
-            // @todo: Prefetch course.
+            // Determine course prefetch icon.
+            this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
+                this.prefetchCourseData.prefetchCourseIcon = icon;
+
+                if (icon == 'spinner') {
+                    // Course is being downloaded. Get the download promise.
+                    let promise = this.courseHelper.getCourseDownloadPromise(this.course.id);
+                    if (promise) {
+                        // There is a download promise. If it fails, show an error.
+                        promise.catch((error) => {
+                            if (!this.pageDestroyed) {
+                                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                            }
+                        });
+                    } else {
+                        // No download, this probably means that the app was closed while downloading. Set previous status.
+                        this.courseProvider.setCoursePreviousStatus(this.course.id);
+                    }
+                }
+            });
         });
     }
 
@@ -97,6 +129,10 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      */
     ngOnDestroy() {
         this.pageDestroyed = true;
+
+        if (this.courseStatusObserver) {
+            this.courseStatusObserver.off();
+        }
     }
 
     /**
@@ -386,5 +422,17 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 }, 5000);
             });
         });
+    }
+
+    /**
+     * Prefetch the course.
+     */
+    prefetchCourse() {
+        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, undefined, this.course._handlers)
+                .catch((error) => {
+            if (!this.pageDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+            }
+        })
     }
 }

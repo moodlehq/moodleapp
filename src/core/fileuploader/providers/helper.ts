@@ -94,13 +94,13 @@ export class CoreFileUploaderHelperProvider {
             fileData;
 
         // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-        return this.fileProvider.readFileData(file, this.fileProvider.FORMATARRAYBUFFER).then((data) => {
+        return this.fileProvider.readFileData(file, CoreFileProvider.FORMATARRAYBUFFER).then((data) => {
             fileData = data;
 
             // Get unique name for the copy.
-            return this.fileProvider.getUniqueNameInFolder(this.fileProvider.TMPFOLDER, name);
+            return this.fileProvider.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name);
         }).then((newName) => {
-            let filePath = this.textUtils.concatenatePaths(this.fileProvider.TMPFOLDER, newName);
+            let filePath = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             return this.fileProvider.writeFile(filePath, fileData);
         }).catch((error) => {
@@ -158,10 +158,10 @@ export class CoreFileUploaderHelperProvider {
             fileName = fileName.replace(/(\.[^\.]*)\?[^\.]*$/, '$1');
 
             // Get a unique name in the folder to prevent overriding another file.
-            return this.fileProvider.getUniqueNameInFolder(this.fileProvider.TMPFOLDER, fileName, defaultExt);
+            return this.fileProvider.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName, defaultExt);
         }).then((newName) => {
             // Now move or copy the file.
-            const destPath = this.textUtils.concatenatePaths(this.fileProvider.TMPFOLDER, newName);
+            const destPath = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
             if (shouldDelete) {
                 return this.fileProvider.moveExternalFile(path, destPath);
             } else {

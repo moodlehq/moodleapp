@@ -32,26 +32,110 @@ import { CoreConfigConstants } from '../configconstants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { InAppBrowserObject } from '@ionic-native/in-app-browser';
 
+/**
+ * PreSets accepted by the WS call.
+ */
 export interface CoreSiteWSPreSets {
-    getFromCache?: boolean; // Get the value from the cache if it's still valid.
-    saveToCache?: boolean; // Save the result to the cache.
-    omitExpires?: boolean; // Ignore cache expiration.
-    emergencyCache?: boolean; // Use the cache when a request fails. Defaults to true.
-    cacheKey?: string; // Extra key to add to the cache when storing this call, to identify the entry.
-    getCacheUsingCacheKey?: boolean; // Whether it should use cache key to retrieve the cached data instead of the request params.
-    getEmergencyCacheUsingCacheKey?: boolean; // Same as getCacheUsingCacheKey, but for emergency cache.
-    uniqueCacheKey?: boolean; // Whether it should only be 1 entry for this cache key (all entries with same key will be deleted).
-    filter?: boolean; // Whether to filter WS response (moodlewssettingfilter). Defaults to true.
-    rewriteurls?: boolean; // Whether to rewrite URLs (moodlewssettingfileurl). Defaults to true.
-    responseExpected?: boolean; // Defaults to true. Set to false when the expected response is null.
-    typeExpected?: string; // Defaults to 'object'. Use it when you expect a type that's not an object|array.
+    /**
+     * Get the value from the cache if it's still valid.
+     * @type {boolean}
+     */
+    getFromCache?: boolean;
+
+    /**
+     * Save the result to the cache.
+     * @type {boolean}
+     */
+    saveToCache?: boolean;
+
+    /**
+     * Ignore cache expiration.
+     * @type {boolean}
+     */
+    omitExpires?: boolean;
+
+    /**
+     * Use the cache when a request fails. Defaults to true.
+     * @type {boolean}
+     */
+    emergencyCache?: boolean;
+
+    /**
+     * Extra key to add to the cache when storing this call, to identify the entry.
+     * @type {string}
+     */
+    cacheKey?: string;
+
+    /**
+     * Whether it should use cache key to retrieve the cached data instead of the request params.
+     * @type {boolean}
+     */
+    getCacheUsingCacheKey?: boolean;
+
+    /**
+     * Same as getCacheUsingCacheKey, but for emergency cache.
+     * @type {boolean}
+     */
+    getEmergencyCacheUsingCacheKey?: boolean;
+
+    /**
+     * Whether it should only be 1 entry for this cache key (all entries with same key will be deleted).
+     * @type {boolean}
+     */
+    uniqueCacheKey?: boolean;
+
+    /**
+     * Whether to filter WS response (moodlewssettingfilter). Defaults to true.
+     * @type {boolean}
+     */
+    filter?: boolean;
+
+    /**
+     * Whether to rewrite URLs (moodlewssettingfileurl). Defaults to true.
+     * @type {boolean}
+     */
+    rewriteurls?: boolean;
+
+    /**
+     * Defaults to true. Set to false when the expected response is null.
+     * @type {boolean}
+     */
+    responseExpected?: boolean;
+
+    /**
+     * Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     * @type {string}
+     */
+    typeExpected?: string;
 };
 
+/**
+ * Response of checking local_mobile status.
+ */
 export interface LocalMobileResponse {
-    code: number; // Code to identify the authentication method to use.
-    service?: string; // Name of the service to use.
-    warning?: string; // Code of the warning message.
-    coreSupported?: boolean; // Whether core SSO is supported.
+    /**
+     * Code to identify the authentication method to use.
+     * @type {number}
+     */
+    code: number;
+
+    /**
+     * Name of the service to use.
+     * @type {string}
+     */
+    service?: string;
+
+    /**
+     * Code of the warning message.
+     * @type {string}
+     */
+    warning?: string;
+
+    /**
+     * Whether core SSO is supported.
+     * @type {boolean}
+     */
+    coreSupported?: boolean;
 }
 
 /**
@@ -435,7 +519,7 @@ export class CoreSite {
         // Check if the method is available, use a prefixed version if possible.
         // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
         if (this.getInfo() && !this.wsAvailable(method, false)) {
-            const compatibilityMethod = CoreConstants.wsPrefix + method;
+            const compatibilityMethod = CoreConstants.WS_PREFIX + method;
             if (this.wsAvailable(compatibilityMethod, false)) {
                 this.logger.info(`Using compatibility WS method '${compatibilityMethod}'`);
                 method = compatibilityMethod;
@@ -482,14 +566,7 @@ export class CoreSite {
 
                 // We pass back a clone of the original object, this may
                 // prevent errors if in the callback the object is modified.
-                if (typeof response == 'object') {
-                    if (Array.isArray(response)) {
-                        return Array.from(response);
-                    } else {
-                        return Object.assign({}, response);
-                    }
-                }
-                return response;
+                return this.utils.clone(response);
             }).catch((error) => {
                 if (error.errorcode == 'invalidtoken' ||
                         (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
@@ -572,7 +649,7 @@ export class CoreSite {
 
         // Let's try again with the compatibility prefix.
         if (checkPrefix) {
-            return this.wsAvailable(CoreConstants.wsPrefix + method, false);
+            return this.wsAvailable(CoreConstants.WS_PREFIX + method, false);
         }
 
         return false;
@@ -884,7 +961,7 @@ export class CoreSite {
             return Promise.resolve({code: 0});
         }
 
-        let observable = this.http.post(checkUrl, {service: service}).timeout(CoreConstants.wsTimeout);
+        let observable = this.http.post(checkUrl, {service: service}).timeout(CoreConstants.WS_TIMEOUT);
         return this.utils.observableToPromise(observable).then((data: any) => {
             if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
                 if (!retrying) {
@@ -937,7 +1014,7 @@ export class CoreSite {
         }
 
         this.infos.functions.forEach((func) => {
-            if (func.name.indexOf(CoreConstants.wsPrefix) != -1) {
+            if (func.name.indexOf(CoreConstants.WS_PREFIX) != -1) {
                 appUsesLocalMobile = true;
             }
         });
@@ -1081,7 +1158,7 @@ export class CoreSite {
         };
 
         if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
-                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.secondsMinute)) {
+                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.SECONDS_MINUTE)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago.
             // Open the final URL without auto-login.
             return Promise.resolve(open(url));

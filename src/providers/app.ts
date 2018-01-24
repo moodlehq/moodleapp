@@ -21,10 +21,32 @@ import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
 import { SQLiteDB } from '../classes/sqlitedb';
 
+/**
+ * Data stored for a redirect to another page/site.
+ */
 export interface CoreRedirectData {
+    /**
+     * ID of the site to load.
+     * @type {string}
+     */
     siteId?: string;
-    page?: string; // Name of the page to redirect.
-    params?: any; // Params to pass to the page.
+
+    /**
+     * Name of the page to redirect to.
+     * @type {string}
+     */
+    page?: string;
+
+    /**
+     * Params to pass to the page.
+     * @type {any}
+     */
+    params?: any;
+
+    /**
+     * Timestamp when this redirect was last modified.
+     * @type {number}
+     */
     timemodified?: number;
 };
 
@@ -40,11 +62,11 @@ export interface CoreRedirectData {
  */
 @Injectable()
 export class CoreAppProvider {
-    DBNAME = 'MoodleMobile';
-    db: SQLiteDB;
-    logger;
-    ssoAuthenticationPromise : Promise<any>;
-    isKeyboardShown: boolean = false;
+    protected DBNAME = 'MoodleMobile';
+    protected db: SQLiteDB;
+    protected logger;
+    protected ssoAuthenticationPromise : Promise<any>;
+    protected isKeyboardShown: boolean = false;
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider) {

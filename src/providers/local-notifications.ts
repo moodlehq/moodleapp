@@ -24,10 +24,22 @@ import { SQLiteDB } from '../classes/sqlitedb';
 import { CoreConstants } from '../core/constants';
 import { Subject } from 'rxjs';
 
+/**
+ * Local notification.
+ */
 export interface CoreILocalNotification extends ILocalNotification {
+    /**
+     * Number of milliseconds to turn the led on (Android only).
+     * @type {number}
+     */
     ledOnTime?: number;
+
+    /**
+     * Number of milliseconds to turn the led off (Android only).
+     * @type {number}
+     */
     ledOffTime?: number;
-}
+};
 
 /*
   Generated class for the LocalNotificationsProvider provider.
@@ -432,7 +444,7 @@ export class CoreLocalNotificationsProvider {
         return this.isTriggered(notification).then((triggered) => {
             if (!triggered) {
                 // Check if sound is enabled for notifications.
-                return this.configProvider.get(CoreConstants.settingsNotificationSound, true).then((soundEnabled) => {
+                return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
                     if (!soundEnabled) {
                         notification.sound = null;
                     } else {

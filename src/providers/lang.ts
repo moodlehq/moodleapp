@@ -26,10 +26,10 @@ import { CoreConfigConstants } from '../configconstants';
 */
 @Injectable()
 export class CoreLangProvider {
-    fallbackLanguage:string = 'en'; // mmCoreConfigConstants.default_lang || 'en',
-    currentLanguage: string; // Save current language in a variable to speed up the get function.
-    customStrings = {};
-    customStringsRaw: string;
+    protected fallbackLanguage:string = 'en'; // mmCoreConfigConstants.default_lang || 'en',
+    protected currentLanguage: string; // Save current language in a variable to speed up the get function.
+    protected customStrings = {};
+    protected customStringsRaw: string;
 
     constructor(private translate: TranslateService, private configProvider: CoreConfigProvider, platform: Platform,
             private globalization: Globalization) {

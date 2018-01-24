@@ -24,10 +24,29 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 
+/**
+ * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
+ */
 export interface PromiseDefer {
-    promise?: Promise<any>; // Promise created.
-    resolve?: (value?: any) => any; // Function to resolve the promise.
-    reject?: (reason?: any) => any; // Function to reject the promise.
+    /**
+     * The promise.
+     * @type {Promise<any>}
+     */
+    promise?: Promise<any>;
+
+    /**
+     * Function to resolve the promise.
+     *
+     * @param {any} [value] The resolve value.
+     */
+    resolve?: (value?: any) => void; // Function to resolve the promise.
+
+    /**
+     * Function to reject the promise.
+     *
+     * @param {any} [reason] The reject param.
+     */
+    reject?: (reason?: any) => void;
 }
 
 /*
@@ -35,8 +54,8 @@ export interface PromiseDefer {
  */
 @Injectable()
 export class CoreUtilsProvider {
-    logger;
-    iabInstance: InAppBrowserObject;
+    protected logger;
+    protected iabInstance: InAppBrowserObject;
 
     constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
             private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
@@ -77,6 +96,23 @@ export class CoreUtilsProvider {
                 });
             });
         });
+    }
+
+    /**
+     * Converts an array of objects to an object, using a property of each entry as the key.
+     * E.g. [{id: 10, name: 'A'}, {id: 11, name: 'B'}] => {10: {id: 10, name: 'A'}, 11: {id: 11, name: 'B'}}
+     *
+     * @param {any[]} array The array to convert.
+     * @param {string} propertyName The name of the property to use as the key.
+     * @param {any} [result] Object where to put the properties. If not defined, a new object will be created.
+     * @return {any} The object.
+     */
+    arrayToObject(array: any[], propertyName: string, result?: any) : any {
+        result = result || {};
+        array.forEach((entry) => {
+            result[entry[propertyName]] = entry;
+        });
+        return result;
     }
 
     /**
@@ -134,11 +170,11 @@ export class CoreUtilsProvider {
      * Blocks leaving a view. This function should be used in views that want to perform a certain action before
      * leaving (usually, ask the user if he wants to leave because some data isn't saved).
      *
-     * @param  {Object} scope         View's scope.
+     * @param  {object} scope         View's scope.
      * @param  {Function} canLeaveFn  Function called when the user wants to leave the view. Must return a promise
      *                                resolved if the view should be left, rejected if the user should stay in the view.
-     * @param  {Object} [currentView] Current view. Defaults to $ionicHistory.currentView().
-     * @return {Object}               Object with:
+     * @param  {object} [currentView] Current view. Defaults to $ionicHistory.currentView().
+     * @return {object}               Object with:
      *                                       -back: Original back function.
      *                                       -unblock: Function to unblock. It is called automatically when scope is destroyed.
      */
@@ -291,15 +327,14 @@ export class CoreUtilsProvider {
      *
      * @param {any} from Object to copy the properties from.
      * @param {any} to Object where to store the properties.
+     * @param {boolean} [clone=true] Whether the properties should be cloned (so they are different instances).
      */
-    copyProperties(from: any, to: any) : void {
+    copyProperties(from: any, to: any, clone = true) : void {
         for (let name in from) {
-            let value = from[name];
-            if (typeof value == 'object') {
-                // Clone the object.
-                to[name] = Object.assign({}, value);
+            if (clone) {
+                to[name] = this.clone(from[name]);
             } else {
-                to[name] = value;
+                to[name] = from[name];
             }
         }
     }
@@ -397,15 +432,16 @@ export class CoreUtilsProvider {
         for (let name in obj) {
             if (!obj.hasOwnProperty(name)) continue;
 
-            if (typeof obj[name] == 'object') {
-                let flatObject = this.flattenObject(obj[name]);
+            let value = obj[name];
+            if (typeof value == 'object' && !Array.isArray(value)) {
+                let flatObject = this.flattenObject(value);
                 for (let subName in flatObject) {
                     if (!flatObject.hasOwnProperty(subName)) continue;
 
                     toReturn[name + '.' + subName] = flatObject[subName];
                 }
             } else {
-                toReturn[name] = obj[name];
+                toReturn[name] = value;
             }
         }
 
@@ -1093,16 +1129,35 @@ export class CoreUtilsProvider {
      * @return {string} Stringified object.
      */
     sortAndStringify(obj: object) : string {
-        return JSON.stringify(obj, Object.keys(this.flattenObject(obj)).sort());
+        return JSON.stringify(this.sortProperties(obj));
+    }
+
+    /**
+     * Given an object, sort its properties and the properties of all the nested objects.
+     *
+     * @param {object} obj The object to sort. If it isn't an object, the original value will be returned.
+     * @return {object} Sorted object.
+     */
+    sortProperties(obj: object) : object {
+        if (typeof obj == 'object' && !Array.isArray(obj)) {
+            // It's an object, sort it.
+            return Object.keys(obj).sort().reduce((accumulator, key) => {
+                // Always call sort with the value. If it isn't an object, the original value will be returned.
+                accumulator[key] = this.sortProperties(obj[key]);
+                return accumulator;
+            }, {});
+        } else {
+            return obj;
+        }
     }
 
     /**
      * Sum the filesizes from a list of files checking if the size will be partial or totally calculated.
      *
      * @param {any[]} files List of files to sum its filesize.
-     * @return {object} Object with the file size and a boolean to indicate if it is the total size or only partial.
+     * @return {{size: number, total: boolean}} File size and a boolean to indicate if it is the total size or only partial.
      */
-    sumFileSizes(files: any[]) : object {
+    sumFileSizes(files: any[]) : {size: number, total: boolean} {
         let result = {
             size: 0,
             total: true

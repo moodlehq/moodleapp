@@ -57,10 +57,10 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
         // Don't allow decimals.
         seconds = Math.floor(seconds);
 
-        hours = Math.floor(seconds / CoreConstants.secondsHour);
-        seconds -= hours * CoreConstants.secondsHour;
-        minutes = Math.floor(seconds / CoreConstants.secondsMinute);
-        seconds -= minutes * CoreConstants.secondsMinute;
+        hours = Math.floor(seconds / CoreConstants.SECONDS_HOUR);
+        seconds -= hours * CoreConstants.SECONDS_HOUR;
+        minutes = Math.floor(seconds / CoreConstants.SECONDS_MINUTE);
+        seconds -= minutes * CoreConstants.SECONDS_MINUTE;
 
         return this.textUtils.twoDigits(hours) + ':' + this.textUtils.twoDigits(minutes) + ':' + this.textUtils.twoDigits(seconds);
     }

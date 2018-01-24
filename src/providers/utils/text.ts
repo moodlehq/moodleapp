@@ -22,7 +22,7 @@ import { CoreLangProvider } from '../lang';
 */
 @Injectable()
 export class CoreTextUtilsProvider {
-    element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
+    protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
 
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) {}
 
@@ -248,13 +248,10 @@ export class CoreTextUtilsProvider {
      *
      * @param {string} title Title of the new state.
      * @param {string} text Content of the text to be expanded.
-     * @param {boolean} [isModal] Whether it should be opened in a modal (true) or in a new page (false).
      * @param {string} [component] Component to link the embedded files to.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {NavController} [navCtrl] The NavController instance to use.
      */
-    expandText(title: string, text: string, isModal?: boolean, component?: string, componentId?: string|number,
-            navCtrl?: NavController) : void {
+    expandText(title: string, text: string, component?: string, componentId?: string|number) : void {
         if (text.length > 0) {
             let params: any = {
                 title: title,
@@ -263,18 +260,12 @@ export class CoreTextUtilsProvider {
                 componentId: componentId
             };
 
-            if (isModal) {
-                // Open a modal with the contents.
-                params.isModal = true;
+            // Open a modal with the contents.
+            params.isModal = true;
 
-                let modal = this.modalCtrl.create('CoreViewerTextPage', params);
-                modal.present();
-            } else if (navCtrl) {
-                // Open a new page with the contents.
-                navCtrl.push('CoreViewerTextPage', params);
-            }
+            let modal = this.modalCtrl.create('CoreViewerTextPage', params);
+            modal.present();
         }
-
     }
 
     /**

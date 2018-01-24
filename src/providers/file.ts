@@ -27,20 +27,20 @@ import { Zip } from '@ionic-native/zip';
  */
 @Injectable()
 export class CoreFileProvider {
-    logger;
-    initialized = false;
-    basePath = '';
-    isHTMLAPI = false;
+    protected logger;
+    protected initialized = false;
+    protected basePath = '';
+    protected isHTMLAPI = false;
 
     // Formats to read a file.
-    FORMATTEXT         = 0;
-    FORMATDATAURL      = 1;
-    FORMATBINARYSTRING = 2;
-    FORMATARRAYBUFFER  = 3;
+    public static FORMATTEXT         = 0;
+    public static FORMATDATAURL      = 1;
+    public static FORMATBINARYSTRING = 2;
+    public static FORMATARRAYBUFFER  = 3;
 
     // Folders.
-    SITESFOLDER = 'sites';
-    TMPFOLDER = 'tmp';
+    public static SITESFOLDER = 'sites';
+    public static TMPFOLDER = 'tmp';
 
     constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
@@ -136,7 +136,7 @@ export class CoreFileProvider {
      * @return {string} Site folder path.
      */
     getSiteFolder(siteId: string) : string {
-        return this.SITESFOLDER + '/' + siteId;
+        return CoreFileProvider.SITESFOLDER + '/' + siteId;
     }
 
     /**
@@ -380,17 +380,17 @@ export class CoreFileProvider {
      *                                  FORMATARRAYBUFFER
      * @return {Promise<any>} Promise to be resolved when the file is read.
      */
-    readFile(path: string, format = this.FORMATTEXT) : Promise<any> {
+    readFile(path: string, format = CoreFileProvider.FORMATTEXT) : Promise<any> {
         // Remove basePath if it's in the path.
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
         this.logger.debug('Read file ' + path + ' with format ' + format);
 
         switch (format) {
-            case this.FORMATDATAURL:
+            case CoreFileProvider.FORMATDATAURL:
                 return this.file.readAsDataURL(this.basePath, path);
-            case this.FORMATBINARYSTRING:
+            case CoreFileProvider.FORMATBINARYSTRING:
                 return this.file.readAsBinaryString(this.basePath, path);
-            case this.FORMATARRAYBUFFER:
+            case CoreFileProvider.FORMATARRAYBUFFER:
                 return this.file.readAsArrayBuffer(this.basePath, path);
             default:
                 return this.file.readAsText(this.basePath, path);
@@ -408,8 +408,8 @@ export class CoreFileProvider {
      *                                  FORMATARRAYBUFFER
      * @return {Promise<any>} Promise to be resolved when the file is read.
      */
-    readFileData(fileData: any, format = this.FORMATTEXT) : Promise<any> {
-        format = format || this.FORMATTEXT;
+    readFileData(fileData: any, format = CoreFileProvider.FORMATTEXT) : Promise<any> {
+        format = format || CoreFileProvider.FORMATTEXT;
         this.logger.debug('Read file from file data with format ' + format);
 
         return new Promise((resolve, reject) => {
@@ -426,13 +426,13 @@ export class CoreFileProvider {
             }
 
             switch (format) {
-                case this.FORMATDATAURL:
+                case CoreFileProvider.FORMATDATAURL:
                     reader.readAsDataURL(fileData);
                     break;
-                case this.FORMATBINARYSTRING:
+                case CoreFileProvider.FORMATBINARYSTRING:
                     reader.readAsBinaryString(fileData);
                     break;
-                case this.FORMATARRAYBUFFER:
+                case CoreFileProvider.FORMATARRAYBUFFER:
                     reader.readAsArrayBuffer(fileData);
                     break;
                 default:
@@ -883,7 +883,7 @@ export class CoreFileProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     clearTmpFolder() : Promise<any> {
-        return this.removeDir(this.TMPFOLDER);
+        return this.removeDir(CoreFileProvider.TMPFOLDER);
     }
 
     /**

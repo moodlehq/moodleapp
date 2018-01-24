@@ -51,7 +51,6 @@ export class CoreFormatTextDirective implements OnChanges {
                                  // avoid this use class="inline" at the same time to use display: inline-block.
     @Input() fullOnClick?: boolean|string; // Whether it should open a new page with the full contents on click. Only if
                                            // "max-height" is set and the content has been collapsed.
-    @Input() brOnFull?: boolean|string; // Whether new lines should be replaced by <br> on full view.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
@@ -103,16 +102,14 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Create a container for an image to adapt its width.
+     * Wrap an image with a container to adapt its width and, if needed, add an anchor to view it in full size.
      *
      * @param {number} elWidth Width of the directive's element.
      * @param {HTMLElement} img Image to adapt.
-     * @return {HTMLElement} Container.
      */
-    protected createMagnifyingGlassContainer(elWidth: number, img: HTMLElement) : HTMLElement {
-        // Check if image width has been adapted. If so, add an icon to view the image at full size.
+    protected adaptImage(elWidth: number, img: HTMLElement) : void {
         let imgWidth = this.getElementWidth(img),
-            // Wrap the image in a new div with position relative.
+            // Element to wrap the image.
             container = document.createElement('span');
 
         container.classList.add('core-adapted-img-container');
@@ -122,18 +119,38 @@ export class CoreFormatTextDirective implements OnChanges {
         } else if (img.classList.contains('atto_image_button_left')) {
             container.classList.add('atto_image_button_left');
         }
-        container.appendChild(img);
+
+        this.domUtils.wrapElement(img, container);
 
         if (imgWidth > elWidth) {
-            let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
-                label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage'));
-
-            // @todo: Implement image viewer. Maybe we can add the listener here directly?
-            container.innerHTML += '<a href="#" class="core-image-viewer-icon" core-image-viewer img="' + imgSrc +
-                            '" aria-label="' + label + '"><ion-icon name="search"></ion-icon></a>';
+            // The image has been adapted, add an anchor to view it in full size.
+            this.addMagnifyingGlass(container, img);
         }
+    }
 
-        return container;
+    /**
+     * Add a magnifying glass icon to view an image at full size.
+     *
+     * @param {HTMLElement} container The container of the image.
+     * @param {HTMLElement} img The image.
+     */
+    addMagnifyingGlass(container: HTMLElement, img: HTMLElement) : void {
+        let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
+            label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage')),
+            anchor = document.createElement('a');
+
+        anchor.classList.add('core-image-viewer-icon');
+        anchor.setAttribute('aria-label', label);
+        // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
+        anchor.innerHTML = '<ion-icon name="search" class="icon icon-md ion-md-search"></ion-icon>';
+
+        anchor.addEventListener('click', (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
+        });
+
+        container.appendChild(anchor);
     }
 
     /**
@@ -159,8 +176,10 @@ export class CoreFormatTextDirective implements OnChanges {
         this.text = this.text.trim();
 
         this.formatContents().then((div: HTMLElement) => {
-            this.element.innerHTML = ''; // Remove current contents.
+            // Disable media adapt to correctly calculate the height.
+            this.element.classList.add('core-disable-media-adapt');
 
+            this.element.innerHTML = ''; // Remove current contents.
             if (this.maxHeight && div.innerHTML != "") {
                 // Move the children to the current element to be able to calculate the height.
                 // @todo: Display the element?
@@ -173,9 +192,12 @@ export class CoreFormatTextDirective implements OnChanges {
 
                 // If cannot calculate height, shorten always.
                 if (!height || height > this.maxHeight) {
-                    let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false;
+                    let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false,
+                        showMoreDiv = document.createElement('div');
 
-                    this.element.innerHTML += '<div class="core-show-more">' + this.translate.instant('core.showmore') + '</div>';
+                    showMoreDiv.classList.add('core-show-more');
+                    showMoreDiv.innerHTML = this.translate.instant('core.showmore');
+                    this.element.appendChild(showMoreDiv);
 
                     if (expandInFullview) {
                         this.element.classList.add('core-expand-in-fullview');
@@ -200,17 +222,15 @@ export class CoreFormatTextDirective implements OnChanges {
                         }
 
                         // Open a new state with the contents.
-                        // @todo: brOnFull is needed?
                         this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                            false, this.component, this.componentId);
+                            this.component, this.componentId);
                     });
                 }
             } else {
                 this.domUtils.moveChildren(div, this.element);
             }
 
-            this.element.classList.add('core-enabled-media-adapt');
-
+            this.element.classList.remove('core-disable-media-adapt');
             this.finishRender();
         });
     }
@@ -233,7 +253,6 @@ export class CoreFormatTextDirective implements OnChanges {
             // Apply format text function.
             return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean), this.utils.isTrueOrOne(this.singleLine));
         }).then((formatted) => {
-
             let div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
                 images,
@@ -271,9 +290,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     this.addMediaAdaptClass(img);
                     this.addExternalContent(img);
                     if (this.utils.isTrueOrOne(this.adaptImg)) {
-                        // Create a container for the image and use it instead of the image.
-                        let container = this.createMagnifyingGlassContainer(elWidth, img);
-                        div.replaceChild(container, img);
+                        this.adaptImage(elWidth, img);
                     }
                 });
             }
@@ -345,16 +362,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return {number} The height of the element in pixels. When 0 is returned it means the element is not visible.
      */
     protected getElementHeight(element: HTMLElement) : number {
-        let height;
-
-        // Disable media adapt to correctly calculate the height.
-        element.classList.remove('core-enabled-media-adapt');
-
-        height = this.domUtils.getElementHeight(element);
-
-        element.classList.add('core-enabled-media-adapt');
-
-        return height || 0;
+        return this.domUtils.getElementHeight(element) || 0;
     }
 
     /**

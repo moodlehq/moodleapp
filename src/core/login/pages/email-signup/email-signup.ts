@@ -263,6 +263,6 @@ export class CoreLoginEmailSignupPage {
      * Show authentication instructions.
      */
     protected showAuthInstructions() {
-        this.textUtils.expandText(this.translate.instant('core.login.instructions'), this.authInstructions, true);
+        this.textUtils.expandText(this.translate.instant('core.login.instructions'), this.authInstructions);
     }
 }

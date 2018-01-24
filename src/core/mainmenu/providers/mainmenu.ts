@@ -17,10 +17,32 @@ import { CoreLangProvider } from '../../../providers/lang';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreConfigConstants } from '../../../configconstants';
 
+/**
+ * Custom main menu item.
+ */
 export interface CoreMainMenuCustomItem {
+    /**
+     * Type of the item: app, inappbrowser, browser or embedded.
+     * @type {string}
+     */
     type: string;
+
+    /**
+     * Url of the item.
+     * @type {string}
+     */
     url: string;
+
+    /**
+     * Label to display for the item.
+     * @type {string}
+     */
     label: string;
+
+    /**
+     * Name of the icon to display for the item.
+     * @type {string}
+     */
     icon: string;
 };
 

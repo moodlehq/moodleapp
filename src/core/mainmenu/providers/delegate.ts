@@ -18,18 +18,65 @@ import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { Subject, BehaviorSubject } from 'rxjs';
 
+/**
+ * Interface that all main menu handlers must implement.
+ */
 export interface CoreMainMenuHandler {
-    name: string; // Name of the handler.
-    priority: number; // The highest priority is displayed first.
-    isEnabled(): boolean|Promise<boolean>; // Whether or not the handler is enabled on a site level.
-    getDisplayData(): CoreMainMenuHandlerData; // Returns the data needed to render the handler.
+    /**
+     * Name of the handler.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * The highest priority is displayed first.
+     * @type {number}
+     */
+    priority: number;
+
+    /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     */
+    isEnabled(): boolean|Promise<boolean>;
+
+    /**
+     * Returns the data needed to render the handler.
+     *
+     * @param {number} courseId The course ID.
+     * @return {CoreMainMenuHandlerData} Data.
+     */
+    getDisplayData(): CoreMainMenuHandlerData;
 };
 
+/**
+ * Data needed to render a main menu handler. It's returned by the handler.
+ */
 export interface CoreMainMenuHandlerData {
-    page: string; // Name of the page.
-    title: string; // Title to display in the tab.
+    /**
+     * Name of the page to load for the handler.
+     * @type {string}
+     */
+    page: string;
+
+    /**
+     * Title to display for the handler.
+     * @type {string}
+     */
+    title: string;
+
+    /**
+     * Name of the icon to display for the handler.
+     * @type {string}
+     */
     icon: string; // Name of the icon to display in the tab.
-    class?: string; // Class to add to the displayed handler.
+
+    /**
+     * Class to add to the displayed handler.
+     * @type {string}
+     */
+    class?: string;
 };
 
 /**

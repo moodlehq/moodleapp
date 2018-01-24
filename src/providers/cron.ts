@@ -21,17 +21,64 @@ import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '../core/constants';
 import { SQLiteDB } from '../classes/sqlitedb';
 
+/**
+ * Interface that all cron handlers must implement.
+ */
 export interface CoreCronHandler {
-    name: string; // Handler's name.
-    getInterval?(): number; // Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
-    usesNetwork?(): boolean; // Whether the process uses network or not. True if not defined.
-    isSync?(): boolean; //  Whether it's a synchronization process or not. True if not defined.
-    canManualSync?(): boolean; // Whether the sync can be executed manually. Call isSync if not defined.
-    execute?(siteId?: string): Promise<any>; // Execute the process. Receives ID of site affected, undefined for all sites.
-                                             // Important: If the promise is rejected then this function will be called again
-                                             // often, it shouldn't be abused.
-    running: boolean; // Whether the handler is running. Used internally by the provider, there's no need to set it.
-    timeout: number; // Timeout ID for the handler scheduling. Used internally by the provider, there's no need to set it.
+    /**
+     * A name to identify the handler.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
+     *
+     * @return {number} Interval time (in milliseconds).
+     */
+    getInterval?(): number;
+
+    /**
+     * Check whether the process uses network or not. True if not defined.
+     *
+     * @return {boolean} Whether the process uses network or not
+     */
+    usesNetwork?(): boolean;
+
+    /**
+     * Check whether it's a synchronization process or not. True if not defined.
+     *
+     * @return {boolean} Whether it's a synchronization process or not.
+     */
+    isSync?(): boolean;
+
+    /**
+     * Check whether the sync can be executed manually. Call isSync if not defined.
+     *
+     * @return {boolean} Whether the sync can be executed manually.
+     */
+    canManualSync?(): boolean;
+
+    /**
+     * Execute the process.
+     *
+     * @param {string} [siteId] ID of the site affected. If not defined, all sites.
+     * @return {Promise<any>} Promise resolved when done. If the promise is rejected, this function will be called again often,
+     *                        it shouldn't be abused.
+     */
+    execute?(siteId?: string): Promise<any>;
+
+    /**
+     * Whether the handler is running. Used internally by the provider, there's no need to set it.
+     * @type {boolean}
+     */
+    running: boolean;
+
+    /**
+     * Timeout ID for the handler scheduling. Used internally by the provider, there's no need to set it.
+     * @type {number}
+     */
+    timeout: number;
 };
 
 /*
@@ -109,7 +156,7 @@ export class CoreCronDelegate {
 
         if (isSync) {
             // Check network connection.
-            promise = this.configProvider.get(CoreConstants.settingsSyncOnlyOnWifi, false).then((syncOnlyOnWifi) => {
+            promise = this.configProvider.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false).then((syncOnlyOnWifi) => {
                 return !syncOnlyOnWifi || !this.appProvider.isNetworkAccessLimited();
             });
         } else {

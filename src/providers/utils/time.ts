@@ -33,17 +33,17 @@ export class CoreTimeUtilsProvider {
      */
     formatTime(seconds: number) : string {
         let totalSecs = Math.abs(seconds),
-            years     = Math.floor(totalSecs / CoreConstants.secondsYear),
-            remainder = totalSecs - (years * CoreConstants.secondsYear),
-            days      = Math.floor(remainder / CoreConstants.secondsDay);
+            years     = Math.floor(totalSecs / CoreConstants.SECONDS_YEAR),
+            remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR),
+            days      = Math.floor(remainder / CoreConstants.SECONDS_DAY);
 
-        remainder = totalSecs - (days * CoreConstants.secondsDay);
+        remainder = totalSecs - (days * CoreConstants.SECONDS_DAY);
 
-        let hours = Math.floor(remainder / CoreConstants.secondsHour);
-        remainder = remainder - (hours * CoreConstants.secondsHour);
+        let hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
+        remainder = remainder - (hours * CoreConstants.SECONDS_HOUR);
 
-        let mins = Math.floor(remainder / CoreConstants.secondsMinute),
-            secs      = remainder - (mins * CoreConstants.secondsMinute),
+        let mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE),
+            secs      = remainder - (mins * CoreConstants.SECONDS_MINUTE),
             ss = this.translate.instant('core.' + (secs == 1 ? 'sec' : 'secs')),
             sm = this.translate.instant('core.' + (mins == 1 ? 'min' : 'mins')),
             sh = this.translate.instant('core.' + (hours == 1 ? 'hour' : 'hours')),

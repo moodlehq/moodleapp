@@ -24,6 +24,7 @@ import * as moment from 'moment';
 export class CoreCoursesMyOverviewProvider {
     public static EVENTS_LIMIT = 20;
     public static EVENTS_LIMIT_PER_COURSE = 10;
+    protected ROOT_CACHE_KEY = 'myoverview:';
 
     constructor(private sitesProvider: CoreSitesProvider) {}
 
@@ -113,7 +114,7 @@ export class CoreCoursesMyOverviewProvider {
      * @return {string} Cache key.
      */
     protected getActionEventsByCoursesCacheKey() : string {
-        return this.getRootCacheKey() + 'bycourse';
+        return this.ROOT_CACHE_KEY + 'bycourse';
     }
 
     /**
@@ -165,7 +166,7 @@ export class CoreCoursesMyOverviewProvider {
      * @return {string} Cache key.
      */
     protected getActionEventsByTimesortPrefixCacheKey() : string {
-        return this.getRootCacheKey() + 'bytimesort:';
+        return this.ROOT_CACHE_KEY + 'bytimesort:';
     }
 
     /**
@@ -179,15 +180,6 @@ export class CoreCoursesMyOverviewProvider {
         afterEventId = afterEventId || 0;
         limit = limit || 0;
         return this.getActionEventsByTimesortPrefixCacheKey() + afterEventId + ':' + limit;
-    }
-
-    /**
-     * Get the root cache key for the WS calls related to overview.
-     *
-     * @return {string} Root cache key.
-     */
-    protected getRootCacheKey() : string {
-        return 'myoverview:';
     }
 
     /**

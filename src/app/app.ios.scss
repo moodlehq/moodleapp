@@ -12,18 +12,6 @@
   height: calc(100% - #{($card-ios-margin-end + $card-ios-margin-start)});
 }
 
-// Top tabs
-// -------------------------
-.ios .core-top-tabbar {
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  > a {
-    font-size: 1.6rem;
-  }
-}
-
 .bar-buttons core-context-menu .button-clear-ios {
   color: $toolbar-ios-button-color;
 }

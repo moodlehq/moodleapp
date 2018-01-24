@@ -354,7 +354,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
 
         // Create the file and return it.
         let fileName = this.type + '_' + this.timeUtils.readableTimestamp() + '.' + this.extension,
-            path = this.textUtils.concatenatePaths(this.fileProvider.TMPFOLDER, 'media/' + fileName);
+            path = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
 
         let loadingModal = this.domUtils.showModalLoading();
 

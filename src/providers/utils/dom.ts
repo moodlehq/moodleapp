@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content } from 'ionic-angular';
+import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
+        NavController, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
@@ -26,14 +27,17 @@ import { CoreConstants } from '../../core/constants';
  */
 @Injectable()
 export class CoreDomUtilsProvider {
-    element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
-    matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
-    inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
+    // List of input types that support keyboard.
+    protected INPUT_SUPPORT_KEYBOARD = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
                 'search', 'tel', 'text', 'time', 'url', 'week'];
+
+    protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
+    protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
         private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
-        private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider) {}
+        private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
+        private modalCtrl: ModalController) {}
 
     /**
      * Wraps a message with core-format-text if the message contains HTML tags.
@@ -43,6 +47,7 @@ export class CoreDomUtilsProvider {
      * @return {string} Result message.
      */
     private addFormatTextIfNeeded(message: string) : string {
+        // @todo
         if (this.textUtils.hasHTMLTags(message)) {
             return '<core-format-text watch="true">' + message + '</core-format-text>';
         }
@@ -96,12 +101,13 @@ export class CoreDomUtilsProvider {
      * @param {string} [unknownMessage] ID of the message to show if size is unknown.
      * @param {number} [wifiThreshold] Threshold to show confirm in WiFi connection. Default: CoreWifiDownloadThreshold.
      * @param {number} [limitedThreshold] Threshold to show confirm in limited connection. Default: CoreDownloadThreshold.
+     * @param {boolean} [alwaysConfirm] True to show a confirm even if the size isn't high, false otherwise.
      * @return {Promise<void>} Promise resolved when the user confirms or if no confirm needed.
      */
-    confirmDownloadSize(size: any, message?: string, unknownMessage?: string, wifiThreshold?: number, limitedThreshold?: number)
-            : Promise<void> {
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.wifiDownloadThreshold : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.downloadThreshold : limitedThreshold;
+    confirmDownloadSize(size: any, message?: string, unknownMessage?: string, wifiThreshold?: number, limitedThreshold?: number,
+            alwaysConfirm?: boolean) : Promise<void> {
+        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
+        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
         if (size.size < 0 || (size.size == 0 && !size.total)) {
             // Seems size was unable to be calculated. Show a warning.
@@ -115,6 +121,8 @@ export class CoreDomUtilsProvider {
             message = message || 'core.course.confirmdownload';
             let readableSize = this.textUtils.bytesToSize(size.size, 2);
             return this.showConfirm(this.translate.instant(message, {size: readableSize}));
+        } else if (alwaysConfirm) {
+            return this.showConfirm(this.translate.instant('core.areyousure'));
         }
         return Promise.resolve();
     }
@@ -261,7 +269,7 @@ export class CoreDomUtilsProvider {
      * Returns height or width of an element.
      *
      * @param {any} element DOM element to measure.
-     * @param {boolean} [isWidth] Whether to get width or height.
+     * @param {boolean} [getWidth] Whether to get width or height.
      * @param {boolean} [usePadding] Whether to use padding to calculate the measure.
      * @param {boolean} [useMargin] Whether to use margin to calculate the measure.
      * @param {boolean} [useBorder] Whether to use borders to calculate the measure.
@@ -421,7 +429,7 @@ export class CoreDomUtilsProvider {
      */
     isRichTextEditorEnabled() : Promise<boolean> {
         if (this.isRichTextEditorSupported()) {
-            return this.configProvider.get(CoreConstants.settingsRichTextEditor, true);
+            return this.configProvider.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
         }
 
         return Promise.resolve(false);
@@ -726,7 +734,7 @@ export class CoreDomUtilsProvider {
      * @return {Alert} The alert modal.
      */
     showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number) : Alert {
-        if (error != CoreConstants.dontShowError) {
+        if (error != CoreConstants.DONT_SHOW_ERROR) {
             if (error && typeof error != 'string') {
                 error = error.message || error.error;
             }
@@ -836,6 +844,42 @@ export class CoreDomUtilsProvider {
      */
     supportsInputKeyboard(el: any) : boolean {
         return el && !el.disabled && (el.tagName.toLowerCase() == 'textarea' ||
-            (el.tagName.toLowerCase() == 'input' && this.inputSupportKeyboard.indexOf(el.type) != -1));
+            (el.tagName.toLowerCase() == 'input' && this.INPUT_SUPPORT_KEYBOARD.indexOf(el.type) != -1));
+    }
+
+    /**
+     * View an image in a new page or modal.
+     *
+     * @param {string} image URL of the image.
+     * @param {string} title Title of the page or modal.
+     * @param {string} [component] Component to link the image to if needed.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     */
+    viewImage(image: string, title?: string, component?: string, componentId?: string|number) : void {
+        if (image) {
+            let params: any = {
+                title: title,
+                image: image,
+                component: component,
+                componentId: componentId
+            };
+
+            let modal = this.modalCtrl.create('CoreViewerImagePage', params);
+            modal.present();
+        }
+
+    }
+
+    /**
+     * Wrap an HTMLElement with another element.
+     *
+     * @param {HTMLElement} el The element to wrap.
+     * @param {HTMLElement} wrapper Wrapper.
+     */
+    wrapElement(el: HTMLElement, wrapper: HTMLElement) : void {
+        // Insert the wrapper before the element.
+        el.parentNode.insertBefore(wrapper, el);
+        // Now move the element into the wrapper.
+        wrapper.appendChild(el);
     }
 }

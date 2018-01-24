@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
-//import { CoreCourseProvider } from '../../../core/course/providers/course';
+import { CoreCourseProvider } from '../../../core/course/providers/course';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -32,7 +32,7 @@ export class AddonCalendarHelperProvider {
         'category': 'albums'
     };
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider/*, private courseProvider: CoreCourseProvider*/) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
 
@@ -44,8 +44,7 @@ export class AddonCalendarHelperProvider {
     formatEventData(e: any) {
         e.icon = this.EVENTICONS[e.eventtype] || false;
         if (!e.icon) {
-            // @todo: It's a module event.
-            //e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
+            e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
             e.moduleIcon = e.icon;
         }
     };

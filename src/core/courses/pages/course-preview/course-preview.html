@@ -17,22 +17,22 @@
                 <p *ngIf="course.startdate">{{course.startdate * 1000 | coreFormatDate:"dfdaymonthyear"}} <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"dfdaymonthyear"}}</span></p>
             </a>
 
-            <ion-item text-wrap *ngIf="course.summary">
+            <ion-item text-wrap *ngIf="course.summary" detail-none>
                 <core-format-text [text]="course.summary" maxHeight="120"></core-format-text>
             </ion-item>
 
-            <a ion-item text-wrap *ngIf="course.contacts && course.contacts.length" core-user-link [attr.aria-label]="'core.viewprofile' | translate">
+            <a ion-item text-wrap *ngIf="course.contacts && course.contacts.length" detail-none>
                 <p class="item-heading">{{ 'core.teachers' | translate }}</p>
                 <p *ngFor="let contact of course.contacts">{{contact.fullname}}</p>
             </a>
             <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
-            <div *ngIf="!isEnrolled">
+            <div *ngIf="!isEnrolled" detail-none>
                 <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
                     <p class="item-heading">{{ instance.name }}</p>
                     <button ion-button block margin-top (click)="selfEnrolClicked(instance.id)">{{ 'core.courses.enrolme' | translate }}</button>
                 </ion-item>
             </div>
-            <ion-item text-wrap *ngIf="!isEnrolled && paypalEnabled">
+            <ion-item text-wrap *ngIf="!isEnrolled && paypalEnabled" detail-none>
                 <p class="item-heading">{{ 'core.courses.paypalaccepted' | translate }}</p>
                 <p>{{ 'core.paymentinstant' | translate }}</p>
                 <button ion-button block margin-top (click)="paypalEnrol()">{{ 'core.courses.sendpaymentbutton' | translate }}</button>
@@ -40,12 +40,11 @@
             <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
                 <p>{{ 'core.courses.notenrollable' | translate }}</p>
             </ion-item>
-            <!-- @todo: Prefetch course.
-            <a class="item item-icon-left" ng-if="handlersShouldBeShown" ng-click="prefetchCourse()">
-                <i ng-if="prefetchCourseIcon != 'spinner'" class="icon {{prefetchCourseIcon}}"></i>
-                <ion-spinner ng-if="prefetchCourseIcon == 'spinner'" class="icon"></ion-spinner>
+            <a ion-item *ngIf="handlersShouldBeShown" (click)="prefetchCourse()" detail-none>
+                <ion-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></ion-icon>
+                <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
                 <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
-            </a> -->
+            </a>
             <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="handlersShouldBeShown">
                 <ion-icon name="briefcase" item-start></ion-icon>
                 <h2>{{ 'core.course.contents' | translate }}</h2>

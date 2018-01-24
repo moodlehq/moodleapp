@@ -17,11 +17,34 @@ import { Platform } from 'ionic-angular';
 import { CoreLoggerProvider } from './logger';
 import { CoreUtilsProvider } from './utils/utils';
 
+/**
+ * Interface that all init handlers must implement.
+ */
 export interface CoreInitHandler {
-    name: string; // Name of the handler.
-    load(): Promise<any>; // Function to execute during the init process.
-    priority?: number; // The highest priority is executed first. You should use values lower than MAX_RECOMMENDED_PRIORITY.
-    blocking?: boolean; // Set this to true when this process should be resolved before any following one.
+    /**
+     * A name to identify the handler.
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Function to execute during the init process.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    load(): Promise<any>;
+
+    /**
+     * The highest priority is executed first. You should use values lower than MAX_RECOMMENDED_PRIORITY.
+     * @type {number}
+     */
+    priority?: number;
+
+    /**
+     * Set this to true when this process should be resolved before any following one.
+     * @type {boolean}
+     */
+    blocking?: boolean;
 };
 
 /*
@@ -32,9 +55,9 @@ export class CoreInitDelegate {
     public static DEFAULT_PRIORITY = 100; // Default priority for init processes.
     public static MAX_RECOMMENDED_PRIORITY = 600;
 
-    initProcesses = {};
-    logger;
-    readiness;
+    protected initProcesses = {};
+    protected logger;
+    protected readiness;
 
     constructor(logger: CoreLoggerProvider, platform: Platform, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreInitDelegate');

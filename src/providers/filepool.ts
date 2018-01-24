@@ -31,47 +31,199 @@ import { SQLiteDB } from '../classes/sqlitedb';
 import { CoreConstants } from '../core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
-// Entry from filepool.
+/**
+ * Entry from filepool.
+ */
 export interface CoreFilepoolFileEntry {
+    /**
+     * The fileId to identify the file.
+     * @type {string}
+     */
     fileId?: string;
+
+    /**
+     * File's URL.
+     * @type {string}
+     */
     url?: string;
+
+    /**
+     * File's revision.
+     * @type {number}
+     */
     revision?: number;
+
+    /**
+     * File's timemodified.
+     * @type {number}
+     */
     timemodified?: number;
-    stale?: number; // 1 if stale, 0 otherwise.
+
+    /**
+     * 1 if file is stale (needs to be updated), 0 otherwise.
+     * @type {number}
+     */
+    stale?: number;
+
+    /**
+     * Timestamp when this file was downloaded.
+     * @type {number}
+     */
     downloadTime?: number;
-    isexternalfile?: number; // 1 if external, 0 otherwise.
+
+    /**
+     * 1 if it's a external file (from an external repository), 0 otherwise.
+     * @type {number}
+     */
+    isexternalfile?: number;
+
+    /**
+     * Type of the repository this file belongs to.
+     * @type {string}
+     */
     repositorytype?: string;
+
+    /**
+     * File's path.
+     * @type {string}
+     */
     path?: string;
+
+    /**
+     * File's extension.
+     * @type {string}
+     */
     extension?: string;
 };
 
-// Entry from files queue.
+/**
+ * Entry from the file's queue.
+ */
 export interface CoreFilepoolQueueEntry {
+    /**
+     * The site the file belongs to.
+     * @type {string}
+     */
     siteId?: string;
+
+    /**
+     * The fileId to identify the file.
+     * @type {string}
+     */
     fileId?: string;
+
+    /**
+     * Timestamp when the file was added to the queue.
+     * @type {number}
+     */
     added?: number;
+
+    /**
+     * The priority of the file.
+     * @type {number}
+     */
     priority?: number;
+
+    /**
+     * File's URL.
+     * @type {string}
+     */
     url?: string;
+
+    /**
+     * File's revision.
+     * @type {number}
+     */
     revision?: number;
+
+    /**
+     * File's timemodified.
+     * @type {number}
+     */
     timemodified?: number;
-    isexternalfile?: number; // 1 if external, 0 otherwise.
+
+    /**
+     * 1 if it's a external file (from an external repository), 0 otherwise.
+     * @type {number}
+     */
+    isexternalfile?: number;
+
+    /**
+     * Type of the repository this file belongs to.
+     * @type {string}
+     */
     repositorytype?: string;
+
+    /**
+     * File's path.
+     * @type {string}
+     */
     path?: string;
+
+    /**
+     * File links (to link the file to components and componentIds).
+     * @type {any[]}
+     */
     links?: any[];
 };
 
-// Entry from packages table.
+/**
+ * Entry from packages table.
+ */
 export interface CoreFilepoolPackageEntry {
+    /**
+     * Package id.
+     * @type {string}
+     */
     id?: string;
+
+    /**
+     * The component to link the files to.
+     * @type {string}
+     */
     component?: string;
+
+    /**
+     * An ID to use in conjunction with the component.
+     * @type {string|number}
+     */
     componentId?: string|number;
+
+    /**
+     * Package status.
+     * @type {string}
+     */
     status?: string;
+
+    /**
+     * Package previous status.
+     * @type {string}
+     */
     previous?: string;
-    revision?: string;
-    timemodified?: number;
+
+    /**
+     * Timestamp when this package was updated.
+     * @type {number}
+     */
     updated?: number;
+
+    /**
+     * Timestamp when this package was downloaded.
+     * @type {number}
+     */
     downloadTime?: number;
+
+    /**
+     * Previous download time.
+     * @type {number}
+     */
     previousDownloadTime?: number;
+
+    /**
+     * Extra data stored by the package.
+     * @type {string}
+     */
+    extra?: string;
 };
 
 /*
@@ -244,14 +396,6 @@ export class CoreFilepoolProvider {
                     type: 'TEXT'
                 },
                 {
-                    name: 'revision',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
                     name: 'updated',
                     type: 'INTEGER'
                 },
@@ -262,6 +406,10 @@ export class CoreFilepoolProvider {
                 {
                     name: 'previousDownloadTime',
                     type: 'INTEGER'
+                },
+                {
+                    name: 'extra',
+                    type: 'TEXT'
                 }
             ]
         },
@@ -384,7 +532,7 @@ export class CoreFilepoolProvider {
      *
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
-     * @param {Object} data Additional information to store about the file (timemodified, url, ...). See mmFilepoolStore schema.
+     * @param {any} data Additional information to store about the file (timemodified, url, ...). See FILES_TABLE schema.
      * @return {Promise<any>} Promise resolved on success.
      */
     protected addFileToPool(siteId: string, fileId: string, data: any) : Promise<any> {
@@ -566,7 +714,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<any>} Promise resolved when the file is downloaded.
      */
     protected addToQueueIfNeeded(siteId: string, fileUrl: string, component: string, componentId?: string|number, timemodified = 0,
@@ -648,7 +796,7 @@ export class CoreFilepoolProvider {
                 return site.getDb().deleteRecords(this.PACKAGES_TABLE).then(() => {
                     entries.forEach((entry) => {
                         // Trigger module status changed, setting it as not downloaded.
-                        this.triggerPackageStatusChanged(siteId, CoreConstants.notDownloaded, entry.component, entry.componentId);
+                        this.triggerPackageStatusChanged(siteId, CoreConstants.NOT_DOWNLOADED, entry.component, entry.componentId);
                     });
                 });
             });
@@ -693,13 +841,13 @@ export class CoreFilepoolProvider {
     /**
      * Given the current status of a list of packages and the status of one of the packages,
      * determine the new status for the list of packages. The status of a list of packages is:
-     *     - CoreConstants.nowDownloadable if there are no downloadable packages.
-     *     - CoreConstants.notDownloaded if at least 1 package has status CoreConstants.notDownloaded.
-     *     - CoreConstants.downloaded if ALL the downloadable packages have status CoreConstants.downloaded.
-     *     - CoreConstants.downloading if ALL the downloadable packages have status CoreConstants.downloading or
-     *                                     CoreConstants.downloaded, with at least 1 package with CoreConstants.downloading.
-     *     - CoreConstants.outdated if ALL the downloadable packages have status CoreConstants.outdated or CoreConstants.downloaded
-     *                                     or CoreConstants.downloading, with at least 1 package with CoreConstants.outdated.
+     *     - CoreConstants.NOT_DOWNLOADABLE if there are no downloadable packages.
+     *     - CoreConstants.NOT_DOWNLOADED if at least 1 package has status CoreConstants.NOT_DOWNLOADED.
+     *     - CoreConstants.DOWNLOADED if ALL the downloadable packages have status CoreConstants.DOWNLOADED.
+     *     - CoreConstants.DOWNLOADING if ALL the downloadable packages have status CoreConstants.DOWNLOADING or
+     *                                     CoreConstants.DOWNLOADED, with at least 1 package with CoreConstants.DOWNLOADING.
+     *     - CoreConstants.OUTDATED if ALL the downloadable packages have status CoreConstants.OUTDATED or CoreConstants.DOWNLOADED
+     *                                     or CoreConstants.DOWNLOADING, with at least 1 package with CoreConstants.OUTDATED.
      *
      * @param {string} current Current status of the list of packages.
      * @param {string} packagestatus Status of one of the packages.
@@ -707,22 +855,22 @@ export class CoreFilepoolProvider {
      */
     determinePackagesStatus(current: string, packageStatus: string) : string {
         if (!current) {
-            current = CoreConstants.notDownloadable;
+            current = CoreConstants.NOT_DOWNLOADABLE;
         }
 
-        if (packageStatus === CoreConstants.notDownloaded) {
+        if (packageStatus === CoreConstants.NOT_DOWNLOADED) {
             // If 1 package is not downloaded the status of the whole list will always be not downloaded.
-            return CoreConstants.notDownloaded;
-        } else if (packageStatus === CoreConstants.downloaded && current === CoreConstants.notDownloadable) {
+            return CoreConstants.NOT_DOWNLOADED;
+        } else if (packageStatus === CoreConstants.DOWNLOADED && current === CoreConstants.NOT_DOWNLOADABLE) {
             // If all packages are downloaded or not downloadable with at least 1 downloaded, status will be downloaded.
-            return CoreConstants.downloaded;
-        } else if (packageStatus === CoreConstants.downloading &&
-                (current === CoreConstants.notDownloadable || current === CoreConstants.downloaded)) {
+            return CoreConstants.DOWNLOADED;
+        } else if (packageStatus === CoreConstants.DOWNLOADING &&
+                (current === CoreConstants.NOT_DOWNLOADABLE || current === CoreConstants.DOWNLOADED)) {
             // If all packages are downloading/downloaded/notdownloadable with at least 1 downloading, status will be downloading.
-            return CoreConstants.downloading;
-        } else if (packageStatus === CoreConstants.outdated && current !== CoreConstants.notDownloaded) {
+            return CoreConstants.DOWNLOADING;
+        } else if (packageStatus === CoreConstants.OUTDATED && current !== CoreConstants.NOT_DOWNLOADED) {
             // If there are no packages notdownloaded and there is at least 1 outdated, status will be outdated.
-            return CoreConstants.outdated;
+            return CoreConstants.OUTDATED;
         }
 
         // Status remains the same.
@@ -833,23 +981,21 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Downloads or prefetches a list of files.
+     * Downloads or prefetches a list of files as a "package".
      *
      * @param {string} siteId The site ID.
      * @param {any[]} fileList List of files to download.
      * @param {boolean} [prefetch] True if should prefetch the contents (queue), false if they should be downloaded right now.
      * @param {string} [component] The component to link the file to.
      * @param {string|number} [componentId]  An ID to use in conjunction with the component.
-     * @param {string} [revision] Package's revision. If not defined, it will be calculated using the list of files.
-     * @param {number} [timemod] Package's timemodified. If not defined, it will be calculated using the list of files.
+     * @param {string} [extra] Extra data to store for the package.
      * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                           the files directly inside the filepool folder.
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when the package is downloaded.
      */
     protected downloadOrPrefetchPackage(siteId: string, fileList: any[], prefetch?: boolean, component?: string,
-            componentId?: string|number, revision?: string, timemodified?: number, dirPath?: string,
-            onProgress?: (event: any) => any) : Promise<any> {
+            componentId?: string|number, extra?: string, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
 
         let packageId = this.getPackageId(component, componentId),
             promise;
@@ -861,11 +1007,8 @@ export class CoreFilepoolProvider {
             this.packagesPromises[siteId] = {};
         }
 
-        revision = revision || String(this.getRevisionFromFileList(fileList));
-        timemodified = timemodified || this.getTimemodifiedFromFileList(fileList);
-
         // Set package as downloading.
-        promise = this.storePackageStatus(siteId, CoreConstants.downloading, component, componentId).then(() => {
+        promise = this.storePackageStatus(siteId, CoreConstants.DOWNLOADING, component, componentId).then(() => {
             let promises = [],
                 packageLoaded = 0;
 
@@ -919,7 +1062,7 @@ export class CoreFilepoolProvider {
 
             return Promise.all(promises).then(() => {
                 // Success prefetching, store package as downloaded.
-                return this.storePackageStatus(siteId, CoreConstants.downloaded, component, componentId, revision, timemodified);
+                return this.storePackageStatus(siteId, CoreConstants.DOWNLOADED, component, componentId, extra);
             }).catch(() => {
                 // Error downloading, go back to previous status and reject the promise.
                 return this.setPackagePreviousStatus(siteId, component, componentId).then(() => {
@@ -943,17 +1086,15 @@ export class CoreFilepoolProvider {
      * @param {any[]} fileList List of files to download.
      * @param {string} component The component to link the file to.
      * @param {string|number} [componentId] An ID to identify the download.
-     * @param {string} [revision] Package's revision. If not defined, it will be calculated using the list of files.
-     * @param {number} [timemodified] Package's timemodified. If not defined, it will be calculated using the list of files.
+     * @param {string} [extra] Extra data to store for the package.
      * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                           the files directly inside the filepool folder.
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>}  Promise resolved when all files are downloaded.
      */
-    downloadPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, revision?: string,
-            timemodified?: number, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
-        return this.downloadOrPrefetchPackage(
-                siteId, fileList, false, component, componentId, revision, timemodified, dirPath, onProgress);
+    downloadPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, extra?: string,
+            dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+        return this.downloadOrPrefetchPackage(siteId, fileList, false, component, componentId, extra, dirPath, onProgress);
     }
 
     /**
@@ -1391,7 +1532,7 @@ export class CoreFilepoolProvider {
 
             // Check if the file is in queue (waiting to be downloaded).
             return this.hasFileInQueue(siteId, fileId).then(() => {
-                return CoreConstants.downloading;
+                return CoreConstants.DOWNLOADING;
             }).catch(() => {
                 // Check if the file is being downloaded right now.
                 let extension = this.mimeUtils.guessExtensionFromUrl(fileUrl),
@@ -1400,18 +1541,18 @@ export class CoreFilepoolProvider {
                 return Promise.resolve(path).then((filePath) => {
                     const downloadId = this.getFileDownloadId(fileUrl, filePath);
                     if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
-                        return CoreConstants.downloading;
+                        return CoreConstants.DOWNLOADING;
                     }
 
                     // File is not being downloaded. Check if it's downloaded and if it's outdated.
                     return this.hasFileInPool(siteId, fileId).then((entry) => {
                         if (this.isFileOutdated(entry, revision, timemodified)) {
-                            return CoreConstants.outdated;
+                            return CoreConstants.OUTDATED;
                         } else {
-                            return CoreConstants.downloaded;
+                            return CoreConstants.DOWNLOADED;
                         }
                     }).catch(() => {
-                        return CoreConstants.notDownloaded;
+                        return CoreConstants.NOT_DOWNLOADED;
                     });
                 });
             });
@@ -1430,7 +1571,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -1575,22 +1716,6 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get a package current status.
-     *
-     * @param {string} siteId Site ID.
-     * @param {string} component Package's component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise<string>} Promise resolved with the status.
-     */
-    getPackageCurrentStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
-        return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.status || CoreConstants.notDownloaded;
-        }).catch(() => {
-            return CoreConstants.notDownloaded;
-        });
-    }
-
-    /**
      * Get the data stored for a package.
      *
      * @param {string} siteId Site ID.
@@ -1683,6 +1808,19 @@ export class CoreFilepoolProvider {
             return this.packagesPromises[siteId][packageId];
         }
     }
+    /**
+     * Get a package extra data.
+     *
+     * @param {string} siteId Site ID.
+     * @param {string} component Package's component.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise<string>} Promise resolved with the extra data.
+     */
+    getPackageExtra(siteId: string, component: string, componentId?: string|number) : Promise<string> {
+        return this.getPackageData(siteId, component, componentId).then((entry) => {
+            return entry.extra;
+        });
+    }
 
     /**
      * Get the ID of a package.
@@ -1705,23 +1843,9 @@ export class CoreFilepoolProvider {
      */
     getPackagePreviousStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.previous || CoreConstants.notDownloaded;
+            return entry.previous || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
-            return CoreConstants.notDownloaded;
-        });
-    }
-
-    /**
-     * Get a package revision.
-     *
-     * @param {string} siteId       Site ID.
-     * @param {string} component    Package's component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise}            Promise resolved with the revision.
-     */
-    getPackageRevision(siteId: string, component: string, componentId?: string|number) : Promise<string> {
-        return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.revision;
+            return CoreConstants.NOT_DOWNLOADED;
         });
     }
 
@@ -1731,65 +1855,13 @@ export class CoreFilepoolProvider {
      * @param {string} siteId Site ID.
      * @param {string} component Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {string} [revision='0'] Package's revision.
-     * @param {number} [timemodified=0] Package's time modified.
      * @return {Promise<string>} Promise resolved with the status.
      */
-    getPackageStatus(siteId: string, component: string, componentId?: string|number, revision = '0', timemodified = 0)
-            : Promise<string> {
-        componentId = this.fixComponentId(componentId);
-
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const packageId = this.getPackageId(component, componentId),
-                conditions = {id: packageId};
-
-            // Get status.
-            return site.getDb().getRecord(this.PACKAGES_TABLE, conditions).then((entry: CoreFilepoolPackageEntry) => {
-                if (entry.status === CoreConstants.downloaded) {
-                    if (revision != entry.revision || timemodified > entry.timemodified) {
-                        // File is outdated. Let's change its status.
-                        let newData: CoreFilepoolPackageEntry = {
-                            status: CoreConstants.outdated,
-                            updated: Date.now()
-                        };
-                        site.getDb().updateRecords(this.PACKAGES_TABLE, newData, conditions).then(() => {
-                            // Success inserting, trigger event.
-                            this.triggerPackageStatusChanged(siteId, CoreConstants.outdated, component, componentId);
-                        });
-                    }
-                } else if (entry.status === CoreConstants.outdated) {
-                    if (revision === entry.revision && timemodified === entry.timemodified) {
-                        // File isn't outdated anymore. Let's change its status.
-                        let newData: CoreFilepoolPackageEntry = {
-                            status: CoreConstants.downloaded,
-                            updated: Date.now()
-                        };
-                        site.getDb().updateRecords(this.PACKAGES_TABLE, newData, conditions).then(() => {
-                            // Success inserting, trigger event.
-                            this.triggerPackageStatusChanged(siteId, CoreConstants.downloaded, component, componentId);
-                        });
-                    }
-                }
-                return entry.status;
-            }, () => {
-                return CoreConstants.notDownloaded;
-            });
-        });
-    }
-
-    /**
-     * Get a package timemodified.
-     *
-     * @param {string} siteId Site ID.
-     * @param {string} component Package's component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @return {Promise<number>} Promise resolved with the time modified.
-     */
-    getPackageTimemodified(siteId: string, component: string, componentId?: string|number) : Promise<number> {
+    getPackageStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
-            return entry.timemodified;
+            return entry.status || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
-            return -1;
+            return CoreConstants.NOT_DOWNLOADED;
         });
     }
 
@@ -1874,10 +1946,10 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get package revision number from a list of files.
+     * Get a revision number from a list of files (highest revision).
      *
      * @param {any[]} files Package files.
-     * @return {number} Package revision.
+     * @return {number} Highest revision.
      */
     getRevisionFromFileList(files: any[]) : number {
         let revision = 0;
@@ -1931,7 +2003,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -1947,7 +2019,7 @@ export class CoreFilepoolProvider {
      * Get time modified from a list of files.
      *
      * @param {any[]} files List of files.
-     * @return {number} Rime modified.
+     * @return {number} Time modified.
      */
     getTimemodifiedFromFileList(files: any[]) : number {
         let timemodified = 0;
@@ -1973,7 +2045,7 @@ export class CoreFilepoolProvider {
      * @param {boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @param {boolean} [downloadUnknown] True to download file in WiFi if their size is unknown, false otherwise.
      *                                    Ignored if checkSize=false.
-     * @param {Object} [options] Extra options (isexternalfile, repositorytype).
+     * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<string>} Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -2225,17 +2297,15 @@ export class CoreFilepoolProvider {
      * @param {any[]} fileList List of files to download.
      * @param {string} component The component to link the file to.
      * @param {string|number} [componentId] An ID to identify the download.
-     * @param {string} [revision] Package's revision. If not defined, it will be calculated using the list of files.
-     * @param {number} [timemodified] Package's time modified. If not defined, it will be calculated using the list of files.
+     * @param {string} [extra] Extra data to store for the package.
      * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                           the files directly inside the filepool folder.
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>}  Promise resolved when all files are downloaded.
      */
-    prefetchPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, revision?: string,
-            timemodified?: number, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
-        return this.downloadOrPrefetchPackage(
-                siteId, fileList, true, component, componentId, revision, timemodified, dirPath, onProgress);
+    prefetchPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, extra?: string,
+            dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+        return this.downloadOrPrefetchPackage(siteId, fileList, true, component, componentId, extra, dirPath, onProgress);
     }
 
     /**
@@ -2511,11 +2581,11 @@ export class CoreFilepoolProvider {
             // Get current stored data, we'll only update 'status' and 'updated' fields.
             return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId}).then((entry: CoreFilepoolPackageEntry) => {
                 let newData: CoreFilepoolPackageEntry = {};
-                if (entry.status == CoreConstants.downloading) {
+                if (entry.status == CoreConstants.DOWNLOADING) {
                     // Going back from downloading to previous status, restore previous download time.
                     newData.downloadTime = entry.previousDownloadTime;
                 }
-                newData.status = entry.previous || CoreConstants.downloaded;
+                newData.status = entry.previous || CoreConstants.DOWNLOADED;
                 newData.updated = Date.now();
                 this.logger.debug(`Set previous status '${entry.status}' for package ${component} ${componentId}`);
 
@@ -2538,7 +2608,7 @@ export class CoreFilepoolProvider {
      * Convenience function to check if a file should be downloaded before opening it.
      *
      * The default behaviour in the app is to download first and then open the local file in the following cases:
-     *     - The file is small (less than mmFilepoolDownloadThreshold).
+     *     - The file is small (less than DOWNLOAD_THRESHOLD).
      *     - The file cannot be streamed.
      * If the file is big and can be streamed, the promise returned by this function will be rejected.
      */
@@ -2568,12 +2638,11 @@ export class CoreFilepoolProvider {
      * @param {string} status New package status.
      * @param {string} component Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
-     * @param {string} [revision] Package's revision. If not provided, try to use the current value.
-     * @param {number} [timemodified] Package's time modified. If not provided, try to use the current value.
+     * @param {string} [extra] Extra data to store for the package. If you want to store more than 1 value, use JSON.stringify.
      * @return {Promise<any>} Promise resolved when status is stored.
      */
-    storePackageStatus(siteId: string, status: string, component: string, componentId?: string|number, revision?: string,
-            timemodified?: number) : Promise<any> {
+    storePackageStatus(siteId: string, status: string, component: string, componentId?: string|number, extra?: string)
+            : Promise<any> {
         this.logger.debug(`Set status '${status}'' for package ${component} ${componentId}`);
         componentId = this.fixComponentId(componentId);
 
@@ -2582,18 +2651,15 @@ export class CoreFilepoolProvider {
                 downloadTime,
                 previousDownloadTime;
 
-            if (status == CoreConstants.downloading) {
+            if (status == CoreConstants.DOWNLOADING) {
                 // Set download time if package is now downloading.
                 downloadTime = this.timeUtils.timestamp();
             }
 
             // Search current status to set it as previous status.
             return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId}).then((entry: CoreFilepoolPackageEntry) => {
-                if (typeof revision == 'undefined' || revision === null) {
-                    revision = entry.revision;
-                }
-                if (typeof timemodified == 'undefined' || timemodified === null) {
-                    timemodified = entry.timemodified;
+                if (typeof extra == 'undefined' || extra === null) {
+                    extra = entry.extra;
                 }
                 if (typeof downloadTime == 'undefined') {
                     // Keep previous download time.
@@ -2614,11 +2680,10 @@ export class CoreFilepoolProvider {
                         componentId: componentId,
                         status: status,
                         previous: previousStatus,
-                        revision: revision || '0',
-                        timemodified: timemodified || 0,
                         updated: Date.now(),
                         downloadTime: downloadTime,
-                        previousDownloadTime: previousDownloadTime
+                        previousDownloadTime: previousDownloadTime,
+                        extra: extra
                     },
                     promise;
 

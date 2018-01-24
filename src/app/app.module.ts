@@ -48,6 +48,7 @@ import { CoreFilepoolProvider } from '../providers/filepool';
 import { CoreUpdateManagerProvider } from '../providers/update-manager';
 import { CorePluginFileDelegate } from '../providers/plugin-file-delegate';
 
+// Core modules.
 import { CoreComponentsModule } from '../components/components.module';
 import { CoreEmulatorModule } from '../core/emulator/emulator.module';
 import { CoreLoginModule } from '../core/login/login.module';
@@ -55,6 +56,9 @@ import { CoreMainMenuModule } from '../core/mainmenu/mainmenu.module';
 import { CoreCoursesModule } from '../core/courses/courses.module';
 import { CoreFileUploaderModule } from '../core/fileuploader/fileuploader.module';
 import { CoreSharedFilesModule } from '../core/sharedfiles/sharedfiles.module';
+import { CoreCourseModule } from '../core/course/course.module';
+
+// Addon modules.
 import { AddonCalendarModule } from '../addon/calendar/calendar.module';
 
 // For translate loader. AoT requires an exported function for factories.
@@ -80,13 +84,14 @@ export function createTranslateLoader(http: HttpClient) {
                 deps: [HttpClient]
             }
         }),
+        CoreComponentsModule,
         CoreEmulatorModule,
         CoreLoginModule,
         CoreMainMenuModule,
         CoreCoursesModule,
         CoreFileUploaderModule,
         CoreSharedFilesModule,
-        CoreComponentsModule,
+        CoreCourseModule,
         AddonCalendarModule
     ],
     bootstrap: [IonicApp],

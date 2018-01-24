@@ -230,8 +230,8 @@ export class AddonCalendarProvider {
 
                 return this.groupsProvider.getUserGroups(courses, siteId).then((groups) => {
                     let now = this.timeUtils.timestamp(),
-                        start = now + (CoreConstants.secondsDay * daysToStart),
-                        end = start + (CoreConstants.secondsDay * daysInterval);
+                        start = now + (CoreConstants.SECONDS_DAY * daysToStart),
+                        end = start + (CoreConstants.SECONDS_DAY * daysInterval);
 
                     // The core_calendar_get_calendar_events needs all the current user courses and groups.
                     let data = {

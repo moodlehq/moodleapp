@@ -466,7 +466,7 @@ export class LocalNotificationsMock extends LocalNotifications {
                     // Schedule the notification again unless it should have been triggered more than an hour ago.
                     delete notification.triggered;
                     notification.at = notification.at * 1000;
-                    if (notification.at - Date.now() > - CoreConstants.secondsHour * 1000) {
+                    if (notification.at - Date.now() > - CoreConstants.SECONDS_HOUR * 1000) {
                         this.schedule(notification);
                     }
                 }
@@ -551,19 +551,19 @@ export class LocalNotificationsMock extends LocalNotifications {
         } else if (every == 'second') {
             interval = 1000;
         } else if (every == 'minute') {
-            interval = CoreConstants.secondsMinute * 1000;
+            interval = CoreConstants.SECONDS_MINUTE * 1000;
         } else if (every == 'hour') {
-            interval = CoreConstants.secondsHour * 1000;
+            interval = CoreConstants.SECONDS_HOUR * 1000;
         } else if (every == 'day') {
-            interval = CoreConstants.secondsDay * 1000;
+            interval = CoreConstants.SECONDS_DAY * 1000;
         } else if (every == 'week') {
-            interval = CoreConstants.secondsDay * 7 * 1000;
+            interval = CoreConstants.SECONDS_DAY * 7 * 1000;
         } else if (every == 'month') {
-            interval = CoreConstants.secondsDay * 31 * 1000;
+            interval = CoreConstants.SECONDS_DAY * 31 * 1000;
         } else if (every == 'quarter') {
-            interval = CoreConstants.secondsHour * 2190 * 1000;
+            interval = CoreConstants.SECONDS_HOUR * 2190 * 1000;
         } else if (every == 'year') {
-            interval = CoreConstants.secondsYear * 1000;
+            interval = CoreConstants.SECONDS_YEAR * 1000;
         } else {
             interval = parseInt(every, 10);
             if (isNaN(interval)) {
@@ -713,7 +713,7 @@ export class LocalNotificationsMock extends LocalNotifications {
                     tag: notification.id + '',
                     template: this.tileTemplate,
                     strings: [notification.title, notification.text, notification.title,  notification.text, notification.title, notification.text],
-                    expirationTime: new Date(Date.now() + CoreConstants.secondsHour * 1000) // Expire in 1 hour.
+                    expirationTime: new Date(Date.now() + CoreConstants.SECONDS_HOUR * 1000) // Expire in 1 hour.
                 })
 
                 tileNotif.show()
