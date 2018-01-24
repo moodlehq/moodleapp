@@ -20,6 +20,8 @@ import { CoreUserHelperProvider } from './providers/helper';
 import { CoreUserProfileMailHandler } from './providers/user-handler';
 import { CoreEventsProvider } from '../../providers/events';
 import { CoreSitesProvider } from '../../providers/sites';
+import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
+import { CoreUserProfileLinkHandler } from './providers/user-link-handler';
 
 @NgModule({
     declarations: [
@@ -31,13 +33,16 @@ import { CoreSitesProvider } from '../../providers/sites';
         CoreUserProfileFieldDelegate,
         CoreUserProfileMailHandler,
         CoreUserProvider,
-        CoreUserHelperProvider
+        CoreUserHelperProvider,
+        CoreUserProfileLinkHandler
     ]
 })
 export class CoreUserModule {
     constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler,
-            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, userProvider: CoreUserProvider) {
+            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, userProvider: CoreUserProvider,
+            contentLinksDelegate: CoreContentLinksDelegate, userLinkHandler: CoreUserProfileLinkHandler) {
         userDelegate.registerHandler(userProfileMailHandler);
+        contentLinksDelegate.registerHandler(userLinkHandler);
 
         eventsProvider.on(CoreEventsProvider.USER_DELETED, (data) => {
             // Search for userid in params.

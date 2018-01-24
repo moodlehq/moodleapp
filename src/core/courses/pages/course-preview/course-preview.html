@@ -21,19 +21,20 @@
                 <core-format-text [text]="course.summary" maxHeight="120"></core-format-text>
             </ion-item>
 
-            <a ion-item text-wrap *ngIf="course.contacts && course.contacts.length" detail-none>
-                <p class="item-heading">{{ 'core.teachers' | translate }}</p>
-                <p *ngFor="let contact of course.contacts">{{contact.fullname}}</p>
-            </a>
+            <ng-container text-wrap *ngIf="course.contacts && course.contacts.length">
+                <ion-item-divider color="light">{{ 'core.teachers' | translate }}</ion-item-divider>
+                <a ion-item text-wrap *ngFor="let contact of course.contacts" core-user-link userId="{{contact.id}}" courseId="{{isEnrolled ? course.id : null}}" [attr.aria-label]="'core.viewprofile' | translate">{{contact.fullname}}</a>
+                <ion-item-divider color="light"></ion-item-divider>
+            </ng-container>
             <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
             <div *ngIf="!isEnrolled" detail-none>
                 <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
-                    <p class="item-heading">{{ instance.name }}</p>
+                    <h2>{{ instance.name }}</h2>
                     <button ion-button block margin-top (click)="selfEnrolClicked(instance.id)">{{ 'core.courses.enrolme' | translate }}</button>
                 </ion-item>
             </div>
             <ion-item text-wrap *ngIf="!isEnrolled && paypalEnabled" detail-none>
-                <p class="item-heading">{{ 'core.courses.paypalaccepted' | translate }}</p>
+                <h2>{{ 'core.courses.paypalaccepted' | translate }}</h2>
                 <p>{{ 'core.paymentinstant' | translate }}</p>
                 <button ion-button block margin-top (click)="paypalEnrol()">{{ 'core.courses.sendpaymentbutton' | translate }}</button>
             </ion-item>

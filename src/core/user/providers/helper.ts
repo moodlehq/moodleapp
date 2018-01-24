@@ -59,11 +59,9 @@ export class CoreUserHelperProvider {
 
         let separator = this.translate.instant('core.listsep');
 
-        roles.map((value) => {
+        return roles.map((value) => {
             let translation = this.translate.instant('core.user.' + value.shortname);
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
-        });
-
-        return roles.join(separator + " ");
+        }).join(separator + " ");
     }
 }
