@@ -102,7 +102,14 @@
     "semicolon": [true, "always"],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
     "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type",
-      "check-typecast", "check-type-operator", "check-preblock"]
+      "check-typecast", "check-type-operator", "check-preblock"],
+    "ban-types": [
+      true,
+      ["Boolean", "Use 'boolean' instead."],
+      ["Number", "Use 'number' instead."],
+      ["String", "Use 'string' instead."],
+      ["Object", "Use {} instead."]
+    ]
   },
   "rulesDirectory": [
     "node_modules/tslint-eslint-rules/dist/rules"
