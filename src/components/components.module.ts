@@ -37,6 +37,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabComponent } from './tabs/tab';
 import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
+import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 
 @NgModule({
     declarations: [
@@ -59,7 +60,8 @@ import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor
         CoreSitePickerComponent,
         CoreTabsComponent,
         CoreTabComponent,
-        CoreRichTextEditorComponent
+        CoreRichTextEditorComponent,
+        CoreNavBarButtonsComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -89,7 +91,8 @@ import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor
         CoreSitePickerComponent,
         CoreTabsComponent,
         CoreTabComponent,
-        CoreRichTextEditorComponent
+        CoreRichTextEditorComponent,
+        CoreNavBarButtonsComponent
     ]
 })
 export class CoreComponentsModule {}
