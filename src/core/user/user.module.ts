@@ -22,6 +22,9 @@ import { CoreEventsProvider } from '../../providers/events';
 import { CoreSitesProvider } from '../../providers/sites';
 import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
 import { CoreUserProfileLinkHandler } from './providers/user-link-handler';
+import { CoreUserParticipantsCourseOptionHandler } from './providers/course-option-handler';
+import { CoreUserParticipantsLinkHandler } from './providers/participants-link-handler';
+import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate';
 
 @NgModule({
     declarations: [
@@ -34,15 +37,22 @@ import { CoreUserProfileLinkHandler } from './providers/user-link-handler';
         CoreUserProfileMailHandler,
         CoreUserProvider,
         CoreUserHelperProvider,
-        CoreUserProfileLinkHandler
+        CoreUserProfileLinkHandler,
+        CoreUserParticipantsCourseOptionHandler,
+        CoreUserParticipantsLinkHandler
     ]
 })
 export class CoreUserModule {
     constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler,
             eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, userProvider: CoreUserProvider,
-            contentLinksDelegate: CoreContentLinksDelegate, userLinkHandler: CoreUserProfileLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, userLinkHandler: CoreUserProfileLinkHandler,
+            courseOptionHandler: CoreUserParticipantsCourseOptionHandler, linkHandler: CoreUserParticipantsLinkHandler,
+            courseOptionsDelegate: CoreCourseOptionsDelegate) {
+
         userDelegate.registerHandler(userProfileMailHandler);
+        courseOptionsDelegate.registerHandler(courseOptionHandler);
         contentLinksDelegate.registerHandler(userLinkHandler);
+        contentLinksDelegate.registerHandler(linkHandler);
 
         eventsProvider.on(CoreEventsProvider.USER_DELETED, (data) => {
             // Search for userid in params.

@@ -50,12 +50,12 @@
                 <ion-icon name="briefcase" item-start></ion-icon>
                 <h2>{{ 'core.course.contents' | translate }}</h2>
             </a>
-            <div class="core-course-handlers" *ngIf="handlersShouldBeShown && course._handlers && course._handlers.length">
-                <a ion-item text-wrap *ngFor="let handler of course._handlers" class="core-courses-handler {{handler.class}}">
-                    <ion-icon [name]="icon" item-start></ion-icon>
-                    <h2><core-format-text [text]="title | translate"></core-format-text></h2>
+            <ng-container *ngIf="handlersShouldBeShown && course._handlers && course._handlers.length">
+                <a ion-item text-wrap *ngFor="let handler of course._handlers" class="core-courses-handler {{handler.data.class}}" (click)="handler.data.action(course)" [title]="handler.data.title | translate">
+                    <ion-icon [name]="handler.data.icon" item-start></ion-icon>
+                    <h2>{{ handler.data.title | translate }}</h2>
                 </a>
-            </div>
+            </ng-container>
             <ion-item class="core-loading-course-handlers" text-center *ngIf="handlersShouldBeShown && !handlersLoaded">
                 <ion-spinner></ion-spinner>
             </ion-item>
