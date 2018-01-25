@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreEventsProvider } from '../../../providers/events';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
@@ -22,25 +23,12 @@ import { CoreCoursesProvider } from './courses';
 /**
  * Interface that all courses handlers must implement.
  */
-export interface CoreCoursesHandler {
-    /**
-     * Name of the handler.
-     * @type {string}
-     */
-    name: string;
-
+export interface CoreCoursesHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
      * @type {number}
      */
     priority: number;
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    isEnabled(): boolean|Promise<boolean>;
 
     /**
      * Whether or not the handler is enabled for a certain course.
@@ -52,7 +40,7 @@ export interface CoreCoursesHandler {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) : boolean|Promise<boolean>;
+    isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean>;
 
     /**
      * Whether or not the handler should be displayed for a course. If not implemented, assume it's true.
@@ -63,7 +51,7 @@ export interface CoreCoursesHandler {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    shouldDisplayForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) : boolean|Promise<boolean>;
+    shouldDisplayForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.
@@ -81,7 +69,7 @@ export interface CoreCoursesHandler {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {Promise<any>} Promise resolved when done.
      */
-    invalidateEnabledForCourse?(courseId: number, navOptions?: any, admOptions?: any) : Promise<any>;
+    invalidateEnabledForCourse?(courseId: number, navOptions?: any, admOptions?: any): Promise<any>;
 
     /**
      * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
@@ -89,8 +77,8 @@ export interface CoreCoursesHandler {
      * @param {any} course The course.
      * @return {Promise<any>} Promise resolved when done.
      */
-    prefetch?(course: any) : Promise<any>;
-};
+    prefetch?(course: any): Promise<any>;
+}
 
 /**
  * Data needed to render a course handler. It's returned by the handler.
@@ -120,7 +108,7 @@ export interface CoreCoursesHandlerData {
      * @param {any} course The course.
      */
     action(course: any): void;
-};
+}
 
 /**
  * Data returned by the delegate for each handler.
@@ -144,30 +132,30 @@ export interface CoreCoursesHandlerToDisplay {
      * @param {any} course The course.
      * @return {Promise<any>} Promise resolved when done.
      */
-    prefetch?(course: any) : Promise<any>;
-};
+    prefetch?(course: any): Promise<any>;
+}
 
 /**
  * Service to interact with plugins to be shown in each course.
  */
 @Injectable()
-export class CoreCoursesDelegate {
-    protected logger;
-    protected handlers: {[s: string]: CoreCoursesHandler} = {}; // All registered handlers.
-    protected enabledHandlers: {[s: string]: CoreCoursesHandler} = {}; // Handlers enabled for the current site.
-    protected loaded: {[courseId: number]: boolean} = {};
-    protected lastUpdateHandlersStart: number;
+export class CoreCoursesDelegate extends CoreDelegate {
+    protected handlers: { [s: string]: CoreCoursesHandler } = {}; // All registered handlers.
+    protected enabledHandlers: { [s: string]: CoreCoursesHandler } = {}; // Handlers enabled for the current site.
+    protected loaded: { [courseId: number]: boolean } = {};
     protected lastUpdateHandlersForCoursesStart: any = {};
-    protected coursesHandlers: {[courseId: number]: {
-        access?: any, navOptions?: any, admOptions?: any, deferred?: PromiseDefer, enabledHandlers?: CoreCoursesHandler[]}} = {};
+    protected coursesHandlers: {
+        [courseId: number]: {
+            access?: any, navOptions?: any, admOptions?: any, deferred?: PromiseDefer, enabledHandlers?: CoreCoursesHandler[]
+        }
+    } = {};
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
-            private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider) {
-        this.logger = logger.getInstance('CoreMainMenuDelegate');
+    protected featurePrefix = '$mmCoursesDelegate_';
 
-        eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
+    constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
+        protected eventsProvider: CoreEventsProvider, private coursesProvider: CoreCoursesProvider) {
+        super('CoreMainMenuDelegate', loggerProvider, sitesProvider, eventsProvider);
+
         eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
             this.clearCoursesHandlers();
         });
@@ -179,7 +167,7 @@ export class CoreCoursesDelegate {
      * @param {number} courseId The course ID to check.
      * @return {boolean} True if handlers are loaded, false otherwise.
      */
-    areHandlersLoaded(courseId: number) : boolean {
+    areHandlersLoaded(courseId: number): boolean {
         return !!this.loaded[courseId];
     }
 
@@ -188,7 +176,7 @@ export class CoreCoursesDelegate {
      *
      * @param {number} [courseId] The course ID. If not defined, all handlers will be cleared.
      */
-    protected clearCoursesHandlers(courseId?: number) : void {
+    protected clearCoursesHandlers(courseId?: number): void {
         if (courseId) {
             this.loaded[courseId] = false;
             delete this.coursesHandlers[courseId];
@@ -204,8 +192,8 @@ export class CoreCoursesDelegate {
      * @param {number} [courseId] The course ID. If not defined, all handlers will be cleared.
      * @return {Promise<any>} Promise resolved when done.
      */
-    clearAndInvalidateCoursesOptions(courseId?: number) : Promise<any> {
-        var promises = [];
+    clearAndInvalidateCoursesOptions(courseId?: number): Promise<any> {
+        let promises = [];
 
         this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
 
@@ -240,14 +228,14 @@ export class CoreCoursesDelegate {
      * @return {Promise<CoreCoursesHandler[]>} Promise resolved with array of handlers.
      */
     protected getHandlersForAccess(courseId: number, refresh: boolean, accessData: any, navOptions?: any,
-            admOptions?: any) : Promise<CoreCoursesHandler[]> {
+        admOptions?: any): Promise<CoreCoursesHandler[]> {
 
         // If the handlers aren't loaded, do not refresh.
         if (!this.loaded[courseId]) {
             refresh = false;
         }
 
-        if (refresh || !this.coursesHandlers[courseId] || this.coursesHandlers[courseId].access.type != accessData.type) {
+        if (refresh || !this.coursesHandlers[courseId] || this.coursesHandlers[courseId].access.type != accessData.type) {
             if (!this.coursesHandlers[courseId]) {
                 this.coursesHandlers[courseId] = {};
             }
@@ -274,8 +262,8 @@ export class CoreCoursesDelegate {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {Promise<CoreCoursesHandlerToDisplay[]>} Promise resolved with array of handlers.
      */
-    getHandlersToDisplay(course: any, refresh?: boolean, isGuest?: boolean, navOptions?: any, admOptions?: any) :
-            Promise<CoreCoursesHandlerToDisplay[]> {
+    getHandlersToDisplay(course: any, refresh?: boolean, isGuest?: boolean, navOptions?: any, admOptions?: any):
+        Promise<CoreCoursesHandlerToDisplay[]> {
         course.id = parseInt(course.id, 10);
 
         let accessData = {
@@ -300,7 +288,7 @@ export class CoreCoursesDelegate {
             this.coursesHandlers[course.id].enabledHandlers.forEach((handler) => {
                 if (handler.shouldDisplayForCourse) {
                     promise = Promise.resolve(handler.shouldDisplayForCourse(
-                            course.id, accessData, course.navOptions, course.admOptions));
+                        course.id, accessData, course.navOptions, course.admOptions));
                 } else {
                     // Not implemented, assume it should be displayed.
                     promise = Promise.resolve(true);
@@ -335,7 +323,7 @@ export class CoreCoursesDelegate {
      * @param {boolean} [refresh] True if it should refresh the list.
      * @return {Promise<boolean>} Promise resolved with boolean: true if it has handlers, false otherwise.
      */
-    hasHandlersForCourse(course: any, refresh?: boolean) : Promise<boolean> {
+    hasHandlersForCourse(course: any, refresh?: boolean): Promise<boolean> {
         // Load course options if missing.
         return this.loadCourseOptions(course, refresh).then(() => {
             return this.hasHandlersForDefault(course.id, refresh, course.navOptions, course.admOptions);
@@ -351,7 +339,7 @@ export class CoreCoursesDelegate {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {Promise<boolean>} Promise resolved with boolean: true if it has handlers, false otherwise.
      */
-    hasHandlersForDefault(courseId: number, refresh?: boolean, navOptions?: any, admOptions?: any) : Promise<boolean> {
+    hasHandlersForDefault(courseId: number, refresh?: boolean, navOptions?: any, admOptions?: any): Promise<boolean> {
         // Default access.
         let accessData = {
             type: CoreCoursesProvider.ACCESS_DEFAULT
@@ -370,7 +358,7 @@ export class CoreCoursesDelegate {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {Promise<boolean>} Promise resolved with boolean: true if it has handlers, false otherwise.
      */
-    hasHandlersForGuest(courseId: number, refresh?: boolean, navOptions?: any, admOptions?: any) : Promise<boolean> {
+    hasHandlersForGuest(courseId: number, refresh?: boolean, navOptions?: any, admOptions?: any): Promise<boolean> {
         // Guest access.
         var accessData = {
             type: CoreCoursesProvider.ACCESS_GUEST
@@ -386,7 +374,7 @@ export class CoreCoursesDelegate {
      * @param {number} courseId Course ID.
      * @return {Promise<any>} Promise resolved when done.
      */
-    invalidateCourseHandlers(courseId: number) : Promise<any> {
+    invalidateCourseHandlers(courseId: number): Promise<any> {
         let promises = [],
             courseData = this.coursesHandlers[courseId];
 
@@ -397,25 +385,11 @@ export class CoreCoursesDelegate {
         courseData.enabledHandlers.forEach((handler) => {
             if (handler && handler.invalidateEnabledForCourse) {
                 promises.push(Promise.resolve(
-                        handler.invalidateEnabledForCourse(courseId, courseData.navOptions, courseData.admOptions)));
+                    handler.invalidateEnabledForCourse(courseId, courseData.navOptions, courseData.admOptions)));
             }
         });
 
         return this.utils.allPromises(promises);
-    }
-
-    /**
-     * Check if a time belongs to the last update handlers call.
-     * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
-     *
-     * @param {number} time Time to check.
-     * @return {boolean} Whether it's the last call.
-     */
-    isLastUpdateCall(time: number) : boolean {
-        if (!this.lastUpdateHandlersStart) {
-            return true;
-        }
-        return time == this.lastUpdateHandlersStart;
     }
 
     /**
@@ -426,7 +400,7 @@ export class CoreCoursesDelegate {
      * @param {number} time Time to check.
      * @return {boolean} Whether it's the last call.
      */
-    isLastUpdateCourseCall(courseId: number, time: number) : boolean {
+    isLastUpdateCourseCall(courseId: number, time: number): boolean {
         if (!this.lastUpdateHandlersForCoursesStart[courseId]) {
             return true;
         }
@@ -440,7 +414,7 @@ export class CoreCoursesDelegate {
      * @param {boolean} [refresh] True if it should refresh the list.
      * @return {Promise<void>} Promise resolved when done.
      */
-    protected loadCourseOptions(course: any, refresh?: boolean) : Promise<void> {
+    protected loadCourseOptions(course: any, refresh?: boolean): Promise<void> {
         if (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh) {
             return this.coursesProvider.getCoursesOptions([course.id]).then((options) => {
                 course.navOptions = options.navOptions[course.id];
@@ -451,92 +425,14 @@ export class CoreCoursesDelegate {
         }
     }
 
-    /**
-     * Register a handler.
-     *
-     * @param {CoreCoursesHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
-     */
-    registerHandler(handler: CoreCoursesHandler) : boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon '${handler.name}' already registered`);
-            return false;
-        }
-        this.logger.log(`Registered addon '${handler.name}'`);
-        this.handlers[handler.name] = handler;
-        return true;
-    }
-
-    /**
-     * Update the handler for the current site.
-     *
-     * @param {CoreInitHandler} handler The handler to check.
-     * @param {number} time Time this update process started.
-     * @return {Promise<void>} Resolved when done.
-     */
-    protected updateHandler(handler: CoreCoursesHandler, time: number) : Promise<void> {
-        let promise,
-            siteId = this.sitesProvider.getCurrentSiteId(),
-            currentSite = this.sitesProvider.getCurrentSite();
-
-        if (!this.sitesProvider.isLoggedIn()) {
-            promise = Promise.reject(null);
-        } else if (currentSite.isFeatureDisabled('$mmCoursesDelegate_' + handler.name)) {
-            promise = Promise.resolve(false);
-        } else {
-            promise = Promise.resolve(handler.isEnabled());
-        }
-
-        // Checks if the handler is enabled.
-        return promise.catch(() => {
-            return false;
-        }).then((enabled: boolean) => {
-            // Verify that this call is the last one that was started.
-            // Check that site hasn't changed since the check started.
-            if (this.isLastUpdateCall(time) && this.sitesProvider.getCurrentSiteId() === siteId) {
-                if (enabled) {
-                    this.enabledHandlers[handler.name] = handler;
-                } else {
-                    delete this.enabledHandlers[handler.name];
-                }
+    updateData(siteId?: string) {
+        if (this.sitesProvider.getCurrentSiteId() === siteId) {
+            // Update handlers for all courses.
+            for (let courseId in this.coursesHandlers) {
+                let handler = this.coursesHandlers[courseId];
+                this.updateHandlersForCourse(parseInt(courseId, 10), handler.access, handler.navOptions, handler.admOptions);
             }
-        });
-    }
-
-    /**
-     * Update the handlers for the current site.
-     *
-     * @return {Promise<void>} Resolved when done.
-     */
-    protected updateHandlers() : Promise<void> {
-        let promises = [],
-            siteId = this.sitesProvider.getCurrentSiteId(),
-            now = Date.now();
-
-        this.logger.debug('Updating handlers for current site.');
-
-        this.lastUpdateHandlersStart = now;
-
-        // Loop over all the handlers.
-        for (let name in this.handlers) {
-            promises.push(this.updateHandler(this.handlers[name], now));
         }
-
-        return Promise.all(promises).then(() => {
-            return true;
-        }, () => {
-            // Never reject.
-            return true;
-        }).then(() => {
-            // Verify that this call is the last one that was started.
-            if (this.isLastUpdateCall(now) && this.sitesProvider.getCurrentSiteId() === siteId) {
-                // Update handlers for all courses.
-                for (let courseId in this.coursesHandlers) {
-                    let handler = this.coursesHandlers[courseId];
-                    this.updateHandlersForCourse(parseInt(courseId, 10), handler.access, handler.navOptions, handler.admOptions);
-                }
-            }
-        });
     }
 
     /**
@@ -549,7 +445,7 @@ export class CoreCoursesDelegate {
      * @return {Promise}             Resolved when updated.
      * @protected
      */
-    updateHandlersForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any) : Promise<any> {
+    updateHandlersForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): Promise<any> {
         let promises = [],
             enabledForCourse = [],
             siteId = this.sitesProvider.getCurrentSiteId(),
@@ -562,15 +458,15 @@ export class CoreCoursesDelegate {
 
             // Checks if the handler is enabled for the user.
             promises.push(Promise.resolve(handler.isEnabledForCourse(courseId, accessData, navOptions, admOptions))
-                    .then(function(enabled) {
-                if (enabled) {
-                    enabledForCourse.push(handler);
-                } else {
-                    return Promise.reject(null);
-                }
-            }).catch(() => {
-                // Nothing to do here, it is not enabled for this user.
-            }));
+                .then(function(enabled) {
+                    if (enabled) {
+                        enabledForCourse.push(handler);
+                    } else {
+                        return Promise.reject(null);
+                    }
+                }).catch(() => {
+                    // Nothing to do here, it is not enabled for this user.
+                }));
         }
 
         return Promise.all(promises).then(() => {
@@ -590,5 +486,5 @@ export class CoreCoursesDelegate {
                 this.coursesHandlers[courseId].deferred.resolve();
             }
         });
-    };
+    }
 }

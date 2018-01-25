@@ -19,7 +19,7 @@ import { CoreEventsProvider } from '../providers/events';
 
 export interface CoreDelegateHandler {
     /**
-     * Name of the handler, or name and sub context (mmaMessages, mmaMessage:blockContact, ...).
+     * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
      * @type {string}
      */
     name: string;
@@ -28,8 +28,8 @@ export interface CoreDelegateHandler {
      * Whether or not the handler is enabled on a site level.
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
-    isEnabled(): boolean|Promise<boolean>;
-};
+    isEnabled(): boolean | Promise<boolean>;
+}
 
 /**
  * Superclass to help creating delegates
@@ -47,13 +47,13 @@ export class CoreDelegate {
      * List of registered handlers.
      * @type {any}
      */
-    protected handlers: {[s: string]: CoreDelegateHandler} = {};
+    protected handlers: { [s: string]: CoreDelegateHandler } = {};
 
     /**
      * List of registered handlers enabled for the current site.
      * @type {any}
      */
-    protected enabledHandlers: {[s: string]: CoreDelegateHandler} = {};
+    protected enabledHandlers: { [s: string]: CoreDelegateHandler } = {};
 
     /**
      * Default handler
@@ -80,15 +80,19 @@ export class CoreDelegate {
      * @param {string} delegateName Delegate name used for logging purposes.
      * @param {CoreLoggerProvider}   loggerProvider CoreLoggerProvider instance, cannot be directly injected.
      * @param {CoreSitesProvider}    sitesProvider  CoreSitesProvider instance, cannot be directly injected.
+     * @param {CoreEventsProvider}   [eventsProvider]  CoreEventsProvider instance, cannot be directly injected.
+     *                                                  If not set, no events will be fired.
      */
     constructor(delegateName: string, protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
-            protected eventsProvider: CoreEventsProvider) {
+        protected eventsProvider?: CoreEventsProvider) {
         this.logger = this.loggerProvider.getInstance(delegateName);
 
-        // Update handlers on this cases.
-        eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
+        if (eventsProvider) {
+            // Update handlers on this cases.
+            eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
+            eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
+            eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
+        }
     }
 
     /**
@@ -100,7 +104,7 @@ export class CoreDelegate {
      * @param {any[]} params Parameters to pass to the function.
      * @return {any} Function returned value or default value.
      */
-    protected executeFunctionOnEnabled(handlerName: string, fnName: string, params?: any[]) : any {
+    protected executeFunctionOnEnabled(handlerName: string, fnName: string, params?: any[]): any {
         return this.execute(this.enabledHandlers[handlerName], fnName, params);
     }
 
@@ -113,7 +117,7 @@ export class CoreDelegate {
      * @param {any[]} params Parameters to pass to the function.
      * @return {any} Function returned value or default value.
      */
-    protected executeFunction(handlerName: string, fnName: string, params?: any[]) : any {
+    protected executeFunction(handlerName: string, fnName: string, params?: any[]): any {
         return this.execute(this.handlers[handlerName], fnName, params);
     }
 
@@ -126,7 +130,7 @@ export class CoreDelegate {
      * @param {any[]} params Parameters to pass to the function.
      * @return {any} Function returned value or default value.
      */
-    private execute(handler: any, fnName: string, params?: any[]) : any {
+    private execute(handler: any, fnName: string, params?: any[]): any {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
@@ -163,7 +167,7 @@ export class CoreDelegate {
      * @param {number} time Time to check.
      * @return {boolean} Whether it's the last call.
      */
-    isLastUpdateCall(time: number) : boolean {
+    isLastUpdateCall(time: number): boolean {
         if (!this.lastUpdateHandlersStart) {
             return true;
         }
@@ -194,7 +198,7 @@ export class CoreDelegate {
      * @param {number} time Time this update process started.
      * @return {Promise<void>} Resolved when done.
      */
-    protected updateHandler(handler: CoreDelegateHandler, time: number) : Promise<void> {
+    protected updateHandler(handler: CoreDelegateHandler, time: number): Promise<void> {
         let promise,
             siteId = this.sitesProvider.getCurrentSiteId(),
             currentSite = this.sitesProvider.getCurrentSite();
@@ -230,7 +234,7 @@ export class CoreDelegate {
      * @param  {any}                 site    Site to check.
      * @return {boolean}                     Whether is enabled or disabled in site.
      */
-    protected isFeatureDisabled(handler: CoreDelegateHandler, site: any) : boolean{
+    protected isFeatureDisabled(handler: CoreDelegateHandler, site: any): boolean {
         return typeof this.featurePrefix != "undefined" && site.isFeatureDisabled(this.featurePrefix + handler.name);
     }
 
@@ -239,7 +243,7 @@ export class CoreDelegate {
      *
      * @return {Promise<void>} Resolved when done.
      */
-    protected updateHandlers() : Promise<void> {
+    protected updateHandlers(): Promise<void> {
         let promises = [],
             now = Date.now();
 

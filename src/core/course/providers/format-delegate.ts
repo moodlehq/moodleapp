@@ -19,24 +19,12 @@ import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreCourseProvider } from './course';
 import { CoreCourseFormatDefaultHandler } from './default-format';
+import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
 
 /**
  * Interface that all course format handlers must implement.
  */
-export interface CoreCourseFormatHandler {
-    /**
-     * Name of the format. It should match the "format" returned in core_course_get_courses.
-     * @type {string}
-     */
-    name: string;
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    isEnabled(): boolean|Promise<boolean>;
-
+export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     /**
      * Get the title to use in course page. If not defined, course fullname.
      * This function will be called without sections first, and then call it again when the sections are retrieved.
@@ -45,7 +33,7 @@ export interface CoreCourseFormatHandler {
      * @param {any[]} [sections] List of sections.
      * @return {string} Title.
      */
-    getCourseTitle?(course: any, sections?: any[]) : string;
+    getCourseTitle?(course: any, sections?: any[]): string;
 
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
@@ -53,7 +41,7 @@ export interface CoreCourseFormatHandler {
      * @param {any} course The course to check.
      * @type {boolean} Whether it can view all sections.
      */
-    canViewAllSections?(course: any) : boolean;
+    canViewAllSections?(course: any): boolean;
 
     /**
      * Whether the default section selector should be displayed. Defaults to true.
@@ -61,7 +49,7 @@ export interface CoreCourseFormatHandler {
      * @param {any} course The course to check.
      * @type {boolean} Whether the default section selector should be displayed.
      */
-    displaySectionSelector?(course: any) : boolean;
+    displaySectionSelector?(course: any): boolean;
 
     /**
      * Given a list of sections, get the "current" section that should be displayed first. Defaults to first section.
@@ -71,7 +59,7 @@ export interface CoreCourseFormatHandler {
      * @return {any|Promise<any>} Current section (or promise resolved with current section). If a promise is returned, it should
      *                            never fail.
      */
-    getCurrentSection?(course: any, sections: any[]) : any|Promise<any>;
+    getCurrentSection?(course: any, sections: any[]): any | Promise<any>;
 
     /**
      * Open the page to display a course. If not defined, the page CoreCourseSectionPage will be opened.
@@ -83,7 +71,7 @@ export interface CoreCourseFormatHandler {
      * @param {any} course The course to open. It should contain a "format" attribute.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse?(navCtrl: NavController, course: any) : Promise<any>;
+    openCourse?(navCtrl: NavController, course: any): Promise<any>;
 
     /**
      * Return the Component to use to display the course format instead of using the default one.
@@ -93,7 +81,7 @@ export interface CoreCourseFormatHandler {
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getCourseFormatComponent?(course: any) : any;
+    getCourseFormatComponent?(course: any): any;
 
     /**
      * Return the Component to use to display the course summary inside the default course format.
@@ -135,26 +123,21 @@ export interface CoreCourseFormatHandler {
      * @param {any[]} sections List of sections.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateData?(course: any, sections: any[]) : Promise<any>;
-};
+    invalidateData?(course: any, sections: any[]): Promise<any>;
+}
 
 /**
  * Service to interact with course formats. Provides the functions to register and interact with the addons.
  */
 @Injectable()
-export class CoreCourseFormatDelegate {
-    protected logger;
-    protected handlers: {[s: string]: CoreCourseFormatHandler} = {}; // All registered handlers.
-    protected enabledHandlers: {[s: string]: CoreCourseFormatHandler} = {}; // Handlers enabled for the current site.
-    protected lastUpdateHandlersStart: number;
+export class CoreCourseFormatDelegate extends CoreDelegate {
+    protected handlers: { [s: string]: CoreCourseFormatHandler } = {}; // All registered handlers.
+    protected enabledHandlers: { [s: string]: CoreCourseFormatHandler } = {}; // Handlers enabled for the current site.
+    protected featurePrefix = 'CoreCourseFormatHandler_';
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-            private defaultHandler: CoreCourseFormatDefaultHandler) {
-        this.logger = logger.getInstance('CoreCoursesCourseFormatDelegate');
-
-        eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
+    constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
+        protected defaultHandler: CoreCourseFormatDefaultHandler) {
+        super('CoreCoursesCourseFormatDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
     /**
@@ -163,7 +146,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to check.
      * @return {boolean} Whether it allows seeing all sections at the same time.
      */
-    canViewAllSections(course: any) : boolean {
+    canViewAllSections(course: any): boolean {
         return this.executeFunction(course.format, 'canViewAllSections', [course]);
     }
 
@@ -173,7 +156,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to check.
      * @return {boolean} Whether the section selector should be displayed.
      */
-    displaySectionSelector(course: any) : boolean {
+    displaySectionSelector(course: any): boolean {
         return this.executeFunction(course.format, 'displaySectionSelector', [course]);
     }
 
@@ -186,7 +169,7 @@ export class CoreCourseFormatDelegate {
      * @param {any[]} params Parameters to pass to the function.
      * @return {any} Function returned value or default value.
      */
-    protected executeFunction(format: string, fnName: string, params?: any[]) : any {
+    protected executeFunction(format: string, fnName: string, params?: any[]): any {
         let handler = this.enabledHandlers[format];
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
@@ -201,7 +184,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getAllSectionsComponent(course: any) : any {
+    getAllSectionsComponent(course: any): any {
         return this.executeFunction(course.format, 'getAllSectionsComponent', [course]);
     }
 
@@ -211,7 +194,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getCourseFormatComponent(course: any) : any {
+    getCourseFormatComponent(course: any): any {
         return this.executeFunction(course.format, 'getCourseFormatComponent', [course]);
     }
 
@@ -221,7 +204,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getCourseSummaryComponent(course: any) : any {
+    getCourseSummaryComponent(course: any): any {
         return this.executeFunction(course.format, 'getCourseSummaryComponent', [course]);
     }
 
@@ -232,7 +215,7 @@ export class CoreCourseFormatDelegate {
      * @param {any[]} [sections] List of sections.
      * @return {string} Course title.
      */
-    getCourseTitle(course: any, sections?: any[]) : string {
+    getCourseTitle(course: any, sections?: any[]): string {
         return this.executeFunction(course.format, 'getCourseTitle', [course, sections]);
     }
 
@@ -243,13 +226,14 @@ export class CoreCourseFormatDelegate {
      * @param {any[]} sections List of sections.
      * @return {Promise<any>} Promise resolved with current section.
      */
-    getCurrentSection(course: any, sections: any[]) : Promise<any> {
+    getCurrentSection(course: any, sections: any[]): Promise<any> {
         // Convert the result to a Promise if it isn't.
         return Promise.resolve(this.executeFunction(course.format, 'getCurrentSection', [course, sections])).catch(() => {
             // This function should never fail. Just return the first section.
             if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
                 return sections[0];
             }
+
             return sections[1];
         });
     }
@@ -260,7 +244,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getSectionSelectorComponent(course: any) : any {
+    getSectionSelectorComponent(course: any): any {
         return this.executeFunction(course.format, 'getSectionSelectorComponent', [course]);
     }
 
@@ -271,7 +255,7 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getSingleSectionComponent(course: any) : any {
+    getSingleSectionComponent(course: any): any {
         return this.executeFunction(course.format, 'getSingleSectionComponent', [course]);
     }
 
@@ -282,22 +266,8 @@ export class CoreCourseFormatDelegate {
      * @param {any[]} sections List of sections.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateData(course: any, sections: any[]) : Promise<any> {
+    invalidateData(course: any, sections: any[]): Promise<any> {
         return this.executeFunction(course.format, 'invalidateData', [course, sections]);
-    }
-
-    /**
-     * Check if a time belongs to the last update handlers call.
-     * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
-     *
-     * @param {number} time Time to check.
-     * @return {boolean} Whether it's the last call.
-     */
-    isLastUpdateCall(time: number) : boolean {
-        if (!this.lastUpdateHandlersStart) {
-            return true;
-        }
-        return time == this.lastUpdateHandlersStart;
     }
 
     /**
@@ -307,85 +277,11 @@ export class CoreCourseFormatDelegate {
      * @param {any} course The course to open. It should contain a "format" attribute.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any) : Promise<any> {
+    openCourse(navCtrl: NavController, course: any): Promise<any> {
         if (this.enabledHandlers[course.format] && this.enabledHandlers[course.format].openCourse) {
             return this.enabledHandlers[course.format].openCourse(navCtrl, course);
         }
-        return navCtrl.push('CoreCourseSectionPage', {course: course});
-    }
 
-    /**
-     * Register a handler.
-     *
-     * @param {CoreCourseFormatHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
-     */
-    registerHandler(handler: CoreCourseFormatHandler) : boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon '${handler.name}' already registered`);
-            return false;
-        }
-        this.logger.log(`Registered addon '${handler.name}'`);
-        this.handlers[handler.name] = handler;
-        return true;
-    }
-
-    /**
-     * Update the handler for the current site.
-     *
-     * @param {CoreCourseFormatHandler} handler The handler to check.
-     * @param {number} time Time this update process started.
-     * @return {Promise<void>} Resolved when done.
-     */
-    protected updateHandler(handler: CoreCourseFormatHandler, time: number) : Promise<void> {
-        let promise,
-            siteId = this.sitesProvider.getCurrentSiteId(),
-            currentSite = this.sitesProvider.getCurrentSite();
-
-        if (!this.sitesProvider.isLoggedIn()) {
-            promise = Promise.reject(null);
-        } else if (currentSite.isFeatureDisabled('CoreCourseFormatHandler_' + handler.name)) {
-            promise = Promise.resolve(false);
-        } else {
-            promise = Promise.resolve(handler.isEnabled());
-        }
-
-        // Checks if the handler is enabled.
-        return promise.catch(() => {
-            return false;
-        }).then((enabled: boolean) => {
-            // Verify that this call is the last one that was started.
-            // Check that site hasn't changed since the check started.
-            if (this.isLastUpdateCall(time) && this.sitesProvider.getCurrentSiteId() === siteId) {
-                if (enabled) {
-                    this.enabledHandlers[handler.name] = handler;
-                } else {
-                    delete this.enabledHandlers[handler.name];
-                }
-            }
-        });
-    }
-
-    /**
-     * Update the handlers for the current site.
-     *
-     * @return {Promise<any>} Resolved when done.
-     */
-    protected updateHandlers() : Promise<any> {
-        let promises = [],
-            now = Date.now();
-
-        this.logger.debug('Updating handlers for current site.');
-
-        this.lastUpdateHandlersStart = now;
-
-        // Loop over all the handlers.
-        for (let name in this.handlers) {
-            promises.push(this.updateHandler(this.handlers[name], now));
-        }
-
-        return Promise.all(promises).catch(() => {
-            // Never reject.
-        });
+        return navCtrl.push('CoreCourseSectionPage', { course: course });
     }
 }

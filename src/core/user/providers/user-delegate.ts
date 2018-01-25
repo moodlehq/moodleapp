@@ -19,7 +19,7 @@ import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreEventsProvider } from '../../../providers/events';
 
-export interface CoreUserProfileHandler extends CoreDelegateHandler  {
+export interface CoreUserProfileHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
      * @type {number}
@@ -44,7 +44,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler  {
      * @param  {any}     [admOptions] Admin options for the course.
      * @return {boolean|Promise<boolean>}            Whether or not the handler is enabled for a user.
      */
-    isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean|Promise<boolean>;
+    isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.
@@ -53,7 +53,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler  {
      * @return {CoreUserProfileHandlerData}    Data to be shown.
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData;
-};
+}
 
 export interface CoreUserProfileHandlerData {
     /**
@@ -94,7 +94,7 @@ export interface CoreUserProfileHandlerData {
      * @return {any}        Action to be done.
      */
     action?($event: any, user: any, courseId: number): any;
-};
+}
 
 /**
  * Service to interact with plugins to be shown in user profile. Provides functions to register a plugin
@@ -119,12 +119,12 @@ export class CoreUserDelegate extends CoreDelegate {
      */
     public static TYPE_ACTION = 'action';
 
-    protected handlers: {[s: string]: CoreUserProfileHandler} = {};
-    protected enabledHandlers: {[s: string]: CoreUserProfileHandler} = {};
+    protected handlers: { [s: string]: CoreUserProfileHandler } = {};
+    protected enabledHandlers: { [s: string]: CoreUserProfileHandler } = {};
     protected featurePrefix = '$mmUserDelegate_';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
-            private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
+        private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
         super('CoreUserDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
@@ -168,7 +168,7 @@ export class CoreUserDelegate extends CoreDelegate {
                         }).catch(() => {
                             // Nothing to do here, it is not enabled for this user.
                         });
-                        promises.push(promise);
+                    promises.push(promise);
                 }
 
                 return Promise.all(promises).then(() => {
