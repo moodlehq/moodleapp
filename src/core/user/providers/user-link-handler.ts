@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '../../login/providers/helper';
+import { CoreContentLinksHelperProvider } from '../../contentlinks/providers/helper';
 
 /**
  * Handler to treat links to user profiles.
@@ -26,7 +26,7 @@ export class CoreUserProfileLinkHandler extends CoreContentLinksHandlerBase {
     // Match user/view.php and user/profile.php but NOT grade/report/user/.
     pattern = /((\/user\/view\.php)|(\/user\/profile\.php)).*([\?\&]id=\d+)/;
 
-    constructor(private loginHelper: CoreLoginHelperProvider) {
+    constructor(private linkHelper: CoreContentLinksHelperProvider) {
         super();
     }
 
@@ -43,12 +43,12 @@ export class CoreUserProfileLinkHandler extends CoreContentLinksHandlerBase {
             CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId, navCtrl?) => {
-                let stateParams = {
+                let pageParams = {
                     courseId: params.course,
                     userId: parseInt(params.id, 10)
                 };
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('CoreUserProfilePage', stateParams, siteId);
+                this.linkHelper.goInSite(navCtrl, 'CoreUserProfilePage', pageParams, siteId);
             }
         }];
     }

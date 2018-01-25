@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '../../../providers/events';
 import { CoreFileProvider } from '../../../providers/file';
 import { CoreFilepoolProvider } from '../../../providers/filepool';
@@ -957,8 +956,7 @@ export class CoreCourseModulePrefetchDelegate {
      * @return {Promise<boolean>} Promise resolved with true if downloadable, false otherwise.
      */
     isModuleDownloadable(module: any, courseId: number) : Promise<boolean> {
-        let handler = this.getPrefetchHandlerFor(module),
-            promise;
+        let handler = this.getPrefetchHandlerFor(module);
 
         if (handler) {
             if (typeof handler.isDownloadable == 'function') {

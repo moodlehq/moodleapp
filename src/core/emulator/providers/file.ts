@@ -384,7 +384,8 @@ export class FileMock extends File {
      * @param {string} dirName The source directory name.
      * @param {string} newPath The destionation path to the directory.
      * @param {string} newDirName The destination directory name.
-     * @returns {Promise<DirectoryEntry|Entry>} Returns a Promise that resolves to the new DirectoryEntry object or rejects with an error.
+     * @returns {Promise<DirectoryEntry|Entry>} Returns a Promise that resolves to the new DirectoryEntry object or rejects with
+     *                                          an error.
      */
     moveDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<DirectoryEntry | Entry> {
         return this.resolveDirectoryUrl(path).then((fse) => {
@@ -421,7 +422,8 @@ export class FileMock extends File {
      * Read file and return data as an ArrayBuffer.
      * @param {string} path Base FileSystem.
      * @param {string} file Name of file, relative to path.
-     * @returns {Promise<ArrayBuffer>} Returns a Promise that resolves with the contents of the file as ArrayBuffer or rejects with an error.
+     * @returns {Promise<ArrayBuffer>} Returns a Promise that resolves with the contents of the file as ArrayBuffer or rejects
+     *                                 with an error.
      */
     readAsArrayBuffer(path: string, file: string): Promise<ArrayBuffer> {
         return this.readFileMock<ArrayBuffer>(path, file, 'ArrayBuffer');
@@ -444,7 +446,8 @@ export class FileMock extends File {
 
      * @param {string} path Base FileSystem.
      * @param {string} file Name of file, relative to path.
-     * @returns {Promise<string>} Returns a Promise that resolves with the contents of the file as data URL or rejects with an error.
+     * @returns {Promise<string>} Returns a Promise that resolves with the contents of the file as data URL or rejects
+     *                            with an error.
      */
     readAsDataURL(path: string, file: string): Promise<string> {
         return this.readFileMock<string>(path, file, 'DataURL');

@@ -7,7 +7,7 @@
     <ion-refresher [enabled]="userLoaded" (ionRefresh)="refreshUser($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="userLoaded" class="core-loading-center">
+    <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user && !isDeleted">
             <ion-item text-center>
                 <div class="item-avatar-center">
@@ -51,7 +51,7 @@
             </a>
 
             <ion-item *ngIf="actionHandlers && actionHandlers.length">
-                <button *ngFor="let actHandler of actionHandlers" ion-button block outline [ngClass]="['core-user-profile-handler', actHandler.class]" (click)="actHandler.action($event)" [hidden]="actHandler.hidden" title="{{ actHandler.title | translate }}">
+                <button *ngFor="let actHandler of actionHandlers" ion-button block outline [ngClass]="['core-user-profile-handler', actHandler.class]" (click)="actHandler.action($event, user, courseId)" [hidden]="actHandler.hidden" title="{{ actHandler.title | translate }}">
                     <ion-icon *ngIf="actHandler.icon" [name]="actHandler.icon" item-start></ion-icon>
                     {{ actHandler.title | translate }}
                     <ion-spinner *ngIf="actHandler.spinner" item-end></ion-spinner>

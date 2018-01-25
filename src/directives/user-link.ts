@@ -15,7 +15,7 @@
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { NavController } from 'ionic-angular';
 /**
- * Directive to open a link in external browser.
+ * Directive to go to user profile on click.
  */
 @Directive({
     selector: '[core-user-link]'

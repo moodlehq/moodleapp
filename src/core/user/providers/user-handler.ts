@@ -63,7 +63,7 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
             action: ($event, user, courseId) => {
                 $event.preventDefault();
                 $event.stopPropagation();
-                window.location.href = "mailto:" + user.email;
+                window.open("mailto:" + user.email, '_blank');
             }
         };
     }

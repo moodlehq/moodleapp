@@ -15,6 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
+import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 
 /**
  * Directive to render a datetime user profile field.
@@ -29,7 +30,7 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider) {}
+    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider, protected utils: CoreUtilsProvider) {}
 
     /**
      * Component being initialized.
@@ -41,7 +42,7 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
             field.modelName = 'profile_field_' + field.shortname;
 
             // Check if it's only date or it has time too.
-            let hasTime = field.param3 && field.param3 !== '0' && field.param3 !== 'false';
+            let hasTime = this.utils.isTrueOrOne(field.param3);
             field.format = hasTime ? this.timeUtils.getLocalizedDateFormat('LLL') : this.timeUtils.getLocalizedDateFormat('LL');
 
             // Check min value.
@@ -64,7 +65,8 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
                 value: field.defaultdata,
                 disabled: this.disabled
             };
-            this.form.addControl(field.modelName, this.fb.control(formData, field.required && !field.locked ? Validators.required : null));
+            this.form.addControl(field.modelName, this.fb.control(formData,
+                field.required && !field.locked ? Validators.required : null));
         }
     }
 

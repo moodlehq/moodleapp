@@ -51,7 +51,8 @@ export class AddonUserProfileFieldMenuComponent implements OnInit {
                 disabled: this.disabled
             };
             // Initialize the value using default data.
-            this.form.addControl(field.modelName, this.fb.control(formData, field.required && !field.locked ? Validators.required : null));
+            this.form.addControl(field.modelName, this.fb.control(formData,
+                field.required && !field.locked ? Validators.required : null));
         }
 
     }

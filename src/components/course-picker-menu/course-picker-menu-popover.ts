@@ -26,7 +26,7 @@ export class CoreCoursePickerMenuPopoverComponent {
     courses: any[];
     courseId = -1;
 
-    constructor(private navParams: NavParams, private viewCtrl: ViewController) {
+    constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.courses = navParams.get('courses') || [];
         this.courseId = navParams.get('courseId') || -1;
     }

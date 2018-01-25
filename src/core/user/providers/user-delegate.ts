@@ -72,7 +72,7 @@ export interface CoreUserProfileHandlerData {
      * Additional class to add to the HTML.
      * @type {string}
      */
-    class: string;
+    class?: string;
 
     /**
      * If enabled, element will be hidden. Only for TYPE_NEW_PAGE and TYPE_ACTION.
@@ -135,7 +135,7 @@ export class CoreUserDelegate extends CoreDelegate {
      * @param {number} courseId The course ID.
      * @return {Promise<any>} Resolved with an array of objects containing 'priority', 'data' and 'type'.
      */
-    getProfileHandlersFor(user: any, courseId): Promise<any> {
+    getProfileHandlersFor(user: any, courseId: number): Promise<any> {
         let handlers = [],
             promises = [];
 
@@ -147,7 +147,7 @@ export class CoreUserDelegate extends CoreDelegate {
 
             return this.coursesProvider.getCoursesOptions(courseIds).then((options) => {
                 // For backwards compatibility we don't modify the courseId.
-                let courseIdForOptions = courseId || this.sitesProvider.getSiteHomeId(),
+                let courseIdForOptions = courseId || this.sitesProvider.getCurrentSiteHomeId(),
                     navOptions = options.navOptions[courseIdForOptions],
                     admOptions = options.admOptions[courseIdForOptions];
 
@@ -165,7 +165,7 @@ export class CoreUserDelegate extends CoreDelegate {
                             } else {
                                 return Promise.reject(null);
                             }
-                        }).catch(function() {
+                        }).catch(() => {
                             // Nothing to do here, it is not enabled for this user.
                         });
                         promises.push(promise);
@@ -175,7 +175,7 @@ export class CoreUserDelegate extends CoreDelegate {
                     return handlers;
                 });
             });
-        }).catch(function() {
+        }).catch(() => {
             // Never fails.
             return handlers;
         });

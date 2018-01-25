@@ -63,11 +63,11 @@ export class AddonCalendarListPage implements OnDestroy {
         course: this.allCourses
     };
 
-    constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, private navParams: NavParams,
+    constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
-            private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
-            private eventsProvider: CoreEventsProvider, private navCtrl: NavController, private appProvider: CoreAppProvider) {
+            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider, private popoverCtrl: PopoverController,
+            eventsProvider: CoreEventsProvider, private navCtrl: NavController, appProvider: CoreAppProvider) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();

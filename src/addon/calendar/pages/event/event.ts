@@ -45,10 +45,10 @@ export class AddonCalendarEventPage {
     courseName: string;
     notificationsEnabled = false;
 
-    constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, private navParams: NavParams,
+    constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
+            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();

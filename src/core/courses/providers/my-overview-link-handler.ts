@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
-import { CoreCoursesProvider } from './courses';
 
 /**
  * Handler to treat links to my overview.
@@ -27,7 +26,7 @@ export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBas
     featureName = '$mmSideMenuDelegate_mmCourses';
     pattern = /\/my\/?$/;
 
-    constructor(private coursesProvider: CoreCoursesProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private loginHelper: CoreLoginHelperProvider) {
         super();
     }
 

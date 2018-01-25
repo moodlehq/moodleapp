@@ -88,7 +88,7 @@ export class CoreMainMenuDelegate extends CoreDelegate  {
     protected handlers: {[s: string]: CoreMainMenuHandler} = {};
     protected enabledHandlers: {[s: string]: CoreMainMenuHandler} = {};
     protected loaded = false;
-    protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerData[]>([]);
+    protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
     protected featurePrefix = '$mmSideMenuDelegate_';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,

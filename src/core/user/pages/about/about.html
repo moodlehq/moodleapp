@@ -7,7 +7,7 @@
     <ion-refresher [enabled]="userLoaded" (ionRefresh)="refreshUser($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="userLoaded" class="core-loading-center">
+    <core-loading [hideUntil]="userLoaded">
         <div *ngIf="user">
             <ion-item-group *ngIf="hasContact">
                 <ion-item-divider color="light">{{ 'core.user.contact' | translate}}</ion-item-divider>
@@ -20,13 +20,13 @@
                 <ion-item text-wrap *ngIf="user.phone1">
                     <h2>{{ 'core.user.phone1' | translate}}</h2>
                     <p><a href="tel:{{user.phone1}}" core-link auto-login="no">
-                            <core-format-text [text]="user.phone1"></core-format-text>
+                        <core-format-text [text]="user.phone1"></core-format-text>
                     </a></p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="user.phone2">
                     <h2>{{ 'core.user.phone2' | translate}}</h2>
                     <p><a href="tel:{{user.phone2}}" core-link auto-login="no">
-                            <core-format-text [text]="user.phone2"></core-format-text>
+                        <core-format-text [text]="user.phone2"></core-format-text>
                     </a></p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="user.address">
@@ -36,7 +36,8 @@
                         </a>
                         <a *ngIf="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" core-link auto-login="no">
                             <core-format-text [text]="user.address"></core-format-text>
-                    </a></p>
+                        </a>
+                    </p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="user.city && !user.address">
                     <h2>{{ 'core.user.city' | translate}}</h2>
@@ -52,7 +53,7 @@
                 <ion-item text-wrap *ngIf="user.url">
                     <h2>{{ 'core.user.webpage' | translate}}</h2>
                     <p><a href="{{user.url}}" core-link>
-                            <core-format-text [text]="user.url"></core-format-text>
+                        <core-format-text [text]="user.url"></core-format-text>
                     </a></p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="user.interests">

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, ComponentRef, OnInit } from '@angular/core';
+import { Component, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, OnInit } from '@angular/core';
 import { CoreLoggerProvider } from '../../../../providers/logger';
 import { CoreUserProfileFieldDelegate } from '../../providers/user-profile-field-delegate';
 import { CoreUtilsProvider } from '../../../../providers/utils/utils';

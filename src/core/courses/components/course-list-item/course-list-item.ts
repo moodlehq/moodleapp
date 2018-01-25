@@ -31,7 +31,8 @@ import { CoreCoursesProvider } from '../../providers/courses';
 export class CoreCoursesCourseListItemComponent implements OnInit {
     @Input() course: any; // The course to render.
 
-    constructor(private navCtrl: NavController, private translate: TranslateService, private coursesProvider: CoreCoursesProvider) {}
+    constructor(private navCtrl: NavController, private translate: TranslateService, private coursesProvider: CoreCoursesProvider) {
+    }
 
     /**
      * Component being initialized.

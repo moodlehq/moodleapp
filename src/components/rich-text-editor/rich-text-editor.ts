@@ -29,8 +29,7 @@ import { Keyboard } from '@ionic-native/keyboard';
  * could be easily broken.
  *
  * Example:
- * <core-rich-text-editor model="newpost" placeholder="{{ 'mma.mod_forum.message' | translate }}" scroll-handle="mmaScrollHandle">
- * </core-rich-text-editor>
+ * <core-rich-text-editor item-content [control]="control" [placeholder]="field.name"></core-rich-text-editor>
  *
  * In the example above, the text written in the editor will be stored in newpost.text.
  */

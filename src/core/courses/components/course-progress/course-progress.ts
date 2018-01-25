@@ -14,7 +14,6 @@
 
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
@@ -45,7 +44,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected courseStatusObserver;
 
-    constructor(private navCtrl: NavController, private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
+    constructor(private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
             private courseProvider: CoreCourseProvider, eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
         // Listen for status change in course.

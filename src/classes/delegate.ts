@@ -39,7 +39,7 @@ export class CoreDelegate {
 
     /**
      * Logger instance get from CoreLoggerProvider.
-     * @type {function}
+     * @type {any}
      */
     protected logger;
 
@@ -84,7 +84,6 @@ export class CoreDelegate {
     constructor(delegateName: string, protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {
         this.logger = this.loggerProvider.getInstance(delegateName);
-        this.sitesProvider = sitesProvider;
 
         // Update handlers on this cases.
         eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
@@ -151,9 +150,9 @@ export class CoreDelegate {
      *
      * @param {string} name The handler name.
      * @param  {boolean} [enabled]  Only enabled, or any.
-     * @return {boolean} If the controller is installed or not.
+     * @return {boolean} If the handler is registered or not.
      */
-    hasHandler(name: string, enabled = false) : boolean {
+    hasHandler(name: string, enabled = false): boolean {
         return enabled ? typeof this.enabledHandlers[name] !== 'undefined' : typeof this.handlers[name] !== 'undefined';
     }
 
@@ -172,9 +171,12 @@ export class CoreDelegate {
     }
 
     /**
-     * Register a profile handler.
+     * Register a handler.
+     *
+     * @param {CoreDelegateHandler} handler The handler delegate object to register.
+     * @return {boolean} True when registered, false if already registered.
      */
-    registerHandler(handler: CoreDelegateHandler) {
+    registerHandler(handler: CoreDelegateHandler): boolean {
         if (typeof this.handlers[handler.name] !== 'undefined') {
             this.logger.log(`Addon '${handler.name}' already registered`);
             return false;

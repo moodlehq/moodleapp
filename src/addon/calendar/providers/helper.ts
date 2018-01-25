@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreCourseProvider } from '../../../core/course/providers/course';
 
 /**
@@ -32,7 +31,7 @@ export class AddonCalendarHelperProvider {
         'category': 'albums'
     };
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider) {
+    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
 

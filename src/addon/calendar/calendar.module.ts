@@ -46,7 +46,7 @@ export class AddonCalendarModule {
         localNotificationsProvider.registerClick(AddonCalendarProvider.COMPONENT, (data) => {
             if (data.eventid) {
                 initDelegate.ready().then(() => {
-                    calendarProvider.isDisabled(data.siteId).then(function(disabled) {
+                    calendarProvider.isDisabled(data.siteId).then((disabled) => {
                         if (disabled) {
                             // The calendar is disabled in the site, don't open it.
                             return;

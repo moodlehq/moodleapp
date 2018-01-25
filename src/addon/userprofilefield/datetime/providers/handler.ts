@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Injectable } from '@angular/core';
-import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '../../../../core/user/providers/user-profile-field-delegate';
+import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from
+    '../../../../core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldDatetimeComponent } from '../component/datetime';
-import { Platform } from 'ionic-angular';
 
 /**
  * Datetime user profile field handlers.
@@ -24,7 +24,7 @@ import { Platform } from 'ionic-angular';
 export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFieldHandler {
     name = 'datetime';
 
-    constructor(private platform: Platform) {}
+    constructor() {}
 
     /**
      * Whether or not the handler is enabled on a site level.

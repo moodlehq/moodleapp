@@ -40,15 +40,15 @@ export class AddonUserProfileFieldTextareaComponent implements OnInit {
 
         if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
+
+            let formData = {
+                value: field.defaultdata,
+                disabled: this.disabled
+            };
+
+            this.control = new FormControl(formData, field.required && !field.locked ? Validators.required : null);
+            this.form.addControl(field.modelName, this.control);
         }
-
-        let formData = {
-            value: field.defaultdata,
-            disabled: this.disabled
-        };
-
-        this.control = new FormControl(formData, field.required && !field.locked ? Validators.required : null);
-        this.form.addControl(field.modelName, this.control);
     }
 
 }

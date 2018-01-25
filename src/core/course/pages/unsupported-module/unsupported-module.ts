@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavParams, NavController } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 
@@ -28,8 +28,7 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 export class CoreCourseUnsupportedModulePage {
     module: any;
 
-    constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
-            private navCtrl: NavController) {
+    constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider) {
         this.module = navParams.get('module') || {};
     }
 

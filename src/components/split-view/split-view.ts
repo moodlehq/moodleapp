@@ -14,9 +14,8 @@
 
 // Code based on https://github.com/martinpritchardelevate/ionic-split-pane-demo
 
-import { Component, ViewChild, Injectable, Input, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit } from '@angular/core';
 import { NavController, Nav } from 'ionic-angular';
-import { CoreSplitViewPlaceholderPage } from './placeholder/placeholder';
 
 /**
  * Directive to create a split view layout.

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content,
-        NavController, ModalController } from 'ionic-angular';
+    ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';

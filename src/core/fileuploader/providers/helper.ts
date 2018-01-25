@@ -65,7 +65,8 @@ export class CoreFileUploaderHelperProvider {
         }
 
         wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreFileUploaderProvider.LIMITED_SIZE_WARNING : limitedThreshold;
+        limitedThreshold = typeof limitedThreshold == 'undefined' ?
+            CoreFileUploaderProvider.LIMITED_SIZE_WARNING : limitedThreshold;
 
         if (size < 0) {
             return this.domUtils.showConfirm(this.translate.instant('core.fileuploader.confirmuploadunknownsize'));

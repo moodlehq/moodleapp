@@ -712,7 +712,8 @@ export class LocalNotificationsMock extends LocalNotifications {
                 let tileNotif = new this.winNotif.TileNotification({
                     tag: notification.id + '',
                     template: this.tileTemplate,
-                    strings: [notification.title, notification.text, notification.title,  notification.text, notification.title, notification.text],
+                    strings: [notification.title, notification.text, notification.title,  notification.text, notification.title,
+                        notification.text],
                     expirationTime: new Date(Date.now() + CoreConstants.SECONDS_HOUR * 1000) // Expire in 1 hour.
                 })
 

@@ -144,7 +144,8 @@ export class CoreWSProvider {
      * @param {string} siteUrl Complete site url to perform the call.
      * @param {any} ajaxData Arguments to pass to the method.
      * @param {CoreWSPreSets} preSets Extra settings and information.
-     * @return {Promise<any>} Deferred promise resolved with the response data in success and rejected with the error message if it fails.
+     * @return {Promise<any>} Deferred promise resolved with the response data in success and rejected with the error message
+     *                        if it fails.
      */
     protected addToRetryQueue(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets) : Promise<any> {
         let call = {

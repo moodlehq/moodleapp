@@ -14,6 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 
 /**
  * Directive to render a checkbox user profile field.
@@ -28,7 +29,7 @@ export class AddonUserProfileFieldCheckboxComponent implements OnInit {
     @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder) {}
+    constructor(private fb: FormBuilder, protected utils: CoreUtilsProvider) {}
 
     /**
      * Component being initialized.
@@ -41,10 +42,11 @@ export class AddonUserProfileFieldCheckboxComponent implements OnInit {
 
             // Initialize the value.
             let formData = {
-                value: field.defaultdata && field.defaultdata !== '0' && field.defaultdata !== 'false',
+                value: this.utils.isTrueOrOne(field.defaultdata),
                 disabled: this.disabled
             };
-            this.form.addControl(field.modelName, this.fb.control(formData, field.required && !field.locked ? Validators.requiredTrue : null));
+            this.form.addControl(field.modelName, this.fb.control(formData,
+                field.required && !field.locked ? Validators.requiredTrue : null));
         }
     }
 

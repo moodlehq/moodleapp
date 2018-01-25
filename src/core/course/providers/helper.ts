@@ -25,7 +25,7 @@ import { CoreCoursesDelegate, CoreCoursesHandlerToDisplay } from '../../courses/
 import { CoreSiteHomeProvider } from '../../sitehome/providers/sitehome';
 import { CoreCourseProvider } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
-import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from './module-prefetch-delegate';
+import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
 import { CoreConstants } from '../../constants';
 import { CoreSite } from '../../../classes/site';

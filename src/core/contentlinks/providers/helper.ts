@@ -72,7 +72,7 @@ export class CoreContentLinksHelperProvider {
      */
     goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string) : void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
-        if (siteId == this.sitesProvider.getCurrentSiteId()) {
+        if (navCtrl && siteId == this.sitesProvider.getCurrentSiteId()) {
             navCtrl.push(pageName, pageParams);
         } else {
             this.loginHelper.redirect(pageName, pageParams, siteId);

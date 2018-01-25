@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, AfterViewInit, ViewChild, ElementRef,
-         SimpleChange } from '@angular/core';
+    SimpleChange } from '@angular/core';
 import { CoreTabComponent } from './tab';
 import { Content } from 'ionic-angular';
 

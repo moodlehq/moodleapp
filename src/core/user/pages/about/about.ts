@@ -17,7 +17,6 @@ import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreCoursesProvider } from '../../../courses/providers/courses';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 
@@ -41,7 +40,7 @@ export class CoreUserAboutPage {
     user: any = {};
     title: string;
 
-    constructor(private navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
+    constructor(navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
             private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private platform: Platform) {
 

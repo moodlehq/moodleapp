@@ -61,10 +61,10 @@ export class CoreUserProvider {
      * Change the given user profile picture.
      *
      * @param  {number} draftItemId New picture draft item id.
-     * @param  {number} id          User ID.
-     * @return {Promise<any>}            Promise resolve with the new profileimageurl
+     * @param  {number} userId      User ID.
+     * @return {Promise<string>}       Promise resolve with the new profileimageurl
      */
-    changeProfilePicture(draftItemId: number, userId: number): Promise<any> {
+    changeProfilePicture(draftItemId: number, userId: number): Promise<string> {
         var data = {
             'draftitemid': draftItemId,
             'delete': 0,
@@ -83,7 +83,7 @@ export class CoreUserProvider {
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
      * @param  {number} userId  User ID.
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @param {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}   Promise resolve when the user is deleted.
      */
     deleteStoredUser(userId: number, siteId?: string): Promise<any> {
@@ -111,24 +111,24 @@ export class CoreUserProvider {
      * @param  {number} userId      User's ID.
      * @param  {number} [courseId]  Course ID to get course profile, undefined or 0 to get site profile.
      * @param  {boolean} [forceLocal] True to retrieve the user data from local DB, false to retrieve it from WS.
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @param {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}            Promise resolved with the user data.
      */
-    getProfile(userId: number, courseId: number, forceLocal = false, siteId?: string): Promise<any> {
+    getProfile(userId: number, courseId?: number, forceLocal = false, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (forceLocal) {
-            return this.getUserFromLocalDb(userId, siteId).catch(function() {
+            return this.getUserFromLocalDb(userId, siteId).catch(() => {
                 return this.getUserFromWS(userId, courseId, siteId);
             });
         }
-        return this.getUserFromWS(userId, courseId, siteId).catch(function() {
+        return this.getUserFromWS(userId, courseId, siteId).catch(() => {
             return this.getUserFromLocalDb(userId, siteId);
         });
     }
 
     /**
-     * Invalidates user WS calls.
+     * Get cache key for a user WS call.
      *
      * @param  {number} userId User ID.
      * @return {string}        Cache key.
@@ -141,7 +141,7 @@ export class CoreUserProvider {
      * Get user basic information from local DB.
      *
      * @param {number} userId User ID.
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @param {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}   Promise resolve when the user is retrieved.
      */
     protected getUserFromLocalDb(userId: number, siteId?: string): Promise<any> {
@@ -158,7 +158,7 @@ export class CoreUserProvider {
      * @param {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}           Promise resolve when the user is retrieved.
      */
-    protected getUserFromWS(userId: number, courseId: number, siteId?: string): Promise<any> {
+    protected getUserFromWS(userId: number, courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             let presets = {
                     cacheKey: this.getUserCacheKey(userId)
@@ -218,7 +218,7 @@ export class CoreUserProvider {
      * @return {boolean}       True if disabled, false otherwise.
      */
     isUpdatePictureDisabledInSite(site?: CoreSite) : boolean {
-         site = site || this.sitesProvider.getCurrentSite();
+        site = site || this.sitesProvider.getCurrentSite();
         return site.isFeatureDisabled('$mmUserDelegate_picture');
     };
 
@@ -226,14 +226,18 @@ export class CoreUserProvider {
     /**
      * Log User Profile View in Moodle.
      * @param  {number}       userId   User ID.
-     * @param  {number}       courseId Course ID.
+     * @param  {number}       [courseId] Course ID.
      * @return {Promise<any>}          Promise resolved when done.
      */
     logView(userId: number, courseId?: number) : Promise<any> {
-        return this.sitesProvider.getCurrentSite().write('core_user_view_user_profile', {
-            userid: userId,
-            courseid: courseId
-        });
+        let params = {
+            userid: userId
+        };
+
+        if (courseId) {
+            params['courseid'] = courseId;
+        }
+        return this.sitesProvider.getCurrentSite().write('core_user_view_user_profile', params);
     }
 
     /**
@@ -242,10 +246,10 @@ export class CoreUserProvider {
      * @param {number} userId   User ID.
      * @param {string} fullname User full name.
      * @param {string} avatar   User avatar URL.
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @param  {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}         Promise resolve when the user is stored.
      */
-    protected storeUser(userId: number, fullname: string, avatar: string, siteId?: string) {
+    protected storeUser(userId: number, fullname: string, avatar: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             let userRecord = {
                 id: userId,

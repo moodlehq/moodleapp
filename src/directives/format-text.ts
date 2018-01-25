@@ -46,7 +46,8 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() componentId?: string|number; // Component ID to use in conjunction with the component.
     @Input() adaptImg?: boolean|string = true; // Whether to adapt images to screen width.
     @Input() clean?: boolean|string; // Whether all the HTML tags should be removed.
-    @Input() singleLine?: boolean|string; // Whether new lines should be removed (all text in single line). Only valid if clean=true.
+    @Input() singleLine?: boolean|string; // Whether new lines should be removed (all text in single line). Only valid if
+                                          // clean=true.
     @Input() maxHeight?: number; // Max height in pixels to render the content box. It should be 50 at least to make sense.
                                  // Using this parameter will force display: block to calculate height better. If you want to
                                  // avoid this use class="inline" at the same time to use display: inline-block.
@@ -253,7 +254,8 @@ export class CoreFormatTextDirective implements OnChanges {
             site = siteInstance;
 
             // Apply format text function.
-            return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean), this.utils.isTrueOrOne(this.singleLine));
+            return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean),
+                this.utils.isTrueOrOne(this.singleLine));
         }).then((formatted) => {
             let div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),

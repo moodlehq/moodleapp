@@ -665,6 +665,20 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get the site home ID of the current site.
+     *
+     * @return {number} Current site home ID.
+     */
+    getCurrentSiteHomeId() : number {
+        if (this.currentSite) {
+            return this.currentSite.getSiteHomeId();
+        } else {
+            return 1;
+        }
+    }
+
+
+    /**
      * Check if the user is logged in a site.
      *
      * @return {boolean} Whether the user is logged in a site.

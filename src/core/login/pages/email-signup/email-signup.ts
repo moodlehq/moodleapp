@@ -229,7 +229,8 @@ export class CoreLoginEmailSignupPage {
             }
 
             // Get the data for the custom profile fields.
-            this.userProfileFieldDelegate.getDataForFields(this.settings.profilefields, true, 'email', this.signupForm.value).then((fieldsData) => {
+            this.userProfileFieldDelegate.getDataForFields(this.settings.profilefields, true, 'email', this.signupForm.value).then(
+                    (fieldsData) => {
                 params.customprofilefields = fieldsData;
 
                 this.wsProvider.callAjax('auth_email_signup_user', params, {siteUrl: this.siteUrl}).then((result) => {

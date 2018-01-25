@@ -49,7 +49,7 @@ export class CoreUserProfilePage {
     newPageHandlers = [];
     communicationHandlers = [];
 
-    constructor(private navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
+    constructor(navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider,
             private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider,
@@ -81,7 +81,7 @@ export class CoreUserProfilePage {
     ionViewDidLoad() {
         this.fetchUser().then(() => {
             return this.userProvider.logView(this.userId, this.courseId).catch((error) => {
-                this.isDeleted = error === this.translate.instant('core.userdeleted');
+                this.isDeleted = error.errorcode === 'userdeleted';
             });
         }).finally(() => {
             this.userLoaded = true;
@@ -142,10 +142,11 @@ export class CoreUserProfilePage {
             let modal = this.domUtils.showModalLoading('core.sending', true);
 
             return this.userProvider.changeProfilePicture(result.itemid, this.userId).then((profileImageURL) => {
-                this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {userId: this.userId, picture: profileImageURL});
+                this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {userId: this.userId,
+                    picture: profileImageURL});
                 this.sitesProvider.updateSiteInfo(this.site.getId());
                 this.refreshUser();
-            }).finally(function() {
+            }).finally(() => {
                 modal.dismiss();
             });
         }).catch((message) => {

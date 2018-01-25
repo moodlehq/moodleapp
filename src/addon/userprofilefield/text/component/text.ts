@@ -14,6 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 
 /**
  * Directive to render a text user profile field.
@@ -28,7 +29,7 @@ export class AddonUserProfileFieldTextComponent implements OnInit {
     @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder) {}
+    constructor(private fb: FormBuilder, protected utils: CoreUtilsProvider) {}
 
     /**
      * Component being initialized.
@@ -45,14 +46,15 @@ export class AddonUserProfileFieldTextComponent implements OnInit {
             }
 
             // Check if it's a password or text.
-            field.inputType = field.param3 && field.param3 !== '0' && field.param3 !== 'false' ? 'password' : 'text';
+            field.inputType = this.utils.isTrueOrOne(field.param3) ? 'password' : 'text';
 
             let formData = {
                 value: field.defaultdata,
                 disabled: this.disabled
             };
             // Initialize the value using default data.
-            this.form.addControl(field.modelName, this.fb.control(formData, field.required && !field.locked ? Validators.required : null));
+            this.form.addControl(field.modelName, this.fb.control(formData,
+                field.required && !field.locked ? Validators.required : null));
         }
     }
 
