@@ -26,8 +26,6 @@ export class CoreCoursesProvider {
     public static ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
     public static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
     public static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
-    public static ACCESS_GUEST = 'courses_access_guest';
-    public static ACCESS_DEFAULT = 'courses_access_default';
     protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
 
@@ -73,13 +71,13 @@ export class CoreCoursesProvider {
     }
 
     /**
-     * Given a list of course IDs to get course options, return the list of courseIds to use.
+     * Given a list of course IDs to get course admin and nav options, return the list of courseIds to use.
      *
      * @param {number[]} courseIds Course IDs.
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise}            Promise resolved with the list of course IDs.
      */
-    protected getCourseIdsForOptions(courseIds: number[], siteId?: string) : Promise<number[]> {
+    protected getCourseIdsForAdminAndNavOptions(courseIds: number[], siteId?: string) : Promise<number[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const siteHomeId = site.getSiteHomeId();
 
@@ -364,11 +362,11 @@ export class CoreCoursesProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<{navOptions: any, admOptions: any}>} Promise resolved with the options for each course.
      */
-    getCoursesOptions(courseIds: number[], siteId?: string) : Promise<{navOptions: any, admOptions: any}> {
+    getCoursesAdminAndNavOptions(courseIds: number[], siteId?: string) : Promise<{navOptions: any, admOptions: any}> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get the list of courseIds to use based on the param.
-        return this.getCourseIdsForOptions(courseIds, siteId).then((courseIds) => {
+        return this.getCourseIdsForAdminAndNavOptions(courseIds, siteId).then((courseIds) => {
             let promises = [],
                 navOptions,
                 admOptions;
@@ -431,7 +429,7 @@ export class CoreCoursesProvider {
 
             return site.read('core_course_get_user_administration_options', params, preSets).then((response) => {
                 // Format returned data.
-                return this.formatUserOptions(response.courses);
+                return this.formatUserAdminOrNavOptions(response.courses);
             });
         });
     }
@@ -473,7 +471,7 @@ export class CoreCoursesProvider {
 
             return site.read('core_course_get_user_navigation_options', params, preSets).then((response) => {
                 // Format returned data.
-                return this.formatUserOptions(response.courses);
+                return this.formatUserAdminOrNavOptions(response.courses);
             });
         });
     }
@@ -484,7 +482,7 @@ export class CoreCoursesProvider {
      * @param {any[]} courses Navigation or administration options for each course.
      * @return {any} Formatted options.
      */
-    protected formatUserOptions(courses: any[]) : any {
+    protected formatUserAdminOrNavOptions(courses: any[]) : any {
         let result = {};
 
         courses.forEach((course) => {
@@ -619,10 +617,10 @@ export class CoreCoursesProvider {
      * @param {string} [siteId] Site ID to invalidate. If not defined, use current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateCoursesOptions(courseIds: number[], siteId?: string) : Promise<any> {
+    invalidateCoursesAdminAndNavOptions(courseIds: number[], siteId?: string) : Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.getCourseIdsForOptions(courseIds, siteId).then((ids) => {
+        return this.getCourseIdsForAdminAndNavOptions(courseIds, siteId).then((ids) => {
             let promises = [];
 
             promises.push(this.invalidateUserAdministrationOptionsForCourses(ids, siteId));

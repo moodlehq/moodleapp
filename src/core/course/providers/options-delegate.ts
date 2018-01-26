@@ -18,12 +18,13 @@ import { CoreEventsProvider } from '../../../providers/events';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreUtilsProvider, PromiseDefer } from '../../../providers/utils/utils';
-import { CoreCoursesProvider } from './courses';
+import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreCourseProvider } from './course';
 
 /**
- * Interface that all courses handlers must implement.
+ * Interface that all course options handlers must implement.
  */
-export interface CoreCoursesHandler extends CoreDelegateHandler {
+export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
      * @type {number}
@@ -57,9 +58,9 @@ export interface CoreCoursesHandler extends CoreDelegateHandler {
      * Returns the data needed to render the handler.
      *
      * @param {number} courseId The course ID.
-     * @return {CoreCoursesHandlerData} Data.
+     * @return {CoreCourseOptionsHandlerData} Data.
      */
-    getDisplayData?(courseId: number): CoreCoursesHandlerData;
+    getDisplayData?(courseId: number): CoreCourseOptionsHandlerData;
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -83,7 +84,7 @@ export interface CoreCoursesHandler extends CoreDelegateHandler {
 /**
  * Data needed to render a course handler. It's returned by the handler.
  */
-export interface CoreCoursesHandlerData {
+export interface CoreCourseOptionsHandlerData {
     /**
      * Title to display for the handler.
      * @type {string}
@@ -113,12 +114,12 @@ export interface CoreCoursesHandlerData {
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreCoursesHandlerToDisplay {
+export interface CoreCourseOptionsHandlerToDisplay {
     /**
      * Data to display.
-     * @type {CoreCoursesHandlerData}
+     * @type {CoreCourseOptionsHandlerData}
      */
-    data: CoreCoursesHandlerData;
+    data: CoreCourseOptionsHandlerData;
 
     /**
      * The highest priority is displayed first.
@@ -136,17 +137,17 @@ export interface CoreCoursesHandlerToDisplay {
 }
 
 /**
- * Service to interact with plugins to be shown in each course.
+ * Service to interact with plugins to be shown in each course (participants, learning plans, ...).
  */
 @Injectable()
-export class CoreCoursesDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreCoursesHandler } = {}; // All registered handlers.
-    protected enabledHandlers: { [s: string]: CoreCoursesHandler } = {}; // Handlers enabled for the current site.
+export class CoreCourseOptionsDelegate extends CoreDelegate {
+    protected handlers: { [s: string]: CoreCourseOptionsHandler } = {}; // All registered handlers.
+    protected enabledHandlers: { [s: string]: CoreCourseOptionsHandler } = {}; // Handlers enabled for the current site.
     protected loaded: { [courseId: number]: boolean } = {};
     protected lastUpdateHandlersForCoursesStart: any = {};
     protected coursesHandlers: {
         [courseId: number]: {
-            access?: any, navOptions?: any, admOptions?: any, deferred?: PromiseDefer, enabledHandlers?: CoreCoursesHandler[]
+            access?: any, navOptions?: any, admOptions?: any, deferred?: PromiseDefer, enabledHandlers?: CoreCourseOptionsHandler[]
         }
     } = {};
 
@@ -154,7 +155,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
         protected eventsProvider: CoreEventsProvider, private coursesProvider: CoreCoursesProvider) {
-        super('CoreMainMenuDelegate', loggerProvider, sitesProvider, eventsProvider);
+        super('CoreCourseOptionsDelegate', loggerProvider, sitesProvider, eventsProvider);
 
         eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
             this.clearCoursesHandlers();
@@ -172,7 +173,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
     }
 
     /**
-     * Clear all courses handlers.
+     * Clear all course options handlers.
      *
      * @param {number} [courseId] The course ID. If not defined, all handlers will be cleared.
      */
@@ -200,7 +201,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
         // Invalidate course enabled data for the handlers that are enabled at site level.
         if (courseId) {
             // Invalidate only options for this course.
-            promises.push(this.coursesProvider.invalidateCoursesOptions([courseId]));
+            promises.push(this.coursesProvider.invalidateCoursesAdminAndNavOptions([courseId]));
             promises.push(this.invalidateCourseHandlers(courseId));
         } else {
             // Invalidate all options.
@@ -225,10 +226,10 @@ export class CoreCoursesDelegate extends CoreDelegate {
      * @param {any} accessData Access type and data. Default, guest, ...
      * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {Promise<CoreCoursesHandler[]>} Promise resolved with array of handlers.
+     * @return {Promise<CoreCourseOptionsHandler[]>} Promise resolved with array of handlers.
      */
     protected getHandlersForAccess(courseId: number, refresh: boolean, accessData: any, navOptions?: any,
-        admOptions?: any): Promise<CoreCoursesHandler[]> {
+        admOptions?: any): Promise<CoreCourseOptionsHandler[]> {
 
         // If the handlers aren't loaded, do not refresh.
         if (!this.loaded[courseId]) {
@@ -260,14 +261,14 @@ export class CoreCoursesDelegate extends CoreDelegate {
      * @param {boolean} [isGuest] Whether it's guest.
      * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {Promise<CoreCoursesHandlerToDisplay[]>} Promise resolved with array of handlers.
+     * @return {Promise<CoreCourseOptionsHandlerToDisplay[]>} Promise resolved with array of handlers.
      */
     getHandlersToDisplay(course: any, refresh?: boolean, isGuest?: boolean, navOptions?: any, admOptions?: any):
-        Promise<CoreCoursesHandlerToDisplay[]> {
+        Promise<CoreCourseOptionsHandlerToDisplay[]> {
         course.id = parseInt(course.id, 10);
 
         let accessData = {
-            type: isGuest ? CoreCoursesProvider.ACCESS_GUEST : CoreCoursesProvider.ACCESS_DEFAULT
+            type: isGuest ? CoreCourseProvider.ACCESS_GUEST : CoreCourseProvider.ACCESS_DEFAULT
         };
 
         if (navOptions) {
@@ -281,7 +282,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
             // Call getHandlersForAccess to make sure the handlers have been loaded.
             return this.getHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions);
         }).then(() => {
-            let handlersToDisplay: CoreCoursesHandlerToDisplay[] = [],
+            let handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [],
                 promises = [],
                 promise;
 
@@ -342,7 +343,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
     hasHandlersForDefault(courseId: number, refresh?: boolean, navOptions?: any, admOptions?: any): Promise<boolean> {
         // Default access.
         let accessData = {
-            type: CoreCoursesProvider.ACCESS_DEFAULT
+            type: CoreCourseProvider.ACCESS_DEFAULT
         };
         return this.getHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions).then((handlers) => {
             return !!(handlers && handlers.length);
@@ -361,7 +362,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
     hasHandlersForGuest(courseId: number, refresh?: boolean, navOptions?: any, admOptions?: any): Promise<boolean> {
         // Guest access.
         var accessData = {
-            type: CoreCoursesProvider.ACCESS_GUEST
+            type: CoreCourseProvider.ACCESS_GUEST
         };
         return this.getHandlersForAccess(courseId, refresh, accessData, navOptions, admOptions).then((handlers) => {
             return !!(handlers && handlers.length);
@@ -416,7 +417,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
      */
     protected loadCourseOptions(course: any, refresh?: boolean): Promise<void> {
         if (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh) {
-            return this.coursesProvider.getCoursesOptions([course.id]).then((options) => {
+            return this.coursesProvider.getCoursesAdminAndNavOptions([course.id]).then((options) => {
                 course.navOptions = options.navOptions[course.id];
                 course.admOptions = options.admOptions[course.id];
             });
@@ -425,7 +426,12 @@ export class CoreCoursesDelegate extends CoreDelegate {
         }
     }
 
-    updateData(siteId?: string) {
+    /**
+     * Update handlers for each course.
+     *
+     * @param {string} [siteId] Site ID.
+     */
+    updateData(siteId?: string): void {
         if (this.sitesProvider.getCurrentSiteId() === siteId) {
             // Update handlers for all courses.
             for (let courseId in this.coursesHandlers) {
@@ -458,7 +464,7 @@ export class CoreCoursesDelegate extends CoreDelegate {
 
             // Checks if the handler is enabled for the user.
             promises.push(Promise.resolve(handler.isEnabledForCourse(courseId, accessData, navOptions, admOptions))
-                .then(function(enabled) {
+                .then((enabled) => {
                     if (enabled) {
                         enabledForCourse.push(handler);
                     } else {

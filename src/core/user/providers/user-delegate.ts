@@ -145,7 +145,7 @@ export class CoreUserDelegate extends CoreDelegate {
                 return course.id;
             });
 
-            return this.coursesProvider.getCoursesOptions(courseIds).then((options) => {
+            return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 // For backwards compatibility we don't modify the courseId.
                 let courseIdForOptions = courseId || this.sitesProvider.getCurrentSiteHomeId(),
                     navOptions = options.navOptions[courseIdForOptions],

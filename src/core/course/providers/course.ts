@@ -28,6 +28,9 @@ import { CoreConstants } from '../../constants';
 @Injectable()
 export class CoreCourseProvider {
     public static ALL_SECTIONS_ID = -1;
+    public static ACCESS_GUEST = 'courses_access_guest';
+    public static ACCESS_DEFAULT = 'courses_access_default';
+
     protected ROOT_CACHE_KEY = 'mmCourse:';
 
     // Variables for database.

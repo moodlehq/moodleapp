@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreCoursesDelegate } from '../../providers/delegate';
+import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
 import { CoreCourseProvider } from '../../../course/providers/course';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 
@@ -65,7 +65,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider, appProvider: CoreAppProvider,
             private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
-            private coursesDelegate: CoreCoursesDelegate, private courseHelper: CoreCourseHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private courseHelper: CoreCourseHelperProvider,
             private courseProvider: CoreCourseProvider) {
         this.course = navParams.get('course');
         this.isMobile = appProvider.isMobile();
@@ -228,7 +228,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * @param {boolean} guest Whether it's guest access.
      */
     protected loadCourseHandlers(refresh: boolean, guest: boolean) : Promise<any> {
-        return this.coursesDelegate.getHandlersToDisplay(this.course, refresh, guest, true).then((handlers) => {
+        return this.courseOptionsDelegate.getHandlersToDisplay(this.course, refresh, guest, true).then((handlers) => {
             this.course._handlers = handlers;
             this.handlersShouldBeShown = true;
             this.handlersLoaded = true;
@@ -375,7 +375,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.coursesProvider.invalidateCourse(this.course.id));
         promises.push(this.coursesProvider.invalidateCourseEnrolmentMethods(this.course.id));
-        // promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions(course.id));
+        promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions(this.course.id));
         if (this.guestInstanceId) {
             promises.push(this.coursesProvider.invalidateCourseGuestEnrolmentInfo(this.guestInstanceId));
         }

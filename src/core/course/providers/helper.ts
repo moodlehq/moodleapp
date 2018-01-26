@@ -21,7 +21,7 @@ import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../providers/utils/text';
 import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
-import { CoreCoursesDelegate, CoreCoursesHandlerToDisplay } from '../../courses/providers/delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './options-delegate';
 import { CoreSiteHomeProvider } from '../../sitehome/providers/sitehome';
 import { CoreCourseProvider } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
@@ -113,8 +113,8 @@ export class CoreCourseHelperProvider {
             private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private utils: CoreUtilsProvider, private translate: TranslateService, private coursesDelegate: CoreCoursesDelegate,
-            private loginHelper: CoreLoginHelperProvider, private siteHomeProvider: CoreSiteHomeProvider) {}
+            private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider) {}
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -242,11 +242,11 @@ export class CoreCourseHelperProvider {
      * @param {any} iconData An object where to store the course icon. It will be stored with the name "prefetchCourseIcon".
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
-     * @param {CoreCoursesHandlerToDisplay[]} courseHandlers List of course handlers.
+     * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
      * @return {Promise<boolean>} Promise resolved with true when the download finishes, resolved with false if user doesn't
      *                            confirm, rejected if an error occurs.
      */
-    confirmAndPrefetchCourse(iconData: any, course: any, sections?: any[], courseHandlers?: CoreCoursesHandlerToDisplay[])
+    confirmAndPrefetchCourse(iconData: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
             : Promise<boolean> {
         let initialIcon = iconData.prefetchCourseIcon,
             promise,
@@ -268,10 +268,10 @@ export class CoreCourseHelperProvider {
                 if (courseHandlers) {
                     promise = Promise.resolve(courseHandlers);
                 } else {
-                    promise = this.coursesDelegate.getHandlersToDisplay(course);
+                    promise = this.courseOptionsDelegate.getHandlersToDisplay(course);
                 }
 
-                return promise.then((handlers: CoreCoursesHandlerToDisplay[]) => {
+                return promise.then((handlers: CoreCourseOptionsHandlerToDisplay[]) => {
                     // Now we have all the data, download the course.
                     return this.prefetchCourse(course, sections, handlers, siteId);
                 }).then(() => {
@@ -315,7 +315,7 @@ export class CoreCourseHelperProvider {
                 subPromises.push(this.courseProvider.getSections(course.id, false, true).then((courseSections) => {
                     sections = courseSections;
                 }));
-                subPromises.push(this.coursesDelegate.getHandlersToDisplay(course).then((cHandlers) => {
+                subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(course).then((cHandlers) => {
                     handlers = cHandlers;
                 }));
 
@@ -662,11 +662,12 @@ export class CoreCourseHelperProvider {
      *
      * @param {any} course The course to prefetch.
      * @param {any[]} sections List of course sections.
-     * @param {CoreCoursesHandlerToDisplay[]} courseHandlers List of course handlers.
+     * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course options handlers.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when the download finishes.
      */
-    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCoursesHandlerToDisplay[], siteId?: string) : Promise<any> {
+    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[], siteId?: string)
+            : Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.courseDwnPromises[siteId] && this.courseDwnPromises[siteId][course.id]) {

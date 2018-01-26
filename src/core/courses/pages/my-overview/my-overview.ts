@@ -17,9 +17,9 @@ import { IonicPage, NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreCoursesDelegate } from '../../providers/delegate';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
 import { CoreSiteHomeProvider } from '../../../sitehome/providers/sitehome';
 import * as moment from 'moment';
 
@@ -71,7 +71,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
-            private siteHomeProvider: CoreSiteHomeProvider, private coursesDelegate: CoreCoursesDelegate) {}
+            private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate) {}
 
     /**
      * View loaded.
@@ -185,7 +185,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             });
 
             // Load course options of the course.
-            return this.coursesProvider.getCoursesOptions(courseIds).then((options) => {
+            return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 courses.forEach((course) => {
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
@@ -239,7 +239,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         }
 
         promises.push(this.coursesProvider.invalidateUserCourses());
-        promises.push(this.coursesDelegate.clearAndInvalidateCoursesOptions());
+        promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
 
         return Promise.all(promises).finally(() => {
             switch (this.tabShown) {

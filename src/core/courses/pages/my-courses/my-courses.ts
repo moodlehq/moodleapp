@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -44,7 +45,8 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider, private courseHelper: CoreCourseHelperProvider) {}
+            private sitesProvider: CoreSitesProvider, private courseHelper: CoreCourseHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate) {}
 
     /**
      * View loaded.
@@ -75,7 +77,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
                 return course.id;
             });
 
-            return this.coursesProvider.getCoursesOptions(courseIds).then((options) => {
+            return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 courses.forEach((course) => {
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
@@ -100,7 +102,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
         let promises = [];
 
         promises.push(this.coursesProvider.invalidateUserCourses());
-        // promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions());
+        promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
 
         Promise.all(promises).finally(() => {
 

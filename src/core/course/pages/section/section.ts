@@ -22,7 +22,7 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
-import { CoreCoursesDelegate, CoreCoursesHandlerToDisplay } from '../../../courses/providers/delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCoursesProvider } from '../../../courses/providers/courses';
 
 /**
@@ -41,7 +41,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     sections: any[];
     sectionId: number;
     sectionNumber: number;
-    courseHandlers: CoreCoursesHandlerToDisplay[];
+    courseHandlers: CoreCourseOptionsHandlerToDisplay[];
     dataLoaded: boolean;
     downloadEnabled: boolean;
     downloadEnabledIcon: string = 'square-outline'; // Disabled by default.
@@ -54,7 +54,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     protected isDestroyed = false;
 
     constructor(private navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private coursesDelegate: CoreCoursesDelegate,
+            private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
             sitesProvider: CoreSitesProvider, private navCtrl: NavController) {
@@ -166,7 +166,7 @@ export class CoreCourseSectionPage implements OnDestroy {
             }));
 
             // Load the course handlers.
-            promises.push(this.coursesDelegate.getHandlersToDisplay(this.course, refresh, false).then((handlers) => {
+            promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.course, refresh, false).then((handlers) => {
                 this.courseHandlers = handlers;
             }));
 
