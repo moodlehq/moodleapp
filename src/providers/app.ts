@@ -48,7 +48,7 @@ export interface CoreRedirectData {
      * @type {number}
      */
     timemodified?: number;
-};
+}
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -65,8 +65,8 @@ export class CoreAppProvider {
     protected DBNAME = 'MoodleMobile';
     protected db: SQLiteDB;
     protected logger;
-    protected ssoAuthenticationPromise : Promise<any>;
-    protected isKeyboardShown: boolean = false;
+    protected ssoAuthenticationPromise: Promise<any>;
+    protected isKeyboardShown = false;
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider) {
@@ -87,7 +87,7 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether the function is supported.
      */
-    canGetUserMedia() : boolean {
+    canGetUserMedia(): boolean {
         return !!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     }
 
@@ -96,14 +96,14 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether the function is supported.
      */
-    canRecordMedia() : boolean {
-        return !!(<any>window).MediaRecorder;
+    canRecordMedia(): boolean {
+        return !!(<any> window).MediaRecorder;
     }
 
     /**
      * Closes the keyboard.
      */
-    closeKeyboard() : void {
+    closeKeyboard(): void {
         if (this.isMobile()) {
             this.keyboard.close();
         }
@@ -114,7 +114,7 @@ export class CoreAppProvider {
      *
      * @return {SQLiteDB} App's DB.
      */
-    getDB() : SQLiteDB {
+    getDB(): SQLiteDB {
         return this.db;
     }
 
@@ -123,8 +123,8 @@ export class CoreAppProvider {
      *
      * @return {NavController} Root NavController.
      */
-    getRootNavController() : NavController {
-        // getRootNav is deprecated. Get the first root nav, there should always be one.
+    getRootNavController(): NavController {
+        // Function getRootNav is deprecated. Get the first root nav, there should always be one.
         return this.appCtrl.getRootNavs()[0];
     }
 
@@ -133,8 +133,9 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether the app is running in a desktop environment (not browser).
      */
-    isDesktop() : boolean {
-        let process = (<any>window).process;
+    isDesktop(): boolean {
+        const process = (<any> window).process;
+
         return !!(process && process.versions && typeof process.versions.electron != 'undefined');
     }
 
@@ -143,7 +144,7 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether keyboard is visible.
      */
-    isKeyboardVisible() : boolean {
+    isKeyboardVisible(): boolean {
         return this.isKeyboardShown;
     }
 
@@ -152,15 +153,14 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether it's running in a Linux environment.
      */
-    isLinux() : boolean {
+    isLinux(): boolean {
         if (!this.isDesktop()) {
             return false;
         }
 
         try {
-            var os = require('os');
-            return os.platform().indexOf('linux') === 0;
-        } catch(ex) {
+            return require('os').platform().indexOf('linux') === 0;
+        } catch (ex) {
             return false;
         }
     }
@@ -170,15 +170,14 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether it's running in a Mac OS environment.
      */
-    isMac() : boolean {
+    isMac(): boolean {
         if (!this.isDesktop()) {
             return false;
         }
 
         try {
-            var os = require('os');
-            return os.platform().indexOf('darwin') === 0;
-        } catch(ex) {
+            return require('os').platform().indexOf('darwin') === 0;
+        } catch (ex) {
             return false;
         }
     }
@@ -188,7 +187,7 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether the app is running in a mobile or tablet device.
      */
-    isMobile() : boolean {
+    isMobile(): boolean {
         return this.platform.is('cordova');
     }
 
@@ -197,12 +196,13 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether the app is online.
      */
-    isOnline() : boolean {
+    isOnline(): boolean {
         let online = this.network.type !== null && this.network.type != Connection.NONE && this.network.type != Connection.UNKNOWN;
         // Double check we are not online because we cannot rely 100% in Cordova APIs. Also, check it in browser.
         if (!online && navigator.onLine) {
             online = true;
         }
+
         return online;
     }
 
@@ -211,14 +211,15 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether the device uses a limited connection.
      */
-    isNetworkAccessLimited() : boolean {
-        let type = this.network.type;
+    isNetworkAccessLimited(): boolean {
+        const type = this.network.type;
         if (type === null) {
             // Plugin not defined, probably in browser.
             return false;
         }
 
-        let limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
+        const limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
+
         return limited.indexOf(type) > -1;
     }
 
@@ -227,15 +228,14 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether it's running in a Windows environment.
      */
-    isWindows() : boolean {
+    isWindows(): boolean {
         if (!this.isDesktop()) {
             return false;
         }
 
         try {
-            var os = require('os');
-            return os.platform().indexOf('win') === 0;
-        } catch(ex) {
+            return require('os').platform().indexOf('win') === 0;
+        } catch (ex) {
             return false;
         }
     }
@@ -243,7 +243,7 @@ export class CoreAppProvider {
     /**
      * Open the keyboard.
      */
-    openKeyboard() : void {
+    openKeyboard(): void {
         // Open keyboard is not supported in desktop and in iOS.
         if (this.isMobile() && !this.platform.is('ios')) {
             this.keyboard.show();
@@ -255,11 +255,11 @@ export class CoreAppProvider {
      * Please notice that this function should be called when the app receives the new token from the browser,
      * NOT when the browser is opened.
      */
-    startSSOAuthentication() : void {
+    startSSOAuthentication(): void {
         let cancelTimeout,
             resolvePromise;
 
-        this.ssoAuthenticationPromise = new Promise((resolve, reject) => {
+        this.ssoAuthenticationPromise = new Promise((resolve, reject): void => {
             resolvePromise = resolve;
 
             // Resolve it automatically after 10 seconds (it should never take that long).
@@ -269,7 +269,7 @@ export class CoreAppProvider {
         });
 
         // Store the resolve function in the promise itself.
-        (<any>this.ssoAuthenticationPromise).resolve = resolvePromise;
+        (<any> this.ssoAuthenticationPromise).resolve = resolvePromise;
 
         // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
         this.ssoAuthenticationPromise.then(() => {
@@ -280,9 +280,9 @@ export class CoreAppProvider {
     /**
      * Finish an SSO authentication process.
      */
-    finishSSOAuthentication() : void {
+    finishSSOAuthentication(): void {
         if (this.ssoAuthenticationPromise) {
-            (<any>this.ssoAuthenticationPromise).resolve && (<any>this.ssoAuthenticationPromise).resolve();
+            (<any> this.ssoAuthenticationPromise).resolve && (<any> this.ssoAuthenticationPromise).resolve();
             this.ssoAuthenticationPromise = undefined;
         }
     }
@@ -292,7 +292,7 @@ export class CoreAppProvider {
      *
      * @return {boolean} Whether there's a SSO authentication ongoing.
      */
-    isSSOAuthenticationOngoing() : boolean {
+    isSSOAuthenticationOngoing(): boolean {
         return !!this.ssoAuthenticationPromise;
     }
 
@@ -301,7 +301,7 @@ export class CoreAppProvider {
      *
      * @return {Promise<any>} Promise resolved once SSO authentication finishes.
      */
-    waitForSSOAuthentication() : Promise<any> {
+    waitForSSOAuthentication(): Promise<any> {
         return this.ssoAuthenticationPromise || Promise.resolve();
     }
 
@@ -310,10 +310,10 @@ export class CoreAppProvider {
      *
      * @return {CoreRedirectData} Object with siteid, state, params and timemodified.
      */
-    getRedirect() : CoreRedirectData {
+    getRedirect(): CoreRedirectData {
         if (localStorage && localStorage.getItem) {
             try {
-                let data: CoreRedirectData = {
+                const data: CoreRedirectData = {
                     siteId: localStorage.getItem('mmCoreRedirectSiteId'),
                     page: localStorage.getItem('mmCoreRedirectState'),
                     params: localStorage.getItem('mmCoreRedirectParams'),
@@ -325,7 +325,7 @@ export class CoreAppProvider {
                 }
 
                 return data;
-            } catch(ex) {
+            } catch (ex) {
                 this.logger.error('Error loading redirect data:', ex);
             }
         }
@@ -340,14 +340,16 @@ export class CoreAppProvider {
      * @param {string} page Page to go.
      * @param {any} params Page params.
      */
-    storeRedirect(siteId: string, page: string, params: any) : void {
+    storeRedirect(siteId: string, page: string, params: any): void {
         if (localStorage && localStorage.setItem) {
             try {
                 localStorage.setItem('mmCoreRedirectSiteId', siteId);
                 localStorage.setItem('mmCoreRedirectState', page);
                 localStorage.setItem('mmCoreRedirectParams', JSON.stringify(params));
                 localStorage.setItem('mmCoreRedirectTime', String(Date.now()));
-            } catch(ex) {}
+            } catch (ex) {
+                // Ignore errors.
+            }
         }
     }
 }

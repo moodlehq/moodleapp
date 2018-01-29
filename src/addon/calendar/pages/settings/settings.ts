@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 /**
  * Page that displays the calendar settings.
  */
-@IonicPage({segment: "addon-calendar-settings"})
+@IonicPage({ segment: 'addon-calendar-settings' })
 @Component({
     selector: 'page-addon-calendar-settings',
     templateUrl: 'settings.html',
@@ -31,20 +31,25 @@ export class AddonCalendarSettingsPage {
     defaultTime = 0;
 
     constructor(private calendarProvider: AddonCalendarProvider, private eventsProvider: CoreEventsProvider,
-         private sitesProvider: CoreSitesProvider) {}
+        private sitesProvider: CoreSitesProvider) { }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.calendarProvider.getDefaultNotificationTime().then((time) => {
             this.defaultTime = time;
         });
     }
 
-    updateDefaultTime(newTime) {
+    /**
+     * Update default time.
+     *
+     * @param {number} newTime New time.
+     */
+    updateDefaultTime(newTime: number): void {
         this.calendarProvider.setDefaultNotificationTime(newTime);
-        this.eventsProvider.trigger(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, {time: newTime},
+        this.eventsProvider.trigger(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, { time: newTime },
             this.sitesProvider.getCurrentSiteId());
-    };
+    }
 }

@@ -22,7 +22,7 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/d
 /**
  * Page that displays the main menu of the app.
  */
-@IonicPage({segment: "core-mainmenu"})
+@IonicPage({segment: 'core-mainmenu'})
 @Component({
     selector: 'page-core-mainmenu',
     templateUrl: 'menu.html',
@@ -48,7 +48,7 @@ export class CoreMainMenuPage implements OnDestroy {
                 ionTabs.select(indexToSelect);
             });
         }
-    };
+    }
 
     tabs: CoreMainMenuHandlerData[] = [];
     loaded: boolean;
@@ -74,13 +74,14 @@ export class CoreMainMenuPage implements OnDestroy {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         if (!this.sitesProvider.isLoggedIn()) {
             this.navCtrl.setRoot('CoreLoginSitesPage');
+
             return;
         }
 
-        let site = this.sitesProvider.getCurrentSite(),
+        const site = this.sitesProvider.getCurrentSite(),
             displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
@@ -89,13 +90,13 @@ export class CoreMainMenuPage implements OnDestroy {
             // Check if handlers are already in tabs. Add the ones that aren't.
             // @todo: https://github.com/ionic-team/ionic/issues/13633
             for (let i = 0; i < handlers.length; i++) {
-                let handler = handlers[i],
-                    found = false,
+                const handler = handlers[i],
                     shouldSelect = (displaySiteHome && handler.name == 'CoreSiteHome') ||
                                    (!displaySiteHome && handler.name == 'CoreCourses');
+                let found = false;
 
                 for (let j = 0; j < this.tabs.length; j++) {
-                    let tab = this.tabs[j];
+                    const tab = this.tabs[j];
                     if (tab.title == handler.title && tab.icon == handler.icon) {
                         found = true;
                         if (shouldSelect) {
@@ -125,7 +126,7 @@ export class CoreMainMenuPage implements OnDestroy {
     /**
      * Page destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscription && this.subscription.unsubscribe();
     }
 }

@@ -26,23 +26,24 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 })
 export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
+    @Input() edit? = false; // True if editing the field. Defaults to false.
+    @Input() disabled? = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider, protected utils: CoreUtilsProvider) {}
+    constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider, protected utils: CoreUtilsProvider) { }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
-        let field = this.field,
-            year;
+    ngOnInit(): void {
+        const field = this.field;
+        let year;
+
         if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
 
             // Check if it's only date or it has time too.
-            let hasTime = this.utils.isTrueOrOne(field.param3);
+            const hasTime = this.utils.isTrueOrOne(field.param3);
             field.format = hasTime ? this.timeUtils.getLocalizedDateFormat('LLL') : this.timeUtils.getLocalizedDateFormat('LL');
 
             // Check min value.
@@ -61,7 +62,7 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
                 }
             }
 
-            let formData = {
+            const formData = {
                 value: field.defaultdata,
                 disabled: this.disabled
             };
@@ -69,5 +70,4 @@ export class AddonUserProfileFieldDatetimeComponent implements OnInit {
                 field.required && !field.locked ? Validators.required : null));
         }
     }
-
 }

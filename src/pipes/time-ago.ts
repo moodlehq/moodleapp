@@ -35,12 +35,13 @@ export class CoreTimeAgoPipe implements PipeTransform {
      * @param {number|string} timestamp The UNIX timestamp (without milliseconds).
      * @return {string} Formatted time.
      */
-    transform(timestamp: string|number) : string {
+    transform(timestamp: string | number): string {
         if (typeof timestamp == 'string') {
             // Convert the value to a number.
             const numberTimestamp = parseInt(timestamp, 10);
             if (isNaN(numberTimestamp)) {
                 this.logger.error('Invalid value received', timestamp);
+
                 return timestamp;
             }
             timestamp = numberTimestamp;

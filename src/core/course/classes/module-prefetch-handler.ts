@@ -37,7 +37,7 @@ import { CoreConstants } from '../../constants';
  * @return {Promise<string>} Promise resolved when the prefetch finishes. The string returned will be stored as "extra" data in the
  *                           filepool package. If you don't need to store extra data, don't return anything.
  */
-export type prefetchFunction = (module: any, courseId: number, single: boolean, siteId: string, ...args) => Promise<string>;
+export type prefetchFunction = (module: any, courseId: number, single: boolean, siteId: string, ...args: any[]) => Promise<string>;
 
 /**
  * Base prefetch handler to be registered in CoreCourseModulePrefetchDelegate. It is useful to minimize the amount of
@@ -88,10 +88,10 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * List of download promises to prevent downloading the module twice at the same time.
      * @type {{[s: string]: {[s: string]: Promise<any>}}}
      */
-    protected downloadPromises: {[s: string]: {[s: string]: Promise<any>}} = {};
+    protected downloadPromises: { [s: string]: { [s: string]: Promise<any> } } = {};
 
-    // List of services that will be injected using injector. It's done like this so subclasses don't have to send all the
-    // services to the parent in the constructor.
+    // List of services that will be injected using injector.
+    // It's done like this so subclasses don't have to send all the services to the parent in the constructor.
     protected translate: TranslateService;
     protected appProvider: CoreAppProvider;
     protected courseProvider: CoreCourseProvider;
@@ -118,7 +118,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise of the current download.
      */
-    addOngoingDownload(id: number, promise: Promise<any>, siteId?: string) : Promise<any> {
+    addOngoingDownload(id: number, promise: Promise<any>, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueId(id);
@@ -141,7 +141,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID.
      * @return {Promise<any>} Promise resolved when all content is downloaded.
      */
-    download(module: any, courseId: number) : Promise<any> {
+    download(module: any, courseId: number): Promise<any> {
         return this.downloadOrPrefetch(module, courseId, false);
     }
 
@@ -156,7 +156,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *                           in the filepool root folder.
      * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
      */
-    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string) : Promise<any> {
+    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
         if (!this.appProvider.isOnline()) {
             // Cannot download in offline.
             return Promise.reject(this.translate.instant('core.networkerrormsg'));
@@ -169,21 +169,21 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             // Get the intro files.
             return this.getIntroFiles(module, courseId);
         }).then((introFiles) => {
-            let downloadFn = prefetch ? this.filepoolProvider.prefetchPackage.bind(this.filepoolProvider) :
-                                        this.filepoolProvider.downloadPackage.bind(this.filepoolProvider),
+            const downloadFn = prefetch ? this.filepoolProvider.prefetchPackage.bind(this.filepoolProvider) :
+                        this.filepoolProvider.downloadPackage.bind(this.filepoolProvider),
                 contentFiles = this.getContentDownloadableFiles(module),
                 promises = [];
 
             if (dirPath) {
                 // Download intro files in filepool root folder.
                 promises.push(this.filepoolProvider.downloadOrPrefetchFiles(siteId, introFiles, prefetch, false,
-                        this.component, module.id));
+                    this.component, module.id));
 
                 // Download content files inside dirPath.
                 promises.push(downloadFn(siteId, contentFiles, this.component, module.id, undefined, dirPath));
             } else {
                 // No dirPath, download everything in filepool root folder.
-                let files = introFiles.concat(contentFiles);
+                const files = introFiles.concat(contentFiles);
                 promises.push(downloadFn(siteId, files, this.component, module.id));
             }
 
@@ -197,8 +197,8 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {any} module The module object returned by WS.
      * @return {any[]} List of files.
      */
-    getContentDownloadableFiles(module: any) {
-        let files = [];
+    getContentDownloadableFiles(module: any): any[] {
+        const files = [];
 
         if (module.contents && module.contents.length) {
             module.contents.forEach((content) => {
@@ -220,11 +220,11 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return {Promise<{size: number, total: boolean}>} Promise resolved with the size and a boolean indicating if it was able
      *                                                   to calculate the total size.
      */
-    getDownloadSize(module: any, courseId: number, single?: boolean) : Promise<{size: number, total: boolean}> {
+    getDownloadSize(module: any, courseId: number, single?: boolean): Promise<{ size: number, total: boolean }> {
         return this.getFiles(module, courseId).then((files) => {
             return this.utils.sumFileSizes(files);
         }).catch(() => {
-            return {size: -1, total: false};
+            return { size: -1, total: false };
         });
     }
 
@@ -235,8 +235,9 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID the module belongs to.
      * @return {number|Promise<number>} Size, or promise resolved with the size.
      */
-    getDownloadedSize?(module: any, courseId: number) : number|Promise<number> {
+    getDownloadedSize?(module: any, courseId: number): number | Promise<number> {
         const siteId = this.sitesProvider.getCurrentSiteId();
+
         return this.filepoolProvider.getFilesSizeByComponent(siteId, this.component, module.id);
     }
 
@@ -248,7 +249,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
      * @return {Promise<any[]>} Promise resolved with the list of files.
      */
-    getFiles(module: any, courseId: number, single?: boolean) : Promise<any[]> {
+    getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
         // Load module contents if needed.
         return this.loadContents(module, courseId).then(() => {
             return this.getIntroFiles(module, courseId).then((files) => {
@@ -264,7 +265,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID.
      * @return {Promise<any[]>} Promise resolved with list of intro files.
      */
-    getIntroFiles(module: any, courseId: number) : Promise<any[]> {
+    getIntroFiles(module: any, courseId: number): Promise<any[]> {
         return Promise.resolve(this.getIntroFilesFromInstance(module));
     }
 
@@ -275,7 +276,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {any} [instance] The instance to get the intro files (book, assign, ...). If not defined, module will be used.
      * @return {any[]} List of intro files.
      */
-    getIntroFilesFromInstance(module: any, instance?: any) {
+    getIntroFilesFromInstance(module: any, instance?: any): any[] {
         if (instance) {
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
@@ -298,13 +299,14 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise of the current download.
      */
-    getOngoingDownload(id: number, siteId?: string) : Promise<any> {
+    getOngoingDownload(id: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.isDownloading(id, siteId)) {
             // There's already a download ongoing, return the promise.
             return this.downloadPromises[siteId][this.getUniqueId(id)];
         }
+
         return Promise.resolve();
     }
 
@@ -314,7 +316,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} id Unique ID inside component.
      * @return {string} Unique ID.
      */
-    getUniqueId(id: number) {
+    getUniqueId(id: number): string {
         return this.component + '#' + id;
     }
 
@@ -324,7 +326,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} moduleId The module ID.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number) : Promise<any> {
+    invalidateContent(moduleId: number): Promise<any> {
         const promises = [],
             siteId = this.sitesProvider.getCurrentSiteId();
 
@@ -342,7 +344,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID the module belongs to.
      * @return {Promise<any>} Promise resolved when invalidated.
      */
-    invalidateModule(module: any, courseId: number) : Promise<any> {
+    invalidateModule(module: any, courseId: number): Promise<any> {
         return this.courseProvider.invalidateModule(module.id);
     }
 
@@ -353,7 +355,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID the module belongs to.
      * @return {boolean|Promise<boolean>} Whether the module can be downloaded. The promise should never be rejected.
      */
-    isDownloadable(module: any, courseId: number) : boolean|Promise<boolean> {
+    isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
         // By default, mark all instances as downloadable.
         return true;
     }
@@ -361,12 +363,13 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
     /**
      * Check if a there's an ongoing download for the given identifier.
      *
-     * @param {number} id       Unique identifier per component.
+     * @param {number} id Unique identifier per component.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Boolean}         True if downloading, false otherwise.
+     * @return {boolean} True if downloading, false otherwise.
      */
-    isDownloading(id: number, siteId?: string) : boolean {
+    isDownloading(id: number, siteId?: string): boolean {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         return !!(this.downloadPromises[siteId] && this.downloadPromises[siteId][this.getUniqueId(id)]);
     }
 
@@ -375,7 +378,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -385,7 +388,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {any} file File to check.
      * @return {boolean} Whether the file is downloadable.
      */
-    isFileDownloadable(file: any) : boolean {
+    isFileDownloadable(file: any): boolean {
         return file.type === 'file';
     }
 
@@ -397,10 +400,11 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise}           Promise resolved when loaded.
      */
-    loadContents(module: any, courseId: number, ignoreCache?: boolean) : Promise<void> {
+    loadContents(module: any, courseId: number, ignoreCache?: boolean): Promise<void> {
         if (this.isResource) {
             return this.courseProvider.loadModuleContents(module, courseId, undefined, false, ignoreCache);
         }
+
         return Promise.resolve();
     }
 
@@ -432,8 +436,8 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the module has been downloaded. Data returned is not reliable.
      */
-    prefetchPackage(module: any, courseId: number, single: boolean, downloadFn: prefetchFunction, siteId?: string, ...args) :
-            Promise<any> {
+    prefetchPackage(module: any, courseId: number, single: boolean, downloadFn: prefetchFunction, siteId?: string, ...args: any[])
+            : Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (!this.appProvider.isOnline()) {
@@ -469,8 +473,9 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {string} [extra] Extra data to store.
      * @return {Promise<any>} Promise resolved when done.
      */
-    setDownloaded(id: number, siteId?: string, extra?: string) : Promise<any> {
+    setDownloaded(id: number, siteId?: string, extra?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         return this.filepoolProvider.storePackageStatus(siteId, CoreConstants.DOWNLOADED, this.component, id, extra);
     }
 
@@ -481,8 +486,9 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    setDownloading(id: number, siteId?: string) : Promise<any> {
+    setDownloading(id: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         return this.filepoolProvider.storePackageStatus(siteId, CoreConstants.DOWNLOADING, this.component, id);
     }
 
@@ -494,8 +500,9 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<never>} Rejected promise.
      */
-    setPreviousStatusAndReject(id: number, error?: any, siteId?: string) : Promise<never> {
+    setPreviousStatusAndReject(id: number, error?: any, siteId?: string): Promise<never> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         return this.filepoolProvider.setPackagePreviousStatus(siteId, this.component, id).then(() => {
             return Promise.reject(error);
         });
@@ -508,7 +515,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID the module belongs to.
      * @return {Promise<any>} Promise resolved when done.
      */
-    removeFiles(module: any, courseId: number) : Promise<any> {
+    removeFiles(module: any, courseId: number): Promise<any> {
         return this.filepoolProvider.removeFilesByComponent(this.sitesProvider.getCurrentSiteId(), this.component, module.id);
     }
 }

@@ -25,17 +25,17 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 })
 export class AddonUserProfileFieldTextComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
+    @Input() edit? = false; // True if editing the field. Defaults to false.
+    @Input() disabled? = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    constructor(private fb: FormBuilder, protected utils: CoreUtilsProvider) {}
+    constructor(private fb: FormBuilder, protected utils: CoreUtilsProvider) { }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
-        let field = this.field;
+    ngOnInit(): void {
+        const field = this.field;
 
         if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
@@ -48,7 +48,7 @@ export class AddonUserProfileFieldTextComponent implements OnInit {
             // Check if it's a password or text.
             field.inputType = this.utils.isTrueOrOne(field.param3) ? 'password' : 'text';
 
-            let formData = {
+            const formData = {
                 value: field.defaultdata,
                 disabled: this.disabled
             };
@@ -57,5 +57,4 @@ export class AddonUserProfileFieldTextComponent implements OnInit {
                 field.required && !field.locked ? Validators.required : null));
         }
     }
-
 }

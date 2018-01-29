@@ -25,14 +25,14 @@ import { CoreCourseProvider } from './course';
 export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     name = 'default';
 
-    constructor(private coursesProvider: CoreCoursesProvider) {}
+    constructor(private coursesProvider: CoreCoursesProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -42,7 +42,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any} course The course.
      * @return {string} Title.
      */
-    getCourseTitle?(course: any) : string {
+    getCourseTitle?(course: any): string {
         return course.fullname || '';
     }
 
@@ -52,7 +52,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any} course The course to check.
      * @type {boolean} Whether it can view all sections.
      */
-    canViewAllSections(course: any) : boolean {
+    canViewAllSections(course: any): boolean {
         return true;
     }
 
@@ -62,7 +62,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any} course The course to check.
      * @type {boolean} Whether the default section selector should be displayed.
      */
-    displaySectionSelector(course: any) : boolean {
+    displaySectionSelector(course: any): boolean {
         return true;
     }
 
@@ -73,16 +73,16 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any[]} sections List of sections.
      * @return {any|Promise<any>} Current section (or promise resolved with current section).
      */
-    getCurrentSection(course: any, sections: any[]) : any|Promise<any> {
+    getCurrentSection(course: any, sections: any[]): any | Promise<any> {
         // We need the "marker" to determine the current section.
         return this.coursesProvider.getCoursesByField('id', course.id).catch(() => {
             // Ignore errors.
         }).then((courses) => {
             if (courses && courses[0]) {
                 // Find the marked section.
-                let course = courses[0];
+                const course = courses[0];
                 for (let i = 0; i < sections.length; i++) {
-                    let section = sections[i];
+                    const section = sections[i];
                     if (section.section == course.marker) {
                         return section;
                     }
@@ -91,7 +91,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
 
             // Marked section not found or we couldn't retrieve the marker. Return the first section.
             for (let i = 0; i < sections.length; i++) {
-                let section = sections[i];
+                const section = sections[i];
                 if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
                     return section;
                 }
@@ -108,7 +108,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any[]} sections List of sections.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateData(course: any, sections: any[]) : Promise<any> {
+    invalidateData(course: any, sections: any[]): Promise<any> {
         return this.coursesProvider.invalidateCoursesByField('id', course.id);
     }
 
@@ -122,7 +122,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any} course The course to open. It should contain a "format" attribute.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any) : Promise<any> {
-        return navCtrl.push('CoreCourseSectionPage', {course: course});
+    openCourse(navCtrl: NavController, course: any): Promise<any> {
+        return navCtrl.push('CoreCourseSectionPage', { course: course });
     }
 }

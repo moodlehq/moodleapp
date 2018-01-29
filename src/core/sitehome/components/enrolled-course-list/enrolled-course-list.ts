@@ -25,16 +25,16 @@ import { CoreCoursesProvider } from '../../../courses/providers/courses';
 export class CoreSiteHomeEnrolledCourseListComponent implements OnInit {
     show: boolean;
 
-    constructor(private coursesProvider: CoreCoursesProvider) {}
+    constructor(private coursesProvider: CoreCoursesProvider) { }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         if (this.coursesProvider.isMyCoursesDisabledInSite()) {
             this.show = false;
         } else {
-            return this.coursesProvider.getUserCourses().then((courses) => {
+            this.coursesProvider.getUserCourses().then((courses) => {
                 this.show = courses.length > 0;
             });
         }

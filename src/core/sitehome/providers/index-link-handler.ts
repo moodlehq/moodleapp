@@ -42,10 +42,10 @@ export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+        CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId, navCtrl?) => {
+            action: (siteId, navCtrl?): void => {
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.loginHelper.redirect('CoreSiteHomeIndexPage', undefined, siteId);
             }
@@ -62,7 +62,7 @@ export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string, url: string, params: any, courseId?: number) : boolean|Promise<boolean> {
+    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
         courseId = parseInt(params.id, 10);
         if (!courseId) {
             return false;

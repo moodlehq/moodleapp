@@ -14,6 +14,7 @@
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { NavController } from 'ionic-angular';
+
 /**
  * Directive to go to user profile on click.
  */
@@ -34,13 +35,13 @@ export class CoreUserLinkDirective implements OnInit {
     /**
      * Function executed when the component is initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.element.addEventListener('click', (event) => {
             // If the event prevented default action, do nothing.
             if (!event.defaultPrevented) {
                 event.preventDefault();
                 event.stopPropagation();
-                this.navCtrl.push('CoreUserProfilePage', {userId: this.userId, courseId: this.courseId});
+                this.navCtrl.push('CoreUserProfilePage', { userId: this.userId, courseId: this.courseId });
             }
         });
     }

@@ -39,7 +39,7 @@ export interface CoreILocalNotification extends ILocalNotification {
      * @type {number}
      */
     ledOffTime?: number;
-};
+}
 
 /*
   Generated class for the LocalNotificationsProvider provider.
@@ -103,7 +103,7 @@ export class CoreLocalNotificationsProvider {
 
     protected logger;
     protected appDB: SQLiteDB;
-    protected codes: {[s: string]: number} = {};
+    protected codes: { [s: string]: number } = {};
     protected codeRequestsQueue = {};
     protected observables = {};
 
@@ -123,7 +123,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} siteId Site ID.
      * @return {Promise<any>} Promise resolved when the notification is cancelled.
      */
-    cancel(id, component, siteId) : Promise<any> {
+    cancel(id: number, component: string, siteId: string): Promise<any> {
         return this.getUniqueNotificationId(id, component, siteId).then((uniqueId) => {
             return this.localNotifications.cancel(uniqueId);
         });
@@ -135,7 +135,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} siteId Site ID.
      * @return {Promise<any>} Promise resolved when the notifications are cancelled.
      */
-    cancelSiteNotifications(siteId) : Promise<any> {
+    cancelSiteNotifications(siteId: string): Promise<any> {
 
         if (!this.isAvailable()) {
             return Promise.resolve();
@@ -144,7 +144,7 @@ export class CoreLocalNotificationsProvider {
         }
 
         return this.localNotifications.getAllScheduled().then((scheduled) => {
-            let ids = [];
+            const ids = [];
 
             scheduled.forEach((notif) => {
                 if (typeof notif.data == 'string') {
@@ -167,7 +167,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} id ID of the element to get its code.
      * @return {Promise<number>} Promise resolved when the code is retrieved.
      */
-    protected getCode(table, id) : Promise<number> {
+    protected getCode(table: string, id: string): Promise<number> {
         const key = table + '#' + id;
 
         // Check if the code is already in memory.
@@ -176,8 +176,9 @@ export class CoreLocalNotificationsProvider {
         }
 
         // Check if we already have a code stored for that ID.
-        return this.appDB.getRecord(table, {id: id}).then((entry) => {
+        return this.appDB.getRecord(table, { id: id }).then((entry) => {
             this.codes[key] = entry.code;
+
             return entry.code;
         }).catch(() => {
             // No code stored for that ID. Create a new code for it.
@@ -186,8 +187,10 @@ export class CoreLocalNotificationsProvider {
                 if (entries.length > 0) {
                     newCode = entries[0].code + 1;
                 }
-                return this.appDB.insertRecord(table, {id: id, code: newCode}).then(() => {
+
+                return this.appDB.insertRecord(table, { id: id, code: newCode }).then(() => {
                     this.codes[key] = newCode;
+
                     return newCode;
                 });
             });
@@ -201,7 +204,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} component Component name.
      * @return {Promise<number>} Promise resolved when the component code is retrieved.
      */
-    protected getComponentCode(component: string) : Promise<number> {
+    protected getComponentCode(component: string): Promise<number> {
         return this.requestCode(this.COMPONENTS_TABLE, component);
     }
 
@@ -212,7 +215,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} siteId Site ID.
      * @return {Promise<number>} Promise resolved when the site code is retrieved.
      */
-    protected getSiteCode(siteId: string) : Promise<number> {
+    protected getSiteCode(siteId: string): Promise<number> {
         return this.requestCode(this.SITES_TABLE, siteId);
     }
 
@@ -229,7 +232,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} siteId Site ID.
      * @return {Promise<number>} Promise resolved when the notification ID is generated.
      */
-    protected getUniqueNotificationId(notificationId: number, component: string, siteId: string) : Promise<number> {
+    protected getUniqueNotificationId(notificationId: number, component: string, siteId: string): Promise<number> {
         if (!siteId || !component) {
             return Promise.reject(null);
         }
@@ -247,19 +250,20 @@ export class CoreLocalNotificationsProvider {
      *
      * @return {boolean} Whether local notifications plugin is installed.
      */
-    isAvailable() : boolean {
-        let win = <any>window;
-        return this.appProvider.isDesktop() || !!(win.plugin && win.plugin.notification && win.plugin.notification.local);
+    isAvailable(): boolean {
+        const win = <any> window;
+
+        return this.appProvider.isDesktop() || !!(win.plugin && win.plugin.notification && win.plugin.notification.local);
     }
 
     /**
      * Check if a notification has been triggered with the same trigger time.
      *
      * @param {CoreILocalNotification} notification Notification to check.
-     * @return {Promise} Promise resolved with a boolean indicating if promise is triggered (true) or not.
+     * @return {Promise<any>} Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
-    isTriggered(notification: CoreILocalNotification) {
-        return this.appDB.getRecord(this.TRIGGERED_TABLE, {id: notification.id}).then((stored) => {
+    isTriggered(notification: CoreILocalNotification): Promise<any> {
+        return this.appDB.getRecord(this.TRIGGERED_TABLE, { id: notification.id }).then((stored) => {
             return stored.at === notification.at.getTime() / 1000;
         }).catch(() => {
             return false;
@@ -271,7 +275,7 @@ export class CoreLocalNotificationsProvider {
      *
      * @param {any} data Data received by the notification.
      */
-    notifyClick(data: any) : void {
+    notifyClick(data: any): void {
         const component = data.component;
         if (component) {
             if (this.observables[component]) {
@@ -283,9 +287,9 @@ export class CoreLocalNotificationsProvider {
     /**
      * Process the next request in queue.
      */
-    protected processNextRequest() : void {
-        let nextKey = Object.keys(this.codeRequestsQueue)[0],
-            request,
+    protected processNextRequest(): void {
+        const nextKey = Object.keys(this.codeRequestsQueue)[0];
+        let request,
             promise;
 
         if (typeof nextKey == 'undefined') {
@@ -325,7 +329,7 @@ export class CoreLocalNotificationsProvider {
      * @param {Function} callback Function to call with the data received by the notification.
      * @return {any} Object with an "off" property to stop listening for clicks.
      */
-    registerClick(component: string, callback: Function) : any {
+    registerClick(component: string, callback: Function): any {
         this.logger.debug(`Register observer '${component}' for notification click.`);
 
         if (typeof this.observables[component] == 'undefined') {
@@ -336,7 +340,7 @@ export class CoreLocalNotificationsProvider {
         this.observables[component].subscribe(callback);
 
         return {
-            off: () => {
+            off: (): void => {
                 this.observables[component].unsubscribe(callback);
             }
         };
@@ -348,8 +352,8 @@ export class CoreLocalNotificationsProvider {
      * @param {number} id Notification ID.
      * @return {Promise<any>} Promise resolved when it is removed.
      */
-    removeTriggered(id: number) : Promise<any> {
-        return this.appDB.deleteRecords(this.TRIGGERED_TABLE, {id: id});
+    removeTriggered(id: number): Promise<any> {
+        return this.appDB.deleteRecords(this.TRIGGERED_TABLE, { id: id });
     }
 
     /**
@@ -359,8 +363,8 @@ export class CoreLocalNotificationsProvider {
      * @param {string} id ID of the element to get its code.
      * @return {Promise}      Promise resolved when the code is retrieved.
      */
-    protected requestCode(table: string, id: string) : Promise<number> {
-        let deferred = this.utils.promiseDefer(),
+    protected requestCode(table: string, id: string): Promise<number> {
+        const deferred = this.utils.promiseDefer(),
             key = table + '#' + id,
             isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
 
@@ -373,7 +377,7 @@ export class CoreLocalNotificationsProvider {
                 table: table,
                 id: id,
                 promises: [deferred]
-            }
+            };
         }
 
         if (isQueueEmpty) {
@@ -388,10 +392,10 @@ export class CoreLocalNotificationsProvider {
      *
      * @return {Promise<any>} Promise resolved when all notifications have been rescheduled.
      */
-    rescheduleAll() : Promise<any> {
+    rescheduleAll(): Promise<any> {
         // Get all the scheduled notifications.
         return this.localNotifications.getAllScheduled().then((notifications) => {
-            let promises = [];
+            const promises = [];
 
             notifications.forEach((notification) => {
                 // Convert some properties to the needed types.
@@ -414,7 +418,7 @@ export class CoreLocalNotificationsProvider {
      * @param {string} siteId Site ID.
      * @return {Promise<any>} Promise resolved when the notification is scheduled.
      */
-    schedule(notification: CoreILocalNotification, component: string, siteId: string) : Promise<any> {
+    schedule(notification: CoreILocalNotification, component: string, siteId: string): Promise<any> {
         return this.getUniqueNotificationId(notification.id, component, siteId).then((uniqueId) => {
             notification.id = uniqueId;
             notification.data = notification.data || {};
@@ -439,7 +443,7 @@ export class CoreLocalNotificationsProvider {
      * @param {CoreILocalNotification} notification Notification to schedule.
      * @return {Promise<any>} Promise resolved when scheduled.
      */
-    protected scheduleNotification(notification: CoreILocalNotification) : Promise<any> {
+    protected scheduleNotification(notification: CoreILocalNotification): Promise<any> {
         // Check if the notification has been triggered already.
         return this.isTriggered(notification).then((triggered) => {
             if (!triggered) {
@@ -464,9 +468,9 @@ export class CoreLocalNotificationsProvider {
      *
      * @param {CoreILocalNotification} notification Notification.
      */
-    showNotificationPopover(notification: CoreILocalNotification) : void {
+    showNotificationPopover(notification: CoreILocalNotification): void {
         // @todo Improve it. For now, show Toast.
-        if (!notification || !notification.title || !notification.text) {
+        if (!notification || !notification.title || !notification.text) {
             // Invalid data.
             return;
         }
@@ -481,16 +485,17 @@ export class CoreLocalNotificationsProvider {
      * @param {CoreILocalNotification} notification Triggered notification.
      * @return {Promise<any>} Promise resolved when stored, rejected otherwise.
      */
-    trigger(notification: CoreILocalNotification) : Promise<any> {
+    trigger(notification: CoreILocalNotification): Promise<any> {
         if (this.platform.is('ios') && this.platform.version().num >= 10) {
             // In iOS10 show in app notification.
             this.showNotificationPopover(notification);
         }
 
-        let entry = {
+        const entry = {
             id: notification.id,
             at: parseInt(notification.at, 10)
         };
-        return this.appDB.insertOrUpdateRecord(this.TRIGGERED_TABLE, entry, {id: notification.id});
+
+        return this.appDB.insertOrUpdateRecord(this.TRIGGERED_TABLE, entry, { id: notification.id });
     }
 }

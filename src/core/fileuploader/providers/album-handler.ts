@@ -26,14 +26,14 @@ export class CoreFileUploaderAlbumHandler implements CoreFileUploaderHandler {
     priority = 2000;
 
     constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
-            private uploaderHelper: CoreFileUploaderHelperProvider) {}
+            private uploaderHelper: CoreFileUploaderHelperProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled(): boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return this.appProvider.isMobile();
     }
 
@@ -43,7 +43,7 @@ export class CoreFileUploaderAlbumHandler implements CoreFileUploaderHandler {
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[] {
+    getSupportedMimetypes(mimetypes: string[]): string[] {
         // Album allows picking images and videos.
         return this.utils.filterByRegexp(mimetypes, /^(image|video)\//);
     }
@@ -53,12 +53,12 @@ export class CoreFileUploaderAlbumHandler implements CoreFileUploaderHandler {
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData {
+    getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.fileuploader.photoalbums',
             class: 'core-fileuploader-album-handler',
             icon: 'images',
-            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]) => {
+            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
                 return this.uploaderHelper.uploadImage(true, maxSize, upload, mimetypes).then((result) => {
                     return {
                         treated: true,

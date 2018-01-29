@@ -48,7 +48,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.completion && this.completion) {
             this.showStatus();
         }
@@ -59,7 +59,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
      *
      * @param {Event} e The click event.
      */
-    completionClicked(e: Event) : void {
+    completionClicked(e: Event): void {
         if (this.completion) {
             if (typeof this.completion.cmid == 'undefined' || this.completion.tracking !== 1) {
                 return;
@@ -68,7 +68,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             e.preventDefault();
             e.stopPropagation();
 
-            let modal = this.domUtils.showModalLoading(),
+            const modal = this.domUtils.showModalLoading(),
                 params = {
                     cmid: this.completion.cmid,
                     completed: this.completion.state === 1 ? 0 : 1
@@ -92,9 +92,9 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     /**
      * Set image and description to show as completion icon.
      */
-    protected showStatus() : void {
+    protected showStatus(): void {
+        const moduleName = this.moduleName || '';
         let langKey,
-            moduleName = this.moduleName || '',
             image;
 
         if (this.completion.tracking === 1 && this.completion.state === 0) {
@@ -132,18 +132,18 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
                     langKey += '-override';
 
                     promise = this.userProvider.getProfile(this.completion.overrideby, this.completion.courseId, true).then(
-                            (profile) => {
-                        return {
-                            overrideuser: profile.fullname,
-                            modname: modNameFormatted
-                        };
-                     });
+                        (profile) => {
+                            return {
+                                overrideuser: profile.fullname,
+                                modname: modNameFormatted
+                            };
+                        });
                 } else {
                     promise = Promise.resolve(modNameFormatted);
                 }
 
                 return promise.then((translateParams) => {
-                    this.completionDescription = this.translate.instant(langKey, {$a: translateParams});
+                    this.completionDescription = this.translate.instant(langKey, { $a: translateParams });
                 });
             });
         }

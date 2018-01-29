@@ -36,16 +36,16 @@ export class CoreSitePickerComponent implements OnInit {
     sites: any[];
 
     constructor(private translate: TranslateService, private sitesProvider: CoreSitesProvider,
-            private textUtils: CoreTextUtilsProvider) {
+        private textUtils: CoreTextUtilsProvider) {
         this.siteSelected = new EventEmitter();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.selectedSite = this.initialSite || this.sitesProvider.getCurrentSiteId();
 
         // Load the sites.
         this.sitesProvider.getSites().then((sites) => {
-            let promises = [];
+            const promises = [];
 
             sites.forEach((site: any) => {
                 // Format the site name.
@@ -53,7 +53,7 @@ export class CoreSitePickerComponent implements OnInit {
                     return site.siteName;
                 }).then((formatted) => {
                     site.fullNameAndSiteName = this.translate.instant('core.fullnameandsitename',
-                            {fullname: site.fullName, sitename: formatted});
+                        { fullname: site.fullName, sitename: formatted });
                 }));
             });
 

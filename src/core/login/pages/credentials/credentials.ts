@@ -28,7 +28,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to enter the user credentials.
  */
-@IonicPage({segment: "core-login-credentials"})
+@IonicPage({ segment: 'core-login-credentials' })
 @Component({
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
@@ -62,15 +62,15 @@ export class CoreLoginCredentialsPage {
         this.urlToOpen = navParams.get('urlToOpen');
 
         this.credForm = fb.group({
-            'username': [navParams.get('username') || '', Validators.required],
-            'password': ['', Validators.required]
+            username: [navParams.get('username') || '', Validators.required],
+            password: ['', Validators.required]
         });
     }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.treatSiteConfig();
 
         if (this.loginHelper.isFixedUrlSet()) {
@@ -85,9 +85,9 @@ export class CoreLoginCredentialsPage {
     /**
      * View left.
      */
-    ionViewDidLeave() {
-        this.viewLeft =  true;
-        this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, {config: this.siteConfig}, this.siteId);
+    ionViewDidLeave(): void {
+        this.viewLeft = true;
+        this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
     }
 
     /**
@@ -95,12 +95,14 @@ export class CoreLoginCredentialsPage {
      * This should be used only if a fixed URL is set, otherwise this check is already performed in CoreLoginSitePage.
      *
      * @param {string} siteUrl Site URL to check.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected checkSite(siteUrl: string) {
+    protected checkSite(siteUrl: string): Promise<any> {
         this.pageLoaded = false;
 
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
         const protocol = siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
+
         return this.sitesProvider.checkSite(siteUrl, protocol).then((result) => {
 
             this.siteChecked = true;
@@ -120,7 +122,7 @@ export class CoreLoginCredentialsPage {
                 // Check that there's no SSO authentication ongoing and the view hasn't changed.
                 if (!this.appProvider.isSSOAuthenticationOngoing() && !this.viewLeft) {
                     this.loginHelper.confirmAndOpenBrowserForSSOLogin(
-                                result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
+                        result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
                 }
             } else {
                 this.isBrowserSSO = false;
@@ -136,7 +138,7 @@ export class CoreLoginCredentialsPage {
     /**
      * Treat the site configuration (if it exists).
      */
-    protected treatSiteConfig() : void {
+    protected treatSiteConfig(): void {
         if (this.siteConfig) {
             this.siteName = this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
@@ -146,7 +148,7 @@ export class CoreLoginCredentialsPage {
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;
-                this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, {config: this.siteConfig});
+                this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, { config: this.siteConfig });
             }
         } else {
             this.siteName = null;
@@ -160,11 +162,11 @@ export class CoreLoginCredentialsPage {
     /**
      * Tries to authenticate the user.
      */
-    login() : void {
+    login(): void {
         this.appProvider.closeKeyboard();
 
         // Get input data.
-        let siteUrl = this.siteUrl,
+        const siteUrl = this.siteUrl,
             username = this.credForm.value.username,
             password = this.credForm.value.password;
 
@@ -176,24 +178,28 @@ export class CoreLoginCredentialsPage {
                     return this.login();
                 }
             });
+
             return;
         }
 
         if (!username) {
             this.domUtils.showErrorModal('core.login.usernamerequired', true);
+
             return;
         }
         if (!password) {
             this.domUtils.showErrorModal('core.login.passwordrequired', true);
+
             return;
         }
 
         if (!this.appProvider.isOnline()) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
+
             return;
         }
 
-        let modal = this.domUtils.showModalLoading();
+        const modal = this.domUtils.showModalLoading();
 
         // Start the authentication process.
         this.sitesProvider.getUserToken(siteUrl, username, password).then((data) => {
@@ -229,15 +235,16 @@ export class CoreLoginCredentialsPage {
     /**
      * Forgotten password button clicked.
      */
-    forgottenPassword() : void {
+    forgottenPassword(): void {
         if (this.siteConfig && this.siteConfig.forgottenpasswordurl) {
             // URL set, open it.
             this.utils.openInApp(this.siteConfig.forgottenpasswordurl);
+
             return;
         }
 
         // Check if password reset can be done through the app.
-        let modal = this.domUtils.showModalLoading();
+        const modal = this.domUtils.showModalLoading();
         this.loginHelper.canRequestPasswordReset(this.siteUrl).then((canReset) => {
             if (canReset) {
                 this.navCtrl.push('CoreLoginForgottenPasswordPage', {
@@ -256,7 +263,7 @@ export class CoreLoginCredentialsPage {
      *
      * @param {any} provider The provider that was clicked.
      */
-    oauthClicked(provider) : void {
+    oauthClicked(provider: any): void {
         if (!this.loginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig.launchurl)) {
             this.domUtils.showErrorModal('Invalid data.');
         }
@@ -265,7 +272,7 @@ export class CoreLoginCredentialsPage {
     /**
      * Signup button was clicked.
      */
-    signup() : void {
-        this.navCtrl.push('CoreLoginEmailSignupPage', {siteUrl: this.siteUrl});
+    signup(): void {
+        this.navCtrl.push('CoreLoginEmailSignupPage', { siteUrl: this.siteUrl });
     }
 }

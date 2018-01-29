@@ -170,11 +170,11 @@ export class CoreFileUploaderDelegate extends CoreDelegate {
      * @return {CoreFileUploaderHandlerDataToReturn[]} List of handlers data.
      */
     getHandlers(mimetypes: string[]): CoreFileUploaderHandlerDataToReturn[] {
-        let handlers = [];
+        const handlers = [];
 
-        for (let name in this.enabledHandlers) {
-            let handler = this.enabledHandlers[name],
-                supportedMimetypes;
+        for (const name in this.enabledHandlers) {
+            const handler = this.enabledHandlers[name];
+            let supportedMimetypes;
 
             if (mimetypes) {
                 if (!handler.getSupportedMimetypes) {
@@ -190,7 +190,7 @@ export class CoreFileUploaderDelegate extends CoreDelegate {
                 }
             }
 
-            let data: CoreFileUploaderHandlerDataToReturn = handler.getData();
+            const data: CoreFileUploaderHandlerDataToReturn = handler.getData();
             data.priority = handler.priority;
             data.mimetypes = supportedMimetypes;
             handlers.push(data);

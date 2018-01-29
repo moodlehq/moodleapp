@@ -24,14 +24,14 @@ import { CoreConstants } from '../../../../constants';
 export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
     name = 'weeks';
 
-    constructor(private timeUtils: CoreTimeUtilsProvider) {}
+    constructor(private timeUtils: CoreTimeUtilsProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -42,8 +42,8 @@ export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
      * @param {any[]} sections List of sections.
      * @return {any|Promise<any>} Current section (or promise resolved with current section).
      */
-    getCurrentSection(course: any, sections: any[]) : any|Promise<any> {
-        let now = this.timeUtils.timestamp();
+    getCurrentSection(course: any, sections: any[]): any | Promise<any> {
+        const now = this.timeUtils.timestamp();
 
         if (now < course.startdate || (course.enddate && now > course.enddate)) {
             // Course hasn't started yet or it has ended already. Return the first section.
@@ -51,12 +51,12 @@ export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
         }
 
         for (let i = 0; i < sections.length; i++) {
-            let section = sections[i];
+            const section = sections[i];
             if (typeof section.section == 'undefined' || section.section < 1) {
                 continue;
             }
 
-            let dates = this.getSectionDates(section, course.startdate);
+            const dates = this.getSectionDates(section, course.startdate);
             if ((now >= dates.start) && (now < dates.end)) {
                 return section;
             }
@@ -73,15 +73,16 @@ export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
      * @param {number} startDate The course start date (in seconds).
      * @return {{start: number, end: number}} An object with the start and end date of the section.
      */
-    protected getSectionDates(section: any, startDate: number) : {start: number, end: number} {
+    protected getSectionDates(section: any, startDate: number): { start: number, end: number } {
         // Hack alert. We add 2 hours to avoid possible DST problems. (e.g. we go into daylight savings and the date changes).
         startDate = startDate + 7200;
 
-        let dates = {
+        const dates = {
             start: startDate + (CoreConstants.SECONDS_WEEK * (section.section - 1)),
             end: 0
         };
         dates.end = dates.start + CoreConstants.SECONDS_WEEK;
+
         return dates;
     }
 }

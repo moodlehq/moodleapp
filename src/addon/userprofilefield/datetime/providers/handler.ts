@@ -24,14 +24,16 @@ import { AddonUserProfileFieldDatetimeComponent } from '../component/datetime';
 export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFieldHandler {
     name = 'datetime';
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -45,10 +47,11 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
      * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
     getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
-        let name = 'profile_field_' + field.shortname;
+        const name = 'profile_field_' + field.shortname;
 
         if (formValues[name]) {
-            let milliseconds = new Date(formValues[name]).getTime();
+            const milliseconds = new Date(formValues[name]).getTime();
+
             return {
                 type: 'datetime',
                 name: 'profile_field_' + field.shortname,
@@ -62,8 +65,7 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
      *
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent() {
+    getComponent(): any {
         return AddonUserProfileFieldDatetimeComponent;
     }
-
 }

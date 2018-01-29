@@ -20,7 +20,7 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 /**
  * Page that displays info about an unsupported module.
  */
-@IonicPage({segment: 'core-course-unsupported-module'})
+@IonicPage({ segment: 'core-course-unsupported-module' })
 @Component({
     selector: 'page-core-course-unsupported-module',
     templateUrl: 'unsupported-module.html',
@@ -35,7 +35,7 @@ export class CoreCourseUnsupportedModulePage {
     /**
      * Expand the description.
      */
-    expandDescription() {
+    expandDescription(): void {
         this.textUtils.expandText(this.translate.instant('core.description'), this.module.description);
     }
 }

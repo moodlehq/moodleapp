@@ -43,16 +43,15 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() text: string; // The text to format.
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component for CoreExternalContentDirective.
-    @Input() componentId?: string|number; // Component ID to use in conjunction with the component.
-    @Input() adaptImg?: boolean|string = true; // Whether to adapt images to screen width.
-    @Input() clean?: boolean|string; // Whether all the HTML tags should be removed.
-    @Input() singleLine?: boolean|string; // Whether new lines should be removed (all text in single line). Only valid if
-                                          // clean=true.
+    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    @Input() adaptImg?: boolean | string = true; // Whether to adapt images to screen width.
+    @Input() clean?: boolean | string; // Whether all the HTML tags should be removed.
+    @Input() singleLine?: boolean | string; // Whether new lines should be removed (all text in single line). Only if clean=true.
     @Input() maxHeight?: number; // Max height in pixels to render the content box. It should be 50 at least to make sense.
-                                 // Using this parameter will force display: block to calculate height better. If you want to
-                                 // avoid this use class="inline" at the same time to use display: inline-block.
-    @Input() fullOnClick?: boolean|string; // Whether it should open a new page with the full contents on click. Only if
-                                           // "max-height" is set and the content has been collapsed.
+                                 // Using this parameter will force display: block to calculate height better.
+                                 // If you want to avoid this use class="inline" at the same time to use display: inline-block.
+    @Input() fullOnClick?: boolean | string; // Whether it should open a new page with the full contents on click.
+                                             // Only if "max-height" is set and the content has been collapsed.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Output() afterRender?: EventEmitter<any>; // Called when the data is rendered.
 
@@ -72,7 +71,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.text) {
             this.formatAndRenderContents();
         }
@@ -83,10 +82,10 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {HTMLElement} element Element to add the attributes to.
      */
-    protected addExternalContent(element: HTMLElement) : void {
+    protected addExternalContent(element: HTMLElement): void {
         // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
-        let extContent = new CoreExternalContentDirective(<any>element, this.loggerProvider, this.filepoolProvider, this.platform,
-                this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider);
+        const extContent = new CoreExternalContentDirective(<any> element, this.loggerProvider, this.filepoolProvider,
+            this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider);
 
         extContent.component = this.component;
         extContent.componentId = this.componentId;
@@ -100,7 +99,7 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {HTMLElement} element Element to add the class to.
      */
-    protected addMediaAdaptClass(element: HTMLElement) : void {
+    protected addMediaAdaptClass(element: HTMLElement): void {
         element.classList.add('core-media-adapt-width');
     }
 
@@ -110,8 +109,8 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param {number} elWidth Width of the directive's element.
      * @param {HTMLElement} img Image to adapt.
      */
-    protected adaptImage(elWidth: number, img: HTMLElement) : void {
-        let imgWidth = this.getElementWidth(img),
+    protected adaptImage(elWidth: number, img: HTMLElement): void {
+        const imgWidth = this.getElementWidth(img),
             // Element to wrap the image.
             container = document.createElement('span');
 
@@ -137,8 +136,8 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param {HTMLElement} container The container of the image.
      * @param {HTMLElement} img The image.
      */
-    addMagnifyingGlass(container: HTMLElement, img: HTMLElement) : void {
-        let imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
+    addMagnifyingGlass(container: HTMLElement, img: HTMLElement): void {
+        const imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
             label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage')),
             anchor = document.createElement('a');
 
@@ -159,7 +158,7 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Finish the rendering, displaying the element again and calling afterRender.
      */
-    protected finishRender() : void {
+    protected finishRender(): void {
         // Show the element again.
         this.element.classList.remove('opacity-hide');
         // Emit the afterRender output.
@@ -169,10 +168,11 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Format contents and render.
      */
-    protected formatAndRenderContents() : void {
+    protected formatAndRenderContents(): void {
         if (!this.text) {
             this.element.innerHTML = ''; // Remove current contents.
             this.finishRender();
+
             return;
         }
 
@@ -183,7 +183,7 @@ export class CoreFormatTextDirective implements OnChanges {
             this.element.classList.add('core-disable-media-adapt');
 
             this.element.innerHTML = ''; // Remove current contents.
-            if (this.maxHeight && div.innerHTML != "") {
+            if (this.maxHeight && div.innerHTML != '') {
                 // Move the children to the current element to be able to calculate the height.
                 // @todo: Display the element?
                 this.domUtils.moveChildren(div, this.element);
@@ -191,11 +191,11 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Height cannot be calculated if the element is not shown while calculating.
                 // Force shorten if it was previously shortened.
                 // @todo: Work on calculate this height better.
-                let height = this.element.style.maxHeight ? 0 : this.getElementHeight(this.element);
+                const height = this.element.style.maxHeight ? 0 : this.getElementHeight(this.element);
 
                 // If cannot calculate height, shorten always.
                 if (!height || height > this.maxHeight) {
-                    let expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false,
+                    const expandInFullview = this.utils.isTrueOrOne(this.fullOnClick) || false,
                         showMoreDiv = document.createElement('div');
 
                     showMoreDiv.classList.add('core-show-more');
@@ -213,13 +213,14 @@ export class CoreFormatTextDirective implements OnChanges {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        let target = <HTMLElement> e.target;
+                        const target = <HTMLElement> e.target;
 
                         if (this.tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' &&
-                                !target.getAttribute('href'))) {
+                            !target.getAttribute('href'))) {
                             if (!expandInFullview) {
                                 // Change class.
                                 this.element.classList.toggle('core-shortened');
+
                                 return;
                             }
                         }
@@ -243,7 +244,7 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
      */
-    protected formatContents() : Promise<HTMLElement> {
+    protected formatContents(): Promise<HTMLElement> {
 
         let site: CoreSite;
 
@@ -257,9 +258,9 @@ export class CoreFormatTextDirective implements OnChanges {
             return this.textUtils.formatText(this.text, this.utils.isTrueOrOne(this.clean),
                 this.utils.isTrueOrOne(this.singleLine));
         }).then((formatted) => {
-            let div = document.createElement('div'),
-                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
-                images,
+            const div = document.createElement('div'),
+                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
+            let images,
                 anchors,
                 audios,
                 videos,
@@ -278,8 +279,8 @@ export class CoreFormatTextDirective implements OnChanges {
             // Important: We need to look for links first because in 'img' we add new links without core-link.
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
-                let linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
-                        this.contentLinksHelper, this.navCtrl);
+                const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
+                    this.contentLinksHelper, this.navCtrl);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 
@@ -288,7 +289,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
             if (images && images.length > 0) {
                 // If cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
-                let elWidth = this.getElementWidth(this.element) || 100;
+                const elWidth = this.getElementWidth(this.element) || 100;
 
                 // Walk through the content to find images, and add our directive.
                 images.forEach((img: HTMLElement) => {
@@ -337,12 +338,12 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param {HTMLElement} element Element to get width from.
      * @return {number} The width of the element in pixels. When 0 is returned it means the element is not visible.
      */
-    protected getElementWidth(element: HTMLElement) : number {
+    protected getElementWidth(element: HTMLElement): number {
         let width = this.domUtils.getElementWidth(element);
 
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
-            let parentWidth = this.domUtils.getElementWidth(element.parentNode, true, false, false, true),
+            const parentWidth = this.domUtils.getElementWidth(element.parentNode, true, false, false, true),
                 previousDisplay = getComputedStyle(element, null).display;
 
             element.style.display = 'inline-block';
@@ -366,7 +367,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param {HTMLElement} elementAng Element to get height from.
      * @return {number} The height of the element in pixels. When 0 is returned it means the element is not visible.
      */
-    protected getElementHeight(element: HTMLElement) : number {
+    protected getElementHeight(element: HTMLElement): number {
         return this.domUtils.getElementHeight(element) || 0;
     }
 
@@ -375,13 +376,13 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {HTMLElement} el Video element.
      */
-    protected treatVideoFilters(video: HTMLElement) : void {
+    protected treatVideoFilters(video: HTMLElement): void {
         // Treat Video JS Youtube video links and translate them to iframes.
         if (!video.classList.contains('video-js')) {
             return;
         }
 
-        let data = JSON.parse(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
+        const data = JSON.parse(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
             youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
                 data.sources[0].src && this.youtubeGetId(data.sources[0].src);
 
@@ -389,7 +390,7 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
-        let iframe = document.createElement('iframe');
+        const iframe = document.createElement('iframe');
         iframe.id = video.id;
         iframe.src = 'https://www.youtube.com/embed/' + youtubeId;
         iframe.setAttribute('frameborder', '0');
@@ -405,11 +406,11 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {HTMLElement} element Video or audio to treat.
      */
-    protected treatMedia(element: HTMLElement) : void {
+    protected treatMedia(element: HTMLElement): void {
         this.addMediaAdaptClass(element);
         this.addExternalContent(element);
 
-        let sources = Array.from(element.querySelectorAll('source')),
+        const sources = Array.from(element.querySelectorAll('source')),
             tracks = Array.from(element.querySelectorAll('track'));
 
         sources.forEach((source) => {
@@ -430,15 +431,15 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param {CoreSite} site Site instance.
      * @param  {Boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
      */
-    protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean) : void {
+    protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean): void {
         this.addMediaAdaptClass(iframe);
 
         if (iframe.src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
-            let matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([^\/]*)/);
+            const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([^\/]*)/);
             if (matches && matches[1]) {
                 let newUrl = this.textUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
-                        matches[1] + '&token=' + site.getToken();
+                    matches[1] + '&token=' + site.getToken();
                 if (iframe.width) {
                     newUrl = newUrl + '&width=' + iframe.width;
                 }
@@ -457,9 +458,10 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param {string} url URL of the video.
      */
-    protected youtubeGetId(url: string) : string {
-        let regExp = /^.*(?:(?:youtu.be\/)|(?:v\/)|(?:\/u\/\w\/)|(?:embed\/)|(?:watch\?))\??v?=?([^#\&\?]*).*/,
+    protected youtubeGetId(url: string): string {
+        const regExp = /^.*(?:(?:youtu.be\/)|(?:v\/)|(?:\/u\/\w\/)|(?:embed\/)|(?:watch\?))\??v?=?([^#\&\?]*).*/,
             match = url.match(regExp);
+
         return (match && match[1].length == 11) ? match[1] : '';
     }
 }

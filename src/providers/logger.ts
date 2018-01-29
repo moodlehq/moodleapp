@@ -29,9 +29,11 @@ import * as moment from 'moment';
 @Injectable()
 export class CoreLoggerProvider {
     /** Whether the logging is enabled. */
-    public enabled: boolean = true;
+    enabled = true;
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Get a logger instance for a certain class, service or component.
@@ -39,15 +41,15 @@ export class CoreLoggerProvider {
      * @param {string} className Name to use in the messages.
      * @return {ant} Instance.
      */
-    getInstance(className: string) : any {
+    getInstance(className: string): any {
         className = className || '';
 
         return {
-            log   : this.prepareLogFn(console.log.bind(console), className),
-            info  : this.prepareLogFn(console.info.bind(console), className),
-            warn  : this.prepareLogFn(console.warn.bind(console), className),
-            debug : this.prepareLogFn(console.debug.bind(console), className),
-            error : this.prepareLogFn(console.error.bind(console), className)
+            log: this.prepareLogFn(console.log.bind(console), className),
+            info: this.prepareLogFn(console.info.bind(console), className),
+            warn: this.prepareLogFn(console.warn.bind(console), className),
+            debug: this.prepareLogFn(console.debug.bind(console), className),
+            error: this.prepareLogFn(console.error.bind(console), className)
         };
     }
 
@@ -58,12 +60,11 @@ export class CoreLoggerProvider {
      * @param {string} className Name to use in the messages.
      * @return {Function} Prepared function.
      */
-    private prepareLogFn(logFn: Function, className: string) : Function {
+    private prepareLogFn(logFn: Function, className: string): Function {
         // Return our own function that will call the logging function with the treated message.
-        return (...args) => {
+        return (...args): void => {
             if (this.enabled) {
-                let now = moment().format('l LTS');
-
+                const now = moment().format('l LTS');
                 args[0] = now + ' ' + className + ': ' + args[0]; // Prepend timestamp and className to the original message.
                 logFn.apply(null, args);
             }

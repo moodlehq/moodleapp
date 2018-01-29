@@ -18,18 +18,18 @@ import { IonicPage, ViewController } from 'ionic-angular';
 /**
  * Page that displays a form to enter a password to self enrol in a course.
  */
-@IonicPage({segment: "core-courses-self-enrol-password"})
+@IonicPage({ segment: 'core-courses-self-enrol-password' })
 @Component({
     selector: 'page-core-courses-self-enrol-password',
     templateUrl: 'self-enrol-password.html',
 })
 export class CoreCoursesSelfEnrolPasswordPage {
-    constructor(private viewCtrl: ViewController) {}
+    constructor(private viewCtrl: ViewController) { }
 
     /**
      * Close help modal.
      */
-    close() : void {
+    close(): void {
         this.viewCtrl.dismiss();
     }
 
@@ -38,7 +38,7 @@ export class CoreCoursesSelfEnrolPasswordPage {
      *
      * @param {string} password Password to submit.
      */
-    submitPassword(password: string) {
+    submitPassword(password: string): void {
         this.viewCtrl.dismiss(password);
     }
 }

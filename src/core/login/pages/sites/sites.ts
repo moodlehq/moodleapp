@@ -24,7 +24,7 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 /**
  * Page that displays the list of stored sites.
  */
-@IonicPage({segment: "core-login-sites"})
+@IonicPage({ segment: 'core-login-sites' })
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
@@ -43,18 +43,14 @@ export class CoreLoginSitesPage {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.sitesProvider.getSites().then((sites) => {
             // Remove protocol from the url to show more url text.
             sites = sites.map((site) => {
                 site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '');
                 site.badge = 10;
-                // @todo: Implement it once push notifications addon is implemented.
-                // if ($mmaPushNotifications) {
-                //     $mmaPushNotifications.getSiteCounter(site.id).then(function(number) {
-                //         site.badge = number;
-                //     });
-                // }
+                // @todo: Implement it once push notifications addon is implemented: $mmaPushNotifications.getSiteCounter(site.id)
+
                 return site;
             });
 
@@ -62,8 +58,8 @@ export class CoreLoginSitesPage {
             this.sites = sites.sort((a, b) => {
                 // First compare by site url without the protocol.
                 let compareA = a.siteUrl.toLowerCase(),
-                    compareB = b.siteUrl.toLowerCase(),
-                    compare = compareA.localeCompare(compareB);
+                    compareB = b.siteUrl.toLowerCase();
+                const compare = compareA.localeCompare(compareB);
 
                 if (compare !== 0) {
                     return compare;
@@ -72,6 +68,7 @@ export class CoreLoginSitesPage {
                 // If site url is the same, use fullname instead.
                 compareA = a.fullName.toLowerCase().trim();
                 compareB = b.fullName.toLowerCase().trim();
+
                 return compareA.localeCompare(compareB);
             });
 
@@ -84,7 +81,7 @@ export class CoreLoginSitesPage {
     /**
      * Go to the page to add a site.
      */
-    add() : void {
+    add(): void {
         this.loginHelper.goToAddSite(false);
     }
 
@@ -94,14 +91,14 @@ export class CoreLoginSitesPage {
      * @param {Event} e Click event.
      * @param {number} index Position of the site.
      */
-    deleteSite(e: Event, index: number) : void {
+    deleteSite(e: Event, index: number): void {
         e.stopPropagation();
 
-        let site = this.sites[index],
+        const site = this.sites[index],
             siteName = site.siteName;
 
         this.textUtils.formatText(siteName).then((siteName) => {
-            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', {sitename: siteName})).then(() => {
+            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: siteName })).then(() => {
                 this.sitesProvider.deleteSite(site.id).then(() => {
                     this.sites.splice(index, 1);
                     this.showDelete = false;
@@ -126,8 +123,8 @@ export class CoreLoginSitesPage {
      *
      * @param {string} siteId The site ID.
      */
-    login(siteId: string) : void {
-        let modal = this.domUtils.showModalLoading();
+    login(siteId: string): void {
+        const modal = this.domUtils.showModalLoading();
 
         this.sitesProvider.loadSite(siteId).then(() => {
             if (!this.loginHelper.isSiteLoggedOut()) {
@@ -144,7 +141,7 @@ export class CoreLoginSitesPage {
     /**
      * Toggle delete.
      */
-    toggleDelete() : void {
+    toggleDelete(): void {
         this.showDelete = !this.showDelete;
     }
 }

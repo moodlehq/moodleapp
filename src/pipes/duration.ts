@@ -35,12 +35,13 @@ export class CoreDurationPipe implements PipeTransform {
      * @param {number|string} seconds The number of seconds.
      * @return {string} Formatted duration.
      */
-    transform(seconds: string|number) {
+    transform(seconds: string | number): string {
         if (typeof seconds == 'string') {
             // Convert the value to a number.
             const numberSeconds = parseInt(seconds, 10);
             if (isNaN(numberSeconds)) {
                 this.logger.error('Invalid value received', seconds);
+
                 return seconds;
             }
             seconds = numberSeconds;

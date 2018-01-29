@@ -36,7 +36,7 @@ export interface CoreMainMenuHandler extends CoreDelegateHandler {
      * @return {CoreMainMenuHandlerData} Data.
      */
     getDisplayData(): CoreMainMenuHandlerData;
-};
+}
 
 /**
  * Data needed to render a main menu handler. It's returned by the handler.
@@ -65,7 +65,7 @@ export interface CoreMainMenuHandlerData {
      * @type {string}
      */
     class?: string;
-};
+}
 
 /**
  * Data returned by the delegate for each handler.
@@ -77,16 +77,16 @@ export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
      * @type {string}
      */
     name?: string;
-};
+}
 
 /**
  * Service to interact with plugins to be shown in the main menu. Provides functions to register a plugin
  * and notify an update in the data.
  */
 @Injectable()
-export class CoreMainMenuDelegate extends CoreDelegate  {
-    protected handlers: {[s: string]: CoreMainMenuHandler} = {};
-    protected enabledHandlers: {[s: string]: CoreMainMenuHandler} = {};
+export class CoreMainMenuDelegate extends CoreDelegate {
+    protected handlers: { [s: string]: CoreMainMenuHandler } = {};
+    protected enabledHandlers: { [s: string]: CoreMainMenuHandler } = {};
     protected loaded = false;
     protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
     protected featurePrefix = '$mmSideMenuDelegate_';
@@ -103,14 +103,14 @@ export class CoreMainMenuDelegate extends CoreDelegate  {
      *
      * @return {boolean} True if handlers are loaded, false otherwise.
      */
-    areHandlersLoaded() : boolean {
+    areHandlersLoaded(): boolean {
         return this.loaded;
     }
 
     /**
      * Clear current site handlers. Reserved for core use.
      */
-    protected clearSiteHandlers() {
+    protected clearSiteHandlers(): void {
         this.loaded = false;
         this.siteHandlers.next([]);
     }
@@ -120,18 +120,18 @@ export class CoreMainMenuDelegate extends CoreDelegate  {
      *
      * @return {Subject<CoreMainMenuHandlerToDisplay[]>} An observable that will receive the handlers.
      */
-    getHandlers() : Subject<CoreMainMenuHandlerToDisplay[]> {
+    getHandlers(): Subject<CoreMainMenuHandlerToDisplay[]> {
         return this.siteHandlers;
     }
 
     /**
      * Update handlers Data.
      */
-    updateData() {
-        let handlersData: any[] = [];
+    updateData(): void {
+        const handlersData: any[] = [];
 
-        for (let name in this.enabledHandlers) {
-            let handler = this.enabledHandlers[name],
+        for (const name in this.enabledHandlers) {
+            const handler = this.enabledHandlers[name],
                 data = handler.getDisplayData();
 
             handlersData.push({
@@ -146,7 +146,7 @@ export class CoreMainMenuDelegate extends CoreDelegate  {
         });
 
         // Return only the display data.
-        let displayData = handlersData.map((item) => {
+        const displayData = handlersData.map((item) => {
             return item.data;
         });
 

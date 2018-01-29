@@ -23,7 +23,7 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 /**
  * Page that displays an user about page.
  */
-@IonicPage({segment: "core-user-about"})
+@IonicPage({ segment: 'core-user-about' })
 @Component({
     selector: 'page-core-user-about',
     templateUrl: 'about.html',
@@ -33,10 +33,10 @@ export class CoreUserAboutPage {
     protected userId: number;
     protected siteId;
 
-    userLoaded: boolean = false;
-    hasContact: boolean = false;
-    hasDetails: boolean = false;
-    isAndroid: boolean = false;
+    userLoaded = false;
+    hasContact = false;
+    hasDetails = false;
+    isAndroid = false;
     user: any = {};
     title: string;
 
@@ -54,7 +54,7 @@ export class CoreUserAboutPage {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.fetchUser().finally(() => {
             this.userLoaded = true;
         });
@@ -63,7 +63,7 @@ export class CoreUserAboutPage {
     /**
      * Fetches the user and updates the view.
      */
-    fetchUser() : Promise<any> {
+    fetchUser(): Promise<any> {
         return this.userProvider.getProfile(this.userId, this.courseId).then((user) => {
 
             if (user.address) {
@@ -86,14 +86,15 @@ export class CoreUserAboutPage {
      *
      * @param {any} refresher Refresher.
      */
-    refreshUser(refresher?: any) {
+    refreshUser(refresher?: any): void {
         this.userProvider.invalidateUserCache(this.userId).finally(() => {
             this.fetchUser().finally(() => {
-                this.eventsProvider.trigger(CoreUserProvider.PROFILE_REFRESHED, {courseId: this.courseId, userId: this.userId,
-                    user: this.user}, this.siteId);
+                this.eventsProvider.trigger(CoreUserProvider.PROFILE_REFRESHED, {
+                    courseId: this.courseId, userId: this.userId,
+                    user: this.user
+                }, this.siteId);
                 refresher && refresher.complete();
             });
         });
     }
-
 }

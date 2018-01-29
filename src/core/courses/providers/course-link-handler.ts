@@ -47,15 +47,15 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         courseId = parseInt(params.id, 10);
 
-        let sectionId = params.sectionid ? parseInt(params.sectionid, 10) : null,
+        const sectionId = params.sectionid ? parseInt(params.sectionid, 10) : null,
             sectionNumber = typeof params.section != 'undefined' ? parseInt(params.section, 10) : NaN,
             pageParams: any = {
-                course: {id: courseId},
-                sectionId: sectionId || null
+                course: { id: courseId },
+                sectionId: sectionId || null
             };
 
         if (!isNaN(sectionNumber)) {
@@ -63,7 +63,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
         }
 
         return [{
-            action: (siteId, navCtrl?) => {
+            action: (siteId, navCtrl?): void => {
                 siteId = siteId || this.sitesProvider.getCurrentSiteId();
                 if (siteId == this.sitesProvider.getCurrentSiteId()) {
                     this.actionEnrol(courseId, url, pageParams).catch(() => {
@@ -87,7 +87,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string, url: string, params: any, courseId?: number) : boolean|Promise<boolean> {
+    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
         courseId = parseInt(params.id, 10);
 
         if (!courseId) {
@@ -96,8 +96,8 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
 
         // Get the course id of Site Home.
         return this.sitesProvider.getSiteHomeId(siteId).then((siteHomeId) => {
-           return courseId != siteHomeId;
-       });
+            return courseId != siteHomeId;
+        });
     }
 
     /**
@@ -108,8 +108,8 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {any} pageParams Params to send to the new page.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected actionEnrol(courseId: number, url: string, pageParams: any) : Promise<any> {
-        let modal = this.domUtils.showModalLoading(),
+    protected actionEnrol(courseId: number, url: string, pageParams: any): Promise<any> {
+        const modal = this.domUtils.showModalLoading(),
             isEnrolUrl = !!url.match(/(\/enrol\/index\.php)|(\/course\/enrol\.php)/);
 
         // Check if user is enrolled in the course.
@@ -119,8 +119,8 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                 modal.dismiss();
 
                 // The user can self enrol. If it's not a enrolment URL we'll ask for confirmation.
-                let promise = isEnrolUrl ? Promise.resolve() :
-                        this.domUtils.showConfirm(this.translate.instant('core.courses.confirmselfenrol'));
+                const promise = isEnrolUrl ? Promise.resolve() :
+                    this.domUtils.showConfirm(this.translate.instant('core.courses.confirmselfenrol'));
 
                 return promise.then(() => {
                     // Enrol URL or user confirmed.
@@ -128,6 +128,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                         if (error) {
                             this.domUtils.showErrorModal(error);
                         }
+
                         return Promise.reject(null);
                     });
                 }, () => {
@@ -147,13 +148,14 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                         error = this.translate.instant('core.courses.notenroled');
                     }
 
-                    let body = this.translate.instant('core.twoparagraphs',
-                                    {p1: error, p2: this.translate.instant('core.confirmopeninbrowser')});
+                    const body = this.translate.instant('core.twoparagraphs',
+                        { p1: error, p2: this.translate.instant('core.confirmopeninbrowser') });
                     this.domUtils.showConfirm(body).then(() => {
                         this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(url);
                     }).catch(() => {
                         // User cancelled.
                     });
+
                     return Promise.reject(null);
                 });
             });
@@ -171,7 +173,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {number} courseId Course ID.
      * @return {Promise<any>} Promise resolved if user can be enrolled in a course, rejected otherwise.
      */
-    protected canSelfEnrol(courseId: number) : Promise<any> {
+    protected canSelfEnrol(courseId: number): Promise<any> {
         // Check that the course has self enrolment enabled.
         return this.coursesProvider.getCourseEnrolmentMethods(courseId).then((methods) => {
             let isSelfEnrolEnabled = false,
@@ -198,8 +200,9 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {string} [password] Password.
      * @return {Promise<any>} Promise resolved when the user is enrolled, rejected otherwise.
      */
-    protected selfEnrol(courseId: number, password?: string) : Promise<any> {
+    protected selfEnrol(courseId: number, password?: string): Promise<any> {
         const modal = this.domUtils.showModalLoading();
+
         return this.coursesProvider.selfEnrol(courseId, password).then(() => {
             // Success self enrolling the user, invalidate the courses list.
             return this.coursesProvider.invalidateUserCourses().catch(() => {
@@ -215,7 +218,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
             modal.dismiss();
             if (error && error.code === CoreCoursesProvider.ENROL_INVALID_KEY) {
                 // Invalid password. Allow the user to input password.
-                let title = this.translate.instant('core.courses.selfenrolment'),
+                const title = this.translate.instant('core.courses.selfenrolment'),
                     body = ' ', // Empty message.
                     placeholder = this.translate.instant('core.courses.password');
 
@@ -240,7 +243,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
      * @param {boolean} first If it's the first call (true) or it's a recursive call (false).
      * @return {Promise<any>} Promise resolved when enrolled or timeout.
      */
-    protected waitForEnrolled(courseId: number, first?: boolean) : Promise<any> {
+    protected waitForEnrolled(courseId: number, first?: boolean): Promise<any> {
         if (first) {
             this.waitStart = Date.now();
         }
@@ -257,7 +260,7 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                 return;
             }
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject): void => {
                 setTimeout(() => {
                     this.waitForEnrolled(courseId).then(resolve);
                 }, 5000);

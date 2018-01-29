@@ -24,7 +24,7 @@ import { CoreLangProvider } from '../lang';
 export class CoreTextUtilsProvider {
     protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
 
-    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) {}
+    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) { }
 
     /**
      * Given a list of sentences, build a message with all of them wrapped in <p>.
@@ -32,13 +32,15 @@ export class CoreTextUtilsProvider {
      * @param {string[]} messages Messages to show.
      * @return {string} Message with all the messages.
      */
-    buildMessage(messages: string[]) : string {
+    buildMessage(messages: string[]): string {
         let result = '';
+
         messages.forEach((message) => {
             if (message) {
                 result += `<p>${message}</p>`;
             }
         });
+
         return result;
     }
 
@@ -49,7 +51,7 @@ export class CoreTextUtilsProvider {
      * @param {number} [precision=2] Number of digits after the decimal separator.
      * @return {string} Size in human readable format.
      */
-    bytesToSize(bytes: number, precision = 2) : string {
+    bytesToSize(bytes: number, precision: number = 2): string {
 
         if (typeof bytes == 'undefined' || bytes < 0) {
             return this.translate.instant('core.notapplicable');
@@ -59,9 +61,9 @@ export class CoreTextUtilsProvider {
             precision = 2;
         }
 
-        let keys = ['core.sizeb', 'core.sizekb', 'core.sizemb', 'core.sizegb', 'core.sizetb'],
-            units = this.translate.instant(keys),
-            pos = 0;
+        const keys = ['core.sizeb', 'core.sizekb', 'core.sizemb', 'core.sizegb', 'core.sizetb'],
+            units = this.translate.instant(keys);
+        let pos = 0;
 
         if (bytes >= 1024) {
             while (bytes >= 1024) {
@@ -71,7 +73,8 @@ export class CoreTextUtilsProvider {
             // Round to "precision" decimals if needed.
             bytes = Number(Math.round(parseFloat(bytes + 'e+' + precision)) + 'e-' + precision);
         }
-        return this.translate.instant('core.humanreadablesize', {size: bytes, unit: units[keys[pos]]});
+
+        return this.translate.instant('core.humanreadablesize', { size: bytes, unit: units[keys[pos]] });
     }
 
     /**
@@ -81,18 +84,19 @@ export class CoreTextUtilsProvider {
      * @param {boolean} [singleLine] True if new lines should be removed (all the text in a single line).
      * @return {string} Clean text.
      */
-    cleanTags(text: string, singleLine?: boolean) : string {
+    cleanTags(text: string, singleLine?: boolean): string {
         if (!text) {
             return '';
         }
 
         // First, we use a regexpr.
-        text = text.replace(/(<([^>]+)>)/ig,"");
+        text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
         this.element.innerHTML = text;
         text = this.element.textContent;
         // Recover or remove new lines.
         text = this.replaceNewLines(text, singleLine ? ' ' : '<br>');
+
         return text;
     }
 
@@ -103,19 +107,19 @@ export class CoreTextUtilsProvider {
      * @param {string} rightPath Right path.
      * @return {string} Concatenated path.
      */
-    concatenatePaths(leftPath: string, rightPath: string) : string {
+    concatenatePaths(leftPath: string, rightPath: string): string {
         if (!leftPath) {
             return rightPath;
         } else if (!rightPath) {
             return leftPath;
         }
 
-        let lastCharLeft = leftPath.slice(-1),
+        const lastCharLeft = leftPath.slice(-1),
             firstCharRight = rightPath.charAt(0);
 
         if (lastCharLeft === '/' && firstCharRight === '/') {
             return leftPath + rightPath.substr(1);
-        } else if(lastCharLeft !== '/' && firstCharRight !== '/') {
+        } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
             return leftPath + '/' + rightPath;
         } else {
             return leftPath + rightPath;
@@ -128,14 +132,14 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to count.
      * @return {number} Number of words.
      */
-    countWords(text: string) : number {
+    countWords(text: string): number {
         // Clean HTML scripts and tags.
         text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
         text = text.replace(/<\/?(?!\!)[^>]*>/gi, '');
         // Decode HTML entities.
         text = this.decodeHTMLEntities(text);
         // Replace underscores (which are classed as word characters) with spaces.
-        text = text.replace(/_/gi, " ");
+        text = text.replace(/_/gi, ' ');
 
         // This RegEx will detect any word change including Unicode chars. Some languages without spaces won't be counted fine.
         return text.match(/\S+/gi).length;
@@ -147,7 +151,7 @@ export class CoreTextUtilsProvider {
      * @param {string|number} text Text to decode.
      * @return {string} Decoded text.
      */
-    decodeHTML(text: string|number) : string {
+    decodeHTML(text: string | number): string {
         if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
@@ -159,7 +163,7 @@ export class CoreTextUtilsProvider {
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
-            .replace(/&#039;/g, "'")
+            .replace(/&#039;/g, '')
             .replace(/&nbsp;/g, ' ');
     }
 
@@ -169,7 +173,7 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to decode.
      * @return {string} Decoded text.
      */
-    decodeHTMLEntities(text: string) : string {
+    decodeHTMLEntities(text: string): string {
         if (text) {
             this.element.innerHTML = text;
             text = this.element.textContent;
@@ -185,12 +189,13 @@ export class CoreTextUtilsProvider {
      * @param {string} uri URI to decode.
      * @return {string} Decoded URI, or original URI if an exception is thrown.
      */
-    decodeURI(uri: string) : string {
+    decodeURI(uri: string): string {
         try {
             return decodeURI(uri);
-        } catch(ex) {
+        } catch (ex) {
             // Error, use the original URI.
         }
+
         return uri;
     }
 
@@ -200,12 +205,13 @@ export class CoreTextUtilsProvider {
      * @param {string} uri URI to decode.
      * @return {string} Decoded URI, or original URI if an exception is thrown.
      */
-    decodeURIComponent(uri: string) : string {
+    decodeURIComponent(uri: string): string {
         try {
             return decodeURIComponent(uri);
-        } catch(ex) {
+        } catch (ex) {
             // Error, use the original URI.
         }
+
         return uri;
     }
 
@@ -215,10 +221,11 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to escape.
      * @return {string} Escaped text.
      */
-    escapeForRegex(text: string) : string {
+    escapeForRegex(text: string): string {
         if (!text) {
             return '';
         }
+
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     }
 
@@ -228,7 +235,7 @@ export class CoreTextUtilsProvider {
      * @param {string|number} text Text to escape.
      * @return {string} Escaped text.
      */
-    escapeHTML(text: string|number) : string {
+    escapeHTML(text: string | number): string {
         if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
@@ -251,9 +258,9 @@ export class CoreTextUtilsProvider {
      * @param {string} [component] Component to link the embedded files to.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      */
-    expandText(title: string, text: string, component?: string, componentId?: string|number) : void {
+    expandText(title: string, text: string, component?: string, componentId?: string | number): void {
         if (text.length > 0) {
-            let params: any = {
+            const params: any = {
                 title: title,
                 content: text,
                 component: component,
@@ -263,7 +270,7 @@ export class CoreTextUtilsProvider {
             // Open a modal with the contents.
             params.isModal = true;
 
-            let modal = this.modalCtrl.create('CoreViewerTextPage', params);
+            const modal = this.modalCtrl.create('CoreViewerTextPage', params);
             modal.present();
         }
     }
@@ -274,8 +281,8 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to format.
      * @return {string} Formatted text.
      */
-    formatHtmlLines(text: string) : string {
-        let hasHTMLTags = this.hasHTMLTags(text);
+    formatHtmlLines(text: string): string {
+        const hasHTMLTags = this.hasHTMLTags(text);
         if (text.indexOf('<p>') == -1) {
             // Wrap the text in <p> tags.
             text = '<p>' + text + '</p>';
@@ -298,7 +305,7 @@ export class CoreTextUtilsProvider {
      * @param {number} [shortenLength] Number of characters to shorten the text.
      * @return {Promise<string>} Promise resolved with the formatted text.
      */
-    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number) : Promise<string> {
+    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number): Promise<string> {
         return this.treatMultilangTags(text).then((formatted) => {
             if (clean) {
                 formatted = this.cleanTags(formatted, singleLine);
@@ -306,6 +313,7 @@ export class CoreTextUtilsProvider {
             if (shortenLength > 0) {
                 formatted = this.shortenText(formatted, shortenLength);
             }
+
             return formatted;
         });
     }
@@ -316,9 +324,10 @@ export class CoreTextUtilsProvider {
      * @param {any[]} files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
      * @return {string} Pluginfile URL, undefined if no files found.
      */
-    getTextPluginfileUrl(files: any[]) : string {
+    getTextPluginfileUrl(files: any[]): string {
         if (files && files.length) {
-            let fileURL = files[0].url || files[0].fileurl;
+            const fileURL = files[0].url || files[0].fileurl;
+
             // Remove text after last slash (encoded or not).
             return fileURL.substr(0, Math.max(fileURL.lastIndexOf('/'), fileURL.lastIndexOf('%2F')));
         }
@@ -332,7 +341,7 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to check.
      * @return {boolean} Whether it has HTML tags.
      */
-    hasHTMLTags(text: string) : boolean {
+    hasHTMLTags(text: string): boolean {
         return /<[a-z][\s\S]*>/i.test(text);
     }
 
@@ -343,12 +352,13 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to check.
      * @return {boolean} True if has Unicode chars, false otherwise.
      */
-    hasUnicode(text: string) : boolean {
+    hasUnicode(text: string): boolean {
         for (let x = 0; x < text.length; x++) {
             if (text.charCodeAt(x) > 55295) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -358,8 +368,8 @@ export class CoreTextUtilsProvider {
      * @param {object} data Object to be checked.
      * @return {boolean} If the data has any long Unicode char on it.
      */
-    hasUnicodeData(data: object) : boolean {
-        for (let el in data) {
+    hasUnicodeData(data: object): boolean {
+        for (const el in data) {
             if (typeof data[el] == 'object') {
                 if (this.hasUnicodeData(data[el])) {
                     return true;
@@ -368,6 +378,7 @@ export class CoreTextUtilsProvider {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -377,12 +388,13 @@ export class CoreTextUtilsProvider {
      * @param {string} json JSON text.
      * @return {any} JSON parsed as object or what it gets.
      */
-    parseJSON(json: string) : any {
+    parseJSON(json: string): any {
         try {
             return JSON.parse(json);
-        } catch(ex) {
+        } catch (ex) {
             // Error, use the json text.
         }
+
         return json;
     }
 
@@ -392,7 +404,7 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to treat.
      * @return {string} Treated text.
      */
-    removeSpecialCharactersForFiles(text: string) : string {
+    removeSpecialCharactersForFiles(text: string): string {
         return text.replace(/[#:\/\?\\]+/g, '_');
     }
 
@@ -403,7 +415,7 @@ export class CoreTextUtilsProvider {
      * @param {string} newValue Text to use instead of new lines.
      * @return {string} Treated text.
      */
-    replaceNewLines(text: string, newValue: string) : string {
+    replaceNewLines(text: string, newValue: string): string {
         return text.replace(/(?:\r\n|\r|\n)/g, newValue);
     }
 
@@ -414,13 +426,14 @@ export class CoreTextUtilsProvider {
      * @param {any[]} files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return {string} Treated text.
      */
-    replacePluginfileUrls(text: string, files: any[]) : string {
+    replacePluginfileUrls(text: string, files: any[]): string {
         if (text) {
-            let fileURL = this.getTextPluginfileUrl(files);
+            const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
                 return text.replace(/@@PLUGINFILE@@/g, fileURL);
             }
         }
+
         return text;
     }
 
@@ -431,13 +444,14 @@ export class CoreTextUtilsProvider {
      * @param {any[]} files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return {string} Treated text.
      */
-    restorePluginfileUrls(text: string, files: any[]) : string {
+    restorePluginfileUrls(text: string, files: any[]): string {
         if (text) {
-            let fileURL = this.getTextPluginfileUrl(files);
+            const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
                 return text.replace(new RegExp(this.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');
             }
         }
+
         return text;
     }
 
@@ -447,13 +461,14 @@ export class CoreTextUtilsProvider {
      * 7.toFixed(2) -> 7.00
      * roundToDecimals(7, 2) -> 7
      *
-     * @param {number} number Number to round.
+     * @param {number} num Number to round.
      * @param {number} [decimals=2] Number of decimals. By default, 2.
      * @return {number} Rounded number.
      */
-    roundToDecimals(number: number, decimals = 2) : number {
-        let multiplier = Math.pow(10, decimals);
-        return Math.round(number * multiplier) / multiplier;
+    roundToDecimals(num: number, decimals: number = 2): number {
+        const multiplier = Math.pow(10, decimals);
+
+        return Math.round(num * multiplier) / multiplier;
     }
 
     /**
@@ -465,7 +480,7 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to treat.
      * @return {string} Treated text.
      */
-    s(text: string) : string {
+    s(text: string): string {
         if (!text) {
             return '';
         }
@@ -480,17 +495,18 @@ export class CoreTextUtilsProvider {
      * @param {number} length The desired length.
      * @return {string} Shortened text.
      */
-    shortenText(text: string, length: number) : string {
+    shortenText(text: string, length: number): string {
         if (text.length > length) {
             text = text.substr(0, length);
 
             // Now, truncate at the last word boundary (if exists).
-            let lastWordPos = text.lastIndexOf(' ');
+            const lastWordPos = text.lastIndexOf(' ');
             if (lastWordPos > 0) {
                 text = text.substr(0, lastWordPos);
             }
             text += '&hellip;';
         }
+
         return text;
     }
 
@@ -501,13 +517,14 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to check.
      * @return {string} Without the Unicode chars.
      */
-    stripUnicode(text: string) : string {
+    stripUnicode(text: string): string {
         let stripped = '';
         for (let x = 0; x < text.length; x++) {
-            if (text.charCodeAt(x) <= 55295){
+            if (text.charCodeAt(x) <= 55295) {
                 stripped += text.charAt(x);
             }
         }
+
         return stripped;
     }
 
@@ -517,19 +534,19 @@ export class CoreTextUtilsProvider {
      * @param {string} text The text to be treated.
      * @return {Promise<string>} Promise resolved with the formatted text.
      */
-    treatMultilangTags(text: string) : Promise<string> {
+    treatMultilangTags(text: string): Promise<string> {
         if (!text) {
             return Promise.resolve('');
         }
 
         return this.langProvider.getCurrentLanguage().then((language) => {
             // Match the current language.
-            let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)<\/(?:lang|span)>', 'g'),
-                anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
+            const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
+            let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)<\/(?:lang|span)>', 'g');
 
             if (!text.match(currentLangRegEx)) {
                 // Current lang not found. Try to find the first language.
-                let matches = text.match(anyLangRegEx);
+                const matches = text.match(anyLangRegEx);
                 if (matches && matches[0]) {
                     language = matches[0].match(/lang="([a-zA-Z0-9_-]+)"/)[1];
                     currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)<\/(?:lang|span)>', 'g');
@@ -542,6 +559,7 @@ export class CoreTextUtilsProvider {
             text = text.replace(currentLangRegEx, '$1');
             // Delete the rest of languages
             text = text.replace(anyLangRegEx, '');
+
             return text;
         });
     }
@@ -552,7 +570,7 @@ export class CoreTextUtilsProvider {
      * @param {string|number} num Number to convert.
      * @return {string} Number with leading zeros.
      */
-    twoDigits(num: string|number) : string {
+    twoDigits(num: string | number): string {
         if (num < 10) {
             return '0' + num;
         } else {
@@ -566,7 +584,7 @@ export class CoreTextUtilsProvider {
      * @param {string} text Text to treat.
      * @return {string} Treated text.
      */
-    ucFirst(text: string) : string {
+    ucFirst(text: string): string {
         return text.charAt(0).toUpperCase() + text.slice(1);
     }
 }

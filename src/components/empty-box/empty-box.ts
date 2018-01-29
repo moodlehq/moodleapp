@@ -29,5 +29,7 @@ export class CoreEmptyBoxComponent {
     @Input() icon?: string; // Name of the icon to use.
     @Input() image?: string; // Image source. If an icon is provided, image won't be used.
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 }

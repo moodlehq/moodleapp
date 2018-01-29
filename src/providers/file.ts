@@ -27,20 +27,20 @@ import { Zip } from '@ionic-native/zip';
  */
 @Injectable()
 export class CoreFileProvider {
+    // Formats to read a file.
+    static FORMATTEXT = 0;
+    static FORMATDATAURL = 1;
+    static FORMATBINARYSTRING = 2;
+    static FORMATARRAYBUFFER = 3;
+
+    // Folders.
+    static SITESFOLDER = 'sites';
+    static TMPFOLDER = 'tmp';
+
     protected logger;
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
-
-    // Formats to read a file.
-    public static FORMATTEXT         = 0;
-    public static FORMATDATAURL      = 1;
-    public static FORMATBINARYSTRING = 2;
-    public static FORMATARRAYBUFFER  = 3;
-
-    // Folders.
-    public static SITESFOLDER = 'sites';
-    public static TMPFOLDER = 'tmp';
 
     constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
             private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
@@ -52,7 +52,7 @@ export class CoreFileProvider {
      *
      * @param {string} path Base path to use.
      */
-    setHTMLBasePath(path: string) {
+    setHTMLBasePath(path: string): void {
         this.isHTMLAPI = true;
         this.basePath = path;
     }
@@ -62,7 +62,7 @@ export class CoreFileProvider {
      *
      * @return {boolean} True if uses HTML API, false otherwise.
      */
-    usesHTMLAPI() : boolean {
+    usesHTMLAPI(): boolean {
         return this.isHTMLAPI;
     }
 
@@ -71,7 +71,7 @@ export class CoreFileProvider {
      *
      * @return {Promise<void>} Promise to be resolved when the initialization is finished.
      */
-    init() : Promise<void> {
+    init(): Promise<void> {
         if (this.initialized) {
             return Promise.resolve();
         }
@@ -84,6 +84,7 @@ export class CoreFileProvider {
                 this.basePath = this.file.documentsDirectory;
             } else if (!this.isAvailable() || this.basePath === '') {
                 this.logger.error('Error getting device OS.');
+
                 return Promise.reject(null);
             }
 
@@ -97,7 +98,7 @@ export class CoreFileProvider {
      *
      * @return {boolean} Whether the plugin is available.
      */
-    isAvailable() : boolean {
+    isAvailable(): boolean {
         return typeof window.resolveLocalFileSystemURL !== 'undefined';
     }
 
@@ -107,9 +108,10 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the file.
      * @return {Promise<FileEntry>} Promise resolved when the file is retrieved.
      */
-    getFile(path: string) : Promise<FileEntry> {
+    getFile(path: string): Promise<FileEntry> {
         return this.init().then(() => {
             this.logger.debug('Get file: ' + path);
+
             return this.file.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
         }).then((entry) => {
             return <FileEntry> entry;
@@ -122,9 +124,10 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the directory.
      * @return {Promise<DirectoryEntry>} Promise resolved when the directory is retrieved.
      */
-    getDir(path: string) : Promise<DirectoryEntry> {
+    getDir(path: string): Promise<DirectoryEntry> {
         return this.init().then(() => {
             this.logger.debug('Get directory: ' + path);
+
             return this.file.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
         });
     }
@@ -135,7 +138,7 @@ export class CoreFileProvider {
      * @param {string} siteId Site ID.
      * @return {string} Site folder path.
      */
-    getSiteFolder(siteId: string) : string {
+    getSiteFolder(siteId: string): string {
         return CoreFileProvider.SITESFOLDER + '/' + siteId;
     }
 
@@ -148,7 +151,7 @@ export class CoreFileProvider {
      * @param {string} [base] Base path to create the dir/file in. If not set, use basePath.
      * @return {Promise<any>} Promise to be resolved when the dir/file is created.
      */
-    protected create(isDirectory: boolean, path: string, failIfExists?: boolean, base?: string) : Promise<any> {
+    protected create(isDirectory: boolean, path: string, failIfExists?: boolean, base?: string): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -157,15 +160,17 @@ export class CoreFileProvider {
             if (path.indexOf('/') == -1) {
                 if (isDirectory) {
                     this.logger.debug('Create dir ' + path + ' in ' + base);
+
                     return this.file.createDir(base, path, !failIfExists);
                 } else {
                     this.logger.debug('Create file ' + path + ' in ' + base);
+
                     return this.file.createFile(base, path, !failIfExists);
                 }
             } else {
-                // this.file doesn't allow creating more than 1 level at a time (e.g. tmp/folder).
+                // The file plugin doesn't allow creating more than 1 level at a time (e.g. tmp/folder).
                 // We need to create them 1 by 1.
-                let firstDir = path.substr(0, path.indexOf('/')),
+                const firstDir = path.substr(0, path.indexOf('/')),
                     restOfPath = path.substr(path.indexOf('/') + 1);
 
                 this.logger.debug('Create dir ' + firstDir + ' in ' + base);
@@ -174,6 +179,7 @@ export class CoreFileProvider {
                     return this.create(isDirectory, restOfPath, failIfExists, newDirEntry.toURL());
                 }).catch((error) => {
                     this.logger.error('Error creating directory ' + firstDir + ' in ' + base);
+
                     return Promise.reject(error);
                 });
             }
@@ -187,7 +193,7 @@ export class CoreFileProvider {
      * @param {boolean} [failIfExists] True if it should fail if the directory exists, false otherwise.
      * @return {Promise<DirectoryEntry>} Promise to be resolved when the directory is created.
      */
-    createDir(path: string, failIfExists?: boolean) : Promise<DirectoryEntry> {
+    createDir(path: string, failIfExists?: boolean): Promise<DirectoryEntry> {
         return this.create(true, path, failIfExists);
     }
 
@@ -198,7 +204,7 @@ export class CoreFileProvider {
      * @param {boolean} [failIfExists] True if it should fail if the file exists, false otherwise..
      * @return {Promise<FileEntry>} Promise to be resolved when the file is created.
      */
-    createFile(path: string, failIfExists?: boolean) : Promise<FileEntry> {
+    createFile(path: string, failIfExists?: boolean): Promise<FileEntry> {
         return this.create(false, path, failIfExists);
     }
 
@@ -208,11 +214,12 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the directory.
      * @return {Promise<any>} Promise to be resolved when the directory is deleted.
      */
-    removeDir(path: string) : Promise<any> {
+    removeDir(path: string): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
             this.logger.debug('Remove directory: ' + path);
+
             return this.file.removeRecursively(this.basePath, path);
         });
     }
@@ -223,11 +230,12 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the file.
      * @return {Promise<any>} Promise to be resolved when the file is deleted.
      */
-    removeFile(path: string) : Promise<any> {
+    removeFile(path: string): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
             this.logger.debug('Remove file: ' + path);
+
             return this.file.removeFile(this.basePath, path);
         });
     }
@@ -238,8 +246,8 @@ export class CoreFileProvider {
      * @param {FileEntry} fileEntry File Entry.
      * @return {Promise<any>} Promise resolved when the file is deleted.
      */
-    removeFileByFileEntry(fileEntry: any) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    removeFileByFileEntry(fileEntry: any): Promise<any> {
+        return new Promise((resolve, reject): void => {
             fileEntry.remove(resolve, reject);
         });
     }
@@ -250,7 +258,7 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the directory.
      * @return {Promise<any>} Promise to be resolved when the contents are retrieved.
      */
-    getDirectoryContents(path: string) : Promise<any> {
+    getDirectoryContents(path: string): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -266,13 +274,13 @@ export class CoreFileProvider {
      * @param {any} entry Directory or file.
      * @return {Promise<number>} Promise to be resolved when the size is calculated.
      */
-    protected getSize(entry: any) : Promise<number> {
-        return new Promise((resolve, reject) => {
+    protected getSize(entry: any): Promise<number> {
+        return new Promise((resolve, reject): void => {
             if (entry.isDirectory) {
-                let directoryReader = entry.createReader();
+                const directoryReader = entry.createReader();
                 directoryReader.readEntries((entries) => {
 
-                    let promises = [];
+                    const promises = [];
                     for (let i = 0; i < entries.length; i++) {
                         promises.push(this.getSize(entries[i]));
                     }
@@ -281,9 +289,10 @@ export class CoreFileProvider {
 
                         let directorySize = 0;
                         for (let i = 0; i < sizes.length; i++) {
-                            let fileSize = parseInt(sizes[i]);
+                            const fileSize = parseInt(sizes[i]);
                             if (isNaN(fileSize)) {
                                 reject();
+
                                 return;
                             }
                             directorySize += fileSize;
@@ -308,13 +317,14 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the directory.
      * @return {Promise<number>} Promise to be resolved when the size is calculated.
      */
-    getDirectorySize(path: string) : Promise<number> {
+    getDirectorySize(path: string): Promise<number> {
         // Remove basePath if it's in the path.
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
 
         this.logger.debug('Get size of dir: ' + path);
+
         return this.getDir(path).then((dirEntry) => {
-           return this.getSize(dirEntry);
+            return this.getSize(dirEntry);
         });
     }
 
@@ -324,13 +334,14 @@ export class CoreFileProvider {
      * @param {string} path Relative path to the file.
      * @return {Promise<number>} Promise to be resolved when the size is calculated.
      */
-    getFileSize(path: string) : Promise<number> {
+    getFileSize(path: string): Promise<number> {
         // Remove basePath if it's in the path.
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
 
         this.logger.debug('Get size of file: ' + path);
+
         return this.getFile(path).then((fileEntry) => {
-           return this.getSize(fileEntry);
+            return this.getSize(fileEntry);
         });
     }
 
@@ -340,8 +351,8 @@ export class CoreFileProvider {
      * @param {FileEntry} path Relative path to the file.
      * @return {Promise<any>} Promise to be resolved when the file is retrieved.
      */
-    getFileObjectFromFileEntry(entry: FileEntry) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    getFileObjectFromFileEntry(entry: FileEntry): Promise<any> {
+        return new Promise((resolve, reject): void => {
             this.logger.debug('Get file object of: ' + entry.fullPath);
             entry.file(resolve, reject);
         });
@@ -352,7 +363,7 @@ export class CoreFileProvider {
      *
      * @return {Promise<number>} Promise resolved with the estimated free space in bytes.
      */
-    calculateFreeSpace() : Promise<number> {
+    calculateFreeSpace(): Promise<number> {
         return this.file.getFreeDiskSpace().then((size) => {
             return size; // GetFreeDiskSpace returns KB.
         });
@@ -364,8 +375,9 @@ export class CoreFileProvider {
      * @param {string} filename The file name.
      * @return {string} The file name normalized.
      */
-    normalizeFileName(filename: string) : string {
+    normalizeFileName(filename: string): string {
         filename = this.textUtils.decodeURIComponent(filename);
+
         return filename;
     }
 
@@ -380,7 +392,7 @@ export class CoreFileProvider {
      *                                  FORMATARRAYBUFFER
      * @return {Promise<any>} Promise to be resolved when the file is read.
      */
-    readFile(path: string, format = CoreFileProvider.FORMATTEXT) : Promise<any> {
+    readFile(path: string, format: number = CoreFileProvider.FORMATTEXT): Promise<any> {
         // Remove basePath if it's in the path.
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
         this.logger.debug('Read file ' + path + ' with format ' + format);
@@ -408,22 +420,22 @@ export class CoreFileProvider {
      *                                  FORMATARRAYBUFFER
      * @return {Promise<any>} Promise to be resolved when the file is read.
      */
-    readFileData(fileData: any, format = CoreFileProvider.FORMATTEXT) : Promise<any> {
+    readFileData(fileData: any, format: number = CoreFileProvider.FORMATTEXT): Promise<any> {
         format = format || CoreFileProvider.FORMATTEXT;
         this.logger.debug('Read file from file data with format ' + format);
 
-        return new Promise((resolve, reject) => {
-            let reader = new FileReader();
-            reader.onloadend = (evt) => {
-                let target = <any> evt.target; // Convert to <any> to be able to use non-standard properties.
+        return new Promise((resolve, reject): void => {
+            const reader = new FileReader();
+            reader.onloadend = (evt): void => {
+                const target = <any> evt.target; // Convert to <any> to be able to use non-standard properties.
                 if (target.result !== undefined || target.result !== null) {
                     resolve(target.result);
                 } else if (target.error !== undefined || target.error !== null) {
                     reject(target.error);
                 } else {
-                    reject({code: null, message: 'READER_ONLOADEND_ERR'});
+                    reject({ code: null, message: 'READER_ONLOADEND_ERR' });
                 }
-            }
+            };
 
             switch (format) {
                 case CoreFileProvider.FORMATDATAURL:
@@ -449,7 +461,7 @@ export class CoreFileProvider {
      * @param {any} data Data to write.
      * @return {Promise<any>} Promise to be resolved when the file is written.
      */
-    writeFile(path: string, data: any) : Promise<any> {
+    writeFile(path: string, data: any): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -458,12 +470,13 @@ export class CoreFileProvider {
             // Create file (and parent folders) to prevent errors.
             return this.createFile(path).then((fileEntry) => {
                 if (this.isHTMLAPI && !this.appProvider.isDesktop() &&
-                        (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
+                    (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
                     // We need to write Blobs.
-                    let type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(path));
-                    data = new Blob([data], {type: type || 'text/plain'});
+                    const type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(path));
+                    data = new Blob([data], { type: type || 'text/plain' });
                 }
-                return this.file.writeFile(this.basePath, path, data, {replace: true}).then(() => {
+
+                return this.file.writeFile(this.basePath, path, data, { replace: true }).then(() => {
                     return fileEntry;
                 });
             });
@@ -476,7 +489,7 @@ export class CoreFileProvider {
      * @param {string} fullPath Absolute path to the file.
      * @return {Promise<FileEntry>} Promise to be resolved when the file is retrieved.
      */
-    getExternalFile(fullPath: string) : Promise<FileEntry> {
+    getExternalFile(fullPath: string): Promise<FileEntry> {
         return this.file.resolveLocalFilesystemUrl(fullPath).then((entry) => {
             return <FileEntry> entry;
         });
@@ -488,10 +501,10 @@ export class CoreFileProvider {
      * @param {string} fullPath Absolute path to the file.
      * @return {Promise<any>} Promise to be resolved when the file is removed.
      */
-    removeExternalFile(fullPath: string) : Promise<any> {
-        // removeFile(fullPath, '') does not work, we need to pass two valid parameters.
-        let directory = fullPath.substring(0, fullPath.lastIndexOf('/') ),
+    removeExternalFile(fullPath: string): Promise<any> {
+        const directory = fullPath.substring(0, fullPath.lastIndexOf('/')),
             filename = fullPath.substr(fullPath.lastIndexOf('/') + 1);
+
         return this.file.removeFile(directory, filename);
     }
 
@@ -500,7 +513,7 @@ export class CoreFileProvider {
      *
      * @return {Promise<string>} Promise to be resolved when the base path is retrieved.
      */
-    getBasePath() : Promise<string> {
+    getBasePath(): Promise<string> {
         return this.init().then(() => {
             if (this.basePath.slice(-1) == '/') {
                 return this.basePath;
@@ -517,7 +530,7 @@ export class CoreFileProvider {
      *
      * @return {Promise<string>} Promise to be resolved when the base path is retrieved.
      */
-    getBasePathToDownload() : Promise<string> {
+    getBasePathToDownload(): Promise<string> {
         return this.init().then(() => {
             if (this.platform.is('ios')) {
                 // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
@@ -536,7 +549,7 @@ export class CoreFileProvider {
      *
      * @return {string} Base path. If the service hasn't been initialized it will return an invalid value.
      */
-    getBasePathInstant() : string {
+    getBasePathInstant(): string {
         if (!this.basePath) {
             return this.basePath;
         } else if (this.basePath.slice(-1) == '/') {
@@ -553,7 +566,7 @@ export class CoreFileProvider {
      * @param {string} [newPath] New path of the file.
      * @return {Promise<any>} Promise resolved when the entry is moved.
      */
-    moveFile(originalPath: string, newPath: string) : Promise<any> {
+    moveFile(originalPath: string, newPath: string): Promise<any> {
         return this.init().then(() => {
             // Remove basePath if it's in the paths.
             originalPath = this.removeStartingSlash(originalPath.replace(this.basePath, ''));
@@ -561,11 +574,11 @@ export class CoreFileProvider {
 
             if (this.isHTMLAPI) {
                 // In Cordova API we need to calculate the longest matching path to make it work.
-                // this.file.moveFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
-                // cordovaFile.moveFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
-                let commonPath = this.basePath,
-                    dirsA = originalPath.split('/'),
+                // The function this.file.moveFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
+                // The function this.file.moveFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
+                const dirsA = originalPath.split('/'),
                     dirsB = newPath.split('/');
+                let commonPath = this.basePath;
 
                 for (let i = 0; i < dirsA.length; i++) {
                     let dir = dirsA[i];
@@ -595,7 +608,7 @@ export class CoreFileProvider {
      * @param {string} to New path of the file.
      * @return {Promise<any>} Promise resolved when the entry is copied.
      */
-    copyFile(from: string, to: string) : Promise<any> {
+    copyFile(from: string, to: string): Promise<any> {
         let fromFileAndDir,
             toFileAndDir;
 
@@ -614,7 +627,7 @@ export class CoreFileProvider {
         }).then(() => {
             if (this.isHTMLAPI) {
                 // In HTML API, the file name cannot include a directory, otherwise it fails.
-                let fromDir = this.textUtils.concatenatePaths(this.basePath, fromFileAndDir.directory),
+                const fromDir = this.textUtils.concatenatePaths(this.basePath, fromFileAndDir.directory),
                     toDir = this.textUtils.concatenatePaths(this.basePath, toFileAndDir.directory);
 
                 return this.file.copyFile(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
@@ -636,13 +649,13 @@ export class CoreFileProvider {
      * path/            -> directory: 'path', name: ''
      * path             -> directory: '', name: 'path'
      */
-    getFileAndDirectoryFromPath(path: string) : any {
-        let file = {
+    getFileAndDirectoryFromPath(path: string): any {
+        const file = {
             directory: '',
             name: ''
-        }
+        };
 
-        file.directory = path.substring(0, path.lastIndexOf('/') );
+        file.directory = path.substring(0, path.lastIndexOf('/'));
         file.name = path.substr(path.lastIndexOf('/') + 1);
 
         return file;
@@ -654,11 +667,12 @@ export class CoreFileProvider {
      * @param {FileEntry} fileEntry File Entry.
      * @return {string} Internal URL.
      */
-    getInternalURL(fileEntry: FileEntry) : string {
+    getInternalURL(fileEntry: FileEntry): string {
         if (!fileEntry.toInternalURL) {
             // File doesn't implement toInternalURL, use toURL.
             return fileEntry.toURL();
         }
+
         return fileEntry.toInternalURL();
     }
 
@@ -668,7 +682,7 @@ export class CoreFileProvider {
      * @param {string} path Path to treat.
      * @return {string} Path with basePath added.
      */
-    addBasePathIfNeeded(path: string) : string {
+    addBasePathIfNeeded(path: string): string {
         if (path.indexOf(this.basePath) > -1) {
             return path;
         } else {
@@ -682,7 +696,7 @@ export class CoreFileProvider {
      * @param {string} path Path to treat.
      * @return {string} Path without basePath if basePath was found, undefined otherwise.
      */
-    removeBasePath(path: string) : string {
+    removeBasePath(path: string): string {
         if (path.indexOf(this.basePath) > -1) {
             return path.replace(this.basePath, '');
         }
@@ -697,11 +711,12 @@ export class CoreFileProvider {
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when the file is unzipped.
      */
-    unzipFile(path: string, destFolder?: string, onProgress?: Function) : Promise<any> {
+    unzipFile(path: string, destFolder?: string, onProgress?: Function): Promise<any> {
         // Get the source file.
         return this.getFile(path).then((fileEntry) => {
             // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
             destFolder = this.addBasePathIfNeeded(destFolder || this.mimeUtils.removeExtension(path));
+
             return this.zip.unzip(fileEntry.toURL(), destFolder, onProgress);
         });
     }
@@ -714,7 +729,7 @@ export class CoreFileProvider {
      * @param {string} newValue New value.
      * @return {Promise<any>} Promise resolved in success.
      */
-    replaceInFile(path: string, search: string|RegExp, newValue: string) : Promise<any> {
+    replaceInFile(path: string, search: string | RegExp, newValue: string): Promise<any> {
         return this.readFile(path).then((content) => {
             if (typeof content == 'undefined' || content === null || !content.replace) {
                 return Promise.reject(null);
@@ -722,6 +737,7 @@ export class CoreFileProvider {
 
             if (content.match(search)) {
                 content = content.replace(search, newValue);
+
                 return this.writeFile(path, content);
             }
         });
@@ -733,12 +749,12 @@ export class CoreFileProvider {
      * @param {Entry} fileEntry FileEntry retrieved from getFile or similar.
      * @return {Promise<any>} Promise resolved with metadata.
      */
-    getMetadata(fileEntry: Entry) : Promise<any> {
+    getMetadata(fileEntry: Entry): Promise<any> {
         if (!fileEntry || !fileEntry.getMetadata) {
             return Promise.reject(null);
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject): void => {
             fileEntry.getMetadata(resolve, reject);
         });
     }
@@ -750,7 +766,7 @@ export class CoreFileProvider {
      * @param {boolean} [isDir] True if directory, false if file.
      * @return {Promise<any>} Promise resolved with metadata.
      */
-    getMetadataFromPath(path: string, isDir?: boolean) : Promise<any> {
+    getMetadataFromPath(path: string, isDir?: boolean): Promise<any> {
         let promise;
         if (isDir) {
             promise = this.getDir(path);
@@ -769,10 +785,11 @@ export class CoreFileProvider {
      * @param {string} path Path.
      * @return {string} Path without a slash in the first position.
      */
-    removeStartingSlash(path: string) : string {
+    removeStartingSlash(path: string): string {
         if (path[0] == '/') {
             return path.substr(1);
         }
+
         return path;
     }
 
@@ -784,14 +801,15 @@ export class CoreFileProvider {
      * @param {boolean} copy True to copy, false to move.
      * @return {Promise<any>} Promise resolved when the entry is copied/moved.
      */
-    protected copyOrMoveExternalFile(from: string, to: string, copy?: boolean) : Promise<any> {
+    protected copyOrMoveExternalFile(from: string, to: string, copy?: boolean): Promise<any> {
         // Get the file to copy/move.
         return this.getExternalFile(from).then((fileEntry) => {
             // Create the destination dir if it doesn't exist.
-            let dirAndFile = this.getFileAndDirectoryFromPath(to);
+            const dirAndFile = this.getFileAndDirectoryFromPath(to);
+
             return this.createDir(dirAndFile.directory).then((dirEntry) => {
                 // Now copy/move the file.
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve, reject): void => {
                     if (copy) {
                         fileEntry.copyTo(dirEntry, dirAndFile.name, resolve, reject);
                     } else {
@@ -809,7 +827,7 @@ export class CoreFileProvider {
      * @param {string} to Relative new path of the file (inside the app folder).
      * @return {Promise<any>} Promise resolved when the entry is copied.
      */
-    copyExternalFile(from: string, to: string) : Promise<any> {
+    copyExternalFile(from: string, to: string): Promise<any> {
         return this.copyOrMoveExternalFile(from, to, true);
     }
 
@@ -820,7 +838,7 @@ export class CoreFileProvider {
      * @param {string} to Relative new path of the file (inside the app folder).
      * @return {Promise<any>} Promise resolved when the entry is moved.
      */
-    moveExternalFile(from: string, to: string) : Promise<any> {
+    moveExternalFile(from: string, to: string): Promise<any> {
         return this.copyOrMoveExternalFile(from, to, false);
     }
 
@@ -832,18 +850,18 @@ export class CoreFileProvider {
      * @param {string} [defaultExt] Default extension to use if no extension found in the file.
      * @return {Promise<string>} Promise resolved with the unique file name.
      */
-    getUniqueNameInFolder(dirPath: string, fileName: string, defaultExt?: string) : Promise<string> {
+    getUniqueNameInFolder(dirPath: string, fileName: string, defaultExt?: string): Promise<string> {
         // Get existing files in the folder.
         return this.getDirectoryContents(dirPath).then((entries) => {
-            let files = {},
+            const files = {};
+            let num = 1,
                 fileNameWithoutExtension = this.mimeUtils.removeExtension(fileName),
                 extension = this.mimeUtils.getFileExtension(fileName) || defaultExt,
-                newName,
-                number = 1;
+                newName;
 
             // Clean the file name.
             fileNameWithoutExtension = this.textUtils.removeSpecialCharactersForFiles(
-                    this.textUtils.decodeURIComponent(fileNameWithoutExtension));
+                this.textUtils.decodeURIComponent(fileNameWithoutExtension));
 
             // Index the files by name.
             entries.forEach((entry) => {
@@ -864,8 +882,8 @@ export class CoreFileProvider {
             } else {
                 // Repeated name. Add a number until we find a free name.
                 do {
-                    newName = fileNameWithoutExtension + '(' + number + ')' + extension;
-                    number++;
+                    newName = fileNameWithoutExtension + '(' + num + ')' + extension;
+                    num++;
                 } while (typeof files[newName] != 'undefined');
 
                 // Ask the user what he wants to do.
@@ -882,7 +900,7 @@ export class CoreFileProvider {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    clearTmpFolder() : Promise<any> {
+    clearTmpFolder(): Promise<any> {
         return this.removeDir(CoreFileProvider.TMPFOLDER);
     }
 
@@ -893,14 +911,14 @@ export class CoreFileProvider {
      * @param {any[]} files List of used files.
      * @return {Promise<any>} Promise resolved when done, rejected if failure.
      */
-    removeUnusedFiles(dirPath: string, files: any[]) : Promise<any> {
+    removeUnusedFiles(dirPath: string, files: any[]): Promise<any> {
         // Get the directory contents.
         return this.getDirectoryContents(dirPath).then((contents) => {
             if (!contents.length) {
                 return;
             }
 
-            let filesMap = {},
+            const filesMap = {},
                 promises = [];
 
             // Index the received files by fullPath and ignore the invalid ones.
@@ -930,7 +948,7 @@ export class CoreFileProvider {
      * @param {string} path The absolute path of the file to check.
      * @return {boolean} Whether the file is in the app's folder.
      */
-    isFileInAppFolder(path: string) : boolean {
+    isFileInAppFolder(path: string): boolean {
         return path.indexOf(this.basePath) != -1;
     }
 }

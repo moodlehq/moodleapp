@@ -21,7 +21,7 @@ import { CoreLangProvider } from '../lang';
 @Injectable()
 export class CoreUrlUtilsProvider {
 
-    constructor(private langProvider: CoreLangProvider) {}
+    constructor(private langProvider: CoreLangProvider) { }
 
     /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
@@ -29,7 +29,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to modify.
      * @return {string} Modified URL.
      */
-    addOrRemoveWWW(url: string) : string {
+    addOrRemoveWWW(url: string): string {
         if (url) {
             if (url.match(/http(s)?:\/\/www\./)) {
                 // Already has www. Remove it.
@@ -39,6 +39,7 @@ export class CoreUrlUtilsProvider {
                 url = url.replace('http://', 'http://www.');
             }
         }
+
         return url;
     }
 
@@ -48,12 +49,13 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {any} Object with the params.
      */
-    extractUrlParams(url: string) : any {
-        let regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
+    extractUrlParams(url: string): any {
+        const regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
             params = {};
 
-        url.replace(regex, (match: string, key: string, value: string) : string => {
+        url.replace(regex, (match: string, key: string, value: string): string => {
             params[key] = typeof value != 'undefined' ? value : '';
+
             return match;
         });
 
@@ -69,7 +71,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} token Token to use.
      * @return {string} Fixed URL.
      */
-    fixPluginfileURL(url: string, token: string) : string {
+    fixPluginfileURL(url: string, token: string): string {
         if (!url || !token) {
             return '';
         }
@@ -97,6 +99,7 @@ export class CoreUrlUtilsProvider {
         if (url.indexOf('/webservice/pluginfile') == -1) {
             url = url.replace('/pluginfile', '/webservice/pluginfile');
         }
+
         return url;
     }
 
@@ -106,7 +109,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The url to be formatted.
      * @return {string} Fromatted url.
      */
-    formatURL(url: string) : string {
+    formatURL(url: string): string {
         url = url.trim();
 
         // Check if the URL starts by http or https.
@@ -120,7 +123,7 @@ export class CoreUrlUtilsProvider {
         url = url.replace(/^https/i, 'https');
 
         // Replace last slash.
-        url = url.replace(/\/$/, "");
+        url = url.replace(/\/$/, '');
 
         return url;
     }
@@ -132,11 +135,11 @@ export class CoreUrlUtilsProvider {
      * @param {string} [page=Mobile_app] Docs page to go to.
      * @return {Promise<string>} Promise resolved with the Moodle docs URL.
      */
-    getDocsUrl(release?: string, page = 'Mobile_app') : Promise<string> {
+    getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
         let docsUrl = 'https://docs.moodle.org/en/' + page;
 
         if (typeof release != 'undefined') {
-            let version = release.substr(0, 3).replace('.', '');
+            const version = release.substr(0, 3).replace('.', '');
             // Check is a valid number.
             if (parseInt(version) >= 24) {
                 // Append release number.
@@ -159,11 +162,12 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {string} Last file without params.
      */
-    getLastFileWithoutParams(url: string) : string {
+    getLastFileWithoutParams(url: string): string {
         let filename = url.substr(url.lastIndexOf('/') + 1);
         if (filename.indexOf('?') != -1) {
             filename = filename.substr(0, filename.indexOf('?'));
         }
+
         return filename;
     }
 
@@ -174,12 +178,12 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {string} Protocol, undefined if no protocol found.
      */
-    getUrlProtocol(url: string) : string {
+    getUrlProtocol(url: string): string {
         if (!url) {
             return;
         }
 
-        let matches = url.match(/^([^\/:\.\?]*):\/\//);
+        const matches = url.match(/^([^\/:\.\?]*):\/\//);
         if (matches && matches[1]) {
             return matches[1];
         }
@@ -192,12 +196,12 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {string} Scheme, undefined if no scheme found.
      */
-    getUrlScheme(url: string) : string {
+    getUrlScheme(url: string): string {
         if (!url) {
             return;
         }
 
-        let matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
+        const matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
         if (matches && matches[1]) {
             return matches[1];
         }
@@ -209,10 +213,10 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {string} Username. Undefined if no username found.
      */
-    getUsernameFromUrl(url: string) : string {
+    getUsernameFromUrl(url: string): string {
         if (url.indexOf('@') > -1) {
             // Get URL without protocol.
-            let withoutProtocol = url.replace(/.*?:\/\//, ''),
+            const withoutProtocol = url.replace(/.*?:\/\//, ''),
                 matches = withoutProtocol.match(/[^@]*/);
 
             // Make sure that @ is at the start of the URL, not in a param at the end.
@@ -228,8 +232,8 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The url to test against the pattern.
      * @return {boolean} Whether the url is absolute.
      */
-    isAbsoluteURL(url: string) : boolean {
-        return /^[^:]{2,}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
+    isAbsoluteURL(url: string): boolean {
+        return /^[^:]{2,}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
     }
 
     /**
@@ -238,7 +242,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The URL to test.
      * @return {boolean} Whether the URL is downloadable.
      */
-    isDownloadableUrl(url: string) : boolean {
+    isDownloadableUrl(url: string): boolean {
         return this.isPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
     }
 
@@ -248,7 +252,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The URL to test.
      * @return {boolean} Whether the URL is a gravatar URL.
      */
-    isGravatarUrl(url: string) : boolean {
+    isGravatarUrl(url: string): boolean {
         return url && url.indexOf('gravatar.com/avatar') !== -1;
     }
 
@@ -258,7 +262,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The url to test.
      * @return {boolean} Whether the url uses http or https protocol.
      */
-    isHttpURL(url: string) : boolean {
+    isHttpURL(url: string): boolean {
         return /^https?\:\/\/.+/i.test(url);
     }
 
@@ -268,7 +272,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The URL to test.
      * @return {boolean} Whether the URL is a pluginfile URL.
      */
-    isPluginFileUrl(url: string) : boolean {
+    isPluginFileUrl(url: string): boolean {
         return url && url.indexOf('/pluginfile.php') !== -1;
     }
 
@@ -278,7 +282,7 @@ export class CoreUrlUtilsProvider {
      * @param {string} url The URL to test.
      * @return {boolean} Whether the URL is a theme image URL.
      */
-    isThemeImageUrl(url: string) : boolean {
+    isThemeImageUrl(url: string): boolean {
         return url && url.indexOf('/theme/image.php') !== -1;
     }
 
@@ -288,11 +292,12 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {string} Treated URL.
      */
-    removeProtocolAndWWW(url: string) : string {
+    removeProtocolAndWWW(url: string): string {
         // Remove protocol.
         url = url.replace(/.*?:\/\//g, '');
         // Remove www.
         url = url.replace(/^www./, '');
+
         return url;
     }
 
@@ -302,8 +307,9 @@ export class CoreUrlUtilsProvider {
      * @param {string} url URL to treat.
      * @return {string} URL without params.
      */
-    removeUrlParams(url: string) : string {
-        let matches = url.match(/^[^\?]+/);
+    removeUrlParams(url: string): string {
+        const matches = url.match(/^[^\?]+/);
+
         return matches && matches[0];
     }
 }

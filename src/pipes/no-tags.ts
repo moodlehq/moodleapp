@@ -28,7 +28,7 @@ export class CoreNoTagsPipe implements PipeTransform {
      * @param {string} text The text to treat.
      * @return {string} Treated text.
      */
-    transform(text: string) : string {
+    transform(text: string): string {
         return text.replace(/(<([^>]+)>)/ig, '');
     }
 }

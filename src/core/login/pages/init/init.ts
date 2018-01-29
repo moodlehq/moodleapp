@@ -23,7 +23,7 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 /**
  * Page that displays a "splash screen" while the app is being initialized.
  */
-@IonicPage({segment: "core-login-init"})
+@IonicPage({ segment: 'core-login-init' })
 @Component({
     selector: 'page-core-login-init',
     templateUrl: 'init.html',
@@ -31,12 +31,12 @@ import { CoreLoginHelperProvider } from '../../providers/helper';
 export class CoreLoginInitPage {
 
     constructor(private navCtrl: NavController, private appProvider: CoreAppProvider, private initDelegate: CoreInitDelegate,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider) {}
+        private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider) { }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         // Wait for the app to be ready.
         this.initDelegate.ready().then(() => {
             // Check if there was a pending redirect.
@@ -51,7 +51,7 @@ export class CoreLoginInitPage {
                         // The redirect is pointing to a site, load it.
                         return this.sitesProvider.loadSite(redirectData.siteId).then(() => {
                             if (!this.loginHelper.isSiteLoggedOut(redirectData.page, redirectData.params)) {
-                                this.navCtrl.setRoot(redirectData.page, redirectData.params, {animate: false});
+                                this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
                             }
                         }).catch(() => {
                             // Site doesn't exist.
@@ -59,7 +59,7 @@ export class CoreLoginInitPage {
                         });
                     } else {
                         // No site to load, just open the state.
-                        return this.navCtrl.setRoot(redirectData.page, redirectData.params, {animate: false});
+                        return this.navCtrl.setRoot(redirectData.page, redirectData.params, { animate: false });
                     }
                 }
             }
@@ -71,7 +71,7 @@ export class CoreLoginInitPage {
     /**
      * Load the right page.
      */
-    protected loadPage() : void {
+    protected loadPage(): void {
         if (this.sitesProvider.isLoggedIn()) {
             if (!this.loginHelper.isSiteLoggedOut()) {
                 this.loginHelper.goToSiteInitialPage();

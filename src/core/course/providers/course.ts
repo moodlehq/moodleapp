@@ -27,9 +27,9 @@ import { CoreConstants } from '../../constants';
  */
 @Injectable()
 export class CoreCourseProvider {
-    public static ALL_SECTIONS_ID = -1;
-    public static ACCESS_GUEST = 'courses_access_guest';
-    public static ACCESS_DEFAULT = 'courses_access_default';
+    static ALL_SECTIONS_ID = -1;
+    static ACCESS_GUEST = 'courses_access_guest';
+    static ACCESS_DEFAULT = 'courses_access_default';
 
     protected ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -88,10 +88,10 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @param {any} completion Completion status of the module.
      */
-    checkModuleCompletion(courseId: number, completion: any) : void {
+    checkModuleCompletion(courseId: number, completion: any): void {
         if (completion && completion.tracking === 2 && completion.state === 0) {
             this.invalidateSections(courseId).finally(() => {
-                this.eventsProvider.trigger(CoreEventsProvider.COMPLETION_MODULE_VIEWED, {courseId: courseId});
+                this.eventsProvider.trigger(CoreEventsProvider.COMPLETION_MODULE_VIEWED, { courseId: courseId });
             });
         }
     }
@@ -102,7 +102,7 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<void>} Promise resolved when all status are cleared.
      */
-    clearAllCoursesStatus(siteId?: string) : Promise<void> {
+    clearAllCoursesStatus(siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             this.logger.debug('Clear all course status for site ' + site.id);
 
@@ -120,13 +120,13 @@ export class CoreCourseProvider {
      * @param {number} [userId] User ID. If not defined, current user.
      * @return {Promise<any>} Promise resolved with the completion statuses: object where the key is module ID.
      */
-    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number) : Promise<any> {
+    getActivitiesCompletionStatus(courseId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
             this.logger.debug(`Getting completion status for user ${userId} in course ${courseId}`);
 
-            let params = {
+            const params = {
                     courseid: courseId,
                     userid: userId
                 },
@@ -138,6 +138,7 @@ export class CoreCourseProvider {
                 if (data && data.statuses) {
                     return this.utils.arrayToObject(data.statuses, 'cmid');
                 }
+
                 return Promise.reject(null);
             });
         });
@@ -150,7 +151,7 @@ export class CoreCourseProvider {
      * @param {number} userId User ID.
      * @return {string} Cache key.
      */
-    protected getActivitiesCompletionCacheKey(courseId: number, userId: number) : string {
+    protected getActivitiesCompletionCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
     }
 
@@ -161,12 +162,13 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the data.
      */
-    getCourseStatusData(courseId: number, siteId?: string) : Promise<any> {
+    getCourseStatusData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.COURSE_STATUS_TABLE, {id: courseId}).then((entry) => {
+            return site.getDb().getRecord(this.COURSE_STATUS_TABLE, { id: courseId }).then((entry) => {
                 if (!entry) {
                     return Promise.reject(null);
                 }
+
                 return entry;
             });
         });
@@ -179,7 +181,7 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<string>} Promise resolved with the status.
      */
-    getCourseStatus(courseId: number, siteId?: string) : Promise<string> {
+    getCourseStatus(courseId: number, siteId?: string): Promise<string> {
         return this.getCourseStatusData(courseId, siteId).then((entry) => {
             return entry.status || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
@@ -199,7 +201,7 @@ export class CoreCourseProvider {
      * @return {Promise<any>} Promise resolved with the module.
      */
     getModule(moduleId: number, courseId?: number, sectionId?: number, preferCache?: boolean, ignoreCache?: boolean,
-            siteId?: string) : Promise<any> {
+        siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         let promise;
@@ -222,7 +224,7 @@ export class CoreCourseProvider {
             // We have courseId, we can use core_course_get_contents for compatibility.
             this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
 
-            let params = {
+            const params = {
                     courseid: courseId,
                     options: [
                         {
@@ -253,15 +255,17 @@ export class CoreCourseProvider {
                 return this.getSections(courseId, false, false, preSets, siteId);
             }).then((sections) => {
                 for (let i = 0; i < sections.length; i++) {
-                    let section = sections[i];
+                    const section = sections[i];
                     for (let j = 0; j < section.modules.length; j++) {
-                        let module = section.modules[j];
+                        const module = section.modules[j];
                         if (module.id == moduleId) {
                             module.course = courseId;
+
                             return module;
                         }
                     }
                 }
+
                 return Promise.reject(null);
             });
         });
@@ -274,9 +278,9 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the module's info.
      */
-    getModuleBasicInfo(moduleId: number, siteId?: string) : Promise<any> {
+    getModuleBasicInfo(moduleId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let params = {
+            const params = {
                     cmid: moduleId
                 },
                 preSets = {
@@ -284,11 +288,12 @@ export class CoreCourseProvider {
                 };
 
             return site.read('core_course_get_course_module', params, preSets).then((response) => {
-                if (response.warnings && response.warnings.length) {
+                if (response.warnings && response.warnings.length) {
                     return Promise.reject(response.warnings[0]);
                 } else if (response.cm) {
                     return response.cm;
                 }
+
                 return Promise.reject(null);
             });
         });
@@ -301,9 +306,9 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the module's grade info.
      */
-    getModuleBasicGradeInfo(moduleId: number, siteId?: string) : Promise<any> {
+    getModuleBasicGradeInfo(moduleId: number, siteId?: string): Promise<any> {
         return this.getModuleBasicInfo(moduleId, siteId).then((info) => {
-            let grade = {
+            const grade = {
                 advancedgrading: info.advancedgrading || false,
                 grade: info.grade || false,
                 gradecat: info.gradecat || false,
@@ -315,6 +320,7 @@ export class CoreCourseProvider {
             if (grade.grade !== false || grade.advancedgrading !== false || grade.outcomes !== false) {
                 return grade;
             }
+
             return false;
         });
     }
@@ -327,9 +333,9 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved with the module's info.
      */
-    getModuleBasicInfoByInstance(id: number, module: string, siteId?: string) : Promise<any> {
+    getModuleBasicInfoByInstance(id: number, module: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let params = {
+            const params = {
                     instance: id,
                     module: module
                 },
@@ -338,11 +344,12 @@ export class CoreCourseProvider {
                 };
 
             return site.read('core_course_get_course_module_by_instance', params, preSets).then((response) => {
-                if (response.warnings && response.warnings.length) {
+                if (response.warnings && response.warnings.length) {
                     return Promise.reject(response.warnings[0]);
                 } else if (response.cm) {
                     return response.cm;
                 }
+
                 return Promise.reject(null);
             });
         });
@@ -355,7 +362,7 @@ export class CoreCourseProvider {
      * @param {string} module Name of the module. E.g. 'glossary'.
      * @return {string} Cache key.
      */
-    protected getModuleBasicInfoByInstanceCacheKey(id: number, module: string) : string {
+    protected getModuleBasicInfoByInstanceCacheKey(id: number, module: string): string {
         return this.ROOT_CACHE_KEY + 'moduleByInstance:' + module + ':' + id;
     }
 
@@ -365,7 +372,7 @@ export class CoreCourseProvider {
      * @param {number} moduleId Module ID.
      * @return {string} Cache key.
      */
-    protected getModuleCacheKey(moduleId: number) : string {
+    protected getModuleCacheKey(moduleId: number): string {
         return this.ROOT_CACHE_KEY + 'module:' + moduleId;
     }
 
@@ -375,7 +382,7 @@ export class CoreCourseProvider {
      * @param {string} moduleName The module name.
      * @return {string} The IMG src.
      */
-    getModuleIconSrc(moduleName: string) : string {
+    getModuleIconSrc(moduleName: string): string {
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             moduleName = 'external-tool';
         }
@@ -390,7 +397,7 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved with the section ID.
      */
-    getModuleSectionId(moduleId: number, siteId?: string) : Promise<number> {
+    getModuleSectionId(moduleId: number, siteId?: string): Promise<number> {
         // Try to get the section using getModuleBasicInfo.
         return this.getModuleBasicInfo(moduleId, siteId).then((module) => {
             return module.section;
@@ -408,7 +415,7 @@ export class CoreCourseProvider {
      * @return {Promise<any>} Promise resolved with the section.
      */
     getSection(courseId: number, sectionId?: number, excludeModules?: boolean, excludeContents?: boolean, siteId?: string)
-            : Promise<any> {
+        : Promise<any> {
 
         if (sectionId < 0) {
             return Promise.reject('Invalid section ID');
@@ -436,30 +443,30 @@ export class CoreCourseProvider {
      * @return {Promise}                The reject contains the error message, else contains the sections.
      */
     getSections(courseId?: number, excludeModules?: boolean, excludeContents?: boolean, preSets?: CoreSiteWSPreSets,
-            siteId?: string) : Promise<any[]> {
+        siteId?: string): Promise<any[]> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             preSets = preSets || {};
             preSets.cacheKey = this.getSectionsCacheKey(courseId);
             preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
 
-            let params = {
-                    courseid: courseId,
-                    options: [
-                        {
-                            name: 'excludemodules',
-                            value: excludeModules ? 1 : 0
-                        },
-                        {
-                            name: 'excludecontents',
-                            value: excludeContents ? 1 : 0
-                        }
-                    ]
-                };
+            const params = {
+                courseid: courseId,
+                options: [
+                    {
+                        name: 'excludemodules',
+                        value: excludeModules ? 1 : 0
+                    },
+                    {
+                        name: 'excludecontents',
+                        value: excludeContents ? 1 : 0
+                    }
+                ]
+            };
 
             return site.read('core_course_get_contents', params, preSets).then((sections) => {
-                let siteHomeId = site.getSiteHomeId(),
-                    showSections = true;
+                const siteHomeId = site.getSiteHomeId();
+                let showSections = true;
 
                 if (courseId == siteHomeId) {
                     showSections = site.getStoredConfig('numsections');
@@ -481,7 +488,7 @@ export class CoreCourseProvider {
      * @param {number} courseId Course ID.
      * @return {string} Cache key.
      */
-    protected getSectionsCacheKey(courseId) : string {
+    protected getSectionsCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'sections:' + courseId;
     }
 
@@ -491,8 +498,8 @@ export class CoreCourseProvider {
      * @param {any[]} sections Sections.
      * @return {any[]} Modules.
      */
-    getSectionsModules(sections: any[]) : any[] {
-        if (!sections || !sections.length) {
+    getSectionsModules(sections: any[]): any[] {
+        if (!sections || !sections.length) {
             return [];
         }
 
@@ -502,6 +509,7 @@ export class CoreCourseProvider {
                 modules = modules.concat(section.modules);
             }
         });
+
         return modules;
     }
 
@@ -512,7 +520,7 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateModule(moduleId: number, siteId?: string) : Promise<any> {
+    invalidateModule(moduleId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getModuleCacheKey(moduleId));
         });
@@ -526,7 +534,7 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateModuleByInstance(id: number, module: string, siteId?: string) : Promise<any> {
+    invalidateModuleByInstance(id: number, module: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getModuleBasicInfoByInstanceCacheKey(id, module));
         });
@@ -540,9 +548,9 @@ export class CoreCourseProvider {
      * @param {number} [userId] User ID. If not defined, current user.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateSections(courseId: number, siteId?: string, userId?: number) : Promise<any> {
+    invalidateSections(courseId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let promises = [],
+            const promises = [],
                 siteHomeId = site.getSiteHomeId();
 
             userId = userId || site.getUserId();
@@ -552,6 +560,7 @@ export class CoreCourseProvider {
             if (courseId == siteHomeId) {
                 promises.push(site.invalidateConfig());
             }
+
             return Promise.all(promises);
         });
     }
@@ -568,7 +577,7 @@ export class CoreCourseProvider {
      * @return {Promise<void>} Promise resolved when loaded.
      */
     loadModuleContents(module: any, courseId?: number, sectionId?: number, preferCache?: boolean, ignoreCache?: boolean,
-            siteId?: string) : Promise<void> {
+        siteId?: string): Promise<void> {
         if (!ignoreCache && module.contents && module.contents.length) {
             // Already loaded.
             return Promise.resolve();
@@ -587,10 +596,11 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<void>} Promise resolved when the WS call is successful.
      */
-    logView(courseId: number, sectionNumber?: number, siteId?: string) : Promise<void> {
-        let params: any = {
+    logView(courseId: number, sectionNumber?: number, siteId?: string): Promise<void> {
+        const params: any = {
             courseid: courseId
         };
+
         if (typeof sectionNumber != 'undefined') {
             params.sectionnumber = sectionNumber;
         }
@@ -600,7 +610,7 @@ export class CoreCourseProvider {
                 if (!response.status) {
                     return Promise.reject(null);
                 }
-            })
+            });
         });
     }
 
@@ -611,13 +621,13 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<string>} Promise resolved when the status is changed. Resolve param: new status.
      */
-    setCoursePreviousStatus(courseId: number, siteId?: string) : Promise<string> {
+    setCoursePreviousStatus(courseId: number, siteId?: string): Promise<string> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         this.logger.debug(`Set previous status for course ${courseId} in site ${siteId}`);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let db = site.getDb(),
+            const db = site.getDb(),
                 newData: any = {};
 
             // Get current stored data.
@@ -631,9 +641,10 @@ export class CoreCourseProvider {
                     newData.downloadTime = entry.previousDownloadTime;
                 }
 
-                return db.updateRecords(this.COURSE_STATUS_TABLE, newData, {id: courseId}).then(() => {
+                return db.updateRecords(this.COURSE_STATUS_TABLE, newData, { id: courseId }).then(() => {
                     // Success updating, trigger event.
                     this.triggerCourseStatusChanged(courseId, newData.status, siteId);
+
                     return newData.status;
                 });
             });
@@ -648,8 +659,8 @@ export class CoreCourseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<void>} Promise resolved when the status is stored.
      */
-    setCourseStatus(courseId: number, status: string, siteId?: string) : Promise<void> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId()
+    setCourseStatus(courseId: number, status: string, siteId?: string): Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         this.logger.debug(`Set status '${status}' for course ${courseId} in site ${siteId}`);
 
@@ -669,7 +680,7 @@ export class CoreCourseProvider {
                     downloadTime = entry.downloadTime;
                     previousDownloadTime = entry.previousDownloadTime;
                 } else {
-                    // downloadTime will be updated, store current time as previous.
+                    // The downloadTime will be updated, store current time as previous.
                     previousDownloadTime = entry.downloadTime;
                 }
 
@@ -679,7 +690,7 @@ export class CoreCourseProvider {
             }).then((previousStatus) => {
                 if (previousStatus != status) {
                     // Status has changed, update it.
-                    let data = {
+                    const data = {
                         id: courseId,
                         status: status,
                         previous: previousStatus,
@@ -688,7 +699,7 @@ export class CoreCourseProvider {
                         previousDownloadTime: previousDownloadTime
                     };
 
-                    return site.getDb().insertOrUpdateRecord(this.COURSE_STATUS_TABLE, data, {id: courseId});
+                    return site.getDb().insertOrUpdateRecord(this.COURSE_STATUS_TABLE, data, { id: courseId });
                 }
             }).then(() => {
                 // Success inserting, trigger event.
@@ -703,7 +714,7 @@ export class CoreCourseProvider {
      * @param {string} moduleName The module name.
      * @return {string} Translated name.
      */
-    translateModuleName(moduleName: string) : string {
+    translateModuleName(moduleName: string): string {
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             moduleName = 'external-tool';
         }
@@ -721,7 +732,7 @@ export class CoreCourseProvider {
      * @param {string} status New course status.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    protected triggerCourseStatusChanged(courseId: number, status: string, siteId?: string) : void {
+    protected triggerCourseStatusChanged(courseId: number, status: string, siteId?: string): void {
         this.eventsProvider.trigger(CoreEventsProvider.COURSE_STATUS_CHANGED, {
             courseId: courseId,
             status: status

@@ -23,7 +23,7 @@ import { CoreSite } from '../../../../classes/site';
 /**
  * Page to accept a site policy.
  */
-@IonicPage({segment: "core-login-site-policy"})
+@IonicPage({ segment: 'core-login-site-policy' })
 @Component({
     selector: 'page-core-login-site-policy',
     templateUrl: 'site-policy.html',
@@ -44,21 +44,23 @@ export class CoreLoginSitePolicyPage {
     /**
      * View laoded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.currentSite = this.sitesProvider.getCurrentSite();
 
         if (!this.currentSite) {
             // Not logged in, stop.
             this.cancel();
+
             return;
         }
 
-        let currentSiteId = this.currentSite.id;
+        const currentSiteId = this.currentSite.id;
         this.siteId = this.siteId || currentSiteId;
 
         if (this.siteId != currentSiteId || !this.currentSite.wsAvailable('core_user_agree_site_policy')) {
             // Not current site or WS not available, stop.
             this.cancel();
+
             return;
         }
 
@@ -67,8 +69,10 @@ export class CoreLoginSitePolicyPage {
 
     /**
      * Fetch the site policy URL.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchSitePolicy() {
+    protected fetchSitePolicy(): Promise<any> {
         return this.loginHelper.getSitePolicy(this.siteId).then((sitePolicy) => {
             this.sitePolicy = sitePolicy;
 
@@ -91,7 +95,7 @@ export class CoreLoginSitePolicyPage {
     /**
      * Cancel.
      */
-    cancel() : void {
+    cancel(): void {
         this.sitesProvider.logout().catch(() => {
             // Ignore errors, shouldn't happen.
         }).then(() => {
@@ -102,8 +106,8 @@ export class CoreLoginSitePolicyPage {
     /**
      * Accept the site policy.
      */
-    accept() : void {
-        let modal = this.domUtils.showModalLoading('core.sending', true);
+    accept(): void {
+        const modal = this.domUtils.showModalLoading('core.sending', true);
         this.loginHelper.acceptSitePolicy(this.siteId).then(() => {
             // Success accepting, go to site initial page.
             // Invalidate cache since some WS don't return error if site policy is not accepted.

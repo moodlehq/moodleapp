@@ -39,7 +39,7 @@ export class CoreCourseModuleComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Handler data must be defined. If it isn't, set it to prevent errors.
         if (this.module && !this.module.handlerData) {
             this.module.handlerData = {};
@@ -51,7 +51,7 @@ export class CoreCourseModuleComponent implements OnInit {
      *
      * @param {Event} event Click event.
      */
-    moduleClicked(event: Event) {
+    moduleClicked(event: Event): void {
         if (this.module.uservisible !== false && this.module.handlerData.action) {
             this.module.handlerData.action(event, this.navCtrl, this.module, this.courseId);
         }
@@ -63,7 +63,7 @@ export class CoreCourseModuleComponent implements OnInit {
      * @param {Event} event Click event.
      * @param {CoreCourseModuleHandlerButton} button The clicked button.
      */
-    buttonClicked(event: Event, button: CoreCourseModuleHandlerButton) {
+    buttonClicked(event: Event, button: CoreCourseModuleHandlerButton): void {
         if (button && button.action) {
             button.action(event, this.navCtrl, this.module, this.courseId);
         }

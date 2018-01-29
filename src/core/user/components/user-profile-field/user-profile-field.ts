@@ -26,20 +26,20 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 })
 export class CoreUserProfileFieldComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() signup?: boolean = false; // True if editing the field in signup. Defaults to false.
-    @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
+    @Input() signup = false; // True if editing the field in signup. Defaults to false.
+    @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() form?: any; // Form where to add the form control. Required if edit=true or signup=true.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
 
     // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
-    @ViewChild('userProfileField', { read: ViewContainerRef }) set userProfileField (el: ViewContainerRef) {
+    @ViewChild('userProfileField', { read: ViewContainerRef }) set userProfileField(el: ViewContainerRef) {
         if (this.field) {
             this.createComponent(this.ufDelegate.getComponent(this.field, this.signup), el);
         } else {
             // The component hasn't been initialized yet. Store the container.
             this.fieldContainer = el;
         }
-    };
+    }
 
     protected logger;
 
@@ -48,14 +48,14 @@ export class CoreUserProfileFieldComponent implements OnInit {
     protected fieldInstance: any;
 
     constructor(logger: CoreLoggerProvider, private factoryResolver: ComponentFactoryResolver,
-            private ufDelegate: CoreUserProfileFieldDelegate, private utilsProvider: CoreUtilsProvider) {
+        private ufDelegate: CoreUserProfileFieldDelegate, private utilsProvider: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreUserProfileFieldComponent');
     }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.createComponent(this.ufDelegate.getComponent(this.field, this.signup), this.fieldContainer);
     }
 
@@ -66,7 +66,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
      * @param {ViewContainerRef} container The container to add the component to.
      * @return {boolean} Whether the component was successfully created.
      */
-    protected createComponent(componentClass: any, container: ViewContainerRef) : boolean {
+    protected createComponent(componentClass: any, container: ViewContainerRef): boolean {
         if (!componentClass || !container) {
             // No component to instantiate or container doesn't exist right now.
             return false;
@@ -95,8 +95,9 @@ export class CoreUserProfileFieldComponent implements OnInit {
             }
 
             return true;
-        } catch(ex) {
+        } catch (ex) {
             this.logger.error('Error creating user field component', ex, componentClass);
+
             return false;
         }
     }

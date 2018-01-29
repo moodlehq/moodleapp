@@ -23,8 +23,8 @@ import { CoreUtilsProvider } from '../../../providers/utils/utils';
  */
 @Injectable()
 export class CoreUserProvider {
-    public static PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
-    public static PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
+    static PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
+    static PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
     protected ROOT_CACHE_KEY = 'mmUser:';
 
     // Variables for database.
@@ -65,16 +65,17 @@ export class CoreUserProvider {
      * @return {Promise<string>}       Promise resolve with the new profileimageurl
      */
     changeProfilePicture(draftItemId: number, userId: number): Promise<string> {
-        var data = {
-            'draftitemid': draftItemId,
-            'delete': 0,
-            'userid': userId
+        const data = {
+            draftitemid: draftItemId,
+            delete: 0,
+            userid: userId
         };
 
         return this.sitesProvider.getCurrentSite().write('core_user_update_picture', data).then((result) => {
             if (!result.success) {
                 return Promise.reject(null);
             }
+
             return result.profileimageurl;
         });
     }
@@ -91,7 +92,7 @@ export class CoreUserProvider {
             return Promise.reject(null);
         }
 
-        let promises = [];
+        const promises = [];
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -114,7 +115,7 @@ export class CoreUserProvider {
      * @param {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}            Promise resolved with the user data.
      */
-    getProfile(userId: number, courseId?: number, forceLocal = false, siteId?: string): Promise<any> {
+    getProfile(userId: number, courseId?: number, forceLocal: boolean = false, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (forceLocal) {
@@ -122,6 +123,7 @@ export class CoreUserProvider {
                 return this.getUserFromWS(userId, courseId, siteId);
             });
         }
+
         return this.getUserFromWS(userId, courseId, siteId).catch(() => {
             return this.getUserFromLocalDb(userId, siteId);
         });
@@ -133,7 +135,7 @@ export class CoreUserProvider {
      * @param  {number} userId User ID.
      * @return {string}        Cache key.
      */
-    protected getUserCacheKey(userId): string {
+    protected getUserCacheKey(userId: number): string {
         return this.ROOT_CACHE_KEY + 'data:' + userId;
     }
 
@@ -146,7 +148,7 @@ export class CoreUserProvider {
      */
     protected getUserFromLocalDb(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.USERS_TABLE, {id: userId});
+            return site.getDb().getRecord(this.USERS_TABLE, { id: userId });
         });
     }
 
@@ -160,18 +162,22 @@ export class CoreUserProvider {
      */
     protected getUserFromWS(userId: number, courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let presets = {
+            const presets = {
                     cacheKey: this.getUserCacheKey(userId)
-                },
-                wsName, data;
+                };
+            let wsName, data;
 
             // Determine WS and data to use.
             if (courseId && courseId != site.getSiteHomeId()) {
                 this.logger.debug(`Get participant with ID '${userId}' in course '${courseId}`);
                 wsName = 'core_user_get_course_user_profiles';
                 data = {
-                    "userlist[0][userid]": userId,
-                    "userlist[0][courseid]": courseId
+                    userlist: [
+                        {
+                            userid: userId,
+                            courseid: courseId
+                        }
+                    ]
                 };
             } else {
                 this.logger.debug(`Get user with ID '${userId}'`);
@@ -187,11 +193,12 @@ export class CoreUserProvider {
                     return Promise.reject('Cannot retrieve user info.');
                 }
 
-                var user = users.shift();
+                const user = users.shift();
                 if (user.country) {
                     user.country = this.utils.getCountryName(user.country);
                 }
                 this.storeUser(user.id, user.fullname, user.profileimageurl);
+
                 return user;
             });
 
@@ -205,11 +212,11 @@ export class CoreUserProvider {
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<any>}       Promise resolved when the data is invalidated.
      */
-    invalidateUserCache(userId: number, siteId?: string) : Promise<any> {
+    invalidateUserCache(userId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getUserCacheKey(userId));
         });
-    };
+    }
 
     /**
      * Check if update profile picture is disabled in a certain site.
@@ -217,11 +224,11 @@ export class CoreUserProvider {
      * @param  {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean}       True if disabled, false otherwise.
      */
-    isUpdatePictureDisabledInSite(site?: CoreSite) : boolean {
+    isUpdatePictureDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
-        return site.isFeatureDisabled('$mmUserDelegate_picture');
-    };
 
+        return site.isFeatureDisabled('$mmUserDelegate_picture');
+    }
 
     /**
      * Log User Profile View in Moodle.
@@ -229,14 +236,15 @@ export class CoreUserProvider {
      * @param  {number}       [courseId] Course ID.
      * @return {Promise<any>}          Promise resolved when done.
      */
-    logView(userId: number, courseId?: number) : Promise<any> {
-        let params = {
+    logView(userId: number, courseId?: number): Promise<any> {
+        const params = {
             userid: userId
         };
 
         if (courseId) {
             params['courseid'] = courseId;
         }
+
         return this.sitesProvider.getCurrentSite().write('core_user_view_user_profile', params);
     }
 
@@ -251,13 +259,13 @@ export class CoreUserProvider {
      */
     protected storeUser(userId: number, fullname: string, avatar: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let userRecord = {
+            const userRecord = {
                 id: userId,
                 fullname: fullname,
                 profileimageurl: avatar
             };
 
-            return site.getDb().insertOrUpdateRecord(this.USERS_TABLE, userRecord, {id: userId});
+            return site.getDb().insertOrUpdateRecord(this.USERS_TABLE, userRecord, { id: userId });
         });
     }
 }

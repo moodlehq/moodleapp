@@ -50,12 +50,13 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         courseId = courseId || params.courseid || params.cid;
+
         return [{
-            action: (siteId, navCtrl?) => {
+            action: (siteId, navCtrl?): void => {
                 this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
             }
         }];

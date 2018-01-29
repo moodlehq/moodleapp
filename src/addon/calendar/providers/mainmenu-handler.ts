@@ -24,16 +24,15 @@ export class AddonCalendarMainMenuHandler implements CoreMainMenuHandler {
     name = 'AddonCalendar';
     priority = 400;
 
-    constructor(private calendarProvider: AddonCalendarProvider) {}
+    constructor(private calendarProvider: AddonCalendarProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
      *
      * @return {boolean} Whether or not the handler is enabled on a site level.
      */
-    isEnabled(): boolean|Promise<boolean> {
-        let isDisabled = this.calendarProvider.isCalendarDisabledInSite();
-        return !isDisabled;
+    isEnabled(): boolean | Promise<boolean> {
+        return !this.calendarProvider.isCalendarDisabledInSite();
     }
 
     /**

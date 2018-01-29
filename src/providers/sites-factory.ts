@@ -21,7 +21,7 @@ import { CoreSite } from '../classes/site';
 @Injectable()
 export class CoreSitesFactoryProvider {
 
-    constructor(private injector: Injector) {}
+    constructor(private injector: Injector) { }
 
     /**
      * Make a site object.
@@ -38,7 +38,7 @@ export class CoreSitesFactoryProvider {
      * This returns a site object.
      */
     makeSite(id: string, siteUrl: string, token?: string, info?: any, privateToken?: string,
-            config?: any, loggedOut?: boolean) : CoreSite {
+            config?: any, loggedOut?: boolean): CoreSite {
         return new CoreSite(this.injector, id, siteUrl, token, info, privateToken, config, loggedOut);
     }
 
@@ -48,10 +48,11 @@ export class CoreSitesFactoryProvider {
      * @return {string[]} List of methods.
      */
     getSiteMethods(): string[] {
-        let methods = [];
-        for (let name in CoreSite.prototype) {
+        const methods = [];
+        for (const name in CoreSite.prototype) {
             methods.push(name);
         }
+
         return methods;
     }
 }

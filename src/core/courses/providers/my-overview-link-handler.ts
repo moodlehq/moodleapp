@@ -39,10 +39,10 @@ export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBas
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId, navCtrl?) => {
+            action: (siteId, navCtrl?): void => {
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.loginHelper.redirect('CoreCoursesMyOverviewPage', undefined, siteId);
             }

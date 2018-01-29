@@ -22,7 +22,7 @@ import { CoreCourseOptionsDelegate } from './providers/options-delegate';
 import { CoreCourseFormatDefaultHandler } from './providers/default-format';
 import { CoreCourseFormatSingleActivityModule } from './formats/singleactivity/singleactivity.module';
 import { CoreCourseFormatSocialModule } from './formats/social/social.module';
-import { CoreCourseFormatTopicsModule} from './formats/topics/topics.module';
+import { CoreCourseFormatTopicsModule } from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 
 @NgModule({

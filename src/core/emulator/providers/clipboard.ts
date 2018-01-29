@@ -46,8 +46,8 @@ export class ClipboardMock extends Clipboard {
      * @param {string} text The text to copy.
      * @return {Promise<any>} Promise resolved when copied.
      */
-    copy(text: string) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    copy(text: string): Promise<any> {
+        return new Promise((resolve, reject): void => {
             if (this.isDesktop) {
                 this.clipboard.writeText(text);
                 resolve();
@@ -76,8 +76,8 @@ export class ClipboardMock extends Clipboard {
      *
      * @return {Promise<any>} Promise resolved with the text.
      */
-    paste() : Promise<any> {
-        return new Promise((resolve, reject) => {
+    paste(): Promise<any> {
+        return new Promise((resolve, reject): void => {
             if (this.isDesktop) {
                 resolve(this.clipboard.readText());
             } else {

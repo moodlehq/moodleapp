@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, ViewContainerRef, ComponentFactoryResolver, ChangeDetectorRef,
-         SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, ViewContainerRef, ComponentFactoryResolver, SimpleChange } from '@angular/core';
 import { CoreLoggerProvider } from '../../../../../providers/logger';
 import { CoreCourseModuleDelegate } from '../../../providers/module-delegate';
 import { CoreCourseUnsupportedModuleComponent } from '../../../components/unsupported-module/unsupported-module';
@@ -37,17 +36,17 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     protected componentInstance: any;
 
     constructor(logger: CoreLoggerProvider, private viewRef: ViewContainerRef, private factoryResolver: ComponentFactoryResolver,
-            private cdr: ChangeDetectorRef, private moduleDelegate: CoreCourseModuleDelegate) {
+            private moduleDelegate: CoreCourseModuleDelegate) {
         this.logger = logger.getInstance('CoreCourseFormatSingleActivityComponent');
     }
 
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (this.course && this.sections && this.sections.length) {
             // In single activity the module should only have 1 section and 1 module. Get the module.
-            let module = this.sections[0] && this.sections[0].modules && this.sections[0].modules[0];
+            const module = this.sections[0] && this.sections[0].modules && this.sections[0].modules[0];
             if (module && !this.componentInstance) {
                 // We haven't created the component yet. Create it now.
                 this.createComponent(module);
@@ -55,11 +54,11 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 
             if (this.componentInstance && this.componentInstance.ngOnChanges) {
                 // Call ngOnChanges of the component.
-                let newChanges: {[name: string]: SimpleChange} = {};
+                const newChanges: { [name: string]: SimpleChange } = {};
 
                 // Check if course has changed.
                 if (changes.course) {
-                    newChanges.course = changes.course
+                    newChanges.course = changes.course;
                     this.componentInstance.course = this.course;
                 }
 
@@ -69,7 +68,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
                         currentValue: module,
                         firstChange: changes.sections.firstChange,
                         previousValue: this.module,
-                        isFirstChange: () => {
+                        isFirstChange: (): boolean => {
                             return newChanges.module.firstChange;
                         }
                     };
@@ -90,8 +89,8 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
      * @param {any} module The module.
      * @return {boolean} Whether the component was successfully created.
      */
-    protected createComponent(module: any) : boolean {
-        let componentClass = this.moduleDelegate.getMainComponent(this.course, module) || CoreCourseUnsupportedModuleComponent;
+    protected createComponent(module: any): boolean {
+        const componentClass = this.moduleDelegate.getMainComponent(this.course, module) || CoreCourseUnsupportedModuleComponent;
         if (!componentClass) {
             // No component to instantiate.
             return false;
@@ -108,11 +107,10 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
             this.componentInstance.courseId = this.course.id;
             this.componentInstance.module = module;
 
-            // this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.
-
             return true;
-        } catch(ex) {
+        } catch (ex) {
             this.logger.error('Error creating component', ex);
+
             return false;
         }
     }

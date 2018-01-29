@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormControl} from '@angular/forms';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 /**
  * Directive to render a textarea user profile field.
@@ -24,24 +24,26 @@ import { FormGroup, Validators, FormControl} from '@angular/forms';
 })
 export class AddonUserProfileFieldTextareaComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() edit?: boolean = false; // True if editing the field. Defaults to false.
-    @Input() disabled?: boolean = false; // True if disabled. Defaults to false.
+    @Input() edit? = false; // True if editing the field. Defaults to false.
+    @Input() disabled? = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
-    control: FormControl
+    control: FormControl;
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
-        let field = this.field;
+    ngOnInit(): void {
+        const field = this.field;
 
         if (field && this.edit && this.form) {
             field.modelName = 'profile_field_' + field.shortname;
 
-            let formData = {
+            const formData = {
                 value: field.defaultdata,
                 disabled: this.disabled
             };
@@ -50,5 +52,4 @@ export class AddonUserProfileFieldTextareaComponent implements OnInit {
             this.form.addControl(field.modelName, this.control);
         }
     }
-
 }

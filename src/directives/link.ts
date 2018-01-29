@@ -28,18 +28,18 @@ import { CoreConfigConstants } from '../configconstants';
     selector: '[core-link]'
 })
 export class CoreLinkDirective implements OnInit {
-    @Input() capture?: boolean|string; // If the link needs to be captured by the app.
-    @Input() inApp?: boolean|string; // True to open in embedded browser, false to open in system browser.
-    @Input() autoLogin? = 'check'; // If the link should be open with auto-login. Accepts the following values:
-                                   //   "yes" -> Always auto-login.
-                                   //   "no" -> Never auto-login.
-                                   //   "check" -> Auto-login only if it points to the current site. Default value.
+    @Input() capture?: boolean | string; // If the link needs to be captured by the app.
+    @Input() inApp?: boolean | string; // True to open in embedded browser, false to open in system browser.
+    @Input() autoLogin?= 'check'; // If the link should be open with auto-login. Accepts the following values:
+                                  //   "yes" -> Always auto-login.
+                                  //   "no" -> Never auto-login.
+                                  //   "check" -> Auto-login only if it points to the current site. Default value.
 
     protected element: HTMLElement;
 
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController) {
+        private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
+        private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }
@@ -47,7 +47,7 @@ export class CoreLinkDirective implements OnInit {
     /**
      * Function executed when the component is initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.inApp = this.utils.isTrueOrOne(this.inApp);
 
         this.element.addEventListener('click', (event) => {
@@ -61,7 +61,7 @@ export class CoreLinkDirective implements OnInit {
                     if (this.utils.isTrueOrOne(this.capture)) {
                         this.contentLinksHelper.handleLink(href, undefined, this.navCtrl).then((treated) => {
                             if (!treated) {
-                               this.navigate(href);
+                                this.navigate(href);
                             }
                         });
                     } else {
@@ -77,7 +77,7 @@ export class CoreLinkDirective implements OnInit {
      *
      * @param {string} href HREF to be opened.
      */
-    protected navigate(href: string) : void {
+    protected navigate(href: string): void {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';
 
         if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
@@ -93,8 +93,8 @@ export class CoreLinkDirective implements OnInit {
                 // $location.url(href);
             } else {
                 // Look for id or name.
-                let scrollEl = <HTMLElement> this.domUtils.closest(this.element, 'scroll-content');
-                this.domUtils.scrollToElement(scrollEl, document.body, "#" + href + ", [name='" + href + "']");
+                const scrollEl = <HTMLElement> this.domUtils.closest(this.element, 'scroll-content');
+                this.domUtils.scrollToElement(scrollEl, document.body, '#' + href + ', [name=\'' + href + '\']');
             }
         } else if (href.indexOf(contentLinksScheme) === 0) {
             // Link should be treated by Custom URL Scheme. Encode the right part, otherwise ':' is removed in iOS.

@@ -25,15 +25,15 @@ import { CoreLoginHelperProvider } from '../core/login/providers/helper';
     templateUrl: 'app.html'
 })
 export class MoodleMobileApp implements OnInit {
-    // Use the page name (string) because the page is lazy loaded (Ionic feature). That way we can load pages without
-    // having to import them. The downside is that each page needs to implement a ngModule.
-    rootPage:any = 'CoreLoginInitPage';
+    // Use page name (string) because the page is lazy loaded (Ionic feature). That way we can load pages without importing them.
+    // The downside is that each page needs to implement a ngModule.
+    rootPage: any = 'CoreLoginInitPage';
     protected logger;
     protected lastUrls = {};
 
     constructor(private platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, logger: CoreLoggerProvider,
-            private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider,
-            private appProvider: CoreAppProvider) {
+        private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider,
+        private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -48,7 +48,7 @@ export class MoodleMobileApp implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Go to sites page when user is logged out.
         this.eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
             this.appProvider.getRootNavController().setRoot('CoreLoginSitesPage');
@@ -93,7 +93,7 @@ export class MoodleMobileApp implements OnInit {
         });
 
         // Handle app launched with a certain URL (custom URL scheme).
-        (<any>window).handleOpenURL = (url: string) => {
+        (<any> window).handleOpenURL = (url: string): void => {
             // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
             if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
                 // Function called more than once, stop.
@@ -113,4 +113,3 @@ export class MoodleMobileApp implements OnInit {
         });
     }
 }
-

@@ -26,15 +26,15 @@ export class CoreFileUploaderCameraHandler implements CoreFileUploaderHandler {
     priority = 1800;
 
     constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
-            private uploaderHelper: CoreFileUploaderHelperProvider) {}
+            private uploaderHelper: CoreFileUploaderHelperProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled(): boolean|Promise<boolean> {
-        return this.appProvider.isMobile() || this.appProvider.canGetUserMedia();
+    isEnabled(): boolean | Promise<boolean> {
+        return this.appProvider.isMobile() || this.appProvider.canGetUserMedia();
     }
 
     /**
@@ -43,7 +43,7 @@ export class CoreFileUploaderCameraHandler implements CoreFileUploaderHandler {
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[] {
+    getSupportedMimetypes(mimetypes: string[]): string[] {
         // Camera only supports JPEG and PNG.
         return this.utils.filterByRegexp(mimetypes, /^image\/(jpeg|png)$/);
     }
@@ -53,12 +53,12 @@ export class CoreFileUploaderCameraHandler implements CoreFileUploaderHandler {
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData {
+    getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.fileuploader.camera',
             class: 'core-fileuploader-camera-handler',
             icon: 'camera',
-            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]) => {
+            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
                 return this.uploaderHelper.uploadImage(false, maxSize, upload, mimetypes).then((result) => {
                     return {
                         treated: true,

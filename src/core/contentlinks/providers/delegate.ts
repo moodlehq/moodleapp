@@ -58,8 +58,8 @@ export interface CoreContentLinksHandler {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>;
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+        CoreContentLinksAction[] | Promise<CoreContentLinksAction[]>;
 
     /**
      * Check if a URL is handled by this handler.
@@ -67,7 +67,7 @@ export interface CoreContentLinksHandler {
      * @param {string} url The URL to check.
      * @return {boolean} Whether the URL is handled by this handler
      */
-    handles(url: string) : boolean;
+    handles(url: string): boolean;
 
     /**
      * If the URL is handled by this handler, return the site URL.
@@ -75,7 +75,7 @@ export interface CoreContentLinksHandler {
      * @param {string} url The URL to check.
      * @return {string} Site URL if it is handled, undefined otherwise.
      */
-    getSiteUrl(url: string) : string;
+    getSiteUrl(url: string): string;
 
     /**
      * Check if the handler is enabled for a certain site (site + user) and a URL.
@@ -87,8 +87,8 @@ export interface CoreContentLinksHandler {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
-    isEnabled?(siteId: string, url: string, params: any, courseId?: number) : boolean|Promise<boolean>;
-};
+    isEnabled?(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean>;
+}
 
 /**
  * Action to perform when a link is clicked.
@@ -118,8 +118,8 @@ export interface CoreContentLinksAction {
      * @param {string} siteId The site ID.
      * @param {NavController} [navCtrl] Nav Controller to use to navigate.
      */
-    action(siteId: string, navCtrl?: NavController) : void;
-};
+    action(siteId: string, navCtrl?: NavController): void;
+}
 
 /**
  * Actions and priority for a handler and URL.
@@ -136,7 +136,7 @@ export interface CoreContentLinksHandlerActions {
      * @type {CoreContentLinksAction[]}
      */
     actions: CoreContentLinksAction[];
-};
+}
 
 /**
  * Delegate to register handlers to handle links.
@@ -144,7 +144,7 @@ export interface CoreContentLinksHandlerActions {
 @Injectable()
 export class CoreContentLinksDelegate {
     protected logger;
-    protected handlers: {[s: string]: CoreContentLinksHandler} = {}; // All registered handlers.
+    protected handlers: { [s: string]: CoreContentLinksHandler } = {}; // All registered handlers.
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
             private utils: CoreUtilsProvider) {
@@ -159,7 +159,7 @@ export class CoreContentLinksDelegate {
      * @param {string} [username] Username to use to filter sites.
      * @return {Promise<CoreContentLinksAction[]>}  Promise resolved with the actions.
      */
-    getActionsFor(url: string, courseId?: number, username?: string) : Promise<CoreContentLinksAction[]> {
+    getActionsFor(url: string, courseId?: number, username?: string): Promise<CoreContentLinksAction[]> {
         if (!url) {
             return Promise.resolve([]);
         }
@@ -170,7 +170,7 @@ export class CoreContentLinksDelegate {
                 promises = [],
                 params = this.urlUtils.extractUrlParams(url);
 
-            for (let name in this.handlers) {
+            for (const name in this.handlers) {
                 const handler = this.handlers[name],
                     checkAll = handler.checkAllUsers,
                     isEnabledFn = this.isHandlerEnabled.bind(this, handler, url, params, courseId);
@@ -192,8 +192,8 @@ export class CoreContentLinksDelegate {
                             // Set default values if any value isn't supplied.
                             actions.forEach((action) => {
                                 action.message = action.message || 'core.view';
-                                action.icon = action.icon || 'eye';
-                                action.sites = action.sites || siteIds;
+                                action.icon = action.icon || 'eye';
+                                action.sites = action.sites || siteIds;
                             });
 
                             // Add them to the list.
@@ -221,13 +221,13 @@ export class CoreContentLinksDelegate {
      * @param {string} url URL to handle.
      * @return {string} Site URL if the URL is supported by any handler, undefined otherwise.
      */
-    getSiteUrl(url: string) : string {
+    getSiteUrl(url: string): string {
         if (!url) {
             return;
         }
 
         // Check if any handler supports this URL.
-        for (let name in this.handlers) {
+        for (const name in this.handlers) {
             const handler = this.handlers[name],
                 siteUrl = handler.getSiteUrl(url);
 
@@ -264,7 +264,7 @@ export class CoreContentLinksDelegate {
             }
 
             if (!handler.isEnabled) {
-                // isEnabled function not provided, assume it's enabled.
+                // Handler doesn't implement isEnabled, assume it's enabled.
                 return true;
             }
 
@@ -278,13 +278,15 @@ export class CoreContentLinksDelegate {
      * @param {CoreContentLinksHandler} handler The handler to register.
      * @return {boolean} True if registered successfully, false otherwise.
      */
-    registerHandler(handler: CoreContentLinksHandler) : boolean {
+    registerHandler(handler: CoreContentLinksHandler): boolean {
         if (typeof this.handlers[handler.name] !== 'undefined') {
             this.logger.log(`Addon '${handler.name}' already registered`);
+
             return false;
         }
         this.logger.log(`Registered addon '${handler.name}'`);
         this.handlers[handler.name] = handler;
+
         return true;
     }
 
@@ -294,7 +296,7 @@ export class CoreContentLinksDelegate {
      * @param {CoreContentLinksHandlerActions[]} actions Actions to sort.
      * @return {CoreContentLinksAction[]} Sorted actions.
      */
-    protected sortActionsByPriority(actions: CoreContentLinksHandlerActions[]) : CoreContentLinksAction[] {
+    protected sortActionsByPriority(actions: CoreContentLinksHandlerActions[]): CoreContentLinksAction[] {
         let sorted: CoreContentLinksAction[] = [];
 
         // Sort by priority.
@@ -306,6 +308,7 @@ export class CoreContentLinksDelegate {
         actions.forEach((entry) => {
             sorted = sorted.concat(entry.actions);
         });
+
         return sorted;
     }
 }

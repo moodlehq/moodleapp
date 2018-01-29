@@ -25,14 +25,14 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHandler {
     name = 'text';
 
-    constructor(private textUtils: CoreTextUtilsProvider) {}
+    constructor(private textUtils: CoreTextUtilsProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -46,7 +46,7 @@ export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHan
      * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
     getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
-        let name = 'profile_field_' + field.shortname;
+        const name = 'profile_field_' + field.shortname;
 
         return {
             type: 'text',
@@ -60,8 +60,7 @@ export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHan
      *
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent() {
+    getComponent(): any {
         return AddonUserProfileFieldTextComponent;
     }
-
 }

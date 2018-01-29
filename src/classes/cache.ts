@@ -23,12 +23,14 @@
 export class CoreCache {
     protected cacheStore = {};
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Clear the cache.
      */
-    clear() {
+    clear(): void {
         this.cacheStore = {};
     }
 
@@ -38,7 +40,7 @@ export class CoreCache {
      * @param {any} id The ID to identify the entry.
      * @return {any} The data from the cache. Undefined if not found.
      */
-    getEntry(id: any) : any {
+    getEntry(id: any): any {
         if (!this.cacheStore[id]) {
             this.cacheStore[id] = {};
         }
@@ -54,7 +56,7 @@ export class CoreCache {
      * @param {boolean} [ignoreInvalidate] Whether it should always return the cached data, even if it's expired.
      * @return {any} Cached value. Undefined if not cached or expired.
      */
-    getValue(id: any, name: string, ignoreInvalidate?: boolean) : any {
+    getValue(id: any, name: string, ignoreInvalidate?: boolean): any {
         const entry = this.getEntry(id);
 
         if (entry[name] && typeof entry[name].value != 'undefined') {
@@ -73,9 +75,9 @@ export class CoreCache {
      *
      * @param {any} id The ID to identify the entry.
      */
-    invalidate(id: any) : void {
+    invalidate(id: any): void {
         const entry = this.getEntry(id);
-        for (let name in entry) {
+        for (const name in entry) {
             entry[name].timemodified = 0;
         }
     }
@@ -88,12 +90,13 @@ export class CoreCache {
      * @param {any} value Value to set.
      * @return {any} The set value.
      */
-    setValue(id: any, name: string, value: any) : any {
+    setValue(id: any, name: string, value: any): any {
         const entry = this.getEntry(id);
         entry[name] = {
             value: value,
             timemodified: Date.now()
         };
+
         return value;
     }
 }

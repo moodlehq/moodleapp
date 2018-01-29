@@ -43,12 +43,12 @@ export class CoreLoadingComponent implements OnInit {
     @Input() hideUntil: boolean; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
 
-    constructor(private translate: TranslateService) {}
+    constructor(private translate: TranslateService) { }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         if (!this.message) {
             // Default loading message.
             this.message = this.translate.instant('core.loading');

@@ -20,7 +20,7 @@ import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 /**
  * Page that displays site home index.
  */
-@IonicPage({segment: 'core-sitehome-index'})
+@IonicPage({ segment: 'core-sitehome-index' })
 @Component({
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
@@ -29,7 +29,7 @@ export class CoreSiteHomeIndexPage {
 
     constructor(navParams: NavParams, navCtrl: NavController, courseHelper: CoreCourseHelperProvider,
             sitesProvider: CoreSitesProvider) {
-        let module = navParams.get('module');
+        const module = navParams.get('module');
         if (module) {
             courseHelper.openModule(navCtrl, module, sitesProvider.getCurrentSite().getSiteHomeId());
         }

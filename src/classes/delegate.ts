@@ -84,7 +84,7 @@ export class CoreDelegate {
      *                                                  If not set, no events will be fired.
      */
     constructor(delegateName: string, protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
-        protected eventsProvider?: CoreEventsProvider) {
+            protected eventsProvider?: CoreEventsProvider) {
         this.logger = this.loggerProvider.getInstance(delegateName);
 
         if (eventsProvider) {
@@ -145,7 +145,7 @@ export class CoreDelegate {
      * @param  {boolean} [enabled]  Only enabled, or any.
      * @return {any}                Handler.
      */
-    protected getHandler(handlerName: string, enabled = false): any {
+    protected getHandler(handlerName: string, enabled: boolean = false): any {
         return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
     }
 
@@ -156,7 +156,7 @@ export class CoreDelegate {
      * @param  {boolean} [enabled]  Only enabled, or any.
      * @return {boolean} If the handler is registered or not.
      */
-    hasHandler(name: string, enabled = false): boolean {
+    hasHandler(name: string, enabled: boolean = false): boolean {
         return enabled ? typeof this.enabledHandlers[name] !== 'undefined' : typeof this.handlers[name] !== 'undefined';
     }
 
@@ -171,6 +171,7 @@ export class CoreDelegate {
         if (!this.lastUpdateHandlersStart) {
             return true;
         }
+
         return time == this.lastUpdateHandlersStart;
     }
 
@@ -183,11 +184,13 @@ export class CoreDelegate {
     registerHandler(handler: CoreDelegateHandler): boolean {
         if (typeof this.handlers[handler.name] !== 'undefined') {
             this.logger.log(`Addon '${handler.name}' already registered`);
+
             return false;
         }
 
         this.logger.log(`Registered addon '${handler.name}'`);
         this.handlers[handler.name] = handler;
+
         return true;
     }
 
@@ -199,9 +202,9 @@ export class CoreDelegate {
      * @return {Promise<void>} Resolved when done.
      */
     protected updateHandler(handler: CoreDelegateHandler, time: number): Promise<void> {
-        let promise,
-            siteId = this.sitesProvider.getCurrentSiteId(),
+        const siteId = this.sitesProvider.getCurrentSiteId(),
             currentSite = this.sitesProvider.getCurrentSite();
+        let promise;
 
         if (!this.sitesProvider.isLoggedIn()) {
             promise = Promise.reject(null);
@@ -235,7 +238,7 @@ export class CoreDelegate {
      * @return {boolean}                     Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: CoreDelegateHandler, site: any): boolean {
-        return typeof this.featurePrefix != "undefined" && site.isFeatureDisabled(this.featurePrefix + handler.name);
+        return typeof this.featurePrefix != 'undefined' && site.isFeatureDisabled(this.featurePrefix + handler.name);
     }
 
     /**
@@ -244,7 +247,7 @@ export class CoreDelegate {
      * @return {Promise<void>} Resolved when done.
      */
     protected updateHandlers(): Promise<void> {
-        let promises = [],
+        const promises = [],
             now = Date.now();
 
         this.logger.debug('Updating handlers for current site.');
@@ -252,7 +255,7 @@ export class CoreDelegate {
         this.lastUpdateHandlersStart = now;
 
         // Loop over all the handlers.
-        for (let name in this.handlers) {
+        for (const name in this.handlers) {
             promises.push(this.updateHandler(this.handlers[name], now));
         }
 
@@ -274,7 +277,7 @@ export class CoreDelegate {
      * Update handlers Data.
      * Override this function to update handlers data.
      */
-    updateData() {
-
+    updateData(): any {
+        // To be overridden.
     }
 }

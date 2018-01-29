@@ -60,12 +60,13 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         courseId = courseId || params.courseid || params.cid;
+
         return [{
-            action: (siteId, navCtrl?) : void => {
+            action: (siteId, navCtrl?): void => {
                 // Check if userid is the site's current user.
                 const modal = this.domUtils.showModalLoading();
                 this.sitesProvider.getSite(siteId).then((site) => {
@@ -96,7 +97,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
      * @param {NavController} [navCtrl] Nav Controller to use to navigate.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected goToReview(url: string, params: any, courseId: number, siteId: string, navCtrl?: NavController) : Promise<any> {
+    protected goToReview(url: string, params: any, courseId: number, siteId: string, navCtrl?: NavController): Promise<any> {
         // This function should be overridden.
         return Promise.resolve();
     }

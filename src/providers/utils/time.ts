@@ -23,7 +23,7 @@ import { CoreConstants } from '../../core/constants';
 @Injectable()
 export class CoreTimeUtilsProvider {
 
-    constructor(private translate: TranslateService) {}
+    constructor(private translate: TranslateService) { }
 
     /**
      * Returns hours, minutes and seconds in a human readable format
@@ -31,44 +31,53 @@ export class CoreTimeUtilsProvider {
      * @param {number} seconds A number of seconds
      * @return {string} Seconds in a human readable format.
      */
-    formatTime(seconds: number) : string {
-        let totalSecs = Math.abs(seconds),
-            years     = Math.floor(totalSecs / CoreConstants.SECONDS_YEAR),
-            remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR),
-            days      = Math.floor(remainder / CoreConstants.SECONDS_DAY);
+    formatTime(seconds: number): string {
+        let totalSecs,
+            years,
+            days,
+            hours,
+            mins,
+            secs,
+            remainder;
+
+        totalSecs = Math.abs(seconds);
+        years = Math.floor(totalSecs / CoreConstants.SECONDS_YEAR);
+        remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR);
+        days = Math.floor(remainder / CoreConstants.SECONDS_DAY);
 
         remainder = totalSecs - (days * CoreConstants.SECONDS_DAY);
 
-        let hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
+        hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
         remainder = remainder - (hours * CoreConstants.SECONDS_HOUR);
 
-        let mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE),
-            secs      = remainder - (mins * CoreConstants.SECONDS_MINUTE),
-            ss = this.translate.instant('core.' + (secs == 1 ? 'sec' : 'secs')),
+        mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE);
+        secs = remainder - (mins * CoreConstants.SECONDS_MINUTE);
+
+        const ss = this.translate.instant('core.' + (secs == 1 ? 'sec' : 'secs')),
             sm = this.translate.instant('core.' + (mins == 1 ? 'min' : 'mins')),
             sh = this.translate.instant('core.' + (hours == 1 ? 'hour' : 'hours')),
             sd = this.translate.instant('core.' + (days == 1 ? 'day' : 'days')),
-            sy = this.translate.instant('core.' + (years == 1 ? 'year' : 'years')),
-            oyears = '',
+            sy = this.translate.instant('core.' + (years == 1 ? 'year' : 'years'));
+        let oyears = '',
             odays = '',
             ohours = '',
             omins = '',
             osecs = '';
 
         if (years) {
-            oyears  = years + ' ' + sy;
+            oyears = years + ' ' + sy;
         }
         if (days) {
-            odays  = days + ' ' + sd;
+            odays = days + ' ' + sd;
         }
         if (hours) {
             ohours = hours + ' ' + sh;
         }
         if (mins) {
-            omins  = mins + ' ' + sm;
+            omins = mins + ' ' + sm;
         }
         if (secs) {
-            osecs  = secs + ' ' + ss;
+            osecs = secs + ' ' + ss;
         }
 
         if (years) {
@@ -97,11 +106,11 @@ export class CoreTimeUtilsProvider {
      * @param {number} [precision] Number of elements to have in precission. 0 or undefined to full precission.
      * @return {string} Duration in a human readable format.
      */
-    formatDuration(duration: number, precision?: number) : string {
+    formatDuration(duration: number, precision?: number): string {
         precision = precision || 5;
 
-        let eventDuration = moment.duration(duration, 'seconds'),
-            durationString = '';
+        const eventDuration = moment.duration(duration, 'seconds');
+        let durationString = '';
 
         if (precision && eventDuration.years() > 0) {
             durationString += ' ' + moment.duration(eventDuration.years(), 'years').humanize();
@@ -132,7 +141,7 @@ export class CoreTimeUtilsProvider {
      *
      * @return {string} The readable timestamp.
      */
-    readableTimestamp() : string {
+    readableTimestamp(): string {
         return moment(Date.now()).format('YYYYMMDDHHmmSS');
     }
 
@@ -141,16 +150,17 @@ export class CoreTimeUtilsProvider {
      *
      * @return {number} The current timestamp in seconds.
      */
-    timestamp() : number {
+    timestamp(): number {
         return Math.round(Date.now() / 1000);
     }
 
     /**
      * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
      *
+     * @param {any} localizedFormat Format to use.
      * @return {string} Localized ISO format
      */
-    getLocalizedDateFormat(lozalizedFormat) : string {
-        return moment.localeData().longDateFormat(lozalizedFormat);
+    getLocalizedDateFormat(localizedFormat: any): string {
+        return moment.localeData().longDateFormat(localizedFormat);
     }
 }

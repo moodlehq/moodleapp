@@ -23,7 +23,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to enter the user password to reconnect to a site.
  */
-@IonicPage({segment: "core-login-reconnect"})
+@IonicPage({ segment: 'core-login-reconnect' })
 @Component({
     selector: 'page-core-login-reconnect',
     templateUrl: 'reconnect.html',
@@ -45,10 +45,10 @@ export class CoreLoginReconnectPage {
     protected siteId: string;
 
     constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider) {
+        private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
+        private domUtils: CoreDomUtilsProvider) {
 
-        let currentSite = this.sitesProvider.getCurrentSite();
+        const currentSite = this.sitesProvider.getCurrentSite();
 
         this.infoSiteUrl = navParams.get('infoSiteUrl');
         this.pageName = navParams.get('pageName');
@@ -59,14 +59,14 @@ export class CoreLoginReconnectPage {
 
         this.isLoggedOut = currentSite && currentSite.isLoggedOut();
         this.credForm = fb.group({
-            'password': ['', Validators.required]
+            password: ['', Validators.required]
         });
     }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         if (this.siteConfig) {
             this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
         }
@@ -85,6 +85,7 @@ export class CoreLoginReconnectPage {
             // Check logoURL if user avatar is not set.
             if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
                 this.site.avatar = false;
+
                 return site.getPublicConfig().then((config) => {
                     this.logoUrl = config.logourl || config.compactlogourl;
                 });
@@ -99,7 +100,7 @@ export class CoreLoginReconnectPage {
     /**
      * Cancel reconnect.
      */
-    cancel() {
+    cancel(): void {
         this.sitesProvider.logout().finally(() => {
             this.navCtrl.setRoot('CoreLoginSitesPage');
         });
@@ -108,25 +109,27 @@ export class CoreLoginReconnectPage {
     /**
      * Tries to authenticate the user.
      */
-    login() : void {
+    login(): void {
         this.appProvider.closeKeyboard();
 
         // Get input data.
-        let siteUrl = this.siteUrl,
+        const siteUrl = this.siteUrl,
             username = this.username,
             password = this.credForm.value.password;
 
         if (!password) {
             this.domUtils.showErrorModal('core.login.passwordrequired', true);
+
             return;
         }
 
         if (!this.appProvider.isOnline()) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
+
             return;
         }
 
-        let modal = this.domUtils.showModalLoading();
+        const modal = this.domUtils.showModalLoading();
 
         // Start the authentication process.
         this.sitesProvider.getUserToken(siteUrl, username, password).then((data) => {
@@ -160,7 +163,7 @@ export class CoreLoginReconnectPage {
      *
      * @param {any} provider The provider that was clicked.
      */
-    oauthClicked(provider) : void {
+    oauthClicked(provider: any): void {
         if (!this.loginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig.launchurl)) {
             this.domUtils.showErrorModal('Invalid data.');
         }

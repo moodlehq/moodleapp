@@ -107,7 +107,7 @@ export interface CoreSiteWSPreSets {
      * @type {string}
      */
     typeExpected?: string;
-};
+}
 
 /**
  * Response of checking local_mobile status.
@@ -190,10 +190,10 @@ export class CoreSite {
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected moodleReleases = {
-        '3.1': 2016052300,
-        '3.2': 2016120500,
-        '3.3': 2017051503,
-        '3.4': 2017111300
+        3.1: 2016052300,
+        3.2: 2016120500,
+        3.3: 2017051503,
+        3.4: 2017111300
     };
 
     /**
@@ -211,7 +211,7 @@ export class CoreSite {
     constructor(injector: Injector, public id: string, public siteUrl: string, public token?: string, public infos?: any,
             public privateToken?: string, public config?: any, public loggedOut?: boolean) {
         // Inject the required services.
-        let logger = injector.get(CoreLoggerProvider);
+        const logger = injector.get(CoreLoggerProvider);
         this.appProvider = injector.get(CoreAppProvider);
         this.dbProvider = injector.get(CoreDbProvider);
         this.domUtils = injector.get(CoreDomUtilsProvider);
@@ -235,7 +235,7 @@ export class CoreSite {
     /**
      * Initialize the database.
      */
-    initDB() : void {
+    initDB(): void {
         this.db = this.dbProvider.getDB('Site-' + this.id);
         this.db.createTableFromSchema(this.tableSchema);
     }
@@ -245,7 +245,7 @@ export class CoreSite {
      *
      * @return {string} Site ID.
      */
-    getId() : string {
+    getId(): string {
         return this.id;
     }
 
@@ -254,7 +254,7 @@ export class CoreSite {
      *
      * @return {string} Site URL.
      */
-    getURL() : string {
+    getURL(): string {
         return this.siteUrl;
     }
 
@@ -263,7 +263,7 @@ export class CoreSite {
      *
      * @return {string} Site token.
      */
-    getToken() : string {
+    getToken(): string {
         return this.token;
     }
 
@@ -272,7 +272,7 @@ export class CoreSite {
      *
      * @return {any} Site info.
      */
-    getInfo() : any {
+    getInfo(): any {
         return this.infos;
     }
 
@@ -281,7 +281,7 @@ export class CoreSite {
      *
      * @return {string} Site private token.
      */
-    getPrivateToken() : string {
+    getPrivateToken(): string {
         return this.privateToken;
     }
 
@@ -290,7 +290,7 @@ export class CoreSite {
      *
      * @return {SQLiteDB} Site DB.
      */
-    getDb() : SQLiteDB {
+    getDb(): SQLiteDB {
         return this.db;
     }
 
@@ -299,7 +299,7 @@ export class CoreSite {
      *
      * @return {number} User's ID.
      */
-    getUserId() : number {
+    getUserId(): number {
         if (typeof this.infos != 'undefined' && typeof this.infos.userid != 'undefined') {
             return this.infos.userid;
         }
@@ -310,7 +310,7 @@ export class CoreSite {
      *
      * @return {number} Site Home ID.
      */
-    getSiteHomeId() : number {
+    getSiteHomeId(): number {
         return this.infos && this.infos.siteid || 1;
     }
 
@@ -319,7 +319,7 @@ export class CoreSite {
      *
      * @param {string} New ID.
      */
-    setId(id: string) : void {
+    setId(id: string): void {
         this.id = id;
         this.initDB();
     }
@@ -329,7 +329,7 @@ export class CoreSite {
      *
      * @param {string} New token.
      */
-    setToken(token: string) : void {
+    setToken(token: string): void {
         this.token = token;
     }
 
@@ -338,7 +338,7 @@ export class CoreSite {
      *
      * @param {string} privateToken New private token.
      */
-    setPrivateToken(privateToken: string) : void {
+    setPrivateToken(privateToken: string): void {
         this.privateToken = privateToken;
     }
 
@@ -347,7 +347,7 @@ export class CoreSite {
      *
      * @return {boolean} Whether is logged out.
      */
-    isLoggedOut() : boolean {
+    isLoggedOut(): boolean {
         return !!this.loggedOut;
     }
 
@@ -356,7 +356,7 @@ export class CoreSite {
      *
      * @param {any} New info.
      */
-    setInfo(infos: any) : void {
+    setInfo(infos: any): void {
         this.infos = infos;
     }
 
@@ -365,7 +365,7 @@ export class CoreSite {
      *
      * @param {any} Config.
      */
-    setConfig(config: any) : void {
+    setConfig(config: any): void {
         this.config = config;
     }
 
@@ -374,7 +374,7 @@ export class CoreSite {
      *
      * @param {boolean} loggedOut True if logged out and needs to authenticate again, false otherwise.
      */
-    setLoggedOut(loggedOut: boolean) : void {
+    setLoggedOut(loggedOut: boolean): void {
         this.loggedOut = !!loggedOut;
     }
 
@@ -383,8 +383,9 @@ export class CoreSite {
      *
      * @return {boolean} Whether can access my files.
      */
-    canAccessMyFiles() : boolean {
+    canAccessMyFiles(): boolean {
         const infos = this.getInfo();
+
         return infos && (typeof infos.usercanmanageownfiles === 'undefined' || infos.usercanmanageownfiles);
     }
 
@@ -393,8 +394,9 @@ export class CoreSite {
      *
      * @return {boolean} Whether can download files.
      */
-    canDownloadFiles() : boolean {
+    canDownloadFiles(): boolean {
         const infos = this.getInfo();
+
         return infos && infos.downloadfiles;
     }
 
@@ -405,15 +407,15 @@ export class CoreSite {
      * @param {boolean} [whenUndefined=true] The value to return when the parameter is undefined.
      * @return {boolean} Whether can use advanced feature.
      */
-    canUseAdvancedFeature(feature: string, whenUndefined = true) : boolean {
-        let infos = this.getInfo(),
-            canUse = true;
+    canUseAdvancedFeature(feature: string, whenUndefined: boolean = true): boolean {
+        const infos = this.getInfo();
+        let canUse = true;
 
         if (typeof infos.advancedfeatures === 'undefined') {
             canUse = whenUndefined;
         } else {
-            for (let i in infos.advancedfeatures) {
-                let item = infos.advancedfeatures[i];
+            for (const i in infos.advancedfeatures) {
+                const item = infos.advancedfeatures[i];
                 if (item.name === feature && parseInt(item.value, 10) === 0) {
                     canUse = false;
                 }
@@ -429,8 +431,9 @@ export class CoreSite {
      *
      * @return {boolean} Whether can upload files.
      */
-    canUploadFiles() : boolean {
+    canUploadFiles(): boolean {
         const infos = this.getInfo();
+
         return infos && infos.uploadfiles;
     }
 
@@ -439,12 +442,12 @@ export class CoreSite {
      *
      * @return {Promise<any>} A promise to be resolved when the site info is retrieved.
      */
-    fetchSiteInfo() : Promise<any> {
-        // get_site_info won't be cached.
-        let preSets = {
+    fetchSiteInfo(): Promise<any> {
+        // The get_site_info WS call won't be cached.
+        const preSets = {
             getFromCache: false,
             saveToCache: false
-        }
+        };
 
         // Reset clean Unicode to check if it's supported again.
         this.cleanUnicode = false;
@@ -460,7 +463,7 @@ export class CoreSite {
      * @param {CoreSiteWSPreSets} [preSets] Extra options.
      * @return {Promise<any>} Promise resolved with the response, rejected with CoreWSError if it fails.
      */
-    read(method: string, data: any, preSets?: CoreSiteWSPreSets) : Promise<any> {
+    read(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<any> {
         preSets = preSets || {};
         if (typeof preSets.getFromCache == 'undefined') {
             preSets.getFromCache = true;
@@ -468,6 +471,7 @@ export class CoreSite {
         if (typeof preSets.saveToCache == 'undefined') {
             preSets.saveToCache = true;
         }
+
         return this.request(method, data, preSets);
     }
 
@@ -479,7 +483,7 @@ export class CoreSite {
      * @param {CoreSiteWSPreSets} [preSets] Extra options.
      * @return {Promise<any>} Promise resolved with the response, rejected with CoreWSError if it fails.
      */
-    write(method: string, data: any, preSets?: CoreSiteWSPreSets) : Promise<any> {
+    write(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<any> {
         preSets = preSets || {};
         if (typeof preSets.getFromCache == 'undefined') {
             preSets.getFromCache = false;
@@ -490,6 +494,7 @@ export class CoreSite {
         if (typeof preSets.emergencyCache == 'undefined') {
             preSets.emergencyCache = false;
         }
+
         return this.request(method, data, preSets);
     }
 
@@ -512,8 +517,8 @@ export class CoreSite {
      * This method is smart which means that it will try to map the method to a compatibility one if need be, usually this
      * means that it will fallback on the 'local_mobile_' prefixed function if it is available and the non-prefixed is not.
      */
-    request(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean) : Promise<any> {
-        let initialToken = this.token;
+    request(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<any> {
+        const initialToken = this.token;
         data = data || {};
 
         // Check if the method is available, use a prefixed version if possible.
@@ -525,11 +530,12 @@ export class CoreSite {
                 method = compatibilityMethod;
             } else {
                 this.logger.error(`WS function '${method}' is not available, even in compatibility mode.`);
+
                 return Promise.reject(this.wsProvider.createFakeWSError('core.wsfunctionnotavailable', true));
             }
         }
 
-        let wsPreSets: CoreWSPreSets = {
+        const wsPreSets: CoreWSPreSets = {
             wsToken: this.token,
             siteUrl: this.siteUrl,
             cleanUnicode: this.cleanUnicode,
@@ -564,12 +570,11 @@ export class CoreSite {
                     this.saveToCache(method, data, response, preSets);
                 }
 
-                // We pass back a clone of the original object, this may
-                // prevent errors if in the callback the object is modified.
+                // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
                 return this.utils.clone(response);
             }).catch((error) => {
                 if (error.errorcode == 'invalidtoken' ||
-                        (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
+                    (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
                     if (initialToken !== this.token && !retrying) {
                         // Token has changed, retry with the new token.
                         return this.request(method, data, preSets, true);
@@ -586,41 +591,49 @@ export class CoreSite {
                     error.message = this.translate.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
-                    this.eventsProvider.trigger(CoreEventsProvider.USER_DELETED, {params: data}, this.id);
+                    this.eventsProvider.trigger(CoreEventsProvider.USER_DELETED, { params: data }, this.id);
                     error.message = this.translate.instant('core.userdeleted');
+
                     return Promise.reject(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
                     // Password Change Forced, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = this.translate.instant('core.forcepasswordchangenotice');
+
                     return Promise.reject(error);
                 } else if (error.errorcode === 'usernotfullysetup') {
                     // User not fully setup, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = this.translate.instant('core.usernotfullysetup');
+
                     return Promise.reject(error);
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     this.eventsProvider.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
                     error.message = this.translate.instant('core.sitepolicynotagreederror');
+
                     return Promise.reject(error);
                 } else if (error.errorcode === 'dmlwriteexception' && this.textUtils.hasUnicodeData(data)) {
                     if (!this.cleanUnicode) {
                         // Try again cleaning unicode.
                         this.cleanUnicode = true;
+
                         return this.request(method, data, preSets);
                     }
                     // This should not happen.
                     error.message = this.translate.instant('core.unicodenotsupported');
+
                     return Promise.reject(error);
                 } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
+
                     return Promise.reject(error);
                 }
 
                 this.logger.debug(`WS call '${method}' failed. Trying to use the emergency cache.`);
                 preSets.omitExpires = true;
                 preSets.getFromCache = true;
+
                 return this.getFromCache(method, data, preSets, true).catch(() => {
                     return Promise.reject(error);
                 });
@@ -635,7 +648,7 @@ export class CoreSite {
      * @param {boolean} [checkPrefix=true] When true also checks with the compatibility prefix.
      * @return {boolean} Whether the WS is available.
      */
-    wsAvailable(method: string, checkPrefix = true) : boolean {
+    wsAvailable(method: string, checkPrefix: boolean = true): boolean {
         if (typeof this.infos == 'undefined') {
             return false;
         }
@@ -662,8 +675,8 @@ export class CoreSite {
      * @param {any} data Arguments to pass to the method.
      * @return {string} Cache ID.
      */
-    protected getCacheId(method: string, data: any) : string {
-        return <string>Md5.hashAsciiStr(method + ':' + this.utils.sortAndStringify(data));
+    protected getCacheId(method: string, data: any): string {
+        return <string> Md5.hashAsciiStr(method + ':' + this.utils.sortAndStringify(data));
     }
 
     /**
@@ -675,32 +688,33 @@ export class CoreSite {
      * @param {boolean} emergency Whether it's an "emergency" cache call (WS call failed).
      * @return {Promise<any>} Promise resolved with the WS response.
      */
-    protected getFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean) : Promise<any> {
-        let id = this.getCacheId(method, data),
-            promise;
+    protected getFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean): Promise<any> {
+        const id = this.getCacheId(method, data);
+        let promise;
 
         if (!this.db || !preSets.getFromCache) {
             return Promise.reject(null);
         }
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            promise = this.db.getRecords(this.WS_CACHE_TABLE, {key: preSets.cacheKey}).then((entries) => {
+            promise = this.db.getRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
                 if (!entries.length) {
                     // Cache key not found, get by params sent.
-                    return this.db.getRecord(this.WS_CACHE_TABLE, {id: id});
+                    return this.db.getRecord(this.WS_CACHE_TABLE, { id: id });
                 } else if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
                     for (let i = 0, len = entries.length; i < len; i++) {
-                        let entry = entries[i];
+                        const entry = entries[i];
                         if (entry.id == id) {
                             return entry;
                         }
                     }
                 }
+
                 return entries[0];
             });
         } else {
-            promise = this.db.getRecord(this.WS_CACHE_TABLE, {id: id});
+            promise = this.db.getRecord(this.WS_CACHE_TABLE, { id: id });
         }
 
         return promise.then((entry) => {
@@ -711,6 +725,7 @@ export class CoreSite {
             if (!preSets.omitExpires) {
                 if (now > entry.expirationTime) {
                     this.logger.debug('Cached element found, but it is expired');
+
                     return Promise.reject(null);
                 }
             }
@@ -718,6 +733,7 @@ export class CoreSite {
             if (typeof entry != 'undefined' && typeof entry.data != 'undefined') {
                 const expires = (entry.expirationTime - now) / 1000;
                 this.logger.info(`Cached element found, id: ${id} expires in ${expires} seconds`);
+
                 return JSON.parse(entry.data);
             }
 
@@ -734,14 +750,14 @@ export class CoreSite {
      * @param {CoreSiteWSPreSets} preSets Extra options.
      * @return {Promise<any>} Promise resolved when the response is saved.
      */
-    protected saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets) : Promise<any> {
-        let id = this.getCacheId(method, data),
-            cacheExpirationTime = CoreConfigConstants.cache_expiration_time,
-            promise,
+    protected saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets): Promise<any> {
+        const id = this.getCacheId(method, data),
             entry: any = {
                 id: id,
                 data: JSON.stringify(response)
-            }
+            };
+        let cacheExpirationTime = CoreConfigConstants.cache_expiration_time,
+            promise;
 
         if (!this.db) {
             return Promise.reject(null);
@@ -761,7 +777,8 @@ export class CoreSite {
                 if (preSets.cacheKey) {
                     entry.key = preSets.cacheKey;
                 }
-                return this.db.insertOrUpdateRecord(this.WS_CACHE_TABLE, entry, {id: id});
+
+                return this.db.insertOrUpdateRecord(this.WS_CACHE_TABLE, entry, { id: id });
             });
         }
     }
@@ -775,16 +792,16 @@ export class CoreSite {
      * @param {boolean} [allCacheKey] True to delete all entries with the cache key, false to delete only by ID.
      * @return {Promise<any>} Promise resolved when the entries are deleted.
      */
-    protected deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean) : Promise<any> {
+    protected deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<any> {
         const id = this.getCacheId(method, data);
 
         if (!this.db) {
             return Promise.reject(null);
         } else {
             if (allCacheKey) {
-                return this.db.deleteRecords(this.WS_CACHE_TABLE, {key: preSets.cacheKey});
+                return this.db.deleteRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey });
             } else {
-                return this.db.deleteRecords(this.WS_CACHE_TABLE, {id: id});
+                return this.db.deleteRecords(this.WS_CACHE_TABLE, { id: id });
             }
         }
     }
@@ -797,7 +814,7 @@ export class CoreSite {
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise resolved when uploaded.
      */
-    uploadFile(filePath: string, options: CoreWSFileUploadOptions, onProgress?: (event: ProgressEvent) => any) : Promise<any> {
+    uploadFile(filePath: string, options: CoreWSFileUploadOptions, onProgress?: (event: ProgressEvent) => any): Promise<any> {
         if (!options.fileArea) {
             options.fileArea = 'draft';
         }
@@ -813,13 +830,14 @@ export class CoreSite {
      *
      * @return {Promise<any>} Promise resolved when the cache entries are invalidated.
      */
-    invalidateWsCache() : Promise<any> {
+    invalidateWsCache(): Promise<any> {
         if (!this.db) {
             return Promise.reject(null);
         }
 
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
-        return this.db.updateRecords(this.WS_CACHE_TABLE, {expirationTime: 0});
+
+        return this.db.updateRecords(this.WS_CACHE_TABLE, { expirationTime: 0 });
     }
 
     /**
@@ -828,7 +846,7 @@ export class CoreSite {
      * @param {string} key Key to search.
      * @return {Promise<any>} Promise resolved when the cache entries are invalidated.
      */
-    invalidateWsCacheForKey(key: string) : Promise<any> {
+    invalidateWsCacheForKey(key: string): Promise<any> {
         if (!this.db) {
             return Promise.reject(null);
         }
@@ -837,7 +855,8 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate cache for key: ' + key);
-        return this.db.updateRecords(this.WS_CACHE_TABLE, {expirationTime: 0}, {key: key});
+
+        return this.db.updateRecords(this.WS_CACHE_TABLE, { expirationTime: 0 }, { key: key });
     }
 
     /**
@@ -846,7 +865,7 @@ export class CoreSite {
      * @param {string[]} keys Keys to search.
      * @return {Promise<any>} Promise resolved when the cache entries are invalidated.
      */
-    invalidateMultipleWsCacheForKey(keys: string[]) : Promise<any> {
+    invalidateMultipleWsCacheForKey(keys: string[]): Promise<any> {
         if (!this.db) {
             return Promise.reject(null);
         }
@@ -854,7 +873,7 @@ export class CoreSite {
             return Promise.resolve();
         }
 
-        let promises = [];
+        const promises = [];
 
         this.logger.debug('Invalidating multiple cache keys');
         keys.forEach((key) => {
@@ -870,7 +889,7 @@ export class CoreSite {
      * @param {string} key Key to search.
      * @return {Promise}    Promise resolved when the cache entries are invalidated.
      */
-    invalidateWsCacheForKeyStartingWith(key: string) : Promise<any> {
+    invalidateWsCacheForKeyStartingWith(key: string): Promise<any> {
         if (!this.db) {
             return Promise.reject(null);
         }
@@ -879,8 +898,10 @@ export class CoreSite {
         }
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
-        let sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
-        return this.db.execute(sql, [key + "%"]);
+
+        const sql = 'UPDATE ' + this.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+
+        return this.db.execute(sql, [key + '%']);
     }
 
     /**
@@ -890,7 +911,7 @@ export class CoreSite {
      * @param {string} url The url to be fixed.
      * @return {string} Fixed URL.
      */
-    fixPluginfileURL(url: string) : string {
+    fixPluginfileURL(url: string): string {
         return this.urlUtils.fixPluginfileURL(url, this.token);
     }
 
@@ -899,7 +920,7 @@ export class CoreSite {
      *
      * @return {Promise<any>} Promise to be resolved when the DB is deleted.
      */
-    deleteDB() : Promise<any> {
+    deleteDB(): Promise<any> {
         return this.dbProvider.deleteDB('Site-' + this.id);
     }
 
@@ -908,9 +929,10 @@ export class CoreSite {
      *
      * @return {Promise<any>} Promise to be resolved when the DB is deleted.
      */
-    deleteFolder() : Promise<any> {
+    deleteFolder(): Promise<any> {
         if (this.fileProvider.isAvailable()) {
             const siteFolder = this.fileProvider.getSiteFolder(this.id);
+
             return this.fileProvider.removeDir(siteFolder).catch(() => {
                 // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists.
             });
@@ -924,9 +946,10 @@ export class CoreSite {
      *
      * @return {Promise<number>} Promise resolved with the site space usage (size).
      */
-    getSpaceUsage() : Promise<number> {
+    getSpaceUsage(): Promise<number> {
         if (this.fileProvider.isAvailable()) {
             const siteFolderPath = this.fileProvider.getSiteFolder(this.id);
+
             return this.fileProvider.getDirectorySize(siteFolderPath).catch(() => {
                 return 0;
             });
@@ -941,8 +964,9 @@ export class CoreSite {
      * @param {string} [page] Docs page to go to.
      * @return {Promise<string>} Promise resolved with the Moodle docs URL.
      */
-    getDocsUrl(page?: string) : Promise<string> {
+    getDocsUrl(page?: string): Promise<string> {
         const release = this.infos.release ? this.infos.release : undefined;
+
         return this.urlUtils.getDocsUrl(release, page);
     }
 
@@ -952,27 +976,29 @@ export class CoreSite {
      * @param {boolean} [retrying] True if we're retrying the check.
      * @return {Promise<LocalMobileResponse>} Promise resolved when the check is done.
      */
-    checkLocalMobilePlugin(retrying?: boolean) : Promise<LocalMobileResponse> {
+    checkLocalMobilePlugin(retrying?: boolean): Promise<LocalMobileResponse> {
         const checkUrl = this.siteUrl + '/local/mobile/check.php',
             service = CoreConfigConstants.wsextservice;
 
         if (!service) {
             // External service not defined.
-            return Promise.resolve({code: 0});
+            return Promise.resolve({ code: 0 });
         }
 
-        let observable = this.http.post(checkUrl, {service: service}).timeout(CoreConstants.WS_TIMEOUT);
+        const observable = this.http.post(checkUrl, { service: service }).timeout(CoreConstants.WS_TIMEOUT);
+
         return this.utils.observableToPromise(observable).then((data: any) => {
             if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
                 if (!retrying) {
                     this.siteUrl = this.urlUtils.addOrRemoveWWW(this.siteUrl);
+
                     return this.checkLocalMobilePlugin(true);
                 } else {
                     return Promise.reject(data.error);
                 }
-            } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
-                // local_mobile returned something we didn't expect. Let's assume it's not installed.
-                return {code: 0, warning: 'core.login.localmobileunexpectedresponse'};
+            } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
+                // The local_mobile returned something we didn't expect. Let's assume it's not installed.
+                return { code: 0, warning: 'core.login.localmobileunexpectedresponse' };
             }
 
             const code = parseInt(data.code, 10);
@@ -986,7 +1012,7 @@ export class CoreSite {
                         return Promise.reject(this.translate.instant('core.login.webservicesnotenabled'));
                     case 3:
                         // Extended service not enabled, but the official is enabled.
-                        return {code: 0};
+                        return { code: 0 };
                     case 4:
                         // Neither extended or official services enabled.
                         return Promise.reject(this.translate.instant('core.login.mobileservicesnotenabled'));
@@ -994,10 +1020,10 @@ export class CoreSite {
                         return Promise.reject(this.translate.instant('core.unexpectederror'));
                 }
             } else {
-                return {code: code, service: service, coresupported: !!data.coresupported};
+                return { code: code, service: service, coresupported: !!data.coresupported };
             }
         }, () => {
-            return {code: 0};
+            return { code: 0 };
         });
     }
 
@@ -1006,7 +1032,7 @@ export class CoreSite {
      *
      * @return {boolean} Whether the App is able to use local_mobile plugin for this site.
      */
-    checkIfAppUsesLocalMobile() : boolean {
+    checkIfAppUsesLocalMobile(): boolean {
         let appUsesLocalMobile = false;
 
         if (!this.infos || !this.infos.functions) {
@@ -1027,7 +1053,7 @@ export class CoreSite {
      *
      * @return {Promise<any>} Promise resolved it local_mobile was added, rejected otherwise.
      */
-    checkIfLocalMobileInstalledAndNotUsed() : Promise<any> {
+    checkIfLocalMobileInstalledAndNotUsed(): Promise<any> {
         const appUsesLocalMobile = this.checkIfAppUsesLocalMobile();
 
         if (appUsesLocalMobile) {
@@ -1035,11 +1061,12 @@ export class CoreSite {
             return Promise.reject(null);
         }
 
-        return this.checkLocalMobilePlugin().then((data: LocalMobileResponse) : any => {
+        return this.checkLocalMobilePlugin().then((data: LocalMobileResponse): any => {
             if (typeof data.service == 'undefined') {
-                // local_mobile NOT installed. Reject.
+                // The local_mobile NOT installed. Reject.
                 return Promise.reject(null);
             }
+
             return data;
         });
     }
@@ -1050,13 +1077,14 @@ export class CoreSite {
      * @param {string} url URL to check.
      * @return {boolean} Whether the URL belongs to this site.
      */
-    containsUrl(url: string) : boolean {
+    containsUrl(url: string): boolean {
         if (!url) {
             return false;
         }
 
         const siteUrl = this.urlUtils.removeProtocolAndWWW(this.siteUrl);
         url = this.urlUtils.removeProtocolAndWWW(url);
+
         return url.indexOf(siteUrl) == 0;
     }
 
@@ -1065,12 +1093,13 @@ export class CoreSite {
      *
      * @return {Promise<any>} Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
      */
-    getPublicConfig() : Promise<any> {
-        return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, {siteUrl: this.siteUrl}).then((config) => {
+    getPublicConfig(): Promise<any> {
+        return this.wsProvider.callAjax('tool_mobile_get_public_config', {}, { siteUrl: this.siteUrl }).then((config) => {
             // Use the wwwroot returned by the server.
             if (config.httpswwwroot) {
                 this.siteUrl = config.httpswwwroot;
             }
+
             return config;
         });
     }
@@ -1082,7 +1111,7 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser.
      * @return {Promise<any>} Promise resolved when done, rejected otherwise.
      */
-    openInBrowserWithAutoLogin(url: string, alertMessage?: string) : Promise<any> {
+    openInBrowserWithAutoLogin(url: string, alertMessage?: string): Promise<any> {
         return this.openWithAutoLogin(false, url, undefined, alertMessage);
     }
 
@@ -1093,7 +1122,7 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser.
      * @return {Promise<any>} Promise resolved when done, rejected otherwise.
      */
-    openInBrowserWithAutoLoginIfSameSite(url: string, alertMessage?: string) : Promise<any> {
+    openInBrowserWithAutoLoginIfSameSite(url: string, alertMessage?: string): Promise<any> {
         return this.openWithAutoLoginIfSameSite(false, url, undefined, alertMessage);
     }
 
@@ -1105,7 +1134,7 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
      * @return {Promise<InAppBrowserObject>} Promise resolved when done.
      */
-    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
+    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
         return this.openWithAutoLogin(true, url, options, alertMessage);
     }
 
@@ -1117,7 +1146,7 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
      * @return {Promise<InAppBrowserObject>} Promise resolved when done.
      */
-    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
+    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
         return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
     }
 
@@ -1130,16 +1159,16 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
      * @return {Promise<InAppBrowserObject>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
+    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
         // Convenience function to open the URL.
-        let open = (url) => {
-            return new Promise<InAppBrowserObject>((resolve, reject) => {
+        const open = (url): Promise<any> => {
+            return new Promise<InAppBrowserObject>((resolve, reject): void => {
                 if (modal) {
                     modal.dismiss();
                 }
 
                 if (alertMessage) {
-                    let alert = this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000);
+                    const alert = this.domUtils.showAlert(this.translate.instant('core.notice'), alertMessage, undefined, 3000);
                     alert.onDidDismiss(() => {
                         if (inApp) {
                             resolve(this.utils.openInApp(url, options));
@@ -1157,8 +1186,8 @@ export class CoreSite {
             });
         };
 
-        if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
-                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < 6 * CoreConstants.SECONDS_MINUTE)) {
+        if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
+                (this.lastAutoLogin && this.timeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago.
             // Open the final URL without auto-login.
             return Promise.resolve(open(url));
@@ -1172,7 +1201,7 @@ export class CoreSite {
 
         // Use write to not use cache.
         return this.write('tool_mobile_get_autologin_key', params).then((data) => {
-            if (!data.autologinurl || !data.key) {
+            if (!data.autologinurl || !data.key) {
                 // Not valid data, open the final URL without auto-login.
                 return open(url);
             }
@@ -1195,7 +1224,7 @@ export class CoreSite {
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
      * @return {Promise<InAppBrowserObject>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string) : Promise<InAppBrowserObject> {
+    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
         if (this.containsUrl(url)) {
             return this.openWithAutoLogin(inApp, url, options, alertMessage);
         } else {
@@ -1204,6 +1233,7 @@ export class CoreSite {
             } else {
                 this.utils.openInBrowser(url);
             }
+
             return Promise.resolve(null);
         }
     }
@@ -1216,10 +1246,10 @@ export class CoreSite {
      * @param {boolean} [ignoreCache] True if it should ignore cached data.
      * @return {Promise<any>} Promise resolved with site config.
      */
-    getConfig(name?: string, ignoreCache?: boolean) {
-        let preSets: CoreSiteWSPreSets = {
+    getConfig(name?: string, ignoreCache?: boolean): Promise<any> {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getConfigCacheKey()
-        }
+        };
 
         if (ignoreCache) {
             preSets.getFromCache = false;
@@ -1229,18 +1259,20 @@ export class CoreSite {
         return this.read('tool_mobile_get_config', {}, preSets).then((config) => {
             if (name) {
                 // Return the requested setting.
-                for (let x in config.settings) {
+                for (const x in config.settings) {
                     if (config.settings[x].name == name) {
                         return config.settings[x].value;
                     }
                 }
+
                 return Promise.reject(null);
             } else {
                 // Return all settings in the same array.
-                let settings = {};
+                const settings = {};
                 config.settings.forEach((setting) => {
                     settings[setting.name] = setting.value;
                 });
+
                 return settings;
             }
         });
@@ -1251,7 +1283,7 @@ export class CoreSite {
      *
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateConfig() : Promise<any> {
+    invalidateConfig(): Promise<any> {
         return this.invalidateWsCacheForKey(this.getConfigCacheKey());
     }
 
@@ -1260,7 +1292,7 @@ export class CoreSite {
      *
      * @return {string} Cache key.
      */
-    protected getConfigCacheKey() : string {
+    protected getConfigCacheKey(): string {
         return 'tool_mobile_get_config';
     }
 
@@ -1270,7 +1302,7 @@ export class CoreSite {
      * @param {string} [name] Name of the setting to get. If not set, all settings will be returned.
      * @return {any} Site config or a specific setting.
      */
-    getStoredConfig(name?: string) : any {
+    getStoredConfig(name?: string): any {
         if (!this.config) {
             return;
         }
@@ -1288,13 +1320,14 @@ export class CoreSite {
      * @param {string} name Name of the feature to check.
      * @return {boolean} Whether it's disabled.
      */
-    isFeatureDisabled(name: string) : boolean {
+    isFeatureDisabled(name: string): boolean {
         const disabledFeatures = this.getStoredConfig('tool_mobile_disabledfeatures');
         if (!disabledFeatures) {
             return false;
         }
 
         const regEx = new RegExp('(,|^)' + this.textUtils.escapeForRegex(name) + '(,|$)', 'g');
+
         return !!disabledFeatures.match(regEx);
     }
 
@@ -1319,7 +1352,7 @@ export class CoreSite {
      * This function only accepts versions from 2.4.0 and above. If any of the versions supplied isn't found, it will assume
      * it's the last released major version.
      */
-    isVersionGreaterEqualThan(versions: string | string[]) : boolean {
+    isVersionGreaterEqualThan(versions: string | string[]): boolean {
         const siteVersion = parseInt(this.getInfo().version, 10);
 
         if (Array.isArray(versions)) {
@@ -1328,7 +1361,7 @@ export class CoreSite {
             }
 
             for (let i = 0; i < versions.length; i++) {
-                let versionNumber = this.getVersionNumber(versions[i]);
+                const versionNumber = this.getVersionNumber(versions[i]);
                 if (i == versions.length - 1) {
                     // It's the last version, check only if site version is greater than this one.
                     return siteVersion >= versionNumber;
@@ -1354,8 +1387,8 @@ export class CoreSite {
      * @param {string} version Release version to convert to version number.
      * @return {number} Version number, 0 if invalid.
      */
-    protected getVersionNumber(version: string) : number {
-        let data = this.getMajorAndMinor(version);
+    protected getVersionNumber(version: string): number {
+        const data = this.getMajorAndMinor(version);
 
         if (!data) {
             // Invalid version.
@@ -1376,17 +1409,17 @@ export class CoreSite {
      * @param {string} version Release version (e.g. '3.1.0').
      * @return {object} Object with major and minor. Returns false if invalid version.
      */
-    protected getMajorAndMinor(version) : any {
+    protected getMajorAndMinor(version: string): any {
         const match = version.match(/(\d)+(?:\.(\d)+)?(?:\.(\d)+)?/);
-        if (!match || !match[1]) {
+        if (!match || !match[1]) {
             // Invalid version.
             return false;
         }
 
         return {
-            major: match[1] + '.' + (match[2] || '0'),
-            minor: parseInt(match[3] || 0, 10)
-        }
+            major: match[1] + '.' + (match[2] || '0'),
+            minor: parseInt(match[3], 10) || 0
+        };
     }
 
     /**
@@ -1395,10 +1428,10 @@ export class CoreSite {
      * @param {string} version Release version (e.g. '3.1.0').
      * @return {number} Next major version number.
      */
-    protected getNextMajorVersionNumber(version: string) : number {
-        let data = this.getMajorAndMinor(version),
-            position,
+    protected getNextMajorVersionNumber(version: string): number {
+        const data = this.getMajorAndMinor(version),
             releases = Object.keys(this.moodleReleases);
+        let position;
 
         if (!data) {
             // Invalid version.
@@ -1407,7 +1440,7 @@ export class CoreSite {
 
         position = releases.indexOf(data.major);
 
-        if (position == -1 || position == releases.length -1) {
+        if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
             return this.moodleReleases[releases[position]];
         }

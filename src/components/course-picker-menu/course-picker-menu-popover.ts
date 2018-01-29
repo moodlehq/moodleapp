@@ -38,8 +38,9 @@ export class CoreCoursePickerMenuPopoverComponent {
      * @param {any} course Course object clicked.
      * @return {boolean} Return true if success, false if error.
      */
-    coursePicked(event: Event, course: any) : boolean {
+    coursePicked(event: Event, course: any): boolean {
         this.viewCtrl.dismiss(course);
+
         return true;
     }
 }

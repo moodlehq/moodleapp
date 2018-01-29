@@ -51,8 +51,8 @@ export class CoreIframeComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
-        let iframe: HTMLIFrameElement = this.iframe && this.iframe.nativeElement;
+    ngOnInit(): void {
+        const iframe: HTMLIFrameElement = this.iframe && this.iframe.nativeElement;
 
         this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.src);
         this.iframeWidth = this.domUtils.formatPixelsSize(this.iframeWidth) || '100%';
@@ -85,7 +85,7 @@ export class CoreIframeComponent implements OnInit {
      * @param {any} element Element to treat.
      * @return {{ window: Window, document: Document }} Window and Document.
      */
-    protected getContentWindowAndDocument(element: any) : { window: Window, document: Document } {
+    protected getContentWindowAndDocument(element: any): { window: Window, document: Document } {
         let contentWindow: Window = element.contentWindow,
             contentDocument: Document = element.contentDocument || (contentWindow && contentWindow.document);
 
@@ -106,7 +106,7 @@ export class CoreIframeComponent implements OnInit {
             }
         }
 
-        return {window: contentWindow, document: contentDocument};
+        return { window: contentWindow, document: contentDocument };
     }
 
     /**
@@ -115,7 +115,7 @@ export class CoreIframeComponent implements OnInit {
      *
      * @param {any} element Element to treat.
      */
-    protected treatFrame(element: any) : void {
+    protected treatFrame(element: any): void {
         if (element) {
             let winAndDoc = this.getContentWindowAndDocument(element);
             // Redefine window.open in this element and sub frames, it might have been loaded already.
@@ -139,10 +139,10 @@ export class CoreIframeComponent implements OnInit {
      * @param {Window} contentWindow The window of the element contents.
      * @param {Document} contentDocument The document of the element contents.
      */
-    protected redefineWindowOpen(element: any, contentWindow: Window, contentDocument: Document) : void {
+    protected redefineWindowOpen(element: any, contentWindow: Window, contentDocument: Document): void {
         if (contentWindow) {
             // Intercept window.open.
-            contentWindow.open = (url: string) : Window => {
+            contentWindow.open = (url: string): Window => {
                 const scheme = this.urlUtils.getUrlScheme(url);
                 if (!scheme) {
                     // It's a relative URL, use the frame src to create the full URL.
@@ -153,10 +153,12 @@ export class CoreIframeComponent implements OnInit {
                             url = this.textUtils.concatenatePaths(dirAndFile.directory, url);
                         } else {
                             this.logger.warn('Cannot get iframe dir path to open relative url', url, element);
+
                             return new Window(); // Return new Window object.
                         }
                     } else {
                         this.logger.warn('Cannot get iframe src to open relative url', url, element);
+
                         return new Window(); // Return new Window object.
                     }
                 }
@@ -198,7 +200,7 @@ export class CoreIframeComponent implements OnInit {
      * @param {any} element Element to treat.
      * @param {Document} contentDocument The document of the element contents.
      */
-    protected treatLinks(element: any, contentDocument: Document) : void {
+    protected treatLinks(element: any, contentDocument: Document): void {
         if (!contentDocument) {
             return;
         }

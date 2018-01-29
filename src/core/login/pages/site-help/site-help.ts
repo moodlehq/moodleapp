@@ -18,18 +18,18 @@ import { IonicPage, ViewController } from 'ionic-angular';
 /**
  * Component that displays some help regarding the CoreLoginSitePage.
  */
-@IonicPage({segment: "core-login-site-help"})
+@IonicPage({ segment: 'core-login-site-help' })
 @Component({
     selector: 'page-core-login-site-help',
     templateUrl: 'site-help.html',
 })
 export class CoreLoginSiteHelpPage {
-    constructor(private viewCtrl: ViewController) {}
+    constructor(private viewCtrl: ViewController) { }
 
     /**
      * Close help modal.
      */
-    closeHelp() : void {
+    closeHelp(): void {
         this.viewCtrl.dismiss();
     }
 }

@@ -25,7 +25,7 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
     priority = 700;
     type = CoreUserDelegate.TYPE_COMMUNICATION;
 
-    constructor(protected sitesProvider: CoreSitesProvider) {}
+    constructor(protected sitesProvider: CoreSitesProvider) { }
 
     /**
      * Check if handler is enabled.
@@ -45,10 +45,10 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
      * @param  {any} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
      * @return  {boolean|Promise<boolean>}   Promise resolved with true if enabled, resolved with false otherwise.
      */
-    isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean|Promise<boolean> {
+    isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         // Not current user required.
         return user.id != this.sitesProvider.getCurrentSite().getUserId() && user.email;
-    };
+    }
 
     /**
      * Returns the data needed to render the handler.
@@ -60,10 +60,10 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
             icon: 'mail',
             title: 'core.user.sendemail',
             class: 'core-user-profile-mail',
-            action: ($event, user, courseId) => {
+            action: ($event, user, courseId): void => {
                 $event.preventDefault();
                 $event.stopPropagation();
-                window.open("mailto:" + user.email, '_blank');
+                window.open('mailto:' + user.email, '_blank');
             }
         };
     }

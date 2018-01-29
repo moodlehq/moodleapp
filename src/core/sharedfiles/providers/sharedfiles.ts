@@ -28,7 +28,7 @@ import { SQLiteDB } from '../../../classes/sqlitedb';
  */
 @Injectable()
 export class CoreSharedFilesProvider {
-    public static SHARED_FILES_FOLDER = 'sharedfiles';
+    static SHARED_FILES_FOLDER = 'sharedfiles';
 
     // Variables for the database.
     protected SHARED_FILES_TABLE = 'wscache';
@@ -41,14 +41,14 @@ export class CoreSharedFilesProvider {
                 primaryKey: true
             }
         ]
-    }
+    };
 
     protected logger;
     protected appDB: SQLiteDB;
 
     constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, appProvider: CoreAppProvider,
-            private textUtils: CoreTextUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider) {
+        private textUtils: CoreTextUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider,
+        private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreSharedFilesProvider');
 
         this.appDB = appProvider.getDB();
@@ -61,12 +61,13 @@ export class CoreSharedFilesProvider {
      *
      * @return {Promise<any>} Promise resolved with a new file to be treated. If no new files found, promise is rejected.
      */
-    checkIOSNewFiles() : Promise<any> {
+    checkIOSNewFiles(): Promise<any> {
         this.logger.debug('Search for new files on iOS');
+
         return this.fileProvider.getDirectoryContents('Inbox').then((entries) => {
             if (entries.length > 0) {
-                let promises = [],
-                    fileToReturn;
+                const promises = [];
+                let fileToReturn;
 
                 entries.forEach((entry) => {
                     const fileId = this.getFileId(entry);
@@ -90,8 +91,10 @@ export class CoreSharedFilesProvider {
                     if (fileToReturn) {
                         // Mark it as "treated".
                         fileId = this.getFileId(fileToReturn);
+
                         return this.markAsTreated(fileId).then(() => {
                             this.logger.debug('File marked as "treated": ' + fileToReturn.name);
+
                             return fileToReturn;
                         });
                     } else {
@@ -110,7 +113,7 @@ export class CoreSharedFilesProvider {
      * @param {any} entry FileEntry.
      * @return {Promise<any>} Promise resolved when done, rejected otherwise.
      */
-    deleteInboxFile(entry: any) : Promise<any> {
+    deleteInboxFile(entry: any): Promise<any> {
         this.logger.debug('Delete inbox file: ' + entry.name);
 
         return this.fileProvider.removeFileByFileEntry(entry).catch(() => {
@@ -120,6 +123,7 @@ export class CoreSharedFilesProvider {
                 this.logger.debug('"Treated" mark removed from file: ' + entry.name);
             }).catch((error) => {
                 this.logger.debug('Error deleting "treated" mark from file: ' + entry.name, error);
+
                 return Promise.reject(error);
             });
         });
@@ -131,7 +135,7 @@ export class CoreSharedFilesProvider {
      * @param {any} entry FileEntry.
      * @return {string} File ID.
      */
-    protected getFileId(entry: any) : string {
+    protected getFileId(entry: any): string {
         return <string> Md5.hashAsciiStr(entry.name);
     }
 
@@ -143,7 +147,7 @@ export class CoreSharedFilesProvider {
      * @param {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      * @return {Promise<any[]>} Promise resolved with the files.
      */
-    getSiteSharedFiles(siteId?: string, path?: string, mimetypes?: string[]) : Promise<any[]> {
+    getSiteSharedFiles(siteId?: string, path?: string, mimetypes?: string[]): Promise<any[]> {
         let pathToGet = this.getSiteSharedFilesDirPath(siteId);
         if (path) {
             pathToGet = this.textUtils.concatenatePaths(pathToGet, path);
@@ -173,8 +177,9 @@ export class CoreSharedFilesProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {string} Path.
      */
-    getSiteSharedFilesDirPath(siteId?: string) : string {
+    getSiteSharedFilesDirPath(siteId?: string): string {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         return this.fileProvider.getSiteFolder(siteId) + '/' + CoreSharedFilesProvider.SHARED_FILES_FOLDER;
     }
 
@@ -184,8 +189,8 @@ export class CoreSharedFilesProvider {
      * @param {string} fileId File ID.
      * @return {Promise<any>} Resolved if treated, rejected otherwise.
      */
-    protected isFileTreated(fileId: string) : Promise<any> {
-        return this.appDB.getRecord(this.SHARED_FILES_TABLE, {id: fileId});
+    protected isFileTreated(fileId: string): Promise<any> {
+        return this.appDB.getRecord(this.SHARED_FILES_TABLE, { id: fileId });
     }
 
     /**
@@ -194,11 +199,11 @@ export class CoreSharedFilesProvider {
      * @param {string} fileId File ID.
      * @return {Promise<any>} Promise resolved when marked.
      */
-    protected markAsTreated(fileId: string) : Promise<any> {
+    protected markAsTreated(fileId: string): Promise<any> {
         // Check if it's already marked.
         return this.isFileTreated(fileId).catch(() => {
             // Doesn't exist, insert it.
-            return this.appDB.insertRecord(this.SHARED_FILES_TABLE, {id: fileId});
+            return this.appDB.insertRecord(this.SHARED_FILES_TABLE, { id: fileId });
         });
     }
 
@@ -210,10 +215,10 @@ export class CoreSharedFilesProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}Promise resolved when done.
      */
-    storeFileInSite(entry: any, newName?: string, siteId?: string) : Promise<any> {
+    storeFileInSite(entry: any, newName?: string, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        if (!entry || !siteId) {
+        if (!entry || !siteId) {
             return Promise.reject(null);
         }
 
@@ -225,7 +230,8 @@ export class CoreSharedFilesProvider {
         // Create dir if it doesn't exist already.
         return this.fileProvider.createDir(sharedFilesFolder).then(() => {
             return this.fileProvider.moveFile(entry.fullPath, newPath).then((newFile) => {
-                this.eventsProvider.trigger(CoreEventsProvider.FILE_SHARED, {siteId: siteId, name: newName});
+                this.eventsProvider.trigger(CoreEventsProvider.FILE_SHARED, { siteId: siteId, name: newName });
+
                 return newFile;
             });
         });
@@ -237,7 +243,7 @@ export class CoreSharedFilesProvider {
      * @param {string} fileId File ID.
      * @return {Promise<any>} Resolved when unmarked.
      */
-    protected unmarkAsTreated(fileId: string) : Promise<any> {
-        return this.appDB.deleteRecords(this.SHARED_FILES_TABLE, {id: fileId});
+    protected unmarkAsTreated(fileId: string): Promise<any> {
+        return this.appDB.deleteRecords(this.SHARED_FILES_TABLE, { id: fileId });
     }
 }

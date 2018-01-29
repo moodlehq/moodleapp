@@ -18,7 +18,7 @@ import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreEventsProvider } from '../../../providers/events';
 
-export interface CoreUserProfileFieldHandler extends CoreDelegateHandler  {
+export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
 
     /**
      * Return the Component to use to display the user profile field.
@@ -37,7 +37,7 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler  {
      */
     getData?(field: any, signup: boolean, registerAuth: string, formValues: any):
         Promise<CoreUserProfileFieldHandlerData> | CoreUserProfileFieldHandlerData;
-};
+}
 
 export interface CoreUserProfileFieldHandlerData {
     /**
@@ -57,15 +57,15 @@ export interface CoreUserProfileFieldHandlerData {
      * @type {any}
      */
     value: any;
-};
+}
 
 /**
  * Service to interact with user profile fields. Provides functions to register a plugin.
  */
 @Injectable()
 export class CoreUserProfileFieldDelegate extends CoreDelegate {
-    protected handlers: {[s: string]: CoreUserProfileFieldHandler} = {};
-    protected enabledHandlers: {[s: string]: CoreUserProfileFieldHandler} = {};
+    protected handlers: { [s: string]: CoreUserProfileFieldHandler } = {};
+    protected enabledHandlers: { [s: string]: CoreUserProfileFieldHandler } = {};
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {
@@ -79,8 +79,8 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      * @param  {boolean} signup         True if user is in signup page.
      * @return {any} The component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean) : any {
-        let type = field.type || field.datatype;
+    getComponent(field: any, signup: boolean): any {
+        const type = field.type || field.datatype;
         if (signup) {
             return this.executeFunction(type, 'getComponent');
         } else {
@@ -98,10 +98,10 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      * @return {Promise<any>}           Data to send for the field.
      */
     getDataForField(field: any, signup: boolean, registerAuth: string, formValues: any): Promise<any> {
-        let type = field.type || field.datatype,
+        const type = field.type || field.datatype,
             handler = this.getHandler(type, !signup);
         if (handler) {
-            let name = 'profile_field_' + field.shortname;
+            const name = 'profile_field_' + field.shortname;
             if (handler.getData) {
                 return Promise.resolve(handler.getData(field, signup, registerAuth, formValues));
             } else if (field.shortname && typeof formValues[name] != 'undefined') {
@@ -113,6 +113,7 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
                 });
             }
         }
+
         return Promise.reject(null);
     }
 
@@ -125,8 +126,8 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      * @param  {any}     formValues     Form values.
      * @return {Promise<any>}           Data to send.
      */
-    getDataForFields(fields: any[], signup = false, registerAuth = "", formValues: any): Promise<any> {
-        let result = [],
+    getDataForFields(fields: any[], signup: boolean = false, registerAuth: string = '', formValues: any): Promise<any> {
+        const result = [],
             promises = [];
 
         fields.forEach((field) => {

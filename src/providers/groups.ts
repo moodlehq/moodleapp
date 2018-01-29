@@ -37,7 +37,7 @@ export interface CoreGroupInfo {
      * @type {boolean}
      */
     visibleGroups?: boolean;
-};
+}
 
 /*
  * Service to handle groups.
@@ -45,12 +45,12 @@ export interface CoreGroupInfo {
 @Injectable()
 export class CoreGroupsProvider {
     // Group mode constants.
-    public static NOGROUPS       = 0;
-    public static SEPARATEGROUPS = 1;
-    public static VISIBLEGROUPS  = 2;
+    static NOGROUPS = 0;
+    static SEPARATEGROUPS = 1;
+    static VISIBLEGROUPS = 2;
     protected ROOT_CACHE_KEY = 'mmGroups:';
 
-    constructor(private sitesProvider: CoreSitesProvider, private translate: TranslateService) {}
+    constructor(private sitesProvider: CoreSitesProvider, private translate: TranslateService) { }
 
     /**
      * Check if group mode of an activity is enabled.
@@ -59,7 +59,7 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with true if the activity has groups, resolved with false otherwise.
      */
-    activityHasGroups(cmId: number, siteId?: string) : Promise<boolean> {
+    activityHasGroups(cmId: number, siteId?: string): Promise<boolean> {
         return this.getActivityGroupMode(cmId, siteId).then((groupmode) => {
             return groupmode === CoreGroupsProvider.SEPARATEGROUPS || groupmode === CoreGroupsProvider.VISIBLEGROUPS;
         }).catch(() => {
@@ -75,7 +75,7 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the groups are retrieved.
      */
-    getActivityAllowedGroups(cmId: number, userId?: number, siteId?: string) : Promise<any> {
+    getActivityAllowedGroups(cmId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -85,12 +85,13 @@ export class CoreGroupsProvider {
                 },
                 preSets = {
                     cacheKey: this.getActivityAllowedGroupsCacheKey(cmId, userId)
-                }
+                };
 
             return site.read('core_group_get_activity_allowed_groups', params, preSets).then((response) => {
                 if (!response || !response.groups) {
                     return Promise.reject(null);
                 }
+
                 return response.groups;
             });
         });
@@ -103,7 +104,7 @@ export class CoreGroupsProvider {
      * @param {number} userId User ID.
      * @return {string} Cache key.
      */
-    protected getActivityAllowedGroupsCacheKey(cmId: number, userId: number) : string {
+    protected getActivityAllowedGroupsCacheKey(cmId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'allowedgroups:' + cmId + ':' + userId;
     }
 
@@ -115,7 +116,7 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any[]>} Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
      */
-    getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string) : Promise<any[]> {
+    getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get real groupmode, in case it's forced by the course.
@@ -124,6 +125,7 @@ export class CoreGroupsProvider {
                 // Get the groups available for the user.
                 return this.getActivityAllowedGroups(cmId, userId, siteId);
             }
+
             return [];
         });
     }
@@ -137,10 +139,10 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<CoreGroupInfo>} Promise resolved with the group info.
      */
-    getActivityGroupInfo(cmId: number, addAllParts = true, userId?: number, siteId?: string) : Promise<CoreGroupInfo> {
-        let groupInfo: CoreGroupInfo = {
+    getActivityGroupInfo(cmId: number, addAllParts: boolean = true, userId?: number, siteId?: string): Promise<CoreGroupInfo> {
+        const groupInfo: CoreGroupInfo = {
             groups: []
-        }
+        };
 
         return this.getActivityGroupMode(cmId, siteId).then((groupMode) => {
             groupInfo.separateGroups = groupMode === CoreGroupsProvider.SEPARATEGROUPS;
@@ -149,6 +151,7 @@ export class CoreGroupsProvider {
             if (groupInfo.separateGroups || groupInfo.visibleGroups) {
                 return this.getActivityAllowedGroups(cmId, userId, siteId);
             }
+
             return [];
         }).then((groups) => {
             if (groups.length <= 0) {
@@ -156,10 +159,11 @@ export class CoreGroupsProvider {
                 groupInfo.visibleGroups = false;
             } else {
                 if (addAllParts || groupInfo.visibleGroups) {
-                    groupInfo.groups.push({id: 0, name: this.translate.instant('core.allparticipants')});
+                    groupInfo.groups.push({ id: 0, name: this.translate.instant('core.allparticipants') });
                 }
                 groupInfo.groups = groupInfo.groups.concat(groups);
             }
+
             return groupInfo;
         });
     }
@@ -171,19 +175,20 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved when the group mode is retrieved.
      */
-    getActivityGroupMode(cmId: number, siteId?: string) : Promise<number> {
+    getActivityGroupMode(cmId: number, siteId?: string): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     cmid: cmId
                 },
                 preSets = {
                     cacheKey: this.getActivityGroupModeCacheKey(cmId)
-                }
+                };
 
             return site.read('core_group_get_activity_groupmode', params, preSets).then((response) => {
                 if (!response || typeof response.groupmode == 'undefined') {
                     return Promise.reject(null);
                 }
+
                 return response.groupmode;
             });
         });
@@ -195,7 +200,7 @@ export class CoreGroupsProvider {
      * @param {number} cmId Course module ID.
      * @return {string} Cache key.
      */
-    protected getActivityGroupModeCacheKey(cmId: number) : string {
+    protected getActivityGroupModeCacheKey(cmId: number): string {
         return this.ROOT_CACHE_KEY + 'groupmode:' + cmId;
     }
 
@@ -207,9 +212,9 @@ export class CoreGroupsProvider {
      * @param {number} [userId] ID of the user. If not defined, use the userId related to siteId.
      * @return {Promise<any[]>} Promise resolved when the groups are retrieved.
      */
-    getUserGroups(courses: any[], siteId?: string, userId?: number) : Promise<any[]> {
-        let promises = [],
-            groups = [];
+    getUserGroups(courses: any[], siteId?: string, userId?: number): Promise<any[]> {
+        const promises = [];
+        let groups = [];
 
         courses.forEach((course) => {
             const courseId = typeof course == 'object' ? course.id : course;
@@ -231,12 +236,13 @@ export class CoreGroupsProvider {
      * @param {number} [userId] ID of the user. If not defined, use ID related to siteid.
      * @return {Promise<any[]>} Promise resolved when the groups are retrieved.
      */
-    getUserGroupsInCourse(courseId: number, siteId?: string, userId?: number) : Promise<any[]> {
+    getUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let data = {
+            const data = {
                     userid: userId || site.getUserId(),
                     courseid: courseId
-                }, preSets = {
+                },
+                preSets = {
                     cacheKey: this.getUserGroupsInCourseCacheKey(courseId, userId)
                 };
 
@@ -257,7 +263,7 @@ export class CoreGroupsProvider {
      * @param {number} userId User ID.
      * @return {string} Cache key.
      */
-    protected getUserGroupsInCourseCacheKey(courseId: number, userId: number) : string {
+    protected getUserGroupsInCourseCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'courseGroups:' + courseId + ':' + userId;
     }
 
@@ -269,9 +275,10 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateActivityAllowedGroups(cmId: number, userId?: number, siteId?: string) : Promise<any> {
+    invalidateActivityAllowedGroups(cmId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+            userId = userId || site.getUserId();
+
             return site.invalidateWsCacheForKey(this.getActivityAllowedGroupsCacheKey(cmId, userId));
         });
     }
@@ -283,7 +290,7 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateActivityGroupMode(cmId: number, siteId?: string) : Promise<any> {
+    invalidateActivityGroupMode(cmId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getActivityGroupModeCacheKey(cmId));
         });
@@ -297,10 +304,11 @@ export class CoreGroupsProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateActivityGroupInfo(cmId: number, userId?: number, siteId?: string) : Promise<any> {
-        let promises = [];
+    invalidateActivityGroupInfo(cmId: number, userId?: number, siteId?: string): Promise<any> {
+        const promises = [];
         promises.push(this.invalidateActivityAllowedGroups(cmId, userId, siteId));
         promises.push(this.invalidateActivityGroupMode(cmId, siteId));
+
         return Promise.all(promises);
     }
 
@@ -312,11 +320,11 @@ export class CoreGroupsProvider {
      * @param {number} [userId] User ID. If not defined, use current user.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateUserGroups(courses: any[], siteId?: string, userId?: number) : Promise<any> {
+    invalidateUserGroups(courses: any[], siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let promises = [];
+            const promises = [];
 
-            userId = userId || site.getUserId();
+            userId = userId || site.getUserId();
 
             courses.forEach((course) => {
                 const courseId = typeof course == 'object' ? course.id : course;
@@ -335,9 +343,10 @@ export class CoreGroupsProvider {
      * @param {number} [userId] User ID. If not defined, use current user.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateUserGroupsInCourse(courseId: number, siteId?: string, userId?: number) : Promise<any> {
+    invalidateUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+            userId = userId || site.getUserId();
+
             return site.invalidateWsCacheForKey(this.getUserGroupsInCourseCacheKey(courseId, userId));
         });
     }

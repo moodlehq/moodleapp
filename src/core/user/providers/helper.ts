@@ -35,15 +35,15 @@ export class CoreUserHelperProvider {
      * @param {string} country Country.
      * @return {string} Formatted address.
      */
-    formatAddress(address: string, city: string, country: string) : string {
-        let separator = this.translate.instant('core.listsep'),
-            values = [address, city, country];
+    formatAddress(address: string, city: string, country: string): string {
+        const separator = this.translate.instant('core.listsep');
+        let values = [address, city, country];
 
         values = values.filter((value) => {
             return value && value.length > 0;
         });
 
-        return values.join(separator + " ");
+        return values.join(separator + ' ');
     }
 
     /**
@@ -52,16 +52,17 @@ export class CoreUserHelperProvider {
      * @param {any[]} [roles] List of user roles.
      * @return {string} The formatted roles.
      */
-    formatRoleList(roles?: any[]) : string {
+    formatRoleList(roles?: any[]): string {
         if (!roles || roles.length <= 0) {
-            return "";
+            return '';
         }
 
-        let separator = this.translate.instant('core.listsep');
+        const separator = this.translate.instant('core.listsep');
 
         return roles.map((value) => {
-            let translation = this.translate.instant('core.user.' + value.shortname);
+            const translation = this.translate.instant('core.user.' + value.shortname);
+
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
-        }).join(separator + " ");
+        }).join(separator + ' ');
     }
 }

@@ -35,15 +35,15 @@ export interface CoreFileUploaderOptions extends CoreWSFileUploadOptions {
      * @type {boolean}
      */
     deleteAfterUpload?: boolean;
-};
+}
 
 /**
  * Service to upload files.
  */
 @Injectable()
 export class CoreFileUploaderProvider {
-    public static LIMITED_SIZE_WARNING = 1048576; // 1 MB.
-    public static WIFI_SIZE_WARNING = 10485760; // 10 MB.
+    static LIMITED_SIZE_WARNING = 1048576; // 1 MB.
+    static WIFI_SIZE_WARNING = 10485760; // 10 MB.
 
     protected logger;
 
@@ -60,7 +60,7 @@ export class CoreFileUploaderProvider {
      * @param {string} extension Extension.
      * @return {string}           Treated extension.
      */
-    protected addDot(extension: string) : string {
+    protected addDot(extension: string): string {
         return '.' + extension;
     }
 
@@ -71,7 +71,7 @@ export class CoreFileUploaderProvider {
      * @param {any[]} b Second file list.
      * @return {boolean} Whether both lists are different.
      */
-    areFileListDifferent(a: any[], b: any[]) : boolean {
+    areFileListDifferent(a: any[], b: any[]): boolean {
         a = a || [];
         b = b || [];
         if (a.length != b.length) {
@@ -95,12 +95,14 @@ export class CoreFileUploaderProvider {
      *
      * @param {any[]} files List of files.
      */
-    clearTmpFiles(files: any[]) : void {
+    clearTmpFiles(files: any[]): void {
         // Delete the local files.
         files.forEach((file) => {
             if (!file.offline && file.remove) {
                 // Pass an empty function to prevent missing parameter error.
-                file.remove(() => {});
+                file.remove(() => {
+                    // Nothing to do.
+                });
             }
         });
     }
@@ -112,8 +114,8 @@ export class CoreFileUploaderProvider {
      * @param {boolean} [isFromAlbum] True if the image was taken from album, false if it's a new image taken with camera.
      * @return {CoreFileUploaderOptions} Options.
      */
-    getCameraUploadOptions(uri: string, isFromAlbum?: boolean) : CoreFileUploaderOptions {
-        let extension = this.mimeUtils.getExtension(uri),
+    getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
+        const extension = this.mimeUtils.getExtension(uri),
             mimetype = this.mimeUtils.getMimeType(extension),
             isIOS = this.platform.is('ios'),
             options: CoreFileUploaderOptions = {
@@ -155,11 +157,11 @@ export class CoreFileUploaderProvider {
      */
     getFileUploadOptions(uri: string, name: string, type: string, deleteAfterUpload?: boolean, fileArea?: string, itemId?: number)
             : CoreFileUploaderOptions {
-        let options : CoreFileUploaderOptions = {};
+        const options: CoreFileUploaderOptions = {};
         options.fileName = name;
         options.mimeType = type || this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(options.fileName));
         options.deleteAfterUpload = !!deleteAfterUpload;
-        options.itemId = itemId || 0;
+        options.itemId = itemId || 0;
         options.fileArea = fileArea;
 
         return options;
@@ -171,9 +173,9 @@ export class CoreFileUploaderProvider {
      * @param {MediaFile} mediaFile File object to upload.
      * @return {CoreFileUploaderOptions} Options.
      */
-    getMediaUploadOptions(mediaFile: MediaFile) : CoreFileUploaderOptions {
-        let options : CoreFileUploaderOptions = {},
-            filename = mediaFile.name,
+    getMediaUploadOptions(mediaFile: MediaFile): CoreFileUploaderOptions {
+        const options: CoreFileUploaderOptions = {};
+        let filename = mediaFile.name,
             split;
 
         // Add a timestamp to the filename to make it unique.
@@ -188,6 +190,7 @@ export class CoreFileUploaderProvider {
         } else {
             options.mimeType = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(options.fileName));
         }
+
         return options;
     }
 
@@ -197,7 +200,7 @@ export class CoreFileUploaderProvider {
      * @param {string} folderPath Folder where to get the files.
      * @return {Promise<any[]>} Promise resolved with the list of files.
      */
-    getStoredFiles(folderPath: string) : Promise<any[]> {
+    getStoredFiles(folderPath: string): Promise<any[]> {
         return this.fileProvider.getDirectoryContents(folderPath).then((files) => {
             return this.markOfflineFiles(files);
         });
@@ -210,7 +213,7 @@ export class CoreFileUploaderProvider {
      * @param {string} folderPath Folder path to get files from.
      * @return {Promise<any[]>} Promise resolved with files.
      */
-    getStoredFilesFromOfflineFilesObject(filesObject: {online: any[], offline: number}, folderPath: string) : Promise<any[]> {
+    getStoredFilesFromOfflineFilesObject(filesObject: { online: any[], offline: number }, folderPath: string): Promise<any[]> {
         let files = [];
 
         if (filesObject) {
@@ -227,6 +230,7 @@ export class CoreFileUploaderProvider {
                 });
             }
         }
+
         return Promise.resolve(files);
     }
 
@@ -239,7 +243,7 @@ export class CoreFileUploaderProvider {
      * @param {string} [mimetype] File's mimetype.
      * @return {string} Undefined if file is valid, error message if file is invalid.
      */
-    isInvalidMimetype(mimetypes?: string[], path?: string, mimetype?: string) : string {
+    isInvalidMimetype(mimetypes?: string[], path?: string, mimetype?: string): string {
         let extension;
 
         if (mimetypes) {
@@ -253,7 +257,8 @@ export class CoreFileUploaderProvider {
 
             if (mimetype && mimetypes.indexOf(mimetype) == -1) {
                 extension = extension || this.translate.instant('core.unknown');
-                return this.translate.instant('core.fileuploader.invalidfiletype', {$a: extension});
+
+                return this.translate.instant('core.fileuploader.invalidfiletype', { $a: extension });
             }
         }
     }
@@ -264,12 +269,13 @@ export class CoreFileUploaderProvider {
      * @param {any[]} files Files to mark as offline.
      * @return {any[]} Files marked as offline.
      */
-    markOfflineFiles(files: any[]) : any[] {
+    markOfflineFiles(files: any[]): any[] {
         // Mark the files as pending offline.
         files.forEach((file) => {
             file.offline = true;
             file.filename = file.name;
         });
+
         return files;
     }
 
@@ -279,8 +285,8 @@ export class CoreFileUploaderProvider {
      * @param {string} filetypeList Formatted string list where the mimetypes can be checked.
      * @return {{info: any[], mimetypes: string[]}}  Mimetypes and the filetypes informations.
      */
-    prepareFiletypeList(filetypeList: string) : {info: any[], mimetypes: string[]} {
-        let filetypes = filetypeList.split(/[;, ]+/g),
+    prepareFiletypeList(filetypeList: string): { info: any[], mimetypes: string[] } {
+        const filetypes = filetypeList.split(/[;, ]+/g),
             mimetypes = {}, // Use an object to prevent duplicates.
             typesInfo = [];
 
@@ -298,7 +304,7 @@ export class CoreFileUploaderProvider {
                     mimetypes[filetype] = true;
                 } else if (filetype.indexOf('.') === 0) {
                     // It's an extension.
-                    let mimetype = this.mimeUtils.getMimeType(filetype);
+                    const mimetype = this.mimeUtils.getMimeType(filetype);
                     typesInfo.push({
                         name: mimetype ? this.mimeUtils.getMimetypeDescription(mimetype) : false,
                         extlist: filetype
@@ -309,7 +315,7 @@ export class CoreFileUploaderProvider {
                     }
                 } else {
                     // It's a group.
-                    let groupExtensions = this.mimeUtils.getGroupMimeInfo(filetype, 'extensions'),
+                    const groupExtensions = this.mimeUtils.getGroupMimeInfo(filetype, 'extensions'),
                         groupMimetypes = this.mimeUtils.getGroupMimeInfo(filetype, 'mimetypes');
 
                     if (groupExtensions.length > 0) {
@@ -326,7 +332,8 @@ export class CoreFileUploaderProvider {
                     } else {
                         // Treat them as extensions.
                         filetype = this.addDot(filetype);
-                        let mimetype = this.mimeUtils.getMimeType(filetype);
+
+                        const mimetype = this.mimeUtils.getMimeType(filetype);
                         typesInfo.push({
                             name: mimetype ? this.mimeUtils.getMimetypeDescription(mimetype) : false,
                             extlist: filetype
@@ -354,8 +361,8 @@ export class CoreFileUploaderProvider {
      * @param {any[]} files List of files.
      * @return {Promise<{online: any[], offline: number}>} Promise resolved if success.
      */
-    storeFilesToUpload(folderPath: string, files: any[]) : Promise<{online: any[], offline: number}> {
-        let result = {
+    storeFilesToUpload(folderPath: string, files: any[]): Promise<{ online: any[], offline: number }> {
+        const result = {
             online: [],
             offline: 0
         };
@@ -366,7 +373,7 @@ export class CoreFileUploaderProvider {
 
         // Remove unused files from previous saves.
         return this.fileProvider.removeUnusedFiles(folderPath, files).then(() => {
-            let promises = [];
+            const promises = [];
 
             files.forEach((file) => {
                 if (file.filename && !file.name) {
@@ -382,9 +389,9 @@ export class CoreFileUploaderProvider {
                     // File already in the submission folder.
                     result.offline++;
                 } else {
-                    // Local file, copy it. Use copy instead of move to prevent having a unstable state if
-                    // some copies succeed and others don't.
-                    let destFile = this.textUtils.concatenatePaths(folderPath, file.name);
+                    // Local file, copy it.
+                    // Use copy instead of move to prevent having a unstable state if some copies succeed and others don't.
+                    const destFile = this.textUtils.concatenatePaths(folderPath, file.name);
                     promises.push(this.fileProvider.copyFile(file.toURL(), destFile));
                     result.offline++;
                 }
@@ -406,7 +413,7 @@ export class CoreFileUploaderProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     uploadFile(uri: string, options?: CoreFileUploaderOptions, onProgress?: (event: ProgressEvent) => any,
-            siteId?: string) : Promise<any> {
+            siteId?: string): Promise<any> {
         options = options || {};
 
         const deleteAfterUpload = options.deleteAfterUpload,
@@ -423,6 +430,7 @@ export class CoreFileUploaderProvider {
                     this.fileProvider.removeExternalFile(uri);
                 }, 500);
             }
+
             return result;
         });
     }
@@ -437,8 +445,8 @@ export class CoreFileUploaderProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved with the itemId.
      */
-    uploadOrReuploadFile(file: any, itemId?: number, component?: string, componentId?: string|number,
-            siteId?: string) : Promise<number> {
+    uploadOrReuploadFile(file: any, itemId?: number, component?: string, componentId?: string | number,
+            siteId?: string): Promise<number> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         let promise,
@@ -448,9 +456,9 @@ export class CoreFileUploaderProvider {
             // It's an online file. We need to download it and re-upload it.
             fileName = file.filename;
             promise = this.filepoolProvider.downloadUrl(siteId, file.url || file.fileurl, false, component, componentId,
-                    file.timemodified, undefined, undefined, file).then((path) => {
-                return this.fileProvider.getExternalFile(path);
-            });
+                file.timemodified, undefined, undefined, file).then((path) => {
+                    return this.fileProvider.getExternalFile(path);
+                });
         } else {
             // Local file, we already have the file entry.
             fileName = file.name;
@@ -459,7 +467,8 @@ export class CoreFileUploaderProvider {
 
         return promise.then((fileEntry) => {
             // Now upload the file.
-            let options = this.getFileUploadOptions(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId);
+            const options = this.getFileUploadOptions(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId);
+
             return this.uploadFile(fileEntry.toURL(), options, undefined, siteId).then((result) => {
                 return result.itemid;
             });
@@ -477,8 +486,8 @@ export class CoreFileUploaderProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved with the itemId.
      */
-    uploadOrReuploadFiles(files: any[], component?: string, componentId?: string|number, siteId?: string) : Promise<number> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    uploadOrReuploadFiles(files: any[], component?: string, componentId?: string | number, siteId?: string): Promise<number> {
+            siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (!files || !files.length) {
             // Return fake draft ID.
@@ -487,10 +496,10 @@ export class CoreFileUploaderProvider {
 
         // Upload only the first file first to get a draft id.
         return this.uploadOrReuploadFile(files[0], 0, component, componentId, siteId).then((itemId) => {
-            let promises = [];
+            const promises = [];
 
             for (let i = 1; i < files.length; i++) {
-                let file = files[i];
+                const file = files[i];
                 promises.push(this.uploadOrReuploadFile(file, itemId, component, componentId, siteId));
             }
 

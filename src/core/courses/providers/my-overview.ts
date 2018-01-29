@@ -22,11 +22,11 @@ import * as moment from 'moment';
  */
 @Injectable()
 export class CoreCoursesMyOverviewProvider {
-    public static EVENTS_LIMIT = 20;
-    public static EVENTS_LIMIT_PER_COURSE = 10;
+    static EVENTS_LIMIT = 20;
+    static EVENTS_LIMIT_PER_COURSE = 10;
     protected ROOT_CACHE_KEY = 'myoverview:';
 
-    constructor(private sitesProvider: CoreSitesProvider) {}
+    constructor(private sitesProvider: CoreSitesProvider) { }
 
     /**
      * Get calendar action events for the given course.
@@ -36,11 +36,11 @@ export class CoreCoursesMyOverviewProvider {
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<{events: any[], canLoadMore: number}>} Promise resolved when the info is retrieved.
      */
-    getActionEventsByCourse(courseId: number, afterEventId?: number, siteId?: string) :
-            Promise<{events: any[], canLoadMore: number}> {
+    getActionEventsByCourse(courseId: number, afterEventId?: number, siteId?: string):
+            Promise<{ events: any[], canLoadMore: number }> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
+            const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data: any = {
                     timesortfrom: time,
                     courseid: courseId,
@@ -54,10 +54,11 @@ export class CoreCoursesMyOverviewProvider {
                 data.aftereventid = afterEventId;
             }
 
-            return site.read('core_calendar_get_action_events_by_course', data, preSets).then((courseEvents) : any => {
+            return site.read('core_calendar_get_action_events_by_course', data, preSets).then((courseEvents): any => {
                 if (courseEvents && courseEvents.events) {
                     return this.treatCourseEvents(courseEvents, time);
                 }
+
                 return Promise.reject(null);
             });
         });
@@ -69,7 +70,7 @@ export class CoreCoursesMyOverviewProvider {
      * @param {number} courseId Only events in this course.
      * @return {string} Cache key.
      */
-    protected getActionEventsByCourseCacheKey(courseId: number) : string {
+    protected getActionEventsByCourseCacheKey(courseId: number): string {
         return this.getActionEventsByCoursesCacheKey() + ':' + courseId;
     }
 
@@ -80,9 +81,10 @@ export class CoreCoursesMyOverviewProvider {
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<{[s: string]: {events: any[], canLoadMore: number}}>} Promise resolved when the info is retrieved.
      */
-    getActionEventsByCourses(courseIds: number[], siteId?: string) : Promise<{[s: string]: {events: any[], canLoadMore: number}}> {
+    getActionEventsByCourses(courseIds: number[], siteId?: string): Promise<{ [s: string]:
+            { events: any[], canLoadMore: number } }> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
+            const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data = {
                     timesortfrom: time,
                     courseids: courseIds,
@@ -92,9 +94,9 @@ export class CoreCoursesMyOverviewProvider {
                     cacheKey: this.getActionEventsByCoursesCacheKey()
                 };
 
-            return site.read('core_calendar_get_action_events_by_courses', data, preSets).then((events) : any => {
+            return site.read('core_calendar_get_action_events_by_courses', data, preSets).then((events): any => {
                 if (events && events.groupedbycourse) {
-                    let courseEvents = {};
+                    const courseEvents = {};
 
                     events.groupedbycourse.forEach((course) => {
                         courseEvents[course.courseid] = this.treatCourseEvents(course, time);
@@ -113,7 +115,7 @@ export class CoreCoursesMyOverviewProvider {
      *
      * @return {string} Cache key.
      */
-    protected getActionEventsByCoursesCacheKey() : string {
+    protected getActionEventsByCoursesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'bycourse';
     }
 
@@ -124,9 +126,9 @@ export class CoreCoursesMyOverviewProvider {
      * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<{events: any[], canLoadMore: number}>} Promise resolved when the info is retrieved.
      */
-    getActionEventsByTimesort(afterEventId: number, siteId?: string) : Promise<{events: any[], canLoadMore: number}> {
+    getActionEventsByTimesort(afterEventId: number, siteId?: string): Promise<{ events: any[], canLoadMore: number }> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
+            const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data: any = {
                     timesortfrom: time,
                     limitnum: CoreCoursesMyOverviewProvider.EVENTS_LIMIT
@@ -141,9 +143,9 @@ export class CoreCoursesMyOverviewProvider {
                 data.aftereventid = afterEventId;
             }
 
-            return site.read('core_calendar_get_action_events_by_timesort', data, preSets).then((events) : any => {
+            return site.read('core_calendar_get_action_events_by_timesort', data, preSets).then((events): any => {
                 if (events && events.events) {
-                    let canLoadMore = events.events.length >= data.limitnum ? events.lastid : undefined;
+                    const canLoadMore = events.events.length >= data.limitnum ? events.lastid : undefined;
 
                     // Filter events by time in case it uses cache.
                     events = events.events.filter((element) => {
@@ -155,6 +157,7 @@ export class CoreCoursesMyOverviewProvider {
                         canLoadMore: canLoadMore
                     };
                 }
+
                 return Promise.reject(null);
             });
         });
@@ -165,7 +168,7 @@ export class CoreCoursesMyOverviewProvider {
      *
      * @return {string} Cache key.
      */
-    protected getActionEventsByTimesortPrefixCacheKey() : string {
+    protected getActionEventsByTimesortPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'bytimesort:';
     }
 
@@ -176,9 +179,10 @@ export class CoreCoursesMyOverviewProvider {
      * @param {number} [limit] Limit num of the call.
      * @return {string} Cache key.
      */
-    protected getActionEventsByTimesortCacheKey(afterEventId?: number, limit?: number) : string {
+    protected getActionEventsByTimesortCacheKey(afterEventId?: number, limit?: number): string {
         afterEventId = afterEventId || 0;
         limit = limit || 0;
+
         return this.getActionEventsByTimesortPrefixCacheKey() + afterEventId + ':' + limit;
     }
 
@@ -188,7 +192,7 @@ export class CoreCoursesMyOverviewProvider {
      * @param {string} [siteId] Site ID to invalidate. If not defined, use current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateActionEventsByCourses(siteId?: string) : Promise<any> {
+    invalidateActionEventsByCourses(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKeyStartingWith(this.getActionEventsByCoursesCacheKey());
         });
@@ -200,7 +204,7 @@ export class CoreCoursesMyOverviewProvider {
      * @param {string} [siteId] Site ID to invalidate. If not defined, use current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateActionEventsByTimesort(siteId?: string) : Promise<any> {
+    invalidateActionEventsByTimesort(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKeyStartingWith(this.getActionEventsByTimesortPrefixCacheKey());
         });
@@ -212,7 +216,7 @@ export class CoreCoursesMyOverviewProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
      */
-    isAvailable(siteId?: string) : Promise<boolean> {
+    isAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.wsAvailable('core_calendar_get_action_events_by_courses');
         });
@@ -224,8 +228,9 @@ export class CoreCoursesMyOverviewProvider {
      * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether it's disabled.
      */
-    isDisabledInSite(site?: CoreSite) : boolean {
+    isDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
+
         return site.isFeatureDisabled('$mmSideMenuDelegate_mmaMyOverview');
     }
 
@@ -234,12 +239,13 @@ export class CoreCoursesMyOverviewProvider {
      *
      * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false otherwise.
      */
-    isEnabled() : Promise<boolean> {
+    isEnabled(): Promise<boolean> {
         if (!this.isDisabledInSite()) {
             return this.isAvailable().catch(() => {
                 return false;
             });
         }
+
         return Promise.resolve(false);
     }
 
@@ -250,8 +256,8 @@ export class CoreCoursesMyOverviewProvider {
      * @param {number} timeFrom Current time to filter events from.
      * @return {{events: any[], canLoadMore: number}} Object with course events and last loaded event id if more can be loaded.
      */
-    protected treatCourseEvents(course: any, timeFrom: number) : {events: any[], canLoadMore: number} {
-        let canLoadMore : number =
+    protected treatCourseEvents(course: any, timeFrom: number): { events: any[], canLoadMore: number } {
+        const canLoadMore: number =
             course.events.length >= CoreCoursesMyOverviewProvider.EVENTS_LIMIT_PER_COURSE ? course.lastid : undefined;
 
         // Filter events by time in case it uses cache.

@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, AfterViewInit, ViewChild, ElementRef,
-    SimpleChange } from '@angular/core';
+import {
+    Component, Input, Output, EventEmitter, OnInit, OnChanges, AfterViewInit, ViewChild, ElementRef,
+    SimpleChange
+} from '@angular/core';
 import { CoreTabComponent } from './tab';
 import { Content } from 'ionic-angular';
 
@@ -40,7 +42,7 @@ import { Content } from 'ionic-angular';
     templateUrl: 'tabs.html'
 })
 export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
-    @Input() selectedIndex?: number = 0; // Index of the tab to select.
+    @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil: boolean; // Determine when should the contents be shown.
     @Output() ionChange: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>(); // Emitted when the tab changes.
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
@@ -70,7 +72,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.originalTabsContainer = this.originalTabsRef.nativeElement;
         this.topTabsElement = this.topTabs.nativeElement;
     }
@@ -78,7 +80,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     /**
      * View has been initialized.
      */
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.afterViewInitTriggered = true;
         if (!this.initialized && this.hideUntil) {
             // Tabs should be shown, initialize them.
@@ -89,7 +91,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // We need to wait for ngAfterViewInit because we need core-tab components to be executed.
         if (!this.initialized && this.hideUntil && this.afterViewInitTriggered) {
             // Tabs should be shown, initialize them.
@@ -105,7 +107,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      *
      * @param {CoreTabComponent} tab The tab to add.
      */
-    addTab(tab: CoreTabComponent) : void {
+    addTab(tab: CoreTabComponent): void {
         // Check if tab is already in the list.
         if (this.getIndex(tab) == -1) {
             this.tabs.push(tab);
@@ -119,13 +121,14 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      * @param  {any}    tab [description]
      * @return {number}     [description]
      */
-    getIndex(tab: any) : number {
+    getIndex(tab: any): number {
         for (let i = 0; i < this.tabs.length; i++) {
-            let t = this.tabs[i];
+            const t = this.tabs[i];
             if (t === tab || (typeof t.id != 'undefined' && t.id === tab.id)) {
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -134,14 +137,14 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      *
      * @return {CoreTabComponent} Selected tab.
      */
-    getSelected() : CoreTabComponent {
+    getSelected(): CoreTabComponent {
         return this.tabs[this.selected];
     }
 
     /**
      * Initialize the tabs, determining the first tab to be shown.
      */
-    protected initializeTabs() : void {
+    protected initializeTabs(): void {
         let selectedIndex = this.selectedIndex || 0,
             selectedTab = this.tabs[selectedIndex];
 
@@ -150,8 +153,10 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
             selectedTab = this.tabs.find((tab, index) => {
                 if (tab.enabled && tab.show) {
                     selectedIndex = index;
+
                     return true;
                 }
+
                 return false;
             });
         }
@@ -162,7 +167,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
 
         // Setup tab scrolling.
         this.tabBarHeight = this.topTabsElement.offsetHeight;
-        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight  + 'px';
+        this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
         if (this.scroll) {
             this.scroll.classList.add('no-scroll');
         }
@@ -175,7 +180,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      *
      * @param {any} e Scroll event.
      */
-    showHideTabs(e: any) : void {
+    showHideTabs(e: any): void {
         if (e.target.scrollTop < this.tabBarHeight) {
             if (!this.tabsShown) {
                 this.tabBarElement.classList.remove('tabs-hidden');
@@ -194,7 +199,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      *
      * @param {CoreTabComponent} tab The tab to remove.
      */
-    removeTab(tab: CoreTabComponent) : void {
+    removeTab(tab: CoreTabComponent): void {
         const index = this.getIndex(tab);
         this.tabs.splice(index, 1);
     }
@@ -204,7 +209,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      *
      * @param {number} index The index of the tab to select.
      */
-    selectTab(index: number) : void {
+    selectTab(index: number): void {
         if (index == this.selected) {
             // Already selected.
             return;
@@ -236,13 +241,13 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     /**
      * Sort the tabs, keeping the same order as in the original list.
      */
-    protected sortTabs() {
+    protected sortTabs(): void {
         if (this.originalTabsContainer) {
-            let newTabs = [],
-                newSelected;
+            const newTabs = [];
+            let newSelected;
 
             this.tabs.forEach((tab, index) => {
-                let originalIndex = Array.prototype.indexOf.call(this.originalTabsContainer.children, tab.element);
+                const originalIndex = Array.prototype.indexOf.call(this.originalTabsContainer.children, tab.element);
                 if (originalIndex != -1) {
                     newTabs[originalIndex] = tab;
                     if (this.selected == index) {

@@ -22,7 +22,7 @@ import { CoreMainMenuProvider, CoreMainMenuCustomItem } from '../../providers/ma
 /**
  * Page that displays the list of main menu options that aren't in the tabs.
  */
-@IonicPage({segment: "core-mainmenu-more"})
+@IonicPage({segment: 'core-mainmenu-more'})
 @Component({
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
@@ -53,7 +53,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         // Load the handlers.
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
             this.handlers = handlers.slice(CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Remove the main handlers.
@@ -64,7 +64,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
     /**
      * Page destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
@@ -73,12 +73,12 @@ export class CoreMainMenuMorePage implements OnDestroy {
     /**
      * Load the site info required by the view.
      */
-    protected loadSiteInfo() {
+    protected loadSiteInfo(): void {
         const currentSite = this.sitesProvider.getCurrentSite(),
             config = currentSite.getStoredConfig();
 
         this.siteInfo = currentSite.getInfo();
-        this.logoutLabel = 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout': 'changesite');
+        this.logoutLabel = 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
         this.showWeb = !currentSite.isFeatureDisabled('$mmSideMenuDelegate_website');
         this.showHelp = !currentSite.isFeatureDisabled('$mmSideMenuDelegate_help');
 
@@ -96,7 +96,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
      *
      * @param {CoreMainMenuHandlerData} handler Handler to open.
      */
-    openHandler(handler: CoreMainMenuHandlerData) {
+    openHandler(handler: CoreMainMenuHandlerData): void {
         // @todo.
     }
 
@@ -105,21 +105,21 @@ export class CoreMainMenuMorePage implements OnDestroy {
      *
      * @param {CoreMainMenuCustomItem} item Item to open.
      */
-    openItem(item: CoreMainMenuCustomItem) {
+    openItem(item: CoreMainMenuCustomItem): void {
         this.navCtrl.push('CoreViewerIframePage', {title: item.label, url: item.url});
     }
 
     /**
      * Open settings page.
      */
-    openSettings() {
+    openSettings(): void {
         this.navCtrl.push('CoreSettingsListPage');
     }
 
     /**
      * Logout the user.
      */
-    logout() {
+    logout(): void {
         this.sitesProvider.logout();
     }
 }

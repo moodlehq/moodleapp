@@ -17,13 +17,15 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 
-@IonicPage({segment: "core-placeholder"})
+@IonicPage({ segment: 'core-placeholder' })
 @Component({
     selector: 'core-placeholder',
     templateUrl: 'placeholder.html',
 })
 export class CoreSplitViewPlaceholderPage {
 
-    constructor() { }
+    constructor() {
+        // Nothing to do.
+    }
 
 }

@@ -106,25 +106,25 @@ export class CoreUserDelegate extends CoreDelegate {
      * User profile handler type for communication.
      * @type {string}
      */
-    public static TYPE_COMMUNICATION = 'communication';
+    static TYPE_COMMUNICATION = 'communication';
 
     /**
      * User profile handler type for new page.
      * @type {string}
      */
-    public static TYPE_NEW_PAGE = 'newpage';
+    static TYPE_NEW_PAGE = 'newpage';
     /**
      * User profile handler type for actions.
      * @type {string}
      */
-    public static TYPE_ACTION = 'action';
+    static TYPE_ACTION = 'action';
 
     protected handlers: { [s: string]: CoreUserProfileHandler } = {};
     protected enabledHandlers: { [s: string]: CoreUserProfileHandler } = {};
     protected featurePrefix = '$mmUserDelegate_';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
-        private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
+            private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
         super('CoreUserDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
@@ -136,24 +136,24 @@ export class CoreUserDelegate extends CoreDelegate {
      * @return {Promise<any>} Resolved with an array of objects containing 'priority', 'data' and 'type'.
      */
     getProfileHandlersFor(user: any, courseId: number): Promise<any> {
-        let handlers = [],
+        const handlers = [],
             promises = [];
 
         // Retrieve course options forcing cache.
         return this.coursesProvider.getUserCourses(true).then((courses) => {
-            let courseIds = courses.map((course) => {
+            const courseIds = courses.map((course) => {
                 return course.id;
             });
 
             return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 // For backwards compatibility we don't modify the courseId.
-                let courseIdForOptions = courseId || this.sitesProvider.getCurrentSiteHomeId(),
+                const courseIdForOptions = courseId || this.sitesProvider.getCurrentSiteHomeId(),
                     navOptions = options.navOptions[courseIdForOptions],
                     admOptions = options.admOptions[courseIdForOptions];
 
-                for (let name in this.enabledHandlers) {
+                for (const name in this.enabledHandlers) {
                     // Checks if the handler is enabled for the user.
-                    let handler = this.handlers[name],
+                    const handler = this.handlers[name],
                         isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
                         promise = Promise.resolve(isEnabledForUser).then((enabled) => {
                             if (enabled) {

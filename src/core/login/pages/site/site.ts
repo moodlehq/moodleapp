@@ -24,7 +24,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to enter or select the site URL to connect to.
  */
-@IonicPage({segment: "core-login-site"})
+@IonicPage({ segment: 'core-login-site' })
 @Component({
     selector: 'page-core-login-site',
     templateUrl: 'site.html',
@@ -47,27 +47,29 @@ export class CoreLoginSitePage {
         }
 
         this.siteForm = fb.group({
-            'siteUrl': [url, Validators.required]
+            siteUrl: [url, Validators.required]
         });
     }
 
     /**
      * Try to connect to a site.
      */
-    connect(url: string) : void {
+    connect(url: string): void {
         this.appProvider.closeKeyboard();
 
         if (!url) {
             this.domUtils.showErrorModal('core.login.siteurlrequired', true);
+
             return;
         }
 
         if (!this.appProvider.isOnline()) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
+
             return;
         }
 
-        let modal = this.domUtils.showModalLoading(),
+        const modal = this.domUtils.showModalLoading(),
             siteData = this.sitesProvider.getDemoSiteData(url);
 
         if (siteData) {
@@ -95,9 +97,9 @@ export class CoreLoginSitePage {
                 if (this.loginHelper.isSSOLoginNeeded(result.code)) {
                     // SSO. User needs to authenticate in a browser.
                     this.loginHelper.confirmAndOpenBrowserForSSOLogin(
-                                result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
+                        result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
                 } else {
-                    this.navCtrl.push('CoreLoginCredentialsPage', {siteUrl: result.siteUrl, siteConfig: result.config});
+                    this.navCtrl.push('CoreLoginCredentialsPage', { siteUrl: result.siteUrl, siteConfig: result.config });
                 }
             }, (error) => {
                 this.showLoginIssue(url, error);
@@ -110,8 +112,8 @@ export class CoreLoginSitePage {
     /**
      * Show a help modal.
      */
-    showHelp() : void {
-        let modal = this.modalCtrl.create('CoreLoginSiteHelpPage');
+    showHelp(): void {
+        const modal = this.modalCtrl.create('CoreLoginSiteHelpPage');
         modal.present();
     }
 
@@ -121,8 +123,8 @@ export class CoreLoginSitePage {
      * @param {string} url The URL the user was trying to connect to.
      * @param {string} error Error to display.
      */
-    protected showLoginIssue(url: string, error: string) : void {
-        let modal = this.modalCtrl.create('CoreLoginSiteErrorPage', {siteUrl: url, issue: error});
+    protected showLoginIssue(url: string, error: string): void {
+        const modal = this.modalCtrl.create('CoreLoginSiteErrorPage', { siteUrl: url, issue: error });
         modal.present();
     }
 }

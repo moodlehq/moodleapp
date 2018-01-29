@@ -36,8 +36,9 @@ export class FileMock extends File {
      * @param {string} dir Name of directory to check
      * @returns {Promise<boolean>} Returns a Promise that resolves to true if the directory exists or rejects with an error.
      */
-    checkDir(path: string, dir: string) : Promise<boolean> {
-        let fullPath = this.textUtils.concatenatePaths(path, dir);
+    checkDir(path: string, dir: string): Promise<boolean> {
+        const fullPath = this.textUtils.concatenatePaths(path, dir);
+
         return this.resolveDirectoryUrl(fullPath).then(() => {
             return true;
         });
@@ -55,8 +56,9 @@ export class FileMock extends File {
             if (fse.isFile) {
                 return true;
             } else {
-                let err = new FileError(13);
+                const err = new FileError(13);
                 err.message = 'input is not a file';
+
                 return Promise.reject<boolean>(err);
             }
         });
@@ -71,7 +73,7 @@ export class FileMock extends File {
      * @returns {Promise<Entry>} Returns a Promise that resolves to the new Entry object or rejects with an error.
      */
     private copyMock(srce: Entry, destDir: DirectoryEntry, newName: string): Promise<Entry> {
-        return new Promise<Entry>((resolve, reject) => {
+        return new Promise<Entry>((resolve, reject): void => {
             srce.copyTo(destDir, newName, (deste) => {
                 resolve(deste);
             }, (err) => {
@@ -132,7 +134,7 @@ export class FileMock extends File {
      * @returns {Promise<DirectoryEntry>} Returns a Promise that resolves with a DirectoryEntry or rejects with an error.
      */
     createDir(path: string, dirName: string, replace: boolean): Promise<DirectoryEntry> {
-        let options: any = {
+        const options: any = {
             create: true
         };
 
@@ -156,7 +158,7 @@ export class FileMock extends File {
      * @returns {Promise<FileEntry>} Returns a Promise that resolves to a FileEntry or rejects with an error.
      */
     createFile(path: string, fileName: string, replace: boolean): Promise<FileEntry> {
-        let options: any = {
+        const options: any = {
             create: true
         };
 
@@ -176,7 +178,7 @@ export class FileMock extends File {
      * @returns {Promise<FileWriter>} Promise resolved with the FileWriter.
      */
     private createWriterMock(fe: FileEntry): Promise<FileWriter> {
-        return new Promise<FileWriter>((resolve, reject) => {
+        return new Promise<FileWriter>((resolve, reject): void => {
             fe.createWriter((writer) => {
                 resolve(writer);
             }, (err) => {
@@ -194,7 +196,9 @@ export class FileMock extends File {
     private fillErrorMessageMock(err: any): void {
         try {
             err.message = this.cordovaFileError[err.code];
-        } catch (e) { }
+        } catch (e) {
+            // Ignore errors.
+        }
     }
 
     /**
@@ -206,7 +210,7 @@ export class FileMock extends File {
      * @returns {Promise<DirectoryEntry>}
      */
     getDirectory(directoryEntry: DirectoryEntry, directoryName: string, flags: Flags): Promise<DirectoryEntry> {
-        return new Promise<DirectoryEntry>((resolve, reject) => {
+        return new Promise<DirectoryEntry>((resolve, reject): void => {
             try {
                 directoryEntry.getDirectory(directoryName, flags, (de) => {
                     resolve(de);
@@ -229,7 +233,7 @@ export class FileMock extends File {
      * @returns {Promise<FileEntry>}
      */
     getFile(directoryEntry: DirectoryEntry, fileName: string, flags: Flags): Promise<FileEntry> {
-        return new Promise<FileEntry>((resolve, reject) => {
+        return new Promise<FileEntry>((resolve, reject): void => {
             try {
                 directoryEntry.getFile(fileName, flags, resolve, (err) => {
                     this.fillErrorMessageMock(err);
@@ -247,18 +251,19 @@ export class FileMock extends File {
      *
      * @return {Promise<number>} Promise resolved with the free space.
      */
-    getFreeDiskSpace() : Promise<number> {
+    getFreeDiskSpace(): Promise<number> {
         // FRequest a file system instance with a minimum size until we get an error.
         if (window.requestFileSystem) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject): void => {
                 let iterations = 0,
-                    maxIterations = 50,
-                    calculateByRequest = (size: number, ratio: number) => {
-                        return new Promise((resolve, reject) => {
+                    maxIterations = 50;
+                const calculateByRequest = (size: number, ratio: number): Promise<any> => {
+                        return new Promise((resolve, reject): void => {
                             window.requestFileSystem(LocalFileSystem.PERSISTENT, size, () => {
                                 iterations++;
                                 if (iterations > maxIterations) {
                                     resolve(size);
+
                                     return;
                                 }
                                 calculateByRequest(size * ratio, ratio).then(resolve);
@@ -295,7 +300,8 @@ export class FileMock extends File {
         return this.resolveDirectoryUrl(path).then((fse) => {
             return this.getDirectory(fse, dirName, { create: false, exclusive: false });
         }).then((de) => {
-            let reader: any = de.createReader();
+            const reader: any = de.createReader();
+
             return this.readEntriesMock(reader);
         });
     }
@@ -305,10 +311,10 @@ export class FileMock extends File {
      *
      * @return {Promise<any>} Promise resolved when loaded.
      */
-    load() : Promise<any> {
-        return new Promise((resolve, reject) => {
-            let basePath,
-                win = <any> window; // Convert to <any> to be able to use non-standard properties.
+    load(): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            const win = <any> window; // Convert to <any> to be able to use non-standard properties.
+            let basePath;
 
             if (typeof win.requestFileSystem == 'undefined') {
                 win.requestFileSystem = win.webkitRequestFileSystem;
@@ -321,15 +327,16 @@ export class FileMock extends File {
             };
 
             if (this.appProvider.isDesktop()) {
-                let fs = require('fs'),
+                const fs = require('fs'),
                     app = require('electron').remote.app;
 
-                // emulateCordovaFileForDesktop(fs);
+                // @todo emulateCordovaFileForDesktop(fs);
 
                 // Initialize File System. Get the path to use.
                 basePath = app.getPath('documents') || app.getPath('home');
                 if (!basePath) {
                     reject('Cannot calculate base path for file system.');
+
                     return;
                 }
 
@@ -339,7 +346,7 @@ export class FileMock extends File {
                 fs.mkdir(basePath, (e) => {
                     if (!e || (e && e.code === 'EEXIST')) {
                         // Create successful or it already exists. Resolve.
-                        // this.fileProvider.setHTMLBasePath(basePath);
+                        // @todo this.fileProvider.setHTMLBasePath(basePath);
                         resolve(basePath);
                     } else {
                         reject('Error creating base path.');
@@ -347,7 +354,7 @@ export class FileMock extends File {
                 });
             } else {
                 // It's browser, request a quota to use. Request 500MB.
-                (<any>navigator).webkitPersistentStorage.requestQuota(500 * 1024 * 1024, (granted) => {
+                (<any> navigator).webkitPersistentStorage.requestQuota(500 * 1024 * 1024, (granted) => {
                     window.requestFileSystem(LocalFileSystem.PERSISTENT, granted, (entry) => {
                         basePath = entry.root.toURL();
                         resolve(basePath);
@@ -367,7 +374,7 @@ export class FileMock extends File {
      * @returns {Promise<Entry>} Returns a Promise that resolves to the new Entry object or rejects with an error.
      */
     private moveMock(srce: Entry, destDir: DirectoryEntry, newName: string): Promise<Entry> {
-        return new Promise<Entry>((resolve, reject) => {
+        return new Promise<Entry>((resolve, reject): void => {
             srce.moveTo(destDir, newName, (deste) => {
                 resolve(deste);
             }, (err) => {
@@ -443,7 +450,6 @@ export class FileMock extends File {
      * Read file and return data as a base64 encoded data url.
      * A data url is of the form:
      *      data: [<mediatype>][;base64],<data>
-
      * @param {string} path Base FileSystem.
      * @param {string} file Name of file, relative to path.
      * @returns {Promise<string>} Returns a Promise that resolves with the contents of the file as data URL or rejects
@@ -471,7 +477,7 @@ export class FileMock extends File {
      * @return {Promise<Entry[]>} Promise resolved with the list of files/dirs.
      */
     private readEntriesMock(dr: DirectoryReader): Promise<Entry[]> {
-        return new Promise<Entry[]>((resolve, reject) => {
+        return new Promise<Entry[]>((resolve, reject): void => {
             dr.readEntries((entries: any) => {
                 resolve(entries);
             }, (err) => {
@@ -494,10 +500,11 @@ export class FileMock extends File {
             return this.getFile(directoryEntry, file, { create: false });
         }).then((fileEntry: FileEntry) => {
             const reader = new FileReader();
-            return new Promise<T>((resolve, reject) => {
-                reader.onloadend = () => {
+
+            return new Promise<T>((resolve, reject): void => {
+                reader.onloadend = (): void => {
                     if (reader.result !== undefined || reader.result !== null) {
-                        resolve(<T><any>reader.result);
+                        resolve(<T> <any> reader.result);
                     } else if (reader.error !== undefined || reader.error !== null) {
                         reject(reader.error);
                     } else {
@@ -507,7 +514,7 @@ export class FileMock extends File {
 
                 fileEntry.file((file) => {
                     reader[`readAs${readAs}`].call(reader, file);
-                }, error => {
+                }, (error) => {
                     reject(error);
                 });
             });
@@ -521,7 +528,7 @@ export class FileMock extends File {
      * @return {Promise<any>} Promise resolved when done.
      */
     private removeMock(fe: Entry): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<any>((resolve, reject): void => {
             fe.remove(() => {
                 resolve({ success: true, fileRemoved: fe });
             }, (err) => {
@@ -584,10 +591,11 @@ export class FileMock extends File {
     resolveDirectoryUrl(directoryUrl: string): Promise<DirectoryEntry> {
         return this.resolveLocalFilesystemUrl(directoryUrl).then((de) => {
             if (de.isDirectory) {
-                return <DirectoryEntry>de;
+                return <DirectoryEntry> de;
             } else {
                 const err = new FileError(13);
                 err.message = 'input is not a directory';
+
                 return Promise.reject<DirectoryEntry>(err);
             }
         });
@@ -599,7 +607,7 @@ export class FileMock extends File {
      * @returns {Promise<Entry>}
      */
     resolveLocalFilesystemUrl(fileUrl: string): Promise<Entry> {
-        return new Promise<Entry>((resolve, reject) => {
+        return new Promise<Entry>((resolve, reject): void => {
             try {
                 window.resolveLocalFileSystemURL(fileUrl, (entry: any) => {
                     resolve(entry);
@@ -621,7 +629,7 @@ export class FileMock extends File {
      * @return {Promise<any>} Promise resolved when done.
      */
     private rimrafMock(de: DirectoryEntry): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<any>((resolve, reject): void => {
             de.removeRecursively(() => {
                 resolve({ success: true, fileRemoved: de });
             }, (err) => {
@@ -643,8 +651,8 @@ export class FileMock extends File {
             return this.writeFileInChunksMock(writer, data);
         }
 
-        return new Promise<any>((resolve, reject) => {
-            writer.onwriteend = (evt) => {
+        return new Promise<any>((resolve, reject): void => {
+            writer.onwriteend = (evt): void => {
                 if (writer.error) {
                     reject(writer.error);
                 } else {
@@ -667,7 +675,8 @@ export class FileMock extends File {
         return this.writeFile(path, fileName, text, { replace: true });
     }
 
-    /** Write a new file to the desired location.
+    /**
+     * Write a new file to the desired location.
      *
      * @param {string} path Base FileSystem. Please refer to the iOS and Android filesystems above
      * @param {string} fileName path relative to base path
@@ -696,7 +705,7 @@ export class FileMock extends File {
      * @param {IWriteOptions} options replace file if set to true. See WriteOptions for more information.
      * @returns {Promise<FileEntry>} Returns a Promise that resolves to updated file entry or rejects with an error.
      */
-    private writeFileEntryMock(fe: FileEntry, text: string | Blob | ArrayBuffer, options: IWriteOptions) {
+    private writeFileEntryMock(fe: FileEntry, text: string | Blob | ArrayBuffer, options: IWriteOptions): Promise<FileEntry> {
         return this.createWriterMock(fe).then((writer) => {
             if (options.append) {
                 writer.seek(writer.length);
@@ -717,21 +726,20 @@ export class FileMock extends File {
      * @param {Blob} data Data to write.
      * @return {Promise<any>} Promise resolved when done.
      */
-    private writeFileInChunksMock(writer: FileWriter, data: Blob) : Promise<any> {
-        const BLOCK_SIZE = 1024 * 1024;
+    private writeFileInChunksMock(writer: FileWriter, data: Blob): Promise<any> {
         let writtenSize = 0;
+        const BLOCK_SIZE = 1024 * 1024,
+            writeNextChunk = (): void => {
+                const size = Math.min(BLOCK_SIZE, data.size - writtenSize);
+                const chunk = data.slice(writtenSize, writtenSize + size);
 
-        function writeNextChunk() {
-            const size = Math.min(BLOCK_SIZE, data.size - writtenSize);
-            const chunk = data.slice(writtenSize, writtenSize + size);
+                writtenSize += size;
+                writer.write(chunk);
+            };
 
-            writtenSize += size;
-            writer.write(chunk);
-        }
-
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<any>((resolve, reject): void => {
             writer.onerror = reject;
-            writer.onwrite = () => {
+            writer.onwrite = (): void => {
                 if (writtenSize < data.size) {
                     writeNextChunk();
                 } else {

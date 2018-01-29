@@ -27,15 +27,15 @@ export class CoreFileUploaderAudioHandler implements CoreFileUploaderHandler {
     priority = 1600;
 
     constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private platform: Platform,
-            private uploaderHelper: CoreFileUploaderHelperProvider) {}
+            private uploaderHelper: CoreFileUploaderHelperProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled(): boolean|Promise<boolean> {
-        return this.appProvider.isMobile() || (this.appProvider.canGetUserMedia() && this.appProvider.canRecordMedia());
+    isEnabled(): boolean | Promise<boolean> {
+        return this.appProvider.isMobile() || (this.appProvider.canGetUserMedia() && this.appProvider.canRecordMedia());
     }
 
     /**
@@ -44,19 +44,20 @@ export class CoreFileUploaderAudioHandler implements CoreFileUploaderHandler {
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[] {
+    getSupportedMimetypes(mimetypes: string[]): string[] {
         if (this.platform.is('ios')) {
-            // iOS records as WAV.
+            // In iOS it's recorded as WAV.
             return this.utils.filterByRegexp(mimetypes, /^audio\/wav$/);
         } else if (this.platform.is('android')) {
             // In Android we don't know the format the audio will be recorded, so accept any audio mimetype.
             return this.utils.filterByRegexp(mimetypes, /^audio\//);
         } else {
             // In desktop, support audio formats that are supported by MediaRecorder.
-            let mediaRecorder = (<any>window).MediaRecorder;
+            const mediaRecorder = (<any> window).MediaRecorder;
             if (mediaRecorder) {
                 return mimetypes.filter((type) => {
-                    let matches = type.match(/^audio\//);
+                    const matches = type.match(/^audio\//);
+
                     return matches && matches.length && mediaRecorder.isTypeSupported(type);
                 });
             }
@@ -70,12 +71,12 @@ export class CoreFileUploaderAudioHandler implements CoreFileUploaderHandler {
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData {
+    getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.fileuploader.audio',
             class: 'core-fileuploader-audio-handler',
             icon: 'microphone',
-            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]) => {
+            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
                 return this.uploaderHelper.uploadAudioOrVideo(true, maxSize, upload, mimetypes).then((result) => {
                     return {
                         treated: true,

@@ -74,9 +74,9 @@ export class CoreUtilsProvider {
             return Promise.resolve();
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject): void => {
+            const total = promises.length;
             let count = 0,
-                total = promises.length,
                 error;
 
             promises.forEach((promise) => {
@@ -107,11 +107,12 @@ export class CoreUtilsProvider {
      * @param {any} [result] Object where to put the properties. If not defined, a new object will be created.
      * @return {any} The object.
      */
-    arrayToObject(array: any[], propertyName: string, result?: any) : any {
+    arrayToObject(array: any[], propertyName: string, result?: any): any {
         result = result || {};
         array.forEach((entry) => {
             result[entry[propertyName]] = entry;
         });
+
         return result;
     }
 
@@ -127,7 +128,7 @@ export class CoreUtilsProvider {
      * @param {boolean} [undefinedIsNull=true] True if undefined is equal to null. Defaults to true.
      * @return {boolean} Whether both items are equal.
      */
-    basicLeftCompare(itemA: any, itemB: any, maxLevels = 0, level = 0, undefinedIsNull = true) : boolean {
+    basicLeftCompare(itemA: any, itemB: any, maxLevels: number = 0, level: number = 0, undefinedIsNull: boolean = true): boolean {
         if (typeof itemA == 'function' || typeof itemB == 'function') {
             return true; // Don't compare functions.
         } else if (typeof itemA == 'object' && typeof itemB == 'object') {
@@ -136,8 +137,8 @@ export class CoreUtilsProvider {
             }
 
             let equal = true;
-            for (let name in itemA) {
-                let value = itemA[name];
+            for (const name in itemA) {
+                const value = itemA[name];
                 if (name == '$$hashKey') {
                     // Ignore $$hashKey property since it's a "calculated" property.
                     return;
@@ -151,134 +152,27 @@ export class CoreUtilsProvider {
             return equal;
         } else {
             if (undefinedIsNull && (
-                    (typeof itemA == 'undefined' && itemB === null) || (itemA === null && typeof itemB == 'undefined'))) {
+                (typeof itemA == 'undefined' && itemB === null) || (itemA === null && typeof itemB == 'undefined'))) {
                 return true;
             }
 
             // We'll treat "2" and 2 as the same value.
-            let floatA = parseFloat(itemA),
+            const floatA = parseFloat(itemA),
                 floatB = parseFloat(itemB);
 
             if (!isNaN(floatA) && !isNaN(floatB)) {
                 return floatA == floatB;
             }
+
             return itemA === itemB;
         }
     }
 
     /**
-     * Blocks leaving a view. This function should be used in views that want to perform a certain action before
-     * leaving (usually, ask the user if he wants to leave because some data isn't saved).
-     *
-     * @param  {object} scope         View's scope.
-     * @param  {Function} canLeaveFn  Function called when the user wants to leave the view. Must return a promise
-     *                                resolved if the view should be left, rejected if the user should stay in the view.
-     * @param  {object} [currentView] Current view. Defaults to $ionicHistory.currentView().
-     * @return {object}               Object with:
-     *                                       -back: Original back function.
-     *                                       -unblock: Function to unblock. It is called automatically when scope is destroyed.
+     * Blocks leaving a view.
      */
-    blockLeaveView = function(scope, canLeaveFn, currentView) {
+    blockLeaveView(): void {
         // @todo
-        // currentView = currentView || $ionicHistory.currentView();
-
-        // var unregisterHardwareBack,
-        //     leaving = false,
-        //     hasSplitView = $ionicPlatform.isTablet() && $state.current.name.split('.').length == 3,
-        //     skipSplitViewLeave = false;
-
-        // // Override Ionic's back button behavior.
-        // $rootScope.$ionicGoBack = goBack;
-
-        // // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
-        // unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(goBack, 101);
-
-        // // Add function to the stack.
-        // backFunctionsStack.push(goBack);
-
-        // if (hasSplitView) {
-        //     // Block split view.
-        //     blockSplitView(true);
-        // }
-
-        // scope.$on('$destroy', unblock);
-
-        // return {
-        //     back: originalBackFunction,
-        //     unblock: unblock
-        // };
-
-        // // Function called when the user wants to leave the view.
-        // function goBack() {
-        //     // Check that we're leaving the current view, since the user can navigate to other views from here.
-        //     if ($ionicHistory.currentView() !== currentView) {
-        //         // It's another view.
-        //         originalBackFunction();
-        //         return;
-        //     }
-
-        //     if (leaving) {
-        //         // Leave view pending, don't call again.
-        //         return;
-        //     }
-        //     leaving = true;
-
-        //     canLeaveFn().then(function() {
-        //         // User confirmed to leave or there was no need to confirm, go back.
-        //         // Skip next leave view from split view if there's one since we already checked if user can leave.
-        //         skipSplitViewLeave = hasSplitView;
-        //         originalBackFunction();
-        //     }).finally(function() {
-        //         leaving = false;
-        //     });
-        // }
-
-        // // Leaving current view when it's in split view.
-        // function leaveViewInSplitView() {
-        //     if (skipSplitViewLeave) {
-        //         skipSplitViewLeave = false;
-        //         return $q.when();
-        //     }
-
-        //     return canLeaveFn();
-        // }
-
-        // // Restore original back functions.
-        // function unblock() {
-        //     unregisterHardwareBack();
-
-        //     if (hasSplitView) {
-        //         // Unblock split view.
-        //         blockSplitView(false);
-        //     }
-
-        //     // Remove function from the stack.
-        //     var position = backFunctionsStack.indexOf(goBack);
-        //     if (position > -1) {
-        //         backFunctionsStack.splice(position, 1);
-        //     }
-
-        //     // Revert go back only if it hasn't been overridden by another view.
-        //     if ($rootScope.$ionicGoBack === goBack) {
-        //         if (!backFunctionsStack.length) {
-        //             // Shouldn't happen. Reset stack.
-        //             backFunctionsStack = [originalBackFunction];
-        //             $rootScope.$ionicGoBack = originalBackFunction;
-        //         } else {
-        //             $rootScope.$ionicGoBack = backFunctionsStack[backFunctionsStack.length - 1];
-        //         }
-        //     }
-        // }
-
-        // // Block or unblock split view.
-        // function blockSplitView(block) {
-        //     $rootScope.$broadcast(mmCoreSplitViewBlock, {
-        //         block: block,
-        //         blockFunction: leaveViewInSplitView,
-        //         state: currentView.stateName,
-        //         stateParams: currentView.stateParams
-        //     });
-        // }
     }
 
     /**
@@ -286,7 +180,7 @@ export class CoreUtilsProvider {
      *
      * @param {boolean} [closeAll] Desktop only. True to close all secondary windows, false to close only the "current" one.
      */
-    closeInAppBrowser(closeAll?: boolean) : void {
+    closeInAppBrowser(closeAll?: boolean): void {
         if (this.iabInstance) {
             this.iabInstance.close();
             if (closeAll && this.appProvider.isDesktop()) {
@@ -301,20 +195,22 @@ export class CoreUtilsProvider {
      * @param {any} source The variable to clone.
      * @return {any} Cloned variable.
      */
-    clone(source: any) : any {
+    clone(source: any): any {
         if (Array.isArray(source)) {
             // Clone the array and all the entries.
-            let newArray = [];
+            const newArray = [];
             for (let i = 0; i < source.length; i++) {
                 newArray[i] = this.clone(source[i]);
             }
+
             return newArray;
         } else if (typeof source == 'object') {
             // Clone the object and all the subproperties.
-            let newObject = {};
-            for (let name in source) {
+            const newObject = {};
+            for (const name in source) {
                 newObject[name] = this.clone(source[name]);
             }
+
             return newObject;
         } else {
             // Primitive type or unknown, return it as it is.
@@ -329,8 +225,8 @@ export class CoreUtilsProvider {
      * @param {any} to Object where to store the properties.
      * @param {boolean} [clone=true] Whether the properties should be cloned (so they are different instances).
      */
-    copyProperties(from: any, to: any, clone = true) : void {
-        for (let name in from) {
+    copyProperties(from: any, to: any, clone: boolean = true): void {
+        for (const name in from) {
             if (clone) {
                 to[name] = this.clone(from[name]);
             } else {
@@ -345,7 +241,7 @@ export class CoreUtilsProvider {
      * @param {string} text Text to be copied
      * @return {Promise<any>} Promise resolved when text is copied.
      */
-    copyToClipboard(text: string) : Promise<any> {
+    copyToClipboard(text: string): Promise<any> {
         return this.clipboard.copy(text).then(() => {
             // Show toast using ionicLoading.
             return this.domUtils.showToast('core.copiedtoclipboard', true);
@@ -359,7 +255,7 @@ export class CoreUtilsProvider {
      *
      * @param {any[]} array Array to empty.
      */
-    emptyArray(array: any[]) : void {
+    emptyArray(array: any[]): void {
         array.length = 0; // Empty array without losing its reference.
     }
 
@@ -368,8 +264,8 @@ export class CoreUtilsProvider {
      *
      * @param {object} object Object to remove the properties.
      */
-    emptyObject(object: object) : void {
-        for (let key in object) {
+    emptyObject(object: object): void {
+        for (const key in object) {
             if (object.hasOwnProperty(key)) {
                 delete object[key];
             }
@@ -386,14 +282,14 @@ export class CoreUtilsProvider {
      *                                 - blocking: Boolean. If promise should block the following.
      * @return {Promise<any>} Promise resolved when all promises are resolved.
      */
-    executeOrderedPromises(orderedPromisesData: any[]) : Promise<any> {
-        let promises = [],
-            dependency = Promise.resolve();
+    executeOrderedPromises(orderedPromisesData: any[]): Promise<any> {
+        const promises = [];
+        let dependency = Promise.resolve();
 
         // Execute all the processes in order.
-        for (let i in orderedPromisesData) {
-            let data = orderedPromisesData[i],
-                promise;
+        for (const i in orderedPromisesData) {
+            const data = orderedPromisesData[i];
+            let promise;
 
             // Add the process to the dependency stack.
             promise = dependency.finally(() => {
@@ -403,8 +299,10 @@ export class CoreUtilsProvider {
                     prom = data.func.apply(data.context, data.params || []);
                 } catch (e) {
                     this.logger.error(e.message);
+
                     return;
                 }
+
                 return prom;
             });
             promises.push(promise);
@@ -426,17 +324,21 @@ export class CoreUtilsProvider {
      * @param {object} obj Object to flatten.
      * @return {object} Flatten object.
      */
-    flattenObject(obj: object) : object {
-        let toReturn = {};
+    flattenObject(obj: object): object {
+        const toReturn = {};
 
-        for (let name in obj) {
-            if (!obj.hasOwnProperty(name)) continue;
+        for (const name in obj) {
+            if (!obj.hasOwnProperty(name)) {
+                continue;
+            }
 
-            let value = obj[name];
+            const value = obj[name];
             if (typeof value == 'object' && !Array.isArray(value)) {
-                let flatObject = this.flattenObject(value);
-                for (let subName in flatObject) {
-                    if (!flatObject.hasOwnProperty(subName)) continue;
+                const flatObject = this.flattenObject(value);
+                for (const subName in flatObject) {
+                    if (!flatObject.hasOwnProperty(subName)) {
+                        continue;
+                    }
 
                     toReturn[name + '.' + subName] = flatObject[subName];
                 }
@@ -455,13 +357,14 @@ export class CoreUtilsProvider {
      * @param {RegExp} regex RegExp to apply to each string.
      * @return {string[]} Filtered array.
      */
-    filterByRegexp(array: string[], regex: RegExp) : string[] {
+    filterByRegexp(array: string[], regex: RegExp): string[] {
         if (!array || !array.length) {
             return [];
         }
 
         return array.filter((entry) => {
-            let matches = entry.match(regex);
+            const matches = entry.match(regex);
+
             return matches && matches.length;
         });
     }
@@ -477,12 +380,12 @@ export class CoreUtilsProvider {
      * @param {any} ...args All the params sent after checkAll will be passed to isEnabledFn.
      * @return {Promise<string[]>} Promise resolved with the list of enabled sites.
      */
-    filterEnabledSites(siteIds: string[], isEnabledFn: Function, checkAll?: boolean, ...args) : Promise<string[]> {
-        let promises = [],
+    filterEnabledSites(siteIds: string[], isEnabledFn: Function, checkAll?: boolean, ...args: any[]): Promise<string[]> {
+        const promises = [],
             enabledSites = [];
 
-        for (let i in siteIds) {
-            let siteId = siteIds[i];
+        for (const i in siteIds) {
+            const siteId = siteIds[i];
             if (checkAll || !promises.length) {
                 promises.push(Promise.resolve(isEnabledFn.apply(isEnabledFn, [siteId].concat(args))).then((enabled) => {
                     if (enabled) {
@@ -511,15 +414,16 @@ export class CoreUtilsProvider {
      * @param {any} float The float to print.
      * @return {string} Locale float.
      */
-    formatFloat(float: any) : string {
+    formatFloat(float: any): string {
         if (typeof float == 'undefined') {
             return '';
         }
 
-        let localeSeparator = this.translate.instant('core.decsep');
+        const localeSeparator = this.translate.instant('core.decsep');
 
         // Convert float to string.
         float += '';
+
         return float.replace('.', localeSeparator);
     }
 
@@ -535,14 +439,15 @@ export class CoreUtilsProvider {
      * @param {number} [maxDepth=5] Max Depth to convert to tree. Children found will be in the last level of depth.
      * @return {any[]} Array with the formatted tree, children will be on each node under children field.
      */
-    formatTree(list: any[], parentFieldName = 'parent', idFieldName = 'id', rootParentId = 0, maxDepth = 5) : any[] {
-        let map = {},
+    formatTree(list: any[], parentFieldName: string = 'parent', idFieldName: string = 'id', rootParentId: number = 0,
+            maxDepth: number = 5): any[] {
+        const map = {},
             mapDepth = {},
-            parent,
-            id,
             tree = [];
+        let parent,
+            id;
 
-        list.forEach((node, index) => {
+        list.forEach((node, index): void => {
             id = node[idFieldName];
             parent = node[parentFieldName];
             node.children = [];
@@ -550,11 +455,11 @@ export class CoreUtilsProvider {
             // Use map to look-up the parents.
             map[id] = index;
             if (parent != rootParentId) {
-                let parentNode = list[map[parent]];
+                const parentNode = list[map[parent]];
                 if (parentNode) {
                     if (mapDepth[parent] == maxDepth) {
                         // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
-                        let parentOfParent = parentNode[parentFieldName];
+                        const parentOfParent = parentNode[parentFieldName];
                         if (parentOfParent) {
                             // This element will be the child of the node that is two levels up the hierarchy
                             // (i.e. the child of node.parent.parent).
@@ -587,8 +492,8 @@ export class CoreUtilsProvider {
      * @param {string} code Country code (AF, ES, US, ...).
      * @return {string} Country name. If the country is not found, return the country code.
      */
-    getCountryName(code: string) : string {
-        let countryKey = 'assets.countries.' + code,
+    getCountryName(code: string): string {
+        const countryKey = 'assets.countries.' + code,
             countryName = this.translate.instant(countryKey);
 
         return countryName !== countryKey ? countryName : code;
@@ -599,12 +504,12 @@ export class CoreUtilsProvider {
      *
      * @return {Promise<any>} Promise resolved with the list of countries.
      */
-    getCountryList() : Promise<any> {
+    getCountryList(): Promise<any> {
         // Get the current language.
         return this.langProvider.getCurrentLanguage().then((lang) => {
             // Get the full list of translations. Create a promise to convert the observable into a promise.
-            return new Promise((resolve, reject) => {
-                let observer = this.translate.getTranslation(lang).subscribe((table) => {
+            return new Promise((resolve, reject): void => {
+                const observer = this.translate.getTranslation(lang).subscribe((table) => {
                     resolve(table);
                     observer.unsubscribe();
                 }, (err) => {
@@ -613,11 +518,11 @@ export class CoreUtilsProvider {
                 });
             });
         }).then((table) => {
-            let countries = {};
+            const countries = {};
 
-            for (let name in table) {
+            for (const name in table) {
                 if (name.indexOf('assets.countries.') === 0) {
-                    let code = name.replace('assets.countries.', '');
+                    const code = name.replace('assets.countries.', '');
                     countries[code] = table[name];
                 }
             }
@@ -632,18 +537,18 @@ export class CoreUtilsProvider {
      * @param {any[]} files List of files.
      * @return {string|boolean} String with error message if repeated, false if no repeated.
      */
-    hasRepeatedFilenames(files: any[]) : string|boolean {
-        if (!files || !files.length) {
+    hasRepeatedFilenames(files: any[]): string | boolean {
+        if (!files || !files.length) {
             return false;
         }
 
-        let names = [];
+        const names = [];
 
         // Check if there are 2 files with the same name.
         for (let i = 0; i < files.length; i++) {
-            let name = files[i].filename || files[i].name;
+            const name = files[i].filename || files[i].name;
             if (names.indexOf(name) > -1) {
-                return this.translate.instant('core.filenameexist', {$a: name});
+                return this.translate.instant('core.filenameexist', { $a: name });
             } else {
                 names.push(name);
             }
@@ -659,13 +564,13 @@ export class CoreUtilsProvider {
      * @param {RegExp} regex RegExp to apply to each string.
      * @return {number} Index of the first string that matches the RegExp. -1 if not found.
      */
-    indexOfRegexp(array: string[], regex: RegExp) : number {
+    indexOfRegexp(array: string[], regex: RegExp): number {
         if (!array || !array.length) {
             return -1;
         }
 
         for (let i = 0; i < array.length; i++) {
-            let entry = array[i],
+            const entry = array[i],
                 matches = entry.match(regex);
 
             if (matches && matches.length) {
@@ -682,8 +587,8 @@ export class CoreUtilsProvider {
      * @param {any} value Value to check.
      * @return {boolean} Whether the value is false, 0 or "0".
      */
-    isFalseOrZero(value: any) : boolean {
-        return typeof value != 'undefined' && (value === false || value === "false" || parseInt(value, 10) === 0);
+    isFalseOrZero(value: any): boolean {
+        return typeof value != 'undefined' && (value === false || value === 'false' || parseInt(value, 10) === 0);
     }
 
     /**
@@ -692,8 +597,8 @@ export class CoreUtilsProvider {
      * @param {any} value Value to check.
      * @return {boolean} Whether the value is true, 1 or "1".
      */
-    isTrueOrOne(value: any) : boolean {
-        return typeof value != 'undefined' && (value === true || value === "true" || parseInt(value, 10) === 1);
+    isTrueOrOne(value: any): boolean {
+        return typeof value != 'undefined' && (value === true || value === 'true' || parseInt(value, 10) === 1);
     }
 
     /**
@@ -702,8 +607,8 @@ export class CoreUtilsProvider {
      * @param {string} error Error to check.
      * @return {boolean} Whether the error was returned by the WebService.
      */
-    isWebServiceError(error: string) : boolean {
-        let localErrors = [
+    isWebServiceError(error: string): boolean {
+        const localErrors = [
             this.translate.instant('core.wsfunctionnotavailable'),
             this.translate.instant('core.lostconnection'),
             this.translate.instant('core.userdeleted'),
@@ -716,6 +621,7 @@ export class CoreUtilsProvider {
             this.translate.instant('core.nopasswordchangeforced'),
             this.translate.instant('core.unicodenotsupported')
         ];
+
         return error && localErrors.indexOf(error) == -1;
     }
 
@@ -727,7 +633,7 @@ export class CoreUtilsProvider {
      * @param [key] Key of the property that must be unique. If not specified, the whole entry.
      * @return {any[]} Merged array.
      */
-    mergeArraysWithoutDuplicates(array1: any[], array2: any[], key?: string) : any[] {
+    mergeArraysWithoutDuplicates(array1: any[], array2: any[], key?: string): any[] {
         return this.uniqueArray(array1.concat(array2), key);
     }
 
@@ -741,84 +647,20 @@ export class CoreUtilsProvider {
      * @param {string} path The local path of the file to be open.
      * @return {Promise<any>} Promise resolved when done.
      */
-    openFile(path: string) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    openFile(path: string): Promise<any> {
+        return new Promise((resolve, reject): void => {
             if (this.appProvider.isDesktop()) {
-                // It's a desktop app, send an event so the file is opened. It has to be done with an event
-                // because opening the file from here (renderer process) doesn't focus the opened app.
+                // It's a desktop app, send an event so the file is opened.
+                // Opening the file from here (renderer process) doesn't focus the opened app, that's why an event is needed.
                 // Use sendSync so we can receive the result.
                 if (require('electron').ipcRenderer.sendSync('openItem', path)) {
                     resolve();
                 } else {
                     reject(this.translate.instant('core.erroropenfilenoapp'));
                 }
-            } else if ((<any>window).plugins) {
+            } else if ((<any> window).plugins) {
                 // @todo
                 reject('TODO');
-
-                // var extension = $mmFS.getFileExtension(path),
-                //     mimetype = $mmFS.getMimeType(extension);
-
-                // if (ionic.Platform.isAndroid() && window.plugins.webintent) {
-                //     var iParams = {
-                //         action: "android.intent.action.VIEW",
-                //         url: path,
-                //         type: mimetype
-                //     };
-
-                //     window.plugins.webintent.startActivity(
-                //         iParams,
-                //         function() {
-                //             $log.debug('Intent launched');
-                //             deferred.resolve();
-                //         },
-                //         function() {
-                //             $log.debug('Intent launching failed.');
-                //             $log.debug('action: ' + iParams.action);
-                //             $log.debug('url: ' + iParams.url);
-                //             $log.debug('type: ' + iParams.type);
-
-                //             if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
-                //                 // Extension not found.
-                //                 $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoextension');
-                //             } else {
-                //                 $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoapp');
-                //             }
-                //         }
-                //     );
-
-                // } else if (ionic.Platform.isIOS() && typeof handleDocumentWithURL == 'function') {
-
-                //     $mmFS.getBasePath().then(function(fsRoot) {
-                //         // Encode/decode the specific file path, note that a path may contain directories
-                //         // with white spaces, special characters...
-                //         if (path.indexOf(fsRoot > -1)) {
-                //             path = path.replace(fsRoot, "");
-                //             path = encodeURIComponent($mmText.decodeURIComponent(path));
-                //             path = fsRoot + path;
-                //         }
-
-                //         handleDocumentWithURL(
-                //             function() {
-                //                 $log.debug('File opened with handleDocumentWithURL' + path);
-                //                 deferred.resolve();
-                //             },
-                //             function(error) {
-                //                 $log.debug('Error opening with handleDocumentWithURL' + path);
-                //                 if(error == 53) {
-                //                     $log.error('No app that handles this file type.');
-                //                 }
-                //                 self.openInBrowser(path);
-                //                 deferred.resolve();
-                //             },
-                //             path
-                //         );
-                //     }, deferred.reject);
-                // } else {
-                //     // Last try, launch the file with the browser.
-                //     this.openInBrowser(path);
-                //     resolve();
-                // }
             } else {
                 // Changing _blank for _system may work in cordova 2.4 and onwards.
                 this.logger.log('Opening external file using window.open()');
@@ -836,7 +678,7 @@ export class CoreUtilsProvider {
      * @param {any} [options] Override default options passed to InAppBrowser.
      * @return {InAppBrowserObject} The opened window.
      */
-    openInApp(url: string, options?: any) : InAppBrowserObject {
+    openInApp(url: string, options?: any): InAppBrowserObject {
         if (!url) {
             return;
         }
@@ -854,10 +696,11 @@ export class CoreUtilsProvider {
         }
 
         // Convert the options to a string.
-        let optionsArray = [],
-            optionsString;
-        for (let name in options) {
-            optionsArray.push(`${name}=${options[name]}`)
+        const optionsArray = [];
+        let optionsString;
+
+        for (const name in options) {
+            optionsArray.push(`${name}=${options[name]}`);
         }
         optionsString = optionsArray.join(',');
 
@@ -865,10 +708,10 @@ export class CoreUtilsProvider {
 
         if (this.appProvider.isDesktop() || this.appProvider.isMobile()) {
             // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
-            let loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
+            const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
                 this.eventsProvider.trigger(CoreEventsProvider.IAB_LOAD_START, event);
             });
-            let exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
+            const exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
                 loadStartSubscription.unsubscribe();
                 exitSubscription.unsubscribe();
                 this.eventsProvider.trigger(CoreEventsProvider.IAB_EXIT, event);
@@ -884,10 +727,10 @@ export class CoreUtilsProvider {
      *
      * @param {string} url The URL to open.
      */
-    openInBrowser(url: string) : void {
+    openInBrowser(url: string): void {
         if (this.appProvider.isDesktop()) {
             // It's a desktop app, use Electron shell library to open the browser.
-            let shell = require('electron').shell;
+            const shell = require('electron').shell;
             if (!shell.openExternal(url)) {
                 // Open browser failed, open a new window in the app.
                 window.open(url, '_system');
@@ -909,50 +752,10 @@ export class CoreUtilsProvider {
      * @param {string} url The URL of the file.
      * @return {Promise<void>} Promise resolved when opened.
      */
-    openOnlineFile(url: string) : Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    openOnlineFile(url: string): Promise<void> {
+        return new Promise<void>((resolve, reject): void => {
             // @todo
             reject('TODO');
-            // if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
-            //     // In Android we need the mimetype to open it.
-            //     var iParams;
-
-            //     self.getMimeTypeFromUrl(url).catch(function() {
-            //         // Error getting mimetype, return undefined.
-            //     }).then(function(mimetype) {
-            //         if (!mimetype) {
-            //             // Couldn't retrieve mimetype. Return error.
-            //             $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoextension');
-            //             return;
-            //         }
-
-            //         iParams = {
-            //             action: "android.intent.action.VIEW",
-            //             url: url,
-            //             type: mimetype
-            //         };
-
-            //         window.plugins.webintent.startActivity(
-            //             iParams,
-            //             function() {
-            //                 $log.debug('Intent launched');
-            //                 deferred.resolve();
-            //             },
-            //             function() {
-            //                 $log.debug('Intent launching failed.');
-            //                 $log.debug('action: ' + iParams.action);
-            //                 $log.debug('url: ' + iParams.url);
-            //                 $log.debug('type: ' + iParams.type);
-
-            //                 $mmLang.translateAndRejectDeferred(deferred, 'core.erroropenfilenoapp');
-            //             }
-            //         );
-            //     });
-            // } else {
-            //     this.logger.log('Opening remote file using window.open()');
-            //     window.open(url, '_blank');
-            //     resolve();
-            // }
         });
     }
 
@@ -962,7 +765,7 @@ export class CoreUtilsProvider {
      * @param {object} obj Object to convert.
      * @return {any[]} Array with the values of the object but losing the keys.
      */
-    objectToArray(obj: object) : any[] {
+    objectToArray(obj: object): any[] {
         return Object.keys(obj).map((key) => {
             return obj[key];
         });
@@ -977,27 +780,28 @@ export class CoreUtilsProvider {
      * @param {string} keyName Name of the properties where to store the keys.
      * @param {string} valueName Name of the properties where to store the values.
      * @param {boolean} [sort] True to sort keys alphabetically, false otherwise.
-     * @return {object[]} Array of objects with the name & value of each property.
+     * @return {any[]} Array of objects with the name & value of each property.
      */
-    objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sort?: boolean) : object[] {
+    objectToArrayOfObjects(obj: object, keyName: string, valueName: string, sort?: boolean): any[] {
         // Get the entries from an object or primitive value.
-        let getEntries = (elKey, value) => {
+        const getEntries = (elKey, value): any[] | any => {
             if (typeof value == 'object') {
                 // It's an object, return at least an entry for each property.
-                let keys = Object.keys(value),
-                    entries = [];
+                const keys = Object.keys(value);
+                let entries = [];
 
                 keys.forEach((key) => {
-                    let newElKey = elKey ? elKey + '[' + key + ']' : key;
+                    const newElKey = elKey ? elKey + '[' + key + ']' : key;
                     entries = entries.concat(getEntries(newElKey, value[key]));
                 });
 
                 return entries;
             } else {
                 // Not an object, return a single entry.
-                let entry = {};
+                const entry = {};
                 entry[keyName] = elKey;
                 entry[valueName] = value;
+
                 return entry;
             }
         };
@@ -1007,12 +811,13 @@ export class CoreUtilsProvider {
         }
 
         // "obj" will always be an object, so "entries" will always be an array.
-        let entries = <any[]> getEntries('', obj);
+        const entries = <any[]> getEntries('', obj);
         if (sort) {
             return entries.sort((a, b) => {
                 return a.name >= b.name ? 1 : -1;
             });
         }
+
         return entries;
     }
 
@@ -1026,13 +831,14 @@ export class CoreUtilsProvider {
      * @param [keyPrefix] Key prefix if neededs to delete it.
      * @return {object} Object.
      */
-    objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string) : object {
-        let prefixSubstr = keyPrefix ? keyPrefix.length : 0,
+    objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string): object {
+        const prefixSubstr = keyPrefix ? keyPrefix.length : 0,
             mapped = {};
         objects.forEach((item) => {
-            let key = prefixSubstr > 0 ? item[keyName].substr(prefixSubstr) : item[keyName];
+            const key = prefixSubstr > 0 ? item[keyName].substr(prefixSubstr) : item[keyName];
             mapped[key] = item[valueName];
         });
+
         return mapped;
     }
 
@@ -1042,9 +848,9 @@ export class CoreUtilsProvider {
      * @param {Observable<any>} obs The observable to convert.
      * @return {Promise<any>} Promise.
      */
-    observableToPromise(obs: Observable<any>) : Promise<any> {
-        return new Promise((resolve, reject) => {
-            let subscription = obs.subscribe((data) => {
+    observableToPromise(obs: Observable<any>): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            const subscription = obs.subscribe((data) => {
                 // Data received, unsubscribe.
                 subscription.unsubscribe();
                 resolve(data);
@@ -1061,12 +867,13 @@ export class CoreUtilsProvider {
      *
      * @return {PromiseDefer} The deferred promise.
      */
-    promiseDefer() : PromiseDefer {
-        let deferred: PromiseDefer = {};
-        deferred.promise = new Promise((resolve, reject) => {
+    promiseDefer(): PromiseDefer {
+        const deferred: PromiseDefer = {};
+        deferred.promise = new Promise((resolve, reject): void => {
             deferred.resolve = resolve;
             deferred.reject = reject;
         });
+
         return deferred;
     }
 
@@ -1076,7 +883,7 @@ export class CoreUtilsProvider {
      * @param {Promise<any>} promise Promise to check
      * @return {Promise<boolean>} Promise resolved with boolean: true if the promise is rejected or false if it's resolved.
      */
-    promiseFails(promise: Promise<any>) : Promise<boolean> {
+    promiseFails(promise: Promise<any>): Promise<boolean> {
         return promise.then(() => {
             return false;
         }).catch(() => {
@@ -1090,7 +897,7 @@ export class CoreUtilsProvider {
      * @param {Promise<any>} promise Promise to check
      * @return {Promise<boolean>} Promise resolved with boolean: true if the promise it's resolved or false if it's rejected.
      */
-    promiseWorks(promise: Promise<any>) : Promise<boolean> {
+    promiseWorks(promise: Promise<any>): Promise<boolean> {
         return promise.then(() => {
             return true;
         }).catch(() => {
@@ -1108,16 +915,17 @@ export class CoreUtilsProvider {
      * @param {string} key Key to check.
      * @return {boolean} Whether the two objects/arrays have the same value (or lack of one) for a given key.
      */
-    sameAtKeyMissingIsBlank(obj1: any, obj2: any, key: string) : boolean {
+    sameAtKeyMissingIsBlank(obj1: any, obj2: any, key: string): boolean {
         let value1 = typeof obj1[key] != 'undefined' ? obj1[key] : '',
             value2 = typeof obj2[key] != 'undefined' ? obj2[key] : '';
 
-        if (typeof value1 == 'number' || typeof value1 == 'boolean') {
+        if (typeof value1 == 'number' || typeof value1 == 'boolean') {
             value1 = '' + value1;
         }
-        if (typeof value2 == 'number' || typeof value2 == 'boolean') {
+        if (typeof value2 == 'number' || typeof value2 == 'boolean') {
             value2 = '' + value2;
         }
+
         return value1 === value2;
     }
 
@@ -1128,7 +936,7 @@ export class CoreUtilsProvider {
      * @param {object} obj Object to stringify.
      * @return {string} Stringified object.
      */
-    sortAndStringify(obj: object) : string {
+    sortAndStringify(obj: object): string {
         return JSON.stringify(this.sortProperties(obj));
     }
 
@@ -1138,12 +946,13 @@ export class CoreUtilsProvider {
      * @param {object} obj The object to sort. If it isn't an object, the original value will be returned.
      * @return {object} Sorted object.
      */
-    sortProperties(obj: object) : object {
+    sortProperties(obj: object): object {
         if (typeof obj == 'object' && !Array.isArray(obj)) {
             // It's an object, sort it.
             return Object.keys(obj).sort().reduce((accumulator, key) => {
                 // Always call sort with the value. If it isn't an object, the original value will be returned.
                 accumulator[key] = this.sortProperties(obj[key]);
+
                 return accumulator;
             }, {});
         } else {
@@ -1157,8 +966,8 @@ export class CoreUtilsProvider {
      * @param {any[]} files List of files to sum its filesize.
      * @return {{size: number, total: boolean}} File size and a boolean to indicate if it is the total size or only partial.
      */
-    sumFileSizes(files: any[]) : {size: number, total: boolean} {
-        let result = {
+    sumFileSizes(files: any[]): { size: number, total: boolean } {
+        const result = {
             size: 0,
             total: true
         };
@@ -1183,9 +992,9 @@ export class CoreUtilsProvider {
      * @param {any} localeFloat Locale aware float representation.
      * @return {any} False if bad format, empty string if empty value or the parsed float if not.
      */
-    unformatFloat(localeFloat: any) : any {
+    unformatFloat(localeFloat: any): any {
         // Bad format on input type number.
-        if (typeof localeFloat == "undefined") {
+        if (typeof localeFloat == 'undefined') {
             return false;
         }
 
@@ -1202,7 +1011,7 @@ export class CoreUtilsProvider {
             return '';
         }
 
-        let localeSeparator = this.translate.instant('core.decsep');
+        const localeSeparator = this.translate.instant('core.decsep');
 
         localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
         localeFloat = localeFloat.replace(localeSeparator, '.');
@@ -1212,6 +1021,7 @@ export class CoreUtilsProvider {
         if (isNaN(localeFloat)) {
             return false;
         }
+
         return localeFloat;
     }
 
@@ -1222,13 +1032,13 @@ export class CoreUtilsProvider {
      * @param [key] Key of the property that must be unique. If not specified, the whole entry.
      * @return {any[]} Array without duplicate values.
      */
-    uniqueArray(array: any[], key?: string) : any[] {
-        let filtered = [],
+    uniqueArray(array: any[], key?: string): any[] {
+        const filtered = [],
             unique = [],
             len = array.length;
 
         for (let i = 0; i < len; i++) {
-            let entry = array[i],
+            const entry = array[i],
                 value = key ? entry[key] : entry;
 
             if (unique.indexOf(value) == -1) {

@@ -58,7 +58,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Determine course prefetch icon.
         this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
             this.prefetchCourseData.prefetchCourseIcon = icon;
@@ -83,8 +83,10 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
     /**
      * Open a course.
+     *
+     * @param {any} course The course to open.
      */
-    openCourse(course) {
+    openCourse(course: any): void {
         this.courseFormatDelegate.openCourse(this.navCtrl, course);
     }
 
@@ -93,7 +95,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      *
      * @param {Event} e Click event.
      */
-    prefetchCourse(e: Event) {
+    prefetchCourse(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -101,13 +103,13 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
-        })
+        });
     }
 
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.isDestroyed = true;
 
         if (this.courseStatusObserver) {

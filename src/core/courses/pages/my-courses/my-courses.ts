@@ -24,7 +24,7 @@ import { CoreCourseOptionsDelegate } from '../../../course/providers/options-del
 /**
  * Page that displays the list of courses the user is enrolled in.
  */
-@IonicPage({segment: "core-courses-my-courses"})
+@IonicPage({ segment: 'core-courses-my-courses' })
 @Component({
     selector: 'page-core-courses-my-courses',
     templateUrl: 'my-courses.html',
@@ -46,12 +46,12 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private courseHelper: CoreCourseHelperProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate) {}
+            private courseOptionsDelegate: CoreCourseOptionsDelegate) { }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
 
         this.fetchCourses().finally(() => {
@@ -69,8 +69,10 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
     /**
      * Fetch the user courses.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchCourses() {
+    protected fetchCourses(): Promise<any> {
         return this.coursesProvider.getUserCourses().then((courses) => {
 
             const courseIds = courses.map((course) => {
@@ -98,8 +100,8 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
      *
      * @param {any} refresher Refresher.
      */
-    refreshCourses(refresher: any) {
-        let promises = [];
+    refreshCourses(refresher: any): void {
+        const promises = [];
 
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
@@ -116,7 +118,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     /**
      * Show or hide the filter.
      */
-    switchFilter() {
+    switchFilter(): void {
         this.filter = '';
         this.showFilter = !this.showFilter;
         this.filteredCourses = this.courses;
@@ -125,7 +127,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     /**
      * Go to search courses.
      */
-    openSearch() {
+    openSearch(): void {
         this.navCtrl.push('CoreCoursesSearchPage');
     }
 
@@ -134,7 +136,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
      *
      * @param {string} newValue New filter value.
      */
-    filterChanged(newValue: string) {
+    filterChanged(newValue: string): void {
         if (!newValue || !this.courses) {
             this.filteredCourses = this.courses;
         } else {
@@ -146,12 +148,15 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
     /**
      * Prefetch all the courses.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    prefetchCourses() {
-        let initialIcon = this.prefetchCoursesData.icon;
+    prefetchCourses(): Promise<any> {
+        const initialIcon = this.prefetchCoursesData.icon;
 
         this.prefetchCoursesData.icon = 'spinner';
         this.prefetchCoursesData.badge = '';
+
         return this.courseHelper.confirmAndPrefetchCourses(this.courses, (progress) => {
             this.prefetchCoursesData.badge = progress.count + ' / ' + progress.total;
         }).then((downloaded) => {
@@ -169,7 +174,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     /**
      * Initialize the prefetch icon for the list of courses.
      */
-    protected initPrefetchCoursesIcon() {
+    protected initPrefetchCoursesIcon(): void {
         if (this.prefetchIconInitialized) {
             // Already initialized.
             return;
@@ -180,6 +185,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
         if (!this.courses || this.courses.length < 2) {
             // Not enough courses.
             this.prefetchCoursesData.icon = '';
+
             return;
         }
 
@@ -196,7 +202,7 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     /**
      * Page destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.isDestroyed = true;
         this.myCoursesObserver && this.myCoursesObserver.off();
         this.siteUpdatedObserver && this.siteUpdatedObserver.off();

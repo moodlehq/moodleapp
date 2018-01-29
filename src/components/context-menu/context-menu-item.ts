@@ -15,7 +15,6 @@
 import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { CoreContextMenuComponent } from './context-menu';
 
-
 /**
  * This directive adds a item to the Context Menu popover.
  *
@@ -36,15 +35,16 @@ import { CoreContextMenuComponent } from './context-menu';
 export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChanges {
     @Input() content: string; // Content of the item.
     @Input() iconDescription?: string; // Name of the icon to be shown on the left side of the item.
-    @Input() iconAction?: string; // Name of the icon to be shown on the right side of the item. It represents the action to do on
-                                  // click. If is "spinner" an spinner will be shown. If no icon or spinner is selected, no action
-                                  // or link will work. If href but no iconAction is provided arrow-right will be used.
+    @Input() iconAction?: string; // Name of the icon to show on the right side of the item. Represents the action to do on click.
+                                  // If is "spinner" an spinner will be shown.
+                                  // If no icon or spinner is selected, no action or link will work.
+                                  // If href but no iconAction is provided arrow-right will be used.
     @Input() ariaDescription?: string; // Aria label to add to iconDescription.
     @Input() ariaAction?: string; // Aria label to add to iconAction. If not set, it will be equal to content.
     @Input() href?: string; // Link to go if no action provided.
-    @Input() captureLink?: boolean|string; // Whether the link needs to be captured by the app.
+    @Input() captureLink?: boolean | string; // Whether the link needs to be captured by the app.
     @Input() autoLogin?: string; // Whether the link needs to be opened using auto-login.
-    @Input() closeOnClick?: boolean|string = true; // Whether to close the popover when the item is clicked.
+    @Input() closeOnClick?: boolean | string = true; // Whether to close the popover when the item is clicked.
     @Input() priority?: number; // Used to sort items. The highest priority, the highest position.
     @Input() badge?: string; // A badge to show in the item.
     @Input() badgeClass?: number; // A class to set in the badge.
@@ -61,7 +61,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Initialize values.
         this.priority = this.priority || 1;
         this.closeOnClick = this.getBooleanValue(this.closeOnClick, true);
@@ -88,17 +88,18 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
      * @param {boolean} defaultValue Value to use if undefined.
      * @return {boolean} Boolean value.
      */
-    protected getBooleanValue(value: any, defaultValue: boolean) : boolean {
+    protected getBooleanValue(value: any, defaultValue: boolean): boolean {
         if (typeof value == 'undefined') {
             return defaultValue;
         }
+
         return value && value !== 'false';
     }
 
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.destroyed = true;
         this.ctxtMenu.removeItem(this);
     }
@@ -106,7 +107,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hidden && !changes.hidden.firstChange) {
             this.ctxtMenu.itemsChanged();
         }

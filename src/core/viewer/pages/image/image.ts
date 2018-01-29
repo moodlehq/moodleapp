@@ -19,7 +19,7 @@ import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 /**
  * Page to view an image. If opened as a modal, it will have a button to close the modal.
  */
-@IonicPage({segment: 'core-viewer-image'})
+@IonicPage({ segment: 'core-viewer-image' })
 @Component({
     selector: 'page-core-viewer-image',
     templateUrl: 'image.html',
@@ -28,7 +28,7 @@ export class CoreViewerImagePage {
     title: string; // Page title.
     image: string; // Image URL.
     component: string; // Component to use in external-content.
-    componentId: string|number; // Component ID to use in external-content.
+    componentId: string | number; // Component ID to use in external-content.
 
     constructor(private viewCtrl: ViewController, params: NavParams, translate: TranslateService) {
         this.title = params.get('title') || translate.instant('core.imageviewer');
@@ -40,7 +40,7 @@ export class CoreViewerImagePage {
     /**
      * Close modal.
      */
-    closeModal() : void {
+    closeModal(): void {
         this.viewCtrl.dismiss();
     }
 }

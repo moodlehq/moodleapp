@@ -24,14 +24,16 @@ import { AddonUserProfileFieldMenuComponent } from '../component/menu';
 export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHandler {
     name = 'menu';
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -45,7 +47,7 @@ export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHan
      * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
      */
     getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
-        let name = 'profile_field_' + field.shortname;
+        const name = 'profile_field_' + field.shortname;
 
         if (formValues[name]) {
             return {
@@ -61,8 +63,7 @@ export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHan
      *
      * @return {any}     The component to use, undefined if not found.
      */
-    getComponent() {
+    getComponent(): any {
         return AddonUserProfileFieldMenuComponent;
     }
-
 }

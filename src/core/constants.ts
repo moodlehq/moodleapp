@@ -16,34 +16,34 @@
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
-    public static SECONDS_YEAR = 31536000;
-    public static SECONDS_WEEK = 604800;
-    public static SECONDS_DAY = 86400;
-    public static SECONDS_HOUR = 3600;
-    public static SECONDS_MINUTE = 60;
-    public static WIFI_DOWNLOAD_THRESHOLD = 104857600; // 100MB.
-    public static DOWNLOAD_THRESHOLD = 10485760; // 10MB.
-    public static DONT_SHOW_ERROR = 'CoreDontShowError';
-    public static NO_SITE_ID = 'NoSite';
+    static SECONDS_YEAR = 31536000;
+    static SECONDS_WEEK = 604800;
+    static SECONDS_DAY = 86400;
+    static SECONDS_HOUR = 3600;
+    static SECONDS_MINUTE = 60;
+    static WIFI_DOWNLOAD_THRESHOLD = 104857600; // 100MB.
+    static DOWNLOAD_THRESHOLD = 10485760; // 10MB.
+    static DONT_SHOW_ERROR = 'CoreDontShowError';
+    static NO_SITE_ID = 'NoSite';
 
     // Settings constants.
-    public static SETTINGS_RICH_TEXT_EDITOR = 'CoreSettingsRichTextEditor';
-    public static SETTINGS_NOTIFICATION_SOUND = 'CoreSettingsNotificationSound';
-    public static SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';
+    static SETTINGS_RICH_TEXT_EDITOR = 'CoreSettingsRichTextEditor';
+    static SETTINGS_NOTIFICATION_SOUND = 'CoreSettingsNotificationSound';
+    static SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';
 
     // WS constants.
-    public static WS_TIMEOUT = 30000;
-    public static WS_PREFIX = 'local_mobile_';
+    static WS_TIMEOUT = 30000;
+    static WS_PREFIX = 'local_mobile_';
 
     // Login constants.
-    public static LOGIN_SSO_CODE = 2; // SSO in browser window is required.
-    public static LOGIN_SSO_INAPP_CODE = 3; // SSO in embedded browser is required.
-    public static LOGIN_LAUNCH_DATA = 'CoreLoginLaunchData';
+    static LOGIN_SSO_CODE = 2; // SSO in browser window is required.
+    static LOGIN_SSO_INAPP_CODE = 3; // SSO in embedded browser is required.
+    static LOGIN_LAUNCH_DATA = 'CoreLoginLaunchData';
 
     // Download status constants.
-    public static DOWNLOADED = 'downloaded';
-    public static DOWNLOADING = 'downloading';
-    public static NOT_DOWNLOADED = 'notdownloaded';
-    public static OUTDATED = 'outdated';
-    public static NOT_DOWNLOADABLE = 'notdownloadable';
+    static DOWNLOADED = 'downloaded';
+    static DOWNLOADING = 'downloading';
+    static NOT_DOWNLOADED = 'notdownloaded';
+    static OUTDATED = 'outdated';
+    static NOT_DOWNLOADABLE = 'notdownloadable';
 }

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { TextInput } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '../../providers/utils/dom';
@@ -22,7 +21,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 /**
  * Directive to display a rich text editor if enabled.
  *
-* If enabled, this directive will show a rich text editor. Otherwise it'll show a regular textarea.
+ * If enabled, this directive will show a rich text editor. Otherwise it'll show a regular textarea.
  *
  * This directive requires an OBJECT model. The text written in the editor or textarea will be stored inside
  * a "text" property in that object. This is to ensure 2-way data-binding, since using a string as a model
@@ -41,15 +40,15 @@ export class CoreRichTextEditorComponent {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Resize, images, anchor button, fullscreen...
 
-    @Input() placeholder?: string = ""; // Placeholder to set in textarea.
+    @Input() placeholder? = ''; // Placeholder to set in textarea.
     @Input() control: FormControl; // Form control.
-    @Output() public contentChanged: EventEmitter<string>;
+    @Output() contentChanged: EventEmitter<string>;
 
     @ViewChild('editor') editor: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea: TextInput; // Textarea editor.
     @ViewChild('decorate') decorate: ElementRef; // Buttons.
 
-    rteEnabled: boolean = false;
+    rteEnabled = false;
     uniqueId = `rte{Math.floor(Math.random() * 1000000)}`;
     editorElement: HTMLDivElement;
 
@@ -60,7 +59,7 @@ export class CoreRichTextEditorComponent {
     /**
      * Init editor
      */
-    ngAfterContentInit() {
+    ngAfterContentInit(): void {
         this.domUtils.isRichTextEditorEnabled().then((enabled) => {
             this.rteEnabled = !!enabled;
         });
@@ -77,14 +76,14 @@ export class CoreRichTextEditorComponent {
         this.editorElement.oninput = this.onChange.bind(this);
 
         // Setup button actions.
-        let buttons = (this.decorate.nativeElement as HTMLDivElement).getElementsByTagName('button');
+        const buttons = (this.decorate.nativeElement as HTMLDivElement).getElementsByTagName('button');
         for (let i = 0; i < buttons.length; i++) {
-            let button = buttons[i],
-                command = button.getAttribute('data-command');
+            const button = buttons[i];
+            let command = button.getAttribute('data-command');
 
             if (command) {
                 if (command.includes('|')) {
-                    let parameter = command.split('|')[1];
+                    const parameter = command.split('|')[1];
                     command = command.split('|')[0];
 
                     button.addEventListener('click', ($event) => {
@@ -101,8 +100,10 @@ export class CoreRichTextEditorComponent {
 
     /**
      * On change function to sync with form data.
+     *
+     * @param {Event} $event The event.
      */
-    onChange($event) {
+    onChange($event: Event): void {
         if (this.rteEnabled) {
             if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
                 this.clearText();
@@ -121,8 +122,10 @@ export class CoreRichTextEditorComponent {
 
     /**
      * Toggle from rte editor to textarea syncing values.
+     *
+     * @param {Event} $event The event.
      */
-    toggleEditor($event) {
+    toggleEditor($event: Event): void {
         $event.preventDefault();
         $event.stopPropagation();
 
@@ -139,10 +142,12 @@ export class CoreRichTextEditorComponent {
         setTimeout(() => {
             if (this.rteEnabled) {
                 this.editorElement.focus();
-                let range = document.createRange();
+
+                const range = document.createRange();
                 range.selectNodeContents(this.editorElement);
                 range.collapse(false);
-                let sel = window.getSelection();
+
+                const sel = window.getSelection();
                 sel.removeAllRanges();
                 sel.addRange(range);
             } else {
@@ -158,10 +163,11 @@ export class CoreRichTextEditorComponent {
      * Check if text is empty.
      * @param {string} value text
      */
-    private isNullOrWhiteSpace(value: string) {
-        if (value == null || typeof value == "undefined") {
+    protected isNullOrWhiteSpace(value: string): boolean {
+        if (value == null || typeof value == 'undefined') {
             return true;
         }
+
         value = value.replace(/[\n\r]/g, '');
         value = value.split(' ').join('');
 
@@ -171,7 +177,7 @@ export class CoreRichTextEditorComponent {
     /**
      * Clear the text.
      */
-    clearText() {
+    clearText(): void {
         this.editorElement.innerHTML = '<p></p>';
         this.textarea.value = '';
         this.control.setValue(null);
@@ -185,7 +191,7 @@ export class CoreRichTextEditorComponent {
      * @param {string} command   Command to execute.
      * @param {any} [parameters] Parameters of the command.
      */
-    private buttonAction($event: any, command: string, parameters: any = null) {
+    protected buttonAction($event: any, command: string, parameters: any = null): void {
         $event.preventDefault();
         $event.stopPropagation();
         document.execCommand(command, false, parameters);

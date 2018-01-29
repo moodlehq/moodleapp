@@ -43,15 +43,15 @@ export class CoreContextMenuComponent implements OnInit {
             this.hideMenu = !this.items.some((item) => {
                 return !item.hidden;
             });
-        })
+        });
     }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
-        this.icon = this.icon || 'more';
-        this.ariaLabel = this.title || this.translate.instant('core.info');
+    ngOnInit(): void {
+        this.icon = this.icon || 'more';
+        this.ariaLabel = this.title || this.translate.instant('core.info');
     }
 
     /**
@@ -59,7 +59,7 @@ export class CoreContextMenuComponent implements OnInit {
      *
      * @param {CoreContextMenuItemComponent} item The item to add.
      */
-    addItem(item: CoreContextMenuItemComponent) : void {
+    addItem(item: CoreContextMenuItemComponent): void {
         this.items.push(item);
         this.itemsChanged();
     }
@@ -67,7 +67,7 @@ export class CoreContextMenuComponent implements OnInit {
     /**
      * Function called when the items change.
      */
-    itemsChanged() {
+    itemsChanged(): void {
         this.itemsChangedStream.next();
     }
 
@@ -76,8 +76,8 @@ export class CoreContextMenuComponent implements OnInit {
      *
      * @param {CoreContextMenuItemComponent} item The item to remove.
      */
-    removeItem(item: CoreContextMenuItemComponent) : void {
-        let index = this.items.indexOf(item);
+    removeItem(item: CoreContextMenuItemComponent): void {
+        const index = this.items.indexOf(item);
         if (index >= 0) {
             this.items.splice(index, 1);
         }
@@ -89,8 +89,8 @@ export class CoreContextMenuComponent implements OnInit {
      *
      * @param {MouseEvent} event Event.
      */
-    showContextMenu(event: MouseEvent) : void {
-        let popover = this.popoverCtrl.create(CoreContextMenuPopoverComponent, {title: this.title, items: this.items});
+    showContextMenu(event: MouseEvent): void {
+        const popover = this.popoverCtrl.create(CoreContextMenuPopoverComponent, { title: this.title, items: this.items });
         popover.present({
             ev: event
         });

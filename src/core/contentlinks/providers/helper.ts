@@ -50,7 +50,7 @@ export class CoreContentLinksHelperProvider {
      * @param {CoreContentLinksAction[]} actions List of actions.
      * @return {CoreContentLinksAction} First valid action. Returns undefined if no valid action found.
      */
-    getFirstValidAction(actions: CoreContentLinksAction[]) : CoreContentLinksAction {
+    getFirstValidAction(actions: CoreContentLinksAction[]): CoreContentLinksAction {
         if (actions) {
             for (let i = 0; i < actions.length; i++) {
                 const action = actions[i];
@@ -70,7 +70,7 @@ export class CoreContentLinksHelperProvider {
      * @param {any} [pageParams] Params to send to the page.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string) : void {
+    goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (navCtrl && siteId == this.sitesProvider.getCurrentSiteId()) {
             navCtrl.push(pageName, pageParams);
@@ -84,8 +84,8 @@ export class CoreContentLinksHelperProvider {
      *
      * @param {string} url URL to treat.
      */
-    goToChooseSite(url: string) : void {
-        this.appProvider.getRootNavController().setRoot('CoreContentLinksChooseSitePage', {url: url});
+    goToChooseSite(url: string): void {
+        this.appProvider.getRootNavController().setRoot('CoreContentLinksChooseSitePage', { url: url });
     }
 
     /**
@@ -94,19 +94,19 @@ export class CoreContentLinksHelperProvider {
      * @param {string} url URL to handle.
      * @return {boolean} True if the URL should be handled by this component, false otherwise.
      */
-    handleCustomUrl(url: string) : boolean {
+    handleCustomUrl(url: string): boolean {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link';
         if (url.indexOf(contentLinksScheme) == -1) {
             return false;
         }
 
+        const modal = this.domUtils.showModalLoading();
+        let username;
+
         url = decodeURIComponent(url);
 
         // App opened using custom URL scheme.
         this.logger.debug('Treating custom URL scheme: ' + url);
-
-        let modal = this.domUtils.showModalLoading(),
-            username;
 
         // Delete the scheme from the URL.
         url = url.replace(contentLinksScheme + '=', '');
@@ -124,6 +124,7 @@ export class CoreContentLinksHelperProvider {
         }).then((siteIds) => {
             if (siteIds.length) {
                 modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
+
                 return this.handleLink(url, username).then((treated) => {
                     if (!treated) {
                         this.domUtils.showErrorModal('core.contentlinks.errornoactions', true);
@@ -134,14 +135,14 @@ export class CoreContentLinksHelperProvider {
                 const siteUrl = this.contentLinksDelegate.getSiteUrl(url);
                 if (!siteUrl) {
                     this.domUtils.showErrorModal('core.login.invalidsite', true);
+
                     return;
                 }
 
                 // Check that site exists.
                 return this.sitesProvider.checkSite(siteUrl).then((result) => {
                     // Site exists. We'll allow to add it.
-                    let promise,
-                        ssoNeeded = this.loginHelper.isSSOLoginNeeded(result.code),
+                    const ssoNeeded = this.loginHelper.isSSOLoginNeeded(result.code),
                         hasRemoteAddonsLoaded = false,
                         pageName = 'CoreLoginCredentialsPage',
                         pageParams = {
@@ -150,6 +151,7 @@ export class CoreContentLinksHelperProvider {
                             urlToOpen: url,
                             siteConfig: result.config
                         };
+                    let promise;
 
                     modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
@@ -161,7 +163,7 @@ export class CoreContentLinksHelperProvider {
                         const confirmMsg = this.translate.instant('core.contentlinks.confirmurlothersite');
                         promise = this.domUtils.showConfirm(confirmMsg).then(() => {
                             if (!ssoNeeded) {
-                                // hasRemoteAddonsLoaded = $mmAddonManager.hasRemoteAddonsLoaded(); @todo
+                                // @todo hasRemoteAddonsLoaded = $mmAddonManager.hasRemoteAddonsLoaded(); @todo
                                 if (hasRemoteAddonsLoaded) {
                                     // Store the redirect since logout will restart the app.
                                     this.appProvider.storeRedirect(CoreConstants.NO_SITE_ID, pageName, pageParams);
@@ -177,7 +179,7 @@ export class CoreContentLinksHelperProvider {
                     return promise.then(() => {
                         if (ssoNeeded) {
                             this.loginHelper.confirmAndOpenBrowserForSSOLogin(
-                                        result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
+                                result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
                         } else if (!hasRemoteAddonsLoaded) {
                             this.appProvider.getRootNavController().setRoot(pageName, pageParams);
                         }
@@ -205,7 +207,7 @@ export class CoreContentLinksHelperProvider {
      * @param {NavController} [navCtrl] Nav Controller to use to navigate.
      * @return {Promise<boolean>} Promise resolved with a boolean: true if URL was treated, false otherwise.
      */
-    handleLink(url: string, username?: string, navCtrl?: NavController) : Promise<boolean> {
+    handleLink(url: string, username?: string, navCtrl?: NavController): Promise<boolean> {
         // Check if the link should be treated by some component/addon.
         return this.contentLinksDelegate.getActionsFor(url, undefined, username).then((actions) => {
             const action = this.getFirstValidAction(actions);
@@ -230,8 +232,10 @@ export class CoreContentLinksHelperProvider {
                         }
                     });
                 }
+
                 return true;
             }
+
             return false;
         }).catch(() => {
             return false;

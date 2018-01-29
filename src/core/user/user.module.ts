@@ -46,8 +46,9 @@ export class CoreUserModule {
 
         eventsProvider.on(CoreEventsProvider.USER_DELETED, (data) => {
             // Search for userid in params.
-            let params = data.params,
-                userId = 0;
+            const params = data.params;
+            let userId = 0;
+
             if (params.userid) {
                 userId = params.userid;
             } else if (params.userids) {

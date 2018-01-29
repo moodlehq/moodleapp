@@ -94,7 +94,7 @@ export interface CoreFilepoolFileEntry {
      * @type {string}
      */
     extension?: string;
-};
+}
 
 /**
  * Entry from the file's queue.
@@ -165,7 +165,7 @@ export interface CoreFilepoolQueueEntry {
      * @type {any[]}
      */
     links?: any[];
-};
+}
 
 /**
  * Entry from packages table.
@@ -187,7 +187,7 @@ export interface CoreFilepoolPackageEntry {
      * An ID to use in conjunction with the component.
      * @type {string|number}
      */
-    componentId?: string|number;
+    componentId?: string | number;
 
     /**
      * Package status.
@@ -224,7 +224,7 @@ export interface CoreFilepoolPackageEntry {
      * @type {string}
      */
     extra?: string;
-};
+}
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -429,7 +429,7 @@ export class CoreFilepoolProvider {
     protected sizeCache = {}; // A "cache" to store file sizes to prevent performing too many HEAD requests.
     // Variables to prevent downloading packages/files twice at the same time.
     protected packagesPromises = {};
-    protected filePromises: {[s: string]: {[s: string]: Promise<any>}} = {};
+    protected filePromises: { [s: string]: { [s: string]: Promise<any> } } = {};
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider,
             private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider,
@@ -463,18 +463,20 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<any>} Promise resolved on success.
      */
-    protected addFileLink(siteId: string, fileId: string, component: string, componentId?: string|number) : Promise<any> {
+    protected addFileLink(siteId: string, fileId: string, component: string, componentId?: string | number): Promise<any> {
         if (!component) {
             return Promise.reject(null);
         }
 
         componentId = this.fixComponentId(componentId);
+
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            let newEntry = {
+            const newEntry = {
                 fileId: fileId,
                 component: component,
                 componentId: componentId || ''
             };
+
             return db.insertOrUpdateRecord(this.LINKS_TABLE, newEntry, undefined);
         });
     }
@@ -491,9 +493,10 @@ export class CoreFilepoolProvider {
      * Use this method to create a link between a URL and a component. You usually do not need to call this manually since
      * downloading a file automatically does this. Note that this method does not check if the file exists in the pool.
      */
-    addFileLinkByUrl(siteId: string, fileUrl: string, component: string, componentId?: string|number) : Promise<any> {
+    addFileLinkByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number): Promise<any> {
         return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
             const fileId = this.getFileIdByUrl(fileUrl);
+
             return this.addFileLink(siteId, fileId, component, componentId);
         });
     }
@@ -506,11 +509,12 @@ export class CoreFilepoolProvider {
      * @param {any[]} links Array of objects containing the component and optionally componentId.
      * @return {Promise<any>} Promise resolved on success.
      */
-    protected addFileLinks(siteId: string, fileId: string, links: any[]) : Promise<any> {
-        let promises = [];
+    protected addFileLinks(siteId: string, fileId: string, links: any[]): Promise<any> {
+        const promises = [];
         links.forEach((link) => {
             promises.push(this.addFileLink(siteId, fileId, link.component, link.componentId));
         });
+
         return Promise.all(promises);
     }
 
@@ -523,7 +527,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component (optional).
      * @return {Promise<any>} Resolved on success.
      */
-    addFilesToQueue(siteId: string, files: any[], component?: string, componentId?: string|number) : Promise<any> {
+    addFilesToQueue(siteId: string, files: any[], component?: string, componentId?: string | number): Promise<any> {
         return this.downloadOrPrefetchFiles(siteId, files, true, false, component, componentId);
     }
 
@@ -535,11 +539,12 @@ export class CoreFilepoolProvider {
      * @param {any} data Additional information to store about the file (timemodified, url, ...). See FILES_TABLE schema.
      * @return {Promise<any>} Promise resolved on success.
      */
-    protected addFileToPool(siteId: string, fileId: string, data: any) : Promise<any> {
-        let values = Object.assign({}, data);
+    protected addFileToPool(siteId: string, fileId: string, data: any): Promise<any> {
+        const values = Object.assign({}, data);
         values.fileId = fileId;
+
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.insertOrUpdateRecord(this.FILES_TABLE, values, {fileId: fileId});
+            return db.insertOrUpdateRecord(this.FILES_TABLE, values, { fileId: fileId });
         });
     }
 
@@ -558,7 +563,7 @@ export class CoreFilepoolProvider {
      * @return {Promise<any>} Promise resolved when the file is downloaded.
      */
     protected addToQueue(siteId: string, fileId: string, url: string, priority: number, revision: number, timemodified: number,
-            filePath: string, onProgress?: (event: any) => any, options: any = {}, link?: any) : Promise<any> {
+            filePath: string, onProgress?: (event: any) => any, options: any = {}, link?: any): Promise<any> {
         this.logger.debug(`Adding ${fileId} to the queue`);
 
         return this.appDB.insertRecord(this.QUEUE_TABLE, {
@@ -577,6 +582,7 @@ export class CoreFilepoolProvider {
             // Check if the queue is running.
             this.checkQueueProcessing();
             this.notifyFileDownloading(siteId, fileId);
+
             return this.getQueuePromise(siteId, fileId, true, onProgress);
         });
     }
@@ -595,8 +601,8 @@ export class CoreFilepoolProvider {
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise} Resolved on success.
      */
-    addToQueueByUrl(siteId: string, fileUrl: string, component?: string, componentId?: string|number, timemodified = 0,
-            filePath?: string, onProgress?: (event: any) => any, priority = 0, options: any = {}) : Promise<any> {
+    addToQueueByUrl(siteId: string, fileUrl: string, component?: string, componentId?: string | number, timemodified: number = 0,
+            filePath?: string, onProgress?: (event: any) => any, priority: number = 0, options: any = {}): Promise<any> {
         let fileId,
             link,
             revision,
@@ -612,7 +618,7 @@ export class CoreFilepoolProvider {
             }
 
             return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
-                let primaryKey = {siteId: siteId, fileId: fileId};
+                const primaryKey = { siteId: siteId, fileId: fileId };
 
                 revision = this.getRevisionFromUrl(fileUrl);
                 fileId = this.getFileIdByUrl(fileUrl);
@@ -622,16 +628,16 @@ export class CoreFilepoolProvider {
                     link = {
                         component: component,
                         componentId: this.fixComponentId(componentId)
-                    }
+                    };
                 }
 
-                // Retrieve the queue deferred now if it exists to prevent errors if file is removed from queue
-                // while we're checking if the file is in queue.
+                // Retrieve the queue deferred now if it exists.
+                // This is to prevent errors if file is removed from queue while we're checking if the file is in queue.
                 queueDeferred = this.getQueueDeferred(siteId, fileId, false, onProgress);
 
                 return this.hasFileInQueue(siteId, fileId).then((entry: CoreFilepoolQueueEntry) => {
-                    let foundLink = false,
-                        newData: any = {};
+                    const newData: any = {};
+                    let foundLink = false;
 
                     if (entry) {
                         // We already have the file in queue, we update the priority and links.
@@ -657,8 +663,8 @@ export class CoreFilepoolProvider {
                         if (link) {
                             // We need to add the new link if it does not exist yet.
                             if (entry.links && entry.links.length) {
-                                for (let i in entry.links) {
-                                    let fileLink = entry.links[i];
+                                for (const i in entry.links) {
+                                    const fileLink = entry.links[i];
                                     if (fileLink.component == link.component && fileLink.componentId == link.componentId) {
                                         foundLink = true;
                                         break;
@@ -676,6 +682,7 @@ export class CoreFilepoolProvider {
                         if (Object.keys(newData).length) {
                             // Update only when required.
                             this.logger.debug(`Updating file ${fileId} which is already in queue`);
+
                             return this.appDB.updateRecords(this.QUEUE_TABLE, newData, primaryKey).then(() => {
                                 return this.getQueuePromise(siteId, fileId, true, onProgress);
                             });
@@ -683,8 +690,7 @@ export class CoreFilepoolProvider {
 
                         this.logger.debug(`File ${fileId} already in queue and does not require update`);
                         if (queueDeferred) {
-                            // If we were able to retrieve the queue deferred before we use that one, since the file download
-                            // might have finished now and the deferred wouldn't be in the array anymore.
+                            // If we were able to retrieve the queue deferred before, we use that one.
                             return queueDeferred.promise;
                         } else {
                             // Create a new deferred and return its promise.
@@ -717,8 +723,8 @@ export class CoreFilepoolProvider {
      * @param {any} [options] Extra options (isexternalfile, repositorytype).
      * @return {Promise<any>} Promise resolved when the file is downloaded.
      */
-    protected addToQueueIfNeeded(siteId: string, fileUrl: string, component: string, componentId?: string|number, timemodified = 0,
-            checkSize = true, downloadUnknown?: boolean, options: any = {}) : Promise<any> {
+    protected addToQueueIfNeeded(siteId: string, fileUrl: string, component: string, componentId?: string | number,
+            timemodified: number = 0, checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}): Promise<any> {
         let promise;
 
         if (checkSize) {
@@ -735,7 +741,7 @@ export class CoreFilepoolProvider {
 
             // Calculate the size of the file.
             return promise.then((size) => {
-                let isWifi = !this.appProvider.isNetworkAccessLimited(),
+                const isWifi = !this.appProvider.isNetworkAccessLimited(),
                     sizeUnknown = size <= 0;
 
                 if (!sizeUnknown) {
@@ -768,9 +774,10 @@ export class CoreFilepoolProvider {
      * Though, this will disable the queue if we are missing network or if the file system
      * is not accessible. Also, this will have no effect if the queue is already running.
      */
-    protected checkQueueProcessing() : void {
+    protected checkQueueProcessing(): void {
         if (!this.fileProvider.isAvailable() || !this.appProvider.isOnline()) {
             this.queueState = this.QUEUE_PAUSED;
+
             return;
         } else if (this.queueState === this.QUEUE_RUNNING) {
             return;
@@ -786,7 +793,7 @@ export class CoreFilepoolProvider {
      * @param {string} siteId Site ID.
      * @return {Promise<any>} Promise resolved when all status are cleared.
      */
-    clearAllPackagesStatus(siteId: string) : Promise<any> {
+    clearAllPackagesStatus(siteId: string): Promise<any> {
         this.logger.debug('Clear all packages status for site ' + siteId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -809,7 +816,7 @@ export class CoreFilepoolProvider {
      * @param  {string} siteId ID of the site to clear.
      * @return {Promise<any>} Promise resolved when the filepool is cleared.
      */
-    clearFilepool(siteId: string) : Promise<any> {
+    clearFilepool(siteId: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             return db.deleteRecords(this.FILES_TABLE);
         });
@@ -823,9 +830,9 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<void>} Resolved means yes, rejected means no.
      */
-    componentHasFiles(siteId: string, component: string, componentId?: string|number) : Promise<void> {
+    componentHasFiles(siteId: string, component: string, componentId?: string | number): Promise<void> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            let conditions = {
+            const conditions = {
                 component: component,
                 componentId: componentId || ''
             };
@@ -853,7 +860,7 @@ export class CoreFilepoolProvider {
      * @param {string} packagestatus Status of one of the packages.
      * @return {string} New status for the list of packages;
      */
-    determinePackagesStatus(current: string, packageStatus: string) : string {
+    determinePackagesStatus(current: string, packageStatus: string): string {
         if (!current) {
             current = CoreConstants.NOT_DOWNLOADABLE;
         }
@@ -865,7 +872,7 @@ export class CoreFilepoolProvider {
             // If all packages are downloaded or not downloadable with at least 1 downloaded, status will be downloaded.
             return CoreConstants.DOWNLOADED;
         } else if (packageStatus === CoreConstants.DOWNLOADING &&
-                (current === CoreConstants.NOT_DOWNLOADABLE || current === CoreConstants.DOWNLOADED)) {
+            (current === CoreConstants.NOT_DOWNLOADABLE || current === CoreConstants.DOWNLOADED)) {
             // If all packages are downloading/downloaded/notdownloadable with at least 1 downloading, status will be downloading.
             return CoreConstants.DOWNLOADING;
         } else if (packageStatus === CoreConstants.OUTDATED && current !== CoreConstants.NOT_DOWNLOADED) {
@@ -891,20 +898,21 @@ export class CoreFilepoolProvider {
      * @return {Promise<any>} Resolved with internal URL on success, rejected otherwise.
      */
     protected downloadForPoolByUrl(siteId: string, fileUrl: string, options: any = {}, filePath?: string,
-            onProgress?: (event: any) => any, poolFileObject?: CoreFilepoolFileEntry) : Promise<any> {
+        onProgress?: (event: any) => any, poolFileObject?: CoreFilepoolFileEntry): Promise<any> {
 
-        let fileId = this.getFileIdByUrl(fileUrl),
+        const fileId = this.getFileIdByUrl(fileUrl),
             extension = this.mimeUtils.guessExtensionFromUrl(fileUrl),
-            addExtension = typeof filePath == "undefined",
+            addExtension = typeof filePath == 'undefined',
             pathPromise = filePath ? filePath : this.getFilePath(siteId, fileId, extension);
 
         return Promise.resolve(pathPromise).then((filePath) => {
             if (poolFileObject && poolFileObject.fileId !== fileId) {
                 this.logger.error('Invalid object to update passed');
+
                 return Promise.reject(null);
             }
 
-            let downloadId = this.getFileDownloadId(fileUrl, filePath);
+            const downloadId = this.getFileDownloadId(fileUrl, filePath);
 
             if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
                 // There's already a download ongoing for this file in this location, return the promise.
@@ -919,7 +927,7 @@ export class CoreFilepoolProvider {
                 }
 
                 return this.wsProvider.downloadFile(fileUrl, filePath, addExtension, onProgress).then((fileEntry) => {
-                    let data: CoreFilepoolFileEntry = poolFileObject || {};
+                    const data: CoreFilepoolFileEntry = poolFileObject || {};
 
                     data.downloadTime = Date.now();
                     data.stale = 0;
@@ -956,8 +964,8 @@ export class CoreFilepoolProvider {
      * @return {Promise<any>} Resolved on success.
      */
     downloadOrPrefetchFiles(siteId: string, files: any[], prefetch: boolean, ignoreStale?: boolean, component?: string,
-            componentId?: string|number) : Promise<any> {
-        let promises = [];
+            componentId?: string | number): Promise<any> {
+        const promises = [];
 
         // Download files.
         files.forEach((file) => {
@@ -966,7 +974,7 @@ export class CoreFilepoolProvider {
                 options = {
                     isexternalfile: file.isexternalfile,
                     repositorytype: file.repositorytype
-                }
+                };
 
             if (prefetch) {
                 promises.push(this.addToQueueByUrl(
@@ -995,10 +1003,10 @@ export class CoreFilepoolProvider {
      * @return {Promise<any>} Promise resolved when the package is downloaded.
      */
     protected downloadOrPrefetchPackage(siteId: string, fileList: any[], prefetch?: boolean, component?: string,
-            componentId?: string|number, extra?: string, dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+            componentId?: string | number, extra?: string, dirPath?: string, onProgress?: (event: any) => any): Promise<any> {
 
-        let packageId = this.getPackageId(component, componentId),
-            promise;
+        const packageId = this.getPackageId(component, componentId);
+        let promise;
 
         if (this.packagesPromises[siteId] && this.packagesPromises[siteId][packageId]) {
             // There's already a download ongoing for this package, return the promise.
@@ -1009,23 +1017,23 @@ export class CoreFilepoolProvider {
 
         // Set package as downloading.
         promise = this.storePackageStatus(siteId, CoreConstants.DOWNLOADING, component, componentId).then(() => {
-            let promises = [],
-                packageLoaded = 0;
+            const promises = [];
+            let packageLoaded = 0;
 
             fileList.forEach((file) => {
-                let path,
-                    promise,
-                    fileLoaded = 0,
-                    fileUrl = file.url || file.fileurl,
+                const fileUrl = file.url || file.fileurl,
                     options = {
                         isexternalfile: file.isexternalfile,
                         repositorytype: file.repositorytype
-                    },
+                    };
+                let path,
+                    promise,
+                    fileLoaded = 0,
                     onFileProgress;
 
                 if (onProgress) {
                     // There's a onProgress event, create a function to receive file download progress events.
-                    onFileProgress = (progress: any) => {
+                    onFileProgress = (progress: any): void => {
                         if (progress && progress.loaded) {
                             // Add the new size loaded to the package loaded.
                             packageLoaded = packageLoaded + (progress.loaded - fileLoaded);
@@ -1050,10 +1058,10 @@ export class CoreFilepoolProvider {
 
                 if (prefetch) {
                     promise = this.addToQueueByUrl(
-                            siteId, fileUrl, component, componentId, file.timemodified, path, undefined, 0, options);
+                        siteId, fileUrl, component, componentId, file.timemodified, path, undefined, 0, options);
                 } else {
                     promise = this.downloadUrl(
-                            siteId, fileUrl, false, component, componentId, file.timemodified, onFileProgress, path, options);
+                        siteId, fileUrl, false, component, componentId, file.timemodified, onFileProgress, path, options);
                 }
 
                 // Using undefined for success & fail will pass the success/failure to the parent promise.
@@ -1076,6 +1084,7 @@ export class CoreFilepoolProvider {
         });
 
         this.packagesPromises[siteId][packageId] = promise;
+
         return promise;
     }
 
@@ -1092,8 +1101,8 @@ export class CoreFilepoolProvider {
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>}  Promise resolved when all files are downloaded.
      */
-    downloadPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, extra?: string,
-            dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+    downloadPackage(siteId: string, fileList: any[], component: string, componentId?: string | number, extra?: string,
+            dirPath?: string, onProgress?: (event: any) => any): Promise<any> {
         return this.downloadOrPrefetchPackage(siteId, fileList, false, component, componentId, extra, dirPath, onProgress);
     }
 
@@ -1116,8 +1125,8 @@ export class CoreFilepoolProvider {
      * not force a file to be re-downloaded if it is already part of the pool. You should mark a file as stale using
      * invalidateFileByUrl to trigger a download.
      */
-    downloadUrl(siteId: string, fileUrl: string, ignoreStale?: boolean, component?: string, componentId?: string|number,
-            timemodified = 0, onProgress?: (event: any) => any, filePath?: string, options: any = {}) : Promise<any> {
+    downloadUrl(siteId: string, fileUrl: string, ignoreStale?: boolean, component?: string, componentId?: string | number,
+            timemodified: number = 0, onProgress?: (event: any) => any, filePath?: string, options: any = {}): Promise<any> {
         let fileId,
             promise;
 
@@ -1135,12 +1144,14 @@ export class CoreFilepoolProvider {
                     if (typeof fileObject === 'undefined') {
                         // We do not have the file, download and add to pool.
                         this.notifyFileDownloading(siteId, fileId);
+
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
 
                     } else if (this.isFileOutdated(fileObject, options.revision, options.timemodified) &&
-                                this.appProvider.isOnline() && !ignoreStale) {
+                        this.appProvider.isOnline() && !ignoreStale) {
                         // The file is outdated, force the download and update it.
                         this.notifyFileDownloading(siteId, fileId);
+
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     }
 
@@ -1156,21 +1167,25 @@ export class CoreFilepoolProvider {
                     }, () => {
                         // The file was not found in the pool, weird.
                         this.notifyFileDownloading(siteId, fileId);
+
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     });
 
                 }, () => {
                     // The file is not in the pool just yet.
                     this.notifyFileDownloading(siteId, fileId);
+
                     return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
                 }).then((response) => {
                     if (typeof component != 'undefined') {
                         this.addFileLink(siteId, fileId, component, componentId);
                     }
                     this.notifyFileDownloaded(siteId, fileId);
+
                     return response;
                 }, (err) => {
                     this.notifyFileDownloadError(siteId, fileId);
+
                     return Promise.reject(err);
                 });
             });
@@ -1187,35 +1202,37 @@ export class CoreFilepoolProvider {
      * @param {string} siteId SiteID to get migrated.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fillExtensionInFile(entry: CoreFilepoolFileEntry, siteId: string) : Promise<any> {
+    protected fillExtensionInFile(entry: CoreFilepoolFileEntry, siteId: string): Promise<any> {
         if (typeof entry.extension != 'undefined') {
             // Already filled.
             return Promise.resolve();
         }
 
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            let extension = this.mimeUtils.getFileExtension(entry.path);
+            const extension = this.mimeUtils.getFileExtension(entry.path);
             if (!extension) {
                 // Files does not have extension. Invalidate file (stale = true).
                 // Minor problem: file will remain in the filesystem once downloaded again.
                 this.logger.debug('Staled file with no extension ' + entry.fileId);
-                return db.updateRecords(this.FILES_TABLE, {stale: 1}, {fileId: entry.fileId});
+
+                return db.updateRecords(this.FILES_TABLE, { stale: 1 }, { fileId: entry.fileId });
             }
 
             // File has extension. Save extension, and add extension to path.
-            let fileId = entry.fileId;
+            const fileId = entry.fileId;
             entry.fileId = this.mimeUtils.removeExtension(fileId);
             entry.extension = extension;
 
-            return db.updateRecords(this.FILES_TABLE, entry, {fileId: fileId}).then(() =>{
+            return db.updateRecords(this.FILES_TABLE, entry, { fileId: fileId }).then(() => {
                 if (entry.fileId == fileId) {
                     // File ID hasn't changed, we're done.
                     this.logger.debug('Removed extesion ' + extension + ' from file ' + entry.fileId);
+
                     return;
                 }
 
                 // Now update the links.
-                return db.updateRecords(this.LINKS_TABLE, {fileId: entry.fileId}, {fileId: fileId});
+                return db.updateRecords(this.LINKS_TABLE, { fileId: entry.fileId }, { fileId: fileId });
             });
         });
     }
@@ -1227,14 +1244,16 @@ export class CoreFilepoolProvider {
      * @param {string} siteId SiteID to get migrated
      * @return {Promise<any>} Promise resolved when done.
      */
-    fillMissingExtensionInFiles(siteId: string) : Promise<any> {
+    fillMissingExtensionInFiles(siteId: string): Promise<any> {
         this.logger.debug('Fill missing extensions in files of ' + siteId);
+
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             return db.getAllRecords(this.FILES_TABLE).then((entries) => {
-                let promises = [];
+                const promises = [];
                 entries.forEach((entry) => {
                     promises.push(this.fillExtensionInFile(entry, siteId));
                 });
+
                 return Promise.all(promises);
             });
         });
@@ -1246,7 +1265,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} componentId The component ID.
      * @return {string|number} The normalised component ID. -1 when undefined was passed.
      */
-    protected fixComponentId(componentId: string|number) : string|number {
+    protected fixComponentId(componentId: string | number): string | number {
         if (typeof componentId == 'number') {
             return componentId;
         }
@@ -1261,6 +1280,7 @@ export class CoreFilepoolProvider {
                 return componentId;
             }
         }
+
         return id;
     }
 
@@ -1271,7 +1291,7 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise}       Resolved with fixed URL on success, rejected otherwise.
      */
-    protected fixPluginfileURL(siteId: string, fileUrl: string) : Promise<string> {
+    protected fixPluginfileURL(siteId: string, fileUrl: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.fixPluginfileURL(fileUrl);
         });
@@ -1285,8 +1305,8 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<any[]>} Promise resolved with the files.
      */
-    protected getComponentFiles(db: SQLiteDB, component: string, componentId?: string|number) : Promise<any[]> {
-        let conditions = {
+    protected getComponentFiles(db: SQLiteDB, component: string, componentId?: string | number): Promise<any[]> {
+        const conditions = {
             component: component,
             componentId: componentId || ''
         };
@@ -1301,16 +1321,18 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise}       Resolved with the URL. Rejected otherwise.
      */
-    getDirectoryUrlByUrl(siteId: string, fileUrl: string) : Promise<string> {
+    getDirectoryUrlByUrl(siteId: string, fileUrl: string): Promise<string> {
         if (this.fileProvider.isAvailable()) {
             return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
                 const fileId = this.getFileIdByUrl(fileUrl),
                     filePath = <string> this.getFilePath(siteId, fileId, ''); // No extension, the function will return a string.
+
                 return this.fileProvider.getDir(filePath).then((dirEntry) => {
                     return dirEntry.toURL();
                 });
             });
         }
+
         return Promise.reject(null);
     }
 
@@ -1321,7 +1343,7 @@ export class CoreFilepoolProvider {
      * @param {string} filePath The file destination path.
      * @return {string}         File download ID.
      */
-    protected getFileDownloadId(fileUrl: string, filePath: string) : string {
+    protected getFileDownloadId(fileUrl: string, filePath: string): string {
         return <string> Md5.hashAsciiStr(fileUrl + '###' + filePath);
     }
 
@@ -1332,7 +1354,7 @@ export class CoreFilepoolProvider {
      * @param {string} fileId The file ID.
      * @return {string} Event name.
      */
-    protected getFileEventName(siteId: string, fileId: string) : string {
+    protected getFileEventName(siteId: string, fileId: string): string {
         return 'mmFilepoolFile:' + siteId + ':' + fileId;
     }
 
@@ -1343,9 +1365,10 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The absolute URL to the file.
      * @return {Promise}       Promise resolved with event name.
      */
-    getFileEventNameByUrl(siteId: string, fileUrl: string) : Promise<string> {
+    getFileEventNameByUrl(siteId: string, fileUrl: string): Promise<string> {
         return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
             const fileId = this.getFileIdByUrl(fileUrl);
+
             return this.getFileEventName(siteId, fileId);
         });
     }
@@ -1359,7 +1382,7 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The absolute URL to the file.
      * @return {string} The file ID.
      */
-    protected getFileIdByUrl(fileUrl: string) : string {
+    protected getFileIdByUrl(fileUrl: string): string {
         let url = this.removeRevisionFromUrl(fileUrl),
             filename;
 
@@ -1373,8 +1396,8 @@ export class CoreFilepoolProvider {
             });
         }
 
-        // Try to guess the filename the target file should have. We want to keep the original file name so
-        // people can easily identify the files after the download.
+        // Try to guess the filename the target file should have.
+        // We want to keep the original file name so people can easily identify the files after the download.
         filename = this.guessFilenameFromUrl(url);
 
         return filename + '_' + Md5.hashAsciiStr('url:' + url);
@@ -1387,9 +1410,9 @@ export class CoreFilepoolProvider {
      * @param {string} fileId The file ID.
      * @return {Promise<any[]>} Promise resolved with the links.
      */
-    protected getFileLinks(siteId: string, fileId: string) : Promise<any[]> {
+    protected getFileLinks(siteId: string, fileId: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecords(this.LINKS_TABLE, {fileId: fileId});
+            return db.getRecords(this.LINKS_TABLE, { fileId: fileId });
         });
     }
 
@@ -1401,7 +1424,7 @@ export class CoreFilepoolProvider {
      * @param {string} [extension] Previously calculated extension. Empty to not add any. Undefined to calculate it.
      * @return {string|Promise<string>} The path to the file relative to storage root.
      */
-    protected getFilePath(siteId: string, fileId: string, extension?: string) : string|Promise<string> {
+    protected getFilePath(siteId: string, fileId: string, extension?: string): string | Promise<string> {
         let path = this.getFilepoolFolderPath(siteId) + '/' + fileId;
         if (typeof extension == 'undefined') {
             // We need the extension to be able to open files properly.
@@ -1409,6 +1432,7 @@ export class CoreFilepoolProvider {
                 if (entry.extension) {
                     path += '.' + entry.extension;
                 }
+
                 return path;
             }).catch(() => {
                 // If file not found, use the path without extension.
@@ -1418,6 +1442,7 @@ export class CoreFilepoolProvider {
             if (extension) {
                 path += '.' + extension;
             }
+
             return path;
         }
     }
@@ -1429,9 +1454,10 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise<string>} Promise resolved with the path to the file relative to storage root.
      */
-    getFilePathByUrl(siteId: string, fileUrl: string) : Promise<string> {
+    getFilePathByUrl(siteId: string, fileUrl: string): Promise<string> {
         return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
             const fileId = this.getFileIdByUrl(fileUrl);
+
             return this.getFilePath(siteId, fileId);
         });
     }
@@ -1442,7 +1468,7 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @return {string} The root path to the filepool of the site.
      */
-    getFilepoolFolderPath(siteId: string) : string {
+    getFilepoolFolderPath(siteId: string): string {
         return this.fileProvider.getSiteFolder(siteId) + '/' + this.FOLDER;
     }
 
@@ -1454,14 +1480,14 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<any[]>} Promise resolved with the files on success.
      */
-    getFilesByComponent(siteId: string, component: string, componentId?: string|number) : Promise<any[]> {
+    getFilesByComponent(siteId: string, component: string, componentId?: string | number): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             return this.getComponentFiles(db, component, componentId).then((items) => {
-                let promises = [],
+                const promises = [],
                     files = [];
 
                 items.forEach((item) => {
-                    promises.push(db.getRecord(this.FILES_TABLE, {fileId: item.fileId}).then((fileEntry) => {
+                    promises.push(db.getRecord(this.FILES_TABLE, { fileId: item.fileId }).then((fileEntry) => {
                         if (!fileEntry) {
                             return;
                         }
@@ -1493,10 +1519,10 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<number>} Promise resolved with the size on success.
      */
-    getFilesSizeByComponent(siteId: string, component: string, componentId?: string|number) : Promise<number> {
+    getFilesSizeByComponent(siteId: string, component: string, componentId?: string | number): Promise<number> {
         return this.getFilesByComponent(siteId, component, componentId).then((files) => {
-            let promises = [],
-                size = 0;
+            const promises = [];
+            let size = 0;
 
             files.forEach((file) => {
                 promises.push(this.fileProvider.getFileSize(file.path).then((fs) => {
@@ -1521,7 +1547,7 @@ export class CoreFilepoolProvider {
      * @param {string} [filePath] Filepath to download the file to. If defined, no extension will be added.
      * @return {Promise<string>} Promise resolved with the file state.
      */
-    getFileStateByUrl(siteId: string, fileUrl: string, timemodified = 0, filePath?: string) : Promise<string> {
+    getFileStateByUrl(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string): Promise<string> {
         let fileId,
             revision;
 
@@ -1535,7 +1561,7 @@ export class CoreFilepoolProvider {
                 return CoreConstants.DOWNLOADING;
             }).catch(() => {
                 // Check if the file is being downloaded right now.
-                let extension = this.mimeUtils.guessExtensionFromUrl(fileUrl),
+                const extension = this.mimeUtils.guessExtensionFromUrl(fileUrl),
                     path = filePath ? filePath : this.getFilePath(siteId, fileId, extension);
 
                 return Promise.resolve(path).then((filePath) => {
@@ -1579,16 +1605,18 @@ export class CoreFilepoolProvider {
      * This handles the queue and validity of the file. If there is a local file and it's valid, return the local URL.
      * If the file isn't downloaded or it's outdated, return the online URL and add it to the queue to be downloaded later.
      */
-    protected getFileUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string|number, mode = 'url',
-            timemodified = 0, checkSize = true, downloadUnknown?: boolean, options: any = {}) : Promise<string> {
+    protected getFileUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number,
+            mode: string = 'url', timemodified: number = 0, checkSize: boolean = true, downloadUnknown?: boolean,
+            options: any = {}): Promise<string> {
+
         let fileId,
-            revision,
-            addToQueue = (fileUrl) => {
+            revision;
+        const addToQueue = (fileUrl): void => {
                 // Add the file to queue if needed and ignore errors.
                 this.addToQueueIfNeeded(siteId, fileUrl, component, componentId, timemodified, checkSize,
-                        downloadUnknown, options).catch(() => {
-                    // Ignore errors.
-                });
+                    downloadUnknown, options).catch(() => {
+                        // Ignore errors.
+                    });
             };
 
         return this.fixPluginfileURL(siteId, fileUrl).then((fixedUrl) => {
@@ -1638,6 +1666,7 @@ export class CoreFilepoolProvider {
             }, () => {
                 // We do not have the file in store yet. Add to queue and return the fixed URL.
                 addToQueue(fileUrl);
+
                 return fileUrl;
             });
         });
@@ -1652,16 +1681,16 @@ export class CoreFilepoolProvider {
      * @param {string} fileId The file ID.
      * @return {Promise<string>} Resolved with the internal URL. Rejected otherwise.
      */
-    protected getInternalSrcById(siteId: string, fileId: string) : Promise<string> {
+    protected getInternalSrcById(siteId: string, fileId: string): Promise<string> {
         if (this.fileProvider.isAvailable()) {
             return Promise.resolve(this.getFilePath(siteId, fileId)).then((path) => {
                 return this.fileProvider.getFile(path).then((fileEntry) => {
-                    // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
-                    // with toURL the OS is unable to find the image files.
+                    // We use toInternalURL so images are loaded in iOS8 using img HTML tags.
                     return this.fileProvider.getInternalURL(fileEntry);
                 });
             });
         }
+
         return Promise.reject(null);
     }
 
@@ -1672,7 +1701,7 @@ export class CoreFilepoolProvider {
      * @param {string} fileId The file ID.
      * @return {Promise<string>} Resolved with the URL. Rejected otherwise.
      */
-    protected getInternalUrlById(siteId: string, fileId: string) : Promise<string> {
+    protected getInternalUrlById(siteId: string, fileId: string): Promise<string> {
         if (this.fileProvider.isAvailable()) {
             return Promise.resolve(this.getFilePath(siteId, fileId)).then((path) => {
                 return this.fileProvider.getFile(path).then((fileEntry) => {
@@ -1680,6 +1709,7 @@ export class CoreFilepoolProvider {
                 });
             });
         }
+
         return Promise.reject(null);
     }
 
@@ -1689,12 +1719,13 @@ export class CoreFilepoolProvider {
      * @param {string} filePath The file path.
      * @return {Promise<string>} Resolved with the URL.
      */
-    protected getInternalUrlByPath(filePath: string) : Promise<string> {
+    protected getInternalUrlByPath(filePath: string): Promise<string> {
         if (this.fileProvider.isAvailable()) {
             return this.fileProvider.getFile(filePath).then((fileEntry) => {
                 return fileEntry.toURL();
             });
         }
+
         return Promise.reject(null);
     }
 
@@ -1705,13 +1736,15 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise<string>} Resolved with the URL. Rejected otherwise.
      */
-    getInternalUrlByUrl(siteId: string, fileUrl: string) : Promise<string> {
+    getInternalUrlByUrl(siteId: string, fileUrl: string): Promise<string> {
         if (this.fileProvider.isAvailable()) {
             return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
                 const fileId = this.getFileIdByUrl(fileUrl);
+
                 return this.getInternalUrlById(siteId, fileId);
             });
         }
+
         return Promise.reject(null);
     }
 
@@ -1723,13 +1756,13 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<CoreFilepoolPackageEntry>} Promise resolved with the data.
      */
-    getPackageData(siteId: string, component: string, componentId?: string|number) : Promise<CoreFilepoolPackageEntry> {
+    getPackageData(siteId: string, component: string, componentId?: string | number): Promise<CoreFilepoolPackageEntry> {
         componentId = this.fixComponentId(componentId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const packageId = this.getPackageId(component, componentId);
 
-            return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId});
+            return site.getDb().getRecord(this.PACKAGES_TABLE, { id: packageId });
         });
     }
 
@@ -1739,7 +1772,7 @@ export class CoreFilepoolProvider {
      * @param {string} url An URL to identify the package.
      * @return {string} The directory name.
      */
-    protected getPackageDirNameByUrl(url: string) : string {
+    protected getPackageDirNameByUrl(url: string): string {
         let candidate,
             extension = '';
 
@@ -1757,6 +1790,7 @@ export class CoreFilepoolProvider {
                 extension = '.' + candidate;
             }
         }
+
         return Md5.hashAsciiStr('url:' + url) + extension;
     }
 
@@ -1767,9 +1801,10 @@ export class CoreFilepoolProvider {
      * @param {string} url An URL to identify the package.
      * @return {Promise<string>} Promise resolved with the path of the package.
      */
-    getPackageDirPathByUrl(siteId: string, url: string) : Promise<string> {
+    getPackageDirPathByUrl(siteId: string, url: string): Promise<string> {
         return this.fixPluginfileURL(siteId, url).then((fixedUrl) => {
             const dirName = this.getPackageDirNameByUrl(fixedUrl);
+
             return this.getFilePath(siteId, dirName, '');
         });
     }
@@ -1781,16 +1816,18 @@ export class CoreFilepoolProvider {
      * @param {string} url An URL to identify the package.
      * @return {Promise<string>} Resolved with the URL.
      */
-    getPackageDirUrlByUrl(siteId: string, url: string) : Promise<string> {
+    getPackageDirUrlByUrl(siteId: string, url: string): Promise<string> {
         if (this.fileProvider.isAvailable()) {
             return this.fixPluginfileURL(siteId, url).then((fixedUrl) => {
                 const dirName = this.getPackageDirNameByUrl(fixedUrl),
                     dirPath = <string> this.getFilePath(siteId, dirName, ''); // No extension, the function will return a string.
+
                 return this.fileProvider.getDir(dirPath).then((dirEntry) => {
                     return dirEntry.toURL();
                 });
             });
         }
+
         return Promise.reject(null);
     }
 
@@ -1802,7 +1839,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<any>} Download promise or undefined.
      */
-    getPackageDownloadPromise(siteId: string, component: string, componentId?: string|number) : Promise<any> {
+    getPackageDownloadPromise(siteId: string, component: string, componentId?: string | number): Promise<any> {
         const packageId = this.getPackageId(component, componentId);
         if (this.packagesPromises[siteId] && this.packagesPromises[siteId][packageId]) {
             return this.packagesPromises[siteId][packageId];
@@ -1816,7 +1853,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<string>} Promise resolved with the extra data.
      */
-    getPackageExtra(siteId: string, component: string, componentId?: string|number) : Promise<string> {
+    getPackageExtra(siteId: string, component: string, componentId?: string | number): Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
             return entry.extra;
         });
@@ -1829,7 +1866,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {string} Package ID.
      */
-    getPackageId(component: string, componentId?: string|number) : string {
+    getPackageId(component: string, componentId?: string | number): string {
         return <string> Md5.hashAsciiStr(component + '#' + this.fixComponentId(componentId));
     }
 
@@ -1841,7 +1878,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<string>} Promise resolved with the status.
      */
-    getPackagePreviousStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
+    getPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
             return entry.previous || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
@@ -1857,7 +1894,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<string>} Promise resolved with the status.
      */
-    getPackageStatus(siteId: string, component: string, componentId?: string|number) : Promise<string> {
+    getPackageStatus(siteId: string, component: string, componentId?: string | number): Promise<string> {
         return this.getPackageData(siteId, component, componentId).then((entry) => {
             return entry.status || CoreConstants.NOT_DOWNLOADED;
         }).catch(() => {
@@ -1871,13 +1908,13 @@ export class CoreFilepoolProvider {
      * @param {string} url URL to get the args.
      * @return {string[]} The args found, undefined if not a pluginfile.
      */
-    protected getPluginFileArgs(url: string) : string[] {
+    protected getPluginFileArgs(url: string): string[] {
         if (!this.urlUtils.isPluginFileUrl(url)) {
             // Not pluginfile, return.
             return;
         }
 
-        let relativePath = url.substr(url.indexOf('/pluginfile.php') + 16),
+        const relativePath = url.substr(url.indexOf('/pluginfile.php') + 16),
             args = relativePath.split('/');
 
         if (args.length < 3) {
@@ -1897,7 +1934,7 @@ export class CoreFilepoolProvider {
      * @param {Function} [onProgress] Function to call on progress.
      * @return {any} Deferred.
      */
-    protected getQueueDeferred(siteId: string, fileId: string, create = true, onProgress?: (event: any) => any): any {
+    protected getQueueDeferred(siteId: string, fileId: string, create: boolean = true, onProgress?: (event: any) => any): any {
         if (!this.queueDeferreds[siteId]) {
             if (!create) {
                 return;
@@ -1941,7 +1978,8 @@ export class CoreFilepoolProvider {
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>} Promise.
      */
-    protected getQueuePromise(siteId: string, fileId: string, create = true, onProgress?: (event: any) => any) : Promise<any> {
+    protected getQueuePromise(siteId: string, fileId: string, create: boolean = true, onProgress?: (event: any) => any)
+            : Promise<any> {
         return this.getQueueDeferred(siteId, fileId, create, onProgress).promise;
     }
 
@@ -1951,7 +1989,7 @@ export class CoreFilepoolProvider {
      * @param {any[]} files Package files.
      * @return {number} Highest revision.
      */
-    getRevisionFromFileList(files: any[]) : number {
+    getRevisionFromFileList(files: any[]): number {
         let revision = 0;
 
         files.forEach((file) => {
@@ -1972,22 +2010,23 @@ export class CoreFilepoolProvider {
      * @param {string} url URL to get the revision number.
      * @return {number} Revision number.
      */
-    protected getRevisionFromUrl(url: string) : number {
-        let args = this.getPluginFileArgs(url);
+    protected getRevisionFromUrl(url: string): number {
+        const args = this.getPluginFileArgs(url);
         if (!args) {
             // Not a pluginfile, no revision will be found.
             return 0;
         }
 
-        let revisionRegex = this.pluginFileDelegate.getComponentRevisionRegExp(args);
+        const revisionRegex = this.pluginFileDelegate.getComponentRevisionRegExp(args);
         if (!revisionRegex) {
             return 0;
         }
 
-        let matches = url.match(revisionRegex);
+        const matches = url.match(revisionRegex);
         if (matches && typeof matches[1] != 'undefined') {
             return parseInt(matches[1], 10);
         }
+
         return 0;
     }
 
@@ -2009,10 +2048,10 @@ export class CoreFilepoolProvider {
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with IMG tags.
      */
-    getSrcByUrl(siteId: string, fileUrl: string, component: string, componentId?: string|number, timemodified = 0,
-            checkSize = true, downloadUnknown?: boolean, options: any = {}) : Promise<string> {
+    getSrcByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number, timemodified: number = 0,
+            checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}): Promise<string> {
         return this.getFileUrlByUrl(siteId, fileUrl, component, componentId, 'src',
-                timemodified, checkSize, downloadUnknown, options);
+            timemodified, checkSize, downloadUnknown, options);
     }
 
     /**
@@ -2021,7 +2060,7 @@ export class CoreFilepoolProvider {
      * @param {any[]} files List of files.
      * @return {number} Time modified.
      */
-    getTimemodifiedFromFileList(files: any[]) : number {
+    getTimemodifiedFromFileList(files: any[]): number {
         let timemodified = 0;
 
         files.forEach((file) => {
@@ -2051,10 +2090,10 @@ export class CoreFilepoolProvider {
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with a local browser.
      */
-    getUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string|number, timemodified = 0,
-            checkSize = true, downloadUnknown?: boolean, options: any = {}) : Promise<string> {
+    getUrlByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number, timemodified: number = 0,
+            checkSize: boolean = true, downloadUnknown?: boolean, options: any = {}): Promise<string> {
         return this.getFileUrlByUrl(siteId, fileUrl, component, componentId, 'url',
-                timemodified, checkSize, downloadUnknown, options);
+            timemodified, checkSize, downloadUnknown, options);
     }
 
     /**
@@ -2063,12 +2102,12 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {string}        The filename treated so it doesn't have any special character.
      */
-    protected guessFilenameFromUrl(fileUrl: string) : string {
+    protected guessFilenameFromUrl(fileUrl: string): string {
         let filename = '';
 
         if (fileUrl.indexOf('/webservice/pluginfile') !== -1) {
             // It's a pluginfile URL. Search for the 'file' param to extract the name.
-            let params = this.urlUtils.extractUrlParams(fileUrl);
+            const params = this.urlUtils.extractUrlParams(fileUrl);
             if (params.file) {
                 filename = params.file.substr(params.file.lastIndexOf('/') + 1);
             } else {
@@ -2105,12 +2144,13 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise<CoreFilepoolFileEntry>} Resolved with file object from DB on success, rejected otherwise.
      */
-    protected hasFileInPool(siteId: string, fileId: string) : Promise<CoreFilepoolFileEntry> {
+    protected hasFileInPool(siteId: string, fileId: string): Promise<CoreFilepoolFileEntry> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecord(this.FILES_TABLE, {fileId: fileId}).then((entry) => {
+            return db.getRecord(this.FILES_TABLE, { fileId: fileId }).then((entry) => {
                 if (typeof entry === 'undefined') {
                     return Promise.reject(null);
                 }
+
                 return entry;
             });
         });
@@ -2123,13 +2163,14 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise} Resolved with file object from DB on success, rejected otherwise.
      */
-    protected hasFileInQueue(siteId: string, fileId: string) : Promise<CoreFilepoolQueueEntry> {
-        return this.appDB.getRecord(this.QUEUE_TABLE, {siteId: siteId, fileId: fileId}).then((entry) => {
+    protected hasFileInQueue(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
+        return this.appDB.getRecord(this.QUEUE_TABLE, { siteId: siteId, fileId: fileId }).then((entry) => {
             if (typeof entry === 'undefined') {
                 return Promise.reject(null);
             }
             // Convert the links to an object.
             entry.links = JSON.parse(entry.links);
+
             return entry;
         });
     }
@@ -2142,7 +2183,7 @@ export class CoreFilepoolProvider {
      *                                     It is advised to set it to true to reduce the performance and data usage of the app.
      * @return {Promise<any>} Resolved on success.
      */
-    invalidateAllFiles(siteId: string, onlyUnknown = true) : Promise<any> {
+    invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             let where,
                 whereParams;
@@ -2151,7 +2192,7 @@ export class CoreFilepoolProvider {
                 whereParams = [0, 1, 0];
             }
 
-            return db.updateRecordsWhere(this.FILES_TABLE, {stale: 1}, where, whereParams);
+            return db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, where, whereParams);
         });
     }
 
@@ -2167,11 +2208,12 @@ export class CoreFilepoolProvider {
      * You can manully call addToQueueByUrl to add this file to the queue immediately.
      * Please note that, if a file is stale, the user will be presented the stale file if there is no network access.
      */
-    invalidateFileByUrl(siteId: string, fileUrl: string) : Promise<any> {
+    invalidateFileByUrl(siteId: string, fileUrl: string): Promise<any> {
         return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
             const fileId = this.getFileIdByUrl(fileUrl);
+
             return this.sitesProvider.getSiteDb(siteId).then((db) => {
-                return db.updateRecords(this.FILES_TABLE, {stale: 1}, {fileId: fileId});
+                return db.updateRecords(this.FILES_TABLE, { stale: 1 }, { fileId: fileId });
             });
         });
     }
@@ -2184,12 +2226,13 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @param {boolean} [onlyUnknown=true] True to only invalidate files from external repos or without revision/timemodified.
      *                                     It is advised to set it to true to reduce the performance and data usage of the app.
-     * @return {Promise} Resolved on success.
+     * @return {Promise<any>} Resolved when done.
      */
-    invalidateFilesByComponent(siteId, component, componentId?: string|number, onlyUnknown = true) {
+    invalidateFilesByComponent(siteId: string, component: string, componentId?: string | number, onlyUnknown: boolean = true)
+            : Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             return this.getComponentFiles(db, component, componentId).then((items) => {
-                let fileIds = items.map((item) => {
+                const fileIds = items.map((item) => {
                         return item.fileId;
                     }),
                     whereAndParams = db.getInOrEqual(fileIds);
@@ -2199,7 +2242,7 @@ export class CoreFilepoolProvider {
                     whereAndParams[1] = whereAndParams[1].params.concat([0, 1, 0]);
                 }
 
-                return db.updateRecordsWhere(this.FILES_TABLE, {stale: 1}, whereAndParams[0], whereAndParams[1]);
+                return db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, whereAndParams[0], whereAndParams[1]);
             });
         });
     }
@@ -2211,9 +2254,10 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl File URL.
      * @param {Promise<any>} Promise resolved if file is downloading, rejected otherwise.
      */
-    isFileDownloadingByUrl(siteId: string, fileUrl: string) : Promise<any> {
+    isFileDownloadingByUrl(siteId: string, fileUrl: string): Promise<any> {
         return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
-            let fileId = this.getFileIdByUrl(fileUrl);
+            const fileId = this.getFileIdByUrl(fileUrl);
+
             return this.hasFileInQueue(siteId, fileId);
         });
     }
@@ -2226,7 +2270,7 @@ export class CoreFilepoolProvider {
      * @param {number} [timemodified] The time this file was modified.
      * @param {boolean} Whether the file is outdated.
      */
-    protected isFileOutdated(entry: CoreFilepoolFileEntry, revision?: number, timemodified?: number) : boolean {
+    protected isFileOutdated(entry: CoreFilepoolFileEntry, revision?: number, timemodified?: number): boolean {
         return !!entry.stale || revision > entry.revision || timemodified > entry.timemodified;
     }
 
@@ -2236,7 +2280,7 @@ export class CoreFilepoolProvider {
      * @param {CoreFilepoolFileEntry} entry Filepool entry.
      * @return {boolean} Whether it cannot determine updates.
      */
-    protected isFileUpdateUnknown(entry: CoreFilepoolFileEntry) : boolean {
+    protected isFileUpdateUnknown(entry: CoreFilepoolFileEntry): boolean {
         return !!entry.isexternalfile || (entry.revision < 1 && !entry.timemodified);
     }
 
@@ -2246,8 +2290,8 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      */
-    protected notifyFileDeleted(siteId: string, fileId: string) : void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), {action: 'deleted'});
+    protected notifyFileDeleted(siteId: string, fileId: string): void {
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'deleted' });
     }
 
     /**
@@ -2256,8 +2300,8 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      */
-    protected notifyFileDownloaded(siteId: string, fileId: string) : void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), {action: 'download', success: true});
+    protected notifyFileDownloaded(siteId: string, fileId: string): void {
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'download', success: true });
     }
 
     /**
@@ -2266,8 +2310,8 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      */
-    protected notifyFileDownloadError(siteId: string, fileId: string) : void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), {action: 'download', success: false});
+    protected notifyFileDownloadError(siteId: string, fileId: string): void {
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'download', success: false });
     }
 
     /**
@@ -2276,8 +2320,8 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      */
-    protected notifyFileDownloading(siteId: string, fileId: string) : void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), {action: 'downloading'});
+    protected notifyFileDownloading(siteId: string, fileId: string): void {
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'downloading' });
     }
 
     /**
@@ -2286,8 +2330,8 @@ export class CoreFilepoolProvider {
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
      */
-    protected notifyFileOutdated(siteId: string, fileId: string) : void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), {action: 'outdated'});
+    protected notifyFileOutdated(siteId: string, fileId: string): void {
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'outdated' });
     }
 
     /**
@@ -2303,8 +2347,8 @@ export class CoreFilepoolProvider {
      * @param {Function} [onProgress] Function to call on progress.
      * @return {Promise<any>}  Promise resolved when all files are downloaded.
      */
-    prefetchPackage(siteId: string, fileList: any[], component: string, componentId?: string|number, extra?: string,
-            dirPath?: string, onProgress?: (event: any) => any) : Promise<any> {
+    prefetchPackage(siteId: string, fileList: any[], component: string, componentId?: string | number, extra?: string,
+            dirPath?: string, onProgress?: (event: any) => any): Promise<any> {
         return this.downloadOrPrefetchPackage(siteId, fileList, true, component, componentId, extra, dirPath, onProgress);
     }
 
@@ -2315,7 +2359,7 @@ export class CoreFilepoolProvider {
      * This loops over itself to keep on processing the queue in the background.
      * The queue process is site agnostic.
      */
-    protected processQueue() : void {
+    protected processQueue(): void {
         let promise;
 
         if (this.queueState !== this.QUEUE_RUNNING) {
@@ -2354,14 +2398,15 @@ export class CoreFilepoolProvider {
      *
      * @return {Promise} Resolved on success. Rejected on failure.
      */
-    protected processImportantQueueItem() : Promise<any> {
+    protected processImportantQueueItem(): Promise<any> {
         return this.appDB.getRecords(this.QUEUE_TABLE, undefined, 'priority DESC, added ASC', undefined, 0, 1).then((items) => {
-            let item = items.pop();
+            const item = items.pop();
             if (!item) {
                 return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
             }
             // Convert the links to an object.
             item.links = JSON.parse(item.links);
+
             return this.processQueueItem(item);
         }, () => {
             return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
@@ -2374,9 +2419,9 @@ export class CoreFilepoolProvider {
      * @param {CoreFilepoolQueueEntry} item The object from the queue store.
      * @return {Promise<any>} Resolved on success. Rejected on failure.
      */
-    protected processQueueItem(item: CoreFilepoolQueueEntry) : Promise<any> {
+    protected processQueueItem(item: CoreFilepoolQueueEntry): Promise<any> {
         // Cast optional fields to undefined instead of null.
-        let siteId = item.siteId,
+        const siteId = item.siteId,
             fileId = item.fileId,
             fileUrl = item.url,
             options = {
@@ -2389,6 +2434,7 @@ export class CoreFilepoolProvider {
             links = item.links || [];
 
         this.logger.debug('Processing queue item: ' + siteId + ', ' + fileId);
+
         // Check if the file is already in pool.
         return this.hasFileInPool(siteId, fileId).catch(() => {
             // File not in pool.
@@ -2402,11 +2448,13 @@ export class CoreFilepoolProvider {
                     this.treatQueueDeferred(siteId, fileId, true);
                 });
                 this.notifyFileDownloaded(siteId, fileId);
+
                 return;
             }
 
             // The file does not exist, or is stale, ... download it.
-            let onProgress = this.getQueueOnProgress(siteId, fileId);
+            const onProgress = this.getQueueOnProgress(siteId, fileId);
+
             return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, entry).then(() => {
                 // Success, we add links and remove from queue.
                 this.addFileLinks(siteId, fileId, links);
@@ -2416,7 +2464,9 @@ export class CoreFilepoolProvider {
 
                 // Wait for the item to be removed from queue before resolving the promise.
                 // If the item could not be removed from queue we still resolve the promise.
-                return this.removeFromQueue(siteId, fileId).catch(() => {});
+                return this.removeFromQueue(siteId, fileId).catch(() => {
+                    // Ignore errors.
+                });
             }, (errorObject) => {
                 // Whoops, we have an error...
                 let dropFromQueue = false;
@@ -2438,8 +2488,7 @@ export class CoreFilepoolProvider {
                         // We have the latest version of the file, HTTP 304 status.
                         dropFromQueue = true;
                     } else {
-                        // Unknown error, let's remove the file from the queue to avoid
-                        // locking down the queue because of one file.
+                        // Unknown error, let's remove the file from the queue to avoi locking down the queue.
                         dropFromQueue = true;
                     }
                 } else {
@@ -2449,8 +2498,9 @@ export class CoreFilepoolProvider {
                 if (dropFromQueue) {
                     this.logger.debug('Item dropped from queue due to error: ' + fileUrl, errorObject);
 
-                    // Consider this as a silent error, never reject the promise here.
-                    return this.removeFromQueue(siteId, fileId).catch(() => {}).then(() => {
+                    return this.removeFromQueue(siteId, fileId).catch(() => {
+                        // Consider this as a silent error, never reject the promise here.
+                    }).then(() => {
                         this.treatQueueDeferred(siteId, fileId, false);
                         this.notifyFileDownloadError(siteId, fileId);
                     });
@@ -2458,6 +2508,7 @@ export class CoreFilepoolProvider {
                     // We considered the file as legit but did not get it, failure.
                     this.treatQueueDeferred(siteId, fileId, false);
                     this.notifyFileDownloadError(siteId, fileId);
+
                     return Promise.reject(errorObject);
                 }
 
@@ -2470,10 +2521,10 @@ export class CoreFilepoolProvider {
      *
      * @param {string} siteId The site ID.
      * @param {string} fileId The file ID.
-     * @return {Promise} Resolved on success. Rejected on failure. It is advised to silently ignore failures.
+     * @return {Promise<any>} Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      */
-    protected removeFromQueue(siteId: string, fileId: string) {
-        return this.appDB.deleteRecords(this.QUEUE_TABLE, {siteId: siteId, fileId: fileId});
+    protected removeFromQueue(siteId: string, fileId: string): Promise<any> {
+        return this.appDB.deleteRecords(this.QUEUE_TABLE, { siteId: siteId, fileId: fileId });
     }
 
     /**
@@ -2483,17 +2534,17 @@ export class CoreFilepoolProvider {
      * @param {string} fileId The file ID.
      * @return {Promise<any>} Resolved on success.
      */
-    protected removeFileById(siteId: string, fileId: string) : Promise<any> {
+    protected removeFileById(siteId: string, fileId: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             // Get the path to the file first since it relies on the file object stored in the pool.
             return Promise.resolve(this.getFilePath(siteId, fileId)).then((path) => {
-                let promises = [];
+                const promises = [];
 
                 // Remove entry from filepool store.
-                promises.push(db.deleteRecords(this.FILES_TABLE, {fileId: fileId}));
+                promises.push(db.deleteRecords(this.FILES_TABLE, { fileId: fileId }));
 
                 // Remove links.
-                promises.push(db.deleteRecords(this.LINKS_TABLE, {fileId: fileId}));
+                promises.push(db.deleteRecords(this.LINKS_TABLE, { fileId: fileId }));
 
                 // Remove the file.
                 if (this.fileProvider.isAvailable()) {
@@ -2521,7 +2572,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<any>} Resolved on success.
      */
-    removeFilesByComponent(siteId: string, component: string, componentId?: string|number) : Promise<any> {
+    removeFilesByComponent(siteId: string, component: string, componentId?: string | number): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             return this.getComponentFiles(db, component, componentId);
         }).then((items) => {
@@ -2538,9 +2589,10 @@ export class CoreFilepoolProvider {
      * @param {string} fileUrl The file URL.
      * @return {Promise<any>} Resolved on success, rejected on failure.
      */
-    removeFileByUrl(siteId: string, fileUrl: string) : Promise<any> {
+    removeFileByUrl(siteId: string, fileUrl: string): Promise<any> {
         return this.fixPluginfileURL(siteId, fileUrl).then((fileUrl) => {
             const fileId = this.getFileIdByUrl(fileUrl);
+
             return this.removeFileById(siteId, fileId);
         });
     }
@@ -2553,8 +2605,8 @@ export class CoreFilepoolProvider {
      * @description
      * The revision is used to know if a file has changed. We remove it from the URL to prevent storing a file per revision.
      */
-    protected removeRevisionFromUrl(url: string) : string {
-        let args = this.getPluginFileArgs(url);
+    protected removeRevisionFromUrl(url: string): string {
+        const args = this.getPluginFileArgs(url);
         if (!args) {
             // Not a pluginfile, no revision will be found.
             return url;
@@ -2571,7 +2623,7 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<string>} Promise resolved when the status is changed. Resolve param: new status.
      */
-    setPackagePreviousStatus(siteId: string, component: string, componentId?: string|number) : Promise<any> {
+    setPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<any> {
         componentId = this.fixComponentId(componentId);
         this.logger.debug(`Set previous status for package ${component} ${componentId}`);
 
@@ -2579,8 +2631,8 @@ export class CoreFilepoolProvider {
             const packageId = this.getPackageId(component, componentId);
 
             // Get current stored data, we'll only update 'status' and 'updated' fields.
-            return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId}).then((entry: CoreFilepoolPackageEntry) => {
-                let newData: CoreFilepoolPackageEntry = {};
+            return site.getDb().getRecord(this.PACKAGES_TABLE, { id: packageId }).then((entry: CoreFilepoolPackageEntry) => {
+                const newData: CoreFilepoolPackageEntry = {};
                 if (entry.status == CoreConstants.DOWNLOADING) {
                     // Going back from downloading to previous status, restore previous download time.
                     newData.downloadTime = entry.previousDownloadTime;
@@ -2589,9 +2641,10 @@ export class CoreFilepoolProvider {
                 newData.updated = Date.now();
                 this.logger.debug(`Set previous status '${entry.status}' for package ${component} ${componentId}`);
 
-                return site.getDb().updateRecords(this.PACKAGES_TABLE, newData, {id: packageId}).then(() => {
+                return site.getDb().updateRecords(this.PACKAGES_TABLE, newData, { id: packageId }).then(() => {
                     // Success updating, trigger event.
                     this.triggerPackageStatusChanged(site.id, newData.status, component, componentId);
+
                     return newData.status;
                 });
             });
@@ -2612,7 +2665,7 @@ export class CoreFilepoolProvider {
      *     - The file cannot be streamed.
      * If the file is big and can be streamed, the promise returned by this function will be rejected.
      */
-    shouldDownloadBeforeOpen(url: string, size: number) : Promise<any> {
+    shouldDownloadBeforeOpen(url: string, size: number): Promise<any> {
         if (size >= 0 && size <= this.DOWNLOAD_THRESHOLD) {
             // The file is small, download it.
             return Promise.resolve();
@@ -2641,14 +2694,14 @@ export class CoreFilepoolProvider {
      * @param {string} [extra] Extra data to store for the package. If you want to store more than 1 value, use JSON.stringify.
      * @return {Promise<any>} Promise resolved when status is stored.
      */
-    storePackageStatus(siteId: string, status: string, component: string, componentId?: string|number, extra?: string)
+    storePackageStatus(siteId: string, status: string, component: string, componentId?: string | number, extra?: string)
             : Promise<any> {
         this.logger.debug(`Set status '${status}'' for package ${component} ${componentId}`);
         componentId = this.fixComponentId(componentId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let packageId = this.getPackageId(component, componentId),
-                downloadTime,
+            const packageId = this.getPackageId(component, componentId);
+            let downloadTime,
                 previousDownloadTime;
 
             if (status == CoreConstants.DOWNLOADING) {
@@ -2657,7 +2710,7 @@ export class CoreFilepoolProvider {
             }
 
             // Search current status to set it as previous status.
-            return site.getDb().getRecord(this.PACKAGES_TABLE, {id: packageId}).then((entry: CoreFilepoolPackageEntry) => {
+            return site.getDb().getRecord(this.PACKAGES_TABLE, { id: packageId }).then((entry: CoreFilepoolPackageEntry) => {
                 if (typeof extra == 'undefined' || extra === null) {
                     extra = entry.extra;
                 }
@@ -2666,7 +2719,7 @@ export class CoreFilepoolProvider {
                     downloadTime = entry.downloadTime;
                     previousDownloadTime = entry.previousDownloadTime;
                 } else {
-                    // downloadTime will be updated, store current time as previous.
+                    // The downloadTime will be updated, store current time as previous.
                     previousDownloadTime = entry.downloadTime;
                 }
 
@@ -2674,7 +2727,7 @@ export class CoreFilepoolProvider {
             }).catch(() => {
                 // No previous status.
             }).then((previousStatus: string) => {
-                let packageEntry: CoreFilepoolPackageEntry = {
+                const packageEntry: CoreFilepoolPackageEntry = {
                         id: packageId,
                         component: component,
                         componentId: componentId,
@@ -2684,14 +2737,14 @@ export class CoreFilepoolProvider {
                         downloadTime: downloadTime,
                         previousDownloadTime: previousDownloadTime,
                         extra: extra
-                    },
-                    promise;
+                    };
+                let promise;
 
                 if (previousStatus === status) {
                     // The package already has this status, no need to change it.
                     promise = Promise.resolve();
                 } else {
-                    promise = site.getDb().insertOrUpdateRecord(this.PACKAGES_TABLE, packageEntry, {id: packageId});
+                    promise = site.getDb().insertOrUpdateRecord(this.PACKAGES_TABLE, packageEntry, { id: packageId });
                 }
 
                 return promise.then(() => {
@@ -2707,11 +2760,11 @@ export class CoreFilepoolProvider {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    treatExtensionInQueue() : Promise<any> {
+    treatExtensionInQueue(): Promise<any> {
         this.logger.debug('Treat extensions in queue');
 
         return this.appDB.getAllRecords(this.QUEUE_TABLE).then((entries) => {
-            let promises = [];
+            const promises = [];
             entries.forEach((entry) => {
 
                 // For files in the queue, we only need to remove the extension from the fileId.
@@ -2723,8 +2776,9 @@ export class CoreFilepoolProvider {
                     return;
                 }
 
-                promises.push(this.appDB.updateRecords(this.QUEUE_TABLE, {fileId: entry.fileId}, {fileId: fileId}));
+                promises.push(this.appDB.updateRecords(this.QUEUE_TABLE, { fileId: entry.fileId }, { fileId: fileId }));
             });
+
             return Promise.all(promises);
         });
     }
@@ -2736,7 +2790,7 @@ export class CoreFilepoolProvider {
      * @param {string} fileId The file ID.
      * @param {boolean} resolve True if promise should be resolved, false if it should be rejected.
      */
-    protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean) : void {
+    protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean): void {
         if (this.queueDeferreds[siteId] && this.queueDeferreds[siteId][fileId]) {
             if (resolve) {
                 this.queueDeferreds[siteId][fileId].resolve();
@@ -2755,12 +2809,12 @@ export class CoreFilepoolProvider {
      * @param {string} component  Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      */
-    protected triggerPackageStatusChanged(siteId: string, status: string, component: string, componentId?: string|number) : void {
+    protected triggerPackageStatusChanged(siteId: string, status: string, component: string, componentId?: string | number): void {
         const data = {
             component: component,
             componentId: this.fixComponentId(componentId),
             status: status
-        }
+        };
         this.eventsProvider.trigger(CoreEventsProvider.PACKAGE_STATUS_CHANGED, data, siteId);
     }
 
@@ -2774,13 +2828,13 @@ export class CoreFilepoolProvider {
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise<any>} Promise resolved when status is stored.
      */
-    updatePackageDownloadTime(siteId: string, component: string, componentId?: string|number) : Promise<any> {
+    updatePackageDownloadTime(siteId: string, component: string, componentId?: string | number): Promise<any> {
         componentId = this.fixComponentId(componentId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const packageId = this.getPackageId(component, componentId);
 
-            return site.getDb().updateRecords(this.PACKAGES_TABLE, {downloadTime: this.timeUtils.timestamp()}, {id: packageId});
+            return site.getDb().updateRecords(this.PACKAGES_TABLE, { downloadTime: this.timeUtils.timestamp() }, { id: packageId });
         });
     }
 }

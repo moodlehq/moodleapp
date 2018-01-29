@@ -35,12 +35,12 @@ import { CoreUtilsProvider } from '../../providers/utils/utils';
 })
 export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     @Input() name: string; // Name of the input affected.
-    @Input() initialShown?: boolean|string; // Whether the password should be shown at start.
+    @Input() initialShown?: boolean | string; // Whether the password should be shown at start.
 
     shown: boolean; // Whether the password is shown.
     label: string; // Label for the button to show/hide.
     iconName: string; // Name of the icon of the button to show/hide.
-    selector: string = ''; // Selector to identify the input.
+    selector = ''; // Selector to identify the input.
 
     protected input: HTMLInputElement; // Input affected.
     protected element: HTMLElement; // Current element.
@@ -52,7 +52,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.shown = this.utils.isTrueOrOne(this.initialShown);
         this.selector = 'input[name="' + this.name + '"]';
         this.setData();
@@ -61,14 +61,14 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     /**
      * View has been initialized.
      */
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.searchInput();
     }
 
     /**
      * Search the input to show/hide.
      */
-    protected searchInput() {
+    protected searchInput(): void {
         // Search the input.
         this.input = <HTMLInputElement> this.element.querySelector(this.selector);
 
@@ -89,7 +89,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     /**
      * Set label, icon name and input type.
      */
-    protected setData() {
+    protected setData(): void {
         this.label = this.shown ? 'core.hide' : 'core.show';
         this.iconName = this.shown ? 'eye-off' : 'eye';
         if (this.input) {
@@ -100,7 +100,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     /**
      * Toggle show/hide password.
      */
-    toggle() : void {
+    toggle(): void {
         this.shown = !this.shown;
         this.setData();
     }

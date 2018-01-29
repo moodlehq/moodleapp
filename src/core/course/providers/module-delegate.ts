@@ -43,7 +43,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return {any} The component to use, undefined if not found.
      */
     getMainComponent(course: any, module: any): any;
-};
+}
 
 /**
  * Data needed to render the module in course contents.
@@ -134,7 +134,7 @@ export interface CoreCourseModuleHandlerButton {
      * @param {number} courseId The course ID.
      */
     action(event: Event, navCtrl: NavController, module: any, courseId: number): void;
-};
+}
 
 /**
  * Delegate to register module handlers.
@@ -146,7 +146,7 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
     protected featurePrefix = '$mmCourseDelegate_';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-        protected courseProvider: CoreCourseProvider) {
+            protected courseProvider: CoreCourseProvider) {
         super('CoreCourseModuleDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
@@ -158,9 +158,9 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * @return {any} The component to use, undefined if not found.
      */
     getMainComponent?(course: any, module: any): any {
-        let handler = this.enabledHandlers[module.modname];
+        const handler = this.enabledHandlers[module.modname];
         if (handler && handler.getMainComponent) {
-            let component = handler.getMainComponent(course, module);
+            const component = handler.getMainComponent(course, module);
             if (component) {
                 return component;
             }
@@ -182,11 +182,11 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
         }
 
         // Return the default data.
-        let defaultData: CoreCourseModuleHandlerData = {
+        const defaultData: CoreCourseModuleHandlerData = {
             icon: this.courseProvider.getModuleIconSrc(module.modname),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions) => {
+            action: (event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions): void => {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -198,7 +198,7 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
             defaultData.buttons = [{
                 icon: 'open',
                 label: 'core.openinbrowser',
-                action: (e: Event) => {
+                action: (e: Event): void => {
                     e.preventDefault();
                     e.stopPropagation();
                     this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(module.url);

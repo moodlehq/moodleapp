@@ -28,7 +28,7 @@ import { CoreUserDelegate } from '../../providers/user-delegate';
 /**
  * Page that displays an user profile page.
  */
-@IonicPage({segment: "core-user-profile"})
+@IonicPage({ segment: 'core-user-profile' })
 @Component({
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
@@ -39,12 +39,12 @@ export class CoreUserProfilePage {
     protected site;
     protected obsProfileRefreshed: any;
 
-    userLoaded: boolean = false;
-    isLoadingHandlers: boolean = false;
+    userLoaded = false;
+    isLoadingHandlers = false;
     user: any = {};
     title: string;
-    isDeleted: boolean = false;
-    canChangeProfilePicture: boolean = false;
+    isDeleted = false;
+    canChangeProfilePicture = false;
     actionHandlers = [];
     newPageHandlers = [];
     communicationHandlers = [];
@@ -68,9 +68,9 @@ export class CoreUserProfilePage {
             !this.userProvider.isUpdatePictureDisabledInSite(this.site);
 
         this.obsProfileRefreshed = eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
-            if (typeof data.user != "undefined") {
+            if (typeof data.user != 'undefined') {
                 this.user.email = data.user.email;
-                this.user.address = this.userHelper.formatAddress("", data.user.city, data.user.country);
+                this.user.address = this.userHelper.formatAddress('', data.user.city, data.user.country);
             }
         }, sitesProvider.getCurrentSiteId());
     }
@@ -78,7 +78,7 @@ export class CoreUserProfilePage {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.fetchUser().then(() => {
             return this.userProvider.logView(this.userId, this.courseId).catch((error) => {
                 this.isDeleted = error.errorcode === 'userdeleted';
@@ -91,10 +91,10 @@ export class CoreUserProfilePage {
     /**
      * Fetches the user and updates the view.
      */
-    fetchUser() : Promise<any> {
-        return this.userProvider.getProfile(this.userId, this.courseId).then((user) =>  {
+    fetchUser(): Promise<any> {
+        return this.userProvider.getProfile(this.userId, this.courseId).then((user) => {
 
-            user.address = this.userHelper.formatAddress("", user.city, user.country);
+            user.address = this.userHelper.formatAddress('', user.city, user.country);
             user.roles = this.userHelper.formatRoleList(user.roles);
 
             this.user = user;
@@ -129,21 +129,22 @@ export class CoreUserProfilePage {
         });
     }
 
-
     /**
      * Opens dialog to change profile picture.
      */
-    changeProfilePicture(){
-        let maxSize = -1,
+    changeProfilePicture(): Promise<any> {
+        const maxSize = -1,
             title = this.translate.instant('core.user.newpicture'),
             mimetypes = this.mimetypeUtils.getGroupMimeInfo('image', 'mimetypes');
 
         return this.fileUploaderHelper.selectAndUploadFile(maxSize, title, mimetypes).then((result) => {
-            let modal = this.domUtils.showModalLoading('core.sending', true);
+            const modal = this.domUtils.showModalLoading('core.sending', true);
 
             return this.userProvider.changeProfilePicture(result.itemid, this.userId).then((profileImageURL) => {
-                this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {userId: this.userId,
-                    picture: profileImageURL});
+                this.eventsProvider.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+                    userId: this.userId,
+                    picture: profileImageURL
+                });
                 this.sitesProvider.updateSiteInfo(this.site.getId());
                 this.refreshUser();
             }).finally(() => {
@@ -161,8 +162,8 @@ export class CoreUserProfilePage {
      *
      * @param {any} refresher Refresher.
      */
-    refreshUser(refresher?: any) {
-        let promises = [];
+    refreshUser(refresher?: any): void {
+        const promises = [];
 
         promises.push(this.userProvider.invalidateUserCache(this.userId));
         promises.push(this.coursesProvider.invalidateUserNavigationOptions());
@@ -170,8 +171,11 @@ export class CoreUserProfilePage {
 
         Promise.all(promises).finally(() => {
             this.fetchUser().finally(() => {
-                this.eventsProvider.trigger(CoreUserProvider.PROFILE_REFRESHED, {courseId: this.courseId, userId: this.userId,
-                    user: this.user}, this.site.getId());
+                this.eventsProvider.trigger(CoreUserProvider.PROFILE_REFRESHED, {
+                    courseId: this.courseId,
+                    userId: this.userId,
+                    user: this.user
+                }, this.site.getId());
                 refresher && refresher.complete();
             });
         });
@@ -180,7 +184,7 @@ export class CoreUserProfilePage {
     /**
      * Page destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.obsProfileRefreshed && this.obsProfileRefreshed.off();
     }
 }

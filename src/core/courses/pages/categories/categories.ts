@@ -23,7 +23,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that displays a list of categories and the courses in the current category if any.
  */
-@IonicPage({segment: "core-courses-categories"})
+@IonicPage({ segment: 'core-courses-categories' })
 @Component({
     selector: 'page-core-courses-categories',
     templateUrl: 'categories.html',
@@ -47,7 +47,7 @@ export class CoreCoursesCategoriesPage {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.fetchCategories().finally(() => {
             this.categoriesLoaded = true;
         });
@@ -55,8 +55,10 @@ export class CoreCoursesCategoriesPage {
 
     /**
      * Fetch the categories.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchCategories() {
+    protected fetchCategories(): Promise<any> {
         return this.coursesProvider.getCategories(this.categoryId, true).then((cats) => {
             this.currentCategory = undefined;
 
@@ -69,10 +71,11 @@ export class CoreCoursesCategoriesPage {
             });
 
             // Sort by depth and sortorder to avoid problems formatting Tree.
-            cats.sort((a,b) => {
+            cats.sort((a, b) => {
                 if (a.depth == b.depth) {
                     return (a.sortorder > b.sortorder) ? 1 : ((b.sortorder > a.sortorder) ? -1 : 0);
                 }
+
                 return a.depth > b.depth ? 1 : -1;
             });
 
@@ -97,8 +100,8 @@ export class CoreCoursesCategoriesPage {
      *
      * @param {any} refresher Refresher.
      */
-    refreshCategories(refresher: any) {
-        let promises = [];
+    refreshCategories(refresher: any): void {
+        const promises = [];
 
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.coursesProvider.invalidateCategories(this.categoryId, true));
@@ -116,7 +119,7 @@ export class CoreCoursesCategoriesPage {
      *
      * @param {number} categoryId The category ID.
      */
-    openCategory(categoryId: number) {
-        this.navCtrl.push('CoreCoursesCategoriesPage', {categoryId: categoryId});
+    openCategory(categoryId: number): void {
+        this.navCtrl.push('CoreCoursesCategoriesPage', { categoryId: categoryId });
     }
 }

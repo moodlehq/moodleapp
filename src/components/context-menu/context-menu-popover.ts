@@ -38,7 +38,7 @@ export class CoreContextMenuPopoverComponent {
     /**
      * Close the popover.
      */
-    closeMenu() : void {
+    closeMenu(): void {
         this.viewCtrl.dismiss();
     }
 
@@ -49,13 +49,14 @@ export class CoreContextMenuPopoverComponent {
      * @param {CoreContextMenuItemComponent} item Item clicked.
      * @return {boolean} Return true if success, false if error.
      */
-    itemClicked(event: Event, item: CoreContextMenuItemComponent) : boolean {
+    itemClicked(event: Event, item: CoreContextMenuItemComponent): boolean {
         if (item.action.observers.length > 0) {
             event.preventDefault();
             event.stopPropagation();
 
             if (!item.iconAction) {
                 this.logger.warn('Items with action must have an icon action to work', item);
+
                 return false;
             } else if (item.iconAction == 'spinner') {
                 return false;

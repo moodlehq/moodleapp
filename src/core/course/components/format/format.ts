@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ComponentFactoryResolver, ViewChild, ChangeDetectorRef,
-         SimpleChange, Output, EventEmitter } from '@angular/core';
+import {
+    Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ComponentFactoryResolver, ViewChild, ChangeDetectorRef,
+    SimpleChange, Output, EventEmitter
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreLoggerProvider } from '../../../../providers/logger';
@@ -54,23 +56,23 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // The component hasn't been initialized yet. Store the container.
             this.componentContainers['courseFormat'] = el;
         }
-    };
+    }
     @ViewChild('courseSummary', { read: ViewContainerRef }) set courseSummary(el: ViewContainerRef) {
         this.createComponent('courseSummary', this.cfDelegate.getCourseSummaryComponent(this.course), el);
-    };
+    }
     @ViewChild('sectionSelector', { read: ViewContainerRef }) set sectionSelector(el: ViewContainerRef) {
         this.createComponent('sectionSelector', this.cfDelegate.getSectionSelectorComponent(this.course), el);
-    };
+    }
     @ViewChild('singleSection', { read: ViewContainerRef }) set singleSection(el: ViewContainerRef) {
         this.createComponent('singleSection', this.cfDelegate.getSingleSectionComponent(this.course), el);
-    };
+    }
     @ViewChild('allSections', { read: ViewContainerRef }) set allSections(el: ViewContainerRef) {
         this.createComponent('allSections', this.cfDelegate.getAllSectionsComponent(this.course), el);
-    };
+    }
 
     // Instances and containers of all the components that the handler could define.
-    protected componentContainers: {[type: string]: ViewContainerRef} = {};
-    componentInstances: {[type: string]: any} = {};
+    protected componentContainers: { [type: string]: ViewContainerRef } = {};
+    componentInstances: { [type: string]: any } = {};
 
     displaySectionSelector: boolean;
     selectedSection: any;
@@ -94,10 +96,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Listen for section status changes.
         this.sectionStatusObserver = eventsProvider.on(CoreEventsProvider.SECTION_STATUS_CHANGED, (data) => {
             if (this.downloadEnabled && this.sections && this.sections.length && this.course && data.sectionId &&
-                    data.courseId == this.course.id) {
-                // Check if the affected section is being downloaded. If so, we don't update section status
-                // because it'll already be updated when the download finishes.
-                let downloadId = this.courseHelper.getSectionDownloadId({id: data.sectionId});
+                data.courseId == this.course.id) {
+                // Check if the affected section is being downloaded.
+                // If so, we don't update section status because it'll already be updated when the download finishes.
+                const downloadId = this.courseHelper.getSectionDownloadId({ id: data.sectionId });
                 if (prefetchDelegate.isBeingDownloaded(downloadId)) {
                     return;
                 }
@@ -105,7 +107,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 // Get the affected section.
                 let section;
                 for (let i = 0; i < this.sections.length; i++) {
-                    let s = this.sections[i];
+                    const s = this.sections[i];
                     if (s.id === data.sectionId) {
                         section = s;
                         break;
@@ -131,24 +133,24 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
 
         this.createComponent(
-                'courseFormat', this.cfDelegate.getCourseFormatComponent(this.course), this.componentContainers['courseFormat']);
+            'courseFormat', this.cfDelegate.getCourseFormatComponent(this.course), this.componentContainers['courseFormat']);
     }
 
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.sections && this.sections) {
             if (!this.selectedSection) {
                 // There is no selected section yet, calculate which one to load.
                 if (this.initialSectionId || this.initialSectionNumber) {
                     // We have an input indicating the section ID to load. Search the section.
                     for (let i = 0; i < this.sections.length; i++) {
-                        let section = this.sections[i];
+                        const section = this.sections[i];
                         if (section.id == this.initialSectionId || section.section == this.initialSectionNumber) {
                             this.loaded = true;
                             this.sectionChanged(section);
@@ -166,7 +168,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 // We have a selected section, but the list has changed. Search the section in the list.
                 let newSection;
                 for (let i = 0; i < this.sections.length; i++) {
-                    let section = this.sections[i];
+                    const section = this.sections[i];
                     if (this.compareSections(section, this.selectedSection)) {
                         newSection = section;
                         break;
@@ -186,10 +188,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // Apply the changes to the components and call ngOnChanges if it exists.
-        for (let type in this.componentInstances) {
-            let instance = this.componentInstances[type];
+        for (const type in this.componentInstances) {
+            const instance = this.componentInstances[type];
 
-            for (let name in changes) {
+            for (const name in changes) {
                 instance[name] = changes[name].currentValue;
             }
 
@@ -207,7 +209,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param {ViewContainerRef} container The container to add the component to.
      * @return {boolean} Whether the component was successfully created.
      */
-    protected createComponent(type: string, componentClass: any, container: ViewContainerRef) : boolean {
+    protected createComponent(type: string, componentClass: any, container: ViewContainerRef): boolean {
         if (!componentClass || !container) {
             // No component to instantiate or container doesn't exist right now.
             return false;
@@ -236,8 +238,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.
 
             return true;
-        } catch(ex) {
+        } catch (ex) {
             this.logger.error('Error creating component', type, ex);
+
             return false;
         }
     }
@@ -247,8 +250,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param {any} newSection The new selected section.
      */
-    sectionChanged(newSection: any) {
-        let previousValue = this.selectedSection;
+    sectionChanged(newSection: any): void {
+        const previousValue = this.selectedSection;
         this.selectedSection = newSection;
 
         // If there is a component to render the current section, update its section.
@@ -269,7 +272,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param {any} s2 Second section.
      * @return {boolean} Whether they're equal.
      */
-    compareSections(s1: any, s2: any) : boolean {
+    compareSections(s1: any, s2: any): boolean {
         return s1 && s2 ? s1.id === s2.id : s1 === s2;
     }
 
@@ -278,7 +281,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param {boolean} refresh [description]
      */
-    protected calculateSectionsStatus(refresh?: boolean) : void {
+    protected calculateSectionsStatus(refresh?: boolean): void {
         this.courseHelper.calculateSectionsStatus(this.sections, this.course.id, refresh).catch(() => {
             // Ignore errors (shouldn't happen).
         });
@@ -290,7 +293,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param {Event} e Click event.
      * @param {any} section Section to download.
      */
-    prefetch(e: Event, section: any) : void {
+    prefetch(e: Event, section: any): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -314,7 +317,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param {boolean} [manual] Whether the prefetch was started manually or it was automatically started because all modules
      *                           are being downloaded.
      */
-    protected prefetchSection(section: any, manual?: boolean) {
+    protected prefetchSection(section: any, manual?: boolean): void {
         this.courseHelper.prefetchSection(section, this.course.id, this.sections).catch((error) => {
             // Don't show error message if it's an automatic download.
             if (!manual) {
@@ -328,7 +331,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.sectionStatusObserver) {
             this.sectionStatusObserver.off();
         }

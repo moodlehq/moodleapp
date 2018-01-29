@@ -18,7 +18,6 @@ import { AddonUserProfileFieldMenuModule } from './menu/menu.module';
 import { AddonUserProfileFieldTextModule } from './text/text.module';
 import { AddonUserProfileFieldTextareaModule } from './textarea/textarea.module';
 
-
 @NgModule({
     declarations: [],
     imports: [
@@ -32,4 +31,4 @@ import { AddonUserProfileFieldTextareaModule } from './textarea/textarea.module'
     ],
     exports: []
 })
-export class AddonUserProfileFieldModule {}
+export class AddonUserProfileFieldModule { }

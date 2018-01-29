@@ -22,7 +22,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /**
  * Page to recover a forgotten password.
  */
-@IonicPage({segment: "core-login-forgotten-password"})
+@IonicPage({ segment: 'core-login-forgotten-password' })
 @Component({
     selector: 'page-core-login-forgotten-password',
     templateUrl: 'forgotten-password.html',
@@ -36,31 +36,32 @@ export class CoreLoginForgottenPasswordPage {
 
         this.siteUrl = navParams.get('siteUrl');
         this.myForm = fb.group({
-            'field': ['username', Validators.required],
-            'value': [navParams.get('username') || '', Validators.required]
+            field: ['username', Validators.required],
+            value: [navParams.get('username') || '', Validators.required]
         });
     }
 
     /**
      * Request to reset the password.
      */
-    resetPassword() : void {
-        let field = this.myForm.value.field,
+    resetPassword(): void {
+        const field = this.myForm.value.field,
             value = this.myForm.value.value;
 
         if (!value) {
             this.domUtils.showErrorModal('core.login.usernameoremail', true);
+
             return;
         }
 
-        let modal = this.domUtils.showModalLoading('core.sending', true),
+        const modal = this.domUtils.showModalLoading('core.sending', true),
             isMail = field == 'email';
 
         this.loginHelper.requestPasswordReset(this.siteUrl, isMail ? '' : value, isMail ? value : '').then((response) => {
             if (response.status == 'dataerror') {
                 // Error in the data sent.
                 this.showError(isMail, response.warnings);
-            } else if (response.status == 'emailpasswordconfirmnotsent' || response.status == 'emailpasswordconfirmnoemail') {
+            } else if (response.status == 'emailpasswordconfirmnotsent' || response.status == 'emailpasswordconfirmnoemail') {
                 // Error, not found.
                 this.domUtils.showErrorModal(response.notice);
             } else {
@@ -73,12 +74,12 @@ export class CoreLoginForgottenPasswordPage {
         }).finally(() => {
             modal.dismiss();
         });
-    };
+    }
 
     // Show an error from the warnings.
-    protected showError(isMail: boolean, warnings: any[]) : void {
+    protected showError(isMail: boolean, warnings: any[]): void {
         for (let i = 0; i < warnings.length; i++) {
-            let warning = warnings[i];
+            const warning = warnings[i];
             if ((warning.item == 'email' && isMail) || (warning.item == 'username' && !isMail)) {
                 this.domUtils.showErrorModal(warning.message);
                 break;

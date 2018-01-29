@@ -35,7 +35,7 @@ export class CoreSiteHomeProvider {
      * @param {string} [siteId] The site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with boolean: whether it's available.
      */
-    isAvailable(siteId?: string) : Promise<boolean> {
+    isAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             // First check if it's disabled.
             if (this.isDisabledInSite(site)) {
@@ -44,17 +44,17 @@ export class CoreSiteHomeProvider {
 
             // Use a WS call to check if there's content in the site home.
             const siteHomeId = site.getSiteHomeId(),
-                preSets = {emergencyCache: false};
+                preSets = { emergencyCache: false };
 
             this.logger.debug('Using WS call to check if site home is available.');
 
-            return this.courseProvider.getSections(siteHomeId, false, true, preSets, site.id).then((sections) : any => {
+            return this.courseProvider.getSections(siteHomeId, false, true, preSets, site.id).then((sections): any => {
                 if (!sections || !sections.length) {
                     return Promise.reject(null);
                 }
 
                 for (let i = 0; i < sections.length; i++) {
-                    let section = sections[i];
+                    const section = sections[i];
                     if (section.summary || (section.modules && section.modules.length)) {
                         // It has content, return true.
                         return true;
@@ -85,7 +85,7 @@ export class CoreSiteHomeProvider {
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
-    isDisabled(siteId?: string) : Promise<boolean> {
+    isDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.isDisabledInSite(site);
         });
@@ -97,8 +97,9 @@ export class CoreSiteHomeProvider {
      * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether it's disabled.
      */
-    isDisabledInSite(site: CoreSite) : boolean {
+    isDisabledInSite(site: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
+
         return site.isFeatureDisabled('$mmSideMenuDelegate_mmaFrontpage');
     }
 }

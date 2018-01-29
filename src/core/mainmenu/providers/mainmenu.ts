@@ -44,16 +44,16 @@ export interface CoreMainMenuCustomItem {
      * @type {string}
      */
     icon: string;
-};
+}
 
 /**
  * Service that provides some features regarding Main Menu.
  */
 @Injectable()
 export class CoreMainMenuProvider {
-    public static NUM_MAIN_HANDLERS = 4;
+    static NUM_MAIN_HANDLERS = 4;
 
-    constructor(private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) {}
+    constructor(private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider) { }
 
     /**
      * Get a list of custom menu items for a certain site.
@@ -61,13 +61,14 @@ export class CoreMainMenuProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<CoreMainMenuCustomItem[]>} List of custom menu items.
      */
-    getCustomMenuItems(siteId?: string) : Promise<CoreMainMenuCustomItem[]> {
+    getCustomMenuItems(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let itemsString = site.getStoredConfig('tool_mobile_custommenuitems'),
-                items,
-                position = 0, // Position of each item, to keep the same order as it's configured.
+            const itemsString = site.getStoredConfig('tool_mobile_custommenuitems'),
                 map = {},
                 result = [];
+
+            let items,
+                position = 0; // Position of each item, to keep the same order as it's configured.
 
             if (!itemsString || typeof itemsString != 'string') {
                 // Setting not valid.
@@ -77,12 +78,12 @@ export class CoreMainMenuProvider {
             // Add items to the map.
             items = itemsString.split(/(?:\r\n|\r|\n)/);
             items.forEach((item) => {
-                let values = item.split('|'),
-                    id,
+                const values = item.split('|'),
                     label = values[0] ? values[0].trim() : values[0],
                     url = values[1] ? values[1].trim() : values[1],
                     type = values[2] ? values[2].trim() : values[2],
-                    lang = (values[3] ? values[3].trim() : values[3]) || 'none',
+                    lang = (values[3] ? values[3].trim() : values[3]) || 'none';
+                let id,
                     icon = values[4] ? values[4].trim() : values[4];
 
                 if (!label || !url || !type) {
@@ -119,17 +120,17 @@ export class CoreMainMenuProvider {
             }
 
             return this.langProvider.getCurrentLanguage().then((currentLang) => {
-                const fallbackLang = CoreConfigConstants.default_lang || 'en';
+                const fallbackLang = CoreConfigConstants.default_lang || 'en';
 
                 // Get the right label for each entry and add it to the result.
-                for (let id in map) {
-                    let entry = map[id],
-                        data = entry.labels[currentLang] || entry.labels[currentLang + '_only'] ||
-                            entry.labels.none || entry.labels[fallbackLang];
+                for (const id in map) {
+                    const entry = map[id];
+                    let data = entry.labels[currentLang] || entry.labels[currentLang + '_only'] ||
+                            entry.labels.none || entry.labels[fallbackLang];
 
                     if (!data) {
                         // No valid label found, get the first one that is not "_only".
-                        for (let lang in entry.labels) {
+                        for (const lang in entry.labels) {
                             if (lang.indexOf('_only') == -1) {
                                 data = entry.labels[lang];
                                 break;

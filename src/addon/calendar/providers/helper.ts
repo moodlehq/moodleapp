@@ -23,12 +23,12 @@ import { CoreCourseProvider } from '../../../core/course/providers/course';
 export class AddonCalendarHelperProvider {
     protected logger;
 
-    private EVENTICONS = {
-        'course': 'ionic',
-        'group': 'people',
-        'site': 'globe',
-        'user': 'person',
-        'category': 'albums'
+    protected EVENTICONS = {
+        course: 'ionic',
+        group: 'people',
+        site: 'globe',
+        user: 'person',
+        category: 'albums'
     };
 
     constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider) {
@@ -40,11 +40,11 @@ export class AddonCalendarHelperProvider {
      *
      * @param {any} e Event to format.
      */
-    formatEventData(e: any) {
+    formatEventData(e: any): void {
         e.icon = this.EVENTICONS[e.eventtype] || false;
         if (!e.icon) {
             e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
             e.moduleIcon = e.icon;
         }
-    };
+    }
 }

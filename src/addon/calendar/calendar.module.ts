@@ -42,7 +42,6 @@ export class AddonCalendarModule {
             calendarProvider.scheduleAllSitesEventsNotifications();
         });
 
-
         localNotificationsProvider.registerClick(AddonCalendarProvider.COMPONENT, (data) => {
             if (data.eventid) {
                 initDelegate.ready().then(() => {

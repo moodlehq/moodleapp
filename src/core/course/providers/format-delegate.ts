@@ -136,7 +136,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
     protected featurePrefix = 'CoreCourseFormatHandler_';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-        protected defaultHandler: CoreCourseFormatDefaultHandler) {
+            protected defaultHandler: CoreCourseFormatDefaultHandler) {
         super('CoreCoursesCourseFormatDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
@@ -170,7 +170,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {any} Function returned value or default value.
      */
     protected executeFunction(format: string, fnName: string, params?: any[]): any {
-        let handler = this.enabledHandlers[format];
+        const handler = this.enabledHandlers[format];
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler[fnName]) {

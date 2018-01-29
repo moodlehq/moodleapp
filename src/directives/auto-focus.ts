@@ -26,7 +26,7 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
     selector: '[core-auto-focus]'
 })
 export class CoreAutoFocusDirective implements OnInit {
-    @Input('core-auto-focus') coreAutoFocus: boolean|string = true;
+    @Input('core-auto-focus') coreAutoFocus: boolean | string = true;
 
     protected element: HTMLElement;
 
@@ -38,10 +38,10 @@ export class CoreAutoFocusDirective implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         if (this.navCtrl.isTransitioning()) {
             // Navigating to a new page. Wait for the transition to be over.
-            let subscription = this.navCtrl.viewDidEnter.subscribe(() => {
+            const subscription = this.navCtrl.viewDidEnter.subscribe(() => {
                 this.autoFocus();
                 subscription.unsubscribe();
             });
@@ -53,7 +53,7 @@ export class CoreAutoFocusDirective implements OnInit {
     /**
      * Function after the view is initialized.
      */
-    protected autoFocus() {
+    protected autoFocus(): void {
         const autoFocus = this.utils.isTrueOrOne(this.coreAutoFocus);
         if (autoFocus) {
             // If it's a ion-input or ion-textarea, search the right input to use.

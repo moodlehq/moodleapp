@@ -22,13 +22,14 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
+import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCoursesProvider } from '../../../courses/providers/courses';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
  */
-@IonicPage({segment: 'core-course-section'})
+@IonicPage({ segment: 'core-course-section' })
 @Component({
     selector: 'page-core-course-section',
     templateUrl: 'section.html',
@@ -44,7 +45,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
     dataLoaded: boolean;
     downloadEnabled: boolean;
-    downloadEnabledIcon: string = 'square-outline'; // Disabled by default.
+    downloadEnabledIcon = 'square-outline'; // Disabled by default.
     prefetchCourseData = {
         prefetchCourseIcon: 'spinner'
     };
@@ -57,7 +58,8 @@ export class CoreCourseSectionPage implements OnDestroy {
             private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            sitesProvider: CoreSitesProvider, private navCtrl: NavController) {
+            sitesProvider: CoreSitesProvider, private navCtrl: NavController,
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
@@ -82,9 +84,9 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
 
-        let module = this.navParams.get('module');
+        const module = this.navParams.get('module');
         if (module) {
             this.courseHelper.openModule(this.navCtrl, module, this.course.id, this.sectionId);
         }
@@ -118,11 +120,11 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Fetch and load all the data required for the view.
      */
-    protected loadData(refresh?: boolean) {
+    protected loadData(refresh?: boolean): Promise<any> {
         // First of all, get the course because the data might have changed.
         return this.coursesProvider.getUserCourse(this.course.id).then((course) => {
-            let promises = [],
-                promise;
+            const promises = [];
+            let promise;
 
             this.course = course;
 
@@ -148,9 +150,9 @@ export class CoreCourseSectionPage implements OnDestroy {
                             section.formattedName = name;
                         });
                         section.hasContent = this.courseHelper.sectionHasContent(section);
+
                         return section;
                     });
-
 
                     if (this.courseFormatDelegate.canViewAllSections(this.course)) {
                         // Add a fake first section (all sections).
@@ -181,7 +183,7 @@ export class CoreCourseSectionPage implements OnDestroy {
      *
      * @param {any} refresher Refresher.
      */
-    doRefresh(refresher: any) {
+    doRefresh(refresher: any): void {
         this.invalidateData().finally(() => {
             this.loadData(true).finally(() => {
                 refresher.complete();
@@ -192,7 +194,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * The completion of any of the modules have changed.
      */
-    onCompletionChange() {
+    onCompletionChange(): void {
         this.invalidateData().finally(() => {
             this.refreshAfterCompletionChange();
         });
@@ -201,16 +203,16 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Invalidate the data.
      */
-    protected invalidateData() {
-        let promises = [];
+    protected invalidateData(): Promise<any> {
+        const promises = [];
 
         promises.push(this.courseProvider.invalidateSections(this.course.id));
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.courseFormatDelegate.invalidateData(this.course, this.sections));
 
-        // if ($scope.sections) {
-        //     promises.push($mmCoursePrefetchDelegate.invalidateCourseUpdates(courseId));
-        // }
+        if (this.sections) {
+            promises.push(this.prefetchDelegate.invalidateCourseUpdates(this.course.id));
+        }
 
         return Promise.all(promises);
     }
@@ -218,9 +220,9 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Refresh list after a completion change since there could be new activities.
      */
-    protected refreshAfterCompletionChange() {
+    protected refreshAfterCompletionChange(): void {
         // Save scroll position to restore it once done.
-        let scrollElement = this.content.getScrollElement(),
+        const scrollElement = this.content.getScrollElement(),
             scrollTop = scrollElement.scrollTop || 0,
             scrollLeft = scrollElement.scrollLeft || 0;
 
@@ -235,8 +237,10 @@ export class CoreCourseSectionPage implements OnDestroy {
 
     /**
      * Determines the prefetch icon of the course.
+     *
+     * @return {Promise<void>} Promise resolved when done.
      */
-    protected determineCoursePrefetchIcon() {
+    protected determineCoursePrefetchIcon(): Promise<void> {
         return this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
             this.prefetchCourseData.prefetchCourseIcon = icon;
         });
@@ -245,26 +249,26 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Prefetch the whole course.
      */
-    prefetchCourse() {
+    prefetchCourse(): void {
         this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections, this.courseHandlers)
-                .then((downloaded) => {
-            if (downloaded && this.downloadEnabled) {
-                // Recalculate the status.
-                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
-                    // Ignore errors (shouldn't happen).
-                });
-            }
-        }).catch((error) => {
-            if (!this.isDestroyed) {
-                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-            }
-        });
+            .then((downloaded) => {
+                if (downloaded && this.downloadEnabled) {
+                    // Recalculate the status.
+                    this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
+                        // Ignore errors (shouldn't happen).
+                    });
+                }
+            }).catch((error) => {
+                if (!this.isDestroyed) {
+                    this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                }
+            });
     }
 
     /**
      * Toggle download enabled.
      */
-    toggleDownload() {
+    toggleDownload(): void {
         this.downloadEnabled = !this.downloadEnabled;
         this.downloadEnabledIcon = this.downloadEnabled ? 'checkbox-outline' : 'square-outline';
     }
@@ -272,7 +276,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     /**
      * Page destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.isDestroyed = true;
         if (this.completionObserver) {
             this.completionObserver.off();

@@ -34,7 +34,7 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    close() : Promise<any> {
+    close(): Promise<any> {
         // WebSQL databases aren't closed.
         return Promise.resolve();
     }
@@ -44,11 +44,11 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    emptyDatabase() : Promise<any> {
-        return new Promise((resolve, reject) => {
+    emptyDatabase(): Promise<any> {
+        return new Promise((resolve, reject): void => {
             this.db.transaction((tx) => {
                 // Query all tables from sqlite_master that we have created and can modify.
-                let args = [],
+                const args = [],
                     query = `SELECT * FROM sqlite_master
                             WHERE name NOT LIKE 'sqlite\\_%' escape '\\' AND name NOT LIKE '\\_%' escape '\\'`;
 
@@ -56,16 +56,17 @@ export class SQLiteDBMock extends SQLiteDB {
                     if (result.rows.length <= 0) {
                         // No tables to delete, stop.
                         resolve();
+
                         return;
                     }
 
                     // Drop all the tables.
-                    let promises = [];
+                    const promises = [];
 
                     for (let i = 0; i < result.rows.length; i++) {
-                        promises.push(new Promise((resolve, reject) => {
+                        promises.push(new Promise((resolve, reject): void => {
                             // Drop the table.
-                            let name = JSON.stringify(result.rows.item(i).name);
+                            const name = JSON.stringify(result.rows.item(i).name);
                             tx.executeSql('DROP TABLE ' + name, [], resolve, reject);
                         }));
                     }
@@ -85,8 +86,8 @@ export class SQLiteDBMock extends SQLiteDB {
      * @param {any[]} params Query parameters.
      * @return {Promise<any>} Promise resolved with the result.
      */
-    execute(sql: string, params?: any[]) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    execute(sql: string, params?: any[]): Promise<any> {
+        return new Promise((resolve, reject): void => {
             // With WebSQL, all queries must be run in a transaction.
             this.db.transaction((tx) => {
                 tx.executeSql(sql, params, (tx, results) => {
@@ -106,15 +107,15 @@ export class SQLiteDBMock extends SQLiteDB {
      * @param {any[]} sqlStatements SQL statements to execute.
      * @return {Promise<any>} Promise resolved with the result.
      */
-    executeBatch(sqlStatements: any[]) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    executeBatch(sqlStatements: any[]): Promise<any> {
+        return new Promise((resolve, reject): void => {
             // Create a transaction to execute the queries.
             this.db.transaction((tx) => {
-                let promises = [];
+                const promises = [];
 
                 // Execute all the queries. Each statement can be a string or an array.
                 sqlStatements.forEach((statement) => {
-                    promises.push(new Promise((resolve, reject) => {
+                    promises.push(new Promise((resolve, reject): void => {
                         let query,
                             params;
 
@@ -142,7 +143,7 @@ export class SQLiteDBMock extends SQLiteDB {
      */
     init(): void {
         // This DB is for desktop apps, so use a big size to be sure it isn't filled.
-        this.db = (<any>window).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
+        this.db = (<any> window).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
         this.promise = Promise.resolve();
     }
 
@@ -151,7 +152,7 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    open() : Promise<any> {
+    open(): Promise<any> {
         // WebSQL databases can't closed, so the open method isn't needed.
         return Promise.resolve();
     }

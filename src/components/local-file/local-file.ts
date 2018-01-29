@@ -33,8 +33,8 @@ import * as moment from 'moment';
 })
 export class CoreLocalFileComponent implements OnInit {
     @Input() file: any; // A fileEntry retrieved using CoreFileProvider.getFile or similar.
-    @Input() manage?: boolean|string; // Whether the user can manage the file (edit and delete).
-    @Input() overrideClick?: boolean|string; // Whether the default item click should be overridden.
+    @Input() manage?: boolean | string; // Whether the user can manage the file (edit and delete).
+    @Input() overrideClick?: boolean | string; // Whether the default item click should be overridden.
     @Output() onDelete?: EventEmitter<void>; // Will notify when the file is deleted.
     @Output() onRename?: EventEmitter<any>; // Will notify when the file is renamed. Receives the FileEntry as the param.
     @Output() onClick?: EventEmitter<void>; // Will notify when the file is clicked. Only if overrideClick is true.
@@ -44,7 +44,7 @@ export class CoreLocalFileComponent implements OnInit {
     fileExtension: string;
     size: string;
     timemodified: string;
-    newFileName: string = '';
+    newFileName = '';
     editMode: boolean;
     relativePath: string;
 
@@ -59,7 +59,7 @@ export class CoreLocalFileComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.manage = this.utils.isTrueOrOne(this.manage);
 
         // Let's calculate the relative path for the file.
@@ -83,11 +83,8 @@ export class CoreLocalFileComponent implements OnInit {
 
     /**
      * Load the basic data for the file.
-     *
-     * @param {[type]} scope [description]
-     * @param {[type]} file  [description]
      */
-    protected loadFileBasicData() {
+    protected loadFileBasicData(): void {
         this.fileName = this.file.name;
         this.fileIcon = this.mimeUtils.getFileIcon(this.file.name);
         this.fileExtension = this.mimeUtils.getFileExtension(this.file.name);
@@ -98,7 +95,7 @@ export class CoreLocalFileComponent implements OnInit {
      *
      * @param {Event} e Click event.
      */
-    fileClicked(e: Event) : void {
+    fileClicked(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -107,14 +104,14 @@ export class CoreLocalFileComponent implements OnInit {
         } else {
             this.utils.openFile(this.file.toURL());
         }
-    };
+    }
 
     /**
      * Activate the edit mode.
      *
      * @param {Event} e Click event.
      */
-    activateEdit(e: Event) : void {
+    activateEdit(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
         this.editMode = true;
@@ -124,21 +121,22 @@ export class CoreLocalFileComponent implements OnInit {
         // $timeout(function() {
         //     $mmUtil.focusElement(element[0].querySelector('input'));
         // });
-    };
+    }
 
     /**
      * Rename the file.
      *
      * @param {string} newName New name.
      */
-    changeName(newName: string) : void {
+    changeName(newName: string): void {
         if (newName == this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
+
             return;
         }
 
-        let modal = this.domUtils.showModalLoading(),
+        const modal = this.domUtils.showModalLoading(),
             fileAndDir = this.fileProvider.getFileAndDirectoryFromPath(this.relativePath),
             newPath = this.textUtils.concatenatePaths(fileAndDir.directory, newName);
 
@@ -152,27 +150,27 @@ export class CoreLocalFileComponent implements OnInit {
                 this.editMode = false;
                 this.file = fileEntry;
                 this.loadFileBasicData();
-                this.onRename.emit({file: this.file});
+                this.onRename.emit({ file: this.file });
             }).catch(() => {
                 this.domUtils.showErrorModal('core.errorrenamefile', true);
             });
         }).finally(() => {
             modal.dismiss();
         });
-    };
+    }
 
     /**
      * Delete the file.
      *
      * @param {Event} e Click event.
      */
-    deleteFile(e: Event) : void {
+    deleteFile(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
         // Ask confirmation.
         this.domUtils.showConfirm(this.translate.instant('core.confirmdeletefile')).then(() => {
-            let modal = this.domUtils.showModalLoading();
+            const modal = this.domUtils.showModalLoading();
             this.fileProvider.removeFile(this.relativePath).then(() => {
                 this.onDelete.emit();
             }).catch(() => {

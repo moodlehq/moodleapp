@@ -29,7 +29,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
     protected isLinux: boolean;
 
     constructor(appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private urlUtils: CoreUrlUtilsProvider,
-            private url: string, target?: string, options = '') {
+            private url: string, target?: string, options: string = '') {
         super(url, target, options);
 
         if (!appProvider.isDesktop()) {
@@ -44,8 +44,8 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
 
         let width = 800,
             height = 600,
-            display,
-            bwOptions: any = {};
+            display;
+        const bwOptions: any = {};
 
         if (screen) {
             display = this.screen.getPrimaryDisplay();
@@ -74,7 +74,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
         if (this.isLinux && this.isSSO) {
             // SSO in Linux. Simulate it's an iOS device so we can retrieve the launch URL.
             // This is needed because custom URL scheme is not supported in Linux.
-            let userAgent = 'Mozilla/5.0 (iPad) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60';
+            const userAgent = 'Mozilla/5.0 (iPad) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60';
             this.window.webContents.setUserAgent(userAgent);
         }
     }
@@ -82,7 +82,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
     /**
      * Close the window.
      */
-    close() : void {
+    close(): void {
         this.window.close();
     }
 
@@ -92,8 +92,8 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
      * @param {any} details Details of the script to run, specifying either a file or code key.
      * @return {Promise<any>} Promise resolved when done.
      */
-    executeScript(details: any) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    executeScript(details: any): Promise<any> {
+        return new Promise((resolve, reject): void => {
             if (details.code) {
                 this.window.webContents.executeJavaScript(details.code, false, resolve);
             } else if (details.file) {
@@ -112,11 +112,11 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
      * @param {number} [retry=0] Retry number.
      * @return {Promise<string>} Promise resolved with the launch URL.
      */
-    protected getLaunchUrl(retry = 0) : Promise<string> {
-        return new Promise((resolve, reject) => {
+    protected getLaunchUrl(retry: number = 0): Promise<string> {
+        return new Promise((resolve, reject): void => {
             // Execute Javascript to retrieve the launch link.
-            let jsCode = 'var el = document.querySelector("#launchapp"); el && el.href;',
-                found = false;
+            const jsCode = 'var el = document.querySelector("#launchapp"); el && el.href;';
+            let found = false;
 
             this.window.webContents.executeJavaScript(jsCode).then((launchUrl) => {
                 found = true;
@@ -140,7 +140,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
     /**
      * Hide the window.
      */
-    hide() : void {
+    hide(): void {
         this.window.hide();
     }
 
@@ -150,8 +150,8 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
      * @param {any} details Details of the CSS to insert, specifying either a file or code key.
      * @return {Promise<any>} Promise resolved when done.
      */
-    insertCSS(details: any) : Promise<any> {
-        return new Promise((resolve, reject) => {
+    insertCSS(details: any): Promise<any> {
+        return new Promise((resolve, reject): void => {
             if (details.code) {
                 this.window.webContents.insertCSS(details.code);
                 resolve();
@@ -173,18 +173,20 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
      * @return {Observable<InAppBrowserEvent>} Observable that will listen to the event on subscribe, and will stop listening
      *                                         to the event on unsubscribe.
      */
-    on(name: string) : Observable<InAppBrowserEvent> {
+    on(name: string): Observable<InAppBrowserEvent> {
         // Create the observable.
-        return new Observable<InAppBrowserEvent>((observer: Observer<InAppBrowserEvent>) => {
+        return new Observable<InAppBrowserEvent>((observer: Observer<InAppBrowserEvent>): any => {
             // Helper functions to handle events.
-            let received = (event, url) => {
+            const received = (event, url): void => {
                     try {
                         event.url = url || this.window.getURL();
                         event.type = name;
                         observer.next(event);
-                    } catch(ex) {}
+                    } catch (ex) {
+                        // Ignore errors.
+                    }
                 },
-                finishLoad = (event) => {
+                finishLoad = (event): void => {
                     // Check if user is back to launch page.
                     if (this.urlUtils.removeUrlParams(this.url) == this.urlUtils.removeUrlParams(this.window.getURL())) {
                         // The launch page was loaded. Search for the launch link.
@@ -203,7 +205,6 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
 
                     if (this.isLinux && this.isSSO) {
                         // Linux doesn't support custom URL Schemes. Check if launch page is loaded.
-                        // listeners[callback].push(finishLoad);
                         this.window.webContents.on('did-finish-load', finishLoad);
                     }
                     break;
@@ -218,9 +219,10 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
                 case 'exit':
                     this.window.on('close', received);
                     break;
+                default:
             }
 
-            return () => {
+            return (): void => {
                 // Unsubscribing. We need to remove the listeners.
                 switch (name) {
                     case 'loadstart':
@@ -239,6 +241,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
                     case 'exit':
                         this.window.removeListener('close', received);
                         break;
+                    default:
                 }
             };
         });
@@ -247,7 +250,7 @@ export class InAppBrowserObjectMock extends InAppBrowserObject {
     /**
      * Show the window.
      */
-    show() : void {
+    show(): void {
         this.window.show();
     }
 }

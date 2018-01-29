@@ -31,12 +31,12 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
     isSupportedByTheApp: boolean;
     moduleName: string;
 
-    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate) {}
+    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate) { }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.isDisabledInSite = this.moduleDelegate.isModuleDisabledInSite(this.module.modname);
         this.isSupportedByTheApp = this.moduleDelegate.hasHandler(this.module.modname);
         this.moduleName = this.courseProvider.translateModuleName(this.module.modname);
