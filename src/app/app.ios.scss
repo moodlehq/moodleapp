@@ -21,6 +21,13 @@
   @include margin($item-ios-padding-icon-top, null, $item-ios-padding-icon-bottom, 0);
 }
 
+@each $color-name, $color-base, $color-contrast in get-colors($colors-ios) {
+  .ios .core-#{$color-name}-card {
+    @extend .card-ios ;
+    @extend .card-content-ios;
+  }
+}
+
 // Highlights inside the input element.
 @if ($core-text-input-ios-show-highlight) {
   .card-ios, .list-ios {

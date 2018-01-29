@@ -4,7 +4,7 @@
             <button ion-button (click)="cancel()">{{ 'core.cancel' | translate }}</button>
         </ion-buttons>
 
-        <ion-title>{{ title }}</ion-title>
+        <ion-title>{{ title | translate }}</ion-title>
 
         <ion-buttons end>
             <button ion-button *ngIf="hasCaptured" (click)="done()">{{ 'core.done' | translate }}</button>

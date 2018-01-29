@@ -368,7 +368,7 @@ export class CoreFileUploaderHelperProvider {
         return this.fileProvider.getFileObjectFromFileEntry(fileEntry).then((file) => {
             return this.confirmUploadFile(file.size).then(() => {
                 return this.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, siteId).then(() => {
-                    this.domUtils.showAlertTranslated('core.success', 'core.fileuploader.fileuploaded');
+                    this.domUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
                 });
             }).catch((err) => {
                 if (err) {

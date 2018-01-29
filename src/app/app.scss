@@ -409,3 +409,26 @@ ion-select {
     max-width: calc(100% - 1em);
 }
 /*rtl:end:ignore*/
+
+.action-sheet-group {
+    overflow: auto;
+}
+.alert-message {
+    overflow-y: auto;
+}
+
+ion-toast.core-toast-success .toast-wrapper{
+    background: $green-dark;
+}
+
+ion-toast.core-toast-alert .toast-wrapper{
+    background: $red-dark;
+}
+
+// Message cards
+@each $color-name, $color-base, $color-contrast in get-colors($colors) {
+  .core-#{$color-name}-card {
+    @extend ion-card;
+    border-bottom: 3px solid $color-base;
+  }
+}

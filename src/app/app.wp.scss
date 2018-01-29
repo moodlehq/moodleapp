@@ -20,3 +20,10 @@
 .item-wp ion-spinner[item-start] + .item-input {
   @include margin-horizontal(($item-wp-padding-start / 2), null);
 }
+
+@each $color-name, $color-base, $color-contrast in get-colors($colors-wp) {
+  .wp .core-#{$color-name}-card {
+    @extend .card-wp ;
+    @extend .card-content-wp;
+  }
+}
