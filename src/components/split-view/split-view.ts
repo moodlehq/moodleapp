@@ -14,9 +14,8 @@
 
 // Code based on https://github.com/martinpritchardelevate/ionic-split-pane-demo
 
-import { Component, ViewChild, Injectable, Input, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit } from '@angular/core';
 import { NavController, Nav } from 'ionic-angular';
-import { CoreSplitViewPlaceholderPage } from './placeholder/placeholder';
 
 /**
  * Directive to create a split view layout.
@@ -45,9 +44,9 @@ export class CoreSplitViewComponent implements OnInit {
     // @todo Mix both panels header buttons
 
     @ViewChild('detailNav') detailNav: Nav;
-    @Input() when?: string | boolean = "md"; //
-    protected isEnabled: boolean = false;
-    protected masterPageName: string = "";
+    @Input() when?: string | boolean = 'md';
+    protected isEnabled = false;
+    protected masterPageName = '';
     protected loadDetailPage: any = false;
     protected element: HTMLElement; // Current element.
 
@@ -61,7 +60,7 @@ export class CoreSplitViewComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Get the master page name and set an empty page as a placeholder.
         this.masterPageName = this.masterNav.getActive().component.name;
         this.emptyDetails();
@@ -82,7 +81,7 @@ export class CoreSplitViewComponent implements OnInit {
      * @param {any} page   The component class or deeplink name you want to push onto the navigation stack.
      * @param {any} params Any NavParams you want to pass along to the next view.
      */
-    push(page: any, params?: any, element?: HTMLElement) {
+    push(page: any, params?: any, element?: HTMLElement): void {
         if (this.isEnabled) {
             this.detailNav.setRoot(page, params);
         } else {
@@ -97,7 +96,7 @@ export class CoreSplitViewComponent implements OnInit {
     /**
      * Set the details panel to default info.
      */
-    emptyDetails() {
+    emptyDetails(): void {
         this.loadDetailPage = false;
         this.detailNav.setRoot('CoreSplitViewPlaceholderPage');
     }
@@ -107,7 +106,7 @@ export class CoreSplitViewComponent implements OnInit {
      *
      * @param {Boolean} isOn If it fits both panels at the same time.
      */
-    onSplitPaneChanged(isOn) {
+    onSplitPaneChanged(isOn: boolean): void {
         this.isEnabled = isOn;
         if (this.masterNav && this.detailNav) {
             (isOn) ? this.activateSplitView() : this.deactivateSplitView();
@@ -117,14 +116,14 @@ export class CoreSplitViewComponent implements OnInit {
     /**
      * Enable the split view, show both panels and do some magical navigation.
      */
-    activateSplitView() {
-        let currentView = this.masterNav.getActive(),
+    activateSplitView(): void {
+        const currentView = this.masterNav.getActive(),
             currentPageName = currentView.component.name;
         if (currentPageName != this.masterPageName) {
             // CurrentView is a 'Detail' page remove it from the 'master' nav stack.
             this.masterNav.pop();
 
-            // and add it to the 'detail' nav stack.
+            // And add it to the 'detail' nav stack.
             this.detailNav.setRoot(currentView.component, currentView.data);
         } else if (this.loadDetailPage) {
             // MasterPage is shown, load the last detail page if found.
@@ -136,8 +135,8 @@ export class CoreSplitViewComponent implements OnInit {
     /**
      * Disabled the split view, show only one panel and do some magical navigation.
      */
-    deactivateSplitView() {
-        let detailView = this.detailNav.getActive(),
+    deactivateSplitView(): void {
+        const detailView = this.detailNav.getActive(),
             currentPageName = detailView.component.name;
         if (currentPageName != 'CoreSplitViewPlaceholderPage') {
             // Current detail view is a 'Detail' page so, not the placeholder page, push it on 'master' nav stack.

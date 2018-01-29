@@ -24,14 +24,14 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
     name = 'CoreSharedFilesUpload';
     priority = 1300;
 
-    constructor(private sharedFilesHelper: CoreSharedFilesHelperProvider, private platform: Platform) {}
+    constructor(private sharedFilesHelper: CoreSharedFilesHelperProvider, private platform: Platform) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled(): boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return this.platform.is('ios');
     }
 
@@ -41,7 +41,7 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[] {
+    getSupportedMimetypes(mimetypes: string[]): string[] {
         return mimetypes;
     }
 
@@ -50,12 +50,12 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData {
+    getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.sharedfiles.sharedfiles',
             class: 'core-sharedfiles-fileuploader-handler',
             icon: 'folder',
-            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]) => {
+            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
                 // Don't use the params because the file won't be uploaded, it is returned to the fileuploader.
                 return this.sharedFilesHelper.pickSharedFile(mimetypes);
             }

@@ -30,16 +30,16 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
 
     constructor(private appProvider: CoreAppProvider, private platform: Platform, private timeUtils: CoreTimeUtilsProvider,
             private uploaderHelper: CoreFileUploaderHelperProvider, private uploaderProvider: CoreFileUploaderProvider,
-            private domUtils: CoreDomUtilsProvider) {}
+            private domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled(): boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return this.platform.is('android') || !this.appProvider.isMobile() ||
-                    (this.platform.is('ios') && this.platform.version().major >= 9);
+            (this.platform.is('ios') && this.platform.version().major >= 9);
     }
 
     /**
@@ -48,7 +48,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[] {
+    getSupportedMimetypes(mimetypes: string[]): string[] {
         return mimetypes;
     }
 
@@ -57,14 +57,14 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData {
+    getData(): CoreFileUploaderHandlerData {
         const isIOS = this.platform.is('ios');
 
         return {
             title: isIOS ? 'core.fileuploader.more' : 'core.fileuploader.file',
             class: 'core-fileuploader-file-handler',
             icon: isIOS ? 'more' : 'folder',
-            afterRender: (maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]) => {
+            afterRender: (maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]): void => {
                 // Add an invisible file input in the file handler.
                 // It needs to be done like this because the action sheet items don't accept inputs.
                 const element = document.querySelector('.core-fileuploader-file-handler');
@@ -77,8 +77,9 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                     }
 
                     input.addEventListener('change', (evt: Event) => {
-                        let file = input.files[0],
-                            fileName;
+                        const file = input.files[0];
+                        let fileName;
+
                         input.value = ''; // Unset input.
                         if (!file) {
                             return;
@@ -88,6 +89,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         const error = this.uploaderProvider.isInvalidMimetype(mimetypes, file.name, file.type);
                         if (error) {
                             this.domUtils.showErrorModal(error);
+
                             return;
                         }
 

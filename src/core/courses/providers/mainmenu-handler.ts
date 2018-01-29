@@ -26,14 +26,14 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
     priority = 1100;
     isOverviewEnabled: boolean;
 
-    constructor(private coursesProvider: CoreCoursesProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider) {}
+    constructor(private coursesProvider: CoreCoursesProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
+     * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
-    isEnabled(): boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         // Check if my overview is enabled.
         return this.myOverviewProvider.isEnabled().then((enabled) => {
             this.isOverviewEnabled = enabled;

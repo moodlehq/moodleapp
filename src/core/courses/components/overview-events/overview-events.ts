@@ -31,7 +31,7 @@ import * as moment from 'moment';
 })
 export class CoreCoursesOverviewEventsComponent implements OnChanges {
     @Input() events: any[]; // The events to render.
-    @Input() showCourse?: boolean|string; // Whether to show the course name.
+    @Input() showCourse?: boolean | string; // Whether to show the course name.
     @Input() canLoadMore?: boolean; // Whether more events can be loaded.
     @Output() loadMore: EventEmitter<void>; // Notify that more events should be loaded.
 
@@ -52,7 +52,7 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         this.showCourse = this.utils.isTrueOrOne(this.showCourse);
 
         if (changes.events) {
@@ -65,8 +65,9 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
      *
      * @param {number} start Number of days to start getting events from today. E.g. -1 will get events from yesterday.
      * @param {number} [end] Number of days after the start.
+     * @return {any[]} Filtered events.
      */
-    protected filterEventsByTime(start: number, end?: number) {
+    protected filterEventsByTime(start: number, end?: number): any[] {
         start = moment().add(start, 'days').unix();
         end = typeof end != 'undefined' ? moment().add(end, 'days').unix() : end;
 
@@ -78,6 +79,7 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
             return start <= event.timesort;
         }).map((event) => {
             event.iconUrl = this.courseProvider.getModuleIconSrc(event.icon.component);
+
             return event;
         });
     }
@@ -85,7 +87,7 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     /**
      * Update the events displayed.
      */
-    protected updateEvents() {
+    protected updateEvents(): void {
         this.empty = !this.events || this.events.length <= 0;
         if (!this.empty) {
             this.recentlyOverdue = this.filterEventsByTime(-14, 0);
@@ -99,7 +101,7 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     /**
      * Load more events clicked.
      */
-    loadMoreEvents() {
+    loadMoreEvents(): void {
         this.loadingMore = true;
         this.loadMore.emit();
     }
@@ -110,14 +112,14 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
      * @param {Event} e Click event.
      * @param {string} url Url of the action.
      */
-    action(e: Event, url: string) {
+    action(e: Event, url: string): void {
         e.preventDefault();
         e.stopPropagation();
 
         // Fix URL format.
         url = this.textUtils.decodeHTMLEntities(url);
 
-        let modal = this.domUtils.showModalLoading();
+        const modal = this.domUtils.showModalLoading();
         this.contentLinksHelper.handleLink(url, undefined, this.navCtrl).then((treated) => {
             if (!treated) {
                 return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
@@ -125,7 +127,5 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
         }).finally(() => {
             modal.dismiss();
         });
-
-        return false;
     }
 }

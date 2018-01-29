@@ -17,16 +17,16 @@ import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { Globalization } from '@ionic-native/globalization';
 import { Platform } from 'ionic-angular';
-
 import { CoreConfigProvider } from './config';
 import { CoreConfigConstants } from '../configconstants';
+import { Observable } from 'rxjs';
 
 /*
  * Service to handle language features, like changing the current language.
 */
 @Injectable()
 export class CoreLangProvider {
-    protected fallbackLanguage:string = 'en'; // mmCoreConfigConstants.default_lang || 'en',
+    protected fallbackLanguage = CoreConfigConstants.default_lang || 'en';
     protected currentLanguage: string; // Save current language in a variable to speed up the get function.
     protected customStrings = {};
     protected customStringsRaw: string;
@@ -53,60 +53,64 @@ export class CoreLangProvider {
      * @param {string} language New language to use.
      * @return {Promise<any>} Promise resolved when the change is finished.
      */
-    changeCurrentLanguage(language: string) : Promise<any> {
-        let promises = [];
+    changeCurrentLanguage(language: string): Promise<any> {
+        const promises = [];
 
         promises.push(this.translate.use(language));
         promises.push(this.configProvider.set('current_language', language));
 
         moment.locale(language);
         this.currentLanguage = language;
+
         return Promise.all(promises);
-    };
+    }
 
     /**
      * Clear current custom strings.
      */
-    clearCustomStrings() : void {
+    clearCustomStrings(): void {
         this.customStrings = {};
         this.customStringsRaw = '';
-    };
+    }
 
     /**
      * Function to "decorate" the TranslateService.
      * Basically, it extends the translate functions to use the custom lang strings.
      */
-    decorateTranslate() : void {
-        let originalGet = this.translate.get,
+    decorateTranslate(): void {
+        const originalGet = this.translate.get,
             originalInstant = this.translate.instant;
 
         // Redefine translate.get.
-        this.translate.get = (key: string|string[], interpolateParams?: object) => {
+        this.translate.get = (key: string | string[], interpolateParams?: object): Observable<any> => {
             // Always call the original get function to avoid having to create our own Observables.
             if (typeof key == 'string') {
-                let value = this.getCustomString(key);
+                const value = this.getCustomString(key);
                 if (typeof value != 'undefined') {
                     key = value;
                 }
             } else {
                 key = this.getCustomStrings(key).translations;
             }
+
             return originalGet.apply(this.translate, [key, interpolateParams]);
         };
 
         // Redefine translate.instant.
-        this.translate.instant = (key: string|string[], interpolateParams?: object) => {
+        this.translate.instant = (key: string | string[], interpolateParams?: object): any => {
             if (typeof key == 'string') {
-                let value = this.getCustomString(key);
+                const value = this.getCustomString(key);
                 if (typeof value != 'undefined') {
                     return value;
                 }
+
                 return originalInstant.apply(this.translate, [key, interpolateParams]);
             } else {
-                let result = this.getCustomStrings(key);
+                const result = this.getCustomStrings(key);
                 if (result.allFound) {
                     return result.translations;
                 }
+
                 return originalInstant.apply(this.translate, [result.translations]);
             }
         };
@@ -117,16 +121,16 @@ export class CoreLangProvider {
      *
      * @return {any} Custom strings.
      */
-    getAllCustomStrings() : any {
+    getAllCustomStrings(): any {
         return this.customStrings;
-    };
+    }
 
     /**
      * Get current language.
      *
      * @return {Promise<string>} Promise resolved with the current language.
      */
-    getCurrentLanguage() : Promise<string> {
+    getCurrentLanguage(): Promise<string> {
 
         if (typeof this.currentLanguage != 'undefined') {
             return Promise.resolve(this.currentLanguage);
@@ -153,20 +157,22 @@ export class CoreLangProvider {
 
                         }
                     }
+
                     return language;
                 }).catch(() => {
                     // Error getting locale. Use default language.
                     return this.fallbackLanguage;
                 });
-            } catch(err) {
+            } catch (err) {
                 // Error getting locale. Use default language.
                 return Promise.resolve(this.fallbackLanguage);
             }
         }).then((language) => {
             this.currentLanguage = language; // Save it for later.
+
             return language;
         });
-    };
+    }
 
     /**
      * Get a custom string for a certain key.
@@ -174,8 +180,8 @@ export class CoreLangProvider {
      * @param {string} key The key of the translation to get.
      * @return {string} Translation, undefined if not found.
      */
-    getCustomString(key: string) : string {
-        let customStrings = this.getCustomStringsForLanguage();
+    getCustomString(key: string): string {
+        const customStrings = this.getCustomStringsForLanguage();
         if (customStrings && typeof customStrings[key] != 'undefined') {
             return customStrings[key];
         }
@@ -187,12 +193,12 @@ export class CoreLangProvider {
      * @param {string[]} keys The keys of the translations to get.
      * @return {any} Object with translations and a boolean indicating if all translations were found in custom strings.
      */
-    getCustomStrings(keys: string[]) : any {
-        let customStrings = this.getCustomStringsForLanguage(),
-            translations = [],
-            allFound = true;
+    getCustomStrings(keys: string[]): any {
+        const customStrings = this.getCustomStringsForLanguage(),
+            translations = [];
+        let allFound = true;
 
-        keys.forEach((key : string) => {
+        keys.forEach((key: string) => {
             if (customStrings && typeof customStrings[key] != 'undefined') {
                 translations.push(customStrings[key]);
             } else {
@@ -213,17 +219,18 @@ export class CoreLangProvider {
      * @param {string} [lang] The language to get. If not defined, return current language.
      * @return {any} Custom strings.
      */
-    getCustomStringsForLanguage(lang?: string) : any {
+    getCustomStringsForLanguage(lang?: string): any {
         lang = lang || this.currentLanguage;
+
         return this.customStrings[lang];
-    };
+    }
 
     /**
      * Load certain custom strings.
      *
      * @param {string} strings Custom strings to load (tool_mobile_customlangstrings).
      */
-    loadCustomStrings(strings: string) : void {
+    loadCustomStrings(strings: string): void {
         if (strings == this.customStringsRaw) {
             // Strings haven't changed, stop.
             return;
@@ -236,10 +243,10 @@ export class CoreLangProvider {
             return;
         }
 
-        let list: string[] = strings.split(/(?:\r\n|\r|\n)/);
+        const list: string[] = strings.split(/(?:\r\n|\r|\n)/);
         list.forEach((entry: string) => {
-            let values: string[] = entry.split('|'),
-                lang: string;
+            const values: string[] = entry.split('|');
+            let lang: string;
 
             if (values.length < 3) {
                 // Not enough data, ignore the entry.
@@ -254,5 +261,5 @@ export class CoreLangProvider {
 
             this.customStrings[lang][values[0]] = values[1];
         });
-    };
+    }
 }

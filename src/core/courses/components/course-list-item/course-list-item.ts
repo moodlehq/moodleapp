@@ -31,14 +31,15 @@ import { CoreCoursesProvider } from '../../providers/courses';
 export class CoreCoursesCourseListItemComponent implements OnInit {
     @Input() course: any; // The course to render.
 
-    constructor(private navCtrl: NavController, private translate: TranslateService, private coursesProvider: CoreCoursesProvider) {}
+    constructor(private navCtrl: NavController, private translate: TranslateService, private coursesProvider: CoreCoursesProvider) {
+    }
 
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Check if the user is enrolled in the course.
-        return this.coursesProvider.getUserCourse(this.course.id).then(() => {
+        this.coursesProvider.getUserCourse(this.course.id).then(() => {
             this.course.isEnrolled = true;
         }).catch(() => {
             this.course.isEnrolled = false;
@@ -74,9 +75,10 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
 
     /**
      * Open a course.
+     *
+     * @param {any} course The course to open.
      */
-    openCourse(course) {
+    openCourse(course: any): void {
         this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: course});
     }
-
 }

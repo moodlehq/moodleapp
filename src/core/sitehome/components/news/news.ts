@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { Component, OnInit } from '@angular/core';
 import { CoreSitesProvider } from '../../../../providers/sites';
 
 /**
@@ -35,33 +34,13 @@ export class CoreSiteHomeNewsComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Get number of news items to show.
-        const newsItems = this.sitesProvider.getCurrentSite().getStoredConfig('newsitems') || 0;
+        const newsItems = this.sitesProvider.getCurrentSite().getStoredConfig('newsitems') || 0;
         if (!newsItems) {
             return;
         }
 
         // @todo: Implement it once forum is supported.
-        // $mmaModForum = $mmAddonManager.get('$mmaModForum');
-        // if ($mmaModForum) {
-        //     return $mmaModForum.getCourseForums(courseId).then(function(forums) {
-        //         for (var x in forums) {
-        //             if (forums[x].type == 'news') {
-        //                 return forums[x];
-        //             }
-        //         }
-        //     }).then(function(forum) {
-        //         if (forum) {
-        //             return $mmCourse.getModuleBasicInfo(forum.cmid).then(function(module) {
-        //                 scope.show = true;
-        //                 scope.module = module;
-        //                 scope.module._controller =
-        //                     $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId,
-        //                         module.section);
-        //             });
-        //         }
-        //     });
-        // }
     }
 }

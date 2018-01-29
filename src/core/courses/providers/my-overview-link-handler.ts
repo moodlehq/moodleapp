@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
-import { CoreCoursesProvider } from './courses';
 
 /**
  * Handler to treat links to my overview.
@@ -27,7 +26,7 @@ export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBas
     featureName = '$mmSideMenuDelegate_mmCourses';
     pattern = /\/my\/?$/;
 
-    constructor(private coursesProvider: CoreCoursesProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private loginHelper: CoreLoginHelperProvider) {
         super();
     }
 
@@ -40,10 +39,10 @@ export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBas
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId, navCtrl?) => {
+            action: (siteId, navCtrl?): void => {
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
                 this.loginHelper.redirect('CoreCoursesMyOverviewPage', undefined, siteId);
             }

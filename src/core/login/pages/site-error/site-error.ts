@@ -18,7 +18,7 @@ import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 /**
  * Component that displays an error when trying to connect to a site.
  */
-@IonicPage({segment: "core-login-site-error"})
+@IonicPage({ segment: 'core-login-site-error' })
 @Component({
     selector: 'page-core-login-site-error',
     templateUrl: 'site-error.html',
@@ -35,7 +35,7 @@ export class CoreLoginSiteErrorPage {
     /**
      * Close modal.
      */
-    closeModal() : void {
+    closeModal(): void {
         this.viewCtrl.dismiss();
     }
 }

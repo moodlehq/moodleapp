@@ -26,7 +26,7 @@ export class NetworkMock extends Network {
     constructor() {
         super();
 
-        (<any>window).Connection = {
+        (<any> window).Connection = {
             UNKNOWN: 'unknown',
             ETHERNET: 'ethernet',
             WIFI: 'wifi',
@@ -39,21 +39,21 @@ export class NetworkMock extends Network {
     }
 
     /**
-    * Returns an observable to watch connection changes.
-    *
-    * @return {Observable<any>} Observable.
-    */
+     * Returns an observable to watch connection changes.
+     *
+     * @return {Observable<any>} Observable.
+     */
     onchange(): Observable<any> {
         return Observable.merge(this.onConnect(), this.onDisconnect());
     }
 
     /**
-    * Returns an observable to notify when the app is connected.
-    *
-    * @return {Observable<any>} Observable.
-    */
-    onConnect() : Observable<any> {
-        let observable = new Subject<any>();
+     * Returns an observable to notify when the app is connected.
+     *
+     * @return {Observable<any>} Observable.
+     */
+    onConnect(): Observable<any> {
+        const observable = new Subject<any>();
 
         window.addEventListener('online', (ev) => {
             observable.next(ev);
@@ -63,12 +63,12 @@ export class NetworkMock extends Network {
     }
 
     /**
-    * Returns an observable to notify when the app is disconnected.
-    *
-    * @return {Observable<any>} Observable.
-    */
-    onDisconnect() : Observable<any> {
-        let observable = new Subject<any>();
+     * Returns an observable to notify when the app is disconnected.
+     *
+     * @return {Observable<any>} Observable.
+     */
+    onDisconnect(): Observable<any> {
+        const observable = new Subject<any>();
 
         window.addEventListener('offline', (ev) => {
             observable.next(ev);

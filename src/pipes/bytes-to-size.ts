@@ -35,12 +35,13 @@ export class CoreBytesToSizePipe implements PipeTransform {
      * @param {number|string} value The bytes to convert.
      * @return {string} Readable bytes.
      */
-    transform(value: number|string) : string {
+    transform(value: number | string): string {
         if (typeof value == 'string') {
             // Convert the value to a number.
             const numberValue = parseInt(value, 10);
             if (isNaN(numberValue)) {
                 this.logger.error('Invalid value received', value);
+
                 return value;
             }
             value = numberValue;

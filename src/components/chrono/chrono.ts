@@ -32,12 +32,12 @@ import { Component, Input, OnChanges, OnDestroy, Output, EventEmitter, SimpleCha
 })
 export class CoreChronoComponent implements OnChanges, OnDestroy {
     @Input() running: boolean; // Set it to true to start the chrono. Set it to false to stop it.
-    @Input() startTime?: number = 0; // Number of milliseconds to put in the chrono before starting.
+    @Input() startTime? = 0; // Number of milliseconds to put in the chrono before starting.
     @Input() endTime?: number; // Number of milliseconds to stop the chrono.
     @Input() reset?: boolean; // Set it to true to reset the chrono.
     @Output() onEnd?: EventEmitter<void>; // Will emit an event when the endTime is reached.
 
-    time: number = 0;
+    time = 0;
     protected interval;
 
     constructor(private cdr: ChangeDetectorRef) {
@@ -47,14 +47,14 @@ export class CoreChronoComponent implements OnChanges, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.time = this.startTime || 0;
     }
 
     /**
      * Component being initialized.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes && changes.running) {
             if (changes.running.currentValue) {
                 this.start();
@@ -70,7 +70,7 @@ export class CoreChronoComponent implements OnChanges, OnDestroy {
     /**
      * Reset the chrono, stopping it and setting it to startTime.
      */
-    protected resetChrono() : void {
+    protected resetChrono(): void {
         this.stop();
         this.time = this.startTime || 0;
     }
@@ -78,7 +78,7 @@ export class CoreChronoComponent implements OnChanges, OnDestroy {
     /**
      * Start the chrono if it isn't running.
      */
-    protected start() : void {
+    protected start(): void {
         if (this.interval) {
             // Already setup.
             return;
@@ -105,12 +105,12 @@ export class CoreChronoComponent implements OnChanges, OnDestroy {
     /**
      * Stop the chrono, leaving the same time it has.
      */
-    protected stop() : void {
+    protected stop(): void {
         clearInterval(this.interval);
         delete this.interval;
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.stop();
     }
 }

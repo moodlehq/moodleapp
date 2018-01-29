@@ -16,17 +16,12 @@ import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from '../../../providers/events';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
 
 /**
  * Interface that all handlers must implement.
  */
-export interface CoreFileUploaderHandler {
-    /**
-     * A name to identify the addon.
-     * @type {string}
-     */
-    name: string;
-
+export interface CoreFileUploaderHandler extends CoreDelegateHandler {
     /**
      * Handler's priority. The highest priority, the highest position.
      * @type {string}
@@ -34,27 +29,20 @@ export interface CoreFileUploaderHandler {
     priority?: number;
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    isEnabled(): boolean|Promise<boolean>;
-
-    /**
      * Given a list of mimetypes, return the ones that are supported by the handler.
      *
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[];
+    getSupportedMimetypes(mimetypes: string[]): string[];
 
     /**
      * Get the data to display the handler.
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData;
-};
+    getData(): CoreFileUploaderHandlerData;
+}
 
 /**
  * Data needed to render the handler in the file picker. It must be returned by the handler.
@@ -88,7 +76,7 @@ export interface CoreFileUploaderHandlerData {
      * @return {Promise<CoreFileUploaderHandlerResult>} Promise resolved with the result of picking/uploading the file.
      */
     action?(maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[])
-            : Promise<CoreFileUploaderHandlerResult>;
+        : Promise<CoreFileUploaderHandlerResult>;
 
     /**
      * Function called after the handler is rendered.
@@ -98,8 +86,8 @@ export interface CoreFileUploaderHandlerData {
      * @param {boolean} [allowOffline] True to allow selecting in offline, false to require connection.
      * @param {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      */
-    afterRender?(maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]) : void;
-};
+    afterRender?(maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]): void;
+}
 
 /**
  * The result of clicking a handler.
@@ -134,7 +122,7 @@ export interface CoreFileUploaderHandlerResult {
      * @type {any}
      */
     result?: any;
-};
+}
 
 /**
  * Data returned by the delegate for each handler.
@@ -146,37 +134,32 @@ export interface CoreFileUploaderHandlerDataToReturn extends CoreFileUploaderHan
      */
     priority?: number;
 
-
     /**
      * Supported mimetypes.
      * @type {string[]}
      */
     mimetypes?: string[];
-};
+}
 
 /**
  * Delegate to register handlers to be shown in the file picker.
  */
 @Injectable()
-export class CoreFileUploaderDelegate {
-    protected logger;
-    protected handlers: {[s: string]: CoreFileUploaderHandler} = {}; // All registered handlers.
-    protected enabledHandlers: {[s: string]: CoreFileUploaderHandler} = {}; // Handlers enabled for the current site.
-    protected lastUpdateHandlersStart: number;
+export class CoreFileUploaderDelegate extends CoreDelegate {
+    protected handlers: { [s: string]: CoreFileUploaderHandler } = {}; // All registered handlers.
+    protected enabledHandlers: { [s: string]: CoreFileUploaderHandler } = {}; // Handlers enabled for the current site.
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider) {
-        this.logger = logger.getInstance('CoreFileUploaderDelegate');
+    constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
+            protected eventsProvider: CoreEventsProvider) {
+        super('CoreFileUploaderDelegate', loggerProvider, sitesProvider, eventsProvider);
 
-        eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-        eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
         eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearSiteHandlers.bind(this));
     }
 
     /**
      * Clear current site handlers. Reserved for core use.
      */
-    protected clearSiteHandlers() : void {
+    protected clearSiteHandlers(): void {
         this.enabledHandlers = {};
     }
 
@@ -186,118 +169,33 @@ export class CoreFileUploaderDelegate {
      * @param {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      * @return {CoreFileUploaderHandlerDataToReturn[]} List of handlers data.
      */
-    getHandlers(mimetypes: string[]) : CoreFileUploaderHandlerDataToReturn[] {
-        let handlers = [];
+    getHandlers(mimetypes: string[]): CoreFileUploaderHandlerDataToReturn[] {
+        const handlers = [];
 
-        for (let name in this.enabledHandlers) {
-            let handler = this.enabledHandlers[name],
-                supportedMimetypes;
+        for (const name in this.enabledHandlers) {
+            const handler = this.enabledHandlers[name];
+            let supportedMimetypes;
 
             if (mimetypes) {
                 if (!handler.getSupportedMimetypes) {
                     // Handler doesn't implement a required function, don't add it.
-                    return;
+                    continue;
                 }
 
                 supportedMimetypes = handler.getSupportedMimetypes(mimetypes);
 
                 if (!supportedMimetypes.length) {
                     // Handler doesn't support any mimetype, don't add it.
-                    return;
+                    continue;
                 }
             }
 
-            let data : CoreFileUploaderHandlerDataToReturn = handler.getData();
+            const data: CoreFileUploaderHandlerDataToReturn = handler.getData();
             data.priority = handler.priority;
             data.mimetypes = supportedMimetypes;
             handlers.push(data);
         }
 
         return handlers;
-    }
-
-    /**
-     * Check if a time belongs to the last update handlers call.
-     * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
-     *
-     * @param {number} time Time to check.
-     * @return {boolean} Whether it's the last call.
-     */
-    isLastUpdateCall(time: number) : boolean {
-        if (!this.lastUpdateHandlersStart) {
-            return true;
-        }
-        return time == this.lastUpdateHandlersStart;
-    }
-
-    /**
-     * Register a handler.
-     *
-     * @param {CoreFileUploaderHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
-     */
-    registerHandler(handler: CoreFileUploaderHandler) : boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon '${handler.name}' already registered`);
-            return false;
-        }
-        this.logger.log(`Registered addon '${handler.name}'`);
-        this.handlers[handler.name] = handler;
-        return true;
-    }
-
-    /**
-     * Update the handler for the current site.
-     *
-     * @param {CoreFileUploaderHandler} handler The handler to check.
-     * @param {number} time Time this update process started.
-     * @return {Promise<void>} Resolved when done.
-     */
-    protected updateHandler(handler: CoreFileUploaderHandler, time: number) : Promise<void> {
-        let promise,
-            siteId = this.sitesProvider.getCurrentSiteId();
-
-        if (!this.sitesProvider.isLoggedIn()) {
-            promise = Promise.reject(null);
-        } else {
-            promise = Promise.resolve(handler.isEnabled());
-        }
-
-        // Checks if the handler is enabled.
-        return promise.catch(() => {
-            return false;
-        }).then((enabled: boolean) => {
-            // Verify that this call is the last one that was started.
-            if (this.isLastUpdateCall(time) && this.sitesProvider.getCurrentSiteId() === siteId) {
-                if (enabled) {
-                    this.enabledHandlers[handler.name] = handler;
-                } else {
-                    delete this.enabledHandlers[handler.name];
-                }
-            }
-        });
-    }
-
-    /**
-     * Update the handlers for the current site.
-     *
-     * @return {Promise<any>} Resolved when done.
-     */
-    protected updateHandlers() : Promise<any> {
-        let promises = [],
-            now = Date.now();
-
-        this.logger.debug('Updating handlers for current site.');
-
-        this.lastUpdateHandlersStart = now;
-
-        // Loop over all the handlers.
-        for (let name in this.handlers) {
-            promises.push(this.updateHandler(this.handlers[name], now));
-        }
-
-        return Promise.all(promises).catch(() => {
-            // Never reject.
-        });
     }
 }

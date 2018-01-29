@@ -21,11 +21,11 @@ import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../providers/utils/text';
 import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
-import { CoreCoursesDelegate, CoreCoursesHandlerToDisplay } from '../../courses/providers/delegate';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './options-delegate';
 import { CoreSiteHomeProvider } from '../../sitehome/providers/sitehome';
 import { CoreCourseProvider } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
-import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from './module-prefetch-delegate';
+import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
 import { CoreConstants } from '../../constants';
 import { CoreSite } from '../../../classes/site';
@@ -107,14 +107,14 @@ export type CoreCourseCoursesProgress = {
 @Injectable()
 export class CoreCourseHelperProvider {
 
-    protected courseDwnPromises: {[s: string]: {[id: number]: Promise<any>}} = {};
+    protected courseDwnPromises: { [s: string]: { [id: number]: Promise<any> } } = {};
 
     constructor(private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-            private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-            private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
-            private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private utils: CoreUtilsProvider, private translate: TranslateService, private coursesDelegate: CoreCoursesDelegate,
-            private loginHelper: CoreLoginHelperProvider, private siteHomeProvider: CoreSiteHomeProvider) {}
+        private moduleDelegate: CoreCourseModuleDelegate, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
+        private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
+        private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+        private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
+        private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -125,7 +125,7 @@ export class CoreCourseHelperProvider {
      * @param {any[]} [completionStatus] List of completion status.
      * @return {boolean} Whether the sections have content.
      */
-    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any) {
+    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any): boolean {
         let hasContent = false;
 
         sections.forEach((section) => {
@@ -157,7 +157,7 @@ export class CoreCourseHelperProvider {
      * @param {boolean} [refresh] True if it shouldn't use module status cache (slower).
      * @return {Promise<any>} Promise resolved when the status is calculated.
      */
-    calculateSectionStatus(section: any, courseId: number, refresh?: boolean) : Promise<any> {
+    calculateSectionStatus(section: any, courseId: number, refresh?: boolean): Promise<any> {
 
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
             return Promise.reject(null);
@@ -199,10 +199,10 @@ export class CoreCourseHelperProvider {
      * @param {boolean} [refresh] True if it shouldn't use module status cache (slower).
      * @return {Promise<void>} Promise resolved when the states are calculated.
      */
-    calculateSectionsStatus(sections: any[], courseId: number, refresh?: boolean) : Promise<void> {
+    calculateSectionsStatus(sections: any[], courseId: number, refresh?: boolean): Promise<void> {
+        const promises = [];
         let allSectionsSection,
-            allSectionsStatus,
-            promises = [];
+            allSectionsStatus;
 
         sections.forEach((section) => {
             if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
@@ -242,15 +242,16 @@ export class CoreCourseHelperProvider {
      * @param {any} iconData An object where to store the course icon. It will be stored with the name "prefetchCourseIcon".
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
-     * @param {CoreCoursesHandlerToDisplay[]} courseHandlers List of course handlers.
+     * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
      * @return {Promise<boolean>} Promise resolved with true when the download finishes, resolved with false if user doesn't
      *                            confirm, rejected if an error occurs.
      */
-    confirmAndPrefetchCourse(iconData: any, course: any, sections?: any[], courseHandlers?: CoreCoursesHandlerToDisplay[])
+    confirmAndPrefetchCourse(iconData: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
             : Promise<boolean> {
-        let initialIcon = iconData.prefetchCourseIcon,
-            promise,
+
+        const initialIcon = iconData.prefetchCourseIcon,
             siteId = this.sitesProvider.getCurrentSiteId();
+        let promise;
 
         iconData.prefetchCourseIcon = 'spinner';
 
@@ -268,26 +269,27 @@ export class CoreCourseHelperProvider {
                 if (courseHandlers) {
                     promise = Promise.resolve(courseHandlers);
                 } else {
-                    promise = this.coursesDelegate.getHandlersToDisplay(course);
+                    promise = this.courseOptionsDelegate.getHandlersToDisplay(course);
                 }
 
-                return promise.then((handlers: CoreCoursesHandlerToDisplay[]) => {
+                return promise.then((handlers: CoreCourseOptionsHandlerToDisplay[]) => {
                     // Now we have all the data, download the course.
                     return this.prefetchCourse(course, sections, handlers, siteId);
                 }).then(() => {
                     // Download successful.
                     return true;
                 });
-            }, (error) : any => {
+            }, (error): any => {
                 // User cancelled or there was an error calculating the size.
                 iconData.prefetchCourseIcon = initialIcon;
                 if (error) {
                     return Promise.reject(error);
                 }
+
                 return false;
             });
         });
-    };
+    }
 
     /**
      * Confirm and prefetches a list of courses.
@@ -296,18 +298,18 @@ export class CoreCourseHelperProvider {
      * @param {Function} [onProgress] Function to call everytime a course is downloaded.
      * @return {Promise<boolean>} Resolved with true when downloaded, resolved with false if user cancels, rejected if error.
      */
-    confirmAndPrefetchCourses(courses: any[], onProgress?: (data: CoreCourseCoursesProgress) => void) : Promise<boolean> {
+    confirmAndPrefetchCourses(courses: any[], onProgress?: (data: CoreCourseCoursesProgress) => void): Promise<boolean> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         // Confirm the download without checking size because it could take a while.
         return this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
-            let promises = [],
-                total = courses.length,
-                count = 0;
+            const promises = [],
+                total = courses.length;
+            let count = 0;
 
             courses.forEach((course) => {
-                let subPromises = [],
-                    sections,
+                const subPromises = [];
+                let sections,
                     handlers,
                     success = true;
 
@@ -315,7 +317,7 @@ export class CoreCourseHelperProvider {
                 subPromises.push(this.courseProvider.getSections(course.id, false, true).then((courseSections) => {
                     sections = courseSections;
                 }));
-                subPromises.push(this.coursesDelegate.getHandlersToDisplay(course).then((cHandlers) => {
+                subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(course).then((cHandlers) => {
                     handlers = cHandlers;
                 }));
 
@@ -323,19 +325,20 @@ export class CoreCourseHelperProvider {
                     return this.prefetchCourse(course, sections, handlers, siteId);
                 }).catch((error) => {
                     success = false;
+
                     return Promise.reject(error);
                 }).finally(() => {
                     // Course downloaded or failed, notify the progress.
                     count++;
                     if (onProgress) {
-                        onProgress({count: count, total: total, courseId: course.id, success: success});
+                        onProgress({ count: count, total: total, courseId: course.id, success: success });
                     }
                 }));
             });
 
             if (onProgress) {
                 // Notify the start of the download.
-                onProgress({count: 0, total: total, success: true});
+                onProgress({ count: 0, total: total, success: true });
             }
 
             return this.utils.allPromises(promises).then(() => {
@@ -345,7 +348,7 @@ export class CoreCourseHelperProvider {
             // User cancelled.
             return false;
         });
-    };
+    }
 
     /**
      * Show confirmation dialog and then remove a module files.
@@ -354,7 +357,7 @@ export class CoreCourseHelperProvider {
      * @param {number} courseId Course ID the module belongs to.
      * @return {Promise<any>} Promise resolved when done.
      */
-    confirmAndRemoveFiles(module: any, courseId: number) : Promise<any> {
+    confirmAndRemoveFiles(module: any, courseId: number): Promise<any> {
         return this.domUtils.showConfirm(this.translate.instant('course.confirmdeletemodulefiles')).then(() => {
             return this.prefetchDelegate.removeModuleFiles(module, courseId);
         });
@@ -369,14 +372,14 @@ export class CoreCourseHelperProvider {
      * @param {boolean} [alwaysConfirm] True to show a confirm even if the size isn't high, false otherwise.
      * @return {Promise<any>} Promise resolved if the user confirms or there's no need to confirm.
      */
-    confirmDownloadSizeSection(courseId: number, section?: any, sections?: any[], alwaysConfirm?: boolean) : Promise<any> {
+    confirmDownloadSizeSection(courseId: number, section?: any, sections?: any[], alwaysConfirm?: boolean): Promise<any> {
         let sizePromise;
 
         // Calculate the size of the download.
         if (section && section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
             sizePromise = this.prefetchDelegate.getDownloadSize(section.modules, courseId);
         } else {
-            let promises = [],
+            const promises = [],
                 results = {
                     size: 0,
                     total: true
@@ -408,7 +411,7 @@ export class CoreCourseHelperProvider {
      * @param {any[]} courses Courses
      * @return {Promise<string>} Promise resolved with the status.
      */
-    determineCoursesStatus(courses: any[]) : Promise<string> {
+    determineCoursesStatus(courses: any[]): Promise<string> {
         // Get the status of each course.
         const promises = [],
             siteId = this.sitesProvider.getCurrentSiteId();
@@ -423,6 +426,7 @@ export class CoreCourseHelperProvider {
             for (let i = 1; i < statuses.length; i++) {
                 status = this.filepoolProvider.determinePackagesStatus(status, statuses[i]);
             }
+
             return status;
         });
     }
@@ -434,8 +438,9 @@ export class CoreCourseHelperProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Download promise, undefined if not found.
      */
-    getCourseDownloadPromise(courseId: number, siteId?: string) : Promise<any> {
+    getCourseDownloadPromise(courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         return this.courseDwnPromises[siteId] && this.courseDwnPromises[siteId][courseId];
     }
 
@@ -446,7 +451,7 @@ export class CoreCourseHelperProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<string>} Promise resolved with the icon name.
      */
-    getCourseStatusIcon(courseId: number, siteId?: string) : Promise<string> {
+    getCourseStatusIcon(courseId: number, siteId?: string): Promise<string> {
         return this.courseProvider.getCourseStatus(courseId, siteId).then((status) => {
             return this.getCourseStatusIconFromStatus(status);
         });
@@ -461,7 +466,7 @@ export class CoreCourseHelperProvider {
      * @param {String} status Course status.
      * @return {String}       Icon name.
      */
-    getCourseStatusIconFromStatus(status: string) : string {
+    getCourseStatusIconFromStatus(status: string): string {
         if (status == CoreConstants.DOWNLOADED) {
             // Always show refresh icon, we cannot knew if there's anything new in course options.
             return 'refresh';
@@ -480,11 +485,12 @@ export class CoreCourseHelperProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved with the module's course ID.
      */
-    getModuleCourseIdByInstance(id: number, module: any, siteId?: string) : Promise<number> {
+    getModuleCourseIdByInstance(id: number, module: any, siteId?: string): Promise<number> {
         return this.courseProvider.getModuleBasicInfoByInstance(id, module, siteId).then((cm) => {
             return cm.course;
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+
             return Promise.reject(null);
         });
     }
@@ -500,7 +506,7 @@ export class CoreCourseHelperProvider {
      */
     getModulePrefetchInfo(module: any, courseId: number, invalidateCache?: boolean, component?: string)
             : Promise<CoreCourseModulePrefetchInfo> {
-        let moduleInfo: CoreCourseModulePrefetchInfo = {},
+        const moduleInfo: CoreCourseModulePrefetchInfo = {},
             siteId = this.sitesProvider.getCurrentSiteId(),
             promises = [];
 
@@ -514,19 +520,6 @@ export class CoreCourseHelperProvider {
         }));
 
         // @todo: Decide what to display instead of timemodified. Last check_updates?
-        // promises.push(this.prefetchDelegate.getModuleTimemodified(module, courseId).then(function(moduleModified) {
-        //     moduleInfo.timemodified = moduleModified;
-        //     if (moduleModified > 0) {
-        //         var now = $mmUtil.timestamp();
-        //         if (now - moduleModified < 7 * 86400) {
-        //             moduleInfo.timemodifiedReadable = moment(moduleModified * 1000).fromNow();
-        //         } else {
-        //             moduleInfo.timemodifiedReadable = moment(moduleModified * 1000).calendar();
-        //         }
-        //     } else {
-        //         moduleInfo.timemodifiedReadable = "";
-        //     }
-        // }));
 
         promises.push(this.prefetchDelegate.getModuleStatus(module, courseId).then((moduleStatus) => {
             moduleInfo.status = moduleStatus;
@@ -573,7 +566,7 @@ export class CoreCourseHelperProvider {
      * @param {any} section Section.
      * @return {string} Section download ID.
      */
-    getSectionDownloadId(section: any) : string {
+    getSectionDownloadId(section: any): string {
         return 'Section-' + section.id;
     }
 
@@ -586,11 +579,11 @@ export class CoreCourseHelperProvider {
      * @param {number} [sectionId] Section the module belongs to. If not defined we'll try to retrieve it from the site.
      * @return {Promise<void>} Promise resolved when done.
      */
-    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number) : Promise<void> {
+    navigateToModule(moduleId: number, siteId?: string, courseId?: number, sectionId?: number): Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let modal = this.domUtils.showModalLoading(),
-            promise,
+        const modal = this.domUtils.showModalLoading();
+        let promise,
             site: CoreSite;
 
         if (courseId && sectionId) {
@@ -619,7 +612,7 @@ export class CoreCourseHelperProvider {
             return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId);
         }).then((module) => {
             const params = {
-                course: {id: courseId},
+                course: { id: courseId },
                 module: module,
                 sectionId: sectionId
             };
@@ -649,12 +642,12 @@ export class CoreCourseHelperProvider {
      * @param {number} courseId The course ID of the module.
      * @param {number} [sectionId] The section ID of the module.
      */
-    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number) : void {
+    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number): void {
         if (!module.handlerData) {
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
         }
 
-        module.handlerData.action(new Event('click'), navCtrl, module, courseId, {animate: false});
+        module.handlerData.action(new Event('click'), navCtrl, module, courseId, { animate: false });
     }
 
     /**
@@ -662,11 +655,12 @@ export class CoreCourseHelperProvider {
      *
      * @param {any} course The course to prefetch.
      * @param {any[]} sections List of course sections.
-     * @param {CoreCoursesHandlerToDisplay[]} courseHandlers List of course handlers.
+     * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course options handlers.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when the download finishes.
      */
-    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCoursesHandlerToDisplay[], siteId?: string) : Promise<any> {
+    prefetchCourse(course: any, sections: any[], courseHandlers: CoreCourseOptionsHandlerToDisplay[], siteId?: string)
+            : Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.courseDwnPromises[siteId] && this.courseDwnPromises[siteId][course.id]) {
@@ -678,35 +672,35 @@ export class CoreCourseHelperProvider {
 
         // First of all, mark the course as being downloaded.
         this.courseDwnPromises[siteId][course.id] = this.courseProvider.setCourseStatus(course.id, CoreConstants.DOWNLOADING,
-                siteId).then(() => {
-            let promises = [],
-                allSectionsSection = sections[0];
+            siteId).then(() => {
+                const promises = [];
+                let allSectionsSection = sections[0];
 
-            // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
-            if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
-                allSectionsSection = {id: CoreCourseProvider.ALL_SECTIONS_ID};
-            }
-            promises.push(this.prefetchSection(allSectionsSection, course.id, sections));
-
-            // Prefetch course options.
-            courseHandlers.forEach((handler) => {
-                if (handler.prefetch) {
-                    promises.push(handler.prefetch(course));
+                // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
+                if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
+                    allSectionsSection = { id: CoreCourseProvider.ALL_SECTIONS_ID };
                 }
-            });
+                promises.push(this.prefetchSection(allSectionsSection, course.id, sections));
 
-            return this.utils.allPromises(promises);
-        }).then(() => {
-            // Download success, mark the course as downloaded.
-            return this.courseProvider.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId);
-        }).catch((error) => {
-            // Error, restore previous status.
-            return this.courseProvider.setCoursePreviousStatus(course.id, siteId).then(() => {
-                return Promise.reject(error);
+                // Prefetch course options.
+                courseHandlers.forEach((handler) => {
+                    if (handler.prefetch) {
+                        promises.push(handler.prefetch(course));
+                    }
+                });
+
+                return this.utils.allPromises(promises);
+            }).then(() => {
+                // Download success, mark the course as downloaded.
+                return this.courseProvider.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId);
+            }).catch((error) => {
+                // Error, restore previous status.
+                return this.courseProvider.setCoursePreviousStatus(course.id, siteId).then(() => {
+                    return Promise.reject(error);
+                });
+            }).finally(() => {
+                delete this.courseDwnPromises[siteId][course.id];
             });
-        }).finally(() => {
-            delete this.courseDwnPromises[siteId][course.id];
-        });
 
         return this.courseDwnPromises[siteId][course.id];
     }
@@ -722,11 +716,12 @@ export class CoreCourseHelperProvider {
      * @param {boolean} [refresh] True if refreshing, false otherwise.
      * @return {Promise<any>} Promise resolved when downloaded.
      */
-    prefetchModule(handler: any, module: any, size: any, courseId: number, refresh?: boolean) : Promise<any> {
+    prefetchModule(handler: any, module: any, size: any, courseId: number, refresh?: boolean): Promise<any> {
         // Show confirmation if needed.
         return this.domUtils.confirmDownloadSize(size).then(() => {
             // Invalidate content if refreshing and download the data.
-            let promise = refresh ? handler.invalidateContent(module.id, courseId) : Promise.resolve();
+            const promise = refresh ? handler.invalidateContent(module.id, courseId) : Promise.resolve();
+
             return promise.catch(() => {
                 // Ignore errors.
             }).then(() => {
@@ -744,7 +739,7 @@ export class CoreCourseHelperProvider {
      * @param {any[]} [sections] List of sections. Used when downloading all the sections.
      * @return {Promise<any>} Promise resolved when the prefetch is finished.
      */
-    prefetchSection(section: any, courseId: number, sections?: any[]) : Promise<any> {
+    prefetchSection(section: any, courseId: number, sections?: any[]): Promise<any> {
         if (section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
             // Download only this section.
             return this.prefetchSingleSectionIfNeeded(section, courseId).then(() => {
@@ -753,8 +748,8 @@ export class CoreCourseHelperProvider {
             });
         } else {
             // Download all the sections except "All sections".
-            let promises = [],
-                allSectionsStatus;
+            const promises = [];
+            let allSectionsStatus;
 
             section.isDownloading = true;
             sections.forEach((section) => {
@@ -788,7 +783,7 @@ export class CoreCourseHelperProvider {
      * @param {number} courseId Course ID the section belongs to.
      * @return {Promise<any>} Promise resolved when the section is prefetched.
      */
-    protected prefetchSingleSectionIfNeeded(section: any, courseId: number) : Promise<any> {
+    protected prefetchSingleSectionIfNeeded(section: any, courseId: number): Promise<any> {
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
             return Promise.resolve();
         }
@@ -801,9 +796,11 @@ export class CoreCourseHelperProvider {
                 // Section is downloaded or not downloadable, nothing to do.
                 return;
             }
+
             return this.prefetchSingleSection(section, result, courseId);
         }, (error) => {
             section.isDownloading = false;
+
             return Promise.reject(error);
         });
     }
@@ -817,7 +814,7 @@ export class CoreCourseHelperProvider {
      * @param {number} courseId Course ID the section belongs to.
      * @return {Promise<any>} Promise resolved when the section has been prefetched.
      */
-    protected prefetchSingleSection(section: any, result: any, courseId: number) {
+    protected prefetchSingleSection(section: any, result: any, courseId: number): Promise<any> {
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
             return Promise.resolve();
         }
@@ -828,14 +825,13 @@ export class CoreCourseHelperProvider {
         }
 
         // We only download modules with status notdownloaded, downloading or outdated.
-        let modules = result[CoreConstants.OUTDATED].concat(result[CoreConstants.NOT_DOWNLOADED])
-                        .concat(result[CoreConstants.DOWNLOADING]),
+        const modules = result[CoreConstants.OUTDATED].concat(result[CoreConstants.NOT_DOWNLOADED])
+                .concat(result[CoreConstants.DOWNLOADING]),
             downloadId = this.getSectionDownloadId(section);
 
         section.isDownloading = true;
 
-        // We prefetch all the modules to prevent incoeherences in the download count
-        // and also to download stale data that might not be marked as outdated.
+        // Prefetch all modules to prevent incoeherences in download count and to download stale data not marked as outdated.
         return this.prefetchDelegate.prefetchModules(downloadId, modules, courseId, (data) => {
             section.count = data.count;
             section.total = data.total;
@@ -848,12 +844,12 @@ export class CoreCourseHelperProvider {
      * @param {any} section Section to check.
      * @return {boolean} Whether the section has content.
      */
-    sectionHasContent(section: any) : boolean {
+    sectionHasContent(section: any): boolean {
         if (section.id == CoreCourseProvider.ALL_SECTIONS_ID || section.hiddenbynumsections) {
             return false;
         }
 
         return (typeof section.availabilityinfo != 'undefined' && section.availabilityinfo != '') ||
-                section.summary != '' || (section.modules && section.modules.length > 0);
+            section.summary != '' || (section.modules && section.modules.length > 0);
     }
 }

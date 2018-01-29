@@ -31,20 +31,20 @@ import { CoreUtilsProvider } from '../../providers/utils/utils';
     templateUrl: 'search-box.html'
 })
 export class CoreSearchBoxComponent implements OnInit {
-    @Input() initialValue?: string = ''; // Initial value for search text.
-    @Input() searchLabel?: string ; // Label to be used on action button.
+    @Input() initialValue? = ''; // Initial value for search text.
+    @Input() searchLabel?: string; // Label to be used on action button.
     @Input() placeholder?: string; // Placeholder text for search text input.
-    @Input() autocorrect?: string = 'on'; // Enables/disable Autocorrection on search text input.
-    @Input() spellcheck?: string|boolean = true; // Enables/disable Spellchecker on search text input.
-    @Input() autoFocus?: string|boolean; // Enables/disable Autofocus when entering view.
-    @Input() lengthCheck?: number = 3; // Check value length before submit. If 0, any string will be submitted.
+    @Input() autocorrect? = 'on'; // Enables/disable Autocorrection on search text input.
+    @Input() spellcheck?: string | boolean = true; // Enables/disable Spellchecker on search text input.
+    @Input() autoFocus?: string | boolean; // Enables/disable Autofocus when entering view.
+    @Input() lengthCheck? = 3; // Check value length before submit. If 0, any string will be submitted.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
 
     constructor(private translate: TranslateService, private utils: CoreUtilsProvider) {
         this.onSubmit = new EventEmitter();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.searchLabel = this.searchLabel || this.translate.instant('core.search');
         this.placeholder = this.placeholder || this.translate.instant('core.search');
         this.spellcheck = this.utils.isTrueOrOne(this.spellcheck);
@@ -55,7 +55,7 @@ export class CoreSearchBoxComponent implements OnInit {
      *
      * @param {string} value Entered value.
      */
-    submitForm(value: string) {
+    submitForm(value: string): void {
         if (value.length < this.lengthCheck) {
             // The view should handle this case, but we check it here too just in case.
             return;
@@ -63,5 +63,4 @@ export class CoreSearchBoxComponent implements OnInit {
 
         this.onSubmit.emit(value);
     }
-
 }

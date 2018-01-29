@@ -34,12 +34,13 @@ export class CoreToLocaleStringPipe implements PipeTransform {
      * @param {number|string} timestamp The timestamp (can be in seconds or milliseconds).
      * @return {string} Formatted time.
      */
-    transform(timestamp: number|string) : string {
+    transform(timestamp: number | string): string {
         if (typeof timestamp == 'string') {
             // Convert the value to a number.
             const numberTimestamp = parseInt(timestamp, 10);
             if (isNaN(numberTimestamp)) {
                 this.logger.error('Invalid value received', timestamp);
+
                 return timestamp;
             }
             timestamp = numberTimestamp;
@@ -53,6 +54,7 @@ export class CoreToLocaleStringPipe implements PipeTransform {
             // Timestamp is in seconds, convert it to milliseconds.
             timestamp = timestamp * 1000;
         }
+
         return new Date(timestamp).toLocaleString();
     }
 }

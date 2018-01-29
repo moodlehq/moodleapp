@@ -45,15 +45,15 @@ export interface CoreInitHandler {
      * @type {boolean}
      */
     blocking?: boolean;
-};
+}
 
 /*
  * Provider for initialisation mechanisms.
  */
 @Injectable()
 export class CoreInitDelegate {
-    public static DEFAULT_PRIORITY = 100; // Default priority for init processes.
-    public static MAX_RECOMMENDED_PRIORITY = 600;
+    static DEFAULT_PRIORITY = 100; // Default priority for init processes.
+    static MAX_RECOMMENDED_PRIORITY = 600;
 
     protected initProcesses = {};
     protected logger;
@@ -68,7 +68,7 @@ export class CoreInitDelegate {
      *
      * Reserved for core use, do not call directly.
      */
-    executeInitProcesses() : void {
+    executeInitProcesses(): void {
         let ordered = [];
 
         if (typeof this.readiness == 'undefined') {
@@ -76,7 +76,7 @@ export class CoreInitDelegate {
         }
 
         // Re-ordering by priority.
-        for (let name in this.initProcesses) {
+        for (const name in this.initProcesses) {
             ordered.push(this.initProcesses[name]);
         }
         ordered.sort((a, b) => {
@@ -99,7 +99,7 @@ export class CoreInitDelegate {
     /**
      * Init the readiness promise.
      */
-    protected initReadiness() : void {
+    protected initReadiness(): void {
         this.readiness = this.utils.promiseDefer();
         this.readiness.promise.then(() => this.readiness.resolved = true);
     }
@@ -113,7 +113,7 @@ export class CoreInitDelegate {
      */
     isReady(): boolean {
         return this.readiness.resolved;
-    };
+    }
 
     /**
      * Convenience function to return a function that executes the process.
@@ -121,7 +121,7 @@ export class CoreInitDelegate {
      * @param {CoreInitHandler} data The data of the process.
      * @return {Promise<any>} Promise of the process.
      */
-    protected prepareProcess(data: CoreInitHandler) : Promise<any> {
+    protected prepareProcess(data: CoreInitHandler): Promise<any> {
         let promise;
 
         this.logger.debug(`Executing init process '${data.name}'`);
@@ -130,6 +130,7 @@ export class CoreInitDelegate {
             promise = data.load();
         } catch (e) {
             this.logger.error('Error while calling the init process \'' + data.name + '\'. ' + e);
+
             return;
         }
 
@@ -141,7 +142,7 @@ export class CoreInitDelegate {
      *
      * @return {Promise<any>} Resolved when the app is initialised. Never rejected.
      */
-    ready() : Promise<any> {
+    ready(): Promise<any> {
         if (typeof this.readiness === 'undefined') {
             // Prevent race conditions if this is called before executeInitProcesses.
             this.initReadiness();
@@ -164,13 +165,14 @@ export class CoreInitDelegate {
      *
      * @param {CoreInitHandler} instance The instance of the handler.
      */
-    registerProcess(handler: CoreInitHandler) : void {
+    registerProcess(handler: CoreInitHandler): void {
         if (typeof handler.priority == 'undefined') {
             handler.priority = CoreInitDelegate.DEFAULT_PRIORITY;
         }
 
         if (typeof this.initProcesses[handler.name] != 'undefined') {
             this.logger.log(`Process '${handler.name}' already registered.`);
+
             return;
         }
 

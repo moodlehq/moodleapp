@@ -60,7 +60,7 @@ export interface CoreSiteCheckResponse {
      * @type {any}
      */
     config?: any;
-};
+}
 
 /**
  * Response of getting user token.
@@ -83,7 +83,7 @@ export interface CoreSiteUserTokenResponse {
      * @type {string}
      */
     privateToken?: string;
-};
+}
 
 /**
  * Site's basic info.
@@ -124,7 +124,7 @@ export interface CoreSiteBasicInfo {
      * @type {number}
      */
     badge?: number;
-};
+}
 
 /*
  * Service to manage and interact with sites.
@@ -205,7 +205,7 @@ export class CoreSitesProvider {
     protected services = {};
     protected sessionRestored = false;
     protected currentSite: CoreSite;
-    protected sites: {[s: string]: CoreSite} = {};
+    protected sites: { [s: string]: CoreSite } = {};
     protected appDB: SQLiteDB;
     protected siteTablesSchemas = []; // Schemas for site tables. Other providers can add schemas in here.
 
@@ -224,7 +224,7 @@ export class CoreSitesProvider {
      * @param {string} name Name of the site to check.
      * @return {any} Site data if it's a demo site, undefined otherwise.
      */
-    getDemoSiteData(name: string) {
+    getDemoSiteData(name: string): any {
         const demoSites = CoreConfigConstants.demo_sites;
         if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
             return demoSites[name];
@@ -239,8 +239,8 @@ export class CoreSitesProvider {
      * @param {string} [protocol=https://] Protocol to use first.
      * @return {Promise<CoreSiteCheckResponse>} A promise resolved when the site is checked.
      */
-    checkSite(siteUrl: string, protocol = 'https://') : Promise<CoreSiteCheckResponse> {
-        // formatURL adds the protocol if is missing.
+    checkSite(siteUrl: string, protocol: string = 'https://'): Promise<CoreSiteCheckResponse> {
+        // The formatURL function adds the protocol if is missing.
         siteUrl = this.urlUtils.formatURL(siteUrl);
 
         if (!this.urlUtils.isHttpURL(siteUrl)) {
@@ -256,6 +256,7 @@ export class CoreSitesProvider {
 
                 // Retry with the other protocol.
                 protocol = protocol == 'https://' ? 'http://' : 'https://';
+
                 return this.checkSiteWithProtocol(siteUrl, protocol).catch((secondError) => {
                     // Site doesn't exist.
                     if (secondError.error) {
@@ -263,6 +264,7 @@ export class CoreSitesProvider {
                     } else if (error.error) {
                         return Promise.reject(error.error);
                     }
+
                     return Promise.reject(this.translate.instant('core.login.checksiteversion'));
                 });
             });
@@ -276,7 +278,7 @@ export class CoreSitesProvider {
      * @param {string} protocol Protocol to use.
      * @return {Promise<CoreSiteCheckResponse>} A promise resolved when the site is checked.
      */
-    checkSiteWithProtocol(siteUrl: string, protocol: string) : Promise<CoreSiteCheckResponse> {
+    checkSiteWithProtocol(siteUrl: string, protocol: string): Promise<CoreSiteCheckResponse> {
         let publicConfig;
 
         // Now, replace the siteUrl with the protocol.
@@ -290,6 +292,7 @@ export class CoreSitesProvider {
 
             // Site doesn't exist. Try to add or remove 'www'.
             const treatedUrl = this.urlUtils.addOrRemoveWWW(siteUrl);
+
             return this.siteExists(treatedUrl).then(() => {
                 // Success, use this new URL as site url.
                 siteUrl = treatedUrl;
@@ -300,19 +303,21 @@ export class CoreSitesProvider {
                 }
 
                 error = secondError || error;
-                return Promise.reject({error: typeof error == 'object' ? error.error : error});
+
+                return Promise.reject({ error: typeof error == 'object' ? error.error : error });
             });
         }).then(() => {
             // Create a temporary site to check if local_mobile is installed.
             const temporarySite = this.sitesFactory.makeSite(undefined, siteUrl);
+
             return temporarySite.checkLocalMobilePlugin().then((data) => {
                 data.service = data.service || CoreConfigConstants.wsservice;
                 this.services[siteUrl] = data.service; // No need to store it in DB.
 
                 if (data.coreSupported ||
-                        (data.code != CoreConstants.LOGIN_SSO_CODE && data.code != CoreConstants.LOGIN_SSO_INAPP_CODE)) {
+                    (data.code != CoreConstants.LOGIN_SSO_CODE && data.code != CoreConstants.LOGIN_SSO_INAPP_CODE)) {
                     // SSO using local_mobile not needed, try to get the site public config.
-                    return temporarySite.getPublicConfig().then((config) : any => {
+                    return temporarySite.getPublicConfig().then((config): any => {
                         publicConfig = config;
 
                         // Check that the user can authenticate.
@@ -325,6 +330,7 @@ export class CoreSitesProvider {
                             if (config.maintenancemessage) {
                                 message += config.maintenancemessage;
                             }
+
                             return rejectWithCriticalError(message);
                         }
 
@@ -332,12 +338,13 @@ export class CoreSitesProvider {
                         if (data.code === 0) {
                             data.code = config.typeoflogin;
                         }
+
                         return data;
-                    }, (error) : any => {
+                    }, (error): any => {
                         // Error, check if not supported.
                         if (error.available === 1) {
                             // Service supported but an error happened. Return error.
-                            return Promise.reject({error: error.error});
+                            return Promise.reject({ error: error.error });
                         }
 
                         return data;
@@ -347,12 +354,13 @@ export class CoreSitesProvider {
                 return data;
             }).then((data) => {
                 siteUrl = temporarySite.getURL();
-                return {siteUrl: siteUrl, code: data.code, warning: data.warning, service: data.service, config: publicConfig};
+
+                return { siteUrl: siteUrl, code: data.code, warning: data.warning, service: data.service, config: publicConfig };
             });
         });
 
         // Return a rejected promise with a "critical" error.
-        function rejectWithCriticalError(message: string, errorCode?: string) {
+        function rejectWithCriticalError(message: string, errorCode?: string): Promise<never> {
             return Promise.reject({
                 error: message,
                 errorcode: errorCode,
@@ -367,8 +375,8 @@ export class CoreSitesProvider {
      * @param  {string} siteUrl URL of the site to check.
      * @return {Promise} A promise to be resolved if the site exists.
      */
-    siteExists(siteUrl: string) : Promise<void> {
-        let data: any = {};
+    siteExists(siteUrl: string): Promise<void> {
+        const data: any = {};
 
         if (!this.appProvider.isMobile()) {
             // Send fake parameters for CORS. This is only needed in browser.
@@ -378,13 +386,14 @@ export class CoreSitesProvider {
         }
 
         const observable = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT);
+
         return this.utils.observableToPromise(observable).catch((error) => {
             return Promise.reject(error.message);
         }).then((data: any) => {
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
-                return Promise.reject({errorcode: data.errorcode, error: data.error});
+                return Promise.reject({ errorcode: data.errorcode, error: data.error });
             } else if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
-                return Promise.reject({errorcode: 'enablewsdescription', error: data.error});
+                return Promise.reject({ errorcode: 'enablewsdescription', error: data.error });
             }
             // Other errors are not being checked because invalid login will be always raised and we cannot differ them.
         });
@@ -417,20 +426,21 @@ export class CoreSitesProvider {
             },
             observable = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.WS_TIMEOUT);
 
-        return this.utils.observableToPromise(observable).then((data: any) : any => {
+        return this.utils.observableToPromise(observable).then((data: any): any => {
             if (typeof data == 'undefined') {
                 return Promise.reject(this.translate.instant('core.cannotconnect'));
             } else {
                 if (typeof data.token != 'undefined') {
-                    return {token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken};
+                    return { token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken };
                 } else {
                     if (typeof data.error != 'undefined') {
                         // We only allow one retry (to avoid loops).
-                        if (!retry && data.errorcode == "requirecorrectaccess") {
+                        if (!retry && data.errorcode == 'requirecorrectaccess') {
                             siteUrl = this.urlUtils.addOrRemoveWWW(siteUrl);
+
                             return this.getUserToken(siteUrl, username, password, service, true);
                         } else if (typeof data.errorcode != 'undefined') {
-                            return Promise.reject({error: data.error, errorcode: data.errorcode});
+                            return Promise.reject({ error: data.error, errorcode: data.errorcode });
                         } else {
                             return Promise.reject(data.error);
                         }
@@ -452,12 +462,12 @@ export class CoreSitesProvider {
      * @param {string} [privateToken=''] User's private token.
      * @return {Promise<any>} A promise resolved when the site is added and the user is authenticated.
      */
-    newSite(siteUrl: string, token: string, privateToken = '') : Promise<any> {
+    newSite(siteUrl: string, token: string, privateToken: string = ''): Promise<any> {
         // Create a "candidate" site to fetch the site info.
         const candidateSite = this.sitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken);
 
         return candidateSite.fetchSiteInfo().then((info) => {
-            let result = this.isValidMoodleVersion(info);
+            const result = this.isValidMoodleVersion(info);
             if (result == this.VALID_VERSION) {
                 // Set site ID and info.
                 const siteId = this.createSiteID(info.siteurl, info.username);
@@ -498,7 +508,7 @@ export class CoreSitesProvider {
      * @param {string} username Username.
      * @return {string} Site ID.
      */
-    createSiteID(siteUrl: string, username: string) : string {
+    createSiteID(siteUrl: string, username: string): string {
         return <string> Md5.hashAsciiStr(siteUrl + username);
     }
 
@@ -508,7 +518,7 @@ export class CoreSitesProvider {
      * @param {string} siteUrl The site URL.
      * @return {string} The service shortname.
      */
-    determineService(siteUrl: string) : string {
+    determineService(siteUrl: string): string {
         // We need to try siteUrl in both https or http (due to loginhttps setting).
 
         // First http://
@@ -533,7 +543,7 @@ export class CoreSitesProvider {
      * @param {any} info Site info.
      * @return {number} Either VALID_VERSION, LEGACY_APP_VERSION or INVALID_VERSION.
      */
-    protected isValidMoodleVersion(info: any) : number {
+    protected isValidMoodleVersion(info: any): number {
         if (!info) {
             return this.INVALID_VERSION;
         }
@@ -581,11 +591,13 @@ export class CoreSitesProvider {
      * @param {any} info Site info.
      * @return {any} True if valid, object with error message to show and its params if not valid.
      */
-    protected validateSiteInfo(info: any) : any {
+    protected validateSiteInfo(info: any): any {
         if (!info.firstname || !info.lastname) {
             const moodleLink = `<a core-link href="${info.siteurl}">${info.siteurl}</a>`;
-            return {error: 'core.requireduserdatamissing', params: {'$a': moodleLink}};
+
+            return { error: 'core.requireduserdatamissing', params: { $a: moodleLink } };
         }
+
         return true;
     }
 
@@ -600,7 +612,7 @@ export class CoreSitesProvider {
      * @param {any} [config] Site config (from tool_mobile_get_config).
      * @return {Promise<any>} Promise resolved when done.
      */
-    addSite(id: string, siteUrl: string, token: string, info: any, privateToken = '', config?: any) : Promise<any> {
+    addSite(id: string, siteUrl: string, token: string, info: any, privateToken: string = '', config?: any): Promise<any> {
         const entry = {
             id: id,
             siteUrl: siteUrl,
@@ -610,7 +622,8 @@ export class CoreSitesProvider {
             config: config ? JSON.stringify(config) : config,
             loggedOut: 0
         };
-        return this.appDB.insertOrUpdateRecord(this.SITES_TABLE, entry, {id: id});
+
+        return this.appDB.insertOrUpdateRecord(this.SITES_TABLE, entry, { id: id });
     }
 
     /**
@@ -619,7 +632,7 @@ export class CoreSitesProvider {
      * @param {string} siteId ID of the site to load.
      * @return {Promise}      Promise to be resolved when the site is loaded.
      */
-    loadSite(siteId: string) : Promise<any> {
+    loadSite(siteId: string): Promise<any> {
         this.logger.debug(`Load site ${siteId}`);
 
         return this.getSite(siteId).then((site) => {
@@ -647,7 +660,7 @@ export class CoreSitesProvider {
      *
      * @return {CoreSite} Current site.
      */
-    getCurrentSite() : CoreSite {
+    getCurrentSite(): CoreSite {
         return this.currentSite;
     }
 
@@ -656,7 +669,7 @@ export class CoreSitesProvider {
      *
      * @return {string} Current site ID.
      */
-    getCurrentSiteId() : string {
+    getCurrentSiteId(): string {
         if (this.currentSite) {
             return this.currentSite.getId();
         } else {
@@ -665,13 +678,26 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get the site home ID of the current site.
+     *
+     * @return {number} Current site home ID.
+     */
+    getCurrentSiteHomeId(): number {
+        if (this.currentSite) {
+            return this.currentSite.getSiteHomeId();
+        } else {
+            return 1;
+        }
+    }
+
+    /**
      * Check if the user is logged in a site.
      *
      * @return {boolean} Whether the user is logged in a site.
      */
-    isLoggedIn() : boolean {
+    isLoggedIn(): boolean {
         return typeof this.currentSite != 'undefined' && typeof this.currentSite.token != 'undefined' &&
-                this.currentSite.token != '';
+            this.currentSite.token != '';
     }
 
     /**
@@ -680,7 +706,7 @@ export class CoreSitesProvider {
      * @param {string} siteId ID of the site to delete.
      * @return {Promise<any>} Promise to be resolved when the site is deleted.
      */
-    deleteSite(siteId: string) : Promise<any> {
+    deleteSite(siteId: string): Promise<any> {
         this.logger.debug(`Delete site ${siteId}`);
 
         if (typeof this.currentSite != 'undefined' && this.currentSite.id == siteId) {
@@ -691,7 +717,8 @@ export class CoreSitesProvider {
             return site.deleteDB().then(() => {
                 // Site DB deleted, now delete the app from the list of sites.
                 delete this.sites[siteId];
-                return this.appDB.deleteRecords(this.SITES_TABLE, {id: siteId}).then(() => {
+
+                return this.appDB.deleteRecords(this.SITES_TABLE, { id: siteId }).then(() => {
                     // Site deleted from sites list, now delete the folder.
                     return site.deleteFolder();
                 }, () => {
@@ -709,7 +736,7 @@ export class CoreSitesProvider {
      *
      * @return {Promise<void>} Promise resolved if there are no sites, and rejected if there is at least one.
      */
-    hasNoSites() : Promise<void> {
+    hasNoSites(): Promise<void> {
         return this.appDB.countRecords(this.SITES_TABLE).then((count) => {
             if (count > 0) {
                 return Promise.reject(null);
@@ -722,7 +749,7 @@ export class CoreSitesProvider {
      *
      * @return {Promise<void>} Promise resolved if there is at least one site, and rejected if there aren't.
      */
-    hasSites() : Promise<void> {
+    hasSites(): Promise<void> {
         return this.appDB.countRecords(this.SITES_TABLE).then((count) => {
             if (count == 0) {
                 return Promise.reject(null);
@@ -736,7 +763,7 @@ export class CoreSitesProvider {
      * @param {string} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise<CoreSite>} Promise resolved with the site.
      */
-    getSite(siteId?: string) : Promise<CoreSite> {
+    getSite(siteId?: string): Promise<CoreSite> {
         if (!siteId) {
             return this.currentSite ? Promise.resolve(this.currentSite) : Promise.reject(null);
         } else if (this.currentSite && this.currentSite.getId() == siteId) {
@@ -744,8 +771,8 @@ export class CoreSitesProvider {
         } else if (typeof this.sites[siteId] != 'undefined') {
             return Promise.resolve(this.sites[siteId]);
         } else {
-            // retrieve and create the site.
-            return this.appDB.getRecord(this.SITES_TABLE, {id: siteId}).then((data) => {
+            // Retrieve and create the site.
+            return this.appDB.getRecord(this.SITES_TABLE, { id: siteId }).then((data) => {
                 return this.makeSiteFromSiteListEntry(data);
             });
         }
@@ -757,7 +784,7 @@ export class CoreSitesProvider {
      * @param {any} entry Site list entry.
      * @return {CoreSite} Created site.
      */
-    makeSiteFromSiteListEntry(entry) : CoreSite {
+    makeSiteFromSiteListEntry(entry: any): CoreSite {
         let site,
             info = entry.info,
             config = entry.config;
@@ -765,14 +792,18 @@ export class CoreSitesProvider {
         // Try to parse info and config.
         try {
             info = info ? JSON.parse(info) : info;
-        } catch(ex) {}
+        } catch (ex) {
+            // Ignore errors.
+        }
 
         try {
             config = config ? JSON.parse(config) : config;
-        } catch(ex) {}
+        } catch (ex) {
+            // Ignore errors.
+        }
 
         site = this.sitesFactory.makeSite(entry.id, entry.siteUrl, entry.token,
-                info, entry.privateToken, config, entry.loggedOut == 1);
+            info, entry.privateToken, config, entry.loggedOut == 1);
         this.sites[entry.id] = site;
         if (this.siteTablesSchemas.length) {
             // Create tables in the site's database.
@@ -788,12 +819,13 @@ export class CoreSitesProvider {
      * @param {string|CoreSite} [site] Site object or siteId to be compared. If not defined, use current site.
      * @return {boolean} Whether site or siteId is the current one.
      */
-    isCurrentSite(site: string|CoreSite) : boolean {
+    isCurrentSite(site: string | CoreSite): boolean {
         if (!site || !this.currentSite) {
             return !!this.currentSite;
         }
 
         const siteId = typeof site == 'object' ? site.getId() : site;
+
         return this.currentSite.getId() === siteId;
     }
 
@@ -803,7 +835,7 @@ export class CoreSitesProvider {
      * @param {string} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise<SQLiteDB>} Promise resolved with the database.
      */
-    getSiteDb(siteId: string) : Promise<SQLiteDB> {
+    getSiteDb(siteId: string): Promise<SQLiteDB> {
         return this.getSite(siteId).then((site) => {
             return site.getDb();
         });
@@ -815,7 +847,7 @@ export class CoreSitesProvider {
      * @param  {number} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise}         Promise resolved with site home ID.
      */
-    getSiteHomeId(siteId?: string) : Promise<number> {
+    getSiteHomeId(siteId?: string): Promise<number> {
         return this.getSite(siteId).then((site) => {
             return site.getSiteHomeId();
         });
@@ -827,16 +859,18 @@ export class CoreSitesProvider {
      * @param {String[]} [ids] IDs of the sites to get. If not defined, return all sites.
      * @return {Promise<CoreSiteBasicInfo[]>} Promise resolved when the sites are retrieved.
      */
-    getSites(ids?: string[]) : Promise<CoreSiteBasicInfo[]> {
+    getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         return this.appDB.getAllRecords(this.SITES_TABLE).then((sites) => {
-            let formattedSites = [];
+            const formattedSites = [];
             sites.forEach((site) => {
                 if (!ids || ids.indexOf(site.id) > -1) {
                     // Try to parse info.
                     let siteInfo = site.info;
                     try {
                         siteInfo = siteInfo ? JSON.parse(siteInfo) : siteInfo;
-                    } catch(ex) {}
+                    } catch (ex) {
+                        // Ignore errors.
+                    }
 
                     const basicInfo: CoreSiteBasicInfo = {
                         id: site.id,
@@ -848,6 +882,7 @@ export class CoreSitesProvider {
                     formattedSites.push(basicInfo);
                 }
             });
+
             return formattedSites;
         });
     }
@@ -871,12 +906,13 @@ export class CoreSitesProvider {
      * @param {string} siteid ID of the site the user is accessing.
      * @return {Promise<void>} Promise resolved when current site is stored.
      */
-    login(siteId: string) : Promise<void> {
+    login(siteId: string): Promise<void> {
         const entry = {
             id: 1,
             siteId: siteId
         };
-        return this.appDB.insertOrUpdateRecord(this.CURRENT_SITE_TABLE, entry, {id: 1}).then(() => {
+
+        return this.appDB.insertOrUpdateRecord(this.CURRENT_SITE_TABLE, entry, { id: 1 }).then(() => {
             this.eventsProvider.trigger(CoreEventsProvider.LOGIN, {}, siteId);
         });
     }
@@ -886,7 +922,7 @@ export class CoreSitesProvider {
      *
      * @return {Promise<any>} Promise resolved when the user is logged out.
      */
-    logout() : Promise<any> {
+    logout(): Promise<any> {
         if (!this.currentSite) {
             // Already logged out.
             return Promise.resolve();
@@ -902,7 +938,7 @@ export class CoreSitesProvider {
             promises.push(this.setSiteLoggedOut(siteId, true));
         }
 
-        promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, {id: 1}));
+        promises.push(this.appDB.deleteRecords(this.CURRENT_SITE_TABLE, { id: 1 }));
 
         return Promise.all(promises).finally(() => {
             this.eventsProvider.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
@@ -914,16 +950,17 @@ export class CoreSitesProvider {
      *
      * @return {Promise<any>} Promise resolved if a session is restored.
      */
-    restoreSession() : Promise<any> {
+    restoreSession(): Promise<any> {
         if (this.sessionRestored) {
             return Promise.reject(null);
         }
 
         this.sessionRestored = true;
 
-        return this.appDB.getRecord(this.CURRENT_SITE_TABLE, {id: 1}).then((currentSite) => {
+        return this.appDB.getRecord(this.CURRENT_SITE_TABLE, { id: 1 }).then((currentSite) => {
             const siteId = currentSite.siteId;
             this.logger.debug(`Restore session in site ${siteId}`);
+
             return this.loadSite(siteId);
         });
     }
@@ -935,7 +972,7 @@ export class CoreSitesProvider {
      * @param {boolean} loggedOut True to set the site as logged out, false otherwise.
      * @return {Promise<any>} Promise resolved when done.
      */
-    setSiteLoggedOut(siteId: string, loggedOut: boolean) : Promise<any> {
+    setSiteLoggedOut(siteId: string, loggedOut: boolean): Promise<any> {
         return this.getSite(siteId).then((site) => {
             const newValues = {
                 token: '', // Erase the token for security.
@@ -944,7 +981,7 @@ export class CoreSitesProvider {
 
             site.setLoggedOut(loggedOut);
 
-            return this.appDB.updateRecords(this.SITES_TABLE, newValues, {id: siteId});
+            return this.appDB.updateRecords(this.SITES_TABLE, newValues, { id: siteId });
         });
     }
 
@@ -957,8 +994,9 @@ export class CoreSitesProvider {
      * @param {string} [privateToken=''] User's private token.
      * @return {Promise<any>} A promise resolved when the site is updated.
      */
-    updateSiteToken(siteUrl: string, username: string, token: string, privateToken = '') : Promise<any> {
+    updateSiteToken(siteUrl: string, username: string, token: string, privateToken: string = ''): Promise<any> {
         const siteId = this.createSiteID(siteUrl, username);
+
         return this.updateSiteTokenBySiteId(siteId, token, privateToken);
     }
 
@@ -970,7 +1008,7 @@ export class CoreSitesProvider {
      * @param {string} [privateToken=''] User's private token.
      * @return {Promise<any>} A promise resolved when the site is updated.
      */
-    updateSiteTokenBySiteId(siteId: string, token: string, privateToken = '') : Promise<any> {
+    updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<any> {
         return this.getSite(siteId).then((site) => {
             const newValues = {
                 token: token,
@@ -982,7 +1020,7 @@ export class CoreSitesProvider {
             site.privateToken = privateToken;
             site.setLoggedOut(false); // Token updated means the user authenticated again, not logged out anymore.
 
-            return this.appDB.updateRecords(this.SITES_TABLE, newValues, {id: siteId});
+            return this.appDB.updateRecords(this.SITES_TABLE, newValues, { id: siteId });
         });
     }
 
@@ -992,7 +1030,7 @@ export class CoreSitesProvider {
      * @param {string} siteid Site's ID.
      * @return {Promise<any>} A promise resolved when the site is updated.
      */
-    updateSiteInfo(siteId: string) : Promise<any> {
+    updateSiteInfo(siteId: string): Promise<any> {
         return this.getSite(siteId).then((site) => {
             return site.fetchSiteInfo().then((info) => {
                 site.setInfo(info);
@@ -1001,7 +1039,7 @@ export class CoreSitesProvider {
                 return this.getSiteConfig(site).catch(() => {
                     // Error getting config, keep the current one.
                 }).then((config) => {
-                    let newValues: any = {
+                    const newValues: any = {
                         info: JSON.stringify(info),
                         loggedOut: site.isLoggedOut() ? 1 : 0
                     };
@@ -1011,7 +1049,7 @@ export class CoreSitesProvider {
                         newValues.config = JSON.stringify(config);
                     }
 
-                    return this.appDB.updateRecords(this.SITES_TABLE, newValues, {id: siteId}).finally(() => {
+                    return this.appDB.updateRecords(this.SITES_TABLE, newValues, { id: siteId }).finally(() => {
                         this.eventsProvider.trigger(CoreEventsProvider.SITE_UPDATED, {}, siteId);
                     });
                 });
@@ -1026,8 +1064,9 @@ export class CoreSitesProvider {
      * @param {string} username Username.
      * @return {Promise<any>} A promise to be resolved when the site is updated.
      */
-    updateSiteInfoByUrl(siteUrl: string, username: string) : Promise<any> {
+    updateSiteInfoByUrl(siteUrl: string, username: string): Promise<any> {
         const siteId = this.createSiteID(siteUrl, username);
+
         return this.updateSiteInfo(siteId);
     }
 
@@ -1041,7 +1080,7 @@ export class CoreSitesProvider {
      * @param {string} [username] If set, it will return only the sites where the current user has this username.
      * @return {Promise<string[]>} Promise resolved with the site IDs (array).
      */
-    getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string) : Promise<string[]> {
+    getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string): Promise<string[]> {
         // If prioritize is true, check current site first.
         if (prioritize && this.currentSite && this.currentSite.containsUrl(url)) {
             if (!username || this.currentSite.getInfo().username == username) {
@@ -1066,7 +1105,7 @@ export class CoreSitesProvider {
         }
 
         return this.appDB.getAllRecords(this.SITES_TABLE).then((siteEntries) => {
-            let ids = [];
+            const ids = [];
             siteEntries.forEach((site) => {
                 if (!this.sites[site.id]) {
                     this.makeSiteFromSiteListEntry(site);
@@ -1078,6 +1117,7 @@ export class CoreSitesProvider {
                     }
                 }
             });
+
             return ids;
         }).catch(() => {
             // Shouldn't happen.
@@ -1090,8 +1130,8 @@ export class CoreSitesProvider {
      *
      * @return {Promise<string>} Promise resolved with the site ID.
      */
-    getStoredCurrentSiteId() : Promise<string> {
-        return this.appDB.getRecord(this.CURRENT_SITE_TABLE, {id: 1}).then((currentSite) => {
+    getStoredCurrentSiteId(): Promise<string> {
+        return this.appDB.getRecord(this.CURRENT_SITE_TABLE, { id: 1 }).then((currentSite) => {
             return currentSite.siteId;
         });
     }
@@ -1102,8 +1142,9 @@ export class CoreSitesProvider {
      * @param {string} siteUrl URL of the site.
      * @return {Promise<any>} Promise resolved with the public config.
      */
-    getSitePublicConfig(siteUrl: string) : Promise<any> {
+    getSitePublicConfig(siteUrl: string): Promise<any> {
         const temporarySite = this.sitesFactory.makeSite(undefined, siteUrl);
+
         return temporarySite.getPublicConfig();
     }
 
@@ -1113,7 +1154,7 @@ export class CoreSitesProvider {
      * @param {any} site The site to get the config.
      * @return {Promise<any>} Promise resolved with config if available.
      */
-    protected getSiteConfig(site: CoreSite) : Promise<any> {
+    protected getSiteConfig(site: CoreSite): Promise<any> {
         if (!site.wsAvailable('tool_mobile_get_config')) {
             // WS not available, cannot get config.
             return Promise.resolve();
@@ -1129,7 +1170,7 @@ export class CoreSitesProvider {
      * @param {string} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise<boolean>} Promise resolved with true if disabled.
      */
-    isFeatureDisabled(name: string, siteId?: string) : Promise<boolean> {
+    isFeatureDisabled(name: string, siteId?: string): Promise<boolean> {
         return this.getSite(siteId).then((site) => {
             return site.isFeatureDisabled(name);
         });
@@ -1140,7 +1181,7 @@ export class CoreSitesProvider {
      *
      * @param {any} table Table schema.
      */
-    createTableFromSchema(table: any) : void {
+    createTableFromSchema(table: any): void {
         this.createTablesFromSchema([table]);
     }
 
@@ -1149,12 +1190,12 @@ export class CoreSitesProvider {
      *
      * @param {any[]} tables List of tables schema.
      */
-    createTablesFromSchema(tables: any[]) : void {
+    createTablesFromSchema(tables: any[]): void {
         // Add the tables to the list of schemas. This list is to create all the tables in new sites.
         this.siteTablesSchemas = this.siteTablesSchemas.concat(tables);
 
         // Now create these tables in current sites.
-        for (let id in this.sites) {
+        for (const id in this.sites) {
             this.sites[id].getDb().createTablesFromSchema(tables);
         }
     }

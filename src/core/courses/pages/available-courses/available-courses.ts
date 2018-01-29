@@ -21,7 +21,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that displays available courses in current site.
  */
-@IonicPage({segment: "core-courses-available-courses"})
+@IonicPage({ segment: 'core-courses-available-courses' })
 @Component({
     selector: 'page-core-courses-available-courses',
     templateUrl: 'available-courses.html',
@@ -31,12 +31,12 @@ export class CoreCoursesAvailableCoursesPage {
     coursesLoaded: boolean;
 
     constructor(private coursesProvider: CoreCoursesProvider, private domUtils: CoreDomUtilsProvider,
-            private sitesProvider: CoreSitesProvider) {}
+        private sitesProvider: CoreSitesProvider) { }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.loadCourses().finally(() => {
             this.coursesLoaded = true;
         });
@@ -44,9 +44,12 @@ export class CoreCoursesAvailableCoursesPage {
 
     /**
      * Load the courses.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadCourses() {
+    protected loadCourses(): Promise<any> {
         const frontpageCourseId = this.sitesProvider.getCurrentSite().getSiteHomeId();
+
         return this.coursesProvider.getCoursesByField().then((courses) => {
             this.courses = courses.filter((course) => {
                 return course.id != frontpageCourseId;
@@ -61,8 +64,8 @@ export class CoreCoursesAvailableCoursesPage {
      *
      * @param {any} refresher Refresher.
      */
-    refreshCourses(refresher: any) {
-        let promises = [];
+    refreshCourses(refresher: any): void {
+        const promises = [];
 
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.coursesProvider.invalidateCoursesByField());
@@ -72,5 +75,5 @@ export class CoreCoursesAvailableCoursesPage {
                 refresher.complete();
             });
         });
-    };
+    }
 }

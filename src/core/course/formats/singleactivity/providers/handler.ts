@@ -23,14 +23,16 @@ import { CoreCourseFormatSingleActivityComponent } from '../components/format';
 export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHandler {
     name = 'singleactivity';
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
@@ -40,7 +42,7 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      * @param {any} course The course to check.
      * @type {boolean} Whether it can view all sections.
      */
-    canViewAllSections(course: any) : boolean {
+    canViewAllSections(course: any): boolean {
         return false;
     }
 
@@ -52,10 +54,11 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      * @param {any[]} [sections] List of sections.
      * @return {string} Title.
      */
-    getCourseTitle(course: any, sections?: any[]) : string {
+    getCourseTitle(course: any, sections?: any[]): string {
         if (sections && sections[0] && sections[0].modules && sections[0].modules[0]) {
             return sections[0].modules[0].name;
         }
+
         return course.fullname || '';
     }
 
@@ -65,7 +68,7 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      * @param {any} course The course to check.
      * @type {boolean} Whether the default section selector should be displayed.
      */
-    displaySectionSelector(course: any) : boolean {
+    displaySectionSelector(course: any): boolean {
         return false;
     }
 
@@ -77,7 +80,7 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      * @param {any} course The course to render.
      * @return {any} The component to use, undefined if not found.
      */
-    getCourseFormatComponent(course: any) : any {
+    getCourseFormatComponent(course: any): any {
         return CoreCourseFormatSingleActivityComponent;
     }
 }

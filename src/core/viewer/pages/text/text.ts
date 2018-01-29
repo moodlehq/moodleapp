@@ -19,7 +19,7 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 /**
  * Page to render a certain text. If opened as a modal, it will have a button to close the modal.
  */
-@IonicPage({segment: "core-viewer-text"})
+@IonicPage({ segment: 'core-viewer-text' })
 @Component({
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',
@@ -28,7 +28,7 @@ export class CoreViewerTextPage {
     title: string; // Page title.
     content: string; // Page content.
     component: string; // Component to use in format-text.
-    componentId: string|number; // Component ID to use in format-text.
+    componentId: string | number; // Component ID to use in format-text.
 
     constructor(private viewCtrl: ViewController, params: NavParams, textUtils: CoreTextUtilsProvider) {
         this.title = params.get('title');
@@ -40,7 +40,7 @@ export class CoreViewerTextPage {
     /**
      * Close modal.
      */
-    closeModal() : void {
+    closeModal(): void {
         this.viewCtrl.dismiss();
     }
 }

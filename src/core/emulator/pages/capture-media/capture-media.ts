@@ -22,7 +22,7 @@ import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
 /**
  * Page to capture media in browser or desktop.
  */
-@IonicPage({segment: "core-emulator-capture-media"})
+@IonicPage({ segment: 'core-emulator-capture-media' })
 @Component({
     selector: 'page-core-emulator-capture-media',
     templateUrl: 'capture-media.html',
@@ -55,7 +55,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     protected mediaRecorder; // To record video/audio.
     protected audioDrawer; // To start/stop the display of audio sound.
     protected quality; // Image only.
-    protected previewMedia: HTMLAudioElement|HTMLVideoElement; // The element to preview the audio/video captured.
+    protected previewMedia: HTMLAudioElement | HTMLVideoElement; // The element to preview the audio/video captured.
     protected mediaBlob: Blob; // A Blob where the captured data is stored.
     protected localMediaStream: MediaStream;
 
@@ -75,13 +75,13 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.initVariables();
 
-        let constraints = {
-                video: this.isAudio ? false : {facingMode: this.facingMode},
-                audio: !this.isImage
-            };
+        const constraints = {
+            video: this.isAudio ? false : { facingMode: this.facingMode },
+            audio: !this.isImage
+        };
 
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
             let chunks = [];
@@ -96,17 +96,17 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                     this.audioDrawer.start();
                 }
 
-                this.mediaRecorder = new this.window.MediaRecorder(this.localMediaStream, {mimeType: this.mimetype});
+                this.mediaRecorder = new this.window.MediaRecorder(this.localMediaStream, { mimeType: this.mimetype });
 
                 // When video or audio is recorded, add it to the list of chunks.
-                this.mediaRecorder.ondataavailable = (e) => {
+                this.mediaRecorder.ondataavailable = (e): void => {
                     if (e.data.size > 0) {
                         chunks.push(e.data);
                     }
                 };
 
                 // When recording stops, create a Blob element with the recording and set it to the video or audio.
-                this.mediaRecorder.onstop = () => {
+                this.mediaRecorder.onstop = (): void => {
                     this.mediaBlob = new Blob(chunks);
                     chunks = [];
 
@@ -119,7 +119,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                     waitTimeout;
 
                 // Listen for stream ready to display the stream.
-                this.streamVideo.nativeElement.onloadedmetadata = () => {
+                this.streamVideo.nativeElement.onloadedmetadata = (): void => {
                     if (hasLoaded) {
                         // Already loaded or timeout triggered, stop.
                         return;
@@ -149,7 +149,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 this.readyToCapture = true;
             }
         }).catch((error) => {
-            this.dismissWithError(-1, error.message || error);
+            this.dismissWithError(-1, error.message || error);
         });
     }
 
@@ -159,8 +159,11 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
      *
      * @param {MediaStream} stream Stream returned by getUserMedia.
      */
-    protected initAudioDrawer(stream: MediaStream) : void {
-        let audioCtx = new (this.window.AudioContext || this.window.webkitAudioContext)(),
+    protected initAudioDrawer(stream: MediaStream): void {
+        let skip = true,
+            running = false;
+
+        const audioCtx = new (this.window.AudioContext || this.window.webkitAudioContext)(),
             canvasCtx = this.streamAudio.nativeElement.getContext('2d'),
             source = audioCtx.createMediaStreamSource(stream),
             analyser = audioCtx.createAnalyser(),
@@ -168,9 +171,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
             dataArray = new Uint8Array(bufferLength),
             width = this.streamAudio.nativeElement.width,
             height = this.streamAudio.nativeElement.height,
-            running = false,
-            skip = true,
-            drawAudio = () => {
+            drawAudio = (): void => {
                 if (!running) {
                     return;
                 }
@@ -178,14 +179,14 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 // Update the draw every animation frame.
                 requestAnimationFrame(drawAudio);
 
-                 // Skip half of the frames to improve performance, shouldn't affect the smoothness.
+                // Skip half of the frames to improve performance, shouldn't affect the smoothness.
                 skip = !skip;
                 if (skip) {
                     return;
                 }
 
-                let sliceWidth = width / bufferLength,
-                    x = 0;
+                const sliceWidth = width / bufferLength;
+                let x = 0;
 
                 analyser.getByteTimeDomainData(dataArray);
 
@@ -198,7 +199,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 canvasCtx.beginPath();
 
                 for (let i = 0; i < bufferLength; i++) {
-                    let v = dataArray[i] / 128.0,
+                    const v = dataArray[i] / 128.0,
                         y = v * height / 2;
 
                     if (i === 0) {
@@ -218,7 +219,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
         source.connect(analyser);
 
         this.audioDrawer = {
-            start: () => {
+            start: (): void => {
                 if (running) {
                     return;
                 }
@@ -226,7 +227,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 running = true;
                 drawAudio();
             },
-            stop: () => {
+            stop: (): void => {
                 running = false;
             }
         };
@@ -235,7 +236,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Initialize some variables based on the params.
      */
-    protected initVariables() {
+    protected initVariables(): void {
         if (this.type == 'captureimage') {
             this.isCaptureImage = true;
             this.type = 'image';
@@ -257,7 +258,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Main action clicked: record or stop recording.
      */
-    actionClicked() : void {
+    actionClicked(): void {
         if (this.isCapturing) {
             // It's capturing, stop.
             this.stopCapturing();
@@ -271,15 +272,15 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             } else {
                 // Get the image from the video and set it to the canvas, using video width/height.
-                let width = this.streamVideo.nativeElement.videoWidth,
-                    height = this.streamVideo.nativeElement.videoHeight;
+                const width = this.streamVideo.nativeElement.videoWidth,
+                    height = this.streamVideo.nativeElement.videoHeight,
+                    loadingModal = this.domUtils.showModalLoading();
 
                 this.imgCanvas.nativeElement.width = width;
                 this.imgCanvas.nativeElement.height = height;
                 this.imgCanvas.nativeElement.getContext('2d').drawImage(this.streamVideo.nativeElement, 0, 0, width, height);
 
                 // Convert the image to blob and show it in an image element.
-                let loadingModal = this.domUtils.showModalLoading();
                 this.imgCanvas.nativeElement.toBlob((blob) => {
                     loadingModal.dismiss();
 
@@ -294,7 +295,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * User cancelled.
      */
-    cancel() : void {
+    cancel(): void {
         // Send a "cancelled" error like the Cordova plugin does.
         this.dismissWithError(3, 'Canceled.', 'Camera cancelled');
     }
@@ -302,7 +303,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Discard the captured media.
      */
-    discard() : void {
+    discard(): void {
         this.previewMedia && this.previewMedia.pause();
         this.streamVideo && this.streamVideo.nativeElement.play();
         this.audioDrawer && this.audioDrawer.start();
@@ -312,14 +313,14 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
         this.resetChrono = true;
         delete this.mediaBlob;
         this.cdr.detectChanges();
-    };
+    }
 
     /**
      * Close the modal, returning some data (success).
      *
      * @param {any} data Data to return.
      */
-    dismissWithData(data: any) : void {
+    dismissWithData(data: any): void {
         this.viewCtrl.dismiss(data, 'success');
     }
 
@@ -330,41 +331,44 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
      * @param {string} message Error message.
      * @param {string} [cameraMessage] A specific message to use if it's a Camera capture. If not set, message will be used.
      */
-    dismissWithError(code: number, message: string, cameraMessage?: string) : void {
-        let isCamera = this.isImage && !this.isCaptureImage,
-            error = isCamera ? (cameraMessage || message) : {code: code, message: message};
+    dismissWithError(code: number, message: string, cameraMessage?: string): void {
+        const isCamera = this.isImage && !this.isCaptureImage,
+            error = isCamera ? (cameraMessage || message) : { code: code, message: message };
         this.viewCtrl.dismiss(error, 'error');
     }
 
     /**
      * Done capturing, write the file.
      */
-    done() : void {
+    done(): void {
         if (this.returnDataUrl) {
             // Return the image as a base64 string.
             this.dismissWithData(this.imgCanvas.nativeElement.toDataURL(this.mimetype, this.quality));
+
             return;
         }
 
         if (!this.mediaBlob) {
             // Shouldn't happen.
             this.domUtils.showErrorModal('Please capture the media first.');
+
             return;
         }
 
         // Create the file and return it.
-        let fileName = this.type + '_' + this.timeUtils.readableTimestamp() + '.' + this.extension,
-            path = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
-
-        let loadingModal = this.domUtils.showModalLoading();
+        const fileName = this.type + '_' + this.timeUtils.readableTimestamp() + '.' + this.extension,
+            path = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName),
+            loadingModal = this.domUtils.showModalLoading();
 
         this.fileProvider.writeFile(path, this.mediaBlob).then((fileEntry) => {
             if (this.isImage && !this.isCaptureImage) {
                 this.dismissWithData(fileEntry.toURL());
             } else {
-                // The capture plugin returns a MediaFile, not a FileEntry. The only difference is that
-                // it supports a new function that won't be supported in desktop.
-                fileEntry.getFormatData = (successFn, errorFn) => {};
+                // The capture plugin returns a MediaFile, not a FileEntry.
+                // The only difference is that it supports a new function that won't be supported in desktop.
+                fileEntry.getFormatData = (successFn, errorFn): any => {
+                    // Nothing to do.
+                };
 
                 this.dismissWithData([fileEntry]);
             }
@@ -373,23 +377,23 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
         }).finally(() => {
             loadingModal.dismiss();
         });
-    };
+    }
 
     /**
      * Stop capturing. Only for video and audio.
      */
-    stopCapturing() : void {
+    stopCapturing(): void {
         this.streamVideo && this.streamVideo.nativeElement.pause();
         this.audioDrawer && this.audioDrawer.stop();
         this.mediaRecorder && this.mediaRecorder.stop();
         this.isCapturing = false;
         this.hasCaptured = true;
-    };
+    }
 
     /**
      * Page destroyed.
      */
-    ngOnDestroy() : void {
+    ngOnDestroy(): void {
         const tracks = this.localMediaStream.getTracks();
         tracks.forEach((track) => {
             track.stop();

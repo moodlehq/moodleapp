@@ -26,7 +26,7 @@ import { CoreSitesProvider } from './sites';
 export class CoreFileSessionProvider {
     protected files = {};
 
-    constructor(private sitesProvider: CoreSitesProvider) {}
+    constructor(private sitesProvider: CoreSitesProvider) { }
 
     /**
      * Add a file to the session.
@@ -36,7 +36,7 @@ export class CoreFileSessionProvider {
      * @param {any} file File to add.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    addFile(component: string, id: string|number, file: any, siteId?: string) : void {
+    addFile(component: string, id: string | number, file: any, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         this.initFileArea(component, id, siteId);
@@ -51,7 +51,7 @@ export class CoreFileSessionProvider {
      * @param {string|number} id File area identifier.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    clearFiles(component: string, id: string|number, siteId?: string) : void {
+    clearFiles(component: string, id: string | number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id]) {
             this.files[siteId][component][id] = [];
@@ -66,11 +66,12 @@ export class CoreFileSessionProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {any[]} Array of files in session.
      */
-    getFiles(component: string, id: string|number, siteId?: string) : any[] {
+    getFiles(component: string, id: string | number, siteId?: string): any[] {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id]) {
             return this.files[siteId][component][id];
         }
+
         return [];
     }
 
@@ -81,7 +82,7 @@ export class CoreFileSessionProvider {
      * @param {string|number} id File area identifier.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    protected initFileArea(component: string, id: string|number, siteId?: string) : void {
+    protected initFileArea(component: string, id: string | number, siteId?: string): void {
         if (!this.files[siteId]) {
             this.files[siteId] = {};
         }
@@ -103,7 +104,7 @@ export class CoreFileSessionProvider {
      * @param {any} file File to remove. The instance should be exactly the same as the one stored in session.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    removeFile(component: string, id: string|number, file: any, siteId?: string) : void {
+    removeFile(component: string, id: string | number, file: any, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id]) {
             const position = this.files[siteId][component][id].indexOf(file);
@@ -121,10 +122,10 @@ export class CoreFileSessionProvider {
      * @param {number} index Position of the file to remove.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    removeFileByIndex(component: string, id: string|number, index: number, siteId?: string) : void {
+    removeFileByIndex(component: string, id: string | number, index: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id] && index >= 0 &&
-                index < this.files[siteId][component][id].length) {
+            index < this.files[siteId][component][id].length) {
             this.files[siteId][component][id].splice(index, 1);
         }
     }
@@ -137,7 +138,7 @@ export class CoreFileSessionProvider {
      * @param {any[]} newFiles Files to set.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    setFiles(component: string, id: string|number, newFiles: any[], siteId?: string) : void {
+    setFiles(component: string, id: string | number, newFiles: any[], siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         this.initFileArea(component, id, siteId);

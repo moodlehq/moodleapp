@@ -31,8 +31,8 @@ export class CameraMock extends Camera {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    cleanup() : Promise<any> {
-        // iOS only, nothing to do.
+    cleanup(): Promise<any> {
+        // This function is iOS only, nothing to do.
         return Promise.resolve();
     }
 
@@ -42,7 +42,7 @@ export class CameraMock extends Camera {
      * @param {CameraOptions} options Options that you want to pass to the camera.
      * @return {Promise<any>} Promise resolved when captured.
      */
-    getPicture(options: CameraOptions) : Promise<any> {
+    getPicture(options: CameraOptions): Promise<any> {
         return this.captureHelper.captureMedia('image', options);
     }
 }

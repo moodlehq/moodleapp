@@ -54,7 +54,9 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      */
     pattern?: RegExp;
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Get the list of actions for a link (url).
@@ -65,8 +67,8 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+        CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [];
     }
 
@@ -76,7 +78,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param {string} url The URL to check.
      * @return {boolean} Whether the URL is handled by this handler
      */
-    handles(url: string) : boolean {
+    handles(url: string): boolean {
         return this.pattern && url.search(this.pattern) >= 0;
     }
 
@@ -86,9 +88,9 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param {string} url The URL to check.
      * @return {string} Site URL if it is handled, undefined otherwise.
      */
-    getSiteUrl(url: string) : string {
+    getSiteUrl(url: string): string {
         if (this.pattern) {
-            var position = url.search(this.pattern);
+            const position = url.search(this.pattern);
             if (position > -1) {
                 return url.substr(0, position);
             }
@@ -105,7 +107,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string, url: string, params: any, courseId?: number) : boolean|Promise<boolean> {
+    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
         return true;
     }
 }

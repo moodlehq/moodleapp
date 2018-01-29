@@ -22,7 +22,7 @@ import { CoreContentLinksHelperProvider } from '../../providers/helper';
 /**
  * Page to display the list of sites to choose one to perform a content link action.
  */
-@IonicPage({segment: 'core-content-links-choose-site'})
+@IonicPage({ segment: 'core-content-links-choose-site' })
 @Component({
     selector: 'page-core-content-links-choose-site',
     templateUrl: 'choose-site.html',
@@ -43,7 +43,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         if (!this.url) {
             return this.leaveView();
         }
@@ -70,7 +70,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
     /**
      * Cancel.
      */
-    cancel() : void {
+    cancel(): void {
         this.leaveView();
     }
 
@@ -79,17 +79,16 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      *
      * @param {string} siteId Site ID.
      */
-    siteClicked(siteId: string) : void {
+    siteClicked(siteId: string): void {
         this.action.action(siteId, this.navCtrl);
     }
 
     /**
      * Cancel and leave the view.
      */
-    protected leaveView() {
+    protected leaveView(): void {
         this.sitesProvider.logout().finally(() => {
             this.navCtrl.setRoot('CoreLoginSitesPage');
         });
     }
-
 }

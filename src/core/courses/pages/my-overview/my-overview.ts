@@ -17,16 +17,16 @@ import { IonicPage, NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreCoursesDelegate } from '../../providers/delegate';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
 import { CoreSiteHomeProvider } from '../../../sitehome/providers/sitehome';
 import * as moment from 'moment';
 
 /**
  * Page that displays My Overview.
  */
-@IonicPage({segment: "core-courses-my-overview"})
+@IonicPage({ segment: 'core-courses-my-overview' })
 @Component({
     selector: 'page-core-courses-my-overview',
     templateUrl: 'my-overview.html',
@@ -34,7 +34,7 @@ import * as moment from 'moment';
 export class CoreCoursesMyOverviewPage implements OnDestroy {
     firstSelectedTab: number;
     siteHomeEnabled: boolean;
-    tabsReady: boolean = false;
+    tabsReady = false;
     tabShown = 'courses';
     timeline = {
         sort: 'sortbydates',
@@ -71,17 +71,17 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
-            private siteHomeProvider: CoreSiteHomeProvider, private coursesDelegate: CoreCoursesDelegate) {}
+            private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate) { }
 
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
 
         // Decide which tab to load first.
         this.siteHomeProvider.isAvailable().then((enabled) => {
-            let site = this.sitesProvider.getCurrentSite(),
+            const site = this.sitesProvider.getCurrentSite(),
                 displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
 
             this.siteHomeEnabled = enabled;
@@ -96,7 +96,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      * @param {number} [afterEventId] The last event id.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchMyOverviewTimeline(afterEventId?: number) : Promise<any> {
+    protected fetchMyOverviewTimeline(afterEventId?: number): Promise<any> {
         return this.myOverviewProvider.getActionEventsByTimesort(afterEventId).then((events) => {
             this.timeline.events = events.events;
             this.timeline.canLoadMore = events.canLoadMore;
@@ -110,10 +110,10 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchMyOverviewTimelineByCourses() : Promise<any> {
+    protected fetchMyOverviewTimelineByCourses(): Promise<any> {
         return this.fetchUserCourses().then((courses) => {
-            let today = moment().unix(),
-                courseIds;
+            const today = moment().unix();
+            let courseIds;
             courses = courses.filter((course) => {
                 return course.startdate <= today && (!course.enddate || course.enddate >= today);
             });
@@ -141,7 +141,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchMyOverviewCourses() : Promise<any> {
+    protected fetchMyOverviewCourses(): Promise<any> {
         return this.fetchUserCourses().then((courses) => {
             const today = moment().unix();
 
@@ -177,15 +177,14 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchUserCourses() : Promise<any> {
-        let courseIds;
+    protected fetchUserCourses(): Promise<any> {
         return this.coursesProvider.getUserCourses().then((courses) => {
-            courseIds = courses.map((course) => {
+            const courseIds = courses.map((course) => {
                 return course.id;
             });
 
             // Load course options of the course.
-            return this.coursesProvider.getCoursesOptions(courseIds).then((options) => {
+            return this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 courses.forEach((course) => {
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
@@ -204,7 +203,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * Show or hide the filter.
      */
-    switchFilter() {
+    switchFilter(): void {
         this.showFilter = !this.showFilter;
         this.courses.filter = '';
         this.filteredCourses = this.courses[this.courses.selected];
@@ -215,7 +214,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      *
      * @param {string} newValue New filter value.
      */
-    filterChanged(newValue: string) {
+    filterChanged(newValue: string): void {
         if (!newValue || !this.courses[this.courses.selected]) {
             this.filteredCourses = this.courses[this.courses.selected];
         } else {
@@ -229,9 +228,10 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      * Refresh the data.
      *
      * @param {any} refresher Refresher.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    refreshMyOverview(refresher: any) {
-        let promises = [];
+    refreshMyOverview(refresher: any): Promise<any> {
+        const promises = [];
 
         if (this.tabShown == 'timeline') {
             promises.push(this.myOverviewProvider.invalidateActionEventsByTimesort());
@@ -239,7 +239,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         }
 
         promises.push(this.coursesProvider.invalidateUserCourses());
-        promises.push(this.coursesDelegate.clearAndInvalidateCoursesOptions());
+        promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
 
         return Promise.all(promises).finally(() => {
             switch (this.tabShown) {
@@ -249,11 +249,14 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
                             return this.fetchMyOverviewTimeline();
                         case 'sortbycourses':
                             return this.fetchMyOverviewTimelineByCourses();
+                        default:
                     }
                     break;
                 case 'courses':
                     this.prefetchIconsInitialized = false;
+
                     return this.fetchMyOverviewCourses();
+                default:
             }
         }).finally(() => {
             refresher.complete();
@@ -263,7 +266,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * Change timeline sort being viewed.
      */
-    switchSort() {
+    switchSort(): void {
         switch (this.timeline.sort) {
             case 'sortbydates':
                 if (!this.timeline.loaded) {
@@ -279,6 +282,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
                     });
                 }
                 break;
+            default:
         }
     }
 
@@ -287,7 +291,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      *
      * @param {string} tab Name of the new tab.
      */
-    tabChanged(tab: string) {
+    tabChanged(tab: string): void {
         this.tabShown = tab;
         switch (this.tabShown) {
             case 'timeline':
@@ -304,13 +308,14 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
                     });
                 }
                 break;
+            default:
         }
     }
 
     /**
      * Load more events.
      */
-    loadMoreTimeline() : Promise<any> {
+    loadMoreTimeline(): Promise<any> {
         return this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
     }
 
@@ -318,8 +323,9 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      * Load more events.
      *
      * @param {any} course Course.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    loadMoreCourse(course) {
+    loadMoreCourse(course: any): Promise<any> {
         return this.myOverviewProvider.getActionEventsByCourse(course.id, course.canLoadMore).then((courseEvents) => {
             course.events = course.events.concat(courseEvents.events);
             course.canLoadMore = courseEvents.canLoadMore;
@@ -329,27 +335,30 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * Go to search courses.
      */
-    openSearch() {
+    openSearch(): void {
         this.navCtrl.push('CoreCoursesSearchPage');
     }
 
     /**
      * The selected courses have changed.
      */
-    selectedChanged() {
+    selectedChanged(): void {
         this.filteredCourses = this.courses[this.courses.selected];
     }
 
     /**
      * Prefetch all the shown courses.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    prefetchCourses() {
-        let selected = this.courses.selected,
+    prefetchCourses(): Promise<any> {
+        const selected = this.courses.selected,
             selectedData = this.prefetchCoursesData[selected],
             initialIcon = selectedData.icon;
 
         selectedData.icon = 'spinner';
         selectedData.badge = '';
+
         return this.courseHelper.confirmAndPrefetchCourses(this.courses[selected], (progress) => {
             selectedData.badge = progress.count + ' / ' + progress.total;
         }).then((downloaded) => {
@@ -367,7 +376,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * Initialize the prefetch icon for selected courses.
      */
-    protected initPrefetchCoursesIcons() {
+    protected initPrefetchCoursesIcons(): void {
         if (this.prefetchIconsInitialized) {
             // Already initialized.
             return;
@@ -379,6 +388,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             if (!this.courses[filter] || this.courses[filter].length < 2) {
                 // Not enough courses.
                 this.prefetchCoursesData[filter].icon = '';
+
                 return;
             }
 
@@ -397,7 +407,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * Component being destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.isDestroyed = true;
     }
 }

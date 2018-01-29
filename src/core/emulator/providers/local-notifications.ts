@@ -30,14 +30,14 @@ export class LocalNotificationsMock extends LocalNotifications {
     protected winNotif; // Library for Windows notifications.
     // Templates for Windows ToastNotifications and TileNotifications.
     protected toastTemplate = '<toast><visual><binding template="ToastText02"><text id="1" hint-wrap="true">%s</text>' +
-                    '<text id="2" hint-wrap="true">%s</text></binding></visual></toast>';
-    protected tileBindingTemplate =   '<text hint-style="base" hint-wrap="true">%s</text>' +
-                            '<text hint-style="captionSubtle" hint-wrap="true">%s</text>';
+        '<text id="2" hint-wrap="true">%s</text></binding></visual></toast>';
+    protected tileBindingTemplate = '<text hint-style="base" hint-wrap="true">%s</text>' +
+        '<text hint-style="captionSubtle" hint-wrap="true">%s</text>';
     protected tileTemplate = '<tile><visual branding="nameAndLogo">' +
-                        '<binding template="TileMedium">' + this.tileBindingTemplate + '</binding>' +
-                        '<binding template="TileWide">' + this.tileBindingTemplate + '</binding>' +
-                        '<binding template="TileLarge">' + this.tileBindingTemplate + '</binding>' +
-                    '</visual></tile>';
+        '<binding template="TileMedium">' + this.tileBindingTemplate + '</binding>' +
+        '<binding template="TileWide">' + this.tileBindingTemplate + '</binding>' +
+        '<binding template="TileLarge">' + this.tileBindingTemplate + '</binding>' +
+        '</visual></tile>';
 
     // Variables for database.
     protected DESKTOP_NOTIFS_TABLE = 'desktop_local_notifications';
@@ -57,18 +57,18 @@ export class LocalNotificationsMock extends LocalNotifications {
     };
 
     protected appDB: SQLiteDB;
-    protected scheduled: {[i: number] : any} = {};
-    protected triggered: {[i: number] : any} = {};
+    protected scheduled: { [i: number]: any } = {};
+    protected triggered: { [i: number]: any } = {};
     protected observers;
     protected defaults = {
-        text:  '',
+        text: '',
         title: '',
         sound: '',
         badge: 0,
-        id:    0,
-        data:  undefined,
+        id: 0,
+        data: undefined,
         every: undefined,
-        at:    undefined
+        at: undefined
     };
 
     constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider) {
@@ -90,14 +90,13 @@ export class LocalNotificationsMock extends LocalNotifications {
         };
     }
 
-
     /**
      * Cancels single or multiple notifications
      * @param notificationId {any} A single notification id, or an array of notification ids.
      * @returns {Promise<any>} Returns a promise when the notification is canceled
      */
     cancel(notificationId: any): Promise<any> {
-        let promises = [];
+        const promises = [];
 
         notificationId = Array.isArray(notificationId) ? notificationId : [notificationId];
         notificationId = this.convertIds(notificationId);
@@ -118,8 +117,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<any>} Returns a promise when all notifications are canceled.
      */
     cancelAll(): Promise<any> {
-        let ids = Object.keys(this.scheduled);
-        return this.cancel(ids).then(() => {
+        return this.cancel(Object.keys(this.scheduled)).then(() => {
             this.triggerEvent('cancelall', 'foreground');
         });
     }
@@ -132,8 +130,8 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {string} eventName Name of the event to trigger.
      * @return {Void}
      */
-    protected cancelNotification(id: number, omitEvent: boolean, eventName: string) : void {
-        let notification = this.scheduled[id].notification;
+    protected cancelNotification(id: number, omitEvent: boolean, eventName: string): void {
+        const notification = this.scheduled[id].notification;
 
         clearTimeout(this.scheduled[id].timeout);
         clearInterval(this.scheduled[id].interval);
@@ -154,7 +152,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<any>} Returns a promise when the notification had been cleared.
      */
     clear(notificationId: any): Promise<any> {
-        let promises = [];
+        const promises = [];
 
         notificationId = Array.isArray(notificationId) ? notificationId : [notificationId];
         notificationId = this.convertIds(notificationId);
@@ -175,8 +173,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<any>} Returns a promise when all notifications have cleared
      */
     clearAll(): Promise<any> {
-        let ids = Object.keys(this.scheduled);
-        return this.clear(ids).then(() => {
+        return this.clear(Object.keys(this.scheduled)).then(() => {
             this.triggerEvent('clearall', 'foreground');
         });
     }
@@ -186,10 +183,10 @@ export class LocalNotificationsMock extends LocalNotifications {
      * Code extracted from the Cordova plugin.
      *
      * @param {any[]} ids List of IDs.
-     * @return {Number[]} List of IDs as numbers.
+     * @return {number[]} List of IDs as numbers.
      */
-    protected convertIds(ids: any[]) : number[] {
-        let convertedIds = [];
+    protected convertIds(ids: any[]): number[] {
+        const convertedIds = [];
 
         for (let i = 0; i < ids.length; i++) {
             convertedIds.push(Number(ids[i]));
@@ -205,7 +202,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {ILocalNotification} notification Notification.
      * @return {ILocalNotification} Converted notification.
      */
-    protected convertProperties(notification: ILocalNotification) : ILocalNotification {
+    protected convertProperties(notification: ILocalNotification): ILocalNotification {
         if (notification.id) {
             if (isNaN(notification.id)) {
                 notification.id = this.defaults.id;
@@ -219,7 +216,7 @@ export class LocalNotificationsMock extends LocalNotifications {
         }
 
         if (notification.text) {
-            notification.text  = notification.text.toString();
+            notification.text = notification.text.toString();
         }
 
         if (notification.badge) {
@@ -274,6 +271,7 @@ export class LocalNotificationsMock extends LocalNotifications {
         ids = ids.map((id) => {
             return Number(id);
         });
+
         return Promise.resolve(ids);
     }
 
@@ -282,7 +280,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @return {Promise<any>} Promise resolved with the notifications.
      */
-    protected getAllNotifications() : Promise<any> {
+    protected getAllNotifications(): Promise<any> {
         return this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE);
     }
 
@@ -312,11 +310,11 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {boolean} [getTriggered] Get triggered notifications.
      * @return {ILocalNotification[]} List of notifications.
      */
-    protected getNotifications(ids?: number[], getScheduled?: boolean, getTriggered?: boolean) : ILocalNotification[] {
-        let notifications = [];
+    protected getNotifications(ids?: number[], getScheduled?: boolean, getTriggered?: boolean): ILocalNotification[] {
+        const notifications = [];
 
         if (getScheduled) {
-            for (let id in this.scheduled) {
+            for (const id in this.scheduled) {
                 if (!ids || ids.indexOf(Number(id)) != -1) {
                     notifications.push(this.scheduled[id].notification);
                 }
@@ -324,8 +322,8 @@ export class LocalNotificationsMock extends LocalNotifications {
         }
 
         if (getTriggered) {
-            for (let id in this.triggered) {
-                if ((!getScheduled || !this.scheduled[id]) && (!ids || ids.indexOf(Number(id)) != -1)) {
+            for (const id in this.triggered) {
+                if ((!getScheduled || !this.scheduled[id]) && (!ids || ids.indexOf(Number(id)) != -1)) {
                     notifications.push(this.triggered[id].notification);
                 }
             }
@@ -350,9 +348,10 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<Array<number>>} Returns a promise
      */
     getScheduledIds(): Promise<Array<number>> {
-        let ids = Object.keys(this.scheduled).map((id) => {
+        const ids = Object.keys(this.scheduled).map((id) => {
             return Number(id);
         });
+
         return Promise.resolve(ids);
     }
 
@@ -372,9 +371,10 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @returns {Promise<Array<number>>}
      */
     getTriggeredIds(): Promise<Array<number>> {
-        let ids = Object.keys(this.triggered).map((id) => {
+        const ids = Object.keys(this.triggered).map((id) => {
             return Number(id);
         });
+
         return Promise.resolve(ids);
     }
 
@@ -386,8 +386,8 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {any} ...args List of keys to check.
      * @return {any} First value found.
      */
-    protected getValueFor(notification: ILocalNotification, ...args) : any {
-        for (let i in args) {
+    protected getValueFor(notification: ILocalNotification, ...args: any[]): any {
+        for (const i in args) {
             const key = args[i];
             if (notification.hasOwnProperty(key)) {
                 return notification[key];
@@ -438,7 +438,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    load() : Promise<any> {
+    load(): Promise<any> {
         if (!this.appProvider.isDesktop()) {
             return Promise.resolve();
         }
@@ -446,9 +446,10 @@ export class LocalNotificationsMock extends LocalNotifications {
         if (this.appProvider.isWindows()) {
             try {
                 this.winNotif = require('electron-windows-notifications');
-            } catch(ex) {}
+            } catch (ex) {
+                // Ignore errors.
+            }
         }
-
 
         // App is being loaded, re-schedule all the notifications that were scheduled before.
         return this.getAllNotifications().catch(() => {
@@ -481,7 +482,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {ILocalNotification} notification Notification.
      * @return {ILocalNotification} Treated notification.
      */
-    protected mergeWithDefaults(notification: ILocalNotification) : ILocalNotification {
+    protected mergeWithDefaults(notification: ILocalNotification): ILocalNotification {
         notification.at = this.getValueFor(notification, 'at', 'firstAt', 'date');
         notification.text = this.getValueFor(notification, 'text', 'message');
         notification.data = this.getValueFor(notification, 'data', 'json');
@@ -490,9 +491,9 @@ export class LocalNotificationsMock extends LocalNotifications {
             notification.at = new Date();
         }
 
-        for (let key in this.defaults) {
+        for (const key in this.defaults) {
             if (notification[key] === null || notification[key] === undefined) {
-                if (notification.hasOwnProperty(key) && ['data','sound'].indexOf(key) > -1) {
+                if (notification.hasOwnProperty(key) && ['data', 'sound'].indexOf(key) > -1) {
                     notification[key] = undefined;
                 } else {
                     notification[key] = this.defaults[key];
@@ -500,7 +501,7 @@ export class LocalNotificationsMock extends LocalNotifications {
             }
         }
 
-        for (let key in notification) {
+        for (const key in notification) {
             if (!this.defaults.hasOwnProperty(key)) {
                 delete notification[key];
             }
@@ -514,7 +515,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @param {ILocalNotification} notification Clicked notification.
      */
-    protected notificationClicked(notification: ILocalNotification) : void {
+    protected notificationClicked(notification: ILocalNotification): void {
         this.triggerEvent('click', notification, 'foreground');
         // Focus the app.
         require('electron').ipcRenderer.send('focusApp');
@@ -541,7 +542,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {string} every Interval to convert.
      * @return {number} Number of milliseconds of the interval-
      */
-    protected parseInterval(every: string) {
+    protected parseInterval(every: string): number {
         let interval;
 
         every = String(every).toLowerCase();
@@ -591,8 +592,8 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {number} id ID of the notification.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected removeNotification(id: number) : Promise<any> {
-        return this.appDB.deleteRecords(this.DESKTOP_NOTIFS_TABLE, {id: id});
+    protected removeNotification(id: number): Promise<any> {
+        return this.appDB.deleteRecords(this.DESKTOP_NOTIFS_TABLE, { id: id });
     }
 
     /**
@@ -610,7 +611,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {ILocalNotification | Array<ILocalNotification>} [options] Notification or notifications.
      * @param {string} [eventName] Name of the event: schedule or update.
      */
-    protected scheduleOrUpdate(options?: ILocalNotification | Array<ILocalNotification>, eventName = 'schedule'): void {
+    protected scheduleOrUpdate(options?: ILocalNotification | Array<ILocalNotification>, eventName: string = 'schedule'): void {
         options = Array.isArray(options) ? options : [options];
 
         options.forEach((notification) => {
@@ -632,8 +633,8 @@ export class LocalNotificationsMock extends LocalNotifications {
             }
 
             // Schedule the notification.
-            let toTriggerTime = notification.at * 1000 - Date.now(),
-                trigger = () => {
+            const toTriggerTime = notification.at * 1000 - Date.now(),
+                trigger = (): void => {
                     // Trigger the notification.
                     this.triggerNotification(notification);
 
@@ -666,10 +667,11 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {boolean} triggered Whether the notification has been triggered.
      * @return {Promise<any>} Promise resolved when stored.
      */
-    protected storeNotification(notification: any, triggered: boolean) : Promise<any> {
+    protected storeNotification(notification: any, triggered: boolean): Promise<any> {
         notification = Object.assign({}, notification); // Clone the object.
         notification.triggered = !!triggered;
-        return this.appDB.insertOrUpdateRecord(this.DESKTOP_NOTIFS_TABLE, notification, {id: notification.id});
+
+        return this.appDB.insertOrUpdateRecord(this.DESKTOP_NOTIFS_TABLE, notification, { id: notification.id });
     }
 
     /**
@@ -678,7 +680,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param {string} eventName Event name.
      * @param {any[]} ...args List of parameters to pass.
      */
-    protected triggerEvent(eventName: string, ...args: any[]) {
+    protected triggerEvent(eventName: string, ...args: any[]): void {
         if (this.observers[eventName]) {
             this.observers[eventName].forEach((callback) => {
                 callback.apply(null, args);
@@ -691,13 +693,13 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @param {ILocalNotification} notification Notification to trigger.
      */
-    protected triggerNotification(notification: ILocalNotification) : void {
+    protected triggerNotification(notification: ILocalNotification): void {
         if (this.winNotif) {
             // Use Windows notifications.
-            let notifInstance = new this.winNotif.ToastNotification({
+            const notifInstance = new this.winNotif.ToastNotification({
                 appId: CoreConfigConstants.app_id,
                 template: this.toastTemplate,
-                strings: [notification.title,  notification.text]
+                strings: [notification.title, notification.text]
             });
 
             // Listen for click events.
@@ -709,15 +711,17 @@ export class LocalNotificationsMock extends LocalNotifications {
 
             try {
                 // Show it in Tile too.
-                let tileNotif = new this.winNotif.TileNotification({
+                const tileNotif = new this.winNotif.TileNotification({
                     tag: notification.id + '',
                     template: this.tileTemplate,
-                    strings: [notification.title, notification.text, notification.title,  notification.text, notification.title, notification.text],
+                    strings: [notification.title, notification.text, notification.title, notification.text, notification.title,
+                    notification.text],
                     expirationTime: new Date(Date.now() + CoreConstants.SECONDS_HOUR * 1000) // Expire in 1 hour.
-                })
+                });
 
-                tileNotif.show()
-            } catch(ex) {
+                tileNotif.show();
+            } catch (ex) {
+                // tslint:disable-next-line
                 console.warn('Error showing TileNotification. Please notice they only work with the app installed.', ex);
             }
         } else {
@@ -727,7 +731,7 @@ export class LocalNotificationsMock extends LocalNotifications {
             });
 
             // Listen for click events.
-            notifInstance.onclick = () => {
+            notifInstance.onclick = (): void => {
                 this.notificationClicked(notification);
             };
         }
@@ -757,5 +761,5 @@ export class LocalNotificationsMock extends LocalNotifications {
      */
     update(options?: ILocalNotification): void {
         return this.scheduleOrUpdate(options, 'update');
-    };
+    }
 }

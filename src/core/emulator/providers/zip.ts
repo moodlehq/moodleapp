@@ -36,21 +36,21 @@ export class ZipMock extends Zip {
      * @param {Function} [onProgress] Optional callback to be called on progress update
      * @return {Promise<number>} Promise that resolves with a number. 0 is success, -1 is error.
      */
-    unzip(source: string, destination: string, onProgress?: Function) : Promise<number> {
+    unzip(source: string, destination: string, onProgress?: Function): Promise<number> {
         // Replace all %20 with spaces.
         source = source.replace(/%20/g, ' ');
         destination = destination.replace(/%20/g, ' ');
 
-        let sourceDir = source.substring(0, source.lastIndexOf('/')),
+        const sourceDir = source.substring(0, source.lastIndexOf('/')),
             sourceName = source.substr(source.lastIndexOf('/') + 1);
 
         return this.file.readAsArrayBuffer(sourceDir, sourceName).then((data) => {
-            let zip = new JSZip(data),
+            const zip = new JSZip(data),
                 promises = [],
-                loaded = 0,
                 total = Object.keys(zip.files).length;
+            let loaded = 0;
 
-            if (!zip.files || !zip.files.length) {
+            if (!zip.files || !zip.files.length) {
                 // Nothing to extract.
                 return 0;
             }
@@ -62,7 +62,7 @@ export class ZipMock extends Zip {
                 if (!file.dir) {
                     // It's a file. Get the mimetype and write the file.
                     type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(name));
-                    promise = this.file.writeFile(destination, name, new Blob([file.asArrayBuffer()], {type: type}));
+                    promise = this.file.writeFile(destination, name, new Blob([file.asArrayBuffer()], { type: type }));
                 } else {
                     // It's a folder, create it if it doesn't exist.
                     promise = this.file.createDir(destination, name, false);
@@ -71,14 +71,14 @@ export class ZipMock extends Zip {
                 promises.push(promise.then(() => {
                     // File unzipped, call the progress.
                     loaded++;
-                    onProgress && onProgress({loaded: loaded, total: total});
+                    onProgress && onProgress({ loaded: loaded, total: total });
                 }));
             });
 
-            return Promise.all(promises).then(function() {
+            return Promise.all(promises).then(() => {
                 return 0;
             });
-        }).catch(function() {
+        }).catch(() => {
             // Error.
             return -1;
         });

@@ -40,7 +40,7 @@ export interface CorePluginFileHandler {
      * @return {string} String to remove the revision on pluginfile url.
      */
     getComponentRevisionReplace?(args: string[]): string;
-};
+}
 
 /**
  * Delegate to register pluginfile information handlers.
@@ -48,7 +48,7 @@ export interface CorePluginFileHandler {
 @Injectable()
 export class CorePluginFileDelegate {
     protected logger;
-    protected handlers: {[s: string]: CorePluginFileHandler} = {};
+    protected handlers: { [s: string]: CorePluginFileHandler } = {};
 
     constructor(logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CorePluginFileDelegate');
@@ -60,7 +60,7 @@ export class CorePluginFileDelegate {
      * @param {string} pluginType Type of the plugin.
      * @return {CorePluginFileHandler} Handler. Undefined if no handler found for the plugin.
      */
-    protected getPluginHandler(pluginType: string) : CorePluginFileHandler {
+    protected getPluginHandler(pluginType: string): CorePluginFileHandler {
         if (typeof this.handlers[pluginType] != 'undefined') {
             return this.handlers[pluginType];
         }
@@ -72,7 +72,7 @@ export class CorePluginFileDelegate {
      * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
      * @return {RegExp}  RegExp to match the revision or undefined if not found.
      */
-    getComponentRevisionRegExp(args: string[]) : RegExp {
+    getComponentRevisionRegExp(args: string[]): RegExp {
         // Get handler based on component (args[1]).
         const handler = this.getPluginHandler(args[1]);
 
@@ -87,13 +87,16 @@ export class CorePluginFileDelegate {
      * @param {CorePluginFileHandler} handler The handler to register.
      * @return {boolean} True if registered successfully, false otherwise.
      */
-    registerHandler(handler: CorePluginFileHandler) : boolean {
+    registerHandler(handler: CorePluginFileHandler): boolean {
         if (typeof this.handlers[handler.name] !== 'undefined') {
             this.logger.log(`Addon '${handler.name}' already registered`);
+
             return false;
         }
+
         this.logger.log(`Registered addon '${handler.name}'`);
         this.handlers[handler.name] = handler;
+
         return true;
     }
 
@@ -104,7 +107,7 @@ export class CorePluginFileDelegate {
      * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
      * @return {string} Replaced URL without revision.
      */
-    removeRevisionFromUrl(url: string, args: string[]) : string {
+    removeRevisionFromUrl(url: string, args: string[]): string {
         // Get handler based on component (args[1]).
         const handler = this.getPluginHandler(args[1]);
 

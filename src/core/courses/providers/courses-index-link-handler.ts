@@ -38,14 +38,14 @@ export class CoreCoursesIndexLinkHandler extends CoreContentLinksHandlerBase {
      * @param {string} url The URL to treat.
      * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     * @return {CoreContentLinksAction[] | Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: any, courseId?: number) :
-            CoreContentLinksAction[]|Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string, params: any, courseId?: number):
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId, navCtrl?) => {
-                var page = 'CoreCoursesMyCoursesPage', // By default, go to My Courses.
-                    pageParams: any = {};
+            action: (siteId, navCtrl?): void => {
+                let page = 'CoreCoursesMyCoursesPage'; // By default, go to My Courses.
+                const pageParams: any = {};
 
                 if (this.coursesProvider.isGetCoursesByFieldAvailable()) {
                     if (params.categoryid) {

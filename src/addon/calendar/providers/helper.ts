@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreCourseProvider } from '../../../core/course/providers/course';
 
 /**
@@ -24,15 +23,15 @@ import { CoreCourseProvider } from '../../../core/course/providers/course';
 export class AddonCalendarHelperProvider {
     protected logger;
 
-    private EVENTICONS = {
-        'course': 'ionic',
-        'group': 'people',
-        'site': 'globe',
-        'user': 'person',
-        'category': 'albums'
+    protected EVENTICONS = {
+        course: 'ionic',
+        group: 'people',
+        site: 'globe',
+        user: 'person',
+        category: 'albums'
     };
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider) {
+    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider) {
         this.logger = logger.getInstance('AddonCalendarHelperProvider');
     }
 
@@ -41,11 +40,11 @@ export class AddonCalendarHelperProvider {
      *
      * @param {any} e Event to format.
      */
-    formatEventData(e: any) {
+    formatEventData(e: any): void {
         e.icon = this.EVENTICONS[e.eventtype] || false;
         if (!e.icon) {
             e.icon = this.courseProvider.getModuleIconSrc(e.modulename);
             e.moduleIcon = e.icon;
         }
-    };
+    }
 }

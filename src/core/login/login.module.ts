@@ -21,7 +21,7 @@ import { CoreLoginHelperProvider } from './providers/helper';
     imports: [
     ],
     providers: [
-        CoreLoginHelperProvider,
+        CoreLoginHelperProvider
     ]
 })
 export class CoreLoginModule {}

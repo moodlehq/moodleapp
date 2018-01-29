@@ -32,7 +32,7 @@ import { CoreUtilsProvider } from '../../providers/utils/utils';
     templateUrl: 'mark-required.html'
 })
 export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
-    @Input('core-mark-required') coreMarkRequired: boolean|string = true;
+    @Input('core-mark-required') coreMarkRequired: boolean | string = true;
     protected element: HTMLElement;
     requiredLabel: string;
 
@@ -45,14 +45,14 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.coreMarkRequired = this.utils.isTrueOrOne(this.coreMarkRequired);
     }
 
     /**
      * Called after the view is initialized.
      */
-    ngAfterViewInit() : void {
+    ngAfterViewInit(): void {
         if (this.coreMarkRequired) {
             // Add the "required" to the aria-label.
             const ariaLabel = this.element.getAttribute('aria-label') || this.textUtils.cleanTags(this.element.innerHTML, true);

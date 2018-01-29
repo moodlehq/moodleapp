@@ -31,18 +31,17 @@ export class GlobalizationMock extends Globalization {
      *
      * @return {string} Locale name.
      */
-    private getCurrentlocale() : string {
+    private getCurrentlocale(): string {
         // Get browser language.
-        var navLang = (<any>navigator).userLanguage || navigator.language;
+        const navLang = (<any> navigator).userLanguage || navigator.language;
 
         try {
             if (this.appProvider.isDesktop()) {
-                var locale = require('electron').remote.app.getLocale();
-                return locale || navLang;
+                return require('electron').remote.app.getLocale() || navLang;
             } else {
                 return navLang;
             }
-        } catch(ex) {
+        } catch (ex) {
             // Something went wrong, return browser language.
             return navLang;
         }
@@ -53,12 +52,13 @@ export class GlobalizationMock extends Globalization {
      *
      * @return {Promise<{value: string}>} Promise resolved with an object with the language string.
      */
-    getLocaleName() : Promise<{value: string}> {
-        var locale = this.getCurrentlocale();
+    getLocaleName(): Promise<{ value: string }> {
+        const locale = this.getCurrentlocale();
         if (locale) {
-            return Promise.resolve({value: locale});
+            return Promise.resolve({ value: locale });
         } else {
-            var error = {code: GlobalizationError.UNKNOWN_ERROR, message: 'Cannot get language'};
+            const error = { code: GlobalizationError.UNKNOWN_ERROR, message: 'Cannot get language' };
+
             return Promise.reject(error);
         }
     }
@@ -68,7 +68,7 @@ export class GlobalizationMock extends Globalization {
      *
      * @return {Promise<{value: string}>} Promise resolved with an object with the language string.
      */
-    getPreferredLanguage() : Promise<{value: string}> {
+    getPreferredLanguage(): Promise<{ value: string }> {
         return this.getLocaleName();
     }
 }

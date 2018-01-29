@@ -22,14 +22,16 @@ import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
 export class CoreCourseFormatTopicsHandler implements CoreCourseFormatHandler {
     name = 'topics';
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled() : boolean|Promise<boolean> {
+    isEnabled(): boolean | Promise<boolean> {
         return true;
     }
 }

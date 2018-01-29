@@ -23,7 +23,7 @@ import { CoreSitesProvider } from './sites';
 export class CoreSyncProvider {
 
     // Variables for the database.
-    public static SYNC_TABLE = 'sync';
+    static SYNC_TABLE = 'sync';
     protected tableSchema = {
         name: CoreSyncProvider.SYNC_TABLE,
         columns: [
@@ -50,7 +50,7 @@ export class CoreSyncProvider {
     };
 
     // Store blocked sync objects.
-    protected blockedItems: {[siteId: string]: {[blockId: string]: {[operation: string]: boolean}}} = {};
+    protected blockedItems: { [siteId: string]: { [blockId: string]: { [operation: string]: boolean } } } = {};
 
     constructor(eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider) {
         this.sitesProvider.createTableFromSchema(this.tableSchema);
@@ -69,7 +69,7 @@ export class CoreSyncProvider {
      * @param {string} [operation] Operation name. If not defined, a default text is used.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    blockOperation(component: string, id: number, operation?: string, siteId?: string) : void {
+    blockOperation(component: string, id: number, operation?: string, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
@@ -92,7 +92,7 @@ export class CoreSyncProvider {
      *
      * @param {string} [siteId] If set, clear the blocked objects only for this site. Otherwise clear them for all sites.
      */
-    clearAllBlocks(siteId?: string) : void {
+    clearAllBlocks(siteId?: string): void {
         if (siteId) {
             delete this.blockedItems[siteId];
         } else {
@@ -107,7 +107,7 @@ export class CoreSyncProvider {
      * @param {number} id Unique ID per component.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    clearBlocks(component: string, id: number, siteId?: string) : void {
+    clearBlocks(component: string, id: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
@@ -123,7 +123,7 @@ export class CoreSyncProvider {
      * @param {number} id Unique ID per component.
      * @return {string} Unique sync id.
      */
-    protected getUniqueSyncBlockId(component: string, id: number) : string {
+    protected getUniqueSyncBlockId(component: string, id: number): string {
         return component + '#' + id;
     }
 
@@ -136,7 +136,7 @@ export class CoreSyncProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {boolean} Whether it's blocked.
      */
-    isBlocked(component: string, id: number, siteId?: string) : boolean {
+    isBlocked(component: string, id: number, siteId?: string): boolean {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (!this.blockedItems[siteId]) {
@@ -159,7 +159,7 @@ export class CoreSyncProvider {
      * @param {string} [operation] Operation name. If not defined, a default text is used.
      * @param {string} [siteId] Site ID. If not defined, current site.
      */
-    unblockOperation(component: string, id: number, operation?: string, siteId?: string) : void {
+    unblockOperation(component: string, id: number, operation?: string, siteId?: string): void {
         operation = operation || '-';
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 

@@ -24,7 +24,7 @@ import { CoreTimeAgoPipe } from './time-ago';
 import { CoreToLocaleStringPipe } from './to-locale-string';
 
 @NgModule({
-	declarations: [
+    declarations: [
         CoreBytesToSizePipe,
         CoreCreateLinksPipe,
         CoreDateDayOrTimePipe,

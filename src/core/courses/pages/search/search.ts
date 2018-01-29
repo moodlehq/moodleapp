@@ -20,7 +20,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 /**
  * Page that allows searching for courses.
  */
-@IonicPage({segment: "core-courses-search"})
+@IonicPage({ segment: 'core-courses-search' })
 @Component({
     selector: 'page-core-courses-search',
     templateUrl: 'search.html',
@@ -33,19 +33,19 @@ export class CoreCoursesSearchPage {
     protected page = 0;
     protected currentSearch = '';
 
-    constructor(private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider) {}
+    constructor(private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider) { }
 
     /**
      * Search a new text.
      *
      * @param {string} text The text to search.
      */
-    search(text: string) {
+    search(text: string): void {
         this.currentSearch = text;
         this.courses = undefined;
         this.page = 0;
 
-        let modal = this.domUtils.showModalLoading('core.searching', true);
+        const modal = this.domUtils.showModalLoading('core.searching', true);
         this.searchCourses().finally(() => {
             modal.dismiss();
         });
@@ -53,8 +53,10 @@ export class CoreCoursesSearchPage {
 
     /**
      * Load more results.
+     *
+     * @param {any} infiniteScroll The infinit scroll instance.
      */
-    loadMoreResults(infiniteScroll) {
+    loadMoreResults(infiniteScroll: any): void {
         this.searchCourses().finally(() => {
             infiniteScroll.complete();
         });
@@ -62,8 +64,10 @@ export class CoreCoursesSearchPage {
 
     /**
      * Search courses or load the next page of current search.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected searchCourses() {
+    protected searchCourses(): Promise<any> {
         return this.coursesProvider.search(this.currentSearch, this.page).then((response) => {
             if (this.page === 0) {
                 this.courses = response.courses;

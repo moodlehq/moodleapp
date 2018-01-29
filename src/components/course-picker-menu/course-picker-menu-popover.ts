@@ -26,7 +26,7 @@ export class CoreCoursePickerMenuPopoverComponent {
     courses: any[];
     courseId = -1;
 
-    constructor(private navParams: NavParams, private viewCtrl: ViewController) {
+    constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.courses = navParams.get('courses') || [];
         this.courseId = navParams.get('courseId') || -1;
     }
@@ -38,8 +38,9 @@ export class CoreCoursePickerMenuPopoverComponent {
      * @param {any} course Course object clicked.
      * @return {boolean} Return true if success, false if error.
      */
-    coursePicked(event: Event, course: any) : boolean {
+    coursePicked(event: Event, course: any): boolean {
         this.viewCtrl.dismiss(course);
+
         return true;
     }
 }

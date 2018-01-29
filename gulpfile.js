@@ -6,7 +6,21 @@ var gulp = require('gulp'),
     slash = require('gulp-slash'),
     clipEmptyFiles = require('gulp-clip-empty-files'),
     gutil = require('gulp-util'),
-    File = gutil.File;
+    File = gutil.File,
+    license = '' +
+        '// (C) Copyright 2015 Martin Dougiamas\n' +
+        '//\n' +
+        '// Licensed under the Apache License, Version 2.0 (the "License");\n' +
+        '// you may not use this file except in compliance with the License.\n' +
+        '// You may obtain a copy of the License at\n' +
+        '//\n' +
+        '//     http://www.apache.org/licenses/LICENSE-2.0\n' +
+        '//\n' +
+        '// Unless required by applicable law or agreed to in writing, software\n' +
+        '// distributed under the License is distributed on an "AS IS" BASIS,\n' +
+        '// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n' +
+        '// See the License for the specific language governing permissions and\n' +
+        '// limitations under the License.\n\n';
 
 // Get the names of the JSON files inside a directory.
 function getFilenames(dir) {
@@ -211,15 +225,40 @@ gulp.task('config', function(done) {
     gulp.src(paths.config)
         .pipe(through(function(file) {
             // Convert the contents of the file into a TypeScript class.
+            // Disable the rule variable-name in the file.
             var config = JSON.parse(file.contents.toString()),
-                contents = 'export class CoreConfigConstants {\n';
+                contents = license + '// tslint:disable: variable-name\n' + 'export class CoreConfigConstants {\n';
 
             for (var key in config) {
                 var value = config[key];
-                if (typeof value != 'number' && typeof value != 'boolean') {
-                    value = JSON.stringify(value);
+                if (typeof value == 'string') {
+                    // Wrap the string in ' .
+                    value = "'" + value + "'";
+                } else if (typeof value != 'number' && typeof value != 'boolean') {
+                    // Stringify with 4 spaces of indentation, and then add 4 more spaces in each line.
+                    value = JSON.stringify(value, null, 4).replace(/^(?:    )/gm, '        ').replace(/^(?:})/gm, '    }');
+                    // Replace " by ' in values.
+                    value = value.replace(/: "([^"]*)"/g, ": '$1'");
+
+                    // Check if the keys have "-" in it.
+                    var matches = value.match(/"([^"]*\-[^"]*)":/g);
+                    if (matches) {
+                        // Replace " by ' in keys. We cannot remove them because keys have chars like '-'.
+                        value = value.replace(/"([^"]*)":/g, "'$1':");
+                    } else {
+                        // Remove ' in keys.
+                        value = value.replace(/"([^"]*)":/g, "$1:");
+                    }
+
+                    // Add type any to the key.
+                    key = key + ': any';
                 }
-                contents += '    public static ' + key + ' = ' + value + ';\n';
+
+                // If key has quotation marks, remove them.
+                if (key[0] == '"') {
+                    key = key.substr(1, key.length - 2);
+                }
+                contents += '    static ' + key + ' = ' + value + ';\n';
             }
             contents += '}\n';
 

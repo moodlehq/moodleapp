@@ -27,17 +27,17 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CoreProgressBarComponent implements OnChanges {
-    @Input() progress: number|string; // Percentage from 0 to 100.
+    @Input() progress: number | string; // Percentage from 0 to 100.
     @Input() text?: string; // Percentage in text to be shown at the right. If not defined, progress will be used.
     width: SafeStyle;
     protected textSupplied = false;
 
-    constructor(private sanitizer: DomSanitizer) {}
+    constructor(private sanitizer: DomSanitizer) { }
 
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.text && typeof changes.text.currentValue != 'undefined') {
             // User provided a custom text, don't use default.
             this.textSupplied = true;

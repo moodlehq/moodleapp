@@ -35,7 +35,7 @@ import { CoreUrlUtilsProvider } from '../providers/utils/url';
 export class CoreExternalContentDirective implements AfterViewInit {
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component to link the file to.
-    @Input() componentId?: string|number; // Component ID to use in conjunction with the component.
+    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
 
     protected element: HTMLElement;
     protected logger;
@@ -51,12 +51,12 @@ export class CoreExternalContentDirective implements AfterViewInit {
     /**
      * View has been initialized
      */
-    ngAfterViewInit() {
-        let currentSite = this.sitesProvider.getCurrentSite(),
+    ngAfterViewInit(): void {
+        const currentSite = this.sitesProvider.getCurrentSite(),
             siteId = this.siteId || (currentSite && currentSite.getId()),
-            targetAttr,
-            sourceAttr,
             tagName = this.element.tagName;
+        let targetAttr,
+            sourceAttr;
 
         if (tagName === 'A') {
             targetAttr = 'href';
@@ -66,12 +66,12 @@ export class CoreExternalContentDirective implements AfterViewInit {
             targetAttr = 'src';
             sourceAttr = 'src';
 
-        } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
+        } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
             targetAttr = 'src';
             sourceAttr = 'targetSrc';
 
             if (tagName === 'VIDEO') {
-                let poster = (<HTMLVideoElement>this.element).poster;
+                const poster = (<HTMLVideoElement> this.element).poster;
                 if (poster) {
                     // Handle poster.
                     this.handleExternalContent('poster', poster, siteId).catch(() => {
@@ -83,10 +83,11 @@ export class CoreExternalContentDirective implements AfterViewInit {
         } else {
             // Unsupported tag.
             this.logger.warn('Directive attached to non-supported tag: ' + tagName);
+
             return;
         }
 
-        let url = this.element.getAttribute(sourceAttr) || this.element.getAttribute(targetAttr);
+        const url = this.element.getAttribute(sourceAttr) || this.element.getAttribute(targetAttr);
         this.handleExternalContent(targetAttr, url, siteId).catch(() => {
             // Ignore errors.
         });
@@ -97,12 +98,12 @@ export class CoreExternalContentDirective implements AfterViewInit {
      *
      * @param {string} url URL to use in the source.
      */
-    protected addSource(url: string) : void {
+    protected addSource(url: string): void {
         if (this.element.tagName !== 'SOURCE') {
             return;
         }
 
-        let newSource = document.createElement('source'),
+        const newSource = document.createElement('source'),
             type = this.element.getAttribute('type');
 
         newSource.setAttribute('src', url);
@@ -126,19 +127,19 @@ export class CoreExternalContentDirective implements AfterViewInit {
      * @param {string} [siteId] Site ID.
      * @return {Promise<any>} Promise resolved if the element is successfully treated.
      */
-    protected handleExternalContent(targetAttr: string, url: string, siteId?: string) : Promise<any> {
+    protected handleExternalContent(targetAttr: string, url: string, siteId?: string): Promise<any> {
 
         const tagName = this.element.tagName;
 
         if (tagName == 'VIDEO' && targetAttr != 'poster') {
-            let video = <HTMLVideoElement> this.element;
+            const video = <HTMLVideoElement> this.element;
             if (video.textTracks) {
                 // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
-                video.textTracks.onaddtrack = (event) => {
-                    let track = <TextTrack> event.track;
+                video.textTracks.onaddtrack = (event): void => {
+                    const track = <TextTrack> event.track;
                     if (track) {
-                        track.oncuechange = () => {
-                            var line = this.platform.is('tablet') || this.platform.is('android') ? 90 : 80;
+                        track.oncuechange = (): void => {
+                            const line = this.platform.is('tablet') || this.platform.is('android') ? 90 : 80;
                             // Position all subtitles to a percentage of video height.
                             Array.from(track.cues).forEach((cue: any) => {
                                 cue.snapToLines = false;
@@ -160,6 +161,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
                 // Restoring original src.
                 this.addSource(url);
             }
+
             return Promise.reject(null);
         }
 
@@ -167,12 +169,13 @@ export class CoreExternalContentDirective implements AfterViewInit {
         return this.sitesProvider.getSite(siteId).then((site) => {
             if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(url)) {
                 this.element.parentElement.removeChild(this.element); // Remove element since it'll be broken.
+
                 return Promise.reject(null);
             }
 
             // Download images, tracks and posters if size is unknown.
-            let promise,
-                dwnUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
+            const dwnUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
+            let promise;
 
             if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK') {
                 promise = this.filepoolProvider.getSrcByUrl(siteId, url, this.component, this.componentId, 0, true, dwnUnknown);
@@ -192,9 +195,9 @@ export class CoreExternalContentDirective implements AfterViewInit {
 
                 // Set events to download big files (not downloaded automatically).
                 if (finalUrl.indexOf('http') === 0 && targetAttr != 'poster' &&
-                            (tagName == 'VIDEO' || tagName == 'AUDIO' || tagName == 'A' || tagName == 'SOURCE')) {
-                    let eventName = tagName == 'A' ? 'click' : 'play',
-                        clickableEl = this.element;
+                    (tagName == 'VIDEO' || tagName == 'AUDIO' || tagName == 'A' || tagName == 'SOURCE')) {
+                    const eventName = tagName == 'A' ? 'click' : 'play';
+                    let clickableEl = this.element;
 
                     if (tagName == 'SOURCE') {
                         clickableEl = <HTMLElement> this.domUtils.closest(this.element, 'video,audio');

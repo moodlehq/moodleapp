@@ -15,7 +15,7 @@
 import { NgModule } from '@angular/core';
 import { AddonCalendarProvider } from './providers/calendar';
 import { AddonCalendarHelperProvider } from './providers/helper';
-import { AddonCalendarMainMenuHandler } from './providers/handlers';
+import { AddonCalendarMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
 import { CoreInitDelegate } from '../../providers/init';
 import { CoreLocalNotificationsProvider } from '../../providers/local-notifications';
@@ -42,11 +42,10 @@ export class AddonCalendarModule {
             calendarProvider.scheduleAllSitesEventsNotifications();
         });
 
-
         localNotificationsProvider.registerClick(AddonCalendarProvider.COMPONENT, (data) => {
             if (data.eventid) {
                 initDelegate.ready().then(() => {
-                    calendarProvider.isDisabled(data.siteId).then(function(disabled) {
+                    calendarProvider.isDisabled(data.siteId).then((disabled) => {
                         if (disabled) {
                             // The calendar is disabled in the site, don't open it.
                             return;

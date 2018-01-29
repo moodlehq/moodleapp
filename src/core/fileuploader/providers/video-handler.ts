@@ -27,15 +27,15 @@ export class CoreFileUploaderVideoHandler implements CoreFileUploaderHandler {
     priority = 1400;
 
     constructor(private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private platform: Platform,
-            private uploaderHelper: CoreFileUploaderHelperProvider) {}
+            private uploaderHelper: CoreFileUploaderHelperProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
-    isEnabled(): boolean|Promise<boolean> {
-        return this.appProvider.isMobile() || (this.appProvider.canGetUserMedia() && this.appProvider.canRecordMedia());
+    isEnabled(): boolean | Promise<boolean> {
+        return this.appProvider.isMobile() || (this.appProvider.canGetUserMedia() && this.appProvider.canRecordMedia());
     }
 
     /**
@@ -44,19 +44,20 @@ export class CoreFileUploaderVideoHandler implements CoreFileUploaderHandler {
      * @param {string[]} [mimetypes] List of mimetypes.
      * @return {string[]} Supported mimetypes.
      */
-    getSupportedMimetypes(mimetypes: string[]) : string[] {
+    getSupportedMimetypes(mimetypes: string[]): string[] {
         if (this.platform.is('ios')) {
-            // iOS records as MOV.
+            // In iOS it's recorded as MOV.
             return this.utils.filterByRegexp(mimetypes, /^video\/quicktime$/);
         } else if (this.platform.is('android')) {
             // In Android we don't know the format the video will be recorded, so accept any video mimetype.
             return this.utils.filterByRegexp(mimetypes, /^video\//);
         } else {
             // In desktop, support video formats that are supported by MediaRecorder.
-            let mediaRecorder = (<any>window).MediaRecorder;
+            const mediaRecorder = (<any> window).MediaRecorder;
             if (mediaRecorder) {
-                return mimetypes.filter(function(type) {
-                    let matches = type.match(/^video\//);
+                return mimetypes.filter((type) => {
+                    const matches = type.match(/^video\//);
+
                     return matches && matches.length && mediaRecorder.isTypeSupported(type);
                 });
             }
@@ -70,12 +71,12 @@ export class CoreFileUploaderVideoHandler implements CoreFileUploaderHandler {
      *
      * @return {CoreFileUploaderHandlerData} Data.
      */
-    getData() : CoreFileUploaderHandlerData {
+    getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.fileuploader.video',
             class: 'core-fileuploader-video-handler',
             icon: 'videocam',
-            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]) => {
+            action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
                 return this.uploaderHelper.uploadAudioOrVideo(false, maxSize, upload, mimetypes).then((result) => {
                     return {
                         treated: true,

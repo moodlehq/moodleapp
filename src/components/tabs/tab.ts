@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef,
-    ViewChild } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CoreTabsComponent } from './tabs';
 import { Content } from 'ionic-angular';
 
@@ -45,12 +44,12 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     @Input() icon?: string; // The tab icon.
     @Input() badge?: string; // A badge to add in the tab.
     @Input() badgeStyle?: string; // The badge color.
-    @Input() enabled?: boolean = true; // Whether the tab is enabled.
-    @Input() show?: boolean = true; // Whether the tab should be shown.
+    @Input() enabled? = true; // Whether the tab is enabled.
+    @Input() show? = true; // Whether the tab should be shown.
     @Input() id?: string; // An ID to identify the tab.
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
-    @ContentChild(TemplateRef) template: TemplateRef<any> // Template defined by the content.
+    @ContentChild(TemplateRef) template: TemplateRef<any>; // Template defined by the content.
     @ContentChild(Content) scroll: Content;
 
     element: HTMLElement; // The core-tab element.
@@ -63,21 +62,21 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.tabs.addTab(this);
     }
 
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.tabs.removeTab(this);
     }
 
     /**
      * Select tab.
      */
-    selectTab() {
+    selectTab(): void {
         this.element.classList.add('selected');
 
         this.loaded = true;
@@ -86,9 +85,9 @@ export class CoreTabComponent implements OnInit, OnDestroy {
         // Setup tab scrolling.
         setTimeout(() => {
             if (this.scroll) {
-                this.scroll.getScrollElement().onscroll = (e) => {
+                this.scroll.getScrollElement().onscroll = (e): void => {
                     this.tabs.showHideTabs(e);
-                }
+                };
             }
         }, 1);
     }
@@ -96,7 +95,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     /**
      * Unselect tab.
      */
-    unselectTab() {
+    unselectTab(): void {
         this.element.classList.remove('selected');
     }
 }

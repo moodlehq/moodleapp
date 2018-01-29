@@ -53,7 +53,7 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} extension Extension.
      * @return {boolean} Whether it can be embedded.
      */
-    canBeEmbedded(extension: string) : boolean {
+    canBeEmbedded(extension: string): boolean {
         return this.isExtensionInGroup(extension, ['web_image', 'web_video', 'web_audio']);
     }
 
@@ -63,13 +63,13 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} extension Extension to clean.
      * @return {string} Clean extension.
      */
-    cleanExtension(extension: string) : string {
+    cleanExtension(extension: string): string {
         if (!extension) {
             return extension;
         }
 
         // If the extension has parameters, remove them.
-        let position = extension.indexOf('?');
+        const position = extension.indexOf('?');
         if (position > -1) {
             extension = extension.substr(0, position);
         }
@@ -90,12 +90,12 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param {string} group Group name.
      */
-    protected fillGroupMimeInfo(group: string) : void {
-        let mimetypes = {}, // Use an object to prevent duplicates.
+    protected fillGroupMimeInfo(group: string): void {
+        const mimetypes = {}, // Use an object to prevent duplicates.
             extensions = []; // Extensions are unique.
 
-        for (let extension in this.extToMime) {
-            let data = this.extToMime[extension];
+        for (const extension in this.extToMime) {
+            const data = this.extToMime[extension];
             if (data.type && data.groups && data.groups.indexOf(group) != -1) {
                 // This extension has the group, add it to the list.
                 mimetypes[data.type] = true;
@@ -116,8 +116,8 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} [url] URL of the file. It will be used if there's more than one possible extension.
      * @return {string} Extension.
      */
-    getExtension(mimetype: string, url?: string) : string {
-        mimetype = mimetype || '';
+    getExtension(mimetype: string, url?: string): string {
+        mimetype = mimetype || '';
         mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
 
         if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
@@ -125,15 +125,16 @@ export class CoreMimetypeUtilsProvider {
             return this.guessExtensionFromUrl(url);
         }
 
-        let extensions = this.mimeToExt[mimetype];
+        const extensions = this.mimeToExt[mimetype];
         if (extensions && extensions.length) {
             if (extensions.length > 1 && url) {
                 // There's more than one possible extension. Check if the URL has extension.
-                let candidate = this.guessExtensionFromUrl(url);
+                const candidate = this.guessExtensionFromUrl(url);
                 if (extensions.indexOf(candidate) != -1) {
                     return candidate;
                 }
             }
+
             return extensions[0];
         }
     }
@@ -144,7 +145,7 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} extension Extension.
      * @return {string} Type of the extension.
      */
-    getExtensionType(extension: string) : string {
+    getExtensionType(extension: string): string {
         extension = this.cleanExtension(extension);
 
         if (this.extToMime[extension] && this.extToMime[extension].string) {
@@ -158,9 +159,10 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} mimetype Mimetype.
      * @return {string[]} Extensions.
      */
-    getExtensions(mimetype: string) : string[] {
-        mimetype = mimetype || '';
+    getExtensions(mimetype: string): string[] {
+        mimetype = mimetype || '';
         mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
         return this.mimeToExt[mimetype] || [];
     }
 
@@ -170,15 +172,15 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} The name of the file.
      * @return {string} The path to a file icon.
      */
-    getFileIcon(filename: string) : string {
-        let ext = this.getFileExtension(filename),
-            icon = 'unknown';
+    getFileIcon(filename: string): string {
+        const ext = this.getFileExtension(filename);
+        let icon = 'unknown';
 
         if (ext && this.extToMime[ext]) {
             if (this.extToMime[ext].icon) {
                 icon = this.extToMime[ext].icon;
             } else {
-                let type = this.extToMime[ext].type.split('/')[0];
+                const type = this.extToMime[ext].type.split('/')[0];
                 if (type == 'video' || type == 'text' || type == 'image' || type == 'document' || type == 'audio') {
                     icon = type;
                 }
@@ -193,7 +195,7 @@ export class CoreMimetypeUtilsProvider {
      *
      * @return {string} The path to a folder icon.
      */
-    getFolderIcon() : string {
+    getFolderIcon(): string {
         return 'assets/img/files/folder-64.png';
     }
 
@@ -204,9 +206,9 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} url The URL of the file.
      * @return {Promise<string>} Promise resolved with the mimetype.
      */
-    getMimeTypeFromUrl(url: string) : Promise<string> {
+    getMimeTypeFromUrl(url: string): Promise<string> {
         // First check if it can be guessed from the URL.
-        let extension = this.guessExtensionFromUrl(url),
+        const extension = this.guessExtensionFromUrl(url),
             mimetype = this.getMimeType(extension);
 
         if (mimetype) {
@@ -215,7 +217,7 @@ export class CoreMimetypeUtilsProvider {
 
         // Can't be guessed, get the remote mimetype.
         return this.wsProvider.getRemoteFileMimeType(url).then((mimetype) => {
-            return mimetype || '';
+            return mimetype || '';
         });
     }
 
@@ -226,9 +228,9 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} fileUrl The file URL.
      * @return {string} The lowercased extension without the dot, or undefined.
      */
-    guessExtensionFromUrl(fileUrl: string) : string {
-        let split = fileUrl.split('.'),
-            candidate,
+    guessExtensionFromUrl(fileUrl: string): string {
+        const split = fileUrl.split('.');
+        let candidate,
             extension,
             position;
 
@@ -248,6 +250,7 @@ export class CoreMimetypeUtilsProvider {
         // Check extension corresponds to a mimetype to know if it's valid.
         if (extension && typeof this.getMimeType(extension) == 'undefined') {
             this.logger.warn('Guess file extension: Not valid extension ' + extension);
+
             return;
         }
 
@@ -261,9 +264,9 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} filename The file name.
      * @return {string} The lowercased extension, or undefined.
      */
-    getFileExtension(filename: string) : string {
-        let dot = filename.lastIndexOf("."),
-            ext;
+    getFileExtension(filename: string): string {
+        const dot = filename.lastIndexOf('.');
+        let ext;
 
         if (dot > -1) {
             ext = filename.substr(dot + 1).toLowerCase();
@@ -272,6 +275,7 @@ export class CoreMimetypeUtilsProvider {
             // Check extension corresponds to a mimetype to know if it's valid.
             if (typeof this.getMimeType(ext) == 'undefined') {
                 this.logger.warn('Get file extension: Not valid extension ' + ext);
+
                 return;
             }
         }
@@ -286,7 +290,7 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} [field] The field to get. If not supplied, all the info will be returned.
      * @return {any} Info for the group.
      */
-    getGroupMimeInfo(group: string, field?: string) : any {
+    getGroupMimeInfo(group: string, field?: string): any {
         if (typeof this.groupsMimeInfo[group] == 'undefined') {
             this.fillGroupMimeInfo(group);
         }
@@ -294,6 +298,7 @@ export class CoreMimetypeUtilsProvider {
         if (field) {
             return this.groupsMimeInfo[group][field];
         }
+
         return this.groupsMimeInfo[group];
     }
 
@@ -303,7 +308,7 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} extension Extension.
      * @return {string} Mimetype.
      */
-    getMimeType(extension: string) : string {
+    getMimeType(extension: string): string {
         extension = this.cleanExtension(extension);
 
         if (this.extToMime[extension] && this.extToMime[extension].type) {
@@ -319,18 +324,18 @@ export class CoreMimetypeUtilsProvider {
      * @param {boolean} [capitalise] If true, capitalises first character of result.
      * @return {string} Type description.
      */
-    getMimetypeDescription(obj: any, capitalise?: boolean) : string {
+    getMimetypeDescription(obj: any, capitalise?: boolean): string {
+        const langPrefix = 'assets.mimetypes.';
         let filename = '',
             mimetype = '',
-            extension = '',
-            langPrefix = 'assets.mimetypes.';
+            extension = '';
 
         if (typeof obj == 'object' && typeof obj.file == 'function') {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
             filename = obj.name;
         } else if (typeof obj == 'object') {
-            filename = obj.filename || '';
-            mimetype = obj.mimetype || '';
+            filename = obj.filename || '';
+            mimetype = obj.mimetype || '';
         } else {
             mimetype = obj;
         }
@@ -353,30 +358,30 @@ export class CoreMimetypeUtilsProvider {
             extension = this.getExtension(mimetype);
         }
 
-        let mimetypeStr = this.getMimetypeType(mimetype) || '',
+        const mimetypeStr = this.getMimetypeType(mimetype) || '',
             chunks = mimetype.split('/'),
             attr = {
                 mimetype: mimetype,
                 ext: extension || '',
                 mimetype1: chunks[0],
-                mimetype2: chunks[1] || '',
+                mimetype2: chunks[1] || '',
             },
             translateParams = {};
 
-        for (let key in attr) {
-            let value = attr[key];
+        for (const key in attr) {
+            const value = attr[key];
             translateParams[key] = value;
             translateParams[key.toUpperCase()] = value.toUpperCase();
             translateParams[this.textUtils.ucFirst(key)] = this.textUtils.ucFirst(value);
         }
 
         // MIME types may include + symbol but this is not permitted in string ids.
-        let safeMimetype = mimetype.replace(/\+/g, '_'),
+        const safeMimetype = mimetype.replace(/\+/g, '_'),
             safeMimetypeStr = mimetypeStr.replace(/\+/g, '_'),
-            safeMimetypeTrns = this.translate.instant(langPrefix + safeMimetype, {$a: translateParams}),
-            safeMimetypeStrTrns = this.translate.instant(langPrefix + safeMimetypeStr, {$a: translateParams}),
-            defaultTrns = this.translate.instant(langPrefix + 'default', {$a: translateParams}),
-            result = mimetype;
+            safeMimetypeTrns = this.translate.instant(langPrefix + safeMimetype, { $a: translateParams }),
+            safeMimetypeStrTrns = this.translate.instant(langPrefix + safeMimetypeStr, { $a: translateParams }),
+            defaultTrns = this.translate.instant(langPrefix + 'default', { $a: translateParams });
+        let result = mimetype;
 
         if (safeMimetypeTrns != langPrefix + safeMimetype) {
             result = safeMimetypeTrns;
@@ -399,16 +404,16 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} mimetype Mimetype.
      * @return {string} Type of the mimetype.
      */
-    getMimetypeType(mimetype: string) : string {
+    getMimetypeType(mimetype: string): string {
         mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
 
-        let extensions = this.mimeToExt[mimetype];
+        const extensions = this.mimeToExt[mimetype];
         if (!extensions) {
             return;
         }
 
         for (let i = 0; i < extensions.length; i++) {
-            let extension = extensions[i];
+            const extension = extensions[i];
             if (this.extToMime[extension] && this.extToMime[extension].string) {
                 return this.extToMime[extension].string;
             }
@@ -421,9 +426,10 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} name Group name.
      * @return {string} Translated name.
      */
-    getTranslatedGroupName(name: string) : string {
-        let key = 'assets.mimetypes.group:' + name,
+    getTranslatedGroupName(name: string): string {
+        const key = 'assets.mimetypes.group:' + name,
             translated = this.translate.instant(key);
+
         return translated != key ? translated : name;
     }
 
@@ -435,17 +441,18 @@ export class CoreMimetypeUtilsProvider {
      * @param {string[]} groups List of groups to check.
      * @return {boolean} Whether the extension belongs to any of the groups.
      */
-    isExtensionInGroup(extension: string, groups: string[]) : boolean {
+    isExtensionInGroup(extension: string, groups: string[]): boolean {
         extension = this.cleanExtension(extension);
 
         if (groups && groups.length && this.extToMime[extension] && this.extToMime[extension].groups) {
             for (let i = 0; i < this.extToMime[extension].groups.length; i++) {
-                let group = this.extToMime[extension].groups[i];
+                const group = this.extToMime[extension].groups[i];
                 if (groups.indexOf(group) != -1) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -455,9 +462,9 @@ export class CoreMimetypeUtilsProvider {
      * @param {string} path Path.
      * @return {string} Path without extension.
      */
-    removeExtension(path: string) : string {
-        let extension,
-            position = path.lastIndexOf('.');
+    removeExtension(path: string): string {
+        const position = path.lastIndexOf('.');
+        let extension;
 
         if (position > -1) {
             // Check extension corresponds to a mimetype to know if it's valid.
@@ -466,6 +473,7 @@ export class CoreMimetypeUtilsProvider {
                 return path.substr(0, position); // Remove extension.
             }
         }
+
         return path;
     }
 }

@@ -32,9 +32,9 @@ export class CoreSyncBaseProvider {
     syncInterval = 300000;
 
     // Store sync promises.
-    protected syncPromises: {[siteId: string]: {[uniqueId: string]: Promise<any>}} = {};
+    protected syncPromises: { [siteId: string]: { [uniqueId: string]: Promise<any> } } = {};
 
-    constructor(private sitesProvider: CoreSitesProvider) {}
+    constructor(private sitesProvider: CoreSitesProvider) { }
 
     /**
      * Add an ongoing sync to the syncPromises list. On finish the promise will be removed.
@@ -44,7 +44,7 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} The sync promise.
      */
-    addOngoingSync(id: number, promise: Promise<any>, siteId?: string) : Promise<any> {
+    addOngoingSync(id: number, promise: Promise<any>, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncId(id);
@@ -67,12 +67,13 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise of the current sync or undefined if there isn't any.
      */
-    getOngoingSync(id: number, siteId?: string) : Promise<any> {
+    getOngoingSync(id: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (this.isSyncing(id, siteId)) {
             // There's already a sync ongoing for this discussion, return the promise.
             const uniqueId = this.getUniqueSyncId(id);
+
             return this.syncPromises[siteId][uniqueId];
         }
     }
@@ -84,9 +85,9 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<number>} Promise resolved with the time.
      */
-    getSyncTime(id: number, siteId?: string) : Promise<number> {
+    getSyncTime(id: number, siteId?: string): Promise<number> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecord(CoreSyncProvider.SYNC_TABLE, {component: this.component, id: id}).then((entry) => {
+            return db.getRecord(CoreSyncProvider.SYNC_TABLE, { component: this.component, id: id }).then((entry) => {
                 return entry.time;
             }).catch(() => {
                 return 0;
@@ -101,12 +102,12 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<string[]>} Promise resolved with the warnings.
      */
-    getSyncWarnings(id: number, siteId?: string) : Promise<string[]> {
+    getSyncWarnings(id: number, siteId?: string): Promise<string[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecord(CoreSyncProvider.SYNC_TABLE, {component: this.component, id: id}).then((entry) => {
+            return db.getRecord(CoreSyncProvider.SYNC_TABLE, { component: this.component, id: id }).then((entry) => {
                 try {
                     return JSON.parse(entry.warnings);
-                } catch(ex) {
+                } catch (ex) {
                     return [];
                 }
             }).catch(() => {
@@ -121,7 +122,7 @@ export class CoreSyncBaseProvider {
      * @param {number} id Unique sync identifier per component.
      * @return {string} Unique identifier from component and id.
      */
-    protected getUniqueSyncId(id: number) : string {
+    protected getUniqueSyncId(id: number): string {
         return this.component + '#' + id;
     }
 
@@ -132,10 +133,11 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {boolean} Whether it's synchronizing.
      */
-    isSyncing(id: number, siteId?: string) : boolean {
+    isSyncing(id: number, siteId?: string): boolean {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncId(id);
+
         return !!(this.syncPromises[siteId] && this.syncPromises[siteId][uniqueId]);
     }
 
@@ -146,7 +148,7 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with boolean: whether sync is needed.
      */
-    isSyncNeeded(id: number, siteId?: string) : Promise<boolean> {
+    isSyncNeeded(id: number, siteId?: string): Promise<boolean> {
         return this.getSyncTime(id, siteId).then((time) => {
             return Date.now() - this.syncInterval >= time;
         });
@@ -160,10 +162,11 @@ export class CoreSyncBaseProvider {
      * @param {number} [time] Time to set. If not defined, current time.
      * @return {Promise<any>} Promise resolved when the time is set.
      */
-    setSyncTime(id: number, siteId?: string, time?: number) : Promise<any> {
+    setSyncTime(id: number, siteId?: string, time?: number): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             time = typeof time != 'undefined' ? time : Date.now();
-            return db.insertOrUpdateRecord(CoreSyncProvider.SYNC_TABLE, {time: time}, {component: this.component, id: id});
+
+            return db.insertOrUpdateRecord(CoreSyncProvider.SYNC_TABLE, { time: time }, { component: this.component, id: id });
         });
     }
 
@@ -175,11 +178,12 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    setSyncWarnings(id: number, warnings: string[], siteId?: string) : Promise<any> {
+    setSyncWarnings(id: number, warnings: string[], siteId?: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             warnings = warnings || [];
-            return db.insertOrUpdateRecord(CoreSyncProvider.SYNC_TABLE, {warnings: JSON.stringify(warnings)},
-                    {component: this.component, id: id});
+
+            return db.insertOrUpdateRecord(CoreSyncProvider.SYNC_TABLE, { warnings: JSON.stringify(warnings) },
+                { component: this.component, id: id });
         });
     }
 
@@ -191,11 +195,14 @@ export class CoreSyncBaseProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when there's no sync going on for the identifier.
      */
-    waitForSync(id: number, siteId?: string) : Promise<any> {
+    waitForSync(id: number, siteId?: string): Promise<any> {
         const promise = this.getOngoingSync(id, siteId);
         if (promise) {
-            return promise.catch(() => {});
+            return promise.catch(() => {
+                // Ignore errors.
+            });
         }
+
         return Promise.resolve();
     }
 }

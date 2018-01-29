@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreUserProvider } from '../../../user/providers/user';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -39,15 +40,15 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     completionImage: string;
     completionDescription: string;
 
-    constructor(private textUtils: CoreTextUtilsProvider, private translate: TranslateService,
-            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
+            private translate: TranslateService, private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider) {
         this.completionChanged = new EventEmitter();
     }
 
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.completion && this.completion) {
             this.showStatus();
         }
@@ -58,7 +59,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
      *
      * @param {Event} e The click event.
      */
-    completionClicked(e: Event) : void {
+    completionClicked(e: Event): void {
         if (this.completion) {
             if (typeof this.completion.cmid == 'undefined' || this.completion.tracking !== 1) {
                 return;
@@ -67,7 +68,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             e.preventDefault();
             e.stopPropagation();
 
-            let modal = this.domUtils.showModalLoading(),
+            const modal = this.domUtils.showModalLoading(),
                 params = {
                     cmid: this.completion.cmid,
                     completed: this.completion.state === 1 ? 0 : 1
@@ -91,9 +92,9 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
     /**
      * Set image and description to show as completion icon.
      */
-    protected showStatus() : void {
+    protected showStatus(): void {
+        const moduleName = this.moduleName || '';
         let langKey,
-            moduleName = this.moduleName || '',
             image;
 
         if (this.completion.tracking === 1 && this.completion.state === 0) {
@@ -130,19 +131,19 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
                 if (this.completion.overrideby > 0) {
                     langKey += '-override';
 
-                    // @todo: Get user profile.
-                    // promise = $mmUser.getProfile(scope.completion.overrideby, scope.completion.courseId, true).then(function(profile) {
-                    //     return {
-                    //         overrideuser: profile.fullname,
-                    //         modname: modNameFormatted
-                    //     };
-                    // });
+                    promise = this.userProvider.getProfile(this.completion.overrideby, this.completion.courseId, true).then(
+                        (profile) => {
+                            return {
+                                overrideuser: profile.fullname,
+                                modname: modNameFormatted
+                            };
+                        });
                 } else {
                     promise = Promise.resolve(modNameFormatted);
                 }
 
                 return promise.then((translateParams) => {
-                    this.completionDescription = this.translate.instant(langKey, {$a: translateParams});
+                    this.completionDescription = this.translate.instant(langKey, { $a: translateParams });
                 });
             });
         }

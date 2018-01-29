@@ -22,7 +22,7 @@ import { CoreSharedFilesHelperProvider } from '../../providers/helper';
 /**
  * Modal to display the list of sites to choose one to store a shared file.
  */
-@IonicPage({segment: "core-shared-files-choose-site"})
+@IonicPage({ segment: 'core-shared-files-choose-site' })
 @Component({
     selector: 'page-core-shared-files-choose-site',
     templateUrl: 'choose-site.html',
@@ -45,14 +45,15 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         if (!this.filePath) {
             this.domUtils.showErrorModal('Error reading file.');
             this.navCtrl.pop();
+
             return;
         }
 
-        let fileAndDir = this.fileProvider.getFileAndDirectoryFromPath(this.filePath);
+        const fileAndDir = this.fileProvider.getFileAndDirectoryFromPath(this.filePath);
         this.fileName = fileAndDir.name;
 
         // Get the file.
@@ -77,13 +78,12 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
      *
      * @param {string} siteId Site ID.
      */
-    storeInSite(siteId: string) : void {
+    storeInSite(siteId: string): void {
         this.loaded = false;
         this.sharedFilesHelper.storeSharedFileInSite(this.fileEntry, siteId).then(() => {
             this.navCtrl.pop();
         }).finally(() => {
             this.loaded = true;
         });
-    };
-
+    }
 }

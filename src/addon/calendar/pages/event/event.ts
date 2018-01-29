@@ -27,7 +27,7 @@ import * as moment from 'moment';
 /**
  * Page that displays a single calendar event.
  */
-@IonicPage({segment: "addon-calendar-event"})
+@IonicPage({ segment: 'addon-calendar-event' })
 @Component({
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
@@ -45,10 +45,10 @@ export class AddonCalendarEventPage {
     courseName: string;
     notificationsEnabled = false;
 
-    constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, private navParams: NavParams,
+    constructor(private translate: TranslateService, private calendarProvider: AddonCalendarProvider, navParams: NavParams,
             private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            private calendarHelper: AddonCalendarHelperProvider, private sitesProvider: CoreSitesProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
+            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider, private courseProvider: CoreCourseProvider) {
 
         this.eventId = navParams.get('id');
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -72,13 +72,13 @@ export class AddonCalendarEventPage {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         this.fetchEvent().finally(() => {
             this.eventLoaded = true;
         });
     }
 
-    updateNotificationTime() {
+    updateNotificationTime(): void {
         if (!isNaN(this.notificationTime) && this.event && this.event.id) {
             this.calendarProvider.updateNotificationTime(this.event, this.notificationTime);
         }
@@ -86,8 +86,10 @@ export class AddonCalendarEventPage {
 
     /**
      * Fetches the event and updates the view.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    fetchEvent() {
+    fetchEvent(): Promise<any> {
         return this.calendarProvider.getEvent(this.eventId).then((event) => {
             this.calendarHelper.formatEventData(event);
             this.event = event;
@@ -96,14 +98,14 @@ export class AddonCalendarEventPage {
             let title = this.translate.instant('addon.calendar.type' + event.eventtype);
             if (event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
-                let name = this.courseProvider.translateModuleName(event.modulename);
+                const name = this.courseProvider.translateModuleName(event.modulename);
                 if (name.indexOf('core.mod_') === -1) {
                     event.moduleName = name;
                 }
                 if (title == 'addon.calendar.type' + event.eventtype) {
-                    title = this.translate.instant('core.mod_'+ event.modulename + '.' + event.eventtype);
+                    title = this.translate.instant('core.mod_' + event.modulename + '.' + event.eventtype);
 
-                    if (title == 'core.mod_'+ event.modulename + '.' + event.eventtype) {
+                    if (title == 'core.mod_' + event.modulename + '.' + event.eventtype) {
                         title = name;
                     }
                 }
@@ -130,7 +132,7 @@ export class AddonCalendarEventPage {
      *
      * @param {any} refresher Refresher.
      */
-    refreshEvent(refresher: any) {
+    refreshEvent(refresher: any): void {
         this.calendarProvider.invalidateEvent(this.eventId).finally(() => {
             this.fetchEvent().finally(() => {
                 refresher.complete();

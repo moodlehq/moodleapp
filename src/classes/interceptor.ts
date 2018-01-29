@@ -23,14 +23,16 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class CoreInterceptor implements HttpInterceptor {
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
         // Add the header and serialize the body if needed.
         const newReq = req.clone({
             headers: req.headers.set('Content-Type', 'application/x-www-form-urlencoded'),
             body: typeof req.body == 'object' && String(req.body) != '[object File]' ?
-                    CoreInterceptor.serialize(req.body) : req.body
+                CoreInterceptor.serialize(req.body) : req.body
         });
 
         // Pass on the cloned request instead of the original request.
@@ -44,14 +46,14 @@ export class CoreInterceptor implements HttpInterceptor {
      * @param {boolean} [addNull] Add null values to the serialized as empty parameters.
      * @return {string} Serialization of the object.
      */
-    public static serialize(obj: any, addNull?: boolean) : string {
+    static serialize(obj: any, addNull?: boolean): string {
         let query = '',
             fullSubName,
             subValue,
             innerObj;
 
-        for (let name in obj) {
-            let value = obj[name];
+        for (const name in obj) {
+            const value = obj[name];
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; ++i) {
@@ -62,7 +64,7 @@ export class CoreInterceptor implements HttpInterceptor {
                     query += this.serialize(innerObj) + '&';
                 }
             } else if (value instanceof Object) {
-                for (let subName in value) {
+                for (const subName in value) {
                     subValue = value[subName];
                     fullSubName = name + '[' + subName + ']';
                     innerObj = {};

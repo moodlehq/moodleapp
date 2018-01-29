@@ -1,0 +1,29 @@
+<div [hidden]="!rteEnabled">
+    <div #editor contenteditable="true" class="core-rte-editor" tappable [attr.data-placeholder-text]="placeholder">
+    </div>
+
+    <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
+    <div #decorate class="formatOptions">
+        <button data-command="bold"><strong>B</strong></button>
+        <button data-command="italic"><i>I</i></button>
+        <button data-command="underline"><u>U</u></button>
+        <button data-command="formatBlock|<p>">Normal</button>
+        <button data-command="formatBlock|<h1>">H1</button>
+        <button data-command="formatBlock|<h2>">H2</button>
+        <button data-command="formatBlock|<h3>">H3</button>
+        <button data-command="formatBlock|<pre>">Pre</button>
+        <button data-command="insertOrderedList">OL</button>
+        <button data-command="insertUnorderedList">UL</button>
+        <button data-command="removeFormat">Tx</button>
+        <button (click)="toggleEditor($event)">Toggle Editor</button>
+    </div>
+</div>
+
+<div [hidden]="rteEnabled">
+    <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" ngControl="control" (ionChange)="onChange($event)"></ion-textarea>
+    <div class="formatOptions">
+        <button tappable (click)="toggleEditor($event)">Toggle Editor</button>
+    </div>
+</div>
+
+

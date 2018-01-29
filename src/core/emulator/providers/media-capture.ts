@@ -32,7 +32,7 @@ export class MediaCaptureMock extends MediaCapture {
      * @param {CaptureAudioOptions} options Options.
      * @return {Promise<any>} Promise resolved when captured.
      */
-    captureAudio(options: CaptureAudioOptions) : Promise<any> {
+    captureAudio(options: CaptureAudioOptions): Promise<any> {
         return this.captureHelper.captureMedia('audio', options);
     }
 
@@ -42,7 +42,7 @@ export class MediaCaptureMock extends MediaCapture {
      * @param {CaptureImageOptions} options Options.
      * @return {Promise<any>} Promise resolved when captured.
      */
-    captureImage(options: CaptureImageOptions) : Promise<any> {
+    captureImage(options: CaptureImageOptions): Promise<any> {
         return this.captureHelper.captureMedia('captureimage', options);
     }
 
@@ -52,7 +52,7 @@ export class MediaCaptureMock extends MediaCapture {
      * @param {CaptureVideoOptions} options Options.
      * @return {Promise<any>} Promise resolved when captured.
      */
-    captureVideo(options: CaptureVideoOptions) : Promise<any> {
+    captureVideo(options: CaptureVideoOptions): Promise<any> {
         return this.captureHelper.captureMedia('video', options);
     }
 }

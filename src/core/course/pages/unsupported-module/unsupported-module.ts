@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavParams, NavController } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 
 /**
  * Page that displays info about an unsupported module.
  */
-@IonicPage({segment: 'core-course-unsupported-module'})
+@IonicPage({ segment: 'core-course-unsupported-module' })
 @Component({
     selector: 'page-core-course-unsupported-module',
     templateUrl: 'unsupported-module.html',
@@ -28,15 +28,14 @@ import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 export class CoreCourseUnsupportedModulePage {
     module: any;
 
-    constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
-            private navCtrl: NavController) {
+    constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider) {
         this.module = navParams.get('module') || {};
     }
 
     /**
      * Expand the description.
      */
-    expandDescription() {
+    expandDescription(): void {
         this.textUtils.expandText(this.translate.instant('core.description'), this.module.description);
     }
 }

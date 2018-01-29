@@ -36,9 +36,9 @@ export class CoreFormatDatePipe implements PipeTransform {
      * @param {string|number} timestamp Timestamp to format (in milliseconds). If not defined, use current time.
      * @param {string} format Format to use. It should be a string code to handle i18n (e.g. core.dftimedate). If the code
      *                        doesn't have a prefix, 'core' will be used by default. E.g. 'dftimedate' -> 'core.dftimedate'.
-     * @return {String} Formatted date.
+     * @return {string} Formatted date.
      */
-    transform(timestamp: string|number, format: string) {
+    transform(timestamp: string | number, format: string): string {
         timestamp = timestamp || Date.now();
 
         if (typeof timestamp == 'string') {
@@ -46,6 +46,7 @@ export class CoreFormatDatePipe implements PipeTransform {
             const numberTimestamp = parseInt(timestamp, 10);
             if (isNaN(numberTimestamp)) {
                 this.logger.error('Invalid value received', timestamp);
+
                 return timestamp;
             }
             timestamp = numberTimestamp;
@@ -54,6 +55,7 @@ export class CoreFormatDatePipe implements PipeTransform {
         if (format.indexOf('.') == -1) {
             format = 'core.' + format;
         }
+
         return moment(timestamp).format(this.translate.instant(format));
     }
 }

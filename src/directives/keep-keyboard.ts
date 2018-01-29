@@ -45,15 +45,15 @@ import { CoreUtilsProvider } from '../providers/utils/utils';
 })
 export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     @Input('core-keep-keyboard') selector: string; // Selector to identify the button or input.
-    @Input() inButton?: boolean|string; // Whether this directive is applied to the button (true) or to the input (false).
+    @Input() inButton?: boolean | string; // Whether this directive is applied to the button (true) or to the input (false).
 
     protected element: HTMLElement; // Current element.
     protected button: HTMLElement; // Button element.
     protected input: HTMLElement; // Input element.
     protected lastFocusOut = 0; // Last time the input was focused out.
-    protected clickListener : any; // Listener for clicks in the button.
-    protected focusOutListener : any; // Listener for focusout in the input.
-    protected focusAgainListener : any; // Another listener for focusout, with the purpose to focus again.
+    protected clickListener: any; // Listener for clicks in the button.
+    protected focusOutListener: any; // Listener for focusout in the input.
+    protected focusAgainListener: any; // Another listener for focusout, with the purpose to focus again.
     protected stopFocusAgainTimeout: any; // Timeout to stop focus again listener.
 
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider) {
@@ -63,12 +63,11 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     /**
      * View has been initialized.
      */
-    ngAfterViewInit() {
-        // Use a setTimeout because, if this directive is applied to a button, then the ion-input that it affects
-        // maybe it hasn't been treated yet.
+    ngAfterViewInit(): void {
+        // Use a setTimeout because to make sure that child components have been treated.
         setTimeout(() => {
-            let inButton = this.utils.isTrueOrOne(this.inButton),
-                candidateEls,
+            const inButton = this.utils.isTrueOrOne(this.inButton);
+            let candidateEls,
                 selectedEl;
 
             if (typeof this.selector != 'string' || !this.selector) {
@@ -121,7 +120,7 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.button && this.clickListener) {
             this.button.removeEventListener('click', this.clickListener);
         }
@@ -133,19 +132,11 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     /**
      * The button we're interested in was clicked.
      */
-    protected buttonClicked() : void {
+    protected buttonClicked(): void {
         if (document.activeElement == this.input) {
             // Directive's element is focused at the time the button is clicked. Listen for focusout to focus it again.
             this.focusAgainListener = this.focusElementAgain.bind(this);
             this.input.addEventListener('focusout', this.focusAgainListener);
-
-            // Focus it after a timeout just in case the focusout event isn't triggered.
-            // @todo: This doesn't seem to be needed in iOS. We should test it in Android.
-            // setTimeout(() => {
-            //     if (this.focusAgainListener) {
-            //         this.focusElementAgain();
-            //     }
-            // }, 1000);
         } else if (document.activeElement == this.button && Date.now() - this.lastFocusOut < 200) {
             // Last focused element was the directive's element, focus it again.
             setTimeout(this.focusElementAgain.bind(this), 0);
@@ -155,13 +146,13 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     /**
      * If keyboard is open, focus the input again and stop listening focusout to focus again if needed.
      */
-    protected focusElementAgain() : void {
+    protected focusElementAgain(): void {
         this.domUtils.focusElement(this.input);
 
         if (this.focusAgainListener) {
-            // Sometimes we can receive more than 1 focus out event. If we spend 1 second without receiving any,
-            // stop listening for them.
-            let listener = this.focusAgainListener; // Store it in a local variable, in case it changes.
+            // Sometimes we can receive more than 1 focus out event.
+            // If we spend 1 second without receiving any, stop listening for them.
+            const listener = this.focusAgainListener; // Store it in a local variable, in case it changes.
             clearTimeout(this.stopFocusAgainTimeout);
             this.stopFocusAgainTimeout = setTimeout(() => {
                 this.input.removeEventListener('focusout', listener);
@@ -175,7 +166,7 @@ export class CoreKeepKeyboardDirective implements AfterViewInit, OnDestroy {
     /**
      * Input was focused out, save the time it was done.
      */
-    protected focusOut() : void {
+    protected focusOut(): void {
         this.lastFocusOut = Date.now();
     }
 }

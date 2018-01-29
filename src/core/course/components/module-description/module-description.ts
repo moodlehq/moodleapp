@@ -38,8 +38,10 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() description: string; // The description to display.
     @Input() note?: string; // A note to display along with the description.
     @Input() component?: string; // Component for format text directive.
-    @Input() componentId?: string|number; // Component ID to use in conjunction with the component.
-    @Input() showFull?: string|boolean; // Whether to always display the full description.
+    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    @Input() showFull?: string | boolean; // Whether to always display the full description.
 
-    constructor() {}
+    constructor() {
+        // Nothing to do.
+    }
 }

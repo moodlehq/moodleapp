@@ -16,7 +16,6 @@ import { NgModule } from '@angular/core';
 import { CoreCoursesProvider } from './providers/courses';
 import { CoreCoursesMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
-import { CoreCoursesDelegate } from './providers/delegate';
 import { CoreCoursesCourseLinkHandler } from './providers/course-link-handler';
 import { CoreCoursesIndexLinkHandler } from './providers/courses-index-link-handler';
 import { CoreCoursesMyOverviewLinkHandler } from './providers/my-overview-link-handler';
@@ -31,7 +30,6 @@ import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
         CoreCoursesProvider,
         CoreCoursesMainMenuHandler,
         CoreCoursesMyOverviewProvider,
-        CoreCoursesDelegate,
         CoreCoursesCourseLinkHandler,
         CoreCoursesIndexLinkHandler,
         CoreCoursesMyOverviewLinkHandler

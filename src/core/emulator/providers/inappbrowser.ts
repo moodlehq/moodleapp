@@ -38,7 +38,7 @@ export class InAppBrowserMock extends InAppBrowser {
      * @param {string} [options] Options for the InAppBrowser.
      * @return {InAppBrowserObject} The new instance.
      */
-    create(url: string, target?: string, options = '') : InAppBrowserObject {
+    create(url: string, target?: string, options: string = ''): InAppBrowserObject {
         if (!this.appProvider.isDesktop()) {
             return super.create(url, target, options);
         }

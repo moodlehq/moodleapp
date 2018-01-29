@@ -29,7 +29,7 @@ export class CoreCreateLinksPipe implements PipeTransform {
      * @param {string} text Text to treat.
      * @return {string} Treated text.
      */
-    transform(text: string) {
+    transform(text: string): string {
         return text.replace(this.replacePattern, '<a href="$1">$1</a>');
     }
 }

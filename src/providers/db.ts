@@ -26,7 +26,7 @@ export class CoreDbProvider {
 
     protected dbInstances = {};
 
-    constructor(private sqlite: SQLite, private platform: Platform) {}
+    constructor(private sqlite: SQLite, private platform: Platform) { }
 
     /**
      * Get or create a database object.
@@ -37,14 +37,15 @@ export class CoreDbProvider {
      * @param {boolean} forceNew True if it should always create a new instance.
      * @return {SQLiteDB} DB.
      */
-    getDB(name: string, forceNew?: boolean) : SQLiteDB {
-        if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
+    getDB(name: string, forceNew?: boolean): SQLiteDB {
+        if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
             if (this.platform.is('cordova')) {
                 this.dbInstances[name] = new SQLiteDB(name, this.sqlite, this.platform);
             } else {
                 this.dbInstances[name] = new SQLiteDBMock(name);
             }
         }
+
         return this.dbInstances[name];
     }
 
@@ -54,7 +55,7 @@ export class CoreDbProvider {
      * @param {string} name DB name.
      * @return {Promise<any>} Promise resolved when the DB is deleted.
      */
-    deleteDB(name: string) : Promise<any> {
+    deleteDB(name: string): Promise<any> {
         let promise;
 
         if (typeof this.dbInstances[name] != 'undefined') {
@@ -65,7 +66,7 @@ export class CoreDbProvider {
         }
 
         return promise.then(() => {
-            let db = this.dbInstances[name];
+            const db = this.dbInstances[name];
             delete this.dbInstances[name];
 
             if (this.platform.is('cordova')) {

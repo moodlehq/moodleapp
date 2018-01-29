@@ -47,12 +47,12 @@ export class CoreInputErrorsComponent implements OnInit {
     @Input() errorMessages?: any;
     errorKeys: any[];
 
-    constructor(private translate: TranslateService) {}
+    constructor(private translate: TranslateService) { }
 
     /**
      * Component is being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.initErrorMessages();
 
         this.errorKeys = Object.keys(this.errorMessages);
@@ -61,11 +61,11 @@ export class CoreInputErrorsComponent implements OnInit {
     /**
      * Initialize some common errors if they aren't set.
      */
-    protected initErrorMessages() {
-        this.errorMessages = this.errorMessages || {};
+    protected initErrorMessages(): void {
+        this.errorMessages = this.errorMessages || {};
 
-        this.errorMessages.required = this.errorMessages.required || this.translate.instant('core.required');
-        this.errorMessages.email = this.errorMessages.email || this.translate.instant('core.login.invalidemail');
+        this.errorMessages.required = this.errorMessages.required || this.translate.instant('core.required');
+        this.errorMessages.email = this.errorMessages.email || this.translate.instant('core.login.invalidemail');
         this.errorMessages.date = this.errorMessages.date || this.translate.instant('core.login.invaliddate');
         this.errorMessages.datetime = this.errorMessages.datetime || this.translate.instant('core.login.invaliddate');
         this.errorMessages.datetimelocal = this.errorMessages.datetimelocal || this.translate.instant('core.login.invaliddate');
@@ -73,24 +73,6 @@ export class CoreInputErrorsComponent implements OnInit {
         this.errorMessages.url = this.errorMessages.url || this.translate.instant('core.login.invalidurl');
 
         // @todo: Check how to handle min/max errors once we have a test case to use. Also, review previous errors.
-        // ['min', 'max'].forEach((type) => {
-        //     // Initialize min/max errors if needed.
-        //     if (!this.errorMessages[type]) {
-        //         if (input && typeof input[type] != 'undefined' && input[type] !== '') {
-        //             var value = input[type];
-        //             if (input.type == 'date' || input.type == 'datetime' || input.type == 'datetime-local') {
-        //                 var date = moment(value);
-        //                 if (date.isValid()) {
-        //                     value = moment(value).format($translate.instant('core.dfdaymonthyear'));
-        //                 }
-        //             }
-
-        //             scope.errorMessages[type] = $translate.instant('core.login.invalidvalue' + type, {$a: value});
-        //         } else {
-        //             scope.errorMessages[type] = $translate.instant('core.login.profileinvaliddata');
-        //         }
-        //     }
-        // });
     }
 
 }

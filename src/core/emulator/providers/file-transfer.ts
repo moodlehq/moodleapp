@@ -21,16 +21,16 @@ import { CoreFileProvider } from '../../../providers/file';
  * Mock the File Transfer Error.
  */
 export class FileTransferErrorMock implements FileTransferError {
-    public static FILE_NOT_FOUND_ERR = 1;
-    public static INVALID_URL_ERR = 2;
-    public static CONNECTION_ERR = 3;
-    public static ABORT_ERR = 4;
-    public static NOT_MODIFIED_ERR = 5;
+    static FILE_NOT_FOUND_ERR = 1;
+    static INVALID_URL_ERR = 2;
+    static CONNECTION_ERR = 3;
+    static ABORT_ERR = 4;
+    static NOT_MODIFIED_ERR = 5;
 
+    // tslint:disable-next-line: variable-name
     constructor(public code: number, public source: string, public target: string, public http_status: number,
-            public body: string, public exception: string) {
-    }
-};
+        public body: string, public exception: string) { }
+}
 
 /**
  * Emulates the Cordova FileTransfer plugin in desktop apps and in browser.
@@ -60,7 +60,7 @@ export class FileTransferObjectMock extends FileTransferObject {
     source: string;
     target: string;
     xhr: XMLHttpRequest;
-    private reject: Function;
+    protected reject: Function;
 
     constructor(private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider) {
         super();
@@ -87,12 +87,12 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @returns {Promise<any>} Returns a Promise that resolves to a FileEntry object.
      */
     download(source: string, target: string, trustAllHosts?: boolean, options?: { [s: string]: any; }): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject): void => {
             // Use XMLHttpRequest instead of HttpClient to support onprogress and abort.
-            let basicAuthHeader = this.getBasicAuthHeader(source),
+            const basicAuthHeader = this.getBasicAuthHeader(source),
                 xhr = new XMLHttpRequest(),
-                isDesktop = this.appProvider.isDesktop(),
-                headers = null;
+                isDesktop = this.appProvider.isDesktop();
+            let headers = null;
 
             this.xhr = xhr;
             this.source = source;
@@ -114,21 +114,21 @@ export class FileTransferObjectMock extends FileTransferObject {
             // Prepare the request.
             xhr.open('GET', source, true);
             xhr.responseType = isDesktop ? 'arraybuffer' : 'blob';
-            for (let name in headers) {
+            for (const name in headers) {
                 xhr.setRequestHeader(name, headers[name]);
             }
 
-            (<any>xhr).onprogress = (xhr, ev) => {
+            (<any> xhr).onprogress = (xhr, ev): void => {
                 if (this.progressListener) {
                     this.progressListener(ev);
                 }
             };
 
-            xhr.onerror = (err) => {
+            xhr.onerror = (err): void => {
                 reject(new FileTransferError(-1, source, target, xhr.status, xhr.statusText));
             };
 
-            xhr.onload = () => {
+            xhr.onload = (): void => {
                 // Finished dowloading the file.
                 let response = xhr.response;
                 if (!response) {
@@ -158,10 +158,9 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @return {any} The header with the credentials, null if no credentials.
      */
     protected getBasicAuthHeader(urlString: string): any {
-        let header =  null;
+        let header = null;
 
-        // This is changed due to MS Windows doesn't support credentials in http uris
-        // so we detect them by regexp and strip off from result url.
+        // MS Windows doesn't support credentials in http uris so we detect them by regexp and strip off from result url.
         if (window.btoa) {
             const credentials = this.getUrlCredentials(urlString);
             if (credentials) {
@@ -184,13 +183,13 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @param {XMLHttpRequest} xhr XMLHttpRequest instance.
      * @return {{[s: string]: any}} Object with the headers.
      */
-    protected getHeadersAsObject(xhr: XMLHttpRequest) : { [s: string]: any } {
-        const headersString = xhr.getAllResponseHeaders();
-        let result = {};
+    protected getHeadersAsObject(xhr: XMLHttpRequest): { [s: string]: any } {
+        const headersString = xhr.getAllResponseHeaders(),
+            result = {};
 
         if (headersString) {
             const headers = headersString.split('\n');
-            for (let i in headers) {
+            for (const i in headers) {
                 const headerString = headers[i],
                     separatorPos = headerString.indexOf(':');
                 if (separatorPos != -1) {
@@ -198,6 +197,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                 }
             }
         }
+
         return result;
     }
 
@@ -208,7 +208,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @param {string} urlString The URL to get the credentials from.
      * @return {string} Retrieved credentials.
      */
-    protected getUrlCredentials(urlString: string) : string {
+    protected getUrlCredentials(urlString: string): string {
         const credentialsPattern = /^https?\:\/\/(?:(?:(([^:@\/]*)(?::([^@\/]*))?)?@)?([^:\/?#]*)(?::(\d*))?).*$/,
             credentials = credentialsPattern.exec(urlString);
 
@@ -234,14 +234,14 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @returns {Promise<FileUploadResult>} Promise that resolves to a FileUploadResult and rejects with FileTransferError.
      */
     upload(fileUrl: string, url: string, options?: FileUploadOptions, trustAllHosts?: boolean): Promise<FileUploadResult> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject): void => {
+            const basicAuthHeader = this.getBasicAuthHeader(url);
             let fileKey = null,
                 fileName = null,
                 mimeType = null,
                 params = null,
                 headers = null,
-                httpMethod = null,
-                basicAuthHeader = this.getBasicAuthHeader(url);
+                httpMethod = null;
 
             if (basicAuthHeader) {
                 url = url.replace(this.getUrlCredentials(url) + '@', '');
@@ -258,7 +258,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                 headers = options.headers;
                 httpMethod = options.httpMethod || 'POST';
 
-                if (httpMethod.toUpperCase() == "PUT"){
+                if (httpMethod.toUpperCase() == 'PUT') {
                     httpMethod = 'PUT';
                 } else {
                     httpMethod = 'POST';
@@ -275,11 +275,11 @@ export class FileTransferObjectMock extends FileTransferObject {
             headers = headers || {};
             if (!headers['Content-Disposition']) {
                 headers['Content-Disposition'] = 'form-data;' + (fileKey ? ' name="' + fileKey + '";' : '') +
-                    (fileName ? ' filename="' + fileName + '"' : '')
+                    (fileName ? ' filename="' + fileName + '"' : '');
             }
 
-            // For some reason, adding a Content-Type header with the mimeType makes the request fail (it doesn't detect
-            // the token in the params). Don't include this header, and delete it if it's supplied.
+            // Adding a Content-Type header with the mimeType makes the request fail (it doesn't detect the token in the params).
+            // Don't include this header, and delete it if it's supplied.
             delete headers['Content-Type'];
 
             // Get the file to upload.
@@ -287,16 +287,16 @@ export class FileTransferObjectMock extends FileTransferObject {
                 return this.fileProvider.getFileObjectFromFileEntry(fileEntry);
             }).then((file) => {
                 // Use XMLHttpRequest instead of HttpClient to support onprogress and abort.
-                let xhr = new XMLHttpRequest();
-                xhr.open(httpMethod || 'POST', url);
-                for (let name in headers) {
+                const xhr = new XMLHttpRequest();
+                xhr.open(httpMethod || 'POST', url);
+                for (const name in headers) {
                     // Filter "unsafe" headers.
                     if (name != 'Connection') {
                         xhr.setRequestHeader(name, headers[name]);
                     }
                 }
 
-                xhr.onprogress = (ev: ProgressEvent) : any => {
+                xhr.onprogress = (ev: ProgressEvent): any => {
                     if (this.progressListener) {
                         this.progressListener(ev);
                     }
@@ -307,24 +307,23 @@ export class FileTransferObjectMock extends FileTransferObject {
                 this.target = url;
                 this.reject = reject;
 
-                xhr.onerror = () => {
+                xhr.onerror = (): void => {
                     reject(new FileTransferError(-1, fileUrl, url, xhr.status, xhr.statusText));
                 };
 
-                xhr.onload = () => {
+                xhr.onload = (): void => {
                     // Finished uploading the file.
-                    let result: FileUploadResult = {
+                    resolve({
                         bytesSent: file.size,
                         responseCode: xhr.status,
                         response: xhr.response,
                         headers: this.getHeadersAsObject(xhr)
-                    };
-                    resolve(result);
+                    });
                 };
 
                 // Create a form data to send params and the file.
-                let fd = new FormData();
-                for (var name in params) {
+                const fd = new FormData();
+                for (const name in params) {
                     fd.append(name, params[name]);
                 }
                 fd.append('file', file);

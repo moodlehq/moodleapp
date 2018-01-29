@@ -38,7 +38,7 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
      * @param {number|string} seconds Number of seconds.
      * @return {string} Formatted seconds.
      */
-    transform(seconds: string|number) : string {
+    transform(seconds: string | number): string {
         let hours,
             minutes;
 
@@ -49,6 +49,7 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
             const numberSeconds = parseInt(seconds, 10);
             if (isNaN(numberSeconds)) {
                 this.logger.error('Invalid value received', seconds);
+
                 return seconds;
             }
             seconds = numberSeconds;

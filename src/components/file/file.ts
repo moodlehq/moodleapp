@@ -35,12 +35,12 @@ import { CoreConstants } from '../../core/constants';
 export class CoreFileComponent implements OnInit, OnDestroy {
     @Input() file: any; // The file. Must have a property 'filename' and a 'fileurl' or 'url'
     @Input() component?: string; // Component the file belongs to.
-    @Input() componentId?: string|number; // Component ID.
+    @Input() componentId?: string | number; // Component ID.
     @Input() timemodified?: number; // If set, the value will be used to check if the file is outdated.
-    @Input() canDelete?: boolean|string; // Whether file can be deleted.
-    @Input() alwaysDownload?: boolean|string; // Whether it should always display the refresh button when the file is downloaded.
-                                              // Use it for files that you cannot determine if they're outdated or not.
-    @Input() canDownload?: boolean|string = true; // Whether file can be downloaded.
+    @Input() canDelete?: boolean | string; // Whether file can be deleted.
+    @Input() alwaysDownload?: boolean | string; // Whether it should always display the refresh button when the file is downloaded.
+                                                // Use it for files that you cannot determine if they're outdated or not.
+    @Input() canDownload?: boolean | string = true; // Whether file can be downloaded.
     @Output() onDelete?: EventEmitter<string>; // Will notify when the delete button is clicked.
 
     isDownloaded: boolean;
@@ -64,7 +64,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.canDelete = this.utils.isTrueOrOne(this.canDelete);
         this.alwaysDownload = this.utils.isTrueOrOne(this.alwaysDownload);
         this.canDownload = this.utils.isTrueOrOne(this.canDownload);
@@ -98,14 +98,14 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      *
      * @return {Promise<void>} Promise resolved when state has been calculated.
      */
-    protected calculateState() : Promise<void> {
+    protected calculateState(): Promise<void> {
         return this.filepoolProvider.getFileStateByUrl(this.siteId, this.fileUrl, this.timemodified).then((state) => {
-            let canDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
+            const canDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
 
-            this.isDownloaded = state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
+            this.isDownloaded = state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
             this.isDownloading = canDownload && state === CoreConstants.DOWNLOADING;
-            this.showDownload = canDownload && (state === CoreConstants.NOT_DOWNLOADED || state === CoreConstants.OUTDATED ||
-                    (this.alwaysDownload && state === CoreConstants.DOWNLOADED));
+            this.showDownload = canDownload && (state === CoreConstants.NOT_DOWNLOADED || state === CoreConstants.OUTDATED ||
+                (this.alwaysDownload && state === CoreConstants.DOWNLOADED));
         });
     }
 
@@ -114,25 +114,27 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      *
      * @return {Promise<string>} Promise resolved when file is downloaded.
      */
-    protected downloadFile() : Promise<string> {
+    protected downloadFile(): Promise<string> {
         if (!this.sitesProvider.getCurrentSite().canDownloadFiles()) {
             this.domUtils.showErrorModal('core.cannotdownloadfiles', true);
+
             return Promise.reject(null);
         }
 
         this.isDownloading = true;
-        return this.filepoolProvider.downloadUrl(this.siteId, this.fileUrl, false, this.component, this.componentId,
-                this.timemodified, undefined, undefined, this.file).catch(() => {
 
-            // Call calculateState to make sure we have the right state.
-            return this.calculateState().then(() => {
-                if (this.isDownloaded) {
-                    return this.filepoolProvider.getInternalUrlByUrl(this.siteId, this.fileUrl);
-                } else {
-                    return Promise.reject(null);
-                }
+        return this.filepoolProvider.downloadUrl(this.siteId, this.fileUrl, false, this.component, this.componentId,
+            this.timemodified, undefined, undefined, this.file).catch(() => {
+
+                // Call calculateState to make sure we have the right state.
+                return this.calculateState().then(() => {
+                    if (this.isDownloaded) {
+                        return this.filepoolProvider.getInternalUrlByUrl(this.siteId, this.fileUrl);
+                    } else {
+                        return Promise.reject(null);
+                    }
+                });
             });
-        });
     }
 
     /**
@@ -140,33 +142,35 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      *
      * @return {Promise<string>} Promise resolved when file is opened.
      */
-    protected openFile() : Promise<any> {
-        let fixedUrl = this.sitesProvider.getCurrentSite().fixPluginfileURL(this.fileUrl),
-            promise;
+    protected openFile(): Promise<any> {
+        const fixedUrl = this.sitesProvider.getCurrentSite().fixPluginfileURL(this.fileUrl);
+        let promise;
 
         if (this.fileProvider.isAvailable()) {
             promise = Promise.resolve().then(() => {
                 // The file system is available.
-                let isWifi = !this.appProvider.isNetworkAccessLimited(),
+                const isWifi = !this.appProvider.isNetworkAccessLimited(),
                     isOnline = this.appProvider.isOnline();
 
                 if (this.isDownloaded && !this.showDownload) {
                     // File is downloaded, get the local file URL.
                     return this.filepoolProvider.getUrlByUrl(this.siteId, this.fileUrl,
-                            this.component, this.componentId, this.timemodified, false, false, this.file);
+                        this.component, this.componentId, this.timemodified, false, false, this.file);
                 } else {
                     if (!isOnline && !this.isDownloaded) {
                         // Not downloaded and user is offline, reject.
                         return Promise.reject(this.translate.instant('core.networkerrormsg'));
                     }
 
-                    let isDownloading = this.isDownloading;
+                    const isDownloading = this.isDownloading;
                     this.isDownloading = true; // This check could take a while, show spinner.
+
                     return this.filepoolProvider.shouldDownloadBeforeOpen(fixedUrl, this.fileSize).then(() => {
                         if (isDownloading) {
                             // It's already downloading, stop.
                             return;
                         }
+
                         // Download and then return the local URL.
                         return this.downloadFile();
                     }, () => {
@@ -181,7 +185,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                         } else {
                             // Outdated but offline, so we return the local URL.
                             return this.filepoolProvider.getUrlByUrl(this.siteId, this.fileUrl,
-                                    this.component, this.componentId, this.timemodified, false, false, this.file);
+                                this.component, this.componentId, this.timemodified, false, false, this.file);
                         }
                     });
                 }
@@ -231,7 +235,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      * @param {Event} e Click event.
      * @param {boolean} openAfterDownload Whether the file should be opened after download.
      */
-    download(e: Event, openAfterDownload: boolean) : void {
+    download(e: Event, openAfterDownload: boolean): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -243,6 +247,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         if (!this.appProvider.isOnline() && (!openAfterDownload || (openAfterDownload && !this.isDownloaded))) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
+
             return;
         }
 
@@ -253,27 +258,27 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             });
         } else {
             // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-            promise = this.fileSize ? this.domUtils.confirmDownloadSize({size: this.fileSize, total: true}) : Promise.resolve();
+            promise = this.fileSize ? this.domUtils.confirmDownloadSize({ size: this.fileSize, total: true }) : Promise.resolve();
             promise.then(() => {
                 // User confirmed, add the file to queue.
                 this.filepoolProvider.invalidateFileByUrl(this.siteId, this.fileUrl).finally(() => {
                     this.isDownloading = true;
                     this.filepoolProvider.addToQueueByUrl(this.siteId, this.fileUrl, this.component,
-                            this.componentId, this.timemodified, undefined, undefined, 0, this.file).catch((error) => {
-                        this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-                        this.calculateState();
-                    });
+                        this.componentId, this.timemodified, undefined, undefined, 0, this.file).catch((error) => {
+                            this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                            this.calculateState();
+                        });
                 });
             });
         }
-    };
+    }
 
     /**
      * Delete the file.
      *
      * @param {Event} e Click event.
      */
-    deleteFile(e: Event) : void {
+    deleteFile(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -285,7 +290,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.observer && this.observer.off();
     }
 }

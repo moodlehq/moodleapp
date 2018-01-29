@@ -29,9 +29,9 @@ import { CoreConfigConstants } from '../configconstants';
 @Injectable()
 export class CoreUpdateManagerProvider implements CoreInitHandler {
     // Data for init delegate.
-    public name = 'CoreUpdateManager';
-    public priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 300;
-    public blocking = true;
+    name = 'CoreUpdateManager';
+    priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 300;
+    blocking = true;
 
     protected VERSION_APPLIED = 'version_applied';
     protected logger;
@@ -47,8 +47,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return {Promise<any>} Promise resolved when the update process finishes.
      */
-    load() : Promise<any> {
-        let promises = [],
+    load(): Promise<any> {
+        const promises = [],
             versionCode = CoreConfigConstants.versioncode;
 
         return this.configProvider.get(this.VERSION_APPLIED, 0).then((versionApplied: number) => {
@@ -80,13 +80,14 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return {Promise<any>} Promise resolved when the site migration is finished.
      */
-    protected migrateFileExtensions() : Promise<any> {
+    protected migrateFileExtensions(): Promise<any> {
         return this.sitesProvider.getSitesIds().then((sites) => {
-            let promises = [];
+            const promises = [];
             sites.forEach((siteId) => {
                 promises.push(this.filepoolProvider.fillMissingExtensionInFiles(siteId));
             });
             promises.push(this.filepoolProvider.treatExtensionInQueue());
+
             return Promise.all(promises);
         });
     }
@@ -97,7 +98,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return {Promise<any>} Promise resolved when the events are configured.
      */
-    protected setCalendarDefaultNotifTime() : Promise<any> {
+    protected setCalendarDefaultNotifTime(): Promise<any> {
         if (!this.notifProvider.isAvailable()) {
             // Local notifications not available, nothing to do.
             return Promise.resolve();
@@ -113,7 +114,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return {Promise<any>} Promise resolved when the config is loaded for the current site (if any).
      */
-    protected setSitesConfig() : Promise<any> {
+    protected setSitesConfig(): Promise<any> {
         return this.sitesProvider.getSitesIds().then((siteIds) => {
 
             return this.sitesProvider.getStoredCurrentSiteId().catch(() => {
@@ -146,9 +147,9 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      * @param {String} siteId Site ID.
      * @return {Promise<any>} Promise resolved when the config is loaded for the site.
      */
-    protected setSiteConfig(siteId: string) : Promise<any> {
+    protected setSiteConfig(siteId: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            if (site.getStoredConfig() || !site.wsAvailable('tool_mobile_get_config')) {
+            if (site.getStoredConfig() || !site.wsAvailable('tool_mobile_get_config')) {
                 // Site already has the config or it cannot be retrieved. Stop.
                 return;
             }
@@ -156,7 +157,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
             // Get the site config.
             return site.getConfig().then((config) => {
                 return this.sitesProvider.addSite(
-                        site.getId(), site.getURL(), site.getToken(), site.getInfo(), site.getPrivateToken(), config);
+                    site.getId(), site.getURL(), site.getToken(), site.getInfo(), site.getPrivateToken(), config);
             }).catch(() => {
                 // Ignore errors.
             });
@@ -169,7 +170,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return {Promise<any>} Promise resolved when the db is migrated.
      */
-    protected adaptForumOfflineStores() : Promise<any> {
+    protected adaptForumOfflineStores(): Promise<any> {
         // @todo: Implement it once Forum addon is implemented.
         return Promise.resolve();
     }

@@ -73,21 +73,21 @@ import { CoreInitDelegate } from '../../providers/init';
         {
             provide: Camera,
             deps: [CoreAppProvider, CoreEmulatorCaptureHelperProvider],
-            useFactory: (appProvider: CoreAppProvider, captureHelper: CoreEmulatorCaptureHelperProvider) => {
+            useFactory: (appProvider: CoreAppProvider, captureHelper: CoreEmulatorCaptureHelperProvider): Camera => {
                 return appProvider.isMobile() ? new Camera() : new CameraMock(captureHelper);
             }
         },
         {
             provide: Clipboard,
             deps: [CoreAppProvider],
-            useFactory: (appProvider: CoreAppProvider) => {
+            useFactory: (appProvider: CoreAppProvider): Clipboard => {
                 return appProvider.isMobile() ? new Clipboard() : new ClipboardMock(appProvider);
             }
         },
         {
             provide: File,
             deps: [CoreAppProvider, CoreTextUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, textUtils: CoreTextUtilsProvider) => {
+            useFactory: (appProvider: CoreAppProvider, textUtils: CoreTextUtilsProvider): File => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new File() : new FileMock(appProvider, textUtils);
             }
@@ -95,7 +95,7 @@ import { CoreInitDelegate } from '../../providers/init';
         {
             provide: FileTransfer,
             deps: [CoreAppProvider, CoreFileProvider],
-            useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider) => {
+            useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider): FileTransfer => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new FileTransfer() : new FileTransferMock(appProvider, fileProvider);
             }
@@ -103,14 +103,15 @@ import { CoreInitDelegate } from '../../providers/init';
         {
             provide: Globalization,
             deps: [CoreAppProvider],
-            useFactory: (appProvider: CoreAppProvider) => {
+            useFactory: (appProvider: CoreAppProvider): Globalization => {
                 return appProvider.isMobile() ? new Globalization() : new GlobalizationMock(appProvider);
             }
         },
         {
             provide: InAppBrowser,
             deps: [CoreAppProvider, CoreFileProvider, CoreUrlUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider, urlUtils: CoreUrlUtilsProvider) => {
+            useFactory: (appProvider: CoreAppProvider, fileProvider: CoreFileProvider, urlUtils: CoreUrlUtilsProvider)
+                    : InAppBrowser => {
                 return !appProvider.isDesktop() ? new InAppBrowser() : new InAppBrowserMock(appProvider, fileProvider, urlUtils);
             }
         },
@@ -118,7 +119,7 @@ import { CoreInitDelegate } from '../../providers/init';
         {
             provide: LocalNotifications,
             deps: [CoreAppProvider, CoreUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider) => {
+            useFactory: (appProvider: CoreAppProvider, utils: CoreUtilsProvider): LocalNotifications => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new LocalNotifications() : new LocalNotificationsMock(appProvider, utils);
             }
@@ -126,14 +127,14 @@ import { CoreInitDelegate } from '../../providers/init';
         {
             provide: MediaCapture,
             deps: [CoreAppProvider, CoreEmulatorCaptureHelperProvider],
-            useFactory: (appProvider: CoreAppProvider, captureHelper: CoreEmulatorCaptureHelperProvider) => {
+            useFactory: (appProvider: CoreAppProvider, captureHelper: CoreEmulatorCaptureHelperProvider): MediaCapture => {
                 return appProvider.isMobile() ? new MediaCapture() : new MediaCaptureMock(captureHelper);
             }
         },
         {
             provide: Network,
             deps: [Platform],
-            useFactory: (platform: Platform) => {
+            useFactory: (platform: Platform): Network => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return platform.is('cordova') ? new Network() : new NetworkMock();
             }
@@ -144,7 +145,7 @@ import { CoreInitDelegate } from '../../providers/init';
         {
             provide: Zip,
             deps: [CoreAppProvider, File, CoreMimetypeUtilsProvider, CoreTextUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, file: File, mimeUtils: CoreMimetypeUtilsProvider) => {
+            useFactory: (appProvider: CoreAppProvider, file: File, mimeUtils: CoreMimetypeUtilsProvider): Zip => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
                 return appProvider.isMobile() ? new Zip() : new ZipMock(file, mimeUtils);
             }
@@ -153,7 +154,7 @@ import { CoreInitDelegate } from '../../providers/init';
 })
 export class CoreEmulatorModule {
     constructor(appProvider: CoreAppProvider, initDelegate: CoreInitDelegate, helper: CoreEmulatorHelperProvider) {
-        let win = <any>window; // Convert the "window" to "any" type to be able to use non-standard properties.
+        const win = <any> window; // Convert the "window" to "any" type to be able to use non-standard properties.
 
         // Emulate Custom URL Scheme plugin in desktop apps.
         if (appProvider.isDesktop()) {

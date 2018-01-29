@@ -38,7 +38,7 @@ export class CoreEmulatorCaptureHelperProvider {
     constructor(private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider,
             private modalCtrl: ModalController) {
         // Convert the window to "any" type because some of the variables used (like MediaRecorder) aren't in the window spec.
-        this.win = <any>window;
+        this.win = <any> window;
     }
 
     /**
@@ -48,16 +48,16 @@ export class CoreEmulatorCaptureHelperProvider {
      * @param {any} [options] Optional options.
      * @return {Promise<any>} Promise resolved when captured, rejected if error.
      */
-    captureMedia(type: string, options: any) : Promise<any> {
-        options = options || {};
+    captureMedia(type: string, options: any): Promise<any> {
+        options = options || {};
 
         try {
             // Build the params to send to the modal.
-            let deferred = this.utils.promiseDefer(),
+            const deferred = this.utils.promiseDefer(),
                 params: any = {
                     type: type
-                },
-                mimeAndExt,
+                };
+            let mimeAndExt,
                 modal: Modal;
 
             // Initialize some data based on the type of media to capture.
@@ -86,7 +86,7 @@ export class CoreEmulatorCaptureHelperProvider {
                     params.extension = 'jpeg';
                 }
 
-                if (options.quality >= 0 && options.quality <= 100) {
+                if (options.quality >= 0 && options.quality <= 100) {
                     params.quality = options.quality / 100;
                 }
 
@@ -110,7 +110,7 @@ export class CoreEmulatorCaptureHelperProvider {
             });
 
             return deferred.promise;
-        } catch(ex) {
+        } catch (ex) {
             return Promise.reject(ex.toString());
         }
     }
@@ -122,13 +122,13 @@ export class CoreEmulatorCaptureHelperProvider {
      * @param {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      * @return {{extension: string, mimetype: string}} An object with mimetype and extension to use.
      */
-    protected getMimeTypeAndExtension(type: string, mimetypes) : {extension: string, mimetype: string} {
-        var result: any = {};
+    protected getMimeTypeAndExtension(type: string, mimetypes: string[]): { extension: string, mimetype: string } {
+        const result: any = {};
 
         if (mimetypes && mimetypes.length) {
             // Search for a supported mimetype.
             for (let i = 0; i < mimetypes.length; i++) {
-                let mimetype = mimetypes[i],
+                const mimetype = mimetypes[i],
                     matches = mimetype.match(new RegExp('^' + type + '/'));
 
                 if (matches && matches.length && this.win.MediaRecorder.isTypeSupported(mimetype)) {
@@ -159,8 +159,8 @@ export class CoreEmulatorCaptureHelperProvider {
      *
      * @return {boolean} Whether the function is supported.
      */
-    protected initGetUserMedia() : boolean {
-        let nav = <any>navigator;
+    protected initGetUserMedia(): boolean {
+        const nav = <any> navigator;
         // Check if there is a function to get user media.
         if (typeof nav.mediaDevices == 'undefined') {
             nav.mediaDevices = {};
@@ -172,9 +172,10 @@ export class CoreEmulatorCaptureHelperProvider {
 
             if (nav.getUserMedia) {
                 // Deprecated function exists, support the new function using the deprecated one.
-                navigator.mediaDevices.getUserMedia = (constraints) => {
-                    let deferred = this.utils.promiseDefer();
+                navigator.mediaDevices.getUserMedia = (constraints): Promise<any> => {
+                    const deferred = this.utils.promiseDefer();
                     nav.getUserMedia(constraints, deferred.resolve, deferred.reject);
+
                     return deferred.promise;
                 };
             } else {
@@ -188,16 +189,16 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Initialize the mimetypes to use when capturing.
      */
-    protected initMimeTypes() : void {
+    protected initMimeTypes(): void {
         // Determine video and audio mimetype to use.
-        for (let mimeType in this.possibleVideoMimeTypes) {
+        for (const mimeType in this.possibleVideoMimeTypes) {
             if (this.win.MediaRecorder.isTypeSupported(mimeType)) {
                 this.videoMimeType = mimeType;
                 break;
             }
         }
 
-        for (let mimeType in this.possibleAudioMimeTypes) {
+        for (const mimeType in this.possibleAudioMimeTypes) {
             if (this.win.MediaRecorder.isTypeSupported(mimeType)) {
                 this.audioMimeType = mimeType;
                 break;
@@ -210,7 +211,7 @@ export class CoreEmulatorCaptureHelperProvider {
      *
      * @return {Promise<void>} Promise resolved when loaded.
      */
-    load() : Promise<void> {
+    load(): Promise<void> {
         if (typeof this.win.MediaRecorder != 'undefined' && this.initGetUserMedia()) {
             this.initMimeTypes();
         }

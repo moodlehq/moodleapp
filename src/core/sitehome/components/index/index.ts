@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { Component, OnInit } from '@angular/core';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCourseProvider } from '../../../course/providers/course';
@@ -46,7 +45,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.loadContent().finally(() => {
             this.dataLoaded = true;
         });
@@ -57,7 +56,7 @@ export class CoreSiteHomeIndexComponent implements OnInit {
      *
      * @param {any} refresher Refresher.
      */
-    doRefresh(refresher: any) {
+    doRefresh(refresher: any): void {
         const promises = [],
             currentSite = this.sitesProvider.getCurrentSite();
 
@@ -84,15 +83,17 @@ export class CoreSiteHomeIndexComponent implements OnInit {
 
     /**
      * Convenience function to fetch the data.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadContent() {
+    protected loadContent(): Promise<any> {
         this.hasContent = false;
 
-        let config = this.sitesProvider.getCurrentSite().getStoredConfig() || {numsections: 1};
+        const config = this.sitesProvider.getCurrentSite().getStoredConfig() || { numsections: 1 };
 
         if (config.frontpageloggedin) {
             // Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
-            let frontpageItems = [
+            const frontpageItems = [
                     'news', // News items.
                     false,
                     'categories', // List of categories.

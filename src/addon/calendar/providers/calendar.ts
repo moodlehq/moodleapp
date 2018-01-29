@@ -28,9 +28,9 @@ import { CoreConfigProvider } from '../../../providers/config';
  */
 @Injectable()
 export class AddonCalendarProvider {
-    public static DAYS_INTERVAL = 30;
-    public static COMPONENT = 'AddonCalendarEvents';
-    public static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
+    static DAYS_INTERVAL = 30;
+    static COMPONENT = 'AddonCalendarEvents';
+    static DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
     protected DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
     protected ROOT_CACHE_KEY = 'mmaCalendar:';
     protected DEFAULT_NOTIFICATION_TIME = 60;
@@ -118,10 +118,11 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<number>}  Promise resolved with the default time.
      */
-    getDefaultNotificationTime(siteId?: string) : Promise<number> {
+    getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+
         return this.configProvider.get(key, this.DEFAULT_NOTIFICATION_TIME);
     }
 
@@ -133,19 +134,27 @@ export class AddonCalendarProvider {
      * @param {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>} Promise resolved when the event data is retrieved.
      */
-    getEvent(id: number, siteId?: string) : Promise<any> {
+    getEvent(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            let presets = {
+            const preSets = {
                     cacheKey: this.getEventCacheKey(id)
                 },
                 data = {
-                    "options[userevents]": 0,
-                    "options[siteevents]": 0,
-                    "events[eventids][0]": id
+                    options: {
+                        userevents: 0,
+                        siteevents: 0,
+                    },
+                    events: {
+                        eventids: [
+                            id
+                        ]
+                    }
                 };
-            return site.read('core_calendar_get_calendar_events', data, presets).then((response) => {
+
+            return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
                 // The WebService returns all category events. Check the response to search for the event we want.
-                let event = response.events.find((e) => {return e.id == id});
+                const event = response.events.find((e) => { return e.id == id; });
+
                 return event || this.getEventFromLocalDb(id);
             }).catch(() => {
                 return this.getEventFromLocalDb(id);
@@ -170,9 +179,9 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise<any>}    Promise resolved when the event data is retrieved.
      */
-    getEventFromLocalDb(id: number, siteId?: string) : Promise<any> {
+    getEventFromLocalDb(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecord(this.EVENTS_TABLE, {id: id});
+            return site.getDb().getRecord(this.EVENTS_TABLE, { id: id });
         });
     }
 
@@ -183,13 +192,14 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise<number>}  Event notification time in minutes. 0 if disabled.
      */
-    getEventNotificationTime(id: number, siteId?: string) : Promise<number> {
+    getEventNotificationTime(id: number, siteId?: string): Promise<number> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.getEventNotificationTimeOption(id, siteId).then((time: number) => {
             if (time == -1) {
                 return this.getDefaultNotificationTime(siteId);
             }
+
             return time;
         });
     }
@@ -201,7 +211,7 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise<number>}  Promise with wvent notification time in minutes. 0 if disabled, -1 if default time.
      */
-    getEventNotificationTimeOption(id: number, siteId?: string) : Promise<number> {
+    getEventNotificationTimeOption(id: number, siteId?: string): Promise<number> {
         return this.getEventFromLocalDb(id, siteId).then((e) => {
             return e.notificationtime || -1;
         }).catch(() => {
@@ -221,42 +231,48 @@ export class AddonCalendarProvider {
      * @param {string} [siteId]          Site to get the events from. If not defined, use current site.
      * @return {Promise<any[]>}          Promise to be resolved when the participants are retrieved.
      */
-    getEventsList(daysToStart = 0, daysInterval = AddonCalendarProvider.DAYS_INTERVAL, siteId?: string) : Promise<any[]> {
+    getEventsList(daysToStart: number = 0, daysInterval: number = AddonCalendarProvider.DAYS_INTERVAL, siteId?: string)
+            : Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
             return this.coursesProvider.getUserCourses(false, siteId).then((courses) => {
-                courses.push({id: site.getSiteHomeId()}); // Add front page.
+                courses.push({ id: site.getSiteHomeId() }); // Add front page.
 
                 return this.groupsProvider.getUserGroups(courses, siteId).then((groups) => {
-                    let now = this.timeUtils.timestamp(),
+                    const now = this.timeUtils.timestamp(),
                         start = now + (CoreConstants.SECONDS_DAY * daysToStart),
-                        end = start + (CoreConstants.SECONDS_DAY * daysInterval);
-
-                    // The core_calendar_get_calendar_events needs all the current user courses and groups.
-                    let data = {
-                        "options[userevents]": 1,
-                        "options[siteevents]": 1,
-                        "options[timestart]": start,
-                        "options[timeend]": end
-                    };
+                        end = start + (CoreConstants.SECONDS_DAY * daysInterval),
+                        data = {
+                            options: {
+                                userevents: 1,
+                                siteevents: 1,
+                                timestart: start,
+                                timeend: end
+                            },
+                            events: {
+                                courseids: [],
+                                groupids: []
+                            }
+                        };
 
                     courses.forEach((course, index) => {
-                        data["events[courseids][" + index + "]"] = course.id;
+                        data.events.courseids[index] = course.id;
                     });
 
                     groups.forEach((group, index) => {
-                        data["events[groupids][" + index + "]"] = group.id;
+                        data.events.groupids[index] = group.id;
                     });
 
                     // We need to retrieve cached data using cache key because we have timestamp in the params.
-                    let preSets = {
+                    const preSets = {
                         cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
                         getCacheUsingCacheKey: true
                     };
 
                     return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
                         this.storeEventsInLocalDB(response.events, siteId);
+
                         return response.events;
                     });
                 });
@@ -269,7 +285,7 @@ export class AddonCalendarProvider {
      *
      * @return {string} Prefix Cache key.
      */
-    protected getEventsListPrefixCacheKey() : string {
+    protected getEventsListPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'eventslist:';
     }
 
@@ -280,7 +296,7 @@ export class AddonCalendarProvider {
      * @param {number} daysInterval Number of days between timestart and timeend.
      * @return {string} Cache key.
      */
-    protected getEventsListCacheKey(daysToStart: number, daysInterval: number) : string {
+    protected getEventsListCacheKey(daysToStart: number, daysInterval: number): string {
         return this.getEventsListPrefixCacheKey() + daysToStart + ':' + daysInterval;
     }
 
@@ -291,27 +307,28 @@ export class AddonCalendarProvider {
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<any[]>} Promise resolved when the list is invalidated.
      */
-    invalidateEventsList(courses: any[], siteId?: string) : Promise<any[]> {
+    invalidateEventsList(courses: any[], siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
-            let promises = [];
+            const promises = [];
 
             promises.push(this.coursesProvider.invalidateUserCourses(siteId));
             promises.push(this.groupsProvider.invalidateUserGroups(courses, siteId));
             promises.push(site.invalidateWsCacheForKeyStartingWith(this.getEventsListPrefixCacheKey()));
+
             return Promise.all(promises);
         });
     }
 
-     /**
+    /**
      * Invalidates a single event.
      *
      * @param {number} eventId List of courses or course ids.
      * @param {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<any>} Promise resolved when the list is invalidated.
      */
-    invalidateEvent(eventId: number, siteId?: string) : Promise<any> {
+    invalidateEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getEventCacheKey(eventId));
         });
@@ -323,8 +340,9 @@ export class AddonCalendarProvider {
      * @param {CoreSite} [site] Site. If not defined, use current site.
      * @return {boolean} Whether it's disabled.
      */
-    isCalendarDisabledInSite(site?: CoreSite) : boolean {
+    isCalendarDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
+
         return site.isFeatureDisabled('$mmSideMenuDelegate_mmaCalendar');
     }
 
@@ -334,12 +352,11 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] Site Id. If not defined, use current site.
      * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
-    isDisabled(siteId?: string) : Promise<boolean> {
+    isDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return this.isCalendarDisabledInSite(site);
         });
     }
-
 
     /**
      * Get the next events for all the sites and schedules their notifications.
@@ -348,10 +365,10 @@ export class AddonCalendarProvider {
      *
      * @return {Promise}         Promise resolved when all the notifications have been scheduled.
      */
-    scheduleAllSitesEventsNotifications() : Promise<any[]> {
+    scheduleAllSitesEventsNotifications(): Promise<any[]> {
         if (this.localNotificationsProvider.isAvailable()) {
             return this.sitesProvider.getSitesIds().then((siteIds) => {
-                let promises = [];
+                const promises = [];
 
                 siteIds.forEach((siteId) => {
                     // Check if calendar is disabled for the site.
@@ -381,7 +398,7 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] Site ID the event belongs to. If not defined, use current site.
      * @return {Promise<void>}    Promise resolved when the notification is scheduled.
      */
-    scheduleEventNotification(event: any, time: number, siteId?: string) : Promise<void> {
+    scheduleEventNotification(event: any, time: number, siteId?: string): Promise<void> {
         if (this.localNotificationsProvider.isAvailable()) {
             siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -391,16 +408,16 @@ export class AddonCalendarProvider {
             }
 
             // If time is -1, get event default time.
-            let promise = time == -1 ? this.getDefaultNotificationTime(siteId) : Promise.resolve(time);
+            const promise = time == -1 ? this.getDefaultNotificationTime(siteId) : Promise.resolve(time);
 
             return promise.then((time) => {
-                let timeEnd = (event.timestart + event.timeduration) * 1000;
+                const timeEnd = (event.timestart + event.timeduration) * 1000;
                 if (timeEnd <= new Date().getTime()) {
                     // The event has finished already, don't schedule it.
                     return Promise.resolve();
                 }
 
-                let dateTriggered = new Date((event.timestart - (time * 60)) * 1000),
+                const dateTriggered = new Date((event.timestart - (time * 60)) * 1000),
                     startDate = new Date(event.timestart * 1000),
                     notification = {
                         id: event.id,
@@ -421,7 +438,6 @@ export class AddonCalendarProvider {
         }
     }
 
-
     /**
      * Schedules the notifications for a list of events.
      * If an event notification time is 0, cancel its scheduled notification (if any).
@@ -431,8 +447,8 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site the events belong to. If not defined, use current site.
      * @return {Promise<any[]>}         Promise resolved when all the notifications have been scheduled.
      */
-    scheduleEventsNotifications(events: any[], siteId?: string) : Promise<any[]> {
-        var promises = [];
+    scheduleEventsNotifications(events: any[], siteId?: string): Promise<any[]> {
+        const promises = [];
 
         if (this.localNotificationsProvider.isAvailable()) {
             siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -453,10 +469,11 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any[]>}    Promise resolved when stored.
      */
-    setDefaultNotificationTime(time: number, siteId?: string) : Promise<any[]> {
+    setDefaultNotificationTime(time: number, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        let key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = this.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+
         return this.configProvider.set(key, time);
     }
 
@@ -467,11 +484,11 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise<any[]>}         Promise resolved when the events are stored.
      */
-    protected storeEventsInLocalDB(events: any[], siteId?: string) : Promise<any[]> {
+    protected storeEventsInLocalDB(events: any[], siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
-            let promises = [],
+            const promises = [],
                 db = site.getDb();
 
             events.forEach((event) => {
@@ -480,7 +497,7 @@ export class AddonCalendarProvider {
                     // Event not stored, return empty object.
                     return {};
                 }).then((e) => {
-                    let eventRecord = {
+                    const eventRecord = {
                         id: event.id,
                         name: event.name,
                         description: event.description,
@@ -497,7 +514,7 @@ export class AddonCalendarProvider {
                         notificationtime: e.notificationtime || -1
                     };
 
-                    return db.insertOrUpdateRecord(this.EVENTS_TABLE, eventRecord, {id: eventRecord.id});
+                    return db.insertOrUpdateRecord(this.EVENTS_TABLE, eventRecord, { id: eventRecord.id });
                 }));
             });
 
@@ -513,7 +530,7 @@ export class AddonCalendarProvider {
      * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise<void>} Promise resolved when the notification is updated.
      */
-    updateNotificationTime(event: any, time: number, siteId?: string) : Promise<void> {
+    updateNotificationTime(event: any, time: number, siteId?: string): Promise<void> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             if (!this.sitesProvider.isLoggedIn()) {
                 // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
@@ -522,7 +539,7 @@ export class AddonCalendarProvider {
 
             event.notificationtime = time;
 
-            return site.getDb().insertOrUpdateRecord(this.EVENTS_TABLE, event, {id: event.id}).then(() => {
+            return site.getDb().insertOrUpdateRecord(this.EVENTS_TABLE, event, { id: event.id }).then(() => {
                 return this.scheduleEventNotification(event, time);
             });
         });

@@ -18,6 +18,7 @@ import { CoreLoginEmailSignupPage } from './email-signup';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '../../../../components/components.module';
 import { CoreDirectivesModule } from '../../../../directives/directives.module';
+import { CoreUserComponentsModule } from '../../../user/components/components.module';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { CoreDirectivesModule } from '../../../../directives/directives.module';
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
+        CoreUserComponentsModule,
         IonicPageModule.forChild(CoreLoginEmailSignupPage),
         TranslateModule.forChild()
     ]

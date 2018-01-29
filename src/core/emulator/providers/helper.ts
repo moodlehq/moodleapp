@@ -32,23 +32,23 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
     constructor(private file: File, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
             initDelegate: CoreInitDelegate, private localNotif: LocalNotifications,
-            private captureHelper: CoreEmulatorCaptureHelperProvider) {}
+            private captureHelper: CoreEmulatorCaptureHelperProvider) { }
 
     /**
      * Load the Mocks that need it.
      *
      * @return {Promise<void>} Promise resolved when loaded.
      */
-    load() : Promise<void> {
-        let promises = [];
+    load(): Promise<void> {
+        const promises = [];
 
-        promises.push((<any>this.file).load().then((basePath: string) => {
+        promises.push((<any> this.file).load().then((basePath: string) => {
             this.fileProvider.setHTMLBasePath(basePath);
         }));
-        promises.push((<any>this.localNotif).load());
+        promises.push((<any> this.localNotif).load());
         promises.push(this.captureHelper.load());
 
-        (<any>window).FileTransferError = FileTransferErrorMock;
+        (<any> window).FileTransferError = FileTransferErrorMock;
 
         return this.utils.allPromises(promises);
     }

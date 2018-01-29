@@ -60,12 +60,14 @@ import { CoreSharedFilesModule } from '../core/sharedfiles/sharedfiles.module';
 import { CoreCourseModule } from '../core/course/course.module';
 import { CoreSiteHomeModule } from '../core/sitehome/sitehome.module';
 import { CoreContentLinksModule } from '../core/contentlinks/contentlinks.module';
+import { CoreUserModule } from '../core/user/user.module';
 
 // Addon modules.
 import { AddonCalendarModule } from '../addon/calendar/calendar.module';
+import { AddonUserProfileFieldModule } from '../addon/userprofilefield/userprofilefield.module';
 
 // For translate loader. AoT requires an exported function for factories.
-export function createTranslateLoader(http: HttpClient) {
+export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http, './assets/lang/', '.json');
 }
 
@@ -97,7 +99,9 @@ export function createTranslateLoader(http: HttpClient) {
         CoreCourseModule,
         CoreSiteHomeModule,
         CoreContentLinksModule,
-        AddonCalendarModule
+        CoreUserModule,
+        AddonCalendarModule,
+        AddonUserProfileFieldModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

@@ -21,14 +21,14 @@ import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreCoursesDelegate } from '../../providers/delegate';
+import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
 import { CoreCourseProvider } from '../../../course/providers/course';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
  */
-@IonicPage({segment: "core-courses-course-preview"})
+@IonicPage({ segment: 'core-courses-course-preview' })
 @Component({
     selector: 'page-core-courses-course-preview',
     templateUrl: 'course-preview.html',
@@ -36,7 +36,7 @@ import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 export class CoreCoursesCoursePreviewPage implements OnDestroy {
     course: any;
     isEnrolled: boolean;
-    handlersShouldBeShown: boolean = true;
+    handlersShouldBeShown = true;
     handlersLoaded: boolean;
     component = 'CoreCoursesCoursePreview';
     selfEnrolInstances: any[] = [];
@@ -47,7 +47,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     };
 
     protected guestWSAvailable: boolean;
-    protected isGuestEnabled: boolean = false;
+    protected isGuestEnabled = false;
     protected guestInstanceId: number;
     protected enrollmentMethods: any[];
     protected waitStart = 0;
@@ -65,7 +65,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider, appProvider: CoreAppProvider,
             private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
             private translate: TranslateService, private eventsProvider: CoreEventsProvider,
-            private coursesDelegate: CoreCoursesDelegate, private courseHelper: CoreCourseHelperProvider,
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private courseHelper: CoreCourseHelperProvider,
             private courseProvider: CoreCourseProvider) {
         this.course = navParams.get('course');
         this.isMobile = appProvider.isMobile();
@@ -82,7 +82,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         const currentSite = this.sitesProvider.getCurrentSite(),
             currentSiteUrl = currentSite && currentSite.getURL();
 
@@ -107,7 +107,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
 
                 if (icon == 'spinner') {
                     // Course is being downloaded. Get the download promise.
-                    let promise = this.courseHelper.getCourseDownloadPromise(this.course.id);
+                    const promise = this.courseHelper.getCourseDownloadPromise(this.course.id);
                     if (promise) {
                         // There is a download promise. If it fails, show an error.
                         promise.catch((error) => {
@@ -127,7 +127,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Page destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.pageDestroyed = true;
 
         if (this.courseStatusObserver) {
@@ -141,7 +141,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * @return {Promise<boolean>} Promise resolved if can access as guest, rejected otherwise. Resolve param indicates if
      *                            password is required for guest access.
      */
-    protected canAccessAsGuest() : Promise<boolean> {
+    protected canAccessAsGuest(): Promise<boolean> {
         if (!this.isGuestEnabled) {
             return Promise.reject(null);
         }
@@ -149,7 +149,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
         // Search instance ID of guest enrolment method.
         this.guestInstanceId = undefined;
         for (let i = 0; i < this.enrollmentMethods.length; i++) {
-            let method = this.enrollmentMethods[i];
+            const method = this.enrollmentMethods[i];
             if (method.type == 'guest') {
                 this.guestInstanceId = method.id;
                 break;
@@ -162,6 +162,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                     // Not active, reject.
                     return Promise.reject(null);
                 }
+
                 return info.passwordrequired;
             });
         }
@@ -174,9 +175,10 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      *
      * @param {boolean} refresh Whether the user is refreshing the data.
      */
-    protected getCourse(refresh?: boolean) : Promise<any> {
+    protected getCourse(refresh?: boolean): Promise<any> {
         // Get course enrolment methods.
         this.selfEnrolInstances = [];
+
         return this.coursesProvider.getCourseEnrolmentMethods(this.course.id).then((methods) => {
             this.enrollmentMethods = methods;
 
@@ -193,15 +195,18 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             // Check if user is enrolled in the course.
             return this.coursesProvider.getUserCourse(this.course.id).then((course) => {
                 this.isEnrolled = true;
+
                 return course;
             }).catch(() => {
                 // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
                 this.isEnrolled = false;
+
                 return this.coursesProvider.getCourse(this.course.id);
             }).then((course) => {
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 this.course.fullname = course.fullname || this.course.fullname;
                 this.course.summary = course.summary || this.course.summary;
+
                 return this.loadCourseHandlers(refresh, false);
             }).catch(() => {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
@@ -227,8 +232,8 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * @param {boolean} refresh Whether the user is refreshing the data.
      * @param {boolean} guest Whether it's guest access.
      */
-    protected loadCourseHandlers(refresh: boolean, guest: boolean) : Promise<any> {
-        return this.coursesDelegate.getHandlersToDisplay(this.course, refresh, guest, true).then((handlers) => {
+    protected loadCourseHandlers(refresh: boolean, guest: boolean): Promise<any> {
+        return this.courseOptionsDelegate.getHandlersToDisplay(this.course, refresh, guest, true).then((handlers) => {
             this.course._handlers = handlers;
             this.handlersShouldBeShown = true;
             this.handlersLoaded = true;
@@ -238,26 +243,27 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Open the course.
      */
-    openCourse() {
+    openCourse(): void {
         if (!this.handlersShouldBeShown) {
             // Course cannot be opened.
             return;
         }
 
-        this.navCtrl.push('CoreCourseSectionPage', {course: this.course});
+        this.navCtrl.push('CoreCourseSectionPage', { course: this.course });
     }
 
     /**
      * Enrol using PayPal.
      */
-    paypalEnrol() {
+    paypalEnrol(): void {
         let window,
             hasReturnedFromPaypal = false,
             inAppLoadSubscription,
             inAppFinishSubscription,
             inAppExitSubscription,
-            appResumeSubscription,
-            urlLoaded = (event) => {
+            appResumeSubscription;
+
+        const urlLoaded = (event): void => {
                 if (event.url.indexOf(this.paypalReturnUrl) != -1) {
                     hasReturnedFromPaypal = true;
                 } else if (event.url.indexOf(this.courseUrl) != -1 && hasReturnedFromPaypal) {
@@ -266,7 +272,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                     window.close();
                 }
             },
-            inAppClosed = () => {
+            inAppClosed = (): void => {
                 // InAppBrowser closed, refresh data.
                 unsubscribeAll();
 
@@ -276,7 +282,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 this.dataLoaded = false;
                 this.refreshData();
             },
-            unsubscribeAll = () => {
+            unsubscribeAll = (): void => {
                 inAppLoadSubscription && inAppLoadSubscription.unsubscribe();
                 inAppFinishSubscription && inAppFinishSubscription.unsubscribe();
                 inAppExitSubscription && inAppExitSubscription.unsubscribe();
@@ -315,7 +321,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      *
      * @param {number} instanceId The instance ID of the enrolment method.
      */
-    selfEnrolClicked(instanceId: number) {
+    selfEnrolClicked(instanceId: number): void {
         this.domUtils.showConfirm(this.translate.instant('core.courses.confirmselfenrol')).then(() => {
             this.selfEnrolInCourse('', instanceId);
         }).catch(() => {
@@ -330,8 +336,8 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * @param {number} instanceId The instance ID.
      * @return {Promise<any>} Promise resolved when self enrolled.
      */
-    selfEnrolInCourse(password: string, instanceId: number) : Promise<any> {
-        let modal = this.domUtils.showModalLoading('core.loading', true);
+    selfEnrolInCourse(password: string, instanceId: number): Promise<any> {
+        const modal = this.domUtils.showModalLoading('core.loading', true);
 
         return this.coursesProvider.selfEnrol(this.course.id, password, instanceId).then(() => {
             // Close modal and refresh data.
@@ -343,7 +349,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 this.refreshData().finally(() => {
                     // My courses have been updated, trigger event.
                     this.eventsProvider.trigger(
-                            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {}, this.sitesProvider.getCurrentSiteId());
+                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {}, this.sitesProvider.getCurrentSiteId());
                 });
             });
         }).catch((error) => {
@@ -369,13 +375,13 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      *
      * @param {any} [refresher] The refresher if this was triggered by a Pull To Refresh.
      */
-    refreshData(refresher?: any) : Promise<any> {
-        let promises = [];
+    refreshData(refresher?: any): Promise<any> {
+        const promises = [];
 
         promises.push(this.coursesProvider.invalidateUserCourses());
         promises.push(this.coursesProvider.invalidateCourse(this.course.id));
         promises.push(this.coursesProvider.invalidateCourseEnrolmentMethods(this.course.id));
-        // promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions(course.id));
+        promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions(this.course.id));
         if (this.guestInstanceId) {
             promises.push(this.coursesProvider.invalidateCourseGuestEnrolmentInfo(this.guestInstanceId));
         }
@@ -393,8 +399,9 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * Wait for the user to be enrolled in the course.
      *
      * @param {boolean} first If it's the first call (true) or it's a recursive call (false).
+     * @return {Promise<any>} Promise resolved when enrolled or timeout.
      */
-    protected waitForEnrolled(first?: boolean) {
+    protected waitForEnrolled(first?: boolean): Promise<any> {
         if (first) {
             this.waitStart = Date.now();
         }
@@ -406,12 +413,12 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             return this.coursesProvider.getUserCourse(this.course.id);
         }).catch(() => {
             // Not enrolled, wait a bit and try again.
-            if (this.pageDestroyed || (Date.now() - this.waitStart > 60000)) {
+            if (this.pageDestroyed || (Date.now() - this.waitStart > 60000)) {
                 // Max time reached or the user left the view, stop.
                 return;
             }
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject): void => {
                 setTimeout(() => {
                     if (!this.pageDestroyed) {
                         // Wait again.
@@ -427,12 +434,12 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     /**
      * Prefetch the course.
      */
-    prefetchCourse() {
+    prefetchCourse(): void {
         this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, undefined, this.course._handlers)
                 .catch((error) => {
             if (!this.pageDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
-        })
+        });
     }
 }

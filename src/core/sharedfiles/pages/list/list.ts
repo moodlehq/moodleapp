@@ -24,7 +24,7 @@ import { CoreSharedFilesProvider } from '../../providers/sharedfiles';
 /**
  * Modal to display the list of shared files.
  */
-@IonicPage({segment: "core-shared-files-list"})
+@IonicPage({ segment: 'core-shared-files-list' })
 @Component({
     selector: 'page-core-shared-files-list',
     templateUrl: 'list.html',
@@ -35,7 +35,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     isModal: boolean;
     manage: boolean;
     pick: boolean; // To pick a file you MUST use a modal.
-    path: string = '';
+    path = '';
     title: string;
     filesLoaded: boolean;
     files: any[];
@@ -57,7 +57,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         this.loadFiles();
 
         // Listen for new files shared with the app.
@@ -74,8 +74,10 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
 
     /**
      * Load the files.
+     *
+     * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadFiles() {
+    protected loadFiles(): Promise<any> {
         if (this.path) {
             this.title = this.fileProvider.getFileAndDirectoryFromPath(this.path).name;
         } else {
@@ -91,7 +93,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     /**
      * Close modal.
      */
-    closeModal() : void {
+    closeModal(): void {
         this.viewCtrl.dismiss();
     }
 
@@ -100,7 +102,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      *
      * @param {any} refresher Refresher.
      */
-    refreshFiles(refresher: any) : void {
+    refreshFiles(refresher: any): void {
         this.loadFiles().finally(() => {
             refresher.complete();
         });
@@ -111,7 +113,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      *
      * @param {number} index Position of the file.
      */
-    fileDeleted(index: number) : void {
+    fileDeleted(index: number): void {
         this.files.splice(index, 1);
     }
 
@@ -121,7 +123,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      * @param {number} index Position of the file.
      * @param {any} file New FileEntry.
      */
-    fileRenamed(index: number, file: any) : void {
+    fileRenamed(index: number, file: any): void {
         this.files[index] = file;
     }
 
@@ -130,8 +132,8 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      *
      * @param {any} folder The folder to open.
      */
-    openFolder(folder: any) : void {
-        let path = this.textUtils.concatenatePaths(this.path, folder.name);
+    openFolder(folder: any): void {
+        const path = this.textUtils.concatenatePaths(this.path, folder.name);
         if (this.isModal) {
             // In Modal we don't want to open a new page because we cannot dismiss the modal from the new page.
             this.path = path;
@@ -154,7 +156,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      *
      * @param {string} id Site to load.
      */
-    changeSite(id: string) : void {
+    changeSite(id: string): void {
         this.siteId = id;
         this.path = '';
         this.filesLoaded = false;
@@ -166,14 +168,14 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
      *
      * @param {any} file Picked file.
      */
-    filePicked(file: any) : void {
+    filePicked(file: any): void {
         this.viewCtrl.dismiss(file);
     }
 
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.shareObserver) {
             this.shareObserver.off();
         }

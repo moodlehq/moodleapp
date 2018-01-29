@@ -47,21 +47,21 @@ export class CoreSharedFilesHelperProvider {
      * @param {string} newName New name.
      * @return {Promise<string>} Promise resolved with the name to use when the user chooses. Rejected if user cancels.
      */
-    askRenameReplace(originalName: string, newName: string) : Promise<string> {
+    askRenameReplace(originalName: string, newName: string): Promise<string> {
         const deferred = this.utils.promiseDefer(),
             alert = this.alertCtrl.create({
                 title: this.translate.instant('core.sharedfiles.sharedfiles'),
-                message: this.translate.instant('core.sharedfiles.chooseactionrepeatedfile', {$a: newName}),
+                message: this.translate.instant('core.sharedfiles.chooseactionrepeatedfile', { $a: newName }),
                 buttons: [
                     {
                         text: this.translate.instant('core.sharedfiles.rename'),
-                        handler: () => {
+                        handler: (): void => {
                             deferred.resolve(newName);
                         }
                     },
                     {
                         text: this.translate.instant('core.sharedfiles.replace'),
-                        handler: () => {
+                        handler: (): void => {
                             deferred.resolve(originalName);
                         }
                     }
@@ -69,6 +69,7 @@ export class CoreSharedFilesHelperProvider {
             });
 
         alert.present();
+
         return deferred.promise;
     }
 
@@ -77,9 +78,9 @@ export class CoreSharedFilesHelperProvider {
      *
      * @param {string} filePath File path to send to the view.
      */
-    goToChooseSite(filePath: string) : void {
-        let navCtrl = this.appProvider.getRootNavController();
-        navCtrl.push('CoreSharedFilesChooseSitePage', {filePath: filePath});
+    goToChooseSite(filePath: string): void {
+        const navCtrl = this.appProvider.getRootNavController();
+        navCtrl.push('CoreSharedFilesChooseSitePage', { filePath: filePath });
     }
 
     /**
@@ -88,15 +89,16 @@ export class CoreSharedFilesHelperProvider {
      * @param  {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
      * @return {Promise<any>} Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
-    pickSharedFile(mimetypes?: string[]) : Promise<any> {
-        return new Promise((resolve, reject) => {
-            let modal = this.modalCtrl.create('CoreSharedFilesListPage', {mimetypes: mimetypes, isModal: true, pick: true});
+    pickSharedFile(mimetypes?: string[]): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            const modal = this.modalCtrl.create('CoreSharedFilesListPage', { mimetypes: mimetypes, isModal: true, pick: true });
             modal.present();
 
             modal.onDidDismiss((file: any) => {
                 if (!file) {
                     // User cancelled.
                     reject();
+
                     return;
                 }
 
@@ -109,7 +111,7 @@ export class CoreSharedFilesHelperProvider {
                         treated: false
                     });
                 }
-            })
+            });
         });
     }
 
@@ -120,9 +122,9 @@ export class CoreSharedFilesHelperProvider {
      *
      * @return {Promise<any>} Promise resolved when done.
      */
-    searchIOSNewSharedFiles() : Promise<any> {
+    searchIOSNewSharedFiles(): Promise<any> {
         return this.initDelegate.ready().then(() => {
-            let navCtrl = this.appProvider.getRootNavController();
+            const navCtrl = this.appProvider.getRootNavController();
             if (navCtrl && navCtrl.getActive().id == 'CoreSharedFilesChooseSite') {
                 // We're already treating a shared file. Abort.
                 return Promise.reject(null);
@@ -133,6 +135,7 @@ export class CoreSharedFilesHelperProvider {
                     if (!siteIds.length) {
                         // No sites stored, show error and delete the file.
                         this.domUtils.showErrorModal('core.sharedfiles.errorreceivefilenosites', true);
+
                         return this.sharedFilesProvider.deleteInboxFile(fileEntry);
                     } else if (siteIds.length == 1) {
                         return this.storeSharedFileInSite(fileEntry, siteIds[0]);
@@ -151,11 +154,12 @@ export class CoreSharedFilesHelperProvider {
      * @param {string} [siteId]  Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    storeSharedFileInSite(fileEntry: any, siteId?: string) : Promise<any> {
+    storeSharedFileInSite(fileEntry: any, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // First of all check if there's already a file with the same name in the shared files folder.
         const sharedFilesDirPath = this.sharedFilesProvider.getSiteSharedFilesDirPath(siteId);
+
         return this.fileProvider.getUniqueNameInFolder(sharedFilesDirPath, fileEntry.name).then((newName) => {
             if (newName == fileEntry.name) {
                 // No file with the same name. Use the original file name.
@@ -165,7 +169,7 @@ export class CoreSharedFilesHelperProvider {
                 return this.askRenameReplace(fileEntry.name, newName);
             }
         }).then((name) => {
-            return this.sharedFilesProvider.storeFileInSite(fileEntry, name, siteId).catch(function(err) {
+            return this.sharedFilesProvider.storeFileInSite(fileEntry, name, siteId).catch((err) => {
                 this.domUtils.showErrorModal(err || 'Error moving file.');
             }).finally(() => {
                 this.sharedFilesProvider.deleteInboxFile(fileEntry);

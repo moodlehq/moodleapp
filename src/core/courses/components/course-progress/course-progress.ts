@@ -14,7 +14,6 @@
 
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
@@ -45,7 +44,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected courseStatusObserver;
 
-    constructor(private navCtrl: NavController, private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
+    constructor(private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
             private courseProvider: CoreCourseProvider, eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
         // Listen for status change in course.
@@ -59,7 +58,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         // Determine course prefetch icon.
         this.courseHelper.getCourseStatusIcon(this.course.id).then((icon) => {
             this.prefetchCourseData.prefetchCourseIcon = icon;
@@ -84,8 +83,10 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
 
     /**
      * Open a course.
+     *
+     * @param {any} course The course to open.
      */
-    openCourse(course) {
+    openCourse(course: any): void {
         this.courseFormatDelegate.openCourse(this.navCtrl, course);
     }
 
@@ -94,7 +95,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      *
      * @param {Event} e Click event.
      */
-    prefetchCourse(e: Event) {
+    prefetchCourse(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -102,13 +103,13 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
-        })
+        });
     }
 
     /**
      * Component destroyed.
      */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.isDestroyed = true;
 
         if (this.courseStatusObserver) {

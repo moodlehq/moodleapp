@@ -22,11 +22,12 @@ import { CoreUtilsProvider } from '../../../../providers/utils/utils';
 import { CoreWSProvider } from '../../../../providers/ws';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoreUserProfileFieldDelegate } from '../../../user/providers/user-profile-field-delegate';
 
 /**
  * Page to signup using email.
  */
-@IonicPage({segment: "core-login-email-signup"})
+@IonicPage({ segment: 'core-login-email-signup' })
 @Component({
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
@@ -42,7 +43,7 @@ export class CoreLoginEmailSignupPage {
     countries: any;
     countriesKeys: any[];
     categories: any[];
-    settingsLoaded: boolean = false;
+    settingsLoaded = false;
 
     // Validation errors.
     usernameErrors: any;
@@ -55,16 +56,16 @@ export class CoreLoginEmailSignupPage {
     constructor(private navCtrl: NavController, navParams: NavParams, private fb: FormBuilder, private wsProvider: CoreWSProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private textUtils: CoreTextUtilsProvider, private userProfileFieldDelegate: CoreUserProfileFieldDelegate) {
 
         this.siteUrl = navParams.get('siteUrl');
 
         // Create the signupForm with the basic controls. More controls will be added later.
         this.signupForm = this.fb.group({
-            'username': ['', Validators.required],
-            'password': ['', Validators.required],
-            'email': ['', Validators.compose([Validators.required, Validators.email])],
-            'email2': ['', Validators.compose([Validators.required, Validators.email])]
+            username: ['', Validators.required],
+            password: ['', Validators.required],
+            email: ['', Validators.compose([Validators.required, Validators.email])],
+            email2: ['', Validators.compose([Validators.required, Validators.email])]
         });
 
         // Setup validation errors.
@@ -78,7 +79,7 @@ export class CoreLoginEmailSignupPage {
     /**
      * View loaded.
      */
-    ionViewDidLoad() {
+    ionViewDidLoad(): void {
         // Fetch the data.
         this.fetchData().finally(() => {
             this.settingsLoaded = true;
@@ -88,12 +89,12 @@ export class CoreLoginEmailSignupPage {
     /**
      * Complete the FormGroup using the settings received from server.
      */
-    protected completeFormGroup() {
+    protected completeFormGroup(): void {
         this.signupForm.addControl('city', this.fb.control(this.settings.defaultcity || ''));
         this.signupForm.addControl('country', this.fb.control(this.settings.country || ''));
 
         // Add the name fields.
-        for (let i in this.settings.namefields) {
+        for (const i in this.settings.namefields) {
             this.signupForm.addControl(this.settings.namefields[i], this.fb.control('', Validators.required));
         }
 
@@ -109,7 +110,7 @@ export class CoreLoginEmailSignupPage {
     /**
      * Fetch the required data from the server-
      */
-    protected fetchData() : Promise<any> {
+    protected fetchData(): Promise<any> {
         // Get site config.
         return this.sitesProvider.getSitePublicConfig(this.siteUrl).then((config) => {
             this.siteConfig = config;
@@ -127,8 +128,8 @@ export class CoreLoginEmailSignupPage {
     /**
      * Get signup settings from server.
      */
-    protected getSignupSettings() : Promise<any> {
-        return this.wsProvider.callAjax('auth_email_get_signup_settings', {}, {siteUrl: this.siteUrl}).then((settings) => {
+    protected getSignupSettings(): Promise<any> {
+        return this.wsProvider.callAjax('auth_email_get_signup_settings', {}, { siteUrl: this.siteUrl }).then((settings) => {
             this.settings = settings;
             this.categories = this.loginHelper.formatProfileFieldsForSignup(settings.profilefields);
 
@@ -154,16 +155,19 @@ export class CoreLoginEmailSignupPage {
      * Treat the site config, checking if it's valid and extracting the data we're interested in.
      *
      * @param {any} siteConfig Site config to treat.
+     * @return {boolean} True if success.
      */
-    protected treatSiteConfig(siteConfig) {
+    protected treatSiteConfig(siteConfig: any): boolean {
         if (siteConfig && siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(siteConfig)) {
             this.siteName = siteConfig.sitename;
             this.authInstructions = siteConfig.authinstructions;
+
             return true;
         } else {
             this.domUtils.showErrorModal(
-                this.translate.instant('core.login.signupplugindisabled', {$a: this.translate.instant('core.login.auth_email')}));
+                this.translate.instant('core.login.signupplugindisabled', { $a: this.translate.instant('core.login.auth_email') }));
             this.navCtrl.pop();
+
             return false;
         }
     }
@@ -173,7 +177,7 @@ export class CoreLoginEmailSignupPage {
      *
      * @param {any} refresher Refresher.
      */
-    refreshSettings(refresher: any) : void {
+    refreshSettings(refresher: any): void {
         this.fetchData().finally(() => {
             refresher.complete();
         });
@@ -184,8 +188,8 @@ export class CoreLoginEmailSignupPage {
      *
      * @param {boolean} ignoreError Whether to ignore errors.
      */
-    requestCaptcha(ignoreError?: boolean) : void {
-        let modal = this.domUtils.showModalLoading();
+    requestCaptcha(ignoreError?: boolean): void {
+        const modal = this.domUtils.showModalLoading();
         this.getSignupSettings().catch((err) => {
             if (!ignoreError && err) {
                 this.domUtils.showErrorModal(err);
@@ -198,7 +202,7 @@ export class CoreLoginEmailSignupPage {
     /**
      * Create account.
      */
-    create() : void {
+    create(): void {
         if (!this.signupForm.valid) {
             // Form not valid. Scroll to the first element with errors.
             if (!this.domUtils.scrollToInputError(this.content, document.body)) {
@@ -206,7 +210,7 @@ export class CoreLoginEmailSignupPage {
                 this.domUtils.showErrorModal('core.errorinvalidform', true);
             }
         } else {
-            let params: any = {
+            const params: any = {
                     username: this.signupForm.value.username.trim().toLowerCase(),
                     password: this.signupForm.value.password,
                     firstname: this.textUtils.cleanTags(this.signupForm.value.firstname),
@@ -218,7 +222,7 @@ export class CoreLoginEmailSignupPage {
                 modal = this.domUtils.showModalLoading('core.sending', true);
 
             if (this.siteConfig.launchurl) {
-                let service = this.sitesProvider.determineService(this.siteUrl);
+                const service = this.sitesProvider.determineService(this.siteUrl);
                 params.redirect = this.loginHelper.prepareForSSOLogin(this.siteUrl, service, this.siteConfig.launchurl);
             }
 
@@ -228,41 +232,38 @@ export class CoreLoginEmailSignupPage {
             }
 
             // Get the data for the custom profile fields.
-            // @todo: Implement it once profile fields are implemented.
-            // $mmUserProfileFieldsDelegate.getDataForFields(fields, true, 'email', $scope.data).then(function(fieldsData) {
-            //     params.customprofilefields = fieldsData;
+            this.userProfileFieldDelegate.getDataForFields(this.settings.profilefields, true, 'email', this.signupForm.value).then(
+                (fieldsData) => {
+                    params.customprofilefields = fieldsData;
 
-            this.wsProvider.callAjax('auth_email_signup_user', params, {siteUrl: this.siteUrl}).then((result) => {
-                if (result.success) {
-                    // Show alert and ho back.
-                    let message = this.translate.instant('core.login.emailconfirmsent', {$a: params.email});
-                    this.domUtils.showAlert(this.translate.instant('core.success'), message);
-                    this.navCtrl.pop();
-                } else {
-                    if (result.warnings && result.warnings.length) {
-                        this.domUtils.showErrorModal(result.warnings[0].message);
-                    } else {
-                        this.domUtils.showErrorModal('core.login.usernotaddederror', true);
-                    }
+                    this.wsProvider.callAjax('auth_email_signup_user', params, { siteUrl: this.siteUrl }).then((result) => {
+                        if (result.success) {
+                            // Show alert and ho back.
+                            const message = this.translate.instant('core.login.emailconfirmsent', { $a: params.email });
+                            this.domUtils.showAlert(this.translate.instant('core.success'), message);
+                            this.navCtrl.pop();
+                        } else {
+                            this.domUtils.showErrorModalFirstWarning(result.warnings, 'core.login.usernotaddederror', true);
+
+                            // Error sending, request another capctha since the current one is probably invalid now.
+                            this.requestCaptcha(true);
+                        }
+                    });
+                }).catch((error) => {
+                    this.domUtils.showErrorModalDefault(error && error.error, 'core.login.usernotaddederror', true);
 
                     // Error sending, request another capctha since the current one is probably invalid now.
                     this.requestCaptcha(true);
-                }
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error && error.error, 'core.login.usernotaddederror', true);
-
-                // Error sending, request another capctha since the current one is probably invalid now.
-                this.requestCaptcha(true);
-            }).finally(() => {
-                modal.dismiss();
-            });
+                }).finally(() => {
+                    modal.dismiss();
+                });
         }
     }
 
     /**
      * Show authentication instructions.
      */
-    protected showAuthInstructions() {
+    protected showAuthInstructions(): void {
         this.textUtils.expandText(this.translate.instant('core.login.instructions'), this.authInstructions);
     }
 }
