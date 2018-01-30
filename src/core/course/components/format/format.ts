@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ComponentFactoryResolver, ViewChild, ChangeDetectorRef,
-    SimpleChange, Output, EventEmitter
-} from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreLoggerProvider } from '../../../../providers/logger';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreCourseProvider } from '../../../course/providers/course';
@@ -48,31 +44,15 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
-    // Get the containers where to inject dynamic components. We use a setter because they might be inside a *ngIf.
-    @ViewChild('courseFormat', { read: ViewContainerRef }) set courseFormat(el: ViewContainerRef) {
-        if (this.course) {
-            this.createComponent('courseFormat', this.cfDelegate.getCourseFormatComponent(this.course), el);
-        } else {
-            // The component hasn't been initialized yet. Store the container.
-            this.componentContainers['courseFormat'] = el;
-        }
-    }
-    @ViewChild('courseSummary', { read: ViewContainerRef }) set courseSummary(el: ViewContainerRef) {
-        this.createComponent('courseSummary', this.cfDelegate.getCourseSummaryComponent(this.course), el);
-    }
-    @ViewChild('sectionSelector', { read: ViewContainerRef }) set sectionSelector(el: ViewContainerRef) {
-        this.createComponent('sectionSelector', this.cfDelegate.getSectionSelectorComponent(this.course), el);
-    }
-    @ViewChild('singleSection', { read: ViewContainerRef }) set singleSection(el: ViewContainerRef) {
-        this.createComponent('singleSection', this.cfDelegate.getSingleSectionComponent(this.course), el);
-    }
-    @ViewChild('allSections', { read: ViewContainerRef }) set allSections(el: ViewContainerRef) {
-        this.createComponent('allSections', this.cfDelegate.getAllSectionsComponent(this.course), el);
-    }
+    // All the possible component classes.
+    courseFormatComponent: any;
+    courseSummaryComponent: any;
+    sectionSelectorComponent: any;
+    singleSectionComponent: any;
+    allSectionsComponent: any;
 
-    // Instances and containers of all the components that the handler could define.
-    protected componentContainers: { [type: string]: ViewContainerRef } = {};
-    componentInstances: { [type: string]: any } = {};
+    // Data to pass to the components.
+    data: any = {};
 
     displaySectionSelector: boolean;
     selectedSection: any;
@@ -80,23 +60,20 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     selectOptions: any = {};
     loaded: boolean;
 
-    protected logger;
     protected sectionStatusObserver;
 
-    constructor(logger: CoreLoggerProvider, private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService,
-            private factoryResolver: ComponentFactoryResolver, private cdr: ChangeDetectorRef,
+    constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
             eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider,
             prefetchDelegate: CoreCourseModulePrefetchDelegate) {
 
-        this.logger = logger.getInstance('CoreCourseFormatComponent');
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
 
         // Listen for section status changes.
         this.sectionStatusObserver = eventsProvider.on(CoreEventsProvider.SECTION_STATUS_CHANGED, (data) => {
             if (this.downloadEnabled && this.sections && this.sections.length && this.course && data.sectionId &&
-                data.courseId == this.course.id) {
+                    data.courseId == this.course.id) {
                 // Check if the affected section is being downloaded.
                 // If so, we don't update section status because it'll already be updated when the download finishes.
                 const downloadId = this.courseHelper.getSectionDownloadId({ id: data.sectionId });
@@ -135,15 +112,19 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
-
-        this.createComponent(
-            'courseFormat', this.cfDelegate.getCourseFormatComponent(this.course), this.componentContainers['courseFormat']);
     }
 
     /**
      * Detect changes on input properties.
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        this.setInputData();
+
+        if (changes.course) {
+            // Course has changed, try to get the components.
+            this.getComponents();
+        }
+
         if (changes.sections && this.sections) {
             if (!this.selectedSection) {
                 // There is no selected section yet, calculate which one to load.
@@ -186,62 +167,39 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (changes.downloadEnabled && this.downloadEnabled) {
             this.calculateSectionsStatus(false);
         }
-
-        // Apply the changes to the components and call ngOnChanges if it exists.
-        for (const type in this.componentInstances) {
-            const instance = this.componentInstances[type];
-
-            for (const name in changes) {
-                instance[name] = changes[name].currentValue;
-            }
-
-            if (instance.ngOnChanges) {
-                instance.ngOnChanges(changes);
-            }
-        }
     }
 
     /**
-     * Create a component, add it to a container and set the input data.
-     *
-     * @param {string} type The "type" of the component.
-     * @param {any} componentClass The class of the component to create.
-     * @param {ViewContainerRef} container The container to add the component to.
-     * @return {boolean} Whether the component was successfully created.
+     * Set the input data for components.
      */
-    protected createComponent(type: string, componentClass: any, container: ViewContainerRef): boolean {
-        if (!componentClass || !container) {
-            // No component to instantiate or container doesn't exist right now.
-            return false;
-        }
+    protected setInputData(): void {
+        this.data.course = this.course;
+        this.data.sections = this.sections;
+        this.data.initialSectionId = this.initialSectionId;
+        this.data.initialSectionNumber = this.initialSectionNumber;
+        this.data.downloadEnabled = this.downloadEnabled;
+    }
 
-        if (this.componentInstances[type] && container === this.componentContainers[type]) {
-            // Component already instantiated and the component hasn't been destroyed, nothing to do.
-            return true;
-        }
-
-        try {
-            // Create the component and add it to the container.
-            const factory = this.factoryResolver.resolveComponentFactory(componentClass),
-                componentRef = container.createComponent(factory);
-
-            this.componentContainers[type] = container;
-            this.componentInstances[type] = componentRef.instance;
-
-            // Set the Input data.
-            this.componentInstances[type].course = this.course;
-            this.componentInstances[type].sections = this.sections;
-            this.componentInstances[type].initialSectionId = this.initialSectionId;
-            this.componentInstances[type].initialSectionNumber = this.initialSectionNumber;
-            this.componentInstances[type].downloadEnabled = this.downloadEnabled;
-
-            this.cdr.detectChanges(); // The instances are used in ngIf, tell Angular that something has changed.
-
-            return true;
-        } catch (ex) {
-            this.logger.error('Error creating component', type, ex);
-
-            return false;
+    /**
+     * Get the components classes.
+     */
+    protected getComponents(): void {
+        if (this.course) {
+            if (!this.courseFormatComponent) {
+                this.courseFormatComponent = this.cfDelegate.getCourseFormatComponent(this.course);
+            }
+            if (!this.courseSummaryComponent) {
+                this.courseSummaryComponent = this.cfDelegate.getCourseSummaryComponent(this.course);
+            }
+            if (!this.sectionSelectorComponent) {
+                this.sectionSelectorComponent = this.cfDelegate.getSectionSelectorComponent(this.course);
+            }
+            if (!this.singleSectionComponent) {
+                this.singleSectionComponent = this.cfDelegate.getSingleSectionComponent(this.course);
+            }
+            if (!this.allSectionsComponent) {
+                this.allSectionsComponent = this.cfDelegate.getAllSectionsComponent(this.course);
+            }
         }
     }
 
@@ -253,16 +211,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     sectionChanged(newSection: any): void {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
-
-        // If there is a component to render the current section, update its section.
-        if (this.componentInstances.singleSection) {
-            this.componentInstances.singleSection.section = this.selectedSection;
-            if (this.componentInstances.singleSection.ngOnChanges) {
-                this.componentInstances.singleSection.ngOnChanges({
-                    section: new SimpleChange(previousValue, newSection, typeof previousValue != 'undefined')
-                });
-            }
-        }
+        this.data.section = this.selectedSection;
     }
 
     /**

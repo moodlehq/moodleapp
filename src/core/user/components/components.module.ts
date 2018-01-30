@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
+import { CoreComponentsModule } from '../../../components/components.module';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
+        CoreComponentsModule
     ],
     providers: [
     ],

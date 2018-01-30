@@ -1,45 +1,45 @@
 <!-- Default course format. -->
-<div *ngIf="!componentInstances.courseFormat">
+<core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Course summary. By default we only display the course progress. -->
-    <ion-list no-lines *ngIf="!componentInstances.courseSummary">
-        <ion-item *ngIf="course.progress != null && course.progress >= 0">
-            <core-progress-bar [progress]="course.progress"></core-progress-bar>
-        </ion-item>
-    </ion-list>
-    <ng-template #courseSummary></ng-template>
+    <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
+        <ion-list no-lines>
+            <ion-item *ngIf="course.progress != null && course.progress >= 0">
+                <core-progress-bar [progress]="course.progress"></core-progress-bar>
+            </ion-item>
+        </ion-list>
+    </core-dynamic-component>
 
     <core-loading [hideUntil]="loaded">
         <!-- Section selector. -->
-        <div *ngIf="!componentInstances.sectionSelector && displaySectionSelector && sections && sections.length" no-padding class="clearfix">
-            <!-- @todo: How to display availabilityinfo and not visible messages? -->
-            <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions" float-start interface="popover">
-                <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
-            </ion-select>
-            <!-- Section download. -->
-            <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
-        </div>
-        <ng-template #sectionSelector></ng-template>
+        <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
+            <div *ngIf="displaySectionSelector && sections && sections.length" no-padding class="clearfix">
+                <!-- @todo: How to display availabilityinfo and not visible messages? -->
+                <ion-select [ngModel]="selectedSection" (ngModelChange)="sectionChanged($event)" [compareWith]="compareSections" [selectOptions]="selectOptions" float-start interface="popover">
+                    <ion-option *ngFor="let section of sections" [value]="section">{{section.formattedName || section.name}}</ion-option>
+                </ion-select>
+                <!-- Section download. -->
+                <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
+            </div>
+        </core-dynamic-component>
 
         <!-- Single section. -->
         <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
-            <ng-container *ngIf="!componentInstances.singleSection">
+            <core-dynamic-component [component]="singleSectionComponent" [data]="data">
                 <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
-            </ng-container>
-            <ng-template #singleSection></ng-template>
+            </core-dynamic-component>
         </div>
 
         <!-- Multiple sections. -->
         <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
-            <ng-container *ngIf="!componentInstances.allSections">
+            <core-dynamic-component [component]="allSectionsComponent" [data]="data">
                 <ng-container *ngFor="let section of sections">
                     <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
                 </ng-container>
-            </ng-container>
-            <ng-template #allSections></ng-template>
+            </core-dynamic-component>
         </div>
     </core-loading>
-</div>
+</core-dynamic-component>
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
@@ -78,6 +78,3 @@
         <ion-badge class="core-course-download-section-progress" *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">{{section.count}} / {{section.total}}</ion-badge>
     </div>
 </ng-template>
-
-<!-- Custom course format that overrides the default one. -->
-<ng-template #courseFormat></ng-template>

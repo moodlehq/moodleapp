@@ -38,6 +38,7 @@ import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabComponent } from './tabs/tab';
 import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
+import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 
 @NgModule({
     declarations: [
@@ -61,7 +62,8 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreTabsComponent,
         CoreTabComponent,
         CoreRichTextEditorComponent,
-        CoreNavBarButtonsComponent
+        CoreNavBarButtonsComponent,
+        CoreDynamicComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -92,7 +94,8 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreTabsComponent,
         CoreTabComponent,
         CoreRichTextEditorComponent,
-        CoreNavBarButtonsComponent
+        CoreNavBarButtonsComponent,
+        CoreDynamicComponent
     ]
 })
 export class CoreComponentsModule {}
