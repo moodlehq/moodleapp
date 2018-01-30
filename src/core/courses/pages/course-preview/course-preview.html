@@ -10,7 +10,7 @@
     <core-loading [hideUntil]="dataLoaded">
 
         <ion-list *ngIf="course">
-            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!handlersShouldBeShown">
+            <a ion-item text-wrap (click)="openCourse()" [title]="course.fullname" [attr.detail-none]="!canAccessCourse">
                 <ion-icon name="ionic" item-start></ion-icon>
                 <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
                 <p *ngIf="course.categoryname">{{course.categoryname}}</p>
@@ -41,24 +41,15 @@
             <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
                 <p>{{ 'core.courses.notenrollable' | translate }}</p>
             </ion-item>
-            <a ion-item *ngIf="handlersShouldBeShown" (click)="prefetchCourse()" detail-none>
+            <a ion-item *ngIf="canAccessCourse" (click)="prefetchCourse()" detail-none>
                 <ion-icon *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" [name]="prefetchCourseData.prefetchCourseIcon" item-start></ion-icon>
                 <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'" item-start></ion-spinner>
                 <h2>{{ 'core.course.downloadcourse' | translate }}</h2>
             </a>
-            <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="handlersShouldBeShown">
+            <a ion-item (click)="openCourse()" [title]="course.fullname" *ngIf="canAccessCourse">
                 <ion-icon name="briefcase" item-start></ion-icon>
                 <h2>{{ 'core.course.contents' | translate }}</h2>
             </a>
-            <ng-container *ngIf="handlersShouldBeShown && course._handlers && course._handlers.length">
-                <a ion-item text-wrap *ngFor="let handler of course._handlers" class="core-courses-handler {{handler.data.class}}" (click)="handler.data.action(course)" [title]="handler.data.title | translate">
-                    <ion-icon [name]="handler.data.icon" item-start></ion-icon>
-                    <h2>{{ handler.data.title | translate }}</h2>
-                </a>
-            </ng-container>
-            <ion-item class="core-loading-course-handlers" text-center *ngIf="handlersShouldBeShown && !handlersLoaded">
-                <ion-spinner></ion-spinner>
-            </ion-item>
         </ion-list>
     </core-loading>
 </ion-content>
