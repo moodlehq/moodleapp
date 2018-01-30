@@ -15,9 +15,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
-import { CorePipesModule } from '../../../../pipes/pipes.module';
+import { CoreUserComponentsModule } from '../../components/components.module';
 import { CoreUserParticipantsPage } from './participants';
 
 @NgModule({
@@ -25,9 +23,7 @@ import { CoreUserParticipantsPage } from './participants';
         CoreUserParticipantsPage,
     ],
     imports: [
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreUserComponentsModule,
         IonicPageModule.forChild(CoreUserParticipantsPage),
         TranslateModule.forChild()
     ],

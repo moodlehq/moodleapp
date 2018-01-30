@@ -92,23 +92,16 @@ export interface CoreCourseOptionsHandlerData {
     title: string;
 
     /**
-     * Name of the icon to display for the handler.
-     * @type {string}
-     */
-    icon: string;
-
-    /**
      * Class to add to the displayed handler.
      * @type {string}
      */
     class?: string;
 
     /**
-     * Action to perform when the handler is clicked.
-     *
-     * @param {any} course The course.
+     * The component to render the handler. It must be the component class, not the name or an instance.
+     * When the component is created, it will receive the courseId as input.
      */
-    action(course: any): void;
+    component: any;
 }
 
 /**

@@ -25,11 +25,13 @@ import { CoreUserProfileLinkHandler } from './providers/user-link-handler';
 import { CoreUserParticipantsCourseOptionHandler } from './providers/course-option-handler';
 import { CoreUserParticipantsLinkHandler } from './providers/participants-link-handler';
 import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate';
+import { CoreUserComponentsModule } from './components/components.module';
 
 @NgModule({
     declarations: [
     ],
     imports: [
+        CoreUserComponentsModule
     ],
     providers: [
         CoreUserDelegate,

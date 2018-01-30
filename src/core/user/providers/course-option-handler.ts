@@ -18,6 +18,7 @@ import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../co
 import { CoreCourseProvider } from '../../course/providers/course';
 import { CoreUserProvider } from './user';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
+import { CoreUserParticipantsComponent } from '../components/participants/participants';
 
 /**
  * Course nav handler.
@@ -102,16 +103,9 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
      */
     getDisplayData(): CoreCourseOptionsHandlerData {
         return {
-            icon: 'person',
             title: 'core.user.participants',
             class: 'core-user-participants-handler',
-            action: (course: any): void => {
-                const pageParams = {
-                    courseId: course.id
-                };
-                // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('CoreUserParticipantsPage', pageParams);
-            }
+            component: CoreUserParticipantsComponent
         };
     }
 }

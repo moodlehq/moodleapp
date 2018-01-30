@@ -11,16 +11,26 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="doRefresh($event)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-    </ion-refresher>
+    <core-tabs>
+        <!-- Course contents tab. -->
+        <core-tab [title]="'core.course.contents' | translate">
+            <ng-template>
+                <ion-content>
+                    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="doRefresh($event)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
 
-    <core-loading [hideUntil]="dataLoaded">
-        <!-- @todo: Use core-tabs or a new component. core-tabs might initialize all tabs at start, so we might require a new component. -->
-        <div class="core-tabs-bar">
-            <a aria-selected="true"  [title]="'core.course.contents' | translate">{{ 'core.course.contents' | translate }}</a>
-            <a *ngFor="let handler of courseHandlers" (click)="handler.data.action(course)" [title]="handler.data.title | translate">{{ handler.data.title | translate }}</a>
-        </div>
-        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange()"></core-course-format>
-    </core-loading>
+                    <core-loading [hideUntil]="dataLoaded">
+                        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber" [downloadEnabled]="downloadEnabled" (completionChanged)="onCompletionChange()"></core-course-format>
+                    </core-loading>
+                </ion-content>
+            </ng-template>
+        </core-tab>
+        <!-- One tab per handler. -->
+        <core-tab *ngFor="let handler of courseHandlers" [title]="handler.data.title | translate" class="{{handler.data.class}}">
+            <ng-template>
+                <core-dynamic-component [component]="handler.data.component" [data]="handlerData"></core-dynamic-component>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
 </ion-content>
