@@ -67,6 +67,28 @@ export class CoreSplitViewComponent implements OnInit {
     }
 
     /**
+     * Get the details NavController. If split view is not enabled, it will return the master nav.
+     *
+     * @return {NavController} Details NavController.
+     */
+    getDetailsNav(): NavController {
+        if (this.isEnabled) {
+            return this.detailNav;
+        } else {
+            return this.masterNav;
+        }
+    }
+
+    /**
+     * Get the master NavController.
+     *
+     * @return {NavController} Master NavController.
+     */
+    getMasterNav(): NavController {
+        return this.masterNav;
+    }
+
+    /**
      * Check if both panels are shown. It depends on screen width.
      *
      * @return {boolean} If split view is enabled.
@@ -81,7 +103,7 @@ export class CoreSplitViewComponent implements OnInit {
      * @param {any} page   The component class or deeplink name you want to push onto the navigation stack.
      * @param {any} params Any NavParams you want to pass along to the next view.
      */
-    push(page: any, params?: any, element?: HTMLElement): void {
+    push(page: any, params?: any): void {
         if (this.isEnabled) {
             this.detailNav.setRoot(page, params);
         } else {

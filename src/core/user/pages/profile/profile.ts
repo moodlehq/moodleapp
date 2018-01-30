@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
@@ -23,7 +23,8 @@ import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreMimetypeUtilsProvider } from '../../../../providers/utils/mimetype';
 import { CoreFileUploaderHelperProvider } from '../../../fileuploader/providers/helper';
-import { CoreUserDelegate } from '../../providers/user-delegate';
+import { CoreUserDelegate, CoreUserProfileHandlerData } from '../../providers/user-delegate';
+import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
 
 /**
  * Page that displays an user profile page.
@@ -45,15 +46,15 @@ export class CoreUserProfilePage {
     title: string;
     isDeleted = false;
     canChangeProfilePicture = false;
-    actionHandlers = [];
-    newPageHandlers = [];
-    communicationHandlers = [];
+    actionHandlers: CoreUserProfileHandlerData[] = [];
+    newPageHandlers: CoreUserProfileHandlerData[] = [];
+    communicationHandlers: CoreUserProfileHandlerData[] = [];
 
     constructor(navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider,
             private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider,
-            private userDelegate: CoreUserDelegate) {
+            private userDelegate: CoreUserDelegate, private svComponent: CoreSplitViewComponent, private navCtrl: NavController) {
         this.userId = navParams.get('userId');
         this.courseId = navParams.get('courseId');
 
@@ -179,6 +180,27 @@ export class CoreUserProfilePage {
                 refresher && refresher.complete();
             });
         });
+    }
+
+    /**
+     * Open the page with the user details.
+     */
+    openUserDetails(): void {
+        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
+        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        navCtrl.push('CoreUserAboutPage', {courseId: this.courseId, userId: this.userId});
+    }
+
+    /**
+     * A handler was clicked.
+     *
+     * @param {Event} event Click event.
+     * @param {CoreUserProfileHandlerData} handler Handler that was clicked.
+     */
+    handlerClicked(event: Event, handler: CoreUserProfileHandlerData): void {
+        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
+        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        handler.action(event, navCtrl, this.user, this.courseId);
     }
 
     /**

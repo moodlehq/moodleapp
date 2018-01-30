@@ -13,12 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreCoursesProvider } from '../../../core/courses/providers/courses';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreEventsProvider } from '../../../providers/events';
 
+/**
+ * Interface that all user profile handlers must implement.
+ */
 export interface CoreUserProfileHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
@@ -55,6 +59,9 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData;
 }
 
+/**
+ * Data needed to render a user profile handler. It's returned by the handler.
+ */
 export interface CoreUserProfileHandlerData {
     /**
      * Title to display.
@@ -88,12 +95,36 @@ export interface CoreUserProfileHandlerData {
 
     /**
      * Action to do when clicked.
-     * @param  {any}    $event
-     * @param  {any}     user       User object.
-     * @param  {number}  courseId   Course ID where to show.
-     * @return {any}        Action to be done.
+     *
+     * @param {Event} event Click event.
+     * @param {NavController} Nav controller to use to navigate.
+     * @param {any} user User object.
+     * @param {number} [courseId] Course ID being viewed. If not defined, site context.
      */
-    action?($event: any, user: any, courseId: number): any;
+    action?(event: Event, navCtrl: NavController, user: any, courseId?: number): void;
+}
+
+/**
+ * Data returned by the delegate for each handler.
+ */
+export interface CoreUserProfileHandlerToDisplay {
+    /**
+     * Data to display.
+     * @type {CoreUserProfileHandlerData}
+     */
+    data: CoreUserProfileHandlerData;
+
+    /**
+     * The highest priority is displayed first.
+     * @type {number}
+     */
+    priority?: number;
+
+    /**
+     * The type of the handler. See CoreUserProfileHandler.
+     * @type {string}
+     */
+    type: string;
 }
 
 /**
@@ -133,10 +164,10 @@ export class CoreUserDelegate extends CoreDelegate {
      *
      * @param {any} user The user object.
      * @param {number} courseId The course ID.
-     * @return {Promise<any>} Resolved with an array of objects containing 'priority', 'data' and 'type'.
+     * @return {Promise<CoreUserProfileHandlerToDisplay[]>} Resolved with the handlers.
      */
-    getProfileHandlersFor(user: any, courseId: number): Promise<any> {
-        const handlers = [],
+    getProfileHandlersFor(user: any, courseId: number): Promise<CoreUserProfileHandlerToDisplay[]> {
+        const handlers: CoreUserProfileHandlerToDisplay[] = [],
             promises = [];
 
         // Retrieve course options forcing cache.
