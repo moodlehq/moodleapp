@@ -133,7 +133,11 @@ angular.module('mm.addons.mod_lti')
         var params = {
                 toolid: id
             },
+            // Try to avoid using cache since the "nonce" parameter is set to a timestamp.
             preSets = {
+                getFromCache: 0,
+                saveToCache: 1,
+                emergencyCache: 1,
                 cacheKey: getLtiLaunchDataCacheKey(id)
             };
 
