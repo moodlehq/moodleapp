@@ -143,7 +143,7 @@ export class CoreSplitViewComponent implements OnInit {
     activateSplitView(): void {
         const currentView = this.masterNav.getActive(),
             currentPageName = currentView.component.name;
-        if (this.masterNav.getPrevious().component.name == this.masterPageName) {
+        if (this.masterNav.getPrevious() && this.masterNav.getPrevious().component.name == this.masterPageName) {
             if (currentPageName != this.masterPageName) {
                 // CurrentView is a 'Detail' page remove it from the 'master' nav stack.
                 this.masterNav.pop();
