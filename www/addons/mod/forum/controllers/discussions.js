@@ -46,6 +46,7 @@ angular.module('mm.addons.mod_forum')
     $scope.component = mmaModForumComponent;
     $scope.componentId = module.id;
     $scope.trackPosts = false;
+    $scope.addDiscussionText = $translate.instant('mma.mod_forum.addanewdiscussion');
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh, sync, showErrors) {
@@ -63,6 +64,18 @@ angular.module('mm.addons.mod_forum')
             // In tablet, load first discussion skipping "Add new discussion" button.
             if (!$scope.linkToLoad) {
                 $scope.linkToLoad = $scope.isCreateEnabled && forum.cancreatediscussions ? 2 : 1;
+            }
+
+            switch (forumdata.type) {
+                case 'news':
+                case 'blog':
+                    $scope.addDiscussionText = $translate.instant('mma.mod_forum.addanewtopic');
+                    break;
+                case 'qanda':
+                    $scope.addDiscussionText = $translate.instant('mma.mod_forum.addanewquestion');
+                    break;
+                default:
+                    $scope.addDiscussionText = $translate.instant('mma.mod_forum.addanewdiscussion');
             }
 
             if (sync) {
