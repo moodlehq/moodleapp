@@ -8,14 +8,14 @@
                 <a class="item item-icon-left item-text-wrap" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}" ng-if="handlersShouldBeShown">
                     <i class="icon ion-ionic"></i>
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
-                    <p ng-if="course.categoryname">{{course.categoryname}}</p>
+                    <p ng-if="course.categoryname"><mm-format-text watch="true">{{course.categoryname}}</mm-format-text></p>
                     <p ng-if="course.startdate">{{course.startdate * 1000 | mmFormatDate:"dfdaymonthyear"}} <span ng-if="course.enddate"> - {{course.enddate * 1000 | mmFormatDate:"dfdaymonthyear"}}</span></p>
                 </a>
 
                 <div class="item item-icon-left item-text-wrap" ng-if="!handlersShouldBeShown">
                     <i class="icon ion-ionic"></i>
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
-                    <p ng-if="course.categoryname">{{course.categoryname}}</p>
+                    <p ng-if="course.categoryname"><mm-format-text watch="true">{{course.categoryname}}</mm-format-text></p>
                     <p ng-if="course.startdate">{{course.startdate * 1000 | mmFormatDate:"dfdaymonthyear"}} <span ng-if="course.enddate"> - {{course.enddate * 1000 | mmFormatDate:"dfdaymonthyear"}}</span></p>
                 </div>
 
