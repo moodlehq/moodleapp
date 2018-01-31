@@ -1,24 +1,3 @@
 page-core-course-section {
-    .core-tabs-bar {
-        @include position(null, null, 0, 0);
 
-        z-index: $z-index-toolbar;
-        display: flex;
-        width: 100%;
-        background: $core-top-tabs-background;
-
-        > a {
-            @extend .tab-button;
-
-            background: $core-top-tabs-background;
-            color: $core-top-tabs-color !important;
-            border-bottom: 1px solid $core-top-tabs-border;
-            font-size: 1.6rem;
-
-            &[aria-selected=true] {
-                color: $core-top-tabs-color-active !important;
-                border-bottom: 2px solid $core-top-tabs-color-active;
-            }
-        }
-    }
 }

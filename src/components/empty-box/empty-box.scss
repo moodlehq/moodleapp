@@ -42,7 +42,7 @@ core-empty-box {
     }
   }
 
-  @media only screen and (max-height: 420px) {
+  @include media-breakpoint-down(sm) {
     .core-empty-box {
       position: relative;
 

@@ -61,7 +61,7 @@
     "download": "Download",
     "downloading": "Downloading",
     "edit": "Edit",
-    "emptysplit": "This page will appear blank if the left panel is empty or is loading.",
+    "emptysplit": "This page will appear blank if the side panel is empty or is loading.",
     "error": "Error",
     "errorchangecompletion": "An error occurred while changing the completion status. Please try again.",
     "errordeletefile": "Error deleting the file. Please try again.",

@@ -23,7 +23,7 @@ import { CoreUserProvider } from './user';
  */
 @Injectable()
 export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase {
-    name = 'AddonParticipants';
+    name = 'CoreUserParticipants';
     featureName = '$mmCoursesDelegate_mmaParticipants';
     pattern = /\/user\/index\.php/;
 

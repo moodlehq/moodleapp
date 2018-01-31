@@ -665,6 +665,19 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get the site home ID of the current site.
+     *
+     * @return {number} Current site home ID.
+     */
+    getCurrentSiteHomeId(): number {
+        if (this.currentSite) {
+            return this.currentSite.getSiteHomeId();
+        } else {
+            return 1;
+        }
+    }
+
+    /**
      * Get current site ID.
      *
      * @return {string} Current site ID.
@@ -678,15 +691,15 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Get the site home ID of the current site.
+     * Get current site User ID.
      *
-     * @return {number} Current site home ID.
+     * @return {number} Current site User ID.
      */
-    getCurrentSiteHomeId(): number {
+    getCurrentSiteUserId(): number {
         if (this.currentSite) {
-            return this.currentSite.getSiteHomeId();
+            return this.currentSite.getUserId();
         } else {
-            return 1;
+            return 0;
         }
     }
 

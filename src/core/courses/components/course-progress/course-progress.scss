@@ -1,6 +1,6 @@
 core-courses-course-progress {
     &.core-courseoverview {
-        @media (max-width: 576px) {
+        @include media-breakpoint-down(sm) {
             ion-card.card {
                 margin: 0;
                 border-radius: 0;

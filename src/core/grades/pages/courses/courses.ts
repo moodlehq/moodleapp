@@ -44,8 +44,17 @@ export class CoreGradesCoursesPage {
      * View loaded.
      */
     ionViewDidLoad(): void {
+        if (this.courseId) {
+            // There is an event to load, open the event in a new state.
+            this.gotoCourseGrades(this.courseId);
+        }
+
         // Get first participants.
         this.fetchData().then(() => {
+            if (!this.courseId && this.splitviewCtrl.isOn() && this.grades.length > 0) {
+                this.gotoCourseGrades(this.grades[0].courseid);
+            }
+
             // Add log in Moodle.
             return this.gradesProvider.logCoursesGradesView();
         }).finally(() => {

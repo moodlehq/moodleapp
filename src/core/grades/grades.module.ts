@@ -17,20 +17,27 @@ import { CoreGradesProvider } from './providers/grades';
 import { CoreGradesHelperProvider } from './providers/helper';
 import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
 import { CoreGradesMainMenuHandler } from './providers/mainmenu-handler';
+import { CoreGradesCourseOptionHandler } from './providers/course-option-handler';
+import { CoreGradesComponentsModule } from './components/components.module';
+import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate';
 
 @NgModule({
     declarations: [
     ],
     imports: [
+        CoreGradesComponentsModule
     ],
     providers: [
         CoreGradesProvider,
         CoreGradesHelperProvider,
-        CoreGradesMainMenuHandler
+        CoreGradesMainMenuHandler,
+        CoreGradesCourseOptionHandler
     ]
 })
 export class CoreGradesModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, gradesMenuHandler: CoreGradesMainMenuHandler) {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, gradesMenuHandler: CoreGradesMainMenuHandler,
+            courseOptionHandler: CoreGradesCourseOptionHandler, courseOptionsDelegate: CoreCourseOptionsDelegate) {
         mainMenuDelegate.registerHandler(gradesMenuHandler);
+        courseOptionsDelegate.registerHandler(courseOptionHandler);
     }
 }

@@ -27,3 +27,8 @@
     @extend .card-content-wp;
   }
 }
+
+.wp .core-avoid-header ion-content {
+    top: $navbar-wp-height;
+    height: calc(100% - #{($navbar-wp-height)});
+}

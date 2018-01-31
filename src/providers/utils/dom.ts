@@ -897,6 +897,18 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Converts HTML formatted text to DOM element.
+     * @param  {string}      text HTML text.
+     * @return {HTMLCollection}      Same text converted to HTMLCollection.
+     */
+    toDom(text: string): HTMLCollection {
+        const element = document.createElement('div');
+        element.innerHTML = text;
+
+        return element.children;
+    }
+
+    /**
      * View an image in a new page or modal.
      *
      * @param {string} image URL of the image.
