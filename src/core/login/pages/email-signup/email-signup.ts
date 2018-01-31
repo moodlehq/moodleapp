@@ -205,7 +205,7 @@ export class CoreLoginEmailSignupPage {
     create(): void {
         if (!this.signupForm.valid) {
             // Form not valid. Scroll to the first element with errors.
-            if (!this.domUtils.scrollToInputError(this.content, document.body)) {
+            if (!this.domUtils.scrollToInputError(this.content)) {
                 // Input not found, show an error modal.
                 this.domUtils.showErrorModal('core.errorinvalidform', true);
             }

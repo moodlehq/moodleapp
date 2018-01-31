@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Content } from 'ionic-angular';
 import { CoreSitesProvider } from '../providers/sites';
 import { CoreDomUtilsProvider } from '../providers/utils/dom';
 import { CoreUrlUtilsProvider } from '../providers/utils/url';
@@ -38,8 +38,9 @@ export class CoreLinkDirective implements OnInit {
     protected element: HTMLElement;
 
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
-        private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
-        private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController) {
+            private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
+            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController,
+            private content: Content) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }
@@ -93,8 +94,7 @@ export class CoreLinkDirective implements OnInit {
                 // $location.url(href);
             } else {
                 // Look for id or name.
-                const scrollEl = <HTMLElement> this.domUtils.closest(this.element, 'scroll-content');
-                this.domUtils.scrollToElement(scrollEl, document.body, '#' + href + ', [name=\'' + href + '\']');
+                this.domUtils.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');
             }
         } else if (href.indexOf(contentLinksScheme) === 0) {
             // Link should be treated by Custom URL Scheme. Encode the right part, otherwise ':' is removed in iOS.

@@ -641,13 +641,20 @@ export class CoreCourseHelperProvider {
      * @param {any} module The module to open.
      * @param {number} courseId The course ID of the module.
      * @param {number} [sectionId] The section ID of the module.
+     * @param {boolean} True if module can be opened, false otherwise.
      */
-    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number): void {
+    openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number): boolean {
         if (!module.handlerData) {
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
         }
 
-        module.handlerData.action(new Event('click'), navCtrl, module, courseId, { animate: false });
+        if (module.handlerData && module.handlerData.action) {
+            module.handlerData.action(new Event('click'), navCtrl, module, courseId, { animate: false });
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

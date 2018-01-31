@@ -50,12 +50,14 @@ export class CoreCourseSectionPage implements OnDestroy {
     prefetchCourseData = {
         prefetchCourseIcon: 'spinner'
     };
+    moduleId: number;
 
+    protected module: any;
     protected completionObserver;
     protected courseStatusObserver;
     protected isDestroyed = false;
 
-    constructor(private navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
+    constructor(navParams: NavParams, private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
@@ -64,6 +66,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
+        this.module = navParams.get('module');
         this.handlerData.courseId = this.course.id;
 
         // Get the title to display. We dont't have sections yet.
@@ -88,9 +91,9 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     ionViewDidLoad(): void {
 
-        const module = this.navParams.get('module');
-        if (module) {
-            this.courseHelper.openModule(this.navCtrl, module, this.course.id, this.sectionId);
+        if (this.module) {
+            this.moduleId = this.module.id;
+            this.courseHelper.openModule(this.navCtrl, this.module, this.course.id, this.sectionId);
         }
 
         this.loadData().finally(() => {
