@@ -143,9 +143,9 @@ export class CoreDelegate {
      *
      * @param  {string} handlerName The handler name.
      * @param  {boolean} [enabled]  Only enabled, or any.
-     * @return {any}                Handler.
+     * @return {CoreDelegateHandler} Handler.
      */
-    protected getHandler(handlerName: string, enabled: boolean = false): any {
+    protected getHandler(handlerName: string, enabled: boolean = false): CoreDelegateHandler {
         return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
     }
 

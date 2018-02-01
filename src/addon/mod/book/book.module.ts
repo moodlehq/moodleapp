@@ -16,8 +16,10 @@ import { NgModule } from '@angular/core';
 import { AddonModBookProvider } from './providers/book';
 import { AddonModBookModuleHandler } from './providers/module-handler';
 import { AddonModBookLinkHandler } from './providers/link-handler';
+import { AddonModBookPrefetchHandler } from './providers/prefetch-handler';
 import { CoreCourseModuleDelegate } from '../../../core/course/providers/module-delegate';
 import { CoreContentLinksDelegate } from '../../../core/contentlinks/providers/delegate';
+import { CoreCourseModulePrefetchDelegate } from '../../../core/course/providers/module-prefetch-delegate';
 
 @NgModule({
     declarations: [
@@ -27,13 +29,16 @@ import { CoreContentLinksDelegate } from '../../../core/contentlinks/providers/d
     providers: [
         AddonModBookProvider,
         AddonModBookModuleHandler,
-        AddonModBookLinkHandler
+        AddonModBookLinkHandler,
+        AddonModBookPrefetchHandler
     ]
 })
 export class AddonModBookModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModBookModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModBookLinkHandler) {
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModBookLinkHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModBookPrefetchHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
     }
 }

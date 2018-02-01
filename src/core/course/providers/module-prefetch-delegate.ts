@@ -202,9 +202,6 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     };
 
     protected ROOT_CACHE_KEY = 'mmCourse:';
-
-    protected handlers: { [s: string]: CoreCourseModulePrefetchHandler } = {}; // All registered handlers.
-    protected enabledHandlers: { [s: string]: CoreCourseModulePrefetchHandler } = {}; // Handlers enabled for the current site.
     protected statusCache = new CoreCache();
 
     // Promises for check updates, to prevent performing the same request twice at the same time.
@@ -225,7 +222,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
             private courseProvider: CoreCourseProvider, private filepoolProvider: CoreFilepoolProvider,
             private timeUtils: CoreTimeUtilsProvider, private fileProvider: CoreFileProvider,
             protected eventsProvider: CoreEventsProvider) {
-        super('CoreCourseModulePrefetchDelegate', loggerProvider, sitesProvider);
+        super('CoreCourseModulePrefetchDelegate', loggerProvider, sitesProvider, eventsProvider);
 
         this.sitesProvider.createTableFromSchema(this.checkUpdatesTableSchema);
     }
@@ -859,7 +856,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * @return {CoreCourseModulePrefetchHandler} Prefetch handler.
      */
     getPrefetchHandlerFor(module: any): CoreCourseModulePrefetchHandler {
-        return this.enabledHandlers[module.modname];
+        return <CoreCourseModulePrefetchHandler> this.getHandler(module.modname, true);
     }
 
     /**

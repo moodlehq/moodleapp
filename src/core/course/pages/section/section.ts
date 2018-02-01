@@ -151,6 +151,18 @@ export class CoreCourseSectionPage implements OnDestroy {
             promises.push(promise.then((completionStatus) => {
                 // Get all the sections.
                 promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
+                    if (refresh) {
+                        // Invalidate the recently downloaded module list. To ensure info can be prefetched.
+                        const modules = this.courseProvider.getSectionsModules(sections);
+
+                        return this.prefetchDelegate.invalidateModules(modules, this.course.id).then(() => {
+                            return sections;
+                        });
+                    } else {
+                        return sections;
+                    }
+                }).then((sections) => {
+
                     this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus);
 
                     // Format the name of each section and check if it has content.
