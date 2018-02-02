@@ -43,6 +43,11 @@ export class CoreContextMenuComponent implements OnInit {
             this.hideMenu = !this.items.some((item) => {
                 return !item.hidden;
             });
+
+            // Sort the items by priority.
+            this.items.sort((a, b) => {
+                return a.priority <= b.priority ? 1 : -1;
+            });
         });
     }
 
