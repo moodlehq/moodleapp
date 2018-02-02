@@ -50,7 +50,7 @@ export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'addon-mod_book-handler',
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                // @todo
+                navCtrl.push('AddonModBookIndexPage', {module: module, courseId: courseId}, options);
             }
         };
     }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { AddonModBookComponentsModule } from './components/components.module';
 import { AddonModBookProvider } from './providers/book';
 import { AddonModBookModuleHandler } from './providers/module-handler';
 import { AddonModBookLinkHandler } from './providers/link-handler';
@@ -25,6 +26,7 @@ import { CoreCourseModulePrefetchDelegate } from '../../../core/course/providers
     declarations: [
     ],
     imports: [
+        AddonModBookComponentsModule
     ],
     providers: [
         AddonModBookProvider,
