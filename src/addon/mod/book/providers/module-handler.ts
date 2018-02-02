@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModBookProvider } from './book';
+import { AddonModBookIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../../../../core/course/providers/module-delegate';
 import { CoreCourseProvider } from '../../../../core/course/providers/course';
 
@@ -57,12 +58,13 @@ export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
 
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
+     * The component returned must implement CoreCourseModuleMainComponent.
      *
      * @param {any} course The course object.
      * @param {any} module The module object.
      * @return {any} The component to use, undefined if not found.
      */
     getMainComponent(course: any, module: any): any {
-        // @todo
+        return AddonModBookIndexComponent;
     }
 }

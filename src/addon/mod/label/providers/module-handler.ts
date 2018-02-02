@@ -57,6 +57,7 @@ export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
 
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
+     * The component returned must implement CoreCourseModuleMainComponent.
      *
      * @param {any} course The course object.
      * @param {any} module The module object.

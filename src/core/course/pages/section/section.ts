@@ -24,6 +24,7 @@ import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
+import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '../../../courses/providers/courses';
 
 /**
@@ -36,6 +37,7 @@ import { CoreCoursesProvider } from '../../../courses/providers/courses';
 })
 export class CoreCourseSectionPage implements OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChild(CoreCourseFormatComponent) formatComponent: CoreCourseFormatComponent;
 
     title: string;
     course: any;
@@ -150,7 +152,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
             promises.push(promise.then((completionStatus) => {
                 // Get all the sections.
-                promises.push(this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
+                return this.courseProvider.getSections(this.course.id, false, true).then((sections) => {
                     if (refresh) {
                         // Invalidate the recently downloaded module list. To ensure info can be prefetched.
                         const modules = this.courseProvider.getSectionsModules(sections);
@@ -185,7 +187,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
                     // Get the title again now that we have sections.
                     this.title = this.courseFormatDelegate.getCourseTitle(this.course, this.sections);
-                }));
+                });
             }));
 
             // Load the course handlers.
@@ -207,7 +209,9 @@ export class CoreCourseSectionPage implements OnDestroy {
     doRefresh(refresher: any): void {
         this.invalidateData().finally(() => {
             this.loadData(true).finally(() => {
-                refresher.complete();
+                this.formatComponent.doRefresh(refresher).finally(() => {
+                    refresher.complete();
+                });
             });
         });
     }

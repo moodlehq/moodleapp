@@ -37,6 +37,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
 
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
+     * The component returned must implement CoreCourseModuleMainComponent.
      *
      * @param {any} course The course object.
      * @param {any} module The module object.
@@ -89,6 +90,20 @@ export interface CoreCourseModuleHandlerData {
      * @param {NavOptions} [options] Options for the navigation.
      */
     action?(event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions): void;
+}
+
+/**
+ * Interface that all the components to render the module in singleactivity must implement.
+ */
+export interface CoreCourseModuleMainComponent {
+    /**
+     * Refresh the data.
+     *
+     * @param {any} [refresher] Refresher.
+     * @param {Function} [done] Function to call when done.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(refresher?: any, done?: () => void): Promise<any>;
 }
 
 /**

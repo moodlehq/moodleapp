@@ -100,6 +100,19 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
     }
 
     /**
+     * Call a certain function on the component.
+     *
+     * @param {string} name Name of the function to call.
+     * @param {any[]} params List of params to send to the function.
+     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     */
+    callComponentFunction(name: string, params: any[]): any {
+        if (this.instance && typeof this.instance[name] == 'function') {
+            return this.instance[name].apply(this.instance, params);
+        }
+    }
+
+    /**
      * Create a component, add it to a container and set the input data.
      *
      * @return {boolean} Whether the component was successfully created.

@@ -20,6 +20,7 @@ import { CoreDomUtilsProvider } from '../../../../../providers/utils/dom';
 import { CoreTextUtilsProvider } from '../../../../../providers/utils/text';
 import { CoreCourseProvider } from '../../../../../core/course/providers/course';
 import { CoreCourseHelperProvider } from '../../../../../core/course/providers/helper';
+import { CoreCourseModuleMainComponent } from '../../../../../core/course/providers/module-delegate';
 import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/toc-popover';
@@ -31,7 +32,7 @@ import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/to
     selector: 'addon-mod-book-index',
     templateUrl: 'index.html',
 })
-export class AddonModBookIndexComponent implements OnInit {
+export class AddonModBookIndexComponent implements OnInit, CoreCourseModuleMainComponent {
     @Input() module: any; // The module of the book.
     @Input() courseId: number; // Course ID the book belongs to.
     @Output() bookRetrieved?: EventEmitter<any>;

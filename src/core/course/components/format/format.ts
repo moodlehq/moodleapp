@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter } from '@angular/core';
+import {
+    Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter, ViewChildren, QueryList
+} from '@angular/core';
 import { Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
@@ -22,6 +24,7 @@ import { CoreCourseProvider } from '../../../course/providers/course';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
+import { CoreDynamicComponent } from '../../../../components/dynamic-component/dynamic-component';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -45,6 +48,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
+
+    @ViewChildren(CoreDynamicComponent) dynamicComponents: QueryList<CoreDynamicComponent>;
 
     // All the possible component classes.
     courseFormatComponent: any;
@@ -284,6 +289,23 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
         });
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param {any} [refresher] Refresher.
+     * @param {Function} [done] Function to call when done.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(refresher?: any, done?: () => void): Promise<any> {
+        const promises = [];
+
+        this.dynamicComponents.forEach((component) => {
+            promises.push(Promise.resolve(component.callComponentFunction('doRefresh', [refresher, done])));
+        });
+
+        return Promise.all(promises);
     }
 
     /**

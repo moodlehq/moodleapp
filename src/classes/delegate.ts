@@ -134,7 +134,7 @@ export class CoreDelegate {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
-            return this.defaultHandler[fnName].apply(this, params);
+            return this.defaultHandler[fnName].apply(this.defaultHandler, params);
         }
     }
 
