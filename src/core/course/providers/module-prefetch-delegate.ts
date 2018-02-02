@@ -225,6 +225,11 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         super('CoreCourseModulePrefetchDelegate', loggerProvider, sitesProvider, eventsProvider);
 
         this.sitesProvider.createTableFromSchema(this.checkUpdatesTableSchema);
+
+        eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearStatusCache.bind(this));
+        eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
+            this.updateStatusCache(data.status, data.component, data.componentId);
+        }, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -653,6 +658,8 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                 promise;
 
             if (!refresh && typeof status != 'undefined') {
+                this.storeCourseAndSection(packageId, courseId, sectionId);
+
                 return Promise.resolve(this.determineModuleStatus(module, status, canCheck));
             }
 
@@ -664,7 +671,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
                 // Get the saved package status.
                 return this.filepoolProvider.getPackageStatus(siteId, component, module.id).then((currentStatus) => {
-                    status = handler.determineStatus ? handler.determineStatus(module, status, canCheck) : status;
+                    status = handler.determineStatus ? handler.determineStatus(module, currentStatus, canCheck) : currentStatus;
                     if (status != CoreConstants.DOWNLOADED) {
                         return status;
                     }
@@ -696,7 +703,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                             // Has updates, mark the module as outdated.
                             status = CoreConstants.OUTDATED;
 
-                            return this.filepoolProvider.storePackageStatus(siteId, component, module.id, status).catch(() => {
+                            return this.filepoolProvider.storePackageStatus(siteId, status, component, module.id).catch(() => {
                                 // Ignore errors.
                             }).then(() => {
                                 return status;
@@ -710,13 +717,14 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                     }, () => {
                         // Error getting updates, show the stored status.
                         updateStatus = false;
+                        this.storeCourseAndSection(packageId, courseId, sectionId);
 
                         return currentStatus;
                     });
                 });
             }).then((status) => {
                 if (updateStatus) {
-                    this.updateStatusCache(status, courseId, component, module.id, sectionId);
+                    this.updateStatusCache(status, component, module.id, courseId, sectionId);
                 }
 
                 return this.determineModuleStatus(module, status, canCheck);
@@ -770,11 +778,6 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
                     promises.push(this.getModuleStatus(module, courseId, updates, refresh).then((modStatus) => {
                         if (modStatus != CoreConstants.NOT_DOWNLOADABLE) {
-                            if (sectionId && sectionId > 0) {
-                                // Store the section ID.
-                                this.statusCache.setValue(packageId, 'sectionId', sectionId);
-                            }
-
                             status = this.filepoolProvider.determinePackagesStatus(status, modStatus);
                             result[modStatus].push(module);
                             result.total++;
@@ -1123,7 +1126,8 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                 // Update status of the module.
                 const packageId = this.filepoolProvider.getPackageId(handler.component, module.id);
                 this.statusCache.setValue(packageId, 'downloadedSize', 0);
-                this.filepoolProvider.storePackageStatus(siteId, handler.component, module.id, CoreConstants.NOT_DOWNLOADED);
+
+                return this.filepoolProvider.storePackageStatus(siteId, CoreConstants.NOT_DOWNLOADED, handler.component, module.id);
             }
         });
     }
@@ -1141,6 +1145,22 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         if (currentData) {
             // There's a prefetch ongoing, return the current promise.
             currentData.subscriptions.push(currentData.observable.subscribe(onProgress));
+        }
+    }
+
+    /**
+     * If courseId or sectionId is set, save them in the cache.
+     *
+     * @param {string} packageId The package ID.
+     * @param {number} [courseId] Course ID.
+     * @param {number} [sectionId] Section ID.
+     */
+    storeCourseAndSection(packageId: string, courseId?: number, sectionId?: number): void {
+        if (courseId) {
+            this.statusCache.setValue(packageId, 'courseId', courseId);
+        }
+        if (sectionId && sectionId > 0) {
+            this.statusCache.setValue(packageId, 'sectionId', sectionId);
         }
     }
 
@@ -1181,12 +1201,12 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * Update the status of a module in the "cache".
      *
      * @param {string} status New status.
-     * @param {number} courseId Course ID of the module.
      * @param {string} component Package's component.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {number} [courseId] Course ID of the module.
      * @param {number} [sectionId] Section ID of the module.
      */
-    updateStatusCache(status: string, courseId: number, component: string, componentId?: string | number, sectionId?: number)
+    updateStatusCache(status: string, component: string, componentId?: string | number, courseId?: number, sectionId?: number)
             : void {
         const packageId = this.filepoolProvider.getPackageId(component, componentId),
             cachedStatus = this.statusCache.getValue(packageId, 'status', true);
@@ -1195,7 +1215,13 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         // If the status has changed, notify that the section has changed.
         notify = typeof cachedStatus != 'undefined' && cachedStatus !== status;
 
+        // If courseId/sectionId is set, store it.
+        this.storeCourseAndSection(packageId, courseId, sectionId);
+
         if (notify) {
+            if (!courseId) {
+                courseId = this.statusCache.getValue(packageId, 'courseId', true);
+            }
             if (!sectionId) {
                 sectionId = this.statusCache.getValue(packageId, 'sectionId', true);
             }
@@ -1205,8 +1231,6 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
             this.statusCache.setValue(packageId, 'status', status);
 
             if (sectionId) {
-                this.statusCache.setValue(packageId, 'sectionId', sectionId);
-
                 this.eventsProvider.trigger(CoreEventsProvider.SECTION_STATUS_CHANGED, {
                     sectionId: sectionId,
                     courseId: courseId

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, Output, EventEmitter, Optional } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Optional } from '@angular/core';
 import { NavParams, NavController, Content, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../../../../../providers/app';
@@ -32,24 +32,31 @@ import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/to
     selector: 'addon-mod-book-index',
     templateUrl: 'index.html',
 })
-export class AddonModBookIndexComponent implements OnInit, CoreCourseModuleMainComponent {
+export class AddonModBookIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
     @Input() module: any; // The module of the book.
     @Input() courseId: number; // Course ID the book belongs to.
     @Output() bookRetrieved?: EventEmitter<any>;
 
-    externalUrl: string;
-    description: string;
     loaded: boolean;
     component = AddonModBookProvider.COMPONENT;
     componentId: number;
     chapterContent: string;
     previousChapter: string;
     nextChapter: string;
+
+    // Data for context menu.
+    externalUrl: string;
+    description: string;
     refreshIcon: string;
+    prefetchStatusIcon: string;
+    prefetchText: string;
+    size: string;
 
     protected chapters: AddonModBookTocChapter[];
     protected currentChapter: string;
     protected contentsMap: AddonModBookContentsMap;
+    protected isDestroyed = false;
+    protected statusObserver;
 
     constructor(private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
             private domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
@@ -136,7 +143,7 @@ export class AddonModBookIndexComponent implements OnInit, CoreCourseModuleMainC
      * Prefetch the module.
      */
     prefetch(): void {
-        // @todo this.courseHelper.contextMenuPrefetch($scope, this.module, this.courseId);
+        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId);
     }
 
     /**
@@ -192,7 +199,7 @@ export class AddonModBookIndexComponent implements OnInit, CoreCourseModuleMainC
                 }
 
                 // All data obtained, now fill the context menu.
-                // @todo this.courseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModBookComponent);
+                this.courseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.
             });
@@ -234,5 +241,10 @@ export class AddonModBookIndexComponent implements OnInit, CoreCourseModuleMainC
             this.loaded = true;
             this.refreshIcon = 'refresh';
         });
+    }
+
+    ngOnDestroy(): void {
+        this.isDestroyed = true;
+        this.statusObserver && this.statusObserver.off();
     }
 }
