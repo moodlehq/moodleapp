@@ -547,28 +547,26 @@ export class CoreDomUtilsProvider {
 
         // Treat elements with src (img, audio, video, ...).
         media = this.element.querySelectorAll('img, video, audio, source, track');
-        for (const i in media) {
-            const el = media[i];
-            let newSrc = paths[this.textUtils.decodeURIComponent(el.getAttribute('src'))];
+        media.forEach((media: HTMLElement) => {
+            let newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('src'))];
 
             if (typeof newSrc != 'undefined') {
-                el.setAttribute('src', newSrc);
+                media.setAttribute('src', newSrc);
             }
 
             // Treat video posters.
-            if (el.tagName == 'VIDEO' && el.getAttribute('poster')) {
-                newSrc = paths[this.textUtils.decodeURIComponent(el.getAttribute('poster'))];
+            if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
+                newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('poster'))];
                 if (typeof newSrc !== 'undefined') {
-                    el.setAttribute('poster', newSrc);
+                    media.setAttribute('poster', newSrc);
                 }
             }
-        }
+        });
 
         // Now treat links.
         anchors = this.element.querySelectorAll('a');
-        for (const i in anchors) {
-            const anchor = anchors[i],
-                href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
+        anchors.forEach((anchor: HTMLElement) => {
+            const href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
                 newUrl = paths[href];
 
             if (typeof newUrl != 'undefined') {
@@ -578,7 +576,7 @@ export class CoreDomUtilsProvider {
                     anchorFn(anchor, href);
                 }
             }
-        }
+        });
 
         return this.element.innerHTML;
     }

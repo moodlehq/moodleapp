@@ -477,7 +477,7 @@ export class CoreFilepoolProvider {
                 componentId: componentId || ''
             };
 
-            return db.insertOrUpdateRecord(this.LINKS_TABLE, newEntry, undefined);
+            return db.insertOrUpdateRecord(this.LINKS_TABLE, newEntry, { fileId: fileId });
         });
     }
 
@@ -1178,7 +1178,9 @@ export class CoreFilepoolProvider {
                     return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
                 }).then((response) => {
                     if (typeof component != 'undefined') {
-                        this.addFileLink(siteId, fileId, component, componentId);
+                        this.addFileLink(siteId, fileId, component, componentId).catch(() => {
+                            // Ignore errors.
+                        });
                     }
                     this.notifyFileDownloaded(siteId, fileId);
 
@@ -2237,9 +2239,11 @@ export class CoreFilepoolProvider {
                     }),
                     whereAndParams = db.getInOrEqual(fileIds);
 
+                whereAndParams[0] = 'fileId ' + whereAndParams[0];
+
                 if (onlyUnknown) {
                     whereAndParams[0] += ' AND (isexternalfile = ? OR (revision < ? AND timemodified = ?))';
-                    whereAndParams[1] = whereAndParams[1].params.concat([0, 1, 0]);
+                    whereAndParams[1] = whereAndParams[1].concat([0, 1, 0]);
                 }
 
                 return db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, whereAndParams[0], whereAndParams[1]);
@@ -2443,8 +2447,12 @@ export class CoreFilepoolProvider {
             if (entry && !this.isFileOutdated(entry, options.revision, options.timemodified)) {
                 // We have the file, it is not stale, we can update links and remove from queue.
                 this.logger.debug('Queued file already in store, ignoring...');
-                this.addFileLinks(siteId, fileId, links);
-                this.removeFromQueue(siteId, fileId).finally(() => {
+                this.addFileLinks(siteId, fileId, links).catch(() => {
+                    // Ignore errors.
+                });
+                this.removeFromQueue(siteId, fileId).catch(() => {
+                    // Ignore errors.
+                }).finally(() => {
                     this.treatQueueDeferred(siteId, fileId, true);
                 });
                 this.notifyFileDownloaded(siteId, fileId);
@@ -2457,7 +2465,9 @@ export class CoreFilepoolProvider {
 
             return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, entry).then(() => {
                 // Success, we add links and remove from queue.
-                this.addFileLinks(siteId, fileId, links);
+                this.addFileLinks(siteId, fileId, links).catch(() => {
+                    // Ignore errors.
+                });
 
                 this.treatQueueDeferred(siteId, fileId, true);
                 this.notifyFileDownloaded(siteId, fileId);
