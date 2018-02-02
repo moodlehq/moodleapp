@@ -49,7 +49,7 @@ export class CoreUserParticipantsComponent implements OnInit {
                 this.gotoParticipant(this.participants[0].id);
             }
             // Add log in Moodle.
-            this.userProvider.logView(this.courseId).catch(() => {
+            this.userProvider.logParticipantsView(this.courseId).catch(() => {
                 // Ignore errors.
             });
         }).finally(() => {

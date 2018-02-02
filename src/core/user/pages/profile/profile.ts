@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, Optional } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
@@ -54,7 +54,8 @@ export class CoreUserProfilePage {
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider,
             private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider,
-            private userDelegate: CoreUserDelegate, private svComponent: CoreSplitViewComponent, private navCtrl: NavController) {
+            private userDelegate: CoreUserDelegate, private navCtrl: NavController,
+            @Optional() private svComponent: CoreSplitViewComponent) {
         this.userId = navParams.get('userId');
         this.courseId = navParams.get('courseId');
 

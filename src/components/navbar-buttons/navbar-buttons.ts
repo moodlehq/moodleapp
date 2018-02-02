@@ -85,7 +85,7 @@ export class CoreNavBarButtonsComponent implements OnInit {
                 selector += '[end]';
             }
 
-            buttonsContainer = header.querySelector(selector);
+            buttonsContainer = <HTMLElement> header.querySelector(selector);
             if (buttonsContainer) {
                 this.domUtils.moveChildren(this.element, buttonsContainer);
             }
