@@ -16,21 +16,33 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreUserParticipantsComponent } from './participants/participants';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
+import { CoreComponentsModule } from '../../../components/components.module';
+import { CoreDirectivesModule } from '../../../directives/directives.module';
+import { CorePipesModule } from '../../../pipes/pipes.module';
 
 @NgModule({
     declarations: [
+        CoreUserParticipantsComponent,
         CoreUserProfileFieldComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        CorePipesModule
     ],
     providers: [
     ],
     exports: [
+        CoreUserParticipantsComponent,
         CoreUserProfileFieldComponent
+    ],
+    entryComponents: [
+        CoreUserParticipantsComponent
     ]
 })
 export class CoreUserComponentsModule {}

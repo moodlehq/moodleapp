@@ -36,9 +36,19 @@ core-tabs {
     core-tab {
         display: none;
         height: 100%;
+        position: relative;
 
         &.selected {
             display: block;
+        }
+
+        ion-header {
+            display: none;
+        }
+
+        .fixed-content, .scroll-content {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
         }
     }
 }

@@ -43,6 +43,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     sectionId: number;
     sectionNumber: number;
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
+    handlerData: any = {}; // Data to send to the handlers components.
     dataLoaded: boolean;
     downloadEnabled: boolean;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
@@ -63,6 +64,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
+        this.handlerData.courseId = this.course.id;
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -122,11 +124,15 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     protected loadData(refresh?: boolean): Promise<any> {
         // First of all, get the course because the data might have changed.
-        return this.coursesProvider.getUserCourse(this.course.id).then((course) => {
+        return this.coursesProvider.getUserCourse(this.course.id).catch(() => {
+            // Error getting the course, probably guest access.
+        }).then((course) => {
             const promises = [];
             let promise;
 
-            this.course = course;
+            if (course) {
+                this.course = course;
+            }
 
             // Get the completion status.
             if (this.course.enablecompletion === false) {

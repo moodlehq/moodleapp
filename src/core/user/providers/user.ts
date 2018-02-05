@@ -23,6 +23,7 @@ import { CoreUtilsProvider } from '../../../providers/utils/utils';
  */
 @Injectable()
 export class CoreUserProvider {
+    static PARTICIPANTS_LIST_LIMIT = 50; // Max of participants to retrieve in each WS call.
     static PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
     static PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
     protected ROOT_CACHE_KEY = 'mmUser:';
@@ -104,6 +105,59 @@ export class CoreUserProvider {
         }));
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Get participants for a certain course.
+     *
+     * @param  {number} courseId    ID of the course.
+     * @param  {number} limitFrom   Position of the first participant to get.
+     * @param  {number} limitNumber Number of participants to get.
+     * @param  {string} [siteId]    Site Id. If not defined, use current site.
+     * @return {Promise<any>}       Promise to be resolved when the participants are retrieved.
+     */
+    getParticipants(courseId: number, limitFrom: number = 0, limitNumber: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+            siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            this.logger.debug(`Get participants for course '${courseId}' starting at '${limitFrom}'`);
+
+            const data = {
+                    courseid: courseId,
+                    options: [
+                        {
+                            name: 'limitfrom',
+                            value: limitFrom
+                        },
+                        {
+                            name: 'limitnumber',
+                            value: limitNumber
+                        },
+                        {
+                            name: 'sortby',
+                            value: 'siteorder'
+                        }
+                    ]
+                }, preSets = {
+                    cacheKey: this.getParticipantsListCacheKey(courseId)
+                };
+
+            return site.read('core_enrol_get_enrolled_users', data, preSets).then((users) => {
+                const canLoadMore = users.length >= limitNumber;
+                this.storeUsers(users, siteId);
+
+                return { participants: users, canLoadMore: canLoadMore };
+            });
+        });
+    }
+
+    /**
+     * Get cache key for participant list WS calls.
+     *
+     * @param  {number} courseId Course ID.
+     * @return {string}          Cache key.
+     */
+    protected getParticipantsListCacheKey(courseId: number): string {
+        return this.ROOT_CACHE_KEY + 'list:' + courseId;
     }
 
     /**
@@ -219,6 +273,59 @@ export class CoreUserProvider {
     }
 
     /**
+     * Invalidates participant list for a certain course.
+     *
+     * @param  {number} courseId Course ID.
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>}         Promise resolved when the list is invalidated.
+     */
+    invalidateParticipantsList(courseId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getParticipantsListCacheKey(courseId));
+        });
+    }
+
+    /**
+     * Check if course participants is disabled in a certain site.
+     *
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    isParticipantsDisabled(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.isParticipantsDisabledInSite(site);
+        });
+    }
+
+    /**
+     * Check if course participants is disabled in a certain site.
+     *
+     * @param {CoreSite} [site] Site. If not defined, use current site.
+     * @return {boolean} Whether it's disabled.
+     */
+    isParticipantsDisabledInSite(site?: any): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('$mmCoursesDelegate_mmaParticipants');
+    }
+
+    /**
+     * Returns whether or not the participants addon is enabled for a certain course.
+     *
+     * @param {number} courseId Course ID.
+     * @param  {string} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise<any>}    Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     */
+    isPluginEnabledForCourse(courseId: number, siteId?: string): Promise<any> {
+        if (!courseId) {
+            return Promise.reject(null);
+        }
+
+        // Retrieving one participant will fail if browsing users is disabled by capabilities.
+        return this.utils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
+    }
+
+    /**
      * Check if update profile picture is disabled in a certain site.
      *
      * @param  {CoreSite} [site] Site. If not defined, use current site.
@@ -249,6 +356,17 @@ export class CoreUserProvider {
     }
 
     /**
+     * Log Participants list view in Moodle.
+     * @param  {number}       courseId Course ID.
+     * @return {Promise<any>}          Promise resolved when done.
+     */
+    logParticipantsView(courseId?: number): Promise<any> {
+        return this.sitesProvider.getCurrentSite().write('core_user_view_user_list', {
+            courseid: courseId
+        });
+    }
+
+    /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
      * @param {number} userId   User ID.
@@ -267,5 +385,24 @@ export class CoreUserProvider {
 
             return site.getDb().insertOrUpdateRecord(this.USERS_TABLE, userRecord, { id: userId });
         });
+    }
+
+    /**
+     * Store users basic information in local DB.
+     *
+     * @param  {any[]} users     Users to store. Fields stored: id, fullname, profileimageurl.
+     * @param  {string} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise<any>}        Promise resolve when the user is stored.
+     */
+    storeUsers(users: any[], siteId?: string): Promise<any> {
+        const promises = [];
+
+        users.forEach((user) => {
+            if (typeof user.id != 'undefined') {
+                promises.push(this.storeUser(user.id, user.fullname, user.profileimageurl, siteId));
+            }
+        });
+
+        return Promise.all(promises);
     }
 }

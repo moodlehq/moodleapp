@@ -60,9 +60,9 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
             icon: 'mail',
             title: 'core.user.sendemail',
             class: 'core-user-profile-mail',
-            action: ($event, user, courseId): void => {
-                $event.preventDefault();
-                $event.stopPropagation();
+            action: (event, navCtrl, user, courseId): void => {
+                event.preventDefault();
+                event.stopPropagation();
                 window.open('mailto:' + user.email, '_blank');
             }
         };

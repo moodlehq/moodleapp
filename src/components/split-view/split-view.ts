@@ -47,6 +47,7 @@ export class CoreSplitViewComponent implements OnInit {
     @Input() when?: string | boolean = 'md';
     protected isEnabled = false;
     protected masterPageName = '';
+    protected masterPageIndex = 0;
     protected loadDetailPage: any = false;
     protected element: HTMLElement; // Current element.
 
@@ -63,7 +64,30 @@ export class CoreSplitViewComponent implements OnInit {
     ngOnInit(): void {
         // Get the master page name and set an empty page as a placeholder.
         this.masterPageName = this.masterNav.getActive().component.name;
+        this.masterPageIndex = this.masterNav.indexOf(this.masterNav.getActive());
         this.emptyDetails();
+    }
+
+    /**
+     * Get the details NavController. If split view is not enabled, it will return the master nav.
+     *
+     * @return {NavController} Details NavController.
+     */
+    getDetailsNav(): NavController {
+        if (this.isEnabled) {
+            return this.detailNav;
+        } else {
+            return this.masterNav;
+        }
+    }
+
+    /**
+     * Get the master NavController.
+     *
+     * @return {NavController} Master NavController.
+     */
+    getMasterNav(): NavController {
+        return this.masterNav;
     }
 
     /**
@@ -81,7 +105,7 @@ export class CoreSplitViewComponent implements OnInit {
      * @param {any} page   The component class or deeplink name you want to push onto the navigation stack.
      * @param {any} params Any NavParams you want to pass along to the next view.
      */
-    push(page: any, params?: any, element?: HTMLElement): void {
+    push(page: any, params?: any): void {
         if (this.isEnabled) {
             this.detailNav.setRoot(page, params);
         } else {
@@ -119,17 +143,19 @@ export class CoreSplitViewComponent implements OnInit {
     activateSplitView(): void {
         const currentView = this.masterNav.getActive(),
             currentPageName = currentView.component.name;
-        if (currentPageName != this.masterPageName) {
-            // CurrentView is a 'Detail' page remove it from the 'master' nav stack.
-            this.masterNav.pop();
+        if (this.masterNav.getPrevious().component.name == this.masterPageName) {
+            if (currentPageName != this.masterPageName) {
+                // CurrentView is a 'Detail' page remove it from the 'master' nav stack.
+                this.masterNav.pop();
 
-            // And add it to the 'detail' nav stack.
-            this.detailNav.setRoot(currentView.component, currentView.data);
-        } else if (this.loadDetailPage) {
-            // MasterPage is shown, load the last detail page if found.
-            this.detailNav.setRoot(this.loadDetailPage.component, this.loadDetailPage.data);
+                // And add it to the 'detail' nav stack.
+                this.detailNav.setRoot(currentView.component, currentView.data);
+            } else if (this.loadDetailPage) {
+                // MasterPage is shown, load the last detail page if found.
+                this.detailNav.setRoot(this.loadDetailPage.component, this.loadDetailPage.data);
+            }
+            this.loadDetailPage = false;
         }
-        this.loadDetailPage = false;
     }
 
     /**
@@ -140,7 +166,7 @@ export class CoreSplitViewComponent implements OnInit {
             currentPageName = detailView.component.name;
         if (currentPageName != 'CoreSplitViewPlaceholderPage') {
             // Current detail view is a 'Detail' page so, not the placeholder page, push it on 'master' nav stack.
-            this.masterNav.push(detailView.component, detailView.data);
+            this.masterNav.insert(this.masterPageIndex + 1, detailView.component, detailView.data);
         }
     }
 }

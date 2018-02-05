@@ -36,8 +36,7 @@ import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 export class CoreCoursesCoursePreviewPage implements OnDestroy {
     course: any;
     isEnrolled: boolean;
-    handlersShouldBeShown = true;
-    handlersLoaded: boolean;
+    canAccessCourse = true;
     component = 'CoreCoursesCoursePreview';
     selfEnrolInstances: any[] = [];
     paypalEnabled: boolean;
@@ -206,19 +205,17 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 this.course.fullname = course.fullname || this.course.fullname;
                 this.course.summary = course.summary || this.course.summary;
-
-                return this.loadCourseHandlers(refresh, false);
+                this.canAccessCourse = true;
             }).catch(() => {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return this.canAccessAsGuest().then((passwordRequired) => {
                     if (!passwordRequired) {
-                        return this.loadCourseHandlers(refresh, true);
+                        this.canAccessCourse = true;
                     } else {
-                        return Promise.reject(null);
+                        this.canAccessCourse = false;
                     }
                 }).catch(() => {
-                    this.course._handlers = [];
-                    this.handlersShouldBeShown = false;
+                    this.canAccessCourse = false;
                 });
             });
         }).finally(() => {
@@ -227,24 +224,10 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     }
 
     /**
-     * Load course nav handlers.
-     *
-     * @param {boolean} refresh Whether the user is refreshing the data.
-     * @param {boolean} guest Whether it's guest access.
-     */
-    protected loadCourseHandlers(refresh: boolean, guest: boolean): Promise<any> {
-        return this.courseOptionsDelegate.getHandlersToDisplay(this.course, refresh, guest, true).then((handlers) => {
-            this.course._handlers = handlers;
-            this.handlersShouldBeShown = true;
-            this.handlersLoaded = true;
-        });
-    }
-
-    /**
      * Open the course.
      */
     openCourse(): void {
-        if (!this.handlersShouldBeShown) {
+        if (!this.canAccessCourse) {
             // Course cannot be opened.
             return;
         }
@@ -435,8 +418,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
      * Prefetch the course.
      */
     prefetchCourse(): void {
-        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, undefined, this.course._handlers)
-                .catch((error) => {
+        this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course).catch((error) => {
             if (!this.pageDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }

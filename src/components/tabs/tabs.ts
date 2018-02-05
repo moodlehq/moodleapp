@@ -43,7 +43,7 @@ import { Content } from 'ionic-angular';
 })
 export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() selectedIndex = 0; // Index of the tab to select.
-    @Input() hideUntil: boolean; // Determine when should the contents be shown.
+    @Input() hideUntil = true; // Determine when should the contents be shown.
     @Output() ionChange: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>(); // Emitted when the tab changes.
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
     @ViewChild('topTabs') topTabs: ElementRef;
@@ -60,13 +60,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     protected tabsShown = true;
     protected scroll: HTMLElement; // Parent scroll element (if core-tabs is inside a ion-content).
 
-    constructor(element: ElementRef, content: Content) {
+    constructor(element: ElementRef, protected content: Content) {
         this.tabBarElement = element.nativeElement;
-        setTimeout(() => {
-            if (content) {
-                this.scroll = content.getScrollElement();
-            }
-        }, 1);
     }
 
     /**
@@ -148,7 +143,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         let selectedIndex = this.selectedIndex || 0,
             selectedTab = this.tabs[selectedIndex];
 
-        if (!selectedTab.enabled || !selectedTab.show) {
+        if (!selectedTab || !selectedTab.enabled || !selectedTab.show) {
             // The tab is not enabled or not shown. Get the first tab that is enabled.
             selectedTab = this.tabs.find((tab, index) => {
                 if (tab.enabled && tab.show) {
@@ -168,8 +163,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         // Setup tab scrolling.
         this.tabBarHeight = this.topTabsElement.offsetHeight;
         this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
-        if (this.scroll) {
-            this.scroll.classList.add('no-scroll');
+        if (this.content) {
+            this.scroll = this.content.getScrollElement();
+            if (this.scroll) {
+                this.scroll.classList.add('no-scroll');
+            }
         }
 
         this.initialized = true;

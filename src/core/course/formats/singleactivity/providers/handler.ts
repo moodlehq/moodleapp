@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
-import { CoreCourseFormatSingleActivityComponent } from '../components/format';
+import { CoreCourseFormatSingleActivityComponent } from '../components/singleactivity';
 
 /**
  * Handler to support singleactivity course format.
