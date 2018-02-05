@@ -33,7 +33,6 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
 
     /**
      * Whether or not the handler is enabled for a certain course.
-     * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
      *
      * @param {number} courseId The course ID.
      * @param {any} accessData Access type and data. Default, guest, ...
@@ -42,17 +41,6 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean>;
-
-    /**
-     * Whether or not the handler should be displayed for a course. If not implemented, assume it's true.
-     *
-     * @param {number} courseId The course ID.
-     * @param {any} accessData Access type and data. Default, guest, ...
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    shouldDisplayForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.
@@ -275,38 +263,22 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
             // Call getHandlersForAccess to make sure the handlers have been loaded.
             return this.getHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions);
         }).then(() => {
-            const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [],
-                promises = [];
-            let promise;
+            const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [];
 
             this.coursesHandlers[course.id].enabledHandlers.forEach((handler) => {
-                if (handler.shouldDisplayForCourse) {
-                    promise = Promise.resolve(handler.shouldDisplayForCourse(
-                        course.id, accessData, course.navOptions, course.admOptions));
-                } else {
-                    // Not implemented, assume it should be displayed.
-                    promise = Promise.resolve(true);
-                }
-
-                promises.push(promise.then((enabled) => {
-                    if (enabled) {
-                        handlersToDisplay.push({
-                            data: handler.getDisplayData(course),
-                            priority: handler.priority,
-                            prefetch: handler.prefetch
-                        });
-                    }
-                }));
-            });
-
-            return this.utils.allPromises(promises).then(() => {
-                // Sort them by priority.
-                handlersToDisplay.sort((a, b) => {
-                    return b.priority - a.priority;
+                handlersToDisplay.push({
+                    data: handler.getDisplayData(course),
+                    priority: handler.priority,
+                    prefetch: handler.prefetch
                 });
-
-                return handlersToDisplay;
             });
+
+            // Sort them by priority.
+            handlersToDisplay.sort((a, b) => {
+                return b.priority - a.priority;
+            });
+
+            return handlersToDisplay;
         });
     }
 
@@ -444,8 +416,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
      * @param {any} accessData Access type and data. Default, guest, ...
      * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {Promise}             Resolved when updated.
-     * @protected
+     * @return {Promise<any>} Resolved when updated.
      */
     updateHandlersForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): Promise<any> {
         const promises = [],

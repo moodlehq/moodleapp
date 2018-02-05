@@ -58,7 +58,6 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
 
     /**
      * Whether or not the handler is enabled for a certain course.
-     * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
      *
      * @param {number} courseId The course ID.
      * @param {any} accessData Access type and data. Default, guest, ...
@@ -71,24 +70,6 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.participants != 'undefined') {
-            return navOptions.participants;
-        }
-
-        // Assume it's enabled for now, further checks will be done in shouldDisplayForCourse.
-        return true;
-    }
-
-    /**
-     * Whether or not the handler should be displayed for a course. If not implemented, assume it's true.
-     *
-     * @param {number} courseId The course ID.
-     * @param {any} accessData Access type and data. Default, guest, ...
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
-     */
-    shouldDisplayForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         if (navOptions && typeof navOptions.participants != 'undefined') {
             return navOptions.participants;
         }
