@@ -63,6 +63,16 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
     }
 
     /**
+     * Whether the option to enable section/module download should be displayed. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @return {boolean} Whether the option to enable section/module download should be displayed
+     */
+    displayEnableDownload(course: any): boolean {
+        return false;
+    }
+
+    /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
      * @param {any} course The course to check.

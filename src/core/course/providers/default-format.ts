@@ -57,6 +57,16 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     }
 
     /**
+     * Whether the option to enable section/module download should be displayed. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @return {boolean} Whether the option to enable section/module download should be displayed
+     */
+    displayEnableDownload(course: any): boolean {
+        return true;
+    }
+
+    /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
      * @param {any} course The course to check.

@@ -4,7 +4,7 @@
 
         <ion-buttons end>
             <core-context-menu>
-                <core-context-menu-item [priority]="2000" [content]="'core.settings.enabledownloadsection' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+                <core-context-menu-item *ngIf="displayEnableDownload" [priority]="2000" [content]="'core.settings.enabledownloadsection' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
                 <core-context-menu-item [priority]="1900" [content]="'core.course.downloadcourse' | translate" (action)="prefetchCourse()" [iconAction]="prefetchCourseData.prefetchCourseIcon" [closeOnClick]="false"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>

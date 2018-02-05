@@ -44,6 +44,14 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     canViewAllSections?(course: any): boolean;
 
     /**
+     * Whether the option to enable section/module download should be displayed. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @type {boolean} Whether the option to enable section/module download should be displayed.
+     */
+    displayEnableDownload?(course: any): boolean;
+
+    /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
      * @param {any} course The course to check.
@@ -148,6 +156,16 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      */
     canViewAllSections(course: any): boolean {
         return this.executeFunction(course.format, 'canViewAllSections', [course]);
+    }
+
+    /**
+     * Whether the option to enable section/module download should be displayed. Defaults to true.
+     *
+     * @param {any} course The course to check.
+     * @return {boolean} Whether the option to enable section/module download should be displayed
+     */
+    displayEnableDownload(course: any): boolean {
+        return this.executeFunction(course.format, 'displayEnableDownload', [course]);
     }
 
     /**

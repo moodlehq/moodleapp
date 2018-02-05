@@ -53,6 +53,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         prefetchCourseIcon: 'spinner'
     };
     moduleId: number;
+    displayEnableDownload: boolean;
 
     protected module: any;
     protected completionObserver;
@@ -73,6 +74,7 @@ export class CoreCourseSectionPage implements OnDestroy {
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
+        this.displayEnableDownload = courseFormatDelegate.displayEnableDownload(this.course);
 
         this.completionObserver = eventsProvider.on(CoreEventsProvider.COMPLETION_MODULE_VIEWED, (data) => {
             if (data && data.courseId == this.course.id) {
