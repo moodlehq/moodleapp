@@ -14,6 +14,7 @@
 
 import { Component, Input, OnInit, ContentChildren, ElementRef, QueryList } from '@angular/core';
 import { Button } from 'ionic-angular';
+import { CoreLoggerProvider } from '../../providers/logger';
 import { CoreDomUtilsProvider } from '../../providers/utils/dom';
 
 /**
@@ -63,41 +64,80 @@ export class CoreNavBarButtonsComponent implements OnInit {
     protected element: HTMLElement;
     protected _buttons: QueryList<Button>;
     protected _hidden: boolean;
+    protected logger: any;
 
-    constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider) {
+    constructor(element: ElementRef, logger: CoreLoggerProvider, private domUtils: CoreDomUtilsProvider) {
         this.element = element.nativeElement;
+        this.logger = logger.getInstance('CoreNavBarButtonsComponent');
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        const header = this.searchHeader();
+        this.searchHeader().then((header) => {
+            if (header) {
+                // Search the right buttons container (start, end or any).
+                let selector = 'ion-buttons',
+                    buttonsContainer: HTMLElement;
 
-        if (header) {
-            // Search the right buttons container (start, end or any).
-            let selector = 'ion-buttons',
-                buttonsContainer: HTMLElement;
+                if (this.element.hasAttribute('start')) {
+                    selector += '[start]';
+                } else if (this.element.hasAttribute('end')) {
+                    selector += '[end]';
+                }
 
-            if (this.element.hasAttribute('start')) {
-                selector += '[start]';
-            } else if (this.element.hasAttribute('end')) {
-                selector += '[end]';
+                buttonsContainer = <HTMLElement> header.querySelector(selector);
+                if (buttonsContainer) {
+                    this.mergeContextMenus(buttonsContainer);
+
+                    this.domUtils.moveChildren(this.element, buttonsContainer);
+                } else {
+                    this.logger.warn('The header was found, but it didn\'t have the right ion-buttons.', selector);
+                }
             }
+        }).catch(() => {
+            // Header not found.
+            this.logger.warn('Header not found.');
+        });
+    }
 
-            buttonsContainer = <HTMLElement> header.querySelector(selector);
-            if (buttonsContainer) {
-                this.domUtils.moveChildren(this.element, buttonsContainer);
-            }
+    /**
+     * If both button containers have a context menu, merge them into a single one.
+     *
+     * @param {HTMLElement} buttonsContainer The container where the buttons will be moved.
+     */
+    protected mergeContextMenus(buttonsContainer: HTMLElement): void {
+        // Check if both button containers have a context menu.
+        const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
+        if (!mainContextMenu) {
+            return;
+        }
+
+        const secondaryContextMenu = this.element.querySelector('core-context-menu');
+        if (!secondaryContextMenu) {
+            return;
+        }
+
+        // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
+        const mainContextMenuInstance = this.domUtils.getInstanceByElement(mainContextMenu),
+            secondaryContextMenuInstance = this.domUtils.getInstanceByElement(secondaryContextMenu);
+
+        if (mainContextMenuInstance && secondaryContextMenuInstance) {
+            secondaryContextMenuInstance.mergeContextMenus(mainContextMenuInstance);
+
+            // Remove the empty context menu from the DOM.
+            secondaryContextMenu.parentElement.removeChild(secondaryContextMenu);
         }
     }
 
     /**
      * Search the ion-header where the buttons should be added.
      *
-     * @return {HTMLElement} Header element.
+     * @param {number} [retries] Number of retries so far.
+     * @return {Promise<HTMLElement>} Promise resolved with the header element.
      */
-    protected searchHeader(): HTMLElement {
+    protected searchHeader(retries: number = 0): Promise<HTMLElement> {
         let parentPage: HTMLElement = this.element;
 
         while (parentPage) {
@@ -112,10 +152,24 @@ export class CoreNavBarButtonsComponent implements OnInit {
                 // Check if the page has a header. If it doesn't, search the next parent page.
                 const header = this.searchHeaderInPage(parentPage);
                 if (header) {
-                    return header;
+                    return Promise.resolve(header);
                 }
             }
         }
+
+        // Header not found.
+        if (retries < 5) {
+            // If the component or any of its parent is inside a ng-content or similar it can be detached when it's initialized.
+            // Try again after a while.
+            return new Promise((resolve, reject): void => {
+                setTimeout(() => {
+                    this.searchHeader(retries + 1).then(resolve, reject);
+                }, 200);
+            });
+        }
+
+        // We've waited enough time, reject.
+        return Promise.reject(null);
     }
 
     /**

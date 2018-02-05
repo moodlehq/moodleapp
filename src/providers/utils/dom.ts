@@ -32,9 +32,12 @@ export class CoreDomUtilsProvider {
     // List of input types that support keyboard.
     protected INPUT_SUPPORT_KEYBOARD = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
         'search', 'tel', 'text', 'time', 'url', 'week'];
+    protected INSTANCE_ID_ATTR_NAME = 'core-instance-id';
 
     protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
     protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
+    protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
+    protected lastInstanceId = 0;
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
@@ -411,6 +414,20 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Retrieve component/directive instance.
+     * Please use this function only if you cannot retrieve the instance using parent/child methods: ViewChild (or similar)
+     * or Angular's injection.
+     *
+     * @param {Element} element The root element of the component/directive.
+     * @return {any} The instance, undefined if not found.
+     */
+    getInstanceByElement(element: Element): any {
+        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
+
+        return this.instances[id];
+    }
+
+    /**
      * Check if an element is outside of screen (viewport).
      *
      * @param {HTMLElement} scrollEl The element that must be scrolled.
@@ -511,6 +528,25 @@ export class CoreDomUtilsProvider {
         }
 
         return this.element.innerHTML;
+    }
+
+    /**
+     * Remove a component/directive instance using the DOM Element.
+     *
+     * @param {Element} element The root element of the component/directive.
+     */
+    removeInstanceByElement(element: Element): void {
+        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
+        delete this.instances[id];
+    }
+
+    /**
+     * Remove a component/directive instance using the ID.
+     *
+     * @param {string} id The ID to remove.
+     */
+    removeInstanceById(id: string): void {
+        delete this.instances[id];
     }
 
     /**
@@ -881,6 +917,22 @@ export class CoreDomUtilsProvider {
         loader.present();
 
         return loader;
+    }
+
+    /**
+     * Stores a component/directive instance.
+     *
+     * @param {Element} element The root element of the component/directive.
+     * @param {any} instance The instance to store.
+     * @return {string} ID to identify the instance.
+     */
+    storeInstanceByElement(element: Element, instance: any): string {
+        const id = String(this.lastInstanceId++);
+
+        element.setAttribute(this.INSTANCE_ID_ATTR_NAME, id);
+        this.instances[id] = instance;
+
+        return id;
     }
 
     /**
