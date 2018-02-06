@@ -56,7 +56,7 @@
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">
-            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" (completionChanged)="completionChanged.emit()"></core-course-module>
+            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" [downloadEnabled]="downloadEnabled" (completionChanged)="completionChanged.emit()"></core-course-module>
         </ng-container>
     </section>
 </ng-template>
