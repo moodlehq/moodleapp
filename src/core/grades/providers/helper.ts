@@ -20,6 +20,7 @@ import { CoreCoursesProvider } from '../../courses/providers/courses';
 import { CoreCourseProvider } from '../../course/providers/course';
 import { CoreGradesProvider } from './grades';
 import { CoreTextUtilsProvider } from '../../../providers/utils/text';
+import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
 import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 
 /**
@@ -32,8 +33,101 @@ export class CoreGradesHelperProvider {
     constructor(logger: CoreLoggerProvider, private coursesProvider: CoreCoursesProvider,
             private gradesProvider: CoreGradesProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService) {
+            private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
+            private urlUtils: CoreUrlUtilsProvider) {
         this.logger = logger.getInstance('CoreGradesHelperProvider');
+    }
+
+    /**
+     * Formats a row from the grades table te be rendered in a page.
+     *
+     * @param  {any}  tableRow JSON object representing row of grades table data.
+     * @return {any}           Formatted row object.
+     */
+    protected formatGradeRow(tableRow: any): any {
+        const row = {};
+        for (const name in tableRow) {
+            if (typeof(tableRow[name].content) != 'undefined') {
+                let content = tableRow[name].content;
+
+                if (name == 'itemname') {
+                    this.setRowIcon(row, content);
+                    row['link'] = this.getModuleLink(content);
+                    row['rowclass'] += tableRow[name].class.indexOf('hidden') >= 0 ? ' hidden' : '';
+                    row['rowclass'] += tableRow[name].class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+
+                    content = content.replace(/<\/span>/gi, '\n');
+                    content = this.textUtils.cleanTags(content);
+                } else {
+                    content = this.textUtils.replaceNewLines(content, '<br>');
+                }
+
+                if (content == '&nbsp;') {
+                    content = '';
+                }
+
+                row[name] = content.trim();
+            }
+        }
+
+        return row;
+    }
+
+    /**
+     * Formats a row from the grades table to be rendered in one table.
+     *
+     * @param  {any}  tableRow JSON object representing row of grades table data.
+     * @return {any}           Formatted row object.
+     */
+    protected formatGradeRowForTable(tableRow: any): any {
+        const row = {};
+        for (let name in tableRow) {
+            if (typeof(tableRow[name].content) != 'undefined') {
+                let content = tableRow[name].content;
+
+                if (name == 'itemname') {
+                    this.setRowIcon(row, content);
+                    row['rowclass'] = tableRow[name].class.indexOf('leveleven') < 0 ? 'odd' : 'even';
+                    row['rowclass'] += tableRow[name].class.indexOf('hidden') >= 0 ? ' hidden' : '';
+                    row['rowclass'] += tableRow[name].class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+
+                    content = content.replace(/<\/span>/gi, '\n');
+                    content = this.textUtils.cleanTags(content);
+
+                    row['id'] = parseInt(tableRow[name].id.split('_')[1], 10);
+                    row['colspan'] = tableRow[name].colspan;
+                    row['rowspan'] = (tableRow['leader'] && tableRow['leader'].rowspan) || 1;
+                    name = 'gradeitem';
+                } else {
+                    content = this.textUtils.replaceNewLines(content, '<br>');
+                }
+
+                if (content == '&nbsp;') {
+                    content = '';
+                }
+
+                row[name] = content.trim();
+            }
+        }
+
+        return row;
+    }
+
+    /**
+     * Removes suffix formatted to compatibilize data from table and items.
+     *
+     * @param  {any} item Grade item to format.
+     * @return {any}      Grade item formatted.
+     */
+    protected formatGradeItem(item: any): any {
+        for (const name in item) {
+            let index = name.indexOf('formatted');
+            if (index > 0) {
+                item[name.substr(0, index)] = item[name];
+            }
+        }
+
+        return item;
     }
 
     /**
@@ -62,7 +156,7 @@ export class CoreGradesHelperProvider {
                 contributiontocoursetotal: false
             };
         formatted.rows = table.tabledata.map((row: any) => {
-            return this.getGradeRow(row);
+            return this.formatGradeRowForTable(row);
         }).filter((row: any) => {
             return typeof row.gradeitem !== 'undefined';
         });
@@ -98,47 +192,6 @@ export class CoreGradesHelperProvider {
     }
 
     /**
-     * Get a row from the grades table.
-     *
-     * @param  {any}  tableRow JSON object representing row of grades table data.
-     * @return {any}           Formatted row object.
-     */
-    getGradeRow(tableRow: any): any {
-        const row = {};
-        for (let name in tableRow) {
-            if (typeof(tableRow[name].content) != 'undefined') {
-                let content = tableRow[name].content;
-
-                if (name == 'itemname') {
-                    this.setRowIcon(row, content);
-                    row['link'] = this.getModuleLink(content);
-                    row['rowclass'] = tableRow[name].class.indexOf('leveleven') < 0 ? 'odd' : 'even';
-                    row['rowclass'] += tableRow[name].class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                    row['rowclass'] += tableRow[name].class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
-
-                    content = content.replace(/<\/span>/gi, '\n');
-                    content = this.textUtils.cleanTags(content);
-
-                    row['id'] = parseInt(tableRow[name].id.split('_')[1], 10);
-                    row['colspan'] = tableRow[name].colspan;
-                    row['rowspan'] = (tableRow['leader'] && tableRow['leader'].rowspan) || 1;
-                    name = 'gradeitem';
-                } else {
-                    content = this.textUtils.replaceNewLines(content, '<br>');
-                }
-
-                if (content == '&nbsp;') {
-                    content = '';
-                }
-
-                row[name] = content.trim();
-            }
-        }
-
-        return row;
-    }
-
-    /**
      * Get course data for grades since they only have courseid.
      *
      * @param  {Object[]} grades  Grades to get the data for.
@@ -159,6 +212,156 @@ export class CoreGradesHelperProvider {
             });
 
             return grades;
+        });
+    }
+
+    /**
+     * Get an specific grade item.
+     *
+     * @param  {number}  courseId             ID of the course to get the grades from.
+     * @param  {number}  gradeId              Grade ID.
+     * @param  {number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
+     * @param  {string}  [siteId]             Site ID. If not defined, current site.
+     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
+     * @return {Promise<any>}                Promise to be resolved when the grades are retrieved.
+     */
+    getGradeItem(courseId: number, gradeId: number, userId?: number, siteId?: string, ignoreCache: boolean = false): Promise<any> {
+
+        return this.gradesProvider.getCourseGradesTable(courseId, userId, siteId, ignoreCache).then((grades) => {
+            if (grades) {
+                return this.getGradesTableRow(grades, gradeId);
+            }
+
+            return Promise.reject(null);
+        });
+    }
+
+    /**
+     * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
+     *
+     * @param  {number}  courseId             ID of the course to get the grades from.
+     * @param  {number}  moduleId             Module ID.
+     * @param  {number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
+     * @param  {number}  [groupId]            ID of the group to get the grades from. Not used for old gradebook table.
+     * @param  {string}  [siteId]             Site ID. If not defined, current site.
+     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
+     * @return {Promise<any>}                Promise to be resolved when the grades are retrieved.
+     */
+    getGradeModuleItems(courseId: number, moduleId: number, userId?: number, groupId?: number, siteId?: string,
+            ignoreCache: boolean = false): Promise<any> {
+
+        return this.gradesProvider.getGradeItems(courseId, userId, groupId, siteId, ignoreCache).then((grades) => {
+            if (grades) {
+                if (typeof grades.tabledata != 'undefined') {
+                    // Table format.
+                    return this.getModuleGradesTableRows(grades, moduleId);
+                } else {
+                    return grades.filter((item) => {
+                        return item.cmid == moduleId;
+                    }).map((item) => {
+                        return this.formatGradeItem(item);
+                    });
+                }
+            }
+
+            return Promise.reject(null);
+        });
+    }
+
+    /**
+     * Gets the link to the module for the selected grade.
+     *
+     * @param  {string} text HTML where the link is present.
+     * @return {string | false}      URL linking to the module.
+     */
+    protected getModuleLink(text: string): string | false {
+        const el = this.domUtils.toDom(text)[0],
+            link = el.attributes['href'] ? el.attributes['href'].value : false;
+
+        if (!link || link.indexOf('/mod/') < 0) {
+            return false;
+        }
+
+        return link;
+    }
+
+    /**
+     * Get a row from the grades table.
+     *
+     * @param  {any}   table    JSON object representing a table with data.
+     * @param  {number} gradeId Grade Object identifier.
+     * @return {any}            Formatted HTML table.
+     */
+    getGradesTableRow(table: any, gradeId: number): any {
+        if (table.tabledata) {
+            const selectedRow = table.tabledata.find((row) => {
+                return row.itemname && row.itemname.id && row.itemname.id.substr(0, 3) == 'row' &&
+                    parseInt(row.itemname.id.split('_')[1], 10) == gradeId;
+            });
+
+            if (selectedRow) {
+                return this.formatGradeRow(selectedRow);
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Get the rows related to a module from the grades table.
+     *
+     * @param  {any}   table     JSON object representing a table with data.
+     * @param  {number} moduleId Grade Object identifier.
+     * @return {any}             Formatted HTML table.
+     */
+    getModuleGradesTableRows(table: any, moduleId: number): any {
+
+        if (table.tabledata) {
+            // Find href containing "/mod/xxx/xxx.php".
+            const regex = /href="([^"]*\/mod\/[^"|^\/]*\/[^"|^\.]*\.php[^"]*)/;
+
+            return table.tabledata.filter((row) => {
+                if (row.itemname && row.itemname.content) {
+                    const matches = row.itemname.content.match(regex);
+
+                    if (matches && matches.length) {
+                        const hrefParams = this.urlUtils.extractUrlParams(matches[1]);
+
+                        return hrefParams && hrefParams.id == moduleId;
+                    }
+                }
+
+                return false;
+            }).map((row) => {
+                return this.formatGradeRow(row);
+            });
+        }
+
+        return [];
+    }
+
+    /**
+     * Invalidate the grade items for a certain module.
+     *
+     * @param  {number}  courseId     ID of the course to invalidate the grades.
+     * @param  {number}  [userId]     ID of the user to invalidate. If not defined use site's current user.
+     * @param  {number}  [groupId]    ID of the group to invalidate. Not used for old gradebook table.
+     * @param  {string}  [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}              Promise to be resolved when the grades are invalidated.
+     */
+    invalidateGradeModuleItems(courseId: number, userId?: number, groupId?: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return this.gradesProvider.isGradeItemsAvalaible(siteId).then((enabled) => {
+                if (enabled) {
+                    return this.gradesProvider.invalidateCourseGradesItemsData(courseId, userId, groupId, siteId);
+                } else {
+                    return this.gradesProvider.invalidateCourseGradesData(courseId, userId, siteId);
+                }
+            });
         });
     }
 
@@ -200,22 +403,5 @@ export class CoreGradesHelperProvider {
         }
 
         return row;
-    }
-
-    /**
-     * Gets the link to the module for the selected grade.
-     *
-     * @param  {string} text HTML where the link is present.
-     * @return {string | false}      URL linking to the module.
-     */
-    protected getModuleLink(text: string): string | false {
-        const el = this.domUtils.toDom(text)[0],
-            link = el.attributes['href'] ? el.attributes['href'].value : false;
-
-        if (!link || link.indexOf('/mod/') < 0) {
-            return false;
-        }
-
-        return link;
     }
 }

@@ -53,12 +53,12 @@ core-grades-course {
     }
 
     .odd {
-      td, th {
+      td, th, th.core-split-item-selected {
         background-color: $gray-lighter;
       }
     }
     .even {
-      td, th {
+      td, th, th.core-split-item-selected {
         background-color: $white;
       }
     }
@@ -68,5 +68,12 @@ core-grades-course {
         font-size: 0.85em;
       }
     }
+  }
+}
+
+.split-pane-side, .split-pane-main {
+  core-grades-course .core-grades-table .hidden-phone {
+    display: none;
+    opacity: 0;
   }
 }

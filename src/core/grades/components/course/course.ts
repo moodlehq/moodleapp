@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, Optional } from '@angular/core';
 import { Content, NavParams, NavController } from 'ionic-angular';
 import { CoreGradesProvider } from '../../providers/grades';
 import { CoreSitesProvider } from '../../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreGradesHelperProvider } from '../../providers/helper';
+import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreAppProvider } from '../../../../providers/app';
 
 /**
  * Component that displays a course grades.
@@ -31,13 +33,15 @@ export class CoreGradesCourseComponent {
 
     @Input() courseId: number;
     @Input() userId: number;
+    @Input() gradeId?: number;
 
     errorMessage: string;
     gradesLoaded = false;
     gradesTable: any;
 
     constructor(private gradesProvider: CoreGradesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-        private gradesHelper: CoreGradesHelperProvider, private sitesProvider: CoreSitesProvider, private navCtrl: NavController) {
+        private gradesHelper: CoreGradesHelperProvider, private sitesProvider: CoreSitesProvider, private navCtrl: NavController,
+        private appProvider: CoreAppProvider, @Optional() private svComponent: CoreSplitViewComponent) {
     }
 
     /**
@@ -46,6 +50,11 @@ export class CoreGradesCourseComponent {
     ngOnInit(): void {
         // Get first participants.
         this.fetchData().then(() => {
+            if (this.gradeId) {
+                // There is the grade to load.
+                this.gotoGrade(this.gradeId);
+            }
+
             // Add log in Moodle.
             return this.gradesProvider.logCourseGradesView(this.courseId, this.userId);
         }).finally(() => {
@@ -82,12 +91,37 @@ export class CoreGradesCourseComponent {
     }
 
     /**
-     * Navigate to the grades of the selected item.
+     * Navigate to the grade of the selected item.
      * @param {number} gradeId  Grade item ID where to navigate.
      */
     gotoGrade(gradeId: number): void {
         if (gradeId) {
-            this.navCtrl.push('CoreGradesGradePage', {courseId: this.courseId, userId: this.userId, gradeId: gradeId});
+            this.gradeId = gradeId;
+            let whereToPush, pageName;
+
+            if (this.svComponent) {
+                if (this.svComponent.getMasterNav().getActive().component.name == 'CoreGradesCourseSplitPage') {
+                    // Table is on left side. Push on right.
+                    whereToPush = this.svComponent;
+                    pageName = 'CoreGradesGradePage';
+                } else {
+                    // Table is on right side. Load new split view.
+                    whereToPush = this.svComponent.getMasterNav();
+                    pageName = 'CoreGradesCourseSplitPage';
+                }
+            } else {
+                if (this.appProvider.isWide()) {
+                    // Table is full screen and large. Load here.
+                    whereToPush = this.navCtrl;
+                    pageName = 'CoreGradesCourseSplitPage';
+                } else {
+                    // Table is full screen but on mobile. Load here.
+                    whereToPush = this.navCtrl;
+                    pageName = 'CoreGradesGradePage';
+                }
+
+            }
+            whereToPush.push(pageName, {courseId: this.courseId, userId: this.userId, gradeId: gradeId});
         }
     }
 }

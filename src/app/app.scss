@@ -54,12 +54,14 @@
 @include media-breakpoint-down(md) {
   .hidden-phone {
     display: none !important;
+    opacity: 0 !important;
   }
 }
 
 @include media-breakpoint-up(md) {
   .hidden-tablet {
     display: none !important;
+    opacity: 0 !important;
   }
 }
 

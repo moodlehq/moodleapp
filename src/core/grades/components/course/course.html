@@ -19,7 +19,7 @@
                     <tr *ngFor="let row of gradesTable.rows" (click)="row.itemtype != 'category' && gotoGrade(row.id)" [class]="row.rowclass">
                         <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
                         </td>
-                        <th class="core-grades-table-gradeitem" [attr.colspan]="row.colspan">
+                        <th class="core-grades-table-gradeitem" [attr.colspan]="row.colspan" [class.core-split-item-selected]="gradeId == row.id">
                             <ion-icon *ngIf="row.icon" name="{{row.icon}}" item-start></ion-icon>
                             <img *ngIf="row.image" [src]="row.image" item-start/>
                             <span [innerHTML]="row.gradeitem"></span>

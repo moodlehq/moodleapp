@@ -192,6 +192,15 @@ export class CoreAppProvider {
     }
 
     /**
+     * Checks if the current window is wider than a mobile.
+     *
+     * @return {boolean} Whether the app the current window is wider than a mobile.
+     */
+    isWide(): boolean {
+        return this.platform.width() > 768;
+    }
+
+    /**
      * Returns whether we are online.
      *
      * @return {boolean} Whether the app is online.

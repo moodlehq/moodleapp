@@ -37,7 +37,7 @@ export class CoreGradesCoursesPage {
     gradesLoaded = false;
 
     constructor(private gradesProvider: CoreGradesProvider, private domUtils: CoreDomUtilsProvider,
-        private courseHelper: CoreGradesHelperProvider) {
+        private gradesHelper: CoreGradesHelperProvider) {
     }
 
     /**
@@ -45,11 +45,10 @@ export class CoreGradesCoursesPage {
      */
     ionViewDidLoad(): void {
         if (this.courseId) {
-            // There is an event to load, open the event in a new state.
+            // There is the course to load, open the course in a new state.
             this.gotoCourseGrades(this.courseId);
         }
 
-        // Get first participants.
         this.fetchData().then(() => {
             if (!this.courseId && this.splitviewCtrl.isOn() && this.grades.length > 0) {
                 this.gotoCourseGrades(this.grades[0].courseid);
@@ -69,7 +68,7 @@ export class CoreGradesCoursesPage {
      */
     fetchData(): Promise<any> {
         return this.gradesProvider.getCoursesGrades().then((grades) => {
-            return this.courseHelper.getGradesCourseData(grades).then((grades) => {
+            return this.gradesHelper.getGradesCourseData(grades).then((grades) => {
                this.grades = grades;
             });
         }).catch((error) => {

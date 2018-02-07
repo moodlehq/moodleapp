@@ -45,7 +45,7 @@ export class CoreGradesProvider {
     }
 
     /**
-     * Get cache key for grade table data WS calls.
+     * Get cache key for grade items data WS calls.
      *
      * @param {number} courseId     ID of the course to get the grades from.
      * @param {number} userId       ID of the user to get the grades from.
@@ -75,6 +75,37 @@ export class CoreGradesProvider {
      */
     protected getCoursesGradesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'coursesgrades';
+    }
+
+    /**
+     * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
+     * Fallback function only used if 'gradereport_user_get_grade_items' WS is not avalaible Moodle < 3.2.
+     *
+     * @param  {number}  courseId             ID of the course to get the grades from.
+     * @param  {number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
+     * @param  {number}  [groupId]            ID of the group to get the grades from. Not used for old gradebook table.
+     * @param  {string}  [siteId]             Site ID. If not defined, current site.
+     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
+     * @return {Promise<any>}                Promise to be resolved when the grades are retrieved.
+     */
+    getGradeItems(courseId: number, userId?: number, groupId?: number, siteId?: string, ignoreCache: boolean = false):
+            Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            return this.isGradeItemsAvalaible(siteId).then((enabled) => {
+                if (enabled) {
+                    return this.getCourseGradesItems(courseId, userId, groupId, siteId, ignoreCache).catch(() => {
+                        // FallBack while solving MDL-57255.
+                        return this.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
+                    });
+                } else {
+                    return this.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
+                }
+            });
+        });
     }
 
     /**
@@ -207,6 +238,21 @@ export class CoreGradesProvider {
     invalidateCoursesGradesData(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getCoursesGradesCacheKey());
+        });
+    }
+
+    /**
+     * Invalidates courses grade items data WS calls.
+     *
+     * @param {number} courseId     ID of the course to get the grades from.
+     * @param {number} userId       ID of the user to get the grades from.
+     * @param {number} [groupId]    ID of the group to get the grades from. Default: 0.
+     * @param {string} [siteId]     Site id (empty for current site).
+     * @return {Promise<any>}     Promise resolved when the data is invalidated.
+     */
+    invalidateCourseGradesItemsData(courseId: number, userId: number, groupId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCourseGradesItemsCacheKey(courseId, userId, groupId));
         });
     }
 
