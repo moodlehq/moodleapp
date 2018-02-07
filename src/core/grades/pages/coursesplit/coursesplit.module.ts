@@ -17,7 +17,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreGradesCourseSplitPage } from './coursesplit';
 import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
 import { CoreGradesComponentsModule } from '../../components/components.module';
 
 @NgModule({
@@ -27,7 +26,6 @@ import { CoreGradesComponentsModule } from '../../components/components.module';
     imports: [
         CoreGradesComponentsModule,
         CoreComponentsModule,
-        CoreDirectivesModule,
         IonicPageModule.forChild(CoreGradesCourseSplitPage),
         TranslateModule.forChild()
     ],

@@ -95,6 +95,6 @@ export class CoreGradesCoursesPage {
      */
     gotoCourseGrades(courseId: number): void {
         this.courseId = courseId;
-        this.splitviewCtrl.push('CoreGradesCoursePage', {courseId: courseId, userId: this.userId, forcephoneview: 1});
+        this.splitviewCtrl.push('CoreGradesCoursePage', {courseId: courseId, userId: this.userId});
     }
 }

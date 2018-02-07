@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSite } from '../../../classes/site';
 import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreCoursesProvider } from '../../courses/providers/courses';
 
 /**
@@ -152,7 +151,6 @@ export class CoreGradesProvider {
 
     /**
      * Get the grades for a certain course.
-     * Using gradereport_user_get_grades_table in case is not avalaible.
      *
      * @param  {number}  courseId             ID of the course to get the grades from.
      * @param  {number}  [userId]             ID of the user to get the grades from.

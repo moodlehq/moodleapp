@@ -121,7 +121,7 @@ export class CoreGradesHelperProvider {
      */
     protected formatGradeItem(item: any): any {
         for (const name in item) {
-            let index = name.indexOf('formatted');
+            const index = name.indexOf('formatted');
             if (index > 0) {
                 item[name.substr(0, index)] = item[name];
             }
@@ -194,8 +194,8 @@ export class CoreGradesHelperProvider {
     /**
      * Get course data for grades since they only have courseid.
      *
-     * @param  {Object[]} grades  Grades to get the data for.
-     * @return {Promise<any>}         Promise always resolved. Resolve param is the formatted grades.
+     * @param  {any} grades    Grades to get the data for.
+     * @return {Promise<any>}  Promise always resolved. Resolve param is the formatted grades.
      */
     getGradesCourseData(grades: any): Promise<any> {
         // Using cache for performance reasons.
@@ -207,7 +207,7 @@ export class CoreGradesHelperProvider {
 
             grades.forEach((grade) => {
                 if (typeof indexedCourses[grade.courseid] != 'undefined') {
-                    grade.coursefullname = indexedCourses[grade.courseid].fullname;
+                    grade.courseFullName = indexedCourses[grade.courseid].fullname;
                 }
             });
 

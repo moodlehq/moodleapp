@@ -8,7 +8,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="gradeLoaded">
-        <core-empty-box *ngIf="!grade" icon="stats" [message]="errormessage"></core-empty-box>
+        <core-empty-box *ngIf="!grade" icon="stats" [message]="'core.grades.nogradesreturned' | translate"></core-empty-box>
 
         <ion-list *ngIf="grade">
             <a ion-item *ngIf="grade.itemname && grade.link" text-wrap detail-push [href]="grade.link" core-link captureLink="true">

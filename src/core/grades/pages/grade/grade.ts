@@ -16,7 +16,6 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Content, NavParams } from 'ionic-angular';
 import { CoreGradesProvider } from '../../providers/grades';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
 import { CoreGradesHelperProvider } from '../../providers/helper';
 import { CoreSitesProvider } from '../../../../providers/sites';
 
@@ -35,7 +34,6 @@ export class CoreGradesGradePage {
     courseId: number;
     userId: number;
     gradeId: number;
-    errormessage: string;
     gradeLoaded = false;
 
     constructor(private gradesProvider: CoreGradesProvider, private domUtils: CoreDomUtilsProvider,
@@ -65,7 +63,6 @@ export class CoreGradesGradePage {
             this.grade = grade;
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error loading grade item');
-            this.errormessage = error || 'Grade not found';
         });
     }
 

@@ -20,6 +20,14 @@ import { CoreGradesMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreGradesCourseOptionHandler } from './providers/course-option-handler';
 import { CoreGradesComponentsModule } from './components/components.module';
 import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate';
+import { CoreGradesUserLinkHandler } from './providers/user-link-handler';
+import { CoreGradesOverviewLinkHandler } from './providers/overview-link-handler';
+import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
+import { CoreGradesUserHandler } from './providers/user-handler';
+import { CoreUserDelegate } from '../user/providers/user-delegate';
+import { CoreEventsProvider } from '../../providers/events';
+import { CoreSitesProvider } from '../../providers/sites';
+import { CoreUserProvider } from '../user/providers/user';
 
 @NgModule({
     declarations: [
@@ -31,13 +39,33 @@ import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate'
         CoreGradesProvider,
         CoreGradesHelperProvider,
         CoreGradesMainMenuHandler,
-        CoreGradesCourseOptionHandler
+        CoreGradesCourseOptionHandler,
+        CoreGradesUserLinkHandler,
+        CoreGradesOverviewLinkHandler,
+        CoreGradesUserHandler
     ]
 })
 export class CoreGradesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, gradesMenuHandler: CoreGradesMainMenuHandler,
-            courseOptionHandler: CoreGradesCourseOptionHandler, courseOptionsDelegate: CoreCourseOptionsDelegate) {
+            courseOptionHandler: CoreGradesCourseOptionHandler, courseOptionsDelegate: CoreCourseOptionsDelegate,
+            contentLinksDelegate: CoreContentLinksDelegate, userLinkHandler: CoreGradesUserLinkHandler,
+            overviewLinkHandler: CoreGradesOverviewLinkHandler, userHandler: CoreGradesUserHandler,
+            userDelegate: CoreUserDelegate, eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
+
+        // Register handlers.
         mainMenuDelegate.registerHandler(gradesMenuHandler);
         courseOptionsDelegate.registerHandler(courseOptionHandler);
+        contentLinksDelegate.registerHandler(userLinkHandler);
+        contentLinksDelegate.registerHandler(overviewLinkHandler);
+        userDelegate.registerHandler(userHandler);
+
+        // Clear user profile handler cache.
+        eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+            userHandler.clearViewGradesCache(data.courseId, data.userId);
+        }, sitesProvider.getCurrentSiteId());
+
+        eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
+            userHandler.clearViewGradesCache();
+        }, sitesProvider.getCurrentSiteId());
     }
 }

@@ -35,7 +35,6 @@ export class CoreGradesCourseComponent {
     @Input() userId: number;
     @Input() gradeId?: number;
 
-    errorMessage: string;
     gradesLoaded = false;
     gradesTable: any;
 
@@ -48,7 +47,6 @@ export class CoreGradesCourseComponent {
      * View loaded.
      */
     ngOnInit(): void {
-        // Get first participants.
         this.fetchData().then(() => {
             if (this.gradeId) {
                 // There is the grade to load.
@@ -73,7 +71,6 @@ export class CoreGradesCourseComponent {
             this.gradesTable = this.gradesHelper.formatGradesTable(table);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error loading grades');
-            this.errorMessage = error;
         });
     }
 
