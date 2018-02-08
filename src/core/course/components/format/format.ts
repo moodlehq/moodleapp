@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter } from '@angular/core';
+import { Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '../../../../providers/events';
 import { CoreSitesProvider } from '../../../../providers/sites';
@@ -42,6 +43,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
+    @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
 
     // All the possible component classes.
@@ -64,7 +66,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
-            eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider,
+            eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider, private content: Content,
             prefetchDelegate: CoreCourseModulePrefetchDelegate) {
 
         this.selectOptions.title = translate.instant('core.course.sections');
@@ -132,7 +134,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     // We have an input indicating the section ID to load. Search the section.
                     for (let i = 0; i < this.sections.length; i++) {
                         const section = this.sections[i];
-                        if (section.id == this.initialSectionId || section.section == this.initialSectionNumber) {
+                        if ((section.id && section.id == this.initialSectionId) ||
+                                (section.section && section.section == this.initialSectionNumber)) {
                             this.loaded = true;
                             this.sectionChanged(section);
                             break;
@@ -212,6 +215,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
         this.data.section = this.selectedSection;
+
+        if (this.moduleId && typeof previousValue == 'undefined') {
+            setTimeout(() => {
+                this.domUtils.scrollToElementBySelector(this.content, '#core-course-module-' + this.moduleId);
+            }, 200);
+        }
     }
 
     /**

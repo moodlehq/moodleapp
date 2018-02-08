@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
-import { Platform, NavController } from 'ionic-angular';
+import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
+import { Platform, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '../providers/app';
 import { CoreFilepoolProvider } from '../providers/filepool';
@@ -62,7 +62,8 @@ export class CoreFormatTextDirective implements OnChanges {
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController) {
+            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController,
+            @Optional() private content: Content) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -280,7 +281,7 @@ export class CoreFormatTextDirective implements OnChanges {
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
                 const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
-                    this.contentLinksHelper, this.navCtrl);
+                    this.contentLinksHelper, this.navCtrl, this.content);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 

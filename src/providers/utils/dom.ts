@@ -584,22 +584,39 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Scroll to a certain element inside another element.
+     * Scroll to a certain element.
      *
-     * @param {Content|HTMLElement} scrollEl The content that must be scrolled.
-     * @param {HTMLElement} container Element to search in.
-     * @param {string} [selector] Selector to find the element to scroll to. If not defined, scroll to the container.
+     * @param {Content} content The content that must be scrolled.
+     * @param {HTMLElement} element The element to scroll to.
      * @param {string} [scrollParentClass] Parent class where to stop calculating the position. Default scroll-content.
      * @return {boolean} True if the element is found, false otherwise.
      */
-    scrollToElement(scrollEl: Content | HTMLElement, container: HTMLElement, selector?: string, scrollParentClass?: string)
-            : boolean {
-        const position = this.getElementXY(container, selector, scrollParentClass);
+    scrollToElement(content: Content, element: HTMLElement, scrollParentClass?: string): boolean {
+        const position = this.getElementXY(element, undefined, scrollParentClass);
         if (!position) {
             return false;
         }
 
-        scrollEl.scrollTo(position[0], position[1]);
+        content.scrollTo(position[0], position[1]);
+
+        return true;
+    }
+
+    /**
+     * Scroll to a certain element using a selector to find it.
+     *
+     * @param {Content} content The content that must be scrolled.
+     * @param {string} selector Selector to find the element to scroll to.
+     * @param {string} [scrollParentClass] Parent class where to stop calculating the position. Default scroll-content.
+     * @return {boolean} True if the element is found, false otherwise.
+     */
+    scrollToElementBySelector(content: Content, selector: string, scrollParentClass?: string): boolean {
+        const position = this.getElementXY(content.getScrollElement(), selector, scrollParentClass);
+        if (!position) {
+            return false;
+        }
+
+        content.scrollTo(position[0], position[1]);
 
         return true;
     }
@@ -607,17 +624,16 @@ export class CoreDomUtilsProvider {
     /**
      * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
-     * @param {Content|HTMLElement} scrollEl The element that must be scrolled.
-     * @param {HTMLElement} container Element to search in.
+     * @param {Content} content The content that must be scrolled.
      * @param [scrollParentClass] Parent class where to stop calculating the position. Default scroll-content.
      * @return {boolean} True if the element is found, false otherwise.
      */
-    scrollToInputError(scrollEl: Content | HTMLElement, container: HTMLElement, scrollParentClass?: string): boolean {
-        if (!scrollEl) {
+    scrollToInputError(content: Content, scrollParentClass?: string): boolean {
+        if (!content) {
             return false;
         }
 
-        return this.scrollToElement(scrollEl, container, '.core-input-error', scrollParentClass);
+        return this.scrollToElementBySelector(content, '.core-input-error', scrollParentClass);
     }
 
     /**

@@ -22,23 +22,18 @@ import { CoreCourseHelperProvider } from '../../course/providers/helper';
 export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerBase {
 
     /**
-     * Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
-     * @type {string}
+     * Construct the handler.
+     *
+     * @param {CoreCourseHelperProvider} courseHelper The CoreCourseHelperProvider instance.
+     * @param {string} addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
+     * @param {string} modName Name of the module (assign, book, ...).
      */
-    addon: string;
-
-    /**
-     * Name of the module (assign, book, ...).
-     * @type {string}
-     */
-    modName: string;
-
-    constructor(private courseHelper: CoreCourseHelperProvider) {
+    constructor(protected courseHelper: CoreCourseHelperProvider, public addon: string, public modName: string) {
         super();
 
         // Match the view.php URL with an id param.
-        this.pattern = new RegExp('\/mod\/' + this.modName + '\/view\.php.*([\&\?]id=\\d+)');
-        this.featureName = '$mmCourseDelegate_' + this.addon;
+        this.pattern = new RegExp('\/mod\/' + modName + '\/view\.php.*([\&\?]id=\\d+)');
+        this.featureName = '$mmCourseDelegate_' + addon;
     }
 
     /**

@@ -25,30 +25,27 @@ import { CoreCourseHelperProvider } from '../../course/providers/helper';
 export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerBase {
 
     /**
-     * Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
-     * @type {string}
-     */
-    addon: string;
-
-    /**
-     * Name of the module (assign, book, ...).
-     * @type {string}
-     */
-    modName: string;
-
-    /**
      * Whether the module can be reviewed in the app. If true, the handler needs to implement the goToReview function.
      * @type {boolean}
      */
     canReview: boolean;
 
+    /**
+     * Construct the handler.
+     *
+     * @param {CoreCourseHelperProvider} courseHelper The CoreCourseHelperProvider instance.
+     * @param {CoreDomUtilsProvider} domUtils The CoreDomUtilsProvider instance.
+     * @param {CoreSitesProvider} sitesProvider The CoreSitesProvider instance.
+     * @param {string} addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
+     * @param {string} modName Name of the module (assign, book, ...).
+     */
     constructor(protected courseHelper: CoreCourseHelperProvider, protected domUtils: CoreDomUtilsProvider,
-            protected sitesProvider: CoreSitesProvider) {
+            protected sitesProvider: CoreSitesProvider, public addon: string, public modName: string) {
         super();
 
         // Match the grade.php URL with an id param.
-        this.pattern = new RegExp('\/mod\/' + this.modName + '\/grade\.php.*([\&\?]id=\\d+)');
-        this.featureName = '$mmCourseDelegate_' + this.addon;
+        this.pattern = new RegExp('\/mod\/' + modName + '\/grade\.php.*([\&\?]id=\\d+)');
+        this.featureName = '$mmCourseDelegate_' + addon;
     }
 
     /**
