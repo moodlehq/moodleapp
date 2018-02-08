@@ -2,29 +2,116 @@ core-course-module {
 
     a.core-course-module-handler {
         align-items: flex-start;
-        item-inner {
+        min-height: 52px;
+
+        &.item .item-inner {
             padding-right: 0;
         }
+        .label {
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+        }
+        .core-module-icon {
+            align-items: flex-start;
+        }
     }
 
-    .core-module-icon {
-        align-items: flex-start;
-    }
-
-    .core-module-buttons {
+    .core-module-title {
         display: flex;
         flex-flow: row;
-        align-items: center;
-        z-index: 1;
-        cursor: pointer;
-        pointer-events: auto;
-        position: absolute;
-        right: 0;
-        top: 4px;
+        align-items: flex-start;
 
-        .spinner {
-            right: 7px;
+        core-format-text {
+            flex-grow: 2;
+        }
+        .core-module-buttons {
+            margin: 0;
+        }
+
+        .core-module-buttons,
+        .core-module-buttons-more {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .core-module-buttons core-course-module-completion,
+        .core-module-buttons-more button {
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .core-module-buttons-more  .spinner {
+            right: 13px;
             position: absolute;
         }
+    }
+}
+
+.md core-course-module {
+    .core-module-description,
+    .core-module-description .core-show-more {
+        padding-right: $label-md-margin-end;
+    }
+
+    a.core-course-module-handler .core-module-icon {
+        margin-top: $label-md-margin-top;
+        margin-bottom: $label-md-margin-bottom;
+    }
+
+    .core-module-title core-format-text {
+        padding-top: $label-md-margin-top + 3;
+    }
+    .button-md {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+    .core-module-buttons-more {
+        min-height: 52px;
+        min-width: 53px;
+    }
+}
+
+.ios core-course-module {
+    .core-module-description,
+    .core-module-description .core-show-more {
+        padding-right: $label-ios-margin-end;
+    }
+
+    a.core-course-module-handler .core-module-icon {
+        margin-top: $label-ios-margin-top;
+        margin-bottom: $label-ios-margin-bottom;
+    }
+
+    .core-module-title core-format-text {
+        padding-top: $label-ios-margin-top + 3;
+    }
+
+    .core-module-buttons-more {
+        min-height: 53px;
+        min-width: 58px;
+    }
+}
+
+.wp core-course-module {
+    .core-module-description,
+    .core-module-description .core-show-more {
+        padding-right: ($item-wp-padding-end / 2);
+    }
+
+    a.core-course-module-handler .core-module-icon {
+        margin-top: $item-wp-padding-top;
+        margin-bottom: $item-wp-padding-bottom;
+    }
+
+    .core-module-title core-format-text {
+        padding-top: $item-wp-padding-top + 3;
+    }
+
+    .button-wp {
+        margin-top: 8px;
+        margin-bottom: 8px;
     }
 }
