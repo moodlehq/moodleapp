@@ -134,7 +134,7 @@ export class CoreDelegate {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
-            return this.defaultHandler[fnName].apply(this, params);
+            return this.defaultHandler[fnName].apply(this.defaultHandler, params);
         }
     }
 
@@ -143,9 +143,9 @@ export class CoreDelegate {
      *
      * @param  {string} handlerName The handler name.
      * @param  {boolean} [enabled]  Only enabled, or any.
-     * @return {any}                Handler.
+     * @return {CoreDelegateHandler} Handler.
      */
-    protected getHandler(handlerName: string, enabled: boolean = false): any {
+    protected getHandler(handlerName: string, enabled: boolean = false): CoreDelegateHandler {
         return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
     }
 

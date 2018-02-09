@@ -67,6 +67,7 @@ import { CoreGradesModule } from '../core/grades/grades.module';
 import { AddonCalendarModule } from '../addon/calendar/calendar.module';
 import { AddonUserProfileFieldModule } from '../addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '../addon/files/files.module';
+import { AddonModBookModule } from '../addon/mod/book/book.module';
 import { AddonModLabelModule } from '../addon/mod/label/label.module';
 
 // For translate loader. AoT requires an exported function for factories.
@@ -107,6 +108,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         AddonCalendarModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
+        AddonModBookModule,
         AddonModLabelModule
     ],
     bootstrap: [IonicApp],

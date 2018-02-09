@@ -37,6 +37,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
 
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
+     * The component returned must implement CoreCourseModuleMainComponent.
      *
      * @param {any} course The course object.
      * @param {any} module The module object.
@@ -68,6 +69,14 @@ export interface CoreCourseModuleHandlerData {
     class?: string;
 
     /**
+     * Whether to display a button to download/refresh the module if it's downloadable.
+     * If it's set to true, the app will show a download/refresh button when needed and will handle the download of the
+     * module using CoreCourseModulePrefetchDelegate.
+     * @type {boolean}
+     */
+    showDownloadButton?: boolean;
+
+    /**
      * The buttons to display in the module item.
      * @type {CoreCourseModuleHandlerButton[]}
      */
@@ -89,6 +98,20 @@ export interface CoreCourseModuleHandlerData {
      * @param {NavOptions} [options] Options for the navigation.
      */
     action?(event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions): void;
+}
+
+/**
+ * Interface that all the components to render the module in singleactivity must implement.
+ */
+export interface CoreCourseModuleMainComponent {
+    /**
+     * Refresh the data.
+     *
+     * @param {any} [refresher] Refresher.
+     * @param {Function} [done] Function to call when done.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(refresher?: any, done?: () => void): Promise<any>;
 }
 
 /**

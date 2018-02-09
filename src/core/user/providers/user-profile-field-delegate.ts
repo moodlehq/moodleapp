@@ -99,7 +99,8 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
      */
     getDataForField(field: any, signup: boolean, registerAuth: string, formValues: any): Promise<any> {
         const type = field.type || field.datatype,
-            handler = this.getHandler(type, !signup);
+            handler = <CoreUserProfileFieldHandler> this.getHandler(type, !signup);
+
         if (handler) {
             const name = 'profile_field_' + field.shortname;
             if (handler.getData) {

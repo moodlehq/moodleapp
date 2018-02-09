@@ -13,26 +13,28 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController, NavOptions } from 'ionic-angular';
+import { AddonModBookProvider } from './book';
+import { AddonModBookIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../../../../core/course/providers/module-delegate';
+import { CoreCourseProvider } from '../../../../core/course/providers/course';
 
 /**
- * Handler to support label modules.
+ * Handler to support book modules.
  */
 @Injectable()
-export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
-    name = 'label';
+export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
+    name = 'book';
 
-    constructor() {
-        // Nothing to do.
-    }
+    constructor(protected bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
+     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return true;
+        return this.bookProvider.isPluginEnabled();
     }
 
     /**
@@ -44,14 +46,14 @@ export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-        // Remove the description from the module so it isn't rendered twice.
-        const title = module.description;
-        module.description = '';
-
         return {
-            icon: '',
-            title: title,
-            class: 'addon-mod-label-handler'
+            icon: this.courseProvider.getModuleIconSrc('book'),
+            title: module.name,
+            class: 'addon-mod_book-handler',
+            showDownloadButton: true,
+            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
+                navCtrl.push('AddonModBookIndexPage', {module: module, courseId: courseId}, options);
+            }
         };
     }
 
@@ -64,6 +66,6 @@ export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
      * @return {any} The component to use, undefined if not found.
      */
     getMainComponent(course: any, module: any): any {
-        // There's no need to implement this because label cannot be used in singleactivity course format.
+        return AddonModBookIndexComponent;
     }
 }

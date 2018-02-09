@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreDomUtilsProvider } from '../../providers/utils/dom';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 import { Subject } from 'rxjs';
@@ -26,7 +27,7 @@ import { Subject } from 'rxjs';
     selector: 'core-context-menu',
     templateUrl: 'context-menu.html'
 })
-export class CoreContextMenuComponent implements OnInit {
+export class CoreContextMenuComponent implements OnInit, OnDestroy {
     @Input() icon?: string; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
     @Input() title?: string; // Aria label and text to be shown on the top of the popover.
 
@@ -34,8 +35,11 @@ export class CoreContextMenuComponent implements OnInit {
     ariaLabel: string;
     protected items: CoreContextMenuItemComponent[] = [];
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
+    protected instanceId: string;
+    protected parentContextMenu: CoreContextMenuComponent;
 
-    constructor(private translate: TranslateService, private popoverCtrl: PopoverController) {
+    constructor(private translate: TranslateService, private popoverCtrl: PopoverController, private elementRef: ElementRef,
+            private domUtils: CoreDomUtilsProvider) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
         this.itemsChangedStream.auditTime(250).subscribe(() => {
@@ -43,7 +47,14 @@ export class CoreContextMenuComponent implements OnInit {
             this.hideMenu = !this.items.some((item) => {
                 return !item.hidden;
             });
+
+            // Sort the items by priority.
+            this.items.sort((a, b) => {
+                return a.priority <= b.priority ? 1 : -1;
+            });
         });
+
+        this.instanceId = this.domUtils.storeInstanceByElement(elementRef.nativeElement, this);
     }
 
     /**
@@ -60,15 +71,44 @@ export class CoreContextMenuComponent implements OnInit {
      * @param {CoreContextMenuItemComponent} item The item to add.
      */
     addItem(item: CoreContextMenuItemComponent): void {
-        this.items.push(item);
-        this.itemsChanged();
+        if (this.parentContextMenu) {
+            // All items were moved to the "parent" menu. Add the item in there.
+            this.parentContextMenu.addItem(item);
+        } else {
+            this.items.push(item);
+            this.itemsChanged();
+        }
     }
 
     /**
      * Function called when the items change.
      */
     itemsChanged(): void {
-        this.itemsChangedStream.next();
+        if (this.parentContextMenu) {
+            // All items were moved to the "parent" menu, call the function in there.
+            this.parentContextMenu.itemsChanged();
+        } else {
+            this.itemsChangedStream.next();
+        }
+    }
+
+    /**
+     * Merge the current context menu with the one passed as parameter. All the items in this menu will be moved to the
+     * one passed as parameter.
+     *
+     * @param {CoreContextMenuComponent} contextMenu The context menu where to move the items.
+     */
+    mergeContextMenus(contextMenu: CoreContextMenuComponent): void {
+        this.parentContextMenu = contextMenu;
+
+        // Add all the items to the other menu.
+        for (let i = 0; i < this.items.length; i++) {
+            contextMenu.addItem(this.items[i]);
+        }
+
+        // Remove all items from the current menu.
+        this.items = [];
+        this.itemsChanged();
     }
 
     /**
@@ -77,11 +117,16 @@ export class CoreContextMenuComponent implements OnInit {
      * @param {CoreContextMenuItemComponent} item The item to remove.
      */
     removeItem(item: CoreContextMenuItemComponent): void {
-        const index = this.items.indexOf(item);
-        if (index >= 0) {
-            this.items.splice(index, 1);
+        if (this.parentContextMenu) {
+            // All items were moved to the "parent" menu. Remove the item from there.
+            this.parentContextMenu.removeItem(item);
+        } else {
+            const index = this.items.indexOf(item);
+            if (index >= 0) {
+                this.items.splice(index, 1);
+            }
+            this.itemsChanged();
         }
-        this.itemsChanged();
     }
 
     /**
@@ -94,5 +139,12 @@ export class CoreContextMenuComponent implements OnInit {
         popover.present({
             ev: event
         });
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.domUtils.removeInstanceById(this.instanceId);
     }
 }

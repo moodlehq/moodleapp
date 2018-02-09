@@ -54,16 +54,10 @@ export type prefetchFunction = (module: any, courseId: number, single: boolean, 
  */
 export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePrefetchHandler {
     /**
-     * A name to identify the addon.
-     * @type {string}
-     */
-    name = 'CoreCourseModulePrefetchHandlerBase';
-
-    /**
      * Name of the module. It should match the "modname" of the module returned in core_course_get_contents.
      * @type {string}
      */
-    modname = '';
+    name = '';
 
     /**
      * The handler's component.
@@ -235,7 +229,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {number} courseId Course ID the module belongs to.
      * @return {number|Promise<number>} Size, or promise resolved with the size.
      */
-    getDownloadedSize?(module: any, courseId: number): number | Promise<number> {
+    getDownloadedSize(module: any, courseId: number): number | Promise<number> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         return this.filepoolProvider.getFilesSizeByComponent(siteId, this.component, module.id);
@@ -324,9 +318,10 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * Invalidate the prefetched content.
      *
      * @param {number} moduleId The module ID.
+     * @param {number} courseId The course ID the module belongs to.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number): Promise<any> {
+    invalidateContent(moduleId: number, courseId: number): Promise<any> {
         const promises = [],
             siteId = this.sitesProvider.getCurrentSiteId();
 

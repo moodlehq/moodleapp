@@ -32,9 +32,12 @@ export class CoreDomUtilsProvider {
     // List of input types that support keyboard.
     protected INPUT_SUPPORT_KEYBOARD = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
         'search', 'tel', 'text', 'time', 'url', 'week'];
+    protected INSTANCE_ID_ATTR_NAME = 'core-instance-id';
 
     protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
     protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
+    protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
+    protected lastInstanceId = 0;
 
     constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
             private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
@@ -411,6 +414,20 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Retrieve component/directive instance.
+     * Please use this function only if you cannot retrieve the instance using parent/child methods: ViewChild (or similar)
+     * or Angular's injection.
+     *
+     * @param {Element} element The root element of the component/directive.
+     * @return {any} The instance, undefined if not found.
+     */
+    getInstanceByElement(element: Element): any {
+        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
+
+        return this.instances[id];
+    }
+
+    /**
      * Check if an element is outside of screen (viewport).
      *
      * @param {HTMLElement} scrollEl The element that must be scrolled.
@@ -514,6 +531,25 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Remove a component/directive instance using the DOM Element.
+     *
+     * @param {Element} element The root element of the component/directive.
+     */
+    removeInstanceByElement(element: Element): void {
+        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
+        delete this.instances[id];
+    }
+
+    /**
+     * Remove a component/directive instance using the ID.
+     *
+     * @param {string} id The ID to remove.
+     */
+    removeInstanceById(id: string): void {
+        delete this.instances[id];
+    }
+
+    /**
      * Search for certain classes in an element contents and replace them with the specified new values.
      *
      * @param {HTMLElement} element DOM element.
@@ -547,28 +583,26 @@ export class CoreDomUtilsProvider {
 
         // Treat elements with src (img, audio, video, ...).
         media = this.element.querySelectorAll('img, video, audio, source, track');
-        for (const i in media) {
-            const el = media[i];
-            let newSrc = paths[this.textUtils.decodeURIComponent(el.getAttribute('src'))];
+        media.forEach((media: HTMLElement) => {
+            let newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('src'))];
 
             if (typeof newSrc != 'undefined') {
-                el.setAttribute('src', newSrc);
+                media.setAttribute('src', newSrc);
             }
 
             // Treat video posters.
-            if (el.tagName == 'VIDEO' && el.getAttribute('poster')) {
-                newSrc = paths[this.textUtils.decodeURIComponent(el.getAttribute('poster'))];
+            if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
+                newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('poster'))];
                 if (typeof newSrc !== 'undefined') {
-                    el.setAttribute('poster', newSrc);
+                    media.setAttribute('poster', newSrc);
                 }
             }
-        }
+        });
 
         // Now treat links.
         anchors = this.element.querySelectorAll('a');
-        for (const i in anchors) {
-            const anchor = anchors[i],
-                href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
+        anchors.forEach((anchor: HTMLElement) => {
+            const href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
                 newUrl = paths[href];
 
             if (typeof newUrl != 'undefined') {
@@ -578,7 +612,7 @@ export class CoreDomUtilsProvider {
                     anchorFn(anchor, href);
                 }
             }
-        }
+        });
 
         return this.element.innerHTML;
     }
@@ -883,6 +917,22 @@ export class CoreDomUtilsProvider {
         loader.present();
 
         return loader;
+    }
+
+    /**
+     * Stores a component/directive instance.
+     *
+     * @param {Element} element The root element of the component/directive.
+     * @param {any} instance The instance to store.
+     * @return {string} ID to identify the instance.
+     */
+    storeInstanceByElement(element: Element, instance: any): string {
+        const id = String(this.lastInstanceId++);
+
+        element.setAttribute(this.INSTANCE_ID_ATTR_NAME, id);
+        this.instances[id] = instance;
+
+        return id;
     }
 
     /**

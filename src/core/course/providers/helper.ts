@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '../../../providers/events';
 import { CoreFilepoolProvider } from '../../../providers/filepool';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
@@ -114,7 +115,8 @@ export class CoreCourseHelperProvider {
         private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider,
         private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
         private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
-        private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider) { }
+        private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
+        private eventsProvider: CoreEventsProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -358,8 +360,12 @@ export class CoreCourseHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     confirmAndRemoveFiles(module: any, courseId: number): Promise<any> {
-        return this.domUtils.showConfirm(this.translate.instant('course.confirmdeletemodulefiles')).then(() => {
+        return this.domUtils.showConfirm(this.translate.instant('core.course.confirmdeletemodulefiles')).then(() => {
             return this.prefetchDelegate.removeModuleFiles(module, courseId);
+        }).catch((error) => {
+            if (error) {
+                this.domUtils.showErrorModal(error);
+            }
         });
     }
 
@@ -406,6 +412,39 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Helper function to prefetch a module, showing a confirmation modal if the size is big.
+     * This function is meant to be called from a context menu option. It will also modify some data like the prefetch icon.
+     *
+     * @param {any} instance The component instance that has the context menu. It should have prefetchStatusIcon and isDestroyed.
+     * @param {any} module Module to be prefetched
+     * @param {number} courseId Course ID the module belongs to.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    contextMenuPrefetch(instance: any, module: any, courseId: number): Promise<any> {
+        const initialIcon = instance.prefetchStatusIcon;
+        let cancelled = false;
+
+        instance.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        return this.prefetchDelegate.getModuleDownloadSize(module, courseId, true).then((size) => {
+            return this.domUtils.confirmDownloadSize(size).catch(() => {
+                // User hasn't confirmed, stop.
+                cancelled = true;
+
+                return Promise.reject(null);
+            }).then(() => {
+                return this.prefetchDelegate.prefetchModule(module, courseId, true);
+            });
+        }).catch((error) => {
+            instance.prefetchStatusIcon = initialIcon;
+            if (!instance.isDestroyed && !cancelled) {
+                this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            }
+        });
+    }
+
+    /**
      * Determine the status of a list of courses.
      *
      * @param {any[]} courses Courses
@@ -428,6 +467,41 @@ export class CoreCourseHelperProvider {
             }
 
             return status;
+        });
+    }
+
+    /**
+     * Fill the Context Menu for a certain module.
+     *
+     * @param {any} instance The component instance that has the context menu.
+     * @param {any} module Module to be prefetched
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} [invalidateCache] Invalidates the cache first.
+     * @param {string} [component] Component of the module.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    fillContextMenu(instance: any, module: any, courseId: number, invalidateCache?: boolean, component?: string): Promise<any> {
+        return this.getModulePrefetchInfo(module, courseId, invalidateCache, component).then((moduleInfo) => {
+            instance.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            instance.prefetchStatusIcon = moduleInfo.statusIcon;
+
+            if (moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE) {
+                // Module is downloadable, get the text to display to prefetch.
+                if (moduleInfo.downloadTime > 0) {
+                    instance.prefetchText = this.translate.instant('core.lastdownloaded') + ': ' + moduleInfo.downloadTimeReadable;
+                } else {
+                    // Module not downloaded, show a default text.
+                    instance.prefetchText = this.translate.instant('core.download');
+                }
+            }
+
+            if (typeof instance.statusObserver == 'undefined' && component) {
+                instance.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
+                    if (data.componentId == module.id && data.component == component) {
+                        this.fillContextMenu(instance, module, courseId, false, component);
+                    }
+                }, this.sitesProvider.getCurrentSiteId());
+            }
         });
     }
 

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, ViewChild } from '@angular/core';
 import { CoreCourseModuleDelegate } from '../../../providers/module-delegate';
 import { CoreCourseUnsupportedModuleComponent } from '../../../components/unsupported-module/unsupported-module';
+import { CoreDynamicComponent } from '../../../../../components/dynamic-component/dynamic-component';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -29,6 +30,8 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
+
+    @ViewChild(CoreDynamicComponent) dynamicComponent: CoreDynamicComponent;
 
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
@@ -51,5 +54,16 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
             this.data.courseId = this.course.id;
             this.data.module = module;
         }
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param {any} [refresher] Refresher.
+     * @param {Function} [done] Function to call when done.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    doRefresh(refresher?: any, done?: () => void): Promise<any> {
+        return Promise.resolve(this.dynamicComponent.callComponentFunction('doRefresh', [refresher, done]));
     }
 }

@@ -649,11 +649,11 @@ export class SQLiteDB {
      *
      * @param {string} table The database table.
      * @param {object} data An object with the fields to insert/update: fieldname=>fieldvalue.
-     * @param {object} conditions The conditions to check if the record already exists.
+     * @param {object} conditions The conditions to check if the record already exists (and to update it).
      * @return {Promise<any>} Promise resolved with done.
      */
     insertOrUpdateRecord(table: string, data: object, conditions: object): Promise<any> {
-        return this.getRecord(table, conditions || data).then(() => {
+        return this.getRecord(table, conditions).then(() => {
             // It exists, update it.
             return this.updateRecords(table, data, conditions);
         }).catch(() => {
@@ -854,7 +854,7 @@ export class SQLiteDB {
         // Create the list of params using the "data" object and the params for the where clause.
         params = Object.keys(data).map((key) => data[key]);
         if (where && whereParams) {
-            params = params.concat(whereParams[1]);
+            params = params.concat(whereParams);
         }
 
         return this.execute(sql, params);
@@ -868,7 +868,7 @@ export class SQLiteDB {
      */
     whereClause(conditions: any = {}): any[] {
         if (!conditions || !Object.keys(conditions).length) {
-            return ['', []];
+            return ['1 = 1', []];
         }
 
         const where = [],

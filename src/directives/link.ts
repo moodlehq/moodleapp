@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController, Content } from 'ionic-angular';
 import { CoreSitesProvider } from '../providers/sites';
 import { CoreDomUtilsProvider } from '../providers/utils/dom';
@@ -40,7 +40,7 @@ export class CoreLinkDirective implements OnInit {
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
             private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController,
-            private content: Content) {
+            @Optional() private content: Content) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }
@@ -81,7 +81,7 @@ export class CoreLinkDirective implements OnInit {
     protected navigate(href: string): void {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';
 
-        if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
+        if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0 || href.indexOf('filesystem:') === 0) {
             // We have a local file.
             this.utils.openFile(href).catch((error) => {
                 this.domUtils.showErrorModal(error);

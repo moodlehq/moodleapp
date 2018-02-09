@@ -21,6 +21,7 @@ import { CoreInitDelegate } from '../../../providers/init';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
+import { CoreTextUtilsProvider } from '../../../providers/utils/text';
 import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './delegate';
@@ -37,7 +38,7 @@ export class CoreContentLinksHelperProvider {
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private contentLinksDelegate: CoreContentLinksDelegate, private appProvider: CoreAppProvider,
             private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private translate: TranslateService,
-            private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider) {
+            private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreContentLinksHelperProvider');
 
         // Listen for app launched URLs. If we receive one, check if it's a content link.
@@ -103,7 +104,7 @@ export class CoreContentLinksHelperProvider {
         const modal = this.domUtils.showModalLoading();
         let username;
 
-        url = decodeURIComponent(url);
+        url = this.textUtils.decodeURIComponent(url);
 
         // App opened using custom URL scheme.
         this.logger.debug('Treating custom URL scheme: ' + url);
