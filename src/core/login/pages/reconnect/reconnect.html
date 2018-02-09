@@ -8,7 +8,7 @@
         <div *ngIf="site" text-wrap text-center [ngClass]="{'item-avatar-center': site.avatar}">
             <ion-avatar *ngIf="site.avatar">
                 <!-- Show user avatar. -->
-                <img [src]="site.avatar" class="avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+                <img [src]="site.avatar" class="avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
             </ion-avatar>
 
             <!-- Show site logo or a default image. -->

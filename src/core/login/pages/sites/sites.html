@@ -13,7 +13,7 @@
     <ion-list>
         <ion-item (click)="login(site.id)" *ngFor="let site of sites; let idx = index">
             <ion-avatar item-start>
-                <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+                <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
             </ion-avatar>
             <h2>{{site.fullName}}</h2>
             <p><core-format-text [text]="site.siteName" clean="true" watch="true" [siteId]="site.id"></core-format-text></p>

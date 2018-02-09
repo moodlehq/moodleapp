@@ -69,6 +69,7 @@ import { AddonUserProfileFieldModule } from '../addon/userprofilefield/userprofi
 import { AddonFilesModule } from '../addon/files/files.module';
 import { AddonModBookModule } from '../addon/mod/book/book.module';
 import { AddonModLabelModule } from '../addon/mod/label/label.module';
+import { AddonMessagesModule } from '../addon/messages/messages.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -109,7 +110,8 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonModBookModule,
-        AddonModLabelModule
+        AddonModLabelModule,
+        AddonMessagesModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

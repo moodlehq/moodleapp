@@ -439,3 +439,15 @@ ion-toast.core-toast-alert .toast-wrapper{
     border-bottom: 3px solid $color-base;
   }
 }
+
+.core-circle:before {
+  content: ' \25CF';
+  font-size: 20px;
+}
+
+@each $color-name, $color-base, $color-contrast in get-colors($colors) {
+  .core-#{$color-name}-circle:before {
+    @extend .core-circle:before;
+    color: $color-base;
+  }
+}

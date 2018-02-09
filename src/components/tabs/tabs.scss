@@ -77,3 +77,10 @@ core-tabs {
         @extend .header-md::after;
     }
 }
+
+.ios, .md, .wp {
+    .core-avoid-header ion-content core-tabs core-tab ion-content {
+        top: 0;
+        height: 100%;
+    }
+}

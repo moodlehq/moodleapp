@@ -11,8 +11,7 @@
         <ion-list *ngIf="user && !isDeleted">
             <ion-item text-center>
                 <div class="item-avatar-center">
-                    <img *ngIf="user.profileimageurl" class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
-                    <img *ngIf="!user.profileimageurl" class="avatar" src="assets/img/user-avatar.png" alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <img class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
                     <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
                 </div>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
