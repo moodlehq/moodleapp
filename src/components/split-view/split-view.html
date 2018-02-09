@@ -1,6 +1,6 @@
 <ion-split-pane (ionChange)="onSplitPaneChanged($event._visible);" [when]="when">
-    <ion-menu [content]="detailNav" type="push">
+    <ion-menu [content]="detailNav" type="push" class="core-avoid-header">
         <ng-content></ng-content>
     </ion-menu>
-    <ion-nav [root]="detailPage" #detailNav main></ion-nav>
+    <ion-nav [root]="detailPage" #detailNav main class="core-avoid-header"></ion-nav>
 </ion-split-pane>

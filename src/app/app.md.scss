@@ -28,6 +28,11 @@
   }
 }
 
+.md .core-avoid-header ion-content {
+    top: $navbar-md-height;
+    height: calc(100% - #{($navbar-md-height)});
+}
+
 // Highlights inside the input element.
 @if ($core-text-input-md-show-highlight) {
   .card-md, .list-md {

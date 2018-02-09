@@ -1,0 +1,79 @@
+core-grades-course {
+  .core-grades-table {
+    border-collapse: collapse;
+    line-height: 20px;
+    width: 100%;
+    font-size: 16px;
+    color: $text-color;
+
+    tr {
+      border-bottom: 1px solid $list-border-color;
+    }
+    th, td {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-right: 10px;
+      vertical-align: top;
+      white-space: normal;
+      text-align: left;
+    }
+    thead th {
+      vertical-align: bottom;
+      font-weight: bold;
+      background-color: $white;
+    }
+    tbody th {
+      font-weight: normal;
+    }
+    #gradeitem {
+      padding-left: 5px;
+    }
+
+    .core-grades-table-gradeitem {
+      padding-left: 5px;
+      font-weight: bold;
+      img {
+        width: 16px;
+        height: 16px;
+      }
+      ion-icon {
+        color: #999999;
+      }
+    }
+    .core-grades-table-feedback {
+      padding-left: 5px;
+      .no-overflow {
+        overflow: auto;
+      }
+    }
+
+    .dimmed_text,
+    .hidden {
+      opacity: .7;
+    }
+
+    .odd {
+      td, th, th.core-split-item-selected {
+        background-color: $gray-lighter;
+      }
+    }
+    .even {
+      td, th, th.core-split-item-selected {
+        background-color: $white;
+      }
+    }
+
+    @include media-breakpoint-up(md) {
+      td {
+        font-size: 0.85em;
+      }
+    }
+  }
+}
+
+.split-pane-side, .split-pane-main {
+  core-grades-course .core-grades-table .hidden-phone {
+    display: none;
+    opacity: 0;
+  }
+}

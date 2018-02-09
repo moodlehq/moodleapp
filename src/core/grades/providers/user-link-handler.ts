@@ -13,21 +13,20 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreContentLinksHandlerBase } from '../../../core/contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '../../../core/contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '../../../core/login/providers/helper';
-import { CoreUserProvider } from './user';
+import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
+import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
+import { CoreContentLinksHelperProvider } from '../../contentlinks/providers/helper';
+import { CoreGradesProvider } from './grades';
 
 /**
- * Handler to treat links to user participants page.
+ * Handler to treat links to user grades.
  */
 @Injectable()
-export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase {
-    name = 'CoreUserParticipants';
-    featureName = '$mmCoursesDelegate_mmaParticipants';
-    pattern = /\/user\/index\.php/;
+export class CoreGradesUserLinkHandler extends CoreContentLinksHandlerBase {
+    name = 'CoreGradesUserLinkHandler';
+    pattern = /\/grade\/report\/user\/index.php/;
 
-    constructor(private userProvider: CoreUserProvider, private loginHelper: CoreLoginHelperProvider) {
+    constructor(private linkHelper: CoreContentLinksHelperProvider, private gradesProvider: CoreGradesProvider) {
         super();
     }
 
@@ -42,12 +41,14 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        courseId = parseInt(params.id, 10) || courseId;
-
         return [{
             action: (siteId, navCtrl?): void => {
+                const pageParams = {
+                    course: {id: courseId},
+                    userId: params.userid ? parseInt(params.userid, 10) : false,
+                };
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('AddonParticipantsListPage', {courseId: courseId}, siteId);
+                this.linkHelper.goInSite(navCtrl, 'CoreGradesCoursePage', pageParams, siteId);
             }
         }];
     }
@@ -63,12 +64,10 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
-        courseId = parseInt(params.id, 10) || courseId;
-
-        if (!courseId || url.indexOf('/grade/report/') != -1) {
+        if (!courseId) {
             return false;
         }
 
-        return this.userProvider.isPluginEnabledForCourse(courseId, siteId);
+        return this.gradesProvider.isPluginEnabledForCourse(courseId, siteId);
     }
 }

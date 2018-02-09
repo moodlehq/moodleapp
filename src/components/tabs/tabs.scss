@@ -1,6 +1,7 @@
 core-tabs {
     .core-tabs-bar {
-        @include position(null, null, 0, 0);
+        left: 0;
+        position: relative;
         z-index: $z-index-toolbar;
         display: flex;
         width: 100%;
@@ -11,15 +12,17 @@ core-tabs {
 
             background: $core-top-tabs-background;
             color: $core-top-tabs-color !important;
-            border-bottom: 1px solid $core-top-tabs-border;
             font-size: 1.6rem;
+            border: 0;
 
             &[aria-selected=true] {
                 color: $core-top-tabs-color-active !important;
-                border-bottom: 2px solid $core-top-tabs-color-active;
+                border: 0 !important;
+                border-bottom: 2px solid $core-top-tabs-color-active !important;
             }
         }
     }
+
     .core-tabs-content-container {
         height: 100%;
     }
@@ -55,4 +58,22 @@ core-tabs {
 
 .scroll-content.no-scroll {
     overflow: hidden !important;
+}
+
+.ios core-tabs {
+    .core-tabs-bar {
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        > a {
+            font-size: 1.6rem;
+        }
+    }
+}
+
+.md core-tabs {
+    .core-tabs-bar::after {
+        @extend .header-md::after;
+    }
 }

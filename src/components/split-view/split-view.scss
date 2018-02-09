@@ -36,16 +36,7 @@ core-split-view {
             }
         }
     }
-}
-
-.ios ion-header + core-split-view  ion-menu.split-pane-side ion-content{
-    top: $navbar-ios-height;
-}
-
-.md ion-header + core-split-view  ion-menu.split-pane-side ion-content{
-    top: $navbar-md-height;
-}
-
-.wp ion-header + core-split-view  ion-menu.split-pane-side ion-content{
-    top: $navbar-wp-height;
+    ion-header {
+        display: none;
+    }
 }

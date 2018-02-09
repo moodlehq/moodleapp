@@ -16,18 +16,19 @@ import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../course/providers/options-delegate';
 import { CoreCourseProvider } from '../../course/providers/course';
-import { CoreUserProvider } from './user';
-import { CoreUserParticipantsComponent } from '../components/participants/participants';
+import { CoreGradesProvider } from './grades';
+import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreGradesCourseComponent } from '../components/course/course';
 
 /**
  * Course nav handler.
  */
 @Injectable()
-export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOptionsHandler {
-    name = 'CoreUserParticipants';
-    priority = 600;
+export class CoreGradesCourseOptionHandler implements CoreCourseOptionsHandler {
+    name = 'CoreGrades';
+    priority = 400;
 
-    constructor(private userProvider: CoreUserProvider) {}
+    constructor(private gradesProvider: CoreGradesProvider, private coursesProvider: CoreCoursesProvider) {}
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -38,12 +39,12 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
      * @return {Promise<any>} Promise resolved when done.
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: any, admOptions?: any): Promise<any> {
-        if (navOptions && typeof navOptions.participants != 'undefined') {
+        if (navOptions && typeof navOptions.grades != 'undefined') {
             // No need to invalidate anything.
             return Promise.resolve();
         }
 
-        return this.userProvider.invalidateParticipantsList(courseId);
+        return this.coursesProvider.invalidateUserCourses();
     }
 
     /**
@@ -69,11 +70,11 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.participants != 'undefined') {
-            return navOptions.participants;
+        if (navOptions && typeof navOptions.grades != 'undefined') {
+            return navOptions.grades;
         }
 
-        return this.userProvider.isPluginEnabledForCourse(courseId);
+        return this.gradesProvider.isPluginEnabledForCourse(courseId);
     }
 
     /**
@@ -83,9 +84,9 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
      */
     getDisplayData(): CoreCourseOptionsHandlerData {
         return {
-            title: 'core.user.participants',
-            class: 'core-user-participants-handler',
-            component: CoreUserParticipantsComponent
+            title: 'core.grades.grades',
+            class: 'core-grades-course-handler',
+            component: CoreGradesCourseComponent
         };
     }
 }

@@ -28,6 +28,11 @@
   }
 }
 
+.ios .core-avoid-header ion-content {
+    top: $navbar-ios-height;
+    height: calc(100% - #{($navbar-ios-height)});
+}
+
 // Highlights inside the input element.
 @if ($core-text-input-ios-show-highlight) {
   .card-ios, .list-ios {

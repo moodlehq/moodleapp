@@ -30,11 +30,16 @@
     clear: both;
   }
 }
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 
 .opacity-hide { opacity: 0; }
 .core-big   { font-size: 115%; }
 
-@media only screen and (min-width: 430px) {
+@include media-breakpoint-up(sm) {
   .core-center-view .scroll-content {
     display: flex!important;
     align-content: center !important;
@@ -46,15 +51,17 @@
   }
 }
 
-@media only screen and (max-width: 768px) {
+@include media-breakpoint-down(md) {
   .hidden-phone {
     display: none !important;
+    opacity: 0 !important;
   }
 }
 
-@media only screen and (min-width: 769px) {
+@include media-breakpoint-up(md) {
   .hidden-tablet {
     display: none !important;
+    opacity: 0 !important;
   }
 }
 

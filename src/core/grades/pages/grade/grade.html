@@ -1,0 +1,72 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'core.grades.grade' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="gradeLoaded" (ionRefresh)="refreshGrade($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="gradeLoaded">
+        <core-empty-box *ngIf="!grade" icon="stats" [message]="'core.grades.nogradesreturned' | translate"></core-empty-box>
+
+        <ion-list *ngIf="grade">
+            <a ion-item *ngIf="grade.itemname && grade.link" text-wrap detail-push [href]="grade.link" core-link captureLink="true">
+                <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" item-start></ion-icon>
+                <img *ngIf="grade.image" [src]="grade.image" item-start/>
+                <h2><core-format-text [text]="grade.itemname"></core-format-text></h2>
+            </a>
+
+            <ion-item *ngIf="grade.itemname && !grade.link" text-wrap >
+                <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" item-start></ion-icon>
+                <img *ngIf="grade.image" [src]="grade.image" item-start/>
+                <h2><core-format-text [text]="grade.itemname"></core-format-text></h2>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.weight">
+                <h2>{{ 'core.grades.weight' | translate}}</h2>
+                <p><core-format-text [text]="grade.weight"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.grade">
+                <h2>{{ 'core.grades.grade' | translate}}</h2>
+                <p><core-format-text [text]="grade.grade"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.range">
+                <h2>{{ 'core.grades.range' | translate}}</h2>
+                <p><core-format-text [text]="grade.range"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.percentage">
+                <h2>{{ 'core.grades.percentage' | translate}}</h2>
+                <p><core-format-text [text]="grade.percentage"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.lettergrade">
+                <h2>{{ 'core.grades.lettergrade' | translate}}</h2>
+                <p><core-format-text [text]="grade.lettergrade"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.rank">
+                <h2>{{ 'core.grades.rank' | translate}}</h2>
+                <p><core-format-text [text]="grade.rank"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.average">
+                <h2>{{ 'core.grades.average' | translate}}</h2>
+                <p><core-format-text [text]="grade.average"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.feedback">
+                <h2>{{ 'core.grades.feedback' | translate}}</h2>
+                <p><core-format-text [fullTitle]="'core.grades.feedback' | translate" maxHeight="60" fullOnClick="true" [text]="grade.feedback"></core-format-text></p>
+            </ion-item>
+
+            <ion-item text-wrap *ngIf="grade.contributiontocoursetotal">
+                <h2>{{ 'core.grades.contributiontocoursetotal' | translate}}</h2>
+                <p><core-format-text [text]="grade.contributiontocoursetotal"></core-format-text></p>
+            </ion-item>
+        </ion-list>
+    </core-loading>
+</ion-content>
