@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.4.0">
-  <name>Moodle Mobile</name>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="es.fonpol.fonpolapp" version="3.4.0">
+  <name>Fonpol App</name>
   <description>
-        Moodle Mobile official app
+        Aplicación Oficial Fonpol
     </description>
-  <author href="http://moodle.com" email="mobile@moodle.com">
-        Moodle Mobile team
+  <author href="http://fonpol.es" email="mobile@fonpol.es">
+        Equipo Fonpol App
     </author>
   <content src="index.html"/>
   <access origin="*"/>
