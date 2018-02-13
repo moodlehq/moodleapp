@@ -91,7 +91,7 @@ export class CoreDelegate {
             // Update handlers on this cases.
             eventsProvider.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
             eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-            eventsProvider.on(CoreEventsProvider.REMOTE_ADDONS_LOADED, this.updateHandlers.bind(this));
+            eventsProvider.on(CoreEventsProvider.SITE_ADDONS_LOADED, this.updateHandlers.bind(this));
         }
     }
 

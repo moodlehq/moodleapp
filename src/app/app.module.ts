@@ -49,6 +49,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
+import { CoreAddonManagerProvider } from '@providers/addonmanager';
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -64,6 +65,7 @@ import { CoreContentLinksModule } from '@core/contentlinks/contentlinks.module';
 import { CoreUserModule } from '@core/user/user.module';
 import { CoreGradesModule } from '@core/grades/grades.module';
 import { CoreSettingsModule } from '@core/settings/settings.module';
+import { CoreSiteAddonsModule } from '@core/siteaddons/siteaddons.module';
 
 // Addon modules.
 import { AddonCalendarModule } from '@addon/calendar/calendar.module';
@@ -111,6 +113,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreUserModule,
         CoreGradesModule,
         CoreSettingsModule,
+        CoreSiteAddonsModule,
         AddonCalendarModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
@@ -153,12 +156,14 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreFilepoolProvider,
         CoreUpdateManagerProvider,
         CorePluginFileDelegate,
-        CoreSyncProvider
+        CoreSyncProvider,
+        CoreAddonManagerProvider
     ]
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,
-            sitesProvider: CoreSitesProvider) {
+            sitesProvider: CoreSitesProvider, addonManagerProvider: CoreAddonManagerProvider) {
+        // Inject CoreAddonManagerProvider even if it's not used to make sure it's initialized.
         // Register a handler for platform ready.
         initDelegate.registerProcess({
             name: 'CorePlatformReady',
