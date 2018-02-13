@@ -56,6 +56,24 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreInitDelegate } from '@providers/init';
 
+// List of Ionic Native providers.
+export const IONIC_NATIVE_PROVIDERS = [
+    Camera,
+    Clipboard,
+    File,
+    FileTransfer,
+    Globalization,
+    InAppBrowser,
+    Keyboard,
+    LocalNotifications,
+    MediaCapture,
+    Network,
+    SplashScreen,
+    StatusBar,
+    SQLite,
+    Zip
+];
+
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
  *

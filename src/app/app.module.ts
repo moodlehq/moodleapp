@@ -81,6 +81,36 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http, './assets/lang/', '.json');
 }
 
+// List of providers.
+export const CORE_PROVIDERS: any[] = [
+    CoreLoggerProvider,
+    CoreDbProvider,
+    CoreAppProvider,
+    CoreConfigProvider,
+    CoreLangProvider,
+    CoreTextUtilsProvider,
+    CoreDomUtilsProvider,
+    CoreTimeUtilsProvider,
+    CoreUrlUtilsProvider,
+    CoreUtilsProvider,
+    CoreMimetypeUtilsProvider,
+    CoreInitDelegate,
+    CoreFileProvider,
+    CoreWSProvider,
+    CoreEventsProvider,
+    CoreSitesFactoryProvider,
+    CoreSitesProvider,
+    CoreLocalNotificationsProvider,
+    CoreGroupsProvider,
+    CoreCronDelegate,
+    CoreFileSessionProvider,
+    CoreFilepoolProvider,
+    CoreUpdateManagerProvider,
+    CorePluginFileDelegate,
+    CoreSyncProvider,
+    CoreAddonManagerProvider
+];
+
 @NgModule({
     declarations: [
         MoodleMobileApp
@@ -126,39 +156,13 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     entryComponents: [
         MoodleMobileApp
     ],
-    providers: [
+    providers: CORE_PROVIDERS.concat([
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
             multi: true,
-        },
-        CoreLoggerProvider,
-        CoreDbProvider,
-        CoreAppProvider,
-        CoreConfigProvider,
-        CoreLangProvider,
-        CoreTextUtilsProvider,
-        CoreDomUtilsProvider,
-        CoreTimeUtilsProvider,
-        CoreUrlUtilsProvider,
-        CoreUtilsProvider,
-        CoreMimetypeUtilsProvider,
-        CoreInitDelegate,
-        CoreFileProvider,
-        CoreWSProvider,
-        CoreEventsProvider,
-        CoreSitesFactoryProvider,
-        CoreSitesProvider,
-        CoreLocalNotificationsProvider,
-        CoreGroupsProvider,
-        CoreCronDelegate,
-        CoreFileSessionProvider,
-        CoreFilepoolProvider,
-        CoreUpdateManagerProvider,
-        CorePluginFileDelegate,
-        CoreSyncProvider,
-        CoreAddonManagerProvider
-    ]
+        }
+    ])
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,

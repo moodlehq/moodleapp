@@ -29,21 +29,25 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '../user/providers/user';
 
+// List of providers (without handlers).
+export const CORE_GRADES_PROVIDERS: any[] = [
+    CoreGradesProvider,
+    CoreGradesHelperProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         CoreGradesComponentsModule
     ],
-    providers: [
-        CoreGradesProvider,
-        CoreGradesHelperProvider,
+    providers: CORE_GRADES_PROVIDERS.concat([
         CoreGradesMainMenuHandler,
         CoreGradesCourseOptionHandler,
         CoreGradesUserLinkHandler,
         CoreGradesOverviewLinkHandler,
         CoreGradesUserHandler
-    ]
+    ])
 })
 export class CoreGradesModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, gradesMenuHandler: CoreGradesMainMenuHandler,

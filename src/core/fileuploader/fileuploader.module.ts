@@ -22,21 +22,25 @@ import { CoreFileUploaderCameraHandler } from './providers/camera-handler';
 import { CoreFileUploaderFileHandler } from './providers/file-handler';
 import { CoreFileUploaderVideoHandler } from './providers/video-handler';
 
+// List of providers (without handlers).
+export const CORE_FILEUPLOADER_PROVIDERS: any[] = [
+    CoreFileUploaderProvider,
+    CoreFileUploaderHelperProvider,
+    CoreFileUploaderDelegate
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        CoreFileUploaderProvider,
-        CoreFileUploaderHelperProvider,
-        CoreFileUploaderDelegate,
+    providers: CORE_FILEUPLOADER_PROVIDERS.concat([
         CoreFileUploaderAlbumHandler,
         CoreFileUploaderAudioHandler,
         CoreFileUploaderCameraHandler,
         CoreFileUploaderFileHandler,
         CoreFileUploaderVideoHandler
-    ]
+    ])
 })
 export class CoreFileUploaderModule {
     constructor(delegate: CoreFileUploaderDelegate, albumHandler: CoreFileUploaderAlbumHandler,

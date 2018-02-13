@@ -22,18 +22,22 @@ import { CoreCoursesMyOverviewLinkHandler } from './providers/my-overview-link-h
 import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
 import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
 
+// List of providers (without handlers).
+export const CORE_COURSES_PROVIDERS: any[] = [
+    CoreCoursesProvider,
+    CoreCoursesMyOverviewProvider
+];
+
 @NgModule({
     declarations: [],
     imports: [
     ],
-    providers: [
-        CoreCoursesProvider,
+    providers: CORE_COURSES_PROVIDERS.concat([
         CoreCoursesMainMenuHandler,
-        CoreCoursesMyOverviewProvider,
         CoreCoursesCourseLinkHandler,
         CoreCoursesIndexLinkHandler,
         CoreCoursesMyOverviewLinkHandler
-    ],
+    ]),
     exports: []
 })
 export class CoreCoursesModule {

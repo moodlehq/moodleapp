@@ -16,13 +16,16 @@ import { NgModule } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreSiteAddonsProvider } from './providers/siteaddons';
 
+// List of providers.
+export const CORE_SITEADDONS_PROVIDERS = [
+    CoreSiteAddonsProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        CoreSiteAddonsProvider
-    ]
+    providers: CORE_SITEADDONS_PROVIDERS
 })
 export class CoreSiteAddonsModule { }
