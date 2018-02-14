@@ -14,6 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { coreShowHideAnimation } from '../../classes/animations';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -37,7 +38,8 @@ import { TranslateService } from '@ngx-translate/core';
  */
 @Component({
     selector: 'core-loading',
-    templateUrl: 'loading.html'
+    templateUrl: 'loading.html',
+    animations: [coreShowHideAnimation]
 })
 export class CoreLoadingComponent implements OnInit {
     @Input() hideUntil: boolean; // Determine when should the contents be shown.

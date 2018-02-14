@@ -39,6 +39,7 @@ import { CoreTabComponent } from './tabs/tab';
 import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
+import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
 
 @NgModule({
     declarations: [
@@ -63,7 +64,8 @@ import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
         CoreTabComponent,
         CoreRichTextEditorComponent,
         CoreNavBarButtonsComponent,
-        CoreDynamicComponent
+        CoreDynamicComponent,
+        CoreSendMessageFormComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -95,7 +97,8 @@ import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
         CoreTabComponent,
         CoreRichTextEditorComponent,
         CoreNavBarButtonsComponent,
-        CoreDynamicComponent
+        CoreDynamicComponent,
+        CoreSendMessageFormComponent
     ]
 })
 export class CoreComponentsModule {}

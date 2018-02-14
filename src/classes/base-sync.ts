@@ -14,11 +14,20 @@
 
 import { CoreSitesProvider } from '../providers/sites';
 import { CoreSyncProvider } from '../providers/sync';
+import { CoreLoggerProvider } from '../providers/logger';
+import { CoreAppProvider } from '../providers/app';
 
 /**
  * Base class to create sync providers. It provides some common functions.
  */
 export class CoreSyncBaseProvider {
+
+    /**
+     * Logger instance get from CoreLoggerProvider.
+     * @type {any}
+     */
+    protected logger;
+
     /**
      * Component of the sync provider.
      * @type {string}
@@ -34,7 +43,11 @@ export class CoreSyncBaseProvider {
     // Store sync promises.
     protected syncPromises: { [siteId: string]: { [uniqueId: string]: Promise<any> } } = {};
 
-    constructor(private sitesProvider: CoreSitesProvider) { }
+    constructor(component: string, protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
+            protected appProvider: CoreAppProvider) {
+        this.logger = this.loggerProvider.getInstance(component);
+        this.component = component;
+    }
 
     /**
      * Add an ongoing sync to the syncPromises list. On finish the promise will be removed.
@@ -184,6 +197,53 @@ export class CoreSyncBaseProvider {
 
             return db.insertOrUpdateRecord(CoreSyncProvider.SYNC_TABLE, { warnings: JSON.stringify(warnings) },
                 { component: this.component, id: id });
+        });
+    }
+
+    /**
+     * Execute a sync function on selected sites.
+     *
+     * @param  {string} syncFunctionLog Log message to explain the sync function purpose.
+     * @param  {string} syncFunction    Sync function to execute.
+     * @param  {any}    [params]        Object that defines the params that admit the funcion.
+     * @param  {string} [siteId]        Site ID to sync. If not defined, sync all sites.
+     * @return {Promise<any>}           Resolved with siteIds selected. Rejected if offline.
+     */
+    syncOnSites(syncFunctionLog: string, syncFunction: string, params?: any, siteId?: string): Promise<any> {
+        if (!this.appProvider.isOnline()) {
+            this.logger.debug(`Cannot sync '${syncFunctionLog}' because device is offline.`);
+
+            return Promise.reject(null);
+        }
+
+        if (this[syncFunction]) {
+            this.logger.debug(`Cannot sync '${syncFunctionLog}' function '${syncFunction}' does not exist.`);
+
+            return Promise.reject(null);
+        }
+        params = params || {};
+
+        let promise;
+        if (!siteId) {
+            // No site ID defined, sync all sites.
+            this.logger.debug(`Try to sync '${syncFunctionLog}' in all sites.`);
+            promise = this.sitesProvider.getSitesIds();
+        } else {
+            this.logger.debug(`Try to sync '${syncFunctionLog}' in site '${siteId}'.`);
+            promise = Promise.resolve([siteId]);
+        }
+
+        return promise.then((siteIds) => {
+            const sitePromises = [];
+            siteIds.forEach((siteId) => {
+                params['siteId'] = siteId;
+                // Execute function for every site selected.
+                if (this[syncFunction]) {
+                    sitePromises.push(this[syncFunction].apply(this, params));
+                }
+            });
+
+            return Promise.all(sitePromises);
         });
     }
 

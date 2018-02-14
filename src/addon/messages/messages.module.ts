@@ -15,7 +15,9 @@
 import { NgModule } from '@angular/core';
 import { AddonMessagesProvider } from './providers/messages';
 import { AddonMessagesOfflineProvider } from './providers/messages-offline';
+import { AddonMessagesSyncProvider } from './providers/sync';
 import { AddonMessagesMainMenuHandler } from './providers/mainmenu-handler';
+
 import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
 
 @NgModule({
@@ -26,6 +28,7 @@ import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
     providers: [
         AddonMessagesProvider,
         AddonMessagesOfflineProvider,
+        AddonMessagesSyncProvider,
         AddonMessagesMainMenuHandler
     ]
 })

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule, Platform } from 'ionic-angular';
 import { HttpModule } from '@angular/http';
@@ -82,6 +83,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         HttpModule,
         IonicModule.forRoot(MoodleMobileApp, {

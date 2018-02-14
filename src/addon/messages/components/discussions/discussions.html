@@ -33,11 +33,13 @@
                 <ion-avatar item-start>
                     <img src="{{discussion.profileimageurl}}" [alt]="'core.pictureof' | translate:{$a: discussion.fullname}" core-external-content onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
-                <h2><core-format-text [text]="discussion.fullname"></core-format-text></h2>
-                <ion-note item-end *ngIf="discussion.message.timecreated > 0 || discussion.unread">
-                    <div *ngIf="discussion.message.timecreated> 0">{{discussion.message.timecreated / 1000 | coreDateDayOrTime}}</div>
-                    <div text-right *ngIf="discussion.unread" class="core-primary-circle"></div>
-                </ion-note>
+                <h2>
+                    <core-format-text [text]="discussion.fullname"></core-format-text>
+                    <ion-note *ngIf="discussion.message.timecreated > 0 || discussion.unread">
+                        <div *ngIf="discussion.message.timecreated> 0">{{discussion.message.timecreated / 1000 | coreDateDayOrTime}}</div>
+                        <div text-right *ngIf="discussion.unread" class="core-primary-circle"></div>
+                    </ion-note>
+                </h2>
                 <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message"></core-format-text></p>
             </ion-item>
         </ion-list>

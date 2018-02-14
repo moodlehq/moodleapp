@@ -60,7 +60,9 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         // Update discussions when new message is received.
         this.newMessagesObserver = eventsProvider.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data) => {
             if (data.userId) {
-                const discussion = this.discussions[data.userId];
+                const discussion = this.discussions.find((disc) => {
+                    return disc.message.user == data.userId;
+                });
 
                 if (typeof discussion == 'undefined') {
                     this.loaded = false;
@@ -78,7 +80,9 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         // Update discussions when a message is read.
         this.readChangedObserver = eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
             if (data.userId) {
-                const discussion = this.discussions[data.userId];
+                const discussion = this.discussions.find((disc) => {
+                    return disc.message.user == data.userId;
+                });
 
                 if (typeof discussion != 'undefined') {
                     // A discussion has been read reset counter.
@@ -160,7 +164,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
             }
 
             this.discussions = discussionsSorted.sort((a, b) => {
-                return a.message.timecreated - b.message.timecreated;
+                return b.message.timecreated - a.message.timecreated;
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);

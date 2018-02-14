@@ -15,7 +15,6 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
-
 // Alignment
 // -------------------------
 
@@ -236,6 +235,11 @@ core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-heig
   }
 }
 
+core-format-text[singleLine="true"], *[core-format-text][singleLine="true"],
+core-format-text[ng-reflect-single-line="true"], *[core-format-text][ng-reflect-single-line="true"] {
+    white-space: nowrap;
+}
+
 .core-media-adapt-width {
   max-width: 100%;
 }
@@ -430,6 +434,36 @@ ion-toast.core-toast-success .toast-wrapper{
 
 ion-toast.core-toast-alert .toast-wrapper{
     background: $red-dark;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+
+  &[core-auto-rows] {
+    height: auto;
+    line-height: 18px;
+    padding: 5px;
+  }
+
+  &:not([core-auto-rows]) {
+    height: 200px;
+    min-height: $core-rte-min-height;
+  }
+}
+
+.toolbar .core-bar-button-image {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  max-width: $core-toolbar-button-image-width - 1;
+  max-height: $core-toolbar-button-image-width - 1;
+  border-radius: 50%;
+}
+
+// Footer with auto height.
+.footer.footer-adjustable {
+    height: auto;
 }
 
 // Message cards

@@ -26,6 +26,7 @@
     "ionic:build:before": "gulp"
   },
   "dependencies": {
+    "@angular/animations": "^5.2.5",
     "@angular/common": "5.0.0",
     "@angular/compiler": "5.0.0",
     "@angular/compiler-cli": "5.0.0",

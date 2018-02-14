@@ -212,14 +212,15 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     /**
      * The filter has changed.
      *
-     * @param {string} newValue New filter value.
+     * @param {any} Received Event.
      */
-    filterChanged(newValue: string): void {
+    filterChanged(event: any): void {
+        const newValue = event.target.value && event.target.value.trim().toLowerCase();
         if (!newValue || !this.courses[this.courses.selected]) {
             this.filteredCourses = this.courses[this.courses.selected];
         } else {
             this.filteredCourses = this.courses[this.courses.selected].filter((course) => {
-                return course.fullname.toLowerCase().indexOf(newValue.toLowerCase()) > -1;
+                return course.fullname.toLowerCase().indexOf(newValue) > -1;
             });
         }
     }

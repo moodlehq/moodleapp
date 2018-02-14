@@ -19,6 +19,8 @@ import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
 import { CoreKeepKeyboardDirective } from './keep-keyboard';
 import { CoreUserLinkDirective } from './user-link';
+import { CoreAutoRowsDirective } from './auto-rows';
+import { CoreLongPressDirective } from './long-press';
 
 @NgModule({
     declarations: [
@@ -27,7 +29,9 @@ import { CoreUserLinkDirective } from './user-link';
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
         CoreLinkDirective,
-        CoreUserLinkDirective
+        CoreUserLinkDirective,
+        CoreAutoRowsDirective,
+        CoreLongPressDirective
     ],
     imports: [],
     exports: [
@@ -36,7 +40,9 @@ import { CoreUserLinkDirective } from './user-link';
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
         CoreLinkDirective,
-        CoreUserLinkDirective
+        CoreUserLinkDirective,
+        CoreAutoRowsDirective,
+        CoreLongPressDirective
     ]
 })
 export class CoreDirectivesModule {}

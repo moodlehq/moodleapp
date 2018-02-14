@@ -151,7 +151,7 @@ export class CoreNavBarButtonsComponent implements OnInit {
             if (parentPage) {
                 // Check if the page has a header. If it doesn't, search the next parent page.
                 const header = this.searchHeaderInPage(parentPage);
-                if (header) {
+                if (header && getComputedStyle(header, null).display != 'none') {
                     return Promise.resolve(header);
                 }
             }

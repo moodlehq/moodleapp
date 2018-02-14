@@ -1,6 +1,15 @@
 {
+    "contacts": "Contacts",
+    "deletemessage": "Delete message",
+    "deletemessageconfirmation": "Are you sure you want to delete this message? It will only be deleted from your messaging history and will still be viewable by the user who sent or received the message.",
+    "errordeletemessage": "Error while deleting the message.",
     "errorwhileretrievingdiscussions": "Error while retrieving discussions from the server.",
+    "errorwhileretrievingmessages": "Error while retrieving messages from the server.",
+    "messagenotsent": "The message was not sent. Please try again later.",
     "message": "Message",
     "messages": "Messages",
-    "nomessages": "No messages"
+    "newmessage": "New message",
+    "newmessages": "New messages",
+    "nomessages": "No messages",
+    "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}"
 }

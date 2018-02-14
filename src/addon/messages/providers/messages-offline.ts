@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreAppProvider } from '../../../providers/app';
 
 /**
  * Service to handle Offline messages.
@@ -55,9 +56,53 @@ export class AddonMessagesOfflineProvider {
         }
     ];
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonMessagesOfflineProvider');
         this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+    }
+
+    /**
+     * Delete a message.
+     *
+     * @param  {number} toUserId    User ID to send the message to.
+     * @param  {string} message     The message.
+     * @param  {number} timeCreated The time the message was created.
+     * @param  {string} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise<any>}       Promise resolved if stored, rejected if failure.
+     */
+    deleteMessage(toUserId: number, message: string, timeCreated: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().deleteRecords(this.MESSAGES_TABLE, {
+                    touserid: toUserId,
+                    smallmessage: message,
+                    timecreated: timeCreated
+                });
+        });
+    }
+
+    /**
+     * Get all messages where deviceoffline is set to 1.
+     *
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved with messages.
+     */
+    getAllDeviceOfflineMessages(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(this.MESSAGES_TABLE, {deviceoffline: 1});
+        });
+    }
+
+    /**
+     * Get offline messages to send to a certain user.
+     *
+     * @param  {number} toUserId       User ID to get messages to.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved with messages.
+     */
+    getMessages(toUserId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(this.MESSAGES_TABLE, {touserid: toUserId});
+        });
     }
 
     /**
@@ -69,6 +114,73 @@ export class AddonMessagesOfflineProvider {
     getAllMessages(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.getDb().getAllRecords(this.MESSAGES_TABLE);
+        });
+    }
+
+    /**
+     * Check if there are offline messages to send to a certain user.
+     *
+     * @param  {number} toUserId User ID to check.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved with boolean: true if has offline messages, false otherwise.
+     */
+    hasMessages(toUserId: number, siteId?: string): Promise<any> {
+        return this.getMessages(toUserId, siteId).then((messages) => {
+            return !!messages.length;
+        });
+    }
+
+    /**
+     * Save a message to be sent later.
+     *
+     * @param  {number} toUserId User ID recipient of the message.
+     * @param  {string} message  The message to send.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved if stored, rejected if failure.
+     */
+    saveMessage(toUserId: number, message: string, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const  entry = {
+                touserid: toUserId,
+                useridfrom: site.getUserId(),
+                smallmessage: message,
+                timecreated: new Date().getTime(),
+                deviceoffline: this.appProvider.isOnline() ? 0 : 1
+            };
+
+            return site.getDb().insertOrUpdateRecord(this.MESSAGES_TABLE, entry, {
+                        touserid: toUserId,
+                        smallmessage: message,
+                        timecreated: entry.timecreated
+                    }).then(() => {
+                return entry;
+            });
+        });
+    }
+
+    /**
+     * Set deviceoffline for a group of messages.
+     *
+     * @param  {any} messages Messages to update. Should be the same entry as retrieved from the DB.
+     * @param  {boolean} value   Value to set.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved if stored, rejected if failure.
+     */
+    setMessagesDeviceOffline(messages: any, value: boolean, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const db = site.getDb(),
+                promises = [],
+                data = { deviceoffline: value ? 1 : 0 };
+
+            messages.forEach((message) => {
+                promises.push(db.insertOrUpdateRecord(this.MESSAGES_TABLE, data, {
+                    touserid: message.touserid,
+                    smallmessage: message.smallmessage,
+                    timecreated: message.timecreated
+                }));
+            });
+
+            return Promise.all(promises);
         });
     }
 }

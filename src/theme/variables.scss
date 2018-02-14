@@ -50,7 +50,6 @@ $core-color:          $orange;
 $core-color-light:    lighten($core-color, 10%);
 $core-color-dark:     darken($core-color, 10%);
 
-
 // Shared Variables
 // --------------------------------------------------
 // To customize the look and feel of this app, you can override
@@ -204,3 +203,17 @@ $core-top-tabs-border: $gray;
 $core-top-tabs-color-active: $core-color;
 
 $core-user-profile-communication-icons-color: $core-color;
+
+$core-rte-min-height: 80px;
+
+$core-toolbar-button-image-width: 32px;
+
+// Mixins
+// -------------------------
+@mixin core-transition($where: all, $time: 500ms) {
+    -webkit-transition: $where $time ease-in-out;
+    -moz-transition: $where $time ease-in-out;
+    -ms-transition: $where $time ease-in-out;
+    -o-transition: $where $time ease-in-out;
+    transition: $where $time ease-in-out;
+}

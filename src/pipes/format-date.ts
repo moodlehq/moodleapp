@@ -52,10 +52,12 @@ export class CoreFormatDatePipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        if (format.indexOf('.') == -1) {
-            format = 'core.' + format;
+        if (format.indexOf('df') == 0) {
+            format = this.translate.instant('core.' + format);
+        } else if (format.indexOf('.') > 0) {
+            format = this.translate.instant(format);
         }
 
-        return moment(timestamp).format(this.translate.instant(format));
+        return moment(timestamp).format(format);
     }
 }

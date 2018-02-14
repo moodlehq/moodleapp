@@ -54,7 +54,7 @@ export class AddonMessagesIndexPage implements OnDestroy {
      */
     gotoDiscussion(discussionUserId: number, messageId?: number): void {
         const params = {
-            id: discussionUserId
+            userId: discussionUserId
         };
         if (messageId) {
             params['message'] = messageId;

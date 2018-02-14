@@ -1,0 +1,36 @@
+$core-send-message-input-background: $gray;
+$core-send-message-input-color: $black;
+
+core-send-message-form {
+  background: $white;
+
+  form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-shrink: 1;
+    width: 100%;
+  }
+
+  .core-send-message-input {
+    @include appearance(none);
+    display: block;
+    width: 100%;
+    border: 0;
+    font-family: inherit;
+    align-self: self-start;
+    background: $core-send-message-input-background;
+    color: $core-send-message-input-color;
+    border-radius: 5px;
+    margin: 0 5px;
+  }
+
+  .core-send-message-button {
+    @include margin(0);
+    @include padding(0);
+    display: none;
+    min-height: 0;
+    align-self: self-end;
+  }
+}
