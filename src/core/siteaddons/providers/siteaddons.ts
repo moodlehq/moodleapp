@@ -106,6 +106,20 @@ export class CoreSiteAddonsProvider {
     }
 
     /**
+     * Given a handler's unique name, return the prefix to add to its string keys.
+     *
+     * @param {string} handlerName Handler's unique name (result of getHandlerUniqueName).
+     * @return {string} Prefix.
+     */
+    protected getHandlerPrefixForStrings(handlerName: string): string {
+        if (handlerName) {
+            return 'addon.' + handlerName + '.';
+        }
+
+        return '';
+    }
+
+    /**
      * Given a handler's unique name and the key of a string, return the full string key (prefixed).
      *
      * @param {string} handlerName Handler's unique name (result of getHandlerUniqueName).
@@ -113,11 +127,7 @@ export class CoreSiteAddonsProvider {
      * @return {string} Full string key.
      */
     protected getHandlerPrefixedString(handlerName: string, key: string): string {
-        if (name) {
-            return 'addon.' + handlerName + '.' + key;
-        }
-
-        return '';
+        return this.getHandlerPrefixForStrings(handlerName) + key;
     }
 
     /**
@@ -182,6 +192,25 @@ export class CoreSiteAddonsProvider {
     }
 
     /**
+     * Load the lang strings for a handler.
+     *
+     * @param {any} addon Data of the addon.
+     * @param {string} handlerName Name of the handler in the addon.
+     * @param {any} handlerSchema Data about the handler.
+     */
+    loadHandlerLangStrings(addon: any, handlerName: string, handlerSchema: any): void {
+        if (!handlerSchema.lang) {
+            return;
+        }
+
+        for (const lang in handlerSchema.lang) {
+            const prefix = this.getHandlerPrefixForStrings(this.getHandlerUniqueName(addon, handlerName));
+
+            this.langProvider.addSiteAddonsStrings(lang, handlerSchema.lang[lang], prefix);
+        }
+    }
+
+    /**
      * Load a site addon.
      *
      * @param {any} addon Data of the addon.
@@ -209,6 +238,8 @@ export class CoreSiteAddonsProvider {
      * @param {any} handlerSchema Data about the handler.
      */
     registerHandler(addon: any, handlerName: string, handlerSchema: any): void {
+        this.loadHandlerLangStrings(addon, handlerName, handlerSchema);
+
         switch (handlerSchema.delegate) {
             case 'CoreMainMenuDelegate':
                 this.registerMainMenuHandler(addon, handlerName, handlerSchema);
