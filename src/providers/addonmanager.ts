@@ -36,7 +36,7 @@ export class CoreAddonManagerProvider {
             const siteId = this.sitesProvider.getCurrentSiteId();
             this.fetchSiteAddons(siteId).then((addons) => {
                 // Addons fetched, check that site hasn't changed.
-                if (siteId == this.sitesProvider.getCurrentSiteId()) {
+                if (siteId == this.sitesProvider.getCurrentSiteId() && addons.length) {
                     // Site is still the same. Load the addons and trigger the event.
                     this.loadSiteAddons(addons);
 
@@ -61,6 +61,11 @@ export class CoreAddonManagerProvider {
         const addons = [];
 
         return this.sitesProvider.getSite(siteId).then((site) => {
+            if (!this.siteAddonsProvider.isGetContentAvailable(site)) {
+                // Cannot load site addons, so there's no point to fetch them.
+                return addons;
+            }
+
             // Get the list of addons. Try not to use cache.
             return site.read('tool_mobile_get_plugins_supporting_mobile', {}, { getFromCache: false }).then((data) => {
                 data.plugins.forEach((addon: any) => {

@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
+import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSite } from '../../../classes/site';
 import { CoreSitesProvider } from '../../../providers/sites';
@@ -24,6 +25,7 @@ import {
 } from '../../../core/course/providers/module-delegate';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../../core/user/providers/user-delegate';
 import { CoreDelegateHandler } from '../../../classes/delegate';
+import { CoreConfigConstants } from '../../../configconstants';
 
 /**
  * Service to provide functionalities regarding site addons.
@@ -36,7 +38,7 @@ export class CoreSiteAddonsProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
-            private userDelegate: CoreUserDelegate) {
+            private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
     }
 
@@ -53,6 +55,54 @@ export class CoreSiteAddonsProvider {
                 return true;
             }
         };
+    }
+
+    /**
+     * Get a certain content for a site addon.
+     *
+     * @param {string} component Component where the class is. E.g. mod_assign.
+     * @param {string} method Method to execute in the class.
+     * @param {any} args The params for the method.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<{html: string, javascript: string}>} Promise resolved with the content and the javascript.
+     */
+    getContent(component: string, method: string, args: any, siteId?: string): Promise<{html: string, javascript: string}> {
+        this.logger.debug(`Get content for component '${component}' and method '${method}'`);
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Get current language to be added to params.
+            return this.langProvider.getCurrentLanguage().then((lang) => {
+                // Add some params that will always be sent. Clone the object so the original one isn't modified.
+                const argsToSend = this.utils.clone(args);
+                argsToSend.userid = args.userid || site.getUserId();
+                argsToSend.appid = CoreConfigConstants.app_id;
+                argsToSend.versionname = CoreConfigConstants.versionname;
+                argsToSend.lang = lang;
+
+                // Now call the WS.
+                const data = {
+                        component: component,
+                        method: method,
+                        args: this.utils.objectToArrayOfObjects(argsToSend, 'name', 'value', true)
+                    }, preSets = {
+                        cacheKey: this.getContentCacheKey(component, method, args)
+                    };
+
+                return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
+            });
+        });
+    }
+
+    /**
+     * Get cache key for get content WS calls.
+     *
+     * @param {string} component Component where the class is. E.g. mod_assign.
+     * @param {string} method Method to execute in the class.
+     * @param {any} args The params for the method.
+     * @return {string} Cache key.
+     */
+    protected getContentCacheKey(component: string, method: string, args: any): string {
+        return this.ROOT_CACHE_KEY + 'content:' + component + ':' + method + ':' + JSON.stringify(args);
     }
 
     /**
@@ -79,6 +129,32 @@ export class CoreSiteAddonsProvider {
      */
     protected getHandlerUniqueName(addon: any, handlerName: string): string {
         return addon.addon + '_' + handlerName;
+    }
+
+    /**
+     * Invalidate a page content.
+     *
+     * @param {string} component Component where the class is. E.g. mod_assign.
+     * @param {string} method Method to execute in the class.
+     * @param {any} args The params for the method.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidatePageContent(component: string, callback: string, args: any, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getContentCacheKey(component, callback, args));
+        });
+    }
+
+    /**
+     * Check if the get content WS is available.
+     *
+     * @param {CoreSite} site The site to check. If not defined, current site.
+     */
+    isGetContentAvailable(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('tool_mobile_get_content');
     }
 
     /**
@@ -181,8 +257,7 @@ export class CoreSiteAddonsProvider {
                     pageParams: {
                         title: prefixedTitle,
                         component: addon.component,
-                        callback: handlerSchema.mainfunction,
-                        contextId: handlerSchema.contextid
+                        method: handlerSchema.method,
                     }
                 };
             }
@@ -223,10 +298,9 @@ export class CoreSiteAddonsProvider {
                         navCtrl.push('CoreSiteAddonsAddonPage', {
                             title: module.name,
                             component: addon.component,
-                            callback: handlerSchema.mainfunction,
-                            contextId: handlerSchema.contextid,
+                            method: handlerSchema.method,
                             args: {
-                                course: courseId,
+                                courseid: courseId,
                                 cmid: module.id
                             }
                         }, options);
@@ -282,10 +356,9 @@ export class CoreSiteAddonsProvider {
                         navCtrl.push('CoreSiteAddonsAddonPage', {
                             title: prefixedTitle,
                             component: addon.component,
-                            callback: handlerSchema.mainfunction,
-                            contextId: handlerSchema.contextid,
+                            method: handlerSchema.method,
                             args: {
-                                course: courseId,
+                                courseid: courseId,
                                 userid: user.id
                             }
                         });

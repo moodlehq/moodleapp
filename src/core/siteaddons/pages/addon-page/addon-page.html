@@ -1,0 +1,17 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ title }}</ion-title>
+
+        <ion-buttons end>
+            <!-- If the site addon defines some buttons, they will be added here. -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="dataLoaded">
+        <core-compile-html [text]="content"></core-compile-html>
+    </core-loading>
+</ion-content>

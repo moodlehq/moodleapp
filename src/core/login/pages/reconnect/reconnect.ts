@@ -88,6 +88,8 @@ export class CoreLoginReconnectPage {
 
                 return site.getPublicConfig().then((config) => {
                     this.logoUrl = config.logourl || config.compactlogourl;
+                }).catch(() => {
+                    // Ignore errors.
                 });
             }
         }).catch(() => {

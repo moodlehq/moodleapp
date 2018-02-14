@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import {
-    Component, NgModule, Input, OnInit, OnDestroy, ViewContainerRef, Compiler, ViewChild, ComponentRef, Injector, ChangeDetectorRef
+    Component, NgModule, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, Compiler, ViewChild, ComponentRef, Injector,
+    SimpleChange, ChangeDetectorRef
 } from '@angular/core';
 import {
     IonicModule, NavController, Platform, ActionSheetController, AlertController, LoadingController, ModalController,
@@ -75,7 +76,7 @@ import { Md5 } from 'ts-md5/dist/md5';
     selector: 'core-compile-html',
     template: '<ng-container #dynamicComponent></ng-container>'
 })
-export class CoreCompileHtmlComponent implements OnInit, OnDestroy {
+export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
@@ -103,10 +104,10 @@ export class CoreCompileHtmlComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * Detect changes on input properties.
      */
-    ngOnInit(): void {
-        if (this.text) {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if ((changes.text || changes.javascript) && this.text) {
             // Create a new component and a new module.
             const component = this.createComponent(),
                 module = NgModule({imports: this.IMPORTS, declarations: [component]})(class {});
@@ -122,6 +123,9 @@ export class CoreCompileHtmlComponent implements OnInit, OnDestroy {
                         break;
                     }
                 }
+
+                // Destroy previous components.
+                this.componentRef && this.componentRef.destroy();
 
                 // Create the component.
                 this.componentRef = this.container.createComponent(componentFactory);
