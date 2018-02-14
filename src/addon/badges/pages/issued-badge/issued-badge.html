@@ -1,0 +1,87 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{badge.name}}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="badgeLoaded" (ionRefresh)="refreshEvent($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="badgeLoaded">
+
+        <div class="list">
+            <div class="item item-text-wrap item-avatar-center">
+                <img *ngIf="badge.badgeurl" class="avatar" src="{{badge.badgeurl}}" core-external-content alt="{{badge.name}}" role="presentation">
+                <span *ngIf="badge.dateexpire && currentTime >= badge.dateexpire" class="badge badge-assertive">
+                        {{ 'addon.badges.expired' | translate }}
+                </span>
+            </div>
+        </div>
+
+        <div class="list" *ngIf="user.fullname">
+            <div class="item item-divider">
+                <h2>{{ 'addon.badges.recipientdetails' | translate}}</h2>
+            </div>
+            <div class="item">
+                <p class="item-heading">{{ 'core.name' | translate}}</p>
+                <p>
+                    <core-format-text watch="true" clean="true" [text]="user.fullname"></core-format-text>
+                </p>
+            </div>
+        </div>
+
+        <div class="list">
+            <div class="item item-divider">
+                <h2>{{ 'addon.badges.issuerdetails' | translate}}</h2>
+            </div>
+            <div class="item" *ngIf="badge.issuername">
+                <p class="item-heading">{{ 'addon.badges.issuername' | translate}}</p>
+                <p>
+                    <core-format-text watch="true" clean="true" [text]="badge.issuername"></core-format-text>
+                </p>
+            </div>
+            <div class="item" *ngIf="badge.issuercontact">
+                <p class="item-heading">{{ 'addon.badges.contact' | translate}}</p>
+                <p>
+                    <core-format-text watch="true" clean="true" [text]="badge.issuercontact"></core-format-text>
+                </p>
+            </div>
+        </div>
+
+        <div class="list">
+            <div class="item item-divider">
+                <h2>{{ 'addon.badges.badgedetails' | translate}}</h2>
+            </div>
+            <div class="item" *ngIf="badge.name">
+                <p class="item-heading">{{ 'core.name' | translate}}</p>
+                <p>{{badge.name}}</p>
+            </div>
+            <div class="item item-text-wrap" *ngIf="badge.description">
+                <p class="item-heading">{{ 'core.description' | translate}}</p>
+                <p>
+                    <core-format-text watch="true" clean="true" [text]="badge.description"></core-format-text>
+                </p>
+            </div>
+            <div class="item item-text-wrap" *ngIf="course.fullname">
+                <p class="item-heading">{{ 'core.course' | translate}}</p>
+                <p>
+                    <core-format-text watch="true" clean="true" [text]="course.fullname"></core-format-text>
+                </p>
+            </div>
+        </div>
+
+        <div class="list">
+            <div class="item item-divider">
+                <h2>{{ 'addon.badges.issuancedetails' | translate}}</h2>
+            </div>
+            <div class="item" *ngIf="badge.dateissued">
+                <p class="item-heading">{{ 'addon.badges.dateawarded' | translate}}</p>
+                <p>{{badge.dateissued | coreToLocaleString }}</p>
+            </div>
+            <div class="item item-text-wrap" *ngIf="badge.dateexpire">
+                <p class="item-heading">{{ 'addon.badges.expirydate' | translate}}</p>
+                <p>{{badge.dateexpire | coreToLocaleString }}</p>
+            </div>
+        </div>
+    </core-loading>
+</ion-content>

@@ -39,11 +39,11 @@ export class AddonBadgesUserBadgesPage {
     badgesLoaded = false;
     badges = [];
     currentTime = 0;
-    badgeHash = '';
+    badgeHash: string;
 
-    constructor(private translate: TranslateService, private badgesProvider: AddonBadgesProvider, navParams: NavParams,
-            private domUtils: CoreDomUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            sitesProvider: CoreSitesProvider, private navCtrl: NavController) {
+    constructor(private translate: TranslateService, private badgesProvider: AddonBadgesProvider,
+            navParams: NavParams, private domUtils: CoreDomUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+            private sitesProvider: CoreSitesProvider) {
 
         this.courseId = navParams.get('courseId') || 0; // Use 0 for site badges.
         this.userId = navParams.get('userId') || sitesProvider.getCurrentSite().getUserId();
@@ -55,6 +55,10 @@ export class AddonBadgesUserBadgesPage {
     ionViewDidLoad(): void {
 
         this.fetchBadges().finally(() => {
+            if (!this.badgeHash && this.splitviewCtrl.isOn() && this.badges.length > 0) {
+                // Take first and load it.
+                this.loadIssuedBadge(this.badges[0].uniquehash);
+            }
             this.badgesLoaded = true;
         });
     }
@@ -70,13 +74,7 @@ export class AddonBadgesUserBadgesPage {
         return this.badgesProvider.getUserBadges(this.courseId, this.userId).then((badges) => {
             this.badges = badges;
         }).catch((message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            } else {
-                this.domUtils.showErrorModal('Error getting badges data.');
-            }
-
-            return Promise.reject(null);
+            this.domUtils.showErrorModalDefault(message, 'Error getting badges data.');
         });
     }
 
@@ -100,6 +98,7 @@ export class AddonBadgesUserBadgesPage {
      */
     loadIssuedBadge(badgeHash: string): void {
         this.badgeHash = badgeHash;
-        //this.splitviewCtrl.push('', { id:  });
+        const params = {courseId: this.courseId, userId: this.userId, badgeHash: badgeHash};
+        this.splitviewCtrl.push('AddonBadgesIssuedBadgePage', params);
     }
 }
