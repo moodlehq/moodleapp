@@ -62,13 +62,13 @@ export class AddonBadgesUserHandler implements CoreUserProfileHandler {
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {
-            icon: 'ion-trophy',
+            icon: 'trophy',
             title: 'addon.badges.badges',
             class: '',
             action: (event, navCtrl, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                //navCtrl.push();
+                navCtrl.push('AddonBadgesUserBadgesPage', {courseId: courseId, userId: user.id });
             }
         };
     }
