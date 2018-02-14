@@ -69,8 +69,9 @@ import { CoreSitePluginsModule } from '@core/siteplugins/siteplugins.module';
 import { CoreCompileModule } from '@core/compile/compile.module';
 
 // Addon modules.
+import { AddonBadgesModule } from '@addon/badges/badges.module';
 import { AddonCalendarModule } from '@addon/calendar/calendar.module';
-import { AddonCompetencyModule } from '../addon/competency/competency.module';
+import { AddonCompetencyModule } from '@addon/competency/competency.module';
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
@@ -150,6 +151,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreSettingsModule,
         CoreSitePluginsModule,
         CoreCompileModule,
+        AddonBadgesModule,
         AddonCalendarModule,
         AddonCompetencyModule,
         AddonUserProfileFieldModule,
