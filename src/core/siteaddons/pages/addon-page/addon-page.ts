@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreSiteAddonsProvider } from '../../providers/siteaddons';
+import { CoreSiteAddonsAddonContentComponent } from '../../components/addon-content/addon-content';
 
 /**
  * Page to render a site addon page.
@@ -26,9 +27,9 @@ import { CoreSiteAddonsProvider } from '../../providers/siteaddons';
     templateUrl: 'addon-page.html',
 })
 export class CoreSiteAddonsAddonPage {
+    @ViewChild(CoreSiteAddonsAddonContentComponent) content: CoreSiteAddonsAddonContentComponent;
+
     title: string; // Page title.
-    content: string; // Page content.
-    dataLoaded: boolean;
 
     protected component: string;
     protected method: string;
@@ -42,37 +43,13 @@ export class CoreSiteAddonsAddonPage {
     }
 
     /**
-     * View loaded.
-     */
-    ionViewDidLoad(): void {
-        this.fetchContent().finally(() => {
-            this.dataLoaded = true;
-        });
-    }
-
-    /**
-     * Fetches the content of the page.
-     *
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    fetchContent(): Promise<any> {
-        return this.siteAddonsProvider.getContent(this.component, this.method, this.args).then((result) => {
-            this.content = result.html;
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
-        });
-    }
-
-    /**
      * Refresh the data.
      *
      * @param {any} refresher Refresher.
      */
     refreshData(refresher: any): void {
-        this.siteAddonsProvider.invalidatePageContent(this.component, this.method, this.args).finally(() => {
-            this.fetchContent().finally(() => {
-                refresher.complete();
-            });
+        this.content.refreshData().finally(() => {
+            refresher.complete();
         });
     }
 }

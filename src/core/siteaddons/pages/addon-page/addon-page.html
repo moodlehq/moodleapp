@@ -8,10 +8,8 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="dataLoaded" (ionRefresh)="refreshData($event)">
+    <ion-refresher [enabled]="content && content.dataLoaded" (ionRefresh)="refreshData($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="dataLoaded">
-        <core-compile-html [text]="content"></core-compile-html>
-    </core-loading>
+    <core-site-addons-addon-content [component]="component" [method]="method" [args]="args"></core-site-addons-addon-content>
 </ion-content>

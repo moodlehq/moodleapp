@@ -18,6 +18,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
 import { CoreSiteWSPreSets } from '../classes/site';
 import { CoreSiteAddonsProvider } from '../core/siteaddons/providers/siteaddons';
+import { CoreSiteAddonsHelperProvider } from '../core/siteaddons/providers/helper';
 
 /**
  * Provider with some helper functions regarding addons.
@@ -28,7 +29,7 @@ export class CoreAddonManagerProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-            private siteAddonsProvider: CoreSiteAddonsProvider) {
+            private siteAddonsProvider: CoreSiteAddonsProvider, private siteAddonsHelperProvider: CoreSiteAddonsHelperProvider) {
         logger = logger.getInstance('CoreAddonManagerProvider');
 
         // Fetch the addons on login.
@@ -70,7 +71,7 @@ export class CoreAddonManagerProvider {
             return site.read('tool_mobile_get_plugins_supporting_mobile', {}, { getFromCache: false }).then((data) => {
                 data.plugins.forEach((addon: any) => {
                     // Check if it's a site addon and it's enabled.
-                    if (this.siteAddonsProvider.isSiteAddonEnabled(addon, site)) {
+                    if (this.siteAddonsHelperProvider.isSiteAddonEnabled(addon, site)) {
                         addons.push(addon);
                     }
                 });
@@ -87,7 +88,7 @@ export class CoreAddonManagerProvider {
      */
     loadSiteAddons(addons: any[]): void {
         addons.forEach((addon) => {
-            this.siteAddonsProvider.loadSiteAddon(addon);
+            this.siteAddonsHelperProvider.loadSiteAddon(addon);
         });
     }
 }

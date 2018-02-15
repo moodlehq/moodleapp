@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreSiteAddonsAddonPage } from './addon-page';
 import { CoreComponentsModule } from '../../../../components/components.module';
 import { CoreCompileHtmlComponentsModule } from '../../../../components/compile-html/compile-html.module';
+import { CoreSiteAddonsComponentsModule } from '../../components/components.module';
 
 /**
  * Module to lazy load the page.
@@ -29,6 +30,7 @@ import { CoreCompileHtmlComponentsModule } from '../../../../components/compile-
     imports: [
         CoreComponentsModule,
         CoreCompileHtmlComponentsModule,
+        CoreSiteAddonsComponentsModule,
         IonicPageModule.forChild(CoreSiteAddonsAddonPage),
         TranslateModule.forChild()
     ]

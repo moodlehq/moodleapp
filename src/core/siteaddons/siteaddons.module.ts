@@ -15,16 +15,20 @@
 import { NgModule } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreSiteAddonsProvider } from './providers/siteaddons';
+import { CoreSiteAddonsHelperProvider } from './providers/helper';
+import { CoreSiteAddonsComponentsModule } from './components/components.module';
 
 // List of providers.
 export const CORE_SITEADDONS_PROVIDERS = [
-    CoreSiteAddonsProvider
+    CoreSiteAddonsProvider,
+    CoreSiteAddonsHelperProvider
 ];
 
 @NgModule({
     declarations: [
     ],
     imports: [
+        CoreSiteAddonsComponentsModule
     ],
     providers: CORE_SITEADDONS_PROVIDERS
 })
