@@ -15,6 +15,9 @@
 import { NgModule } from '@angular/core';
 import { AddonBadgesProvider } from './providers/badges';
 import { AddonBadgesUserHandler } from './providers/user-handler';
+import { AddonBadgesMyBadgesLinkHandler } from './providers/mybadges-link-handler';
+import { AddonBadgesBadgeLinkHandler } from './providers/badge-link-handler';
+import { CoreContentLinksDelegate } from '../../core/contentlinks/providers/delegate';
 import { CoreUserDelegate } from '../../core/user/providers/user-delegate';
 
 @NgModule({
@@ -24,11 +27,18 @@ import { CoreUserDelegate } from '../../core/user/providers/user-delegate';
     ],
     providers: [
         AddonBadgesProvider,
-        AddonBadgesUserHandler
+        AddonBadgesUserHandler,
+        AddonBadgesMyBadgesLinkHandler,
+        AddonBadgesBadgeLinkHandler
     ]
 })
 export class AddonBadgesModule {
-    constructor(userDelegate: CoreUserDelegate, userHandler: AddonBadgesUserHandler) {
+    constructor(userDelegate: CoreUserDelegate, userHandler: AddonBadgesUserHandler,
+        contentLinksDelegate: CoreContentLinksDelegate, myBadgesLinkHandler: AddonBadgesMyBadgesLinkHandler,
+        badgeLinkHandler: AddonBadgesBadgeLinkHandler) {
+
         userDelegate.registerHandler(userHandler);
+        contentLinksDelegate.registerHandler(myBadgesLinkHandler);
+        contentLinksDelegate.registerHandler(badgeLinkHandler);
     }
 }
