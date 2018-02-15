@@ -50,6 +50,7 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreAddonManagerProvider } from '@providers/addonmanager';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -108,7 +109,8 @@ export const CORE_PROVIDERS: any[] = [
     CoreUpdateManagerProvider,
     CorePluginFileDelegate,
     CoreSyncProvider,
-    CoreAddonManagerProvider
+    CoreAddonManagerProvider,
+    CoreFileHelperProvider
 ];
 
 @NgModule({

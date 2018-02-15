@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { CoreAutoFocusDirective } from './auto-focus';
+import { CoreDownloadFileDirective } from './download-file';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
@@ -25,6 +26,7 @@ import { CoreLongPressDirective } from './long-press';
 @NgModule({
     declarations: [
         CoreAutoFocusDirective,
+        CoreDownloadFileDirective,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
@@ -36,6 +38,7 @@ import { CoreLongPressDirective } from './long-press';
     imports: [],
     exports: [
         CoreAutoFocusDirective,
+        CoreDownloadFileDirective,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
         CoreKeepKeyboardDirective,
