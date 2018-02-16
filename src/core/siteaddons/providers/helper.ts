@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
@@ -22,10 +22,12 @@ import { CoreMainMenuDelegate, CoreMainMenuHandler, CoreMainMenuHandlerData } fr
 import {
     CoreCourseModuleDelegate, CoreCourseModuleHandler, CoreCourseModuleHandlerData
 } from '../../../core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '../../../core/course/providers/module-prefetch-delegate';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../../core/user/providers/user-delegate';
 import { CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreSiteAddonsModuleIndexComponent } from '../components/module-index/module-index';
 import { CoreSiteAddonsProvider } from './siteaddons';
+import { CoreSiteAddonsModulePrefetchHandler } from '../classes/module-prefetch-handler';
 
 /**
  * Helper service to provide functionalities regarding site addons. It basically has the features to load and register site
@@ -37,10 +39,10 @@ import { CoreSiteAddonsProvider } from './siteaddons';
 export class CoreSiteAddonsHelperProvider {
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,  private injector: Injector,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
-            private siteAddonsProvider: CoreSiteAddonsProvider) {
+            private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
     }
 
@@ -240,7 +242,8 @@ export class CoreSiteAddonsHelperProvider {
 
         // Create the base handler.
         const modName = addon.component.replace('mod_', ''),
-            baseHandler = this.getBaseHandler(modName);
+            baseHandler = this.getBaseHandler(modName),
+            hasOfflineFunctions = !!(handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length);
         let moduleHandler: CoreCourseModuleHandler;
 
         // Store the handler data.
@@ -257,7 +260,7 @@ export class CoreSiteAddonsHelperProvider {
                     title: module.name,
                     icon: handlerSchema.displaydata.icon,
                     class: handlerSchema.displaydata.class,
-                    showDownloadButton: handlerSchema.offlinefunctions && handlerSchema.offlinefunctions.length,
+                    showDownloadButton: hasOfflineFunctions,
                     action: (event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -278,6 +281,12 @@ export class CoreSiteAddonsHelperProvider {
                 return CoreSiteAddonsModuleIndexComponent;
             }
         });
+
+        if (hasOfflineFunctions) {
+            // Register the prefetch handler.
+            this.prefetchDelegate.registerHandler(new CoreSiteAddonsModulePrefetchHandler(
+                this.injector, this.siteAddonsProvider, addon.component, modName, handlerSchema));
+        }
 
         this.moduleDelegate.registerHandler(moduleHandler);
     }

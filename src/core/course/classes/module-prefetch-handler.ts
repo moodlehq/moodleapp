@@ -133,10 +133,11 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param {any} module The module object returned by WS.
      * @param {number} courseId Course ID.
+     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
      * @return {Promise<any>} Promise resolved when all content is downloaded.
      */
-    download(module: any, courseId: number): Promise<any> {
-        return this.downloadOrPrefetch(module, courseId, false);
+    download(module: any, courseId: number, dirPath?: string): Promise<any> {
+        return this.downloadOrPrefetch(module, courseId, false, dirPath);
     }
 
     /**
@@ -332,8 +333,8 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
     }
 
     /**
-     * Invalidate WS calls needed to determine module status. It doesn't need to invalidate check updates.
-     * It should NOT invalidate files nor all the prefetched data.
+     * Invalidate WS calls needed to determine module status (usually, to check if module is downloadable).
+     * It doesn't need to invalidate check updates. It should NOT invalidate files nor all the prefetched data.
      *
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
@@ -409,10 +410,11 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
      * @return {Promise<any>} Promise resolved when done.
      */
-    prefetch(module: any, courseId?: number, single?: boolean): Promise<any> {
-        return this.downloadOrPrefetch(module, courseId, true);
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
+        return this.downloadOrPrefetch(module, courseId, true, dirPath);
     }
 
     /**

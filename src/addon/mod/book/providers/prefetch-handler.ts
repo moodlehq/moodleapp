@@ -79,22 +79,6 @@ export class AddonModBookPrefetchHandler extends CoreCourseModulePrefetchHandler
     }
 
     /**
-     * Invalidate WS calls needed to determine module status.
-     *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
-     */
-    invalidateModule(module: any, courseId: number): Promise<any> {
-        const promises = [];
-
-        promises.push(this.bookProvider.invalidateBookData(courseId));
-        promises.push(this.courseProvider.invalidateModule(module.id));
-
-        return Promise.all(promises);
-    }
-
-    /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.

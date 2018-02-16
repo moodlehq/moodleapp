@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSite } from '../../../classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '../../../classes/site';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
@@ -56,6 +56,45 @@ export class CoreSiteAddonsProvider {
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
+    }
+
+    /**
+     * Call a WS for a site addon.
+     *
+     * @param {string} method WS method to use.
+     * @param {any} data Data to send to the WS.
+     * @param {CoreSiteWSPreSets} [preSets] Extra options.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the response.
+     */
+    callWS(method: string, data: any, preSets?: CoreSiteWSPreSets, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            preSets = preSets || {};
+            preSets.cacheKey = preSets.cacheKey || this.getCallWSCacheKey(method, data);
+
+            return site.read(method, data, preSets);
+        });
+    }
+
+    /**
+     * Get cache key for a WS call.
+     *
+     * @param {string} method Name of the method.
+     * @param {any} data Data to identify the WS call.
+     * @return {string} Cache key.
+     */
+    getCallWSCacheKey(method: string, data: any): string {
+        return this.getCallWSCommonCacheKey(method) + ':' + this.utils.sortAndStringify(data);
+    }
+
+    /**
+     * Get common cache key for a WS call.
+     *
+     * @param {string} method Name of the method.
+     * @return {string} Cache key.
+     */
+    protected getCallWSCommonCacheKey(method: string): string {
+        return this.ROOT_CACHE_KEY + method;
     }
 
     /**
@@ -103,7 +142,7 @@ export class CoreSiteAddonsProvider {
      * @return {string} Cache key.
      */
     protected getContentCacheKey(component: string, method: string, args: any): string {
-        return this.ROOT_CACHE_KEY + 'content:' + component + ':' + method + ':' + JSON.stringify(args);
+        return this.ROOT_CACHE_KEY + 'content:' + component + ':' + method + ':' + this.utils.sortAndStringify(args);
     }
 
     /**
@@ -114,6 +153,33 @@ export class CoreSiteAddonsProvider {
      */
     getModuleSiteAddonHandler(modName: string): CoreSiteAddonsModuleHandler {
         return this.moduleSiteAddons[modName];
+    }
+
+    /**
+     * Invalidate all WS call to a certain method.
+     *
+     * @param {string} method WS method to use.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllCallWSForMethod(method: string, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getCallWSCommonCacheKey(method));
+        });
+    }
+
+    /**
+     * Invalidate a WS call.
+     *
+     * @param {string} method WS method to use.
+     * @param {any} data Data to send to the WS.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateCallWS(method: string, data: any, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCallWSCacheKey(method, data));
+        });
     }
 
     /**

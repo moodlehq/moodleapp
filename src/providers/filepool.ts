@@ -961,10 +961,12 @@ export class CoreFilepoolProvider {
      * @param {boolean} [ignoreStale] True if 'stale' should be ignored. Only if prefetch=false.
      * @param {string} [component] The component to link the file to.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {string} [dirPath] Name of the directory where to store the files (inside filepool dir). If not defined, store
+     *                           the files directly inside the filepool folder.
      * @return {Promise<any>} Resolved on success.
      */
     downloadOrPrefetchFiles(siteId: string, files: any[], prefetch: boolean, ignoreStale?: boolean, component?: string,
-            componentId?: string | number): Promise<any> {
+            componentId?: string | number, dirPath?: string): Promise<any> {
         const promises = [];
 
         // Download files.
@@ -975,13 +977,23 @@ export class CoreFilepoolProvider {
                     isexternalfile: file.isexternalfile,
                     repositorytype: file.repositorytype
                 };
+            let path;
+
+            if (dirPath) {
+                // Calculate the path to the file.
+                path = file.filename;
+                if (file.filepath !== '/') {
+                    path = file.filepath.substr(1) + path;
+                }
+                path = this.textUtils.concatenatePaths(dirPath, path);
+            }
 
             if (prefetch) {
                 promises.push(this.addToQueueByUrl(
-                    siteId, url, component, componentId, timemodified, undefined, undefined, 0, options));
+                    siteId, url, component, componentId, timemodified, path, undefined, 0, options));
             } else {
                 promises.push(this.downloadUrl(
-                    siteId, url, ignoreStale, component, componentId, timemodified, undefined, undefined, options));
+                    siteId, url, ignoreStale, component, componentId, timemodified, path, undefined, options));
             }
         });
 
