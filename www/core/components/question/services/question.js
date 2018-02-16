@@ -413,7 +413,7 @@ angular.module('mm.core.question')
      * @return {Object}      State.
      */
     self.getState = function(name) {
-        return states[name];
+        return states[name || 'unknown'];
     };
 
     /**
