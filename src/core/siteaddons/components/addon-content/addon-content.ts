@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreSiteAddonsProvider } from '../../providers/siteaddons';
 
@@ -27,12 +27,17 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
+    @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
+    @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 
     content: string; // Content.
     javascript: string; // Javascript to execute.
     dataLoaded: boolean;
 
-    constructor(protected domUtils: CoreDomUtilsProvider, protected siteAddonsProvider: CoreSiteAddonsProvider) { }
+    constructor(protected domUtils: CoreDomUtilsProvider, protected siteAddonsProvider: CoreSiteAddonsProvider) {
+        this.onContentLoaded = new EventEmitter();
+        this.onLoadingContent = new EventEmitter();
+    }
 
     /**
      * Component being initialized.
@@ -46,12 +51,17 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
     /**
      * Fetches the content to render.
      *
+     * @param {boolean} [refresh] Whether the user is refreshing.
      * @return {Promise<any>} Promise resolved when done.
      */
-    fetchContent(): Promise<any> {
+    fetchContent(refresh?: boolean): Promise<any> {
+        this.onLoadingContent.emit(refresh);
+
         return this.siteAddonsProvider.getContent(this.component, this.method, this.args).then((result) => {
             this.content = result.html;
             this.javascript = result.javascript;
+
+            this.onContentLoaded.emit(refresh);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
         });
@@ -62,7 +72,7 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
      */
     refreshData(): Promise<any> {
         return this.siteAddonsProvider.invalidateContent(this.component, this.method, this.args).finally(() => {
-            return this.fetchContent();
+            return this.fetchContent(true);
         });
     }
 

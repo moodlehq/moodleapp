@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '../../../components/components.module';
 import { CoreCompileHtmlComponentsModule } from '../../../components/compile-html/compile-html.module';
 import { CoreSiteAddonsAddonContentComponent } from './addon-content/addon-content';
@@ -29,7 +30,8 @@ import { CoreSiteAddonsModuleIndexComponent } from './module-index/module-index'
         CommonModule,
         IonicModule,
         CoreComponentsModule,
-        CoreCompileHtmlComponentsModule
+        CoreCompileHtmlComponentsModule,
+        TranslateModule.forChild()
     ],
     providers: [
     ],

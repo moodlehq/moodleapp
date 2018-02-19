@@ -265,14 +265,10 @@ export class CoreSiteAddonsHelperProvider {
                         event.preventDefault();
                         event.stopPropagation();
 
-                        navCtrl.push('CoreSiteAddonsAddonPage', {
+                        navCtrl.push('CoreSiteAddonsModuleIndexPage', {
                             title: module.name,
-                            component: addon.component,
-                            method: handlerSchema.method,
-                            args: {
-                                courseid: courseId,
-                                cmid: module.id
-                            }
+                            module: module,
+                            courseId: courseId
                         }, options);
                     }
                 };

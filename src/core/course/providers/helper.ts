@@ -830,8 +830,13 @@ export class CoreCourseHelperProvider {
                     moduleInfo.statusIcon = 'spinner';
                     break;
                 case CoreConstants.OUTDATED:
-                    moduleInfo.statusIcon = 'ion-android-refresh';
+                    moduleInfo.statusIcon = 'refresh';
                     break;
+                case CoreConstants.DOWNLOADED:
+                    if (!this.prefetchDelegate.canCheckUpdates()) {
+                        moduleInfo.statusIcon = 'refresh';
+                        break;
+                    }
                 default:
                     moduleInfo.statusIcon = '';
                     break;

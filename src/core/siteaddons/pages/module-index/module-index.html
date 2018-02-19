@@ -11,5 +11,5 @@
     <ion-refresher [enabled]="content && content.dataLoaded" (ionRefresh)="refreshData($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-site-addons-addon-content [component]="component" [method]="method" [args]="args"></core-site-addons-addon-content>
+    <core-site-addons-module-index [module]="module" [courseId]="courseId"></core-site-addons-module-index>
 </ion-content>

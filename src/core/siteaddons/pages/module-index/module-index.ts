@@ -14,30 +14,28 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { CoreSiteAddonsAddonContentComponent } from '../../components/addon-content/addon-content';
+import { CoreSiteAddonsModuleIndexComponent } from '../../components/module-index/module-index';
 
 /**
- * Page to render a site addon page.
+ * Page to render the index page of a module site addon.
  */
-@IonicPage({ segment: 'core-site-addons-addon-page' })
+@IonicPage({ segment: 'core-site-addons-module-index-page' })
 @Component({
-    selector: 'page-core-site-addons-addon',
-    templateUrl: 'addon-page.html',
+    selector: 'page-core-site-addons-module-index',
+    templateUrl: 'module-index.html',
 })
-export class CoreSiteAddonsAddonPage {
-    @ViewChild(CoreSiteAddonsAddonContentComponent) content: CoreSiteAddonsAddonContentComponent;
+export class CoreSiteAddonsModuleIndexPage {
+    @ViewChild(CoreSiteAddonsModuleIndexComponent) content: CoreSiteAddonsModuleIndexComponent;
 
     title: string; // Page title.
 
-    component: string;
-    method: string;
-    args: any;
+    module: any;
+    courseId: number;
 
     constructor(params: NavParams) {
         this.title = params.get('title');
-        this.component = params.get('component');
-        this.method = params.get('method');
-        this.args = params.get('args');
+        this.module = params.get('module');
+        this.courseId = params.get('courseId');
     }
 
     /**
@@ -46,7 +44,7 @@ export class CoreSiteAddonsAddonPage {
      * @param {any} refresher Refresher.
      */
     refreshData(refresher: any): void {
-        this.content.refreshData().finally(() => {
+        this.content.doRefresh().finally(() => {
             refresher.complete();
         });
     }

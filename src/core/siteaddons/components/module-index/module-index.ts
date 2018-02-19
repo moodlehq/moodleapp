@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
 import { CoreSiteAddonsProvider } from '../../providers/siteaddons';
 import { CoreCourseModuleMainComponent } from '../../../course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
+import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 import { CoreSiteAddonsAddonContentComponent } from '../addon-content/addon-content';
 
 /**
@@ -24,7 +28,7 @@ import { CoreSiteAddonsAddonContentComponent } from '../addon-content/addon-cont
     selector: 'core-site-addons-module-index',
     templateUrl: 'module-index.html',
 })
-export class CoreSiteAddonsModuleIndexComponent implements OnInit, CoreCourseModuleMainComponent {
+export class CoreSiteAddonsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
     @Input() module: any; // The module.
     @Input() courseId: number; // Course ID the module belongs to.
 
@@ -34,12 +38,27 @@ export class CoreSiteAddonsModuleIndexComponent implements OnInit, CoreCourseMod
     method: string;
     args: any;
 
-    constructor(protected siteAddonsProvider: CoreSiteAddonsProvider) { }
+    // Data for context menu.
+    externalUrl: string;
+    description: string;
+    refreshIcon: string;
+    prefetchStatusIcon: string;
+    prefetchText: string;
+    size: string;
+
+    protected isDestroyed = false;
+    protected statusObserver;
+
+    constructor(protected siteAddonsProvider: CoreSiteAddonsProvider, protected courseHelper: CoreCourseHelperProvider,
+            protected prefetchDelegate: CoreCourseModulePrefetchDelegate, protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService) { }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.refreshIcon = 'spinner';
+
         if (this.module) {
             const handler = this.siteAddonsProvider.getModuleSiteAddonHandler(this.module.modname);
             if (handler) {
@@ -50,6 +69,10 @@ export class CoreSiteAddonsModuleIndexComponent implements OnInit, CoreCourseMod
                     cmid: this.module.id
                 };
             }
+
+            // Get the data for the context menu.
+            this.description = this.module.description;
+            this.externalUrl = this.module.url;
         }
     }
 
@@ -62,13 +85,65 @@ export class CoreSiteAddonsModuleIndexComponent implements OnInit, CoreCourseMod
      */
     doRefresh(refresher?: any, done?: () => void): Promise<any> {
         if (this.addonContent) {
+            this.refreshIcon = 'spinner';
+
             return Promise.resolve(this.addonContent.refreshData()).finally(() => {
-                refresher.complete();
+                refresher && refresher.complete();
+                done && done();
             });
         } else {
-            refresher.complete();
+            refresher && refresher.complete();
+            done && done();
 
             return Promise.resolve();
         }
+    }
+
+    /**
+     * Function called when the data of the site addon content is loaded.
+     */
+    contentLoaded(refresh: boolean): void {
+        this.refreshIcon = 'refresh';
+
+        // Check if there is a prefetch handler for this type of module.
+        if (this.prefetchDelegate.getPrefetchHandlerFor(this.module)) {
+            this.courseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
+        }
+    }
+
+    /**
+     * Function called when starting to load the data of the site addon content.
+     */
+    contentLoading(refresh: boolean): void {
+        this.refreshIcon = 'spinner';
+    }
+
+    /**
+     * Expand the description.
+     */
+    expandDescription(): void {
+        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id);
+    }
+
+    /**
+     * Prefetch the module.
+     */
+    prefetch(): void {
+        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId);
+    }
+
+    /**
+     * Confirm and remove downloaded files.
+     */
+    removeFiles(): void {
+        this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.isDestroyed = true;
+        this.statusObserver && this.statusObserver.off();
     }
 }

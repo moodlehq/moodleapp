@@ -15,7 +15,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreSiteAddonsAddonPage } from './addon-page';
+import { CoreSiteAddonsModuleIndexPage } from './module-index';
 import { CoreSiteAddonsComponentsModule } from '../../components/components.module';
 
 /**
@@ -23,11 +23,11 @@ import { CoreSiteAddonsComponentsModule } from '../../components/components.modu
  */
 @NgModule({
     declarations: [
-        CoreSiteAddonsAddonPage
+        CoreSiteAddonsModuleIndexPage
     ],
     imports: [
         CoreSiteAddonsComponentsModule,
-        IonicPageModule.forChild(CoreSiteAddonsAddonPage),
+        IonicPageModule.forChild(CoreSiteAddonsModuleIndexPage),
         TranslateModule.forChild()
     ]
 })
