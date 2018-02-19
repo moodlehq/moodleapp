@@ -13,11 +13,9 @@
 // limitations under the License.
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
-import { NavController } from 'ionic-angular';
 import { CoreCourseProvider } from '../providers/course';
 import { CoreCourseHelperProvider } from '../providers/helper';
 import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
 
 /**
  * Directive to allow downloading and open the main file of a module.

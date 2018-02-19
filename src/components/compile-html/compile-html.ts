@@ -30,6 +30,7 @@ import { CorePipesModule } from '../../pipes/pipes.module';
 import { CoreCourseComponentsModule } from '../../core/course/components/components.module';
 import { CoreCourseDirectivesModule } from '../../core/course/directives/directives.module';
 import { CoreCoursesComponentsModule } from '../../core/courses/components/components.module';
+import { CoreSiteAddonsDirectivesModule } from '../../core/siteaddons/directives/directives.module';
 import { CoreSiteHomeComponentsModule } from '../../core/sitehome/components/components.module';
 import { CoreUserComponentsModule } from '../../core/user/components/components.module';
 
@@ -82,7 +83,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule
+        CoreCourseDirectivesModule, CoreSiteAddonsDirectivesModule
     ];
 
     // Other Ionic/Angular providers that don't depend on where they are injected.

@@ -65,4 +65,22 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
             return this.fetchContent();
         });
     }
+
+    /**
+     * Update the content, usually with a different method or params.
+     *
+     * @param {string} component New component.
+     * @param {string} method New method.
+     * @param {any} args New params.
+     */
+    updateContent(component: string, method: string, args: any): void {
+        this.component = component;
+        this.method = method;
+        this.args = args;
+        this.dataLoaded = false;
+
+        this.fetchContent().finally(() => {
+            this.dataLoaded = true;
+        });
+    }
 }
