@@ -237,4 +237,31 @@ export class CoreFileHelperProvider {
     isStateDownloaded(state: string): boolean {
         return state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
     }
+
+    /**
+     * Whether the file has to be opened in browser (external repository).
+     * The file must have a mimetype attribute.
+     *
+     * @param {any} file The file to check.
+     * @return {boolean} Whether the file should be opened in browser.
+     */
+    shouldOpenInBrowser(file: any): boolean {
+        if (!file || !file.isexternalfile || !file.mimetype) {
+            return false;
+        }
+
+        const mimetype = file.mimetype;
+        if (mimetype.indexOf('application/vnd.google-apps.') != -1) {
+            // Google Docs file, always open in browser.
+            return true;
+        }
+
+        if (file.repositorytype == 'onedrive') {
+            // In OneDrive, open in browser the office docs
+            return mimetype.indexOf('application/vnd.openxmlformats-officedocument') != -1 ||
+                    mimetype == 'text/plain' || mimetype == 'document/unknown';
+        }
+
+        return false;
+    }
 }

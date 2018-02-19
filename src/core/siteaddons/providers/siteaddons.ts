@@ -43,6 +43,32 @@ export interface CoreSiteAddonsModuleHandler {
     handlerSchema: any;
 }
 
+export interface CoreSiteAddonsGetContentResult {
+    /**
+     * The content in HTML.
+     * @type {string}
+     */
+    html: string;
+
+    /**
+     * The javascript for the content.
+     * @type {string}
+     */
+    javascript: string;
+
+    /**
+     * The files for the content.
+     * @type {any[]}
+     */
+    files?: any[];
+
+    /**
+     * Other data.
+     * @type {any}
+     */
+    otherdata?: any;
+}
+
 /**
  * Service to provide functionalities regarding site addons.
  */
@@ -104,9 +130,9 @@ export class CoreSiteAddonsProvider {
      * @param {string} method Method to execute in the class.
      * @param {any} args The params for the method.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{html: string, javascript: string}>} Promise resolved with the content and the javascript.
+     * @return {Promise<CoreSiteAddonsGetContentResult>} Promise resolved with the result.
      */
-    getContent(component: string, method: string, args: any, siteId?: string): Promise<{html: string, javascript: string}> {
+    getContent(component: string, method: string, args: any, siteId?: string): Promise<CoreSiteAddonsGetContentResult> {
         this.logger.debug(`Get content for component '${component}' and method '${method}'`);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -129,6 +155,16 @@ export class CoreSiteAddonsProvider {
                     };
 
                 return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
+            }).then((result) => {
+                if (result.otherdata) {
+                    try {
+                        result.otherdata = JSON.parse(result.otherdata);
+                    } catch (ex) {
+                        // Ignore errors.
+                    }
+                }
+
+                return result;
             });
         });
     }

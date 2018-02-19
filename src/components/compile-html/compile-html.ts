@@ -28,6 +28,7 @@ import { CoreComponentsModule } from '../components.module';
 import { CoreDirectivesModule } from '../../directives/directives.module';
 import { CorePipesModule } from '../../pipes/pipes.module';
 import { CoreCourseComponentsModule } from '../../core/course/components/components.module';
+import { CoreCourseDirectivesModule } from '../../core/course/directives/directives.module';
 import { CoreCoursesComponentsModule } from '../../core/courses/components/components.module';
 import { CoreSiteHomeComponentsModule } from '../../core/sitehome/components/components.module';
 import { CoreUserComponentsModule } from '../../core/user/components/components.module';
@@ -80,7 +81,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
-        CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule
+        CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
+        CoreCourseDirectivesModule
     ];
 
     // Other Ionic/Angular providers that don't depend on where they are injected.

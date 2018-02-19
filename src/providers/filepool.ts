@@ -2718,7 +2718,7 @@ export class CoreFilepoolProvider {
      */
     storePackageStatus(siteId: string, status: string, component: string, componentId?: string | number, extra?: string)
             : Promise<any> {
-        this.logger.debug(`Set status '${status}'' for package ${component} ${componentId}`);
+        this.logger.debug(`Set status '${status}' for package ${component} ${componentId}`);
         componentId = this.fixComponentId(componentId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {

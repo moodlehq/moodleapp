@@ -15,8 +15,11 @@
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -116,7 +119,8 @@ export class CoreCourseHelperProvider {
         private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
         private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
-        private eventsProvider: CoreEventsProvider) { }
+        private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
+        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -468,6 +472,227 @@ export class CoreCourseHelperProvider {
 
             return status;
         });
+    }
+
+    /**
+     * Convenience function to open a module main file, downloading the package if needed.
+     * This is meant for modules like mod_resource.
+     *
+     * @param {any} module The module to download.
+     * @param {number} courseId The course ID of the module.
+     * @param {string} [component] The component to link the files to.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {any[]} [files] List of files of the module. If not provided, use module.contents.
+     * @param {string} [siteId] The site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved on success.
+     */
+    downloadModuleAndOpenFile(module: any, courseId: number, component?: string, componentId?: string | number, files?: any[],
+            siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        let promise;
+        if (files) {
+            promise = Promise.resolve(files);
+        } else {
+            promise = this.courseProvider.loadModuleContents(module, courseId).then(() => {
+                files = module.contents;
+            });
+        }
+
+        // Make sure that module contents are loaded.
+        return promise.then(() => {
+            if (!files || !files.length) {
+                return Promise.reject(null);
+            }
+
+            return this.sitesProvider.getSite(siteId);
+        }).then((site) => {
+            const mainFile = files[0],
+                fileUrl = this.fileHelper.getFileUrl(mainFile);
+
+            // Check if the file should be opened in browser.
+            if (this.fileHelper.shouldOpenInBrowser(mainFile)) {
+                if (this.appProvider.isOnline()) {
+                    // Open in browser.
+                    let fixedUrl = site.fixPluginfileURL(fileUrl).replace('&offline=1', '');
+                    // Remove forcedownload when followed by another param.
+                    fixedUrl = fixedUrl.replace(/forcedownload=\d+&/, '');
+                    // Remove forcedownload when not followed by any param.
+                    fixedUrl = fixedUrl.replace(/[\?|\&]forcedownload=\d+/, '');
+
+                    this.utils.openInBrowser(fixedUrl);
+
+                    if (this.fileProvider.isAvailable()) {
+                        // Download the file if needed (file outdated or not downloaded).
+                        // Download will be in background, don't return the promise.
+                        this.downloadModule(module, courseId, component, componentId, files, siteId);
+                    }
+
+                    return;
+                } else {
+                    // Not online, get the offline file. It will fail if not found.
+                    return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl).then((path) => {
+                        return this.utils.openFile(path);
+                    }).catch((error) => {
+                        return Promise.reject(this.translate.instant('core.networkerrormsg'));
+                    });
+                }
+            }
+
+            // File shouldn't be opened in browser. Download the module if it needs to be downloaded.
+            return this.downloadModuleWithMainFileIfNeeded(module, courseId, component, componentId, files, siteId)
+                    .then((result) => {
+                if (result.path.indexOf('http') === 0) {
+                    return this.utils.openOnlineFile(result.path).catch((error) => {
+                        // Error opening the file, some apps don't allow opening online files.
+                        if (!this.fileProvider.isAvailable()) {
+                            return Promise.reject(error);
+                        } else if (result.status === CoreConstants.DOWNLOADING) {
+                            return Promise.reject(this.translate.instant('core.erroropenfiledownloading'));
+                        }
+
+                        let promise;
+                        if (result.status === CoreConstants.NOT_DOWNLOADED) {
+                            // Not downloaded, download it now and return the local file.
+                            promise = this.downloadModule(module, courseId, component, componentId, files, siteId).then(() => {
+                                return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                            });
+                        } else {
+                            // File is outdated or stale and can't be opened in online, return the local URL.
+                            promise = this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                        }
+
+                        return promise.then((path) => {
+                            return this.utils.openFile(path);
+                        });
+                    });
+                } else {
+                    return this.utils.openFile(result.path);
+                }
+            });
+        });
+    }
+
+    /**
+     * Convenience function to download a module that has a main file and return the local file's path and other info.
+     * This is meant for modules like mod_resource.
+     *
+     * @param {any} module The module to download.
+     * @param {number} courseId The course ID of the module.
+     * @param {string} [component] The component to link the files to.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {any[]} [files] List of files of the module. If not provided, use module.contents.
+     * @param {string} [siteId] The site ID. If not defined, current site.
+     * @return {Promise<{fixedUrl: string, path: string, status: string}>} Promise resolved when done.
+     */
+    protected downloadModuleWithMainFileIfNeeded(module: any, courseId: number, component?: string, componentId?: string | number,
+            files?: any[], siteId?: string): Promise<{fixedUrl: string, path: string, status: string}> {
+
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (!files || !files.length) {
+            // Module not valid, stop.
+            return Promise.reject(null);
+        }
+
+        const mainFile = files[0],
+            fileUrl = this.fileHelper.getFileUrl(mainFile),
+            timemodified = this.fileHelper.getFileTimemodified(mainFile),
+            prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(module),
+            result = {
+                fixedUrl: undefined,
+                path: undefined,
+                status: undefined
+            };
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const fixedUrl = site.fixPluginfileURL(fileUrl);
+            result.fixedUrl = fixedUrl;
+
+            if (this.fileProvider.isAvailable()) {
+                // The file system is available.
+                return this.filepoolProvider.getPackageStatus(siteId, component, componentId).then((status) => {
+                    result.status = status;
+
+                    const isWifi = !this.appProvider.isNetworkAccessLimited(),
+                        isOnline = this.appProvider.isOnline();
+
+                    if (status === CoreConstants.DOWNLOADED) {
+                        // Get the local file URL.
+                        return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                    } else if (status === CoreConstants.DOWNLOADING && !this.appProvider.isDesktop()) {
+                        // Return the online URL.
+                        return fixedUrl;
+                    } else {
+                        if (!isOnline && status === CoreConstants.NOT_DOWNLOADED) {
+                            // Not downloaded and we're offline, reject.
+                            return Promise.reject(this.translate.instant('core.networkerrormsg'));
+                        }
+
+                        return this.filepoolProvider.shouldDownloadBeforeOpen(fixedUrl, mainFile.filesize).then(() => {
+                            // Download and then return the local URL.
+                            return this.downloadModule(module, courseId, component, componentId, files, siteId).then(() => {
+                                return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                            });
+                        }, () => {
+                            // Start the download if in wifi, but return the URL right away so the file is opened.
+                            if (isWifi && isOnline) {
+                                this.downloadModule(module, courseId, component, componentId, files, siteId);
+                            }
+
+                            if (!this.fileHelper.isStateDownloaded(status) || isOnline) {
+                                // Not downloaded or online, return the online URL.
+                                return fixedUrl;
+                            } else {
+                                // Outdated but offline, so we return the local URL. Use getUrlByUrl so it's added to the queue.
+                                return this.filepoolProvider.getUrlByUrl(siteId, fileUrl, component, componentId, timemodified,
+                                        false, false, mainFile);
+                            }
+                        });
+                    }
+                }).then((path) => {
+                    result.path = path;
+
+                    return result;
+                });
+            } else {
+                // We use the live URL.
+                result.path = fixedUrl;
+
+                return result;
+            }
+        });
+    }
+
+    /**
+     * Convenience function to download a module.
+     *
+     * @param {any} module The module to download.
+     * @param {number} courseId The course ID of the module.
+     * @param {string} [component] The component to link the files to.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {any[]} [files] List of files of the module. If not provided, use module.contents.
+     * @param {string} [siteId] The site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    downloadModule(module: any, courseId: number, component?: string, componentId?: string | number, files?: any[], siteId?: string)
+            : Promise<any> {
+
+        const prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(module);
+
+        if (prefetchHandler) {
+            // Use the prefetch handler to download the module.
+            if (prefetchHandler.download) {
+                return prefetchHandler.download(module, courseId);
+            } else {
+                return prefetchHandler.prefetch(module, courseId, true);
+            }
+        }
+
+        // There's no prefetch handler for the module, just download the files.
+        files = files || module.contents;
+
+        return this.filepoolProvider.downloadOrPrefetchFiles(siteId, files, false, false, component, componentId);
     }
 
     /**

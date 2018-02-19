@@ -109,7 +109,17 @@ export class CoreSiteAddonsModulePrefetchHandler extends CoreCourseModulePrefetc
                     promises.push(this.siteAddonsProvider.callWS(method, params, {cacheKey: cacheKey}));
                 } else {
                     // It's a method to get content.
-                    promises.push(this.siteAddonsProvider.getContent(this.component, method, args));
+                    promises.push(this.siteAddonsProvider.getContent(this.component, method, args).then((result) => {
+                        const subPromises = [];
+
+                        // Prefetch the files in the content.
+                        if (result.files && result.files.length) {
+                            subPromises.push(this.filepoolProvider.downloadOrPrefetchFiles(siteId, result.files, prefetch, false,
+                                this.component, module.id, dirPath));
+                        }
+
+                        return Promise.all(subPromises);
+                    }));
                 }
             }
 

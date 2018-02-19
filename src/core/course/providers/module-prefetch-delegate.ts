@@ -86,9 +86,20 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @param {any} module Module.
      * @param {number} courseId Course ID the module belongs to.
      * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
      * @return {Promise<any>} Promise resolved when done.
      */
-    prefetch(module: any, courseId?: number, single?: boolean): Promise<any>;
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any>;
+
+    /**
+     * Download the module.
+     *
+     * @param {any} module The module object returned by WS.
+     * @param {number} courseId Course ID.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @return {Promise<any>} Promise resolved when all content is downloaded.
+     */
+    download?(module: any, courseId: number, dirPath?: string): Promise<any>;
 
     /**
      * Check if a certain module can use core_course_check_updates to check if it has updates.
