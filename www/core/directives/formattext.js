@@ -45,7 +45,7 @@ angular.module('mm.core')
  *     -shorten: If shorten is present, max-height="100" will be applied.
  *     -expand-on-click: This attribute will be discarded. The text will be expanded if shortened and fullview-on-click not true.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $mmUtil, $mmSitesManager, $mmFS) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $mmUtil, $mmSitesManager, $mmFS, $window) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
@@ -416,14 +416,33 @@ angular.module('mm.core')
             if (matches && matches[1]) {
                 var newUrl = $mmFS.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
                         matches[1] + '&token=' + site.getToken();
+
+                // Width and height are mandatory, we need to calcualte one.
                 if (el.width) {
-                    newUrl = newUrl + '&width=' + el.width;
-                }
-                if (el.height) {
-                    newUrl = newUrl + '&height=' + el.height;
+                    width = el.width;
+                } else {
+                    width = getElementWidth(el);
+                    if (!width) {
+                        width = $window.innerWidth;
+                    }
                 }
 
-                el.src = newUrl;
+                if (el.height) {
+                    height = el.height;
+                } else {
+                    height = getElementHeight(angular.element(el));
+                    if (!height) {
+                        height = width;
+                    }
+                }
+
+                el.src = newUrl + '&width=' + width + '&height=' + height;
+                if (!el.width) {
+                    el.width = width;
+                }
+                if (!el.height) {
+                    el.height = height;
+                }
             }
         }
     }
