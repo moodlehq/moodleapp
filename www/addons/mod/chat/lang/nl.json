@@ -1,0 +1,19 @@
+{
+    "beep": "Piep",
+    "currentusers": "Huidige gebruikers",
+    "enterchat": "Klik hier om de chat nu binnen te gaan",
+    "entermessage": "Geef je bericht",
+    "errorwhileconnecting": "Fout bij het verbinden met de chat.",
+    "errorwhilegettingchatdata": "Fout bij het ophalen van de chatgegevens.",
+    "errorwhilegettingchatusers": "Fout bij het ophalen van de chatgebruikers.",
+    "errorwhileretrievingmessages": "Fout bij het ophalen van de berichten van de server.",
+    "errorwhilesendingmessage": "Fout tijdens het versturen van het bericht.",
+    "messagebeepsyou": "{{$a}} heeft je net gepiept!",
+    "messageenter": "{{$a}} is net deze chat binnen gekomen",
+    "messageexit": "{{$a}} heeft deze chat verlaten",
+    "mustbeonlinetosendmessages": "Je moet online zijn om berichten te versturen.",
+    "nomessages": "Nog geen berichten",
+    "send": "Stuur",
+    "sessionstart": "De volgende chatsessie zal beginnen op {{$a.date}}, ({{$a.fromnow}} vanaf nu)",
+    "talk": "Spreek"
+}

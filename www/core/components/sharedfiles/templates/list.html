@@ -1,0 +1,21 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{title}}</mm-format-text></ion-nav-title>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
+        <mm-site-picker site-selected="changeSite(siteId)" ng-show="filesLoaded"></mm-site-picker>
+        <li class="item item-divider"></li>
+        <mm-loading hide-until="filesLoaded">
+            <ul class="list" ng-if="files.length > 0">
+                <li ng-repeat="file in files">
+                    <mm-local-file ng-if="file.isFile" file="file" manage="manage" override-click="pick" file-deleted="fileDeleted($index)" file-clicked="filePicked(file)" file-renamed="fileRenamed($index, file)"></mm-local-file>
+                    <a class="item item-media" ng-if="!file.isFile" ng-click="openFolder(file)">
+                        <img src="img/files/folder-64.png" alt="{{ 'mm.core.folder' | translate }}" role="presentation">
+                        {{ file.name }}
+                    </a>
+                </li>
+            </ul>
+            <mm-empty-box ng-if="files && !files.length && manage" icon="ion-folder" message="{{ 'mm.sharedfiles.nosharedfiles' | translate }}"></mm-empty-box>
+            <mm-empty-box ng-if="files && !files.length && !manage" icon="ion-folder" message="{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}"></mm-empty-box>
+        </mm-loading>
+    </ion-content>
+</ion-view>

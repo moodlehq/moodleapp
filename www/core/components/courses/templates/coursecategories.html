@@ -1,0 +1,34 @@
+<ion-view view-title="{{ 'mm.courses.categories' | translate }}">
+    <ion-content mm-state-class>
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="categoriesLoaded" on-refresh="refreshCategories()">
+        </ion-refresher>
+        <mm-loading hide-until="categoriesLoaded">
+            <div class="item item-icon-left" ng-if="currentCategory">
+                <i class="icon ion-folder"></i>
+                <h2><mm-format-text watch="true">{{currentCategory.name}}</mm-format-text></h2>
+            </div>
+            <div class="item item-text-wrap item-stack-top" ng-if="currentCategory && currentCategory.description">
+                <mm-format-text watch="true" max-height="60">{{currentCategory.description}}</mm-format-text>
+            </div>
+
+            <div ng-if="categories.length > 0">
+                <p class="item item-divider">{{ 'mm.courses.categories' | translate }}</p>
+                <section ng-repeat="category in categories">
+                    <a class="item item-icon-left item-text-wrap item-icon-right" ui-sref="site.mm_coursescategories({categoryid: category.id})" title="{{category.name}}">
+                        <i class="icon ion-folder"></i>
+                        <h2><mm-format-text watch="true">{{category.name}}</mm-format-text></h2>
+                        <span ng-if="category.coursecount > 0" class="badge badge-light">{{category.coursecount}}</span>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </a>
+                </section>
+            </div>
+
+            <div ng-if="courses.length > 0">
+                <p class="item item-divider">{{ 'mm.courses.courses' | translate }}</p>
+                <mm-course-list-item ng-repeat="course in courses" course="course"></mm-course-list-item>
+            </div>
+            <mm-empty-box ng-if="!categories.length && !courses.length" icon="ion-ionic" message="{{ 'mm.courses.nocoursesyet' | translate }}"></mm-empty-box>
+        </mm-loading>
+    </ion-content>
+</ion-view>

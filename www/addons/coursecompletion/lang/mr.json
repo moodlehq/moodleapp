@@ -1,0 +1,21 @@
+{
+    "complete": "पूर्ण",
+    "completecourse": "पूर्ण अभ्यासक्रम",
+    "completed": "पूर्ण झालेले",
+    "completiondate": "Completion date",
+    "couldnotloadreport": "अभ्यासक्रम पूर्ण केल्याचे अहवाल लोड करणे शक्य नाही, कृपया नंतर पुन्हा प्रयत्न करा.",
+    "coursecompletion": "अभ्यासक्रम पूर्ण",
+    "criteria": "निकष",
+    "criteriagroup": "निकष गट",
+    "criteriarequiredall": "खालील सर्व निकष आवश्यक आहेत",
+    "criteriarequiredany": "खालीलपैकी कोणताही निकष  आवश्यक आहेत",
+    "inprogress": "प्रगतीपथावर",
+    "manualselfcompletion": "स्वयं पूर्ण",
+    "notyetstarted": "स्वतःच्या हाताने पूर्ण",
+    "pending": "प्रलंबित",
+    "required": "गरजेचे आहे.",
+    "requiredcriteria": "आवश्यक निकष",
+    "requirement": "आवश्यकता",
+    "status": "स्थिती",
+    "viewcoursereport": "अभ्यासक्रम अहवाल पहा"
+}

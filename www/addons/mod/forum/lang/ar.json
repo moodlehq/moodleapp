@@ -1,0 +1,19 @@
+{
+    "addanewdiscussion": "أضف موضوعا جديدا للنقاش",
+    "cannotadddiscussion": "إضافة نقشات لهذا المنتدى يتطلب عضوية مجموعات",
+    "cannotadddiscussionall": "ليس لديك الصلاحيات لإضافة نقاش لكل المشتركين.",
+    "couldnotadd": "تعذر إرسال مقالة نتيجة خطأ غير معروف",
+    "discussion": "نقاش",
+    "edit": "حرر",
+    "group": "مجموعة",
+    "message": "رسالة",
+    "modeflatnewestfirst": "عرض الردود حسب الأحدث",
+    "modeflatoldestfirst": "عرض الردود حسب الأقدم",
+    "modenested": "عرض الردود حسب المداخلات",
+    "posttoforum": "أضف المشاركة للمنتدى",
+    "re": "إعادة:",
+    "reply": "رد",
+    "subject": "الموضوع",
+    "unread": "لم يتم قرائتها",
+    "unreadpostsnumber": "{{$a}} مشاركات التي لم تقراء"
+}

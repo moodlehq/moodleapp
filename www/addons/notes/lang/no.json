@@ -1,0 +1,12 @@
+{
+    "addnewnote": "Legg til notat",
+    "coursenotes": "Kursnotater",
+    "eventnotecreated": "Notat opprettet",
+    "nonotes": "Ingen notater av denne typen ennå",
+    "note": "Notat",
+    "notes": "Dine private analyser og notater",
+    "personalnotes": "Personlig notat",
+    "sitenotes": "Sidenotater",
+    "userwithid": "Bruker med id {{id}}",
+    "warningnotenotsent": "Kunne ikke legge til notat(er) på kurs {{course}}. {{error}}"
+}

@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Aukeratu kontua fitxategiak bertan gordetzeko.",
+    "chooseactionrepeatedfile": "Dagoeneko fitxategi bat dago izen horrekin. Existitzen den fitxategi hori ordezkatu edo \"{{$a}}\" gisa berrizendatu nahi duzu ?",
+    "errorreceivefilenosites": "Ez dago gunerik gordeta. Mesedez gehitu gune bat app-aren bitartez fitxategi bat partekatu aurretik.",
+    "nosharedfiles": "Ez dago artekatutako fitxategirik gune honetan.",
+    "nosharedfilestoupload": "Ez duzu igotzeko fitxategirik hemen. Beste app baten bitartez fitxategia igo nahi baduzu, fitxategia aurkitu eta ondoren 'Ireki honekin' botoia sakatu.",
+    "rename": "Berrizendatu",
+    "replace": "Ordezkatu",
+    "sharedfiles": "Partekatutako fitxategiak",
+    "successstorefile": "Fitxategia ondo gorde da. Orain fitxategi hau aukeratu dezakezu zure gune pribatura igo edo jarduera bati eransteko."
+}

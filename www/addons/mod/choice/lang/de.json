@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Ihre Auswahl konnte nicht gespeichert werden. Versuchen Sie es bitte noch einmal.",
+    "choiceoptions": "Abstimmoptionen",
+    "errorgetchoice": "Fehler beim Laden der Abstimmung",
+    "expired": "Diese Abstimmung ist seit {{$a}} beendet. Eine Auswahl ist nicht mehr möglich.",
+    "full": "(Nicht verfügbar)",
+    "noresultsviewable": "Ergebnisse sind aktuell nicht sichtbar.",
+    "notopenyet": "Die Aktivität ist nicht verfügbar bis {{$a}}.",
+    "numberofuser": "Anzahl der Antworten",
+    "numberofuserinpercentage": "Prozent der Antworten",
+    "previewonly": "Diese Vorschau zeigt die verfügbaren Optionen für diese Aktivität. Sie können Ihre Wahl nicht vor {{$a}} einreichen.",
+    "removemychoice": "Meine Auswahl löschen",
+    "responses": "Stimmabgaben",
+    "responsesresultgraphdescription": "{{number}}% der Teilnehmer/innen haben die Option gewählt: {{text}}.",
+    "responsesresultgraphheader": "Grafische Darstellung",
+    "resultsnotsynced": "Ihre letzte Antwort ist in den Ergebnissen noch nicht enthalten. Synchronisieren Sie die Daten.",
+    "savemychoice": "Meine Auswahl speichern",
+    "userchoosethisoption": "Teilnehmer/innen mit dieser Auswahl",
+    "yourselection": "Ihre Auswahl"
+}

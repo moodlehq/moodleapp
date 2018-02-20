@@ -1,7 +1,10 @@
 {
     "complete": "Komplett",
+    "completecourse": "",
     "completed": "Slutfört",
-    "coursecompletion": "Fullföljande av kurs",
+    "completiondate": "Datum för fullföljande",
+    "couldnotloadreport": "Det gick inte att läsa in rapporten för fullföljande av kursen, vänligen försök igen senare .",
+    "coursecompletion": "Fullgörande av kurs",
     "criteria": "Kriterier",
     "criteriagroup": "Kriterier för grupp",
     "criteriarequiredall": "Alla kriterier är obligatoriska",
@@ -12,6 +15,7 @@
     "pending": "Avvaktar",
     "required": "Obligatorisk",
     "requiredcriteria": "Obligatoriskt kriterium",
-    "status": "Status",
+    "requirement": "Krav",
+    "status": "Status för märke",
     "viewcoursereport": "Visa kursrapport"
 }

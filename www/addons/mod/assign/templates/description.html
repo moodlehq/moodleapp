@@ -1,0 +1,9 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ 'mm.core.description' | translate }}</mm-format-text></ion-nav-title>
+    <ion-content padding="true" mm-state-class>
+        <mm-format-text component="{{assignComponent}}" component-id="{{moduleId}}">{{ description }}</mm-format-text>
+        <div class="list card" ng-if="files && files.length">
+            <mm-file class="item item-complex" ng-repeat="attachment in files" file="attachment" component="{{assignComponent}}" component-id="{{moduleId}}"></mm-file>
+        </div>
+    </ion-content>
+</ion-view>

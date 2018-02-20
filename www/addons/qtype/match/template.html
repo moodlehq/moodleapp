@@ -1,0 +1,18 @@
+<section class="list mma-qtype-match-container" ng-if="question.loaded">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+    </div>
+    <div class="item item-text-wrap row mm-item-padding" ng-repeat="row in question.rows">
+        <div class="col">
+            <p><mm-format-text watch="true" id="mma-question-{{row.id}}" component="{{component}}" component-id="{{componentId}}">{{ row.text }}</mm-format-text></p>
+        </div>
+        <div class="col" ng-class='{"item-select": !row.disabled, "mm-question-answer-correct": row.isCorrect === 1, "mm-question-answer-incorrect": row.isCorrect === 0}'>
+            <label class="accesshide" for="{{row.id}}" ng-if="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>
+            <select id="{{row.id}}" name="{{row.name}}" ng-if="!row.disabled" aria-labelledby="mma-question-{{row.id}}" ng-options="option.label for option in row.options track by option.value" ng-model="row.selected" mm-ios-select-fix>
+            </select>
+            <p class="mm-select-fix" ng-if="row.selected && row.selected.label">
+                {{row.selected.label}}
+            </p>
+        </div>
+    </div>
+</section>

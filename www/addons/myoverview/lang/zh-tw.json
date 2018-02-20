@@ -1,0 +1,18 @@
+{
+    "future": "未來",
+    "inprogress": "進行中",
+    "morecourses": "更多課程",
+    "next30days": "下一月",
+    "next7days": "下一週",
+    "nocourses": "沒有課程",
+    "nocoursesfuture": "沒有未來的課程",
+    "nocoursesinprogress": "沒有進行中的課程",
+    "nocoursespast": "沒有過去的課程",
+    "noevents": "沒有即將到期的活動",
+    "past": "過去",
+    "pluginname": "課程概觀",
+    "recentlyoverdue": "最近逾期的",
+    "sortbycourses": "依課程排序",
+    "sortbydates": "依日期排序",
+    "timeline": "時間軸"
+}

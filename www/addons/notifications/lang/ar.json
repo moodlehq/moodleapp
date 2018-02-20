@@ -1,4 +1,5 @@
 {
-    "notifications": "الإشعارات",
+    "errorgetnotifications": "خطأ في الحصول على الإشعارات",
+    "notifications": "إشعارات",
     "therearentnotificationsyet": "لا توجد إشعارات"
 }

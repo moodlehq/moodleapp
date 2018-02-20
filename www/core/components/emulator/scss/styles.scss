@@ -1,0 +1,81 @@
+.mm-capture-media-modal {
+    background-color: $gray-light;
+
+    .bar-header {
+        @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
+
+        .button {
+            color: $bar-content-text;
+            font-weight: normal;
+        }
+    }
+
+    .mm-capture-media-modal-content {
+        text-align: center;
+
+        .mm-av-wrapper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: table;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            clear: both;
+        }
+
+        audio, video, img {
+            width: 100%;
+            height: 100%;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            object-fit: contain;
+
+            &.mm-webcam-stream {
+                -webkit-transform: scaleX(-1);
+                transform: scaleX(-1);
+            }
+        }
+
+        .mm-webcam-image-canvas {
+            display: none;
+        }
+
+        .mm-audio-record-container {
+            width: 100%;
+            height: 100%;
+
+            .mm-audio-canvas {
+                width: 100%;
+                height: 100%;
+            }
+
+            .mm-audio-captured {
+                width: 100%;
+            }
+        }
+    }
+
+
+    .bar-footer {
+        background-color: $gray;
+        border-top-color: $gray-dark;
+
+        .col {
+            padding: 0;
+            line-height: $bar-height - $bar-padding-portrait * 2;
+
+            .button-icon {
+                color: $black;
+            }
+
+            .ion-record, .ion-trash-a {
+                color: $red;
+            }
+        }
+    }
+}

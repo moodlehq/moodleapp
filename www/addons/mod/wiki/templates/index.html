@@ -1,0 +1,27 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button ng-if="subwikiData.count > 1" class="button button-icon ion-person-stalker" ng-click="showSubwikiPicker($event)" aria-label="{{ 'mma.mod_wiki.subwiki' | translate }}"></button>
+        <a class="button button-icon ion-home" ng-if="showHomeButton" ng-click="goHomeWiki()" aria-label="{{ 'mma.mod_wiki.gowikihome' | translate }}"></a>
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="wikiLoaded && isOnline && !pageIsOffline && !wikiHasOffline" content="'mm.core.refresh' | translate" action="refreshWiki()" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="650" ng-if="wikiLoaded && isOnline && (pageIsOffline || wikiHasOffline)" content="'mm.settings.synchronizenow' | translate" action="refreshWiki(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="canEdit && isOnline" content="'mm.core.edit' | translate" icon-action="'ion-edit'" action="gotoEditPage()"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="canEdit" content="'mma.mod_wiki.createpage' | translate" icon-action="'ion-plus-round'" action="gotoNewPage()"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="300" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-tabs class="tabs-icon-top" delegate-handle="{{tabsDelegateName}}">
+        <ion-tab title="{{ 'mma.mod_wiki.viewpage' | translate }}" icon="ion-document">
+            <ng-include src="'addons/mod/wiki/templates/page.html'"></ng-include>
+        </ion-tab>
+        <ion-tab title="{{ 'mma.mod_wiki.map' | translate }}" icon="ion-map">
+            <ion-pane ng-controller="mmaModWikiMapCtrl">
+                <ng-include src="'addons/mod/wiki/templates/map.html'"></ng-include>
+            </ion-pane>
+        </ion-tab>
+    </ion-tabs>
+</ion-view>

@@ -4,7 +4,7 @@
     "completed": "Terminé",
     "completiondate": "Date d'achèvement",
     "couldnotloadreport": "Impossible de charger le rapport d'achèvement de cours. Veuillez essayer plus tard.",
-    "coursecompletion": "Achèvement du cours",
+    "coursecompletion": "Les participants doivent achever ce cours.",
     "criteria": "Critères",
     "criteriagroup": "Groupe de critères",
     "criteriarequiredall": "Tous les critères ci-dessous sont requis",
@@ -17,5 +17,5 @@
     "requiredcriteria": "Critères requis",
     "requirement": "Condition",
     "status": "Statut",
-    "viewcoursereport": "Afficher le rapport du cours"
+    "viewcoursereport": "Consulter le rapport du cours"
 }

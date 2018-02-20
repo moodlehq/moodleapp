@@ -1,0 +1,14 @@
+<!-- Feedback container. We'll inject the directive here. -->
+<span class="mma-mod-assign-feedback-container">
+    <mm-loading hide-until="pluginLoaded">
+        <!-- This content will be replaced by the directive if any is applied. -->
+        <div class="item item-text-wrap" ng-if="text.length > 0 || files.length > 0">
+            <h2>{{plugin.name}}</h2>
+            <p ng-if="notsupported" class="badge badge-inline badge-positive">{{ 'mma.mod_assign.feedbacknotsupported' | translate }}</p>
+            <p ng-if="text"><mm-format-text expand-title="{{plugin.name}}" max-height="80" fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
+                {{text}}
+            </mm-format-text></p>
+            <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.cmid}}" always-download="true" no-border="true"></mm-file>
+        </div>
+    </mm-loading>
+</span>

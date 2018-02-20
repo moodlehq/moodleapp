@@ -1,14 +1,4 @@
 {
-    "average": "Average",
-    "contributiontocoursetotal": "Contribution to course total",
-    "feedback": "Feedback",
-    "grade": "Grade",
-    "grades": "Grades",
-    "itemname": "Grade item",
-    "lettergrade": "Letter grade",
-    "percentage": "Percentage",
-    "rank": "Rank",
-    "range": "Range",
-    "viewgrades": "View grades",
-    "weight": "Weight"
+    "nogradesreturned": "No grades returned",
+    "viewgrades": "View grades"
 }

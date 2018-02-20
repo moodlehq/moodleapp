@@ -1,0 +1,10 @@
+<!-- Render (no edit). -->
+<div class="item" ng-if="!edit && field && field.name">
+    <p class="item-heading">{{ field.name }}</p>
+    <p><mm-format-text watch="true">{{ field.value }}</mm-format-text></p>
+</div>
+<!-- Edit. -->
+<ion-input ng-if="edit && field && field.shortname" class="item item-input item-stacked-label item-text-wrap" mm-input-errors field-name="{{field.modelName}}">
+    <ion-label mm-mark-required="{{field.required}}">{{ field.name }}</ion-label>
+    <input type="{{field.inputType}}" name="{{field.modelName}}" placeholder="{{field.name}}" ng-model="model[field.modelName]" ng-disabled="!signup && field.locked" maxlength="{{field.maxlength}}" ng-required="{{field.required}}">
+</ion-input>

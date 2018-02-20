@@ -1,0 +1,14 @@
+{
+    "cannoteditpage": "Ezt az oldalt nem szerkesztheti.",
+    "createpage": "Oldal létrehozása",
+    "editingpage": "'{{$a}}' oldal szerkesztése",
+    "map": "Térkép",
+    "newpagehdr": "Új oldal",
+    "newpagetitle": "Új oldalcím",
+    "nocontent": "Az oldalhoz nincs tartalom",
+    "notingroup": "Nem része a csoportnak",
+    "page": "Oldal",
+    "pageexists": "Az oldal már létezik. Átirányítás az oldalra.",
+    "pagename": "Oldal neve",
+    "wrongversionlock": "A szerkesztés közben egy másik felhasználó szerkesztette ezt az oldalt, így az Ön tartalma elavult."
+}

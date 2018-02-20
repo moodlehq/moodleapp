@@ -14,96 +14,103 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil,
-        $ionicHistory, mmaFilesUploadStateName, $state, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil, $mmText,
+        $mmaFilesHelper, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
-        title,
+        isMyFiles = root === 'my',
+        isSiteFiles = root === 'site',
+        userQuota = $mmSite.getInfo().userquota,
         promise;
 
     // We're loading the files.
     $scope.count = -1;
-    $scope.component = root === 'my' ? mmaFilesMyComponent : mmaFilesSiteComponent;
+    $scope.component = isMyFiles ? mmaFilesMyComponent : mmaFilesSiteComponent;
+    $scope.showUpload = isMyFiles && !path && $mmSite.canUploadFiles() && !$mmaFiles.isUploadDisabledInSite();
 
     // Convenience function that fetches the files and updates the scope.
-    function fetchFiles(root, path) {
+    function fetchFiles() {
         if (!path) {
             // The path is unknown, the user must be requesting a root.
-            if (root === 'site') {
+            if (isSiteFiles) {
                 promise = $mmaFiles.getSiteFiles();
-                title = $translate('mma.files.sitefiles');
-            } else if (root === 'my') {
-                promise = $mmaFiles.getMyFiles();
-                title = $translate('mma.files.myprivatefiles');
+                $scope.title = $translate.instant('mma.files.sitefiles');
+            } else if (isMyFiles) {
+                promise = $mmaFiles.getMyFiles().then(function(files) {
+                    if ($scope.showUpload && $mmaFiles.canGetPrivateFilesInfo() && userQuota > 0) {
+                        // Get the info to calculate the available size.
+                        return $mmaFiles.getPrivateFilesInfo().then(function(info) {
+                            $scope.filesInfo = info;
+                            $scope.spaceUsed = $mmText.bytesToSize(info.filesizewithoutreferences, 1);
+                            $scope.userQuota = $mmText.bytesToSize(userQuota, 1);
+
+                            return files;
+                        });
+                    } else {
+                        delete $scope.userQuota;
+                    }
+
+                    return files;
+                });
+                $scope.title = $translate.instant('mma.files.files');
             } else {
                 // Upon error we create a fake promise that is rejected.
                 promise = $q.reject();
-                title = (function() {
-                    var q = $q.defer();
-                    q.resolve('');
-                    return q.promise;
-                })();
             }
         } else {
             // Serve the files the user requested.
             pathdata = JSON.parse(path);
             promise = $mmaFiles.getFiles(pathdata);
-
-            // Put the title in a promise to act like translate does.
-            title = (function() {
-                var q = $q.defer();
-                q.resolve($stateParams.title);
-                return q.promise;
-            })();
+            $scope.title = $stateParams.title;
         }
 
-        return $q.all([promise, title]).then(function(data) {
-            var files = data[0],
-                title = data[1];
-
+        return promise.then(function(files) {
             $scope.files = files.entries;
             $scope.count = files.count;
-            $scope.title = title;
-        }, function() {
-            $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.files.couldnotloadfiles', true);
+            return $q.reject();
         });
     }
 
-    fetchFiles(root, path).finally(function() {
+    // Function to refresh files list.
+    function refreshFiles() {
+        var promises = [];
+
+        promises.push($mmaFiles.invalidateDirectory(root, path));
+        promises.push($mmaFiles.invalidatePrivateFilesInfoForUser());
+
+        return $q.all(promises).finally(function() {
+            return fetchFiles();
+        });
+    }
+
+    fetchFiles().finally(function() {
         $scope.filesLoaded = true;
     });
 
     $scope.refreshFiles = function() {
-        $mmaFiles.invalidateDirectory(root, path).finally(function() {
-            fetchFiles(root, path).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+        refreshFiles().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
         });
-    };
-
-    // Update list if we come from upload page (we don't know if user upoaded a file or not).
-    // List is invalidated in upload state after uploading a file.
-    $scope.$on('$ionicView.enter', function(e) {
-        var forwardView = $ionicHistory.forwardView();
-        if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
-            $scope.filesLoaded = false;
-            fetchFiles(root, path).finally(function() {
-                $scope.filesLoaded = true;
-            });
-        }
-    });
-
-    $scope.showUpload = function() {
-        return (root === 'my' && !path && $mmSite.canUploadFiles());
     };
 
     // When we are in the root of the private files we can add more files.
     $scope.add = function() {
-        if (!$mmApp.isOnline()) {
-            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-        } else {
-            $state.go('site.files-upload', {root: root, path: path});
-        }
+        $mmaFiles.versionCanUploadFiles().then(function(canUpload) {
+            if (!canUpload) {
+                $mmUtil.showModal('mm.core.notice', 'mma.files.erroruploadnotworking');
+            } else if (!$mmApp.isOnline()) {
+                $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
+            } else {
+                $mmaFilesHelper.selectAndUploadFile($scope.filesInfo).then(function() {
+                    $scope.filesLoaded = false;
+                    refreshFiles().finally(function() {
+                        $scope.filesLoaded = true;
+                    });
+                });
+            }
+        });
     };
 });

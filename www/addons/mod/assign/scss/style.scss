@@ -1,0 +1,270 @@
+
+$mma-mod-assign-warning-color: $red !default;
+
+.mm-site_mod_assign,
+.mm-site_mod_assign-submission {
+
+  div.latesubmission,
+  div.overdue {
+    @extend .mm-error-item;
+  }
+
+  div.earlysubmission {
+    @extend .mm-success-item;
+  }
+
+  div.submissioneditable p {
+    color: $red;
+  }
+}
+
+p.mma-mod-assign-warning {
+  color: $mma-mod-assign-warning-color;
+}
+
+/** Grading */
+.mm-grading-summary .advancedgrade {
+  display: none;
+}
+
+.gradingform_rubric {
+  overflow: auto;
+  padding-bottom: 1.5em;
+
+  .criterion {
+    border: 1px solid $item-default-border;
+    overflow: hidden;
+
+    &.even {
+      background: $gray-lighter;
+    }
+
+    .description,
+    .levels,
+    .remark,
+    .levels .level {
+      vertical-align: top;
+    }
+
+    .description,
+    .remark,
+    .levels .level {
+      padding: 3px;
+    }
+
+    .description {
+      width: 150px;
+      font-weight: bold;
+    }
+
+    .levels table {
+      width: 100%;
+      height: 100%;
+    }
+
+    .levels,
+    .levels table,
+    .levels table tbody {
+      padding: 0;
+      margin: 0;
+    }
+
+    .levels .level {
+      border-left: 1px solid $item-default-border;
+      max-width: 150px;
+    }
+
+    .levels .level .level-wrapper {
+      position: relative;
+    }
+
+    .levels .level.last {
+      border-right: 1px solid $item-default-border;
+    }
+
+    .levels .level .score {
+      font-style: italic;
+      color: $green-dark;
+      font-weight: bold;
+      margin-top: 5px;
+      white-space: nowrap;
+    }
+
+    .levels .level .score .scorevalue {
+      padding-right: 5px;
+    }
+
+    .levels .level.currentchecked {
+      background: #fff0f0;
+    }
+
+    .levels .level.checked {
+      background: $green-light;
+    }
+
+    .description.error,
+    .levels .level .definition.error,
+    .levels .level .score.error {
+      background: #FFDDDD;
+    }
+
+    .levels.error {
+      border: 1px solid $red;
+    }
+  }
+
+  .options .optionsheading {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-bottom: 5px;
+  }
+  .options .option {
+    padding-bottom: 2px;
+  }
+  .options .option label {
+    margin-left: 5px;
+  }
+  .options .option .value {
+    margin-left: 5px;
+    font-weight: bold;
+  }
+
+  .plainvalue.empty {
+    font-style: italic;
+    color: #AAA;
+  }
+
+  .criteria {
+    height:100%;
+    background: $white;
+  }
+}
+
+.gradingform_rubric-regrade {
+  padding: 10px;
+  background: #FFDDDD;
+  border: 1px solid $red;
+  margin-bottom: 10px;
+}
+.gradingform_rubric-restored {
+  padding: 10px;
+  background: #FFFFDD;
+  border: 1px solid #FF0;
+  margin-bottom: 10px;
+}
+.gradingform_rubric-error {
+  color: $red;
+  font-weight: bold;
+}
+
+
+.gradingform_guide-regrade {padding:10px;background:#FFDDDD;border:1px solid #F00;margin-bottom:10px;}
+.gradingform_guide-restored {padding:10px;background:#FFFFDD;border:1px solid #FF0;margin-bottom:10px;}
+.gradingform_guide-error {color:red;font-weight:bold;}
+
+.gradingform_guide {
+  .hidden {
+    display: none;
+  }
+
+  td {
+    padding: 8px;
+  }
+
+  .criterion {
+    border: 1px solid $item-default-border;
+    overflow: hidden;
+
+    .description,
+    .remark {
+      vertical-align: top;
+    }
+
+    &.even {
+      background: $gray-lighter;
+    }
+
+    .description {
+      width: 100%;
+    }
+    .description .criterionname {
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      padding-right: 5px;
+    }
+    .description.error {
+      background: #FFDDDD;
+    }
+  }
+
+  .criterionnamelabel {
+    display: none;
+  }
+  .criterionshortname {
+    font-weight: bold;
+  }
+
+  .plainvalue.empty {
+    font-style: italic;
+    color: #AAA;
+  }
+  .plainvalue.editname {
+    font-weight: bold;
+  }
+
+  .options {
+    .optionsheading {
+      font-weight: bold;
+      font-size: 1.1em;
+      padding-bottom: 5px;
+    }
+    .option {
+      padding-bottom:2px;
+    }
+    .option label {
+      margin-left: 5px;
+    }
+    .option .value {
+      margin-left: 5px;
+      font-weight: bold;
+    }
+  }
+
+  .commentheader  {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-bottom:5px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .descriptionreadonly {
+      vertical-align: top;
+  }
+
+  .criteriondescriptionmarkers {
+    width: 300px;
+  }
+
+  .markingguideremark {
+      margin: 0;
+      width: 100%;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+  }
+  .criteriondescriptionscore {
+    display: inline;
+  }
+  .score label {
+      display: block;
+  }
+  .score input {
+      margin: 0;
+      width: auto;
+  }
+}

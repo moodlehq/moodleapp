@@ -1,4 +1,6 @@
 {
-    "contents": "İçerik(ler)",
-    "showall": "Tümünü göster"
+    "allsections": "Tüm Bölümler",
+    "contents": "İçerik",
+    "hiddenfromstudents": "Öğrencilerden gizli",
+    "overriddennotice": "Bu etkinlikteki final notunuz, elle ayarlandı."
 }

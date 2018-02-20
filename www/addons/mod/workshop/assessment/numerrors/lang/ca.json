@@ -1,0 +1,5 @@
+{
+    "dimensioncommentfor": "Comentari per a: {{$a}}",
+    "dimensiongradefor": "Puntuació per a {{$a}}",
+    "dimensionnumber": "Afirmació {{$a}}"
+}

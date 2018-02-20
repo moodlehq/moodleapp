@@ -1,5 +1,7 @@
 {
-    "errorgetnotifications": "Fout bij het ophalen van notificaties",
+    "errorgetnotifications": "Fout bij het ophalen van meldingen.",
+    "notificationpreferences": "Meldingen  voorkeuren",
     "notifications": "Meldingen",
-    "therearentnotificationsyet": "Er zijn geen meldingen"
+    "playsound": "Speel geluid",
+    "therearentnotificationsyet": "Er zijn geen meldingen."
 }

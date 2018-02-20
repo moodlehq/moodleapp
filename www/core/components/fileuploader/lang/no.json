@@ -1,0 +1,13 @@
+{
+    "addfiletext": "Legg til fil",
+    "audio": "Lydfil ({{$a.EXT}})",
+    "errorreadingfile": "Feil under lesning av fil \"{{$a}}\"",
+    "file": "Fil",
+    "filesofthesetypes": "Disse filtypene kan brukes i denne innleveringen.",
+    "invalidfiletype": "{{$a}}  filtypen aksepteres ikke",
+    "maxbytesfile": "Filen {{$a.file}} er for stor. Den maksimale filstørrelsen du kan laste opp er {{$a.size}}.",
+    "more": "Mer",
+    "uploadafile": "Laste opp ei fil",
+    "uploading": "Laster opp...",
+    "video": "Videofil ({{$a.EXT}})"
+}

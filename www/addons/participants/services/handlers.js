@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipantsHandlers
  */
-.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $mmUtil, $state) {
+.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $state, $mmContentLinkHandlerFactory, $q) {
     var self = {};
 
     /**
@@ -36,6 +36,23 @@ angular.module('mm.addons.participants')
         var self = {};
 
         /**
+         * Invalidate data to determine if handler is enabled for a course.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}             Promise resolved when done.
+         */
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                // No need to invalidate anything.
+                return $q.when();
+            }
+
+            return $mmaParticipants.invalidateParticipantsList(courseId);
+        };
+
+        /**
          * Check if handler is enabled.
          *
          * @return {Boolean} True if handler is enabled, false otherwise.
@@ -47,16 +64,25 @@ angular.module('mm.addons.participants')
         /**
          * Check if handler is enabled for this course.
          *
-         * @param {Number} courseId   Course ID.
-         * @param {Object} accessData Type of access to the course: default, guest, ...
-         * @return {Boolean|Promise}  Promise resolved  with true if handler is enabled,
-         *                            false or promise rejected or resolved with false otherwise.
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Boolean}             True if handler is enabled, false otherwise.
          */
-        self.isEnabledForCourse = function(courseId, accessData) {
+        self.isEnabledForCourse = function(courseId, accessData, navOptions, admOptions) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
-            return $mmaParticipants.isPluginEnabledForCourse(courseId);
+
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                return navOptions.participants;
+            }
+
+            // Assume it's enabled for now, further checks will be done in shouldDisplayForCourse.
+            return true;
         };
 
         /**
@@ -69,6 +95,7 @@ angular.module('mm.addons.participants')
             return function($scope, $state) {
                 $scope.icon = 'ion-person-stalker';
                 $scope.title = 'mma.participants.participants';
+                $scope.class = 'mma-participants-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();
@@ -79,70 +106,65 @@ angular.module('mm.addons.participants')
             };
         };
 
+        /**
+         * Check if handler should be displayed in a course. Will only be called if the handler is enabled for the course.
+         *
+         * This function shouldn't be called too much, so WebServices calls are allowed.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise|Boolean}     True or promise resolved with true if handler should be displayed.
+         */
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.participants != 'undefined') {
+                return navOptions.participants;
+            }
+
+            return $mmaParticipants.isPluginEnabledForCourse(courseId);
+        };
+
         return self;
     };
 
     /**
      * Content links handler.
+     * Match user/index.php but NOT grade/report/user/index.php.
      *
      * @module mm.addons.participants
      * @ngdoc method
      * @name $mmaParticipantsHandlers#linksHandler
      */
-    self.linksHandler = function() {
+    self.linksHandler = $mmContentLinkHandlerFactory.createChild(
+            /\/user\/index\.php/, '$mmCoursesDelegate_mmaParticipants');
 
-        var self = {};
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.linksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+        if (!courseId || url.indexOf('/grade/report/') != -1) {
+            return false;
+        }
 
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds Site IDs the URL belongs to.
-         * @param {String} url       URL to treat.
-         * @return {Object[]}        List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            // Check it's a user URL.
-            if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url);
-                if (typeof params.id != 'undefined') {
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: siteIds,
-                        action: function(siteId) {
-                            // Use redirect to make the participants list the new history root (to avoid "loops" in history).
-                            $state.go('redirect', {
-                                siteid: siteId,
-                                state: 'site.participants',
-                                params: {
-                                    course: {id: parseInt(params.id, 10)}
-                                }
-                            });
-                        }
-                    }];
-                }
+        return $mmaParticipants.isPluginEnabledForCourse(courseId, siteId);
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.linksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.participants',
+                    params: {
+                        course: {id: courseId}
+                    }
+                });
             }
-            return [];
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            // Verify it's not a grade URL.
-            if (url.indexOf('grade/report/user') == -1) {
-                var position = url.indexOf('/user/index.php');
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
-            }
-        };
-
-        return self;
+        }];
     };
 
     return self;

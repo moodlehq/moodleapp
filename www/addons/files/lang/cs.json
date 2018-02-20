@@ -1,19 +1,13 @@
 {
-    "chooseaccountuploadfile": "Vyberte účet, pod kterým nahrajete soubor",
-    "confirmuploadfile": "Chystáte nahrát {$a}. Jste si jisti, že chcete pokračovat?",
-    "downloading": "Stahování ...",
+    "admindisableddownload": "Upozorňujeme, že správce Moodle zakázal stahování souborů, soubory si můžete prohlížet, ale ne stáhnout.",
+    "clicktoupload": "Kliknutím na tlačítko níže nahrát soubory do vašich osobních souborů.",
+    "couldnotloadfiles": "Seznam souborů, které nelze načíst .",
     "emptyfilelist": "Žádný soubor k zobrazení",
-    "errorcapturingaudio": "Chyba snímání zvuku",
-    "errorcapturingvideo": "Chyba snímání videa",
-    "errorreadingfile": "Chyba při čtení souboru \"{$a}\"",
-    "errorreceivefilenosites": "Nejsou uloženy žádné stránky. Než se pokusíte nahrát soubor, přidejte prosím stránku.",
-    "file": "Soubor",
-    "fileuploaded": "Soubor nahrán",
-    "myfiles": "Moje soubory",
-    "readingfile": "Čtení souboru",
+    "erroruploadnotworking": "Bohužel v současné době není možné nahrávat na stránky vašeho Moodle.",
+    "files": "Soubory",
+    "myprivatefilesdesc": "Soubory, které jsou dostupné v soukromé oblasti na těchto stránkách Moodle.",
+    "privatefiles": "Osobní soubory",
     "sitefiles": "Soubory stránek",
-    "success": "Úspěch",
-    "uploadafile": "Vložit soubor",
-    "uploading": "Nahrávání",
-    "video": "Video"
+    "sitefilesdesc": "Další soubory, které jsou dostupné na těchto stránkách Moodle.",
+    "uploadfiles": "Poslat zpětnovazební soubory"
 }

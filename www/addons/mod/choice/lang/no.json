@@ -1,0 +1,19 @@
+{
+    "cannotsubmit": "Beklager, det var et problem med å sende valget ditt. Vennligst prøv på nytt.",
+    "choiceoptions": "Valginnstillinger",
+    "expired": "Beklager, denne aktiviteten ble stengt {{$a}} og er ikke tilgjengelig lenger.",
+    "full": "(full)",
+    "noresultsviewable": "Resultatene er ikke synlige akkurat nå.",
+    "notopenyet": "Denne aktiviteten er ikke tilgjengelig før {{$a}}",
+    "numberofuser": "Antall svar",
+    "numberofuserinpercentage": "Antall svar i prosent",
+    "previewonly": "Dette er bare en forhåndsvisning av de mulige valgene du kan gjøre i denne gallupen. Du kan ikke besvare den før {{$a}}.",
+    "removemychoice": "Fjern valget mitt",
+    "responses": "Svar",
+    "responsesresultgraphdescription": "{{number}}% av brukerne velger dette alternativet: {{text}}.",
+    "responsesresultgraphheader": "Visning av diagram",
+    "resultsnotsynced": "Resultatene viser ikke din siste respons. Synkroniser for å oppdatere dem.",
+    "savemychoice": "Lagre mitt svar",
+    "userchoosethisoption": "Brukere som velger dette alternativet",
+    "yourselection": "Ditt valg"
+}

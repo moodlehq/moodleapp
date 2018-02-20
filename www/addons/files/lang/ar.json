@@ -1,13 +1,8 @@
 {
-    "errorcapturingaudio": "خطأ في التقاط الصوت",
-    "errorcapturingvideo": "خطأ في التقاط الفيديو",
-    "errorreadingfile": "خطاء في قراءة ملف \"{$a}\"",
-    "file": "ملف",
-    "fileuploaded": "الملف الذي تم رفعه",
-    "myfiles": "ملفاتي الخاصة",
+    "couldnotloadfiles": "لا يمكن تحميل قائمة الملفات",
+    "emptyfilelist": "لا يوجد ملفات للعرض",
+    "files": "ملفات",
+    "privatefiles": "ملفات خاصة",
     "sitefiles": "ملفات الموقع",
-    "success": "نجاح",
-    "uploadafile": "تحميل ملف",
-    "uploading": "تحميل",
-    "video": "فيديو"
+    "uploadfiles": "إرسل ملفات التغذية الراجعة"
 }

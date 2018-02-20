@@ -1,0 +1,11 @@
+<section class="list mma-qtype-ddmarker-container" ng-if="question.text || question.text === ''">
+    <mm-loading hide-until="question.loaded"></mm-loading>
+    <!-- Content is outside the mm-loading to let the script calculate drag items position -->
+    <div ng-class="{invisible: !question.loaded}" class="item item-text-wrap">
+        <p ng-if="!question.readonly" class="mm-info-card-icon"><i class="icon ion-information"></i> {{ 'mm.question.howtodraganddrop' | translate }}</p>
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+        <mm-format-text watch="true" not-adapt-img="true" ng-if="question.ddarea" component="{{component}}" component-id="{{componentId}}">
+            {{ question.ddarea }}
+        </mm-format-text>
+    </div>
+</section>

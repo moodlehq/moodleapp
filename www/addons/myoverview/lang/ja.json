@@ -1,0 +1,18 @@
+{
+    "future": "未来",
+    "inprogress": "進行中",
+    "morecourses": "コースをさらに",
+    "next30days": "次の30日間",
+    "next7days": "次の7日間",
+    "nocourses": "コースなし",
+    "nocoursesfuture": "未来のコースはありません。",
+    "nocoursesinprogress": "進行中のコースはありません。",
+    "nocoursespast": "過去のコースはありません。",
+    "noevents": "到来する活動期限はありません。",
+    "past": "過去",
+    "pluginname": "コース概要",
+    "recentlyoverdue": "最近の期限切れ",
+    "sortbycourses": "コースで並べ替える",
+    "sortbydates": "日付で並べ替える",
+    "timeline": "タイムライン"
+}

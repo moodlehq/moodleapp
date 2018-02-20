@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Lo sentimos, hubo un problema al enviar su eleccción. Por favor, inténtelo de nuevo.",
+    "choiceoptions": "Opciones de la elección",
+    "errorgetchoice": "Error al obtener datos de elección.",
+    "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
+    "full": "(Lleno)",
+    "noresultsviewable": "Los resultados no pueden verse en este momento.",
+    "notopenyet": "Lo sentimos, esta actividad no estará disponible hasta {{$a}}",
+    "numberofuser": "Número de respuestas",
+    "numberofuserinpercentage": "Porcentaje de respuestas",
+    "previewonly": "Esto es solamente una vista previa de las opciones disponibles para esta actividad. Usted no podrá enviar su elección hasta {{$a}}.",
+    "removemychoice": "Eliminar mi elección",
+    "responses": "Respuestas",
+    "responsesresultgraphdescription": "{{number}}% de los usuarios eligió la opción: {{text}}.",
+    "responsesresultgraphheader": "Vista de Gráfica",
+    "resultsnotsynced": "Su última respuesta debe ser sincronizada antes de que sea incluida en los resultados.",
+    "savemychoice": "Guardar mi elección",
+    "userchoosethisoption": "Usuarios que eligen esta opción",
+    "yourselection": "Su selección"
+}

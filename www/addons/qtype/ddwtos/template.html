@@ -1,0 +1,10 @@
+<section class="list mma-qtype-ddwtos-container" ng-if="question.text || question.text === ''">
+    <div class="item item-text-wrap">
+        <p ng-if="!question.readonly" class="mm-info-card-icon"><i class="icon ion-information"></i> {{ 'mm.question.howtodraganddrop' | translate }}</p>
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+        <mm-format-text watch="true" ng-if="question.answers" component="{{component}}" component-id="{{componentId}}">
+            {{ question.answers }}
+        </mm-format-text>
+        <div class="drags"></div>
+    </div>
+</section>

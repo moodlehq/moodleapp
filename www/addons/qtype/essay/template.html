@@ -1,0 +1,28 @@
+<section class="list" ng-if="question.text || question.text === ''">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+    </div>
+    <ion-input class="item item-input" ng-if="textarea && !hasDraftFiles" ng-class='{"mm-item-has-rich-text-editor": !isPlainText}'>
+		<!-- "Format" hidden input -->
+		<input ng-if="formatInput" type="hidden" name="{{formatInput.name}}" value="{{formatInput.value}}" >
+        <!-- Plain text textarea. -->
+        <textarea ng-if="isPlainText" class="mm-question-textarea" ng-class='{"mm-monospaced": isMonospaced}' placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" aria-multiline="true">{{textarea.text}}</textarea>
+        <!-- Rich text editor. -->
+        <mm-rich-text-editor ng-if="!isPlainText" model="textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" scroll-handle="{{scrollHandle}}" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
+    </ion-input>
+    <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap mm-error-item">
+        <p class="mm-question-warning">{{ 'mm.question.errorinlinefilesnotsupported' | translate }}</p>
+    </div>
+    <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap">
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{textarea.text}}</mm-format-text></p>
+    </div>
+    <div class="item item-text-wrap mm-error-item" ng-if="allowsAttachments">
+        <p class="mm-question-warning">{{ 'mm.question.errorattachmentsnotsupported' | translate }}</p>
+    </div>
+    <div class="item item-text-wrap" ng-if="!textarea && (answer || (!attachments.length && !allowsAttachments))">
+    	<p><mm-format-text watch="true" ng-class='{"mm-monospaced": isMonospaced}' component="{{component}}" component-id="{{componentId}}">{{answer}}</mm-format-text></p>
+    </div>
+    <div class="item" ng-if="!textarea && attachments && attachments.length">
+    	<mm-file ng-repeat="attachment in attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
+    </div>
+</section>

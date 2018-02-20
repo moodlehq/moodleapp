@@ -1,0 +1,111 @@
+// Style ddwtos content a bit. Almost all these styles are copied from Moodle.
+.mma-qtype-ddwtos-container {
+  .qtext {
+      margin-bottom: 0.5em;
+      display: block;
+  }
+
+  .draghome {
+      margin-bottom: 1em;
+  }
+
+  .answertext {
+      margin-bottom: 0.5em;
+  }
+
+  .drop {
+      display: inline-block;
+      text-align: center;
+      border: 1px solid $gray-darker;
+      margin-bottom: 2px;
+      border-radius: 5px;
+  }
+  .draghome, .drag {
+      display: inline-block;
+      text-align: center;
+      background: transparent;
+      border: 0;
+  }
+  .draghome, .drag.unplaced{
+      border: 1px solid $gray-darker;
+      border-radius: 5px;
+  }
+  .draghome {
+      visibility: hidden;
+  }
+  .drag {
+      z-index: 2;
+      border-radius: 5px;
+  }
+  .drag.selected {
+      z-index: 3;
+      box-shadow: 3px 3px 4px $gray-darker;
+  }
+
+  .drop.selected {
+      border-color: $yellow-light;
+      box-shadow: 0 0 5px 5px $yellow-light;
+  }
+
+  &.notreadonly .drag,
+  &.notreadonly .draghome,
+  &.notreadonly .drop,
+  &.notreadonly .answercontainer {
+      cursor: pointer;
+      border-radius: 5px;
+  }
+
+  &.readonly .drag,
+  &.readonly .draghome,
+  &.readonly .drop,
+  &.readonly .answercontainer {
+      cursor: default;
+  }
+
+  span.incorrect {
+      background-color: $red-light;
+  }
+  span.correct {
+      background-color: $green-light;
+  }
+
+  .group1 {
+      background-color: $white;
+  }
+  .group2 {
+      background-color: #DCDCDC;
+  }
+  .group3 {
+      background-color: $blue-light;
+  }
+  .group4 {
+      background-color: #D8BFD8;
+  }
+  .group5 {
+      background-color: #87CEFA;
+  }
+  .group6 {
+      background-color: #DAA520;
+  }
+  .group7 {
+      background-color: #FFD700;
+  }
+  .group8 {
+      background-color: #F0E68C;
+  }
+
+  sub, sup {
+      font-size: 80%;
+      position: relative;
+      vertical-align: baseline;
+  }
+  sup {
+      top: -0.4em;
+  }
+  sub {
+      bottom: -0.2em;
+  }
+}
+
+
+

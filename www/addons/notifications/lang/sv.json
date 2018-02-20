@@ -1,5 +1,6 @@
 {
     "errorgetnotifications": "Fel att få meddelanden",
-    "notifications": "Meddelanden",
+    "notificationpreferences": "Välj inställningar för notiser",
+    "notifications": "Administration",
     "therearentnotificationsyet": "Det finns inga meddelanden"
 }

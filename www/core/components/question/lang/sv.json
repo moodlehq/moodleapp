@@ -1,0 +1,16 @@
+{
+    "answer": "Svar",
+    "answersaved": "Svar sparade",
+    "complete": "Komplett",
+    "correct": "Rätt",
+    "feedback": "Återkoppling",
+    "incorrect": "Felaktigt",
+    "information": "Information",
+    "invalidanswer": "Ofullständigt svar",
+    "notanswered": "Inte ännu besvarad",
+    "notyetanswered": "Ännu inte besvarad",
+    "partiallycorrect": "Delvis korrekt",
+    "questionno": "Fråga {{$a}}",
+    "requiresgrading": "Kräver rättning",
+    "unknown": "Okänd"
+}

@@ -1,0 +1,16 @@
+{
+    "addfiletext": "Állomány hozzáadása",
+    "audio": "Hangállomány ({{$a.EXT}})",
+    "errorcapturingaudio": "Hiba a hang rögzítélse közben.",
+    "errorcapturingvideo": "Nem sikerült videofelvételt készíteni.",
+    "errorreadingfile": "Hiba a(z) \"{{$a}}\" állomány olvasása közben",
+    "file": "Állomány",
+    "filesofthesetypes": "Az ilyen típusú fájlokat hozzáadhatja a leadott munkához:",
+    "fileuploaded": "Fájl feltöltve",
+    "invalidfiletype": "{{$a}} típusú állomány nem fogadható el.",
+    "maxbytesfile": "A(z)  {{$a.file}} állomány túl nagy. A feltölthető maximális méret  {{$a.size}}.",
+    "more": "Tovább",
+    "uploadafile": "Egy állomány feltöltése",
+    "uploading": "Feltöltés...",
+    "video": "({{$a.EXT}}) videóállomány"
+}

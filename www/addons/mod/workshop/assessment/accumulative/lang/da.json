@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "Kommentar til {{$a}}",
+    "dimensiongradefor": "Karakter for {{$a}}",
+    "dimensionnumber": "Aspekt {{$a}}",
+    "mustchoosegrade": "Du har valgt en karakter for dette forhold"
+}

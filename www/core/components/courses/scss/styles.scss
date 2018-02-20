@@ -1,0 +1,127 @@
+$chart-size: 70px;
+$doughnut-border-size: 15px;
+$doughnut-dasharray: 173;
+$doughnut-empty-colour: $gray-light;
+$doughnut-fill-colour: $mm-color-light;
+$doughnut-border-colour:  $gray-dark;
+$doughnut-text-colour: $gray-darker;
+
+.item-course {
+  >.icon, >ion-spinner {
+    height: 32px + ($item-padding /2);
+    width: 32px + ($item-padding /2);
+    right: 0;
+    top: 6px;
+    color: $doughnut-text-colour;
+    position: absolute;
+  }
+}
+
+.item-progress {
+  @extend .item-avatar;
+  padding-left: $chart-size + ($item-padding * 2);
+  min-height: $chart-size + ($item-padding * 2);
+  >.progress-chart-container {
+    max-width: $chart-size;
+    max-height: $chart-size;
+    position: absolute;
+    top: $item-padding;
+    left: $item-padding;
+  }
+  h2 {
+    font-size: 21px;
+  }
+}
+
+.progress-chart-container {
+  height: $chart-size;
+  width: $chart-size;
+
+  .progress-doughnut {
+    position: relative;
+    height: $chart-size;
+    width: $chart-size;
+    background-clip: padding-box;
+    border: $doughnut-border-size solid $doughnut-empty-colour;
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: table;
+
+    .progress-text {
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+      color: $doughnut-text-colour;
+      font-size: 95%;
+      letter-spacing: -1px;
+    }
+
+    .progress-indicator {
+      position: absolute;
+      top: ($doughnut-border-size * -1);
+      left: ($doughnut-border-size * -1);
+      height: $chart-size;
+      width: $chart-size;
+
+      svg {
+        position: relative;
+        height: 100%;
+        width: 100%;
+
+        .circle {
+          stroke-width: $doughnut-border-size;
+          stroke: $doughnut-fill-colour;
+          fill: none;
+          stroke-dasharray: $doughnut-dasharray;
+          stroke-dashoffset: $doughnut-dasharray;
+          transform: rotate(-90deg);
+          transform-origin: center center;
+
+          @for $i from 1 through 100 {
+              &.percent-#{$i} {
+                  stroke-dashoffset: $doughnut-dasharray - ($i / 100 * $doughnut-dasharray);
+              }
+          }
+        }
+      }
+    }
+  }
+
+  .no-progress {
+    height: $chart-size;
+    width: $chart-size;
+    background-color: $doughnut-empty-colour;
+    border-radius: 50%;
+    position: relative;
+    border: 0.5px solid $doughnut-border-colour;
+
+    .icon {
+      position: absolute;
+      text-align: center;
+      /*rtl:ignore*/
+      left: -1px;
+      top: -1px;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      color: $white;
+      height: $chart-size;
+      width: $chart-size;
+      line-height: $chart-size;
+      font-size: ($chart-size / 2) + 10px;
+      &:before {
+        width: $chart-size;
+      }
+    }
+  }
+}
+
+.mm-site_mm_coursescategories .item-icon-left,
+mm-course-list-item .item-icon-left {
+  color: $black;
+}
+
+.mm-course-enrollment-img {
+  max-width: 20px;
+  max-height: 34px;
+}

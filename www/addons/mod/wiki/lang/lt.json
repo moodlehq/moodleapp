@@ -1,0 +1,21 @@
+{
+    "cannoteditpage": "Jūs negalite redaguoti šio puslapio.",
+    "createpage": "Kurti puslapį",
+    "editingpage": "Redaguojamas puslapis '{{$a}}",
+    "errorloadingpage": "Klaida užkraunant puslapį.",
+    "errornowikiavailable": "Nėra Wiki turinio.",
+    "gowikihome": "Eiti į Wiki",
+    "map": "Susieti",
+    "newpagehdr": "Naujas puslapis",
+    "newpagetitle": "Naujo puslapio pavadinimas",
+    "nocontent": "Nėra šio puslapio turinio",
+    "notingroup": "Nėra grupėje",
+    "page": "Puslapis: {{$a}}",
+    "pageexists": "Šis puslapis jau yra.",
+    "pagename": "Puslapio pavadinimas",
+    "subwiki": "Subwiki",
+    "titleshouldnotbeempty": "Pavadinimo eilutė neturi būti tuščia",
+    "viewpage": "Peržiūrėti puslapį",
+    "wikipage": "Wiki puslapis",
+    "wrongversionlock": "Jums redaguojant kitas naudotojas redagavo šį puslapį, taigi jūsų turinys nebegalioja."
+}

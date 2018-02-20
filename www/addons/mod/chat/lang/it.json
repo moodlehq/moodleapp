@@ -1,0 +1,19 @@
+{
+    "beep": "Beep",
+    "currentusers": "Utenti attivi",
+    "enterchat": "Entra nella chat",
+    "entermessage": "Inserisci il tuo messaggio",
+    "errorwhileconnecting": "Si è verificato un errore durante il collegamento alla chat.",
+    "errorwhilegettingchatdata": "Si è verificato un errore durante la ricezione dei dati della chat.",
+    "errorwhilegettingchatusers": "Si è verificato un errore durante la ricezione degli utenti della chat.",
+    "errorwhileretrievingmessages": "Si è verificato un errore durante la ricezione dei messaggi dal server.",
+    "errorwhilesendingmessage": "Si è verificato un errore durante l'invio del messaggio.",
+    "messagebeepsyou": "{{$a}} ti ha richiamato!",
+    "messageenter": "{{$a}} è entrato nella chat",
+    "messageexit": "{{$a}} ha lasciato la chat",
+    "mustbeonlinetosendmessages": "Per inviare messaggi devi essere online",
+    "nomessages": "Non ci sono ancora messaggi",
+    "send": "Invia",
+    "sessionstart": "La prossima sessione di chat inizierà il {{$a}}, ({{$a.fromnow}} da adesso)",
+    "talk": "Parla"
+}

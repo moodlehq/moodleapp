@@ -1,0 +1,13 @@
+{
+    "addnewnote": "Lisää uusi muistiinpano",
+    "coursenotes": "Kurssin muistiinpanot",
+    "eventnotecreated": "Muistiinpano luotu",
+    "nonotes": "Muistiinpanoja ei vielä ole",
+    "note": "Muistiinpano",
+    "notes": "Oma henkilökohtainen analyysisi ja muistiinpanosi.",
+    "personalnotes": "Henkilökohtaiset muistiinpanot",
+    "publishstate": "Konteksti",
+    "sitenotes": "Sivustotasoiset muistiinpanot",
+    "userwithid": "Käyttäjä, jonka ID on {{id}}",
+    "warningnotenotsent": "Ei voitu lisätä muistiipanoa/panoja kurssille {{course}}. {{error}}"
+}

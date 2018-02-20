@@ -1,0 +1,17 @@
+{
+    "answer": "Risposta",
+    "answersaved": "Risposta salvata",
+    "complete": "Completo",
+    "correct": "Giusto",
+    "feedback": "Commento",
+    "incorrect": "Sbagliato",
+    "information": "Informazione",
+    "invalidanswer": "Risposta incompleta",
+    "notanswered": "Senza scelta",
+    "notyetanswered": "Senza risposta",
+    "partiallycorrect": "Parzialmente corretto",
+    "questionmessage": "Domanda {{$a}}: {{$b}}",
+    "questionno": "Domanda {{$a}}",
+    "requiresgrading": "Richiede valutazione",
+    "unknown": "Sconosciuto"
+}

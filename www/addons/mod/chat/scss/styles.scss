@@ -1,0 +1,55 @@
+$mma-chat-notice-badge: "stable" !default;
+
+// The notice displayed in the list.
+.mma-chat-notice {
+
+  text-align: center;
+  margin-top: 10px;
+
+  span {
+    @extend .badge;
+    @extend .badge-#{$mma-chat-notice-badge};
+    white-space: normal;
+  }
+}
+
+.mma-chat-input-inset {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+}
+
+.mma-chat-footer-note {
+    color: $button-light-text;
+    font-size: $font-size-base;
+    text-align: center;
+    margin: 0;
+    width: 100%;
+}
+
+.mma-chat-send-form {
+  width: 100%;
+}
+
+.mma-chat-reconnect-button, .button.mma-chat-reconnect-button {
+  margin: 0;
+}
+
+.mma-mod_chat-users-modal {
+  .item-complex .item-avatar {
+    padding-bottom: 0;
+
+    .tabs {
+      border: 0;
+    }
+  }
+
+  .button-bar {
+    padding: 0;
+    border: 0;
+
+    .button {
+      border: 0;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "beep": "Hangjelzés",
+    "currentusers": "Mostani felhasználók",
+    "enterchat": "Kattintson ide a csevegésbe való bekapcsolódáshoz",
+    "entermessage": "Írja be az üzenetet",
+    "errorwhilesendingmessage": "HIba történt az üzenet küldése közben. Próbálja meg később!",
+    "messagebeepsyou": "{{$a}} most csöngetett Önnek!",
+    "messageenter": "{{$a}} most lépett be a csevegésbe",
+    "messageexit": "{{$a}} most lépett ki a csevegésből",
+    "nomessages": "Még nincs üzenet",
+    "send": "Elküld",
+    "sessionstart": "A következő csevegés kezdete  {{$a.date}}, (mostantól {{$a.fromnow}})",
+    "talk": "Beszéljen"
+}

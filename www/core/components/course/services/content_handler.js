@@ -21,12 +21,13 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseContentHandler
  */
-.factory('$mmCourseContentHandler', function($mmCourse, $mmUtil) {
+.factory('$mmCourseContentHandler', function($mmCourse, $mmSite) {
     return {
         getController: function(module) {
             return function($scope, $state) {
                 $scope.icon = $mmCourse.getModuleIconSrc(module.modname);
                 $scope.title = module.name;
+                $scope.class = 'mm-course-default-handler mm-course-module-' + module.modname + '-handler';
 
                 $scope.action = function(e) {
                     $state.go('site.mm_course-modcontent', {module: module});
@@ -36,12 +37,12 @@ angular.module('mm.core.course')
 
                 if (module.url) {
                     $scope.buttons = [{
-                        icon: 'ion-ios-browsers-outline',
+                        icon: 'ion-share',
                         label: 'mm.core.openinbrowser',
                         action: function(e) {
-                            $mmUtil.openInBrowser(module.url);
                             e.preventDefault();
                             e.stopPropagation();
+                            $mmSite.openInBrowserWithAutoLoginIfSameSite(module.url);
                         }
                     }];
                 }

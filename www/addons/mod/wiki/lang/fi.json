@@ -1,0 +1,19 @@
+{
+    "cannoteditpage": "Et saa muokata tätä sivua",
+    "createpage": "Luo sivu",
+    "editingpage": "Muokataan tätä sivua '{{$a}}'",
+    "errorloadingpage": "Virhe ladattaessa sivua.",
+    "errornowikiavailable": "Tässä Wikissä ei ole vielä yhtään sivua luotuna.",
+    "map": "Kartta",
+    "newpagehdr": "Uusi sivu",
+    "newpagetitle": "Uusi sivun otsikko",
+    "nocontent": "Tälle sivulle ei ole sisältöä",
+    "notingroup": "Ei ryhmässä",
+    "page": "Sivu",
+    "pageexists": "Tämä sivu on jo olemassa. Ohjataan olemassa olevalle sivulle.",
+    "pagename": "Sivun nimi",
+    "titleshouldnotbeempty": "Otsikko ei saa olla tyhjä",
+    "viewpage": "Näytä sivu",
+    "wikipage": "Wikisivu",
+    "wrongversionlock": "Sisältösi on vanhentunut, koska toinen käyttäjä on muokannut sivua samaan aikaan."
+}

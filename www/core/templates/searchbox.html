@@ -1,0 +1,9 @@
+<form ng-submit="seachBoxSubmit()" class="mm-searchbox">
+    <div class="item-input-inset">
+        <ion-input class="item-input-wrapper">
+            <input ng-if="data.autofocus" type="text" placeholder="{{data.placeholder}}" ng-model="data.value" autocorrect="{{data.autocorrect}}" spellcheck="{{data.spellcheck}}" mm-auto-focus>
+            <input ng-if="!data.autofocus" type="text" placeholder="{{data.placeholder}}" ng-model="data.value" autocorrect="{{data.autocorrect}}" spellcheck="{{data.spellcheck}}">
+        </ion-input>
+        <button type="submit" class="button button-clear button-small icon ion-search" ng-disabled="!data.value || data.value.length < data.lengthCheck" aria-label="{{data.searchLabel}}"></button>
+    </div>
+</form>

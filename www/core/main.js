@@ -16,10 +16,16 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
 .constant('mmCoreSessionExpired', 'mmCoreSessionExpired')
 .constant('mmCoreUserDeleted', 'mmCoreUserDeleted')
+.constant('mmCoreUserPasswordChangeForced', 'mmCoreUserPasswordChangeForced')
+.constant('mmCoreUserNotFullySetup', 'mmCoreUserNotFullySetup')
+.constant('mmCoreSitePolicyNotAgreed', 'mmCoreSitePolicyNotAgreed')
+.constant('mmCoreUnicodeNotSupported', 'mmCoreUnicodeNotSupported')
 .constant('mmCoreSecondsYear', 31536000)
 .constant('mmCoreSecondsDay', 86400)
 .constant('mmCoreSecondsHour', 3600)
 .constant('mmCoreSecondsMinute', 60)
+.constant('mmCoreDontShowError', 'mmCoreDontShowError') // Pass it to reject functions to indicate that no error should be shown.
+.constant('mmCoreNoSiteId', 'NoSite')
 
 // States for downloading files/modules.
 .constant('mmCoreDownloaded', 'downloaded')
@@ -36,6 +42,15 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Set tabs to bottom on Android.
     $ionicConfigProvider.platform.android.tabs.position('bottom');
+    $ionicConfigProvider.form.checkbox('circle');
+
+    // Use JS scrolling.
+    $ionicConfigProvider.scrolling.jsScrolling(true);
+
+    // Translate back button (it's only shown in iOS and browser).
+    if (!ionic.Platform.isAndroid()) {
+        $ionicConfigProvider.backButton.text("{{'mm.core.back' | translate}}");
+    }
 
     // Decorate $ionicPlatform.
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
@@ -43,6 +58,24 @@ angular.module('mm.core', ['pascalprecht.translate'])
             var mq = 'only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 1)';
             return $window.matchMedia(mq).matches;
         };
+        return $delegate;
+    }]);
+
+    // Decorate ion-radio in order to enabled links on its texts.
+    $provide.decorator('ionRadioDirective', ['$delegate', function($delegate) {
+        var directive = $delegate[0];
+
+        transcludeRegex = /ng-transclude/
+        directive.template =  directive.template.replace(transcludeRegex, 'ng-transclude data-tap-disabled="true"');
+        return $delegate;
+    }]);
+
+    // Decorate ion-checkbox in order to enabled links on its texts.
+    $provide.decorator('ionCheckboxDirective', ['$delegate', function($delegate) {
+        var directive = $delegate[0];
+
+        transcludeRegex = /ng-transclude/
+        directive.template =  directive.template.replace(transcludeRegex, 'ng-transclude data-tap-disabled="true"');
         return $delegate;
     }]);
 
@@ -62,26 +95,41 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 params: null
             },
             cache: false,
-            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory) {
+            template: '<ion-view><ion-content mm-state-class><mm-loading class="mm-loading-center"></mm-loading></ion-content></ion-view>',
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp,
+                        $mmLoginHelper, mmCoreNoSiteId) {
 
                 $ionicHistory.nextViewOptions({disableBack: true});
 
                 function loadSiteAndGo() {
-                    $mmSitesManager.loadSite($stateParams.siteid).then(function() {
+                    if ($stateParams.siteid == mmCoreNoSiteId) {
+                        // No site to load, just go to the state.
                         $state.go($stateParams.state, $stateParams.params);
-                    }, function() {
-                        // Site doesn't exist.
-                        $state.go('mm_login.sites');
-                    });
+                    } else {
+                        $mmSitesManager.loadSite($stateParams.siteid).then(function() {
+                            if (!$mmLoginHelper.isSiteLoggedOut($stateParams.state, $stateParams.params)) {
+                                $state.go($stateParams.state, $stateParams.params);
+                            }
+                        }, function() {
+                            // Site doesn't exist.
+                            $state.go('mm_login.sites');
+                        });
+                    }
                 }
 
                 $scope.$on('$ionicView.enter', function() {
                     if ($mmSite.isLoggedIn()) {
                         if ($stateParams.siteid && $stateParams.siteid != $mmSite.getId()) {
-                            // Notification belongs to a different site. Change site.
-                            $mmSitesManager.logout().then(function() {
-                                loadSiteAndGo();
-                            });
+                            // Target state belongs to a different site. Change site.
+                            if ($mmAddonManager.hasRemoteAddonsLoaded()) {
+                                // The site has remote addons so the app will be restarted. Store the data and logout.
+                                $mmApp.storeRedirect($stateParams.siteid, $stateParams.state, $stateParams.params);
+                                $mmSitesManager.logout();
+                            } else {
+                                $mmSitesManager.logout().then(function() {
+                                    loadSiteAndGo();
+                                });
+                            }
                         } else {
                             $state.go($stateParams.state, $stateParams.params);
                         }
@@ -103,6 +151,46 @@ angular.module('mm.core', ['pascalprecht.translate'])
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
 
+    // Angular's default transform detects RTF format as JSON, throwing an error when trying to parse it.
+    // This custom transform fixes this problem.
+    $httpProvider.defaults.transformResponse = [function(data, headers) {
+        if (angular.isString(data)) {
+            // Strip json vulnerability protection prefix and trim whitespace
+            var JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/,
+                tempData = data.replace(JSON_PROTECTION_PREFIX, '').trim();
+
+            if (tempData) {
+                var contentType = headers('Content-Type');
+                if ((contentType && (contentType.indexOf('application/json') === 0)) || isJsonLike(tempData, contentType)) {
+                    try {
+                        data = angular.fromJson(tempData);
+                    } catch(ex) {
+                        // Error parsing data, leave the data as it is.
+                    }
+                }
+            }
+        }
+
+        return data;
+
+        // Check if the returned data is JSON.
+        function isJsonLike(str, contentType) {
+            if (contentType && contentType.indexOf('text/rtf') != -1) {
+                // RTF files can be mistaken as JSON since they start and end with {}.
+                return false;
+            }
+
+            var JSON_START = /^\[|^\{(?!\{)/,
+                JSON_ENDS = {
+                  '[': /]$/,
+                  '{': /}$/
+                },
+                jsonStart = str.match(JSON_START);
+
+            return jsonStart && JSON_ENDS[jsonStart[0]].test(str);
+        }
+    }];
+
     // Add some protocols to safe protocols.
     function addProtocolIfMissing(list, protocol) {
         if (list.indexOf(protocol) == -1) {
@@ -120,6 +208,15 @@ angular.module('mm.core', ['pascalprecht.translate'])
     hreflist = addProtocolIfMissing(hreflist, 'geo');
     hreflist = addProtocolIfMissing(hreflist, 'filesystem'); // For HTML5 FileSystem.
     imglist = addProtocolIfMissing(imglist, 'filesystem'); // For HTML5 FileSystem.
+    imglist = addProtocolIfMissing(imglist, 'file');
+    imglist = addProtocolIfMissing(imglist, 'cdvfile');
+
+    // Set thresholds on app init to avoid duration roundings.
+    moment.relativeTimeThreshold('M', 12);
+    moment.relativeTimeThreshold('d', 31);
+    moment.relativeTimeThreshold('h', 24);
+    moment.relativeTimeThreshold('m', 60);
+    moment.relativeTimeThreshold('s', 60);
 
     $compileProvider.aHrefSanitizationWhitelist(hreflist);
     $compileProvider.imgSrcSanitizationWhitelist(imglist);
@@ -129,9 +226,13 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Register upgrade check process, this should happen almost before everything else.
     $mmInitDelegateProvider.registerProcess('mmUpdateManager', '$mmUpdateManager.check', mmInitDelegateMaxAddonPriority + 300, true);
+
+    // Register clear app tmp folder.
+    $mmInitDelegateProvider.registerProcess('mmFSClearTmp', '$mmFS.clearTmpFolder', mmInitDelegateMaxAddonPriority + 150, false);
 })
 
-.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
+.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide,
+        $mmApp, $timeout, mmCoreEventOnline, mmCoreEventOnlineStatusChanged, $mmUtil, $ionicScrollDelegate) {
     // Execute all the init processes.
     $mmInitDelegate.executeInitProcesses();
 
@@ -146,9 +247,88 @@ angular.module('mm.core', ['pascalprecht.translate'])
         // Listen for keyboard events. We don't use $cordovaKeyboard because it doesn't support keyboardHeight property.
         $window.addEventListener('native.keyboardshow', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardShow, e);
+
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
+
+            if (ionic.Platform.isIOS() && document.activeElement && document.activeElement.tagName != 'BODY') {
+                if ($mmUtil.closest(document.activeElement, 'ion-footer-bar[keyboard-attach]')) {
+                    // Input element is in a footer with keyboard-attach directive, nothing to be done.
+                    return;
+                }
+
+                // In iOS the user can select elements outside of the view using previous/next. Check if it's the case.
+                if ($mmUtil.isElementOutsideOfScreen(document.activeElement)) {
+                    // Focused element is outside of the screen. Scroll so the element is seen.
+                    var position = $mmUtil.getElementXY(document.activeElement),
+                        delegateHandle = $mmUtil.closest(document.activeElement, '*[delegate-handle]'),
+                        scrollView;
+
+                    if (position) {
+                        if ($window && $window.innerHeight) {
+                            // Put the input in the middle of screen aprox, not in top.
+                            position[1] = position[1] - $window.innerHeight * 0.5;
+                        }
+
+                        // Get the right scroll delegate to use.
+                        delegateHandle = delegateHandle && delegateHandle.getAttribute('delegate-handle');
+                        scrollView = typeof delegateHandle == 'string' ?
+                                $ionicScrollDelegate.$getByHandle(delegateHandle) : $ionicScrollDelegate;
+
+                        // Scroll to the position.
+                        scrollView.scrollTo(position[0], position[1]);
+                    }
+                }
+            }
         });
+
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
+
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
         });
+
+        // In desktop, re-define getParentOrSelfWithClass to allow scrolling with trackpad when hovering deep elements.
+        // In iOS, re-define getParentWithClass to prevent the keyboard to hide deep input elements.
+        var fnName = !$mmApp.isDevice() ? 'getParentOrSelfWithClass' : (ionic.Platform.isIOS() ? 'getParentWithClass' : '');
+        if (fnName) {
+            var originalFunction = ionic.DomUtil[fnName];
+            ionic.DomUtil[fnName] = function(e, className, depth) {
+                depth = depth || 20;
+                return originalFunction(e, className, depth);
+            };
+        }
     });
+
+    // Send event when device goes online.
+    var lastExecution = 0;
+
+    $mmApp.ready().then(function() {
+        document.addEventListener('online', function() { sendOnlineEvent(true); }, false); // Cordova event.
+        window.addEventListener('online', function() { sendOnlineEvent(true); }, false); // HTML5 event.
+        document.addEventListener('offline', function() { sendOnlineEvent(false); }, false); // Cordova event.
+        window.addEventListener('offline', function() { sendOnlineEvent(false); }, false); // HTML5 event.
+    });
+
+    function sendOnlineEvent(online) {
+        // The online function can be called several times in a row, prevent consecutive executions.
+        var now = new Date().getTime();
+        if (now - lastExecution < 5000) {
+            return;
+        }
+        lastExecution = now;
+
+        $timeout(function() { // Minor delay just to make sure network is fully established.
+            if (online) {
+                // Deprecated on version 3.1.3.
+                $mmEvents.trigger(mmCoreEventOnline);
+            }
+            $mmEvents.trigger(mmCoreEventOnlineStatusChanged, online);
+        }, 1000);
+    }
 });

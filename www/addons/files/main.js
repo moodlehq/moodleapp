@@ -14,13 +14,11 @@
 
 angular.module('mm.addons.files', ['mm.core'])
 
-.constant('mmaFilesUploadStateName', 'site.files-upload')
-.constant('mmaFilesSharedFilesStore', 'shared_files')
 .constant('mmaFilesMyComponent', 'mmaFilesMy')
 .constant('mmaFilesSiteComponent', 'mmaFilesSite')
 .constant('mmaFilesPriority', 200)
 
-.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaFilesUploadStateName, mmaFilesPriority) {
+.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaFilesPriority) {
 
     $stateProvider
         .state('site.files', {
@@ -48,20 +46,6 @@ angular.module('mm.addons.files', ['mm.core'])
             }
         })
 
-        .state(mmaFilesUploadStateName, {
-            url: '/upload',
-            params: {
-                path: false,
-                root: false
-            },
-            views: {
-                'site': {
-                    controller: 'mmaFilesUploadCtrl',
-                    templateUrl: 'addons/files/templates/upload.html'
-                }
-            }
-        })
-
         .state('site.files-choose-site', {
             url: '/choose-site',
             params: {
@@ -77,32 +61,5 @@ angular.module('mm.addons.files', ['mm.core'])
 
     // Register side menu addon.
     $mmSideMenuDelegateProvider.registerNavHandler('mmaFiles', '$mmaFilesHandlers.sideMenuNav', mmaFilesPriority);
-
-})
-
-.run(function($mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform, $mmApp) {
-
-    // Search for new files shared with the upload (to upload).
-    if (ionic.Platform.isIOS()) {
-        // In iOS we need to manually check if there are new files in the app Inbox folder.
-        function searchToUpload() {
-            $mmApp.ready().then(function() {
-                $mmaFiles.checkIOSNewFiles().then(function(fileEntry) {
-                    $mmSitesManager.getSites().then(function(sites) {
-                        if (sites.length == 0) {
-                            $mmUtil.showErrorModal('mma.files.errorreceivefilenosites', true);
-                        } else if (sites.length == 1) {
-                            $mmaFilesHelper.showConfirmAndUploadInSite(fileEntry, sites[0].id);
-                        } else {
-                            $state.go('site.files-choose-site', {file: fileEntry});
-                        }
-                    });
-                });
-            });
-        }
-        // We want to check it at app start and when the app is resumed.
-        $ionicPlatform.on('resume', searchToUpload);
-        searchToUpload();
-    }
 
 });

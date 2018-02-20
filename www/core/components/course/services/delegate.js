@@ -74,7 +74,8 @@ angular.module('mm.core.course')
 
     self.$get = function($q, $log, $mmSite, $mmUtil, $mmCourseContentHandler) {
         var enabledHandlers = {},
-            self = {};
+            self = {},
+            lastUpdateHandlersStart = {};
 
         $log = $log.getInstance('$mmCourseDelegate');
 
@@ -102,6 +103,71 @@ angular.module('mm.core.course')
         };
 
         /**
+         * Check if the controller a content handler is avalaible (not necessarily enabled).
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#hasContentHandler
+         * @param {String} handles   The module to work on
+         * @return {Boolean} If the controller is installed or not.
+         */
+        self.hasContentHandler = function(handles) {
+            return typeof contentHandlers[handles] !== 'undefined';
+        };
+
+        /**
+         * Check if a certain module is disabled in a site.
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#isModuleDisabled
+         * @param {String} handles  The module to check.
+         * @param {String} [siteId] Site ID. If not defined, current site.
+         * @return {Promise}        True if disabled, false otherwise.
+         */
+        self.isModuleDisabled = function(handles, siteId) {
+            return $mmSitesManager.getSite(siteId).then(function(site) {
+                return self.isModuleDisabledInSite(handles, site);
+            });
+        };
+
+        /**
+         * Check if a certain module is disabled in a site.
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#isModuleDisabledInSite
+         * @param  {String} handles The module to check.
+         * @param  {Object} [site]  Site. If not defined, use current site.
+         * @return {Boolean}        True if disabled, false otherwise.
+         */
+        self.isModuleDisabledInSite = function(handles, site) {
+            site = site || $mmSite;
+
+            if (typeof contentHandlers[handles] !== 'undefined') {
+                return site.isFeatureDisabled('$mmCourseDelegate_' + contentHandlers[handles].addon);
+            }
+            return false;
+        };
+
+        /**
+         * Check if a time belongs to the last update handlers call.
+         * This is to handle the cases where updateContentHandlers don't finish in the same order as they're called.
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#isLastUpdateCall
+         * @param  {Number}  time Time to check.
+         * @return {Boolean}      True if equal, false otherwise.
+         */
+        self.isLastUpdateCall = function(time) {
+            if (!lastUpdateHandlersStart) {
+                return true;
+            }
+            return time == lastUpdateHandlersStart;
+        };
+
+        /**
          * Update the enabled handlers for the current site.
          *
          * @module mm.core.course
@@ -109,11 +175,13 @@ angular.module('mm.core.course')
          * @name $mmCourseDelegate#updateContentHandler
          * @param {String} handles The module this handler handles, e.g. forum, label. This value will be compared with
          * @param {Object} handlerInfo The handler details.
+         * @param  {Number} time Time this update process started.
          * @return {Promise} Resolved when enabled, rejected when not.
          * @protected
          */
-        self.updateContentHandler = function(handles, handlerInfo) {
-            var promise;
+        self.updateContentHandler = function(handles, handlerInfo, time) {
+            var promise,
+                siteId = $mmSite.getId();
 
             if (typeof handlerInfo.instance === 'undefined') {
                 handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
@@ -121,19 +189,24 @@ angular.module('mm.core.course')
 
             if (!$mmSite.isLoggedIn()) {
                 promise = $q.reject();
+            } else if ($mmSite.isFeatureDisabled('$mmCourseDelegate_' + handlerInfo.addon)) {
+                promise = $q.when(false);
             } else {
                 promise = $q.when(handlerInfo.instance.isEnabled());
             }
 
             // Checks if the content is enabled.
-            return promise.then(function(enabled) {
-                if (enabled) {
-                    enabledHandlers[handles] = handlerInfo.instance;
-                } else {
-                    return $q.reject();
+            return promise.catch(function() {
+                return false;
+            }).then(function(enabled) {
+                // Verify that this call is the last one that was started.
+                if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+                    if (enabled) {
+                        enabledHandlers[handles] = handlerInfo.instance;
+                    } else {
+                        delete enabledHandlers[handles];
+                    }
                 }
-            }).catch(function() {
-                delete enabledHandlers[handles];
             });
         };
 
@@ -148,13 +221,15 @@ angular.module('mm.core.course')
          */
         self.updateContentHandlers = function() {
             var promises = [],
-                enabledHandlers = {};
+                now = new Date().getTime();
 
             $log.debug('Updating content handlers for current site.');
 
+            lastUpdateHandlersStart = now;
+
             // Loop over all the content handlers.
             angular.forEach(contentHandlers, function(handlerInfo, handles) {
-                promises.push(self.updateContentHandler(handles, handlerInfo));
+                promises.push(self.updateContentHandler(handles, handlerInfo, now));
             });
 
             return $q.all(promises).then(function() {

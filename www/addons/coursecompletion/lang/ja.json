@@ -1,7 +1,10 @@
 {
     "complete": "詳細",
+    "completecourse": "コース完了",
     "completed": "完了",
-    "coursecompletion": "コース完了",
+    "completiondate": "完了した日",
+    "couldnotloadreport": "コース完了の読み込みができませんでした。後でもう一度試してください。",
+    "coursecompletion": "ユーザはこのコースを完了する必要があります。",
     "criteria": "クライテリア",
     "criteriagroup": "クライテリアグループ",
     "criteriarequiredall": "下記のクライテリアすべてが必須である",
@@ -12,6 +15,7 @@
     "pending": "保留",
     "required": "必須",
     "requiredcriteria": "必須クライテリア",
-    "status": "状態",
+    "requirement": "要求",
+    "status": "ステータス",
     "viewcoursereport": "コースレポートを表示する"
 }

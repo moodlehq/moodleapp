@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Un problème est survenu lors de l'envoi de votre choix.",
+    "choiceoptions": "Options du sondage",
+    "errorgetchoice": "Erreur lors de l'obtention des données du choix.",
+    "expired": "Désolé, cette activité s'est terminée le {{$a}} et n'est plus disponible",
+    "full": "(complet)",
+    "noresultsviewable": "Les résultats ne sont actuellement pas visibles.",
+    "notopenyet": "Désolé, cette activité ne sera disponible que le {{$a}}",
+    "numberofuser": "Nombre de réponses",
+    "numberofuserinpercentage": "Pourcentage de réponses",
+    "previewonly": "Cet affichage est une prévisualisation des options disponibles pour cette activité. Vous ne pourrez pas enregistrer votre choix avant le {{$a}}.",
+    "removemychoice": "Retirer mon vote",
+    "responses": "Réponses",
+    "responsesresultgraphdescription": "{{number}} % des participants ont choisi l'option : {{text}}.",
+    "responsesresultgraphheader": "Affichage graphique",
+    "resultsnotsynced": "Votre dernière réponse doit être synchronisée pour être inclue dans les résultats.",
+    "savemychoice": "Enregistrer mon choix",
+    "userchoosethisoption": "Utilisateurs qui ont choisi l'option",
+    "yourselection": "Votre choix"
+}

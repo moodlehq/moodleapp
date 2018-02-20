@@ -1,0 +1,21 @@
+.mm-site_mod_choice {
+  .chart {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 767px) {
+    .col {
+      border-left: $item-border-width solid $item-default-border;
+
+      &.item, .chart-item {
+        margin-top: 0;
+        border-top: 0;
+      }
+
+      &:first-child {
+        border-left: 0;
+      }
+    }
+  }
+}

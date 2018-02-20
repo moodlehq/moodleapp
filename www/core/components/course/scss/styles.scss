@@ -2,3 +2,15 @@
 .item.item-button-right .badge.mm-course-download{
   right: $spinner-width + $item-padding;
 }
+
+.mm-course-module-handler mm-format-text + mm-format-text {
+  margin-top: 16px;
+}
+
+mm-course-mod-description .card .item {
+  padding: $item-padding / 2;
+}
+
+.padding mm-course-mod-description .card {
+  margin-top: 0;
+}

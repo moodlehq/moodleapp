@@ -1,6 +1,8 @@
 {
+    "appsettings": "إعدادات التطبيق",
     "changesite": "الخروج",
     "help": "مساعدة",
-    "mycourses": "مقرراتي",
+    "logout": "خروج",
+    "mycourses": "مقرراتي الدراسية",
     "website": "الموقع"
 }

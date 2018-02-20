@@ -1,0 +1,18 @@
+<a ng-if="action == 'more'" class="button button-icon icon ion-ios-search-strong" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&rid={{entry.id}}" mm-link capture-link="true" title="{{ 'mma.mod_data.more' | translate }}"></a>
+<a ng-if="action == 'edit'" class="button button-icon icon ion-gear-b" ng-href="{{url}}/mod/data/edit.php?d={{entry.dataid}}&rid={{entry.id}}" mm-link capture-link="true" title="{{ 'mm.core.edit' | translate }}"></a>
+<a ng-if="action == 'delete' && !entry.deleted" class="button button-icon icon ion-trash-a" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&delete={{entry.id}}" mm-link capture-link="true" title="{{ 'mm.core.delete' | translate }}"></a>
+<a ng-if="action == 'delete' && entry.deleted" class="button button-icon icon ion-reply" ng-click="undoDelete()" mm-link capture-link="true" title="{{ 'mm.core.restore' | translate }}"></a>
+<a ng-if="action == 'approve'" class="button button-icon icon ion-thumbsup" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&approve={{entry.id}}" mm-link capture-link="true" title="{{ 'mma.mod_data.approve' | translate }}"></a>
+<a ng-if="action == 'disapprove'" class="button button-icon icon ion-minus-circled" ng-href="{{url}}/mod/data/view.php?d={{entry.dataid}}&disapprove={{entry.id}}" mm-link capture-link="true" title="{{ 'mma.mod_data.disapprove' | translate }}"></a>
+
+<mm-comments ng-if="action == 'comments' && mode == 'list'" context-level="module" instance-id="{{database.coursemodule}}" component="mod_data" item-id="{{entry.id}}" area="database_entry"></mm-comments>
+
+<span ng-if="action == 'timeadded'">{{ entry.timecreated * 1000 |  mmFormatDate:"dffulldate" }}</span>
+<span ng-if="action == 'timemodified'">{{ entry.timemodified * 1000 |  mmFormatDate:"dffulldate" }}</span>
+
+<a ng-if="action == 'userpicture'" mm-user-link courseid="{{database.courseid}}" userid="{{entry.userid}}" title="{{entry.fullname}}">
+    <img ng-if="userpicture" ng-src="{{userpicture}}" class="avatar-round" alt="{{ 'mm.core.pictureof' | translate:{$a: entry.fullname} }}" role="presentation" mm-external-content>
+    <img ng-if="!userpicture" class="avatar-round" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: entry.fullname} }}" role="presentation">
+</a>
+
+<a ng-if="action == 'user'" mm-user-link courseid="{{database.courseid}}" userid="{{entry.userid}}" title="{{entry.fullname}}">{{entry.fullname}}</a>

@@ -1,0 +1,130 @@
+/**
+ * In this file we will reset ionic styles that can bother online html.
+ */
+
+/** Format Text */
+mm-format-text[max-height], *[mm-format-text][max-height] {
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // This is to allow clicks in radio/checkbox content.
+  &.mm-text-formatted {
+    cursor: pointer;
+
+    .mm-show-more {
+      display: none;
+    }
+
+    &:not(.mm-shortened) {
+      max-height: none !important;
+    }
+
+    &.mm-shortened {
+      color: $gray-darker;
+      overflow: hidden;
+      min-height: 50px;
+
+      .mm-show-more {
+        color: $dark;
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+        background-color: $white;
+        padding-left: 10px;
+
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+      }
+
+      &.mm-expand-in-fullview .mm-show-more:after {
+        content: $ionicon-var-chevron-right;
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
+    }
+  }
+}
+
+.item.active,
+.item.activated,
+.item-complex.active .item-content,
+.item-complex.activated .item-content,
+.item .item-content.active,
+.item .item-content.activated {
+
+  mm-format-text[max-height], *[mm-format-text][max-height] {
+    // This is to allow clicking on activated areas and have background the same color.
+    &.mm-text-formatted.mm-shortened {
+      .mm-show-more {
+        background-color: $item-default-active-bg;
+      }
+
+      &:before {
+        background: -moz-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba($item-default-active-bg, 0)), color-stop(calc(100% - 15px), $item-default-active-bg));
+        background: -webkit-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+      }
+    }
+  }
+}
+
+mm-format-text, *[mm-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
+
+  // Fix lists styles in mm-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+
+  .badge {
+    position: initial !important;
+  }
+}
+
+// Message item.
+.item-message {
+  mm-format-text > p:only-child {
+    display: inline;
+  }
+}

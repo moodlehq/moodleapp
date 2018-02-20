@@ -1,0 +1,19 @@
+{
+    "beep": "Abisua",
+    "currentusers": "Oraingo erabiltzaileak",
+    "enterchat": "Sakatu hemen txat-gelara sartzeko",
+    "entermessage": "Idatzi zure mezua",
+    "errorwhileconnecting": "Errorea txatera konektatzean.",
+    "errorwhilegettingchatdata": "Errorea txataren datuak eskuratzean.",
+    "errorwhilegettingchatusers": "Errorea txataren erabiltzaileak eskuratzean.",
+    "errorwhileretrievingmessages": "Errorea zerbitzaritik mezuak ekartzean.",
+    "errorwhilesendingmessage": "Errorea mezua bidaltzean.",
+    "messagebeepsyou": "{{$a}}-(e)k dio: Aizu! Hemen nago!",
+    "messageenter": "{{$a}} oraintxe sartu da gelan",
+    "messageexit": "{{$a}} irten egin da gelatik",
+    "mustbeonlinetosendmessages": "On-line egon behar duzu mezuak bidaltzeko",
+    "nomessages": "Ez dago mezurik oraindik",
+    "send": "Bidali",
+    "sessionstart": "Txat-saioa {{$a.date}}-(e)tan hasiko da, (hemendik {{$a.fromnow}}-(e)ra)",
+    "talk": "Hitz egin"
+}

@@ -17,25 +17,34 @@ angular.module('mm.core')
 /**
  * Directive to auto focus an element when a view is loaded.
  *
+ * You can apply it conditionallity assigning it a boolean value: <input type="text" mm-auto-focus="{{showKeyboard}}">
+ *
  * @module mm.core
  * @ngdoc directive
  * @name mmAutoFocus
  */
-.directive('mmAutoFocus', function($mmApp) {
+.directive('mmAutoFocus', function($mmUtil, $timeout) {
     return {
         restrict: 'A',
-        link: function(scope, el) {
+        link: function(scope, el, attrs) {
             // Wait for transition to finish before auto-focus.
             var unregister = scope.$watch(function() {
                 return ionic.transition.isActive;
             }, function(isActive) {
-                if (!isActive) {
-                    el[0].focus();
+                var showKeyboard = typeof attrs.mmAutoFocus == 'undefined' ||
+                    (attrs.mmAutoFocus !== false && attrs.mmAutoFocus !== 'false' && attrs.mmAutoFocus !== '0');
+
+                if (!isActive && showKeyboard) {
+                    // Enable keyboard. This is needed because Ionic doesn't listen for keyboard events until the user taps.
+                    // Calling this will make Ionic listen for keyboard events and resize the view as it should.
+                    ionic.keyboard.enable();
                     unregister(); // Stop watching.
-                    if (ionic.Platform.isAndroid()) {
-                        // On some Android versions the keyboard doesn't open automatically.
-                        $mmApp.openKeyboard();
-                    }
+
+                    // Wait a bit before focusing the element. This is because Ionic closes the keyboard on
+                    // $ionicView.beforeEnter, and it might take a while to close it.
+                    $timeout(function() {
+                        $mmUtil.focusElement(el[0]);
+                    }, 400);
                 }
             });
         }

@@ -14,18 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.config(function($mmAppProvider, mmaFilesSharedFilesStore) {
-    var stores = [
-        {
-            name: mmaFilesSharedFilesStore,
-            keyPath: 'id'
-        }
-    ];
-    $mmAppProvider.registerStores(stores);
-})
-
-.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
-            mmaFilesSharedFilesStore) {
+.factory('$mmaFiles', function($mmSite, $mmFS, $q, $log, $mmSitesManager, md5) {
 
     $log = $log.getInstance('$mmaFiles');
 
@@ -52,85 +41,32 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Checks if there is a new file received in iOS. If more than one file is found, treat only the first one.
-     * The file returned is marked as "treated" and will be deleted in the next execution.
+     * Check if core_user_get_private_files_info WS call is available.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#checkIOSNewFiles
-     * @return {Promise} Promise resolved with a new file to be treated. If no new files found, promise is rejected.
+     * @name $mmaFiles#canGetPrivateFilesInfo
+     * @return {Boolean} True if WS is available, false otherwise.
      */
-    self.checkIOSNewFiles = function() {
+    self.canGetPrivateFilesInfo = function() {
+        return $mmSite.wsAvailable('core_user_get_private_files_info');
+    };
 
-        var deferred = $q.defer();
+    /**
+     * Check if core_user_add_user_private_files WS call is available.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#canMoveFromDraftToPrivate
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if WS is available, false otherwise.
+     */
+    self.canMoveFromDraftToPrivate = function(siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        $log.debug('Search for new files on iOS');
-        $mmFS.getDirectoryContents('Inbox').then(function(entries) {
-
-            if (entries.length > 0) {
-
-                var promises = [];
-                angular.forEach(entries, function(entry) {
-
-                    var fileDeferred = $q.defer(),
-                        fileId = md5.createHash(entry.name);
-
-                    // Check if file was already treated.
-                    $mmApp.getDB().get(mmaFilesSharedFilesStore, fileId).then(function() {
-                        // File already treated. Delete it.
-                        $log.debug('Delete already treated file: ' + entry.name);
-                        fileDeferred.resolve();
-
-                        entry.remove(function() {
-                            $log.debug('File deleted: ' + entry.name);
-                            $mmApp.getDB().remove(mmaFilesSharedFilesStore, fileId).then(function() {
-                                $log.debug('"Treated" mark removed from file: ' + entry.name);
-                            }, function() {
-                                $log.debug('Error deleting "treated" mark from file: ' + entry.name);
-                            });
-                        }, function() {
-                            $log.debug('Error deleting file in Inbox: ' + entry.name);
-                        });
-
-                    }, function() {
-                        // File not treated before, send it to resolve so it's a candidate to be notified.
-                        $log.debug('Found new file ' + entry.name + ' shared with the app.');
-                        fileDeferred.resolve(entry);
-                    });
-
-                    promises.push(fileDeferred.promise);
-                });
-
-                $q.all(promises).then(function(responses) {
-                    var fileToReturn,
-                        fileId;
-                    for (var i = 0; i < responses.length; i++) {
-                        if (typeof(responses[i]) !== 'undefined') {
-                            // Found new entry to treat.
-                            fileToReturn = responses[i];
-                            break;
-                        }
-                    }
-                    if (fileToReturn) {
-                        fileId = md5.createHash(fileToReturn.name);
-                        // Mark it as "treated".
-                        $mmApp.getDB().insert(mmaFilesSharedFilesStore, {id: fileId}).then(function() {
-                            $log.debug('File marked as "treated": ' + fileToReturn.name);
-                            deferred.resolve(fileToReturn);
-                        }, function() {
-                            $log.debug('Error marking file as "treated": ' + fileToReturn.name);
-                            deferred.reject();
-                        });
-                    } else {
-                        deferred.reject();
-                    }
-                }, deferred.reject);
-            } else {
-                deferred.reject();
-            }
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('core_user_add_user_private_files');
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -147,20 +83,18 @@ angular.module('mm.addons.files')
      *                          - linkId: A hash of the file parameters.
      */
     self.getFiles = function(params) {
-        var deferred = $q.defer(),
-            options = {};
+        var options = {};
 
         options.cacheKey = getFilesListCacheKey(params);
 
-        $mmSite.read('core_files_get_files', params, options).then(function(result) {
+        return $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
                 entries: [],
                 count: 0
             };
 
             if (typeof result.files == 'undefined') {
-                deferred.reject();
-                return;
+                return $q.reject();
             }
 
             angular.forEach(result.files, function(entry) {
@@ -185,27 +119,13 @@ angular.module('mm.addons.files')
 
                 entry.link = JSON.stringify(entry.link);
                 entry.linkId = md5.createHash(entry.link);
-                // entry.localpath = "";
-
-                // if (!entry.isdir && entry.url) {
-                //     // TODO Check $mmSite.
-                //     var uniqueId = $mmSite.id + "-" + md5.createHash(entry.url);
-                //     var path = MM.db.get("files", uniqueId);
-                //     if (path) {
-                //         entry.localpath = path.get("localpath");
-                //     }
-                // }
 
                 data.count += 1;
                 data.entries.push(entry);
             });
 
-            deferred.resolve(data);
-        }, function() {
-            deferred.reject();
+            return data;
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -257,6 +177,50 @@ angular.module('mm.addons.files')
     }
 
     /**
+     * Get the cache key for private files info WS calls.
+     *
+     * @param  {Number} userId User ID.
+     * @return {String}        Cache key.
+     */
+    function getPrivateFilesInfoCacheKey(userId) {
+        return getPrivateFilesInfoCommonCacheKey() + ':' + userId;
+    }
+
+    /**
+     * Get the common part of the cache keys for private files info WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getPrivateFilesInfoCommonCacheKey() {
+        return 'mmaFiles:privateInfo';
+    }
+
+    /**
+     * Get private files info.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#getPrivateFilesInfo
+     * @param  {Number} [userId] User ID. If not defined, current user in the site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the info.
+     */
+    self.getPrivateFilesInfo = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var params = {
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getPrivateFilesInfoCacheKey(userId)
+                };
+
+            return site.read('core_user_get_private_files_info', params, preSets);
+        });
+    };
+
+    /**
      * Get the site files.
      *
      * @module mm.addons.files
@@ -304,7 +268,7 @@ angular.module('mm.addons.files')
         }
 
         return $mmSitesManager.getSite(siteid).then(function(site) {
-            site.invalidateWsCacheForKey(getFilesListCacheKey(params));
+            return site.invalidateWsCacheForKey(getFilesListCacheKey(params));
         });
     };
 
@@ -321,6 +285,39 @@ angular.module('mm.addons.files')
     };
 
     /**
+     * Invalidates private files info for all users.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidatePrivateFilesInfo
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePrivateFilesInfo = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getPrivateFilesInfoCommonCacheKey());
+        });
+    };
+
+    /**
+     * Invalidates private files info for a certain user.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidatePrivateFilesInfoForUser
+     * @param  {Number} [userId] User ID. If not defined, current user in the site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePrivateFilesInfoForUser = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            return site.invalidateWsCacheForKey(getPrivateFilesInfoCacheKey(userId));
+        });
+    };
+
+    /**
      * Invalidates list of site files.
      *
      * @module mm.addons.files
@@ -333,149 +330,204 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Return whether or not the plugin is enabled. Plugin is enabled if:
-     *     - Site supports core_files_get_files
-     *     or
-     *     - User has capability moodle/user:manageownfiles and WS allows uploading files.
+     * Check if Files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if Files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaFiles');
+    };
+
+    /**
+     * Return whether or not the plugin is enabled.
+     * Plugin is enabled if user can see private files, can see site files or can upload private files.
      *
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#isPluginEnabled
-     * @return {Boolean}
+     * @return {Boolean} True if enabled, false otherwise.
      */
     self.isPluginEnabled = function() {
-        var canAccessFiles = self.canAccessFiles(),
-            canAccessMyFiles = $mmSite.canAccessMyFiles(),
-            canUploadFiles = $mmSite.canUploadFiles();
+        var canAccessMyFiles = $mmSite.canAccessMyFiles(),
+            canViewMyFiles = self.canAccessFiles() && canAccessMyFiles && !self.isPrivateFilesDisabledInSite(),
+            canViewSiteFiles = !self.isSiteFilesDisabledInSite(),
+            canUploadFiles = canAccessMyFiles && $mmSite.canUploadFiles() && !self.isUploadDisabledInSite();
 
-        return canAccessFiles || (canUploadFiles && canAccessMyFiles);
+        return canViewMyFiles || canViewSiteFiles || canUploadFiles;
     };
 
     /**
-     * Upload a file.
+     * Check if private files is disabled in a certain site.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#uploadFile
-     * @param  {Object} uri      File URI.
-     * @param  {Object} options  Options for the upload.
-     *                           - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
-     *                           - {String} fileKey
-     *                           - {String} fileName
-     *                           - {String} mimeType
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}
+     * @name $mmaFiles#isPrivateFilesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
-    self.uploadFile = function(uri, options, siteid) {
-        options = options || {};
-        siteid = siteid || $mmSite.getId();
+    self.isPrivateFilesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isPrivateFilesDisabledInSite(site);
+        });
+    };
 
-        var deleteAfterUpload = options.deleteAfterUpload,
-            deferred = $q.defer(),
-            ftOptions = {
-                fileKey: options.fileKey,
-                fileName: options.fileName,
-                mimeType: options.mimeType
+    /**
+     * Check if private files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isPrivateFilesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isPrivateFilesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('files_privatefiles');
+    };
+
+    /**
+     * Check if site files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isSiteFilesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isSiteFilesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isSiteFilesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if site files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isSiteFilesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isSiteFilesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('files_sitefiles');
+    };
+
+    /**
+     * Check if upload files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isUploadDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUploadDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUploadDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if upload files is disabled in a certain site.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isUploadDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUploadDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('files_upload');
+    };
+
+    /**
+     * Move a file from draft area to private files.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#moveFromDraftToPrivate
+     * @param  {Number} draftId  The draft area ID of the file.
+     * @param  {String} [siteid] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved in success, rejected otherwise.
+     */
+    self.moveFromDraftToPrivate = function(draftId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var params = {
+                draftid: draftId
+            },
+            preSets = {
+                responseExpected: false
             };
 
-        function deleteFile() {
-            $timeout(function() {
-                // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
-                $mmFS.removeExternalFile(uri);
-            }, 500);
-        }
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.write('core_user_add_user_private_files', params, preSets);
+        });
+    };
 
-        $mmSitesManager.getSite(siteid).then(function(site) {
-            site.uploadFile(uri, ftOptions).then(deferred.resolve, deferred.reject, deferred.notify).finally(function() {
-                if (deleteAfterUpload) {
-                    deleteFile();
-                }
-            });
-        }, function() {
-            if (deleteAfterUpload) {
-                deleteFile();
+    /**
+     * Check the Moodle version in order to check if file should be moved from draft to private files.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#shouldMoveFromDraftToPrivate
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Resolved with true if should be moved, false otherwise.
+     */
+    self.shouldMoveFromDraftToPrivate = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.isVersionGreaterEqualThan('3.1.0');
+        });
+    };
+
+    /**
+     * Check the Moodle version in order to check if upload files is working.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#versionCanUploadFiles
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Resolved with true if WS is working, false otherwise.
+     */
+    self.versionCanUploadFiles = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (site.isVersionGreaterEqualThan('3.1.1')) {
+                // In Moodle 3.1.1 or higher we need a WS to move to private files.
+                return self.canMoveFromDraftToPrivate(siteId);
+            } else if (site.isVersionGreaterEqualThan('3.1.0')) {
+                // Upload private files doesn't work for Moodle 3.1.0 due to a bug.
+                return false;
             }
-            deferred.reject(error);
+
+            return true;
         });
-
-        return deferred.promise;
-    };
-
-    /**
-     * Upload image.
-     * @todo Handle Node Webkit.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadImage
-     * @param  {String}  uri         File URI.
-     * @param  {Boolean} isFromAlbum True if the image was taken from album, false if it's a new image taken with camera.
-     * @return {Promise}
-     */
-    self.uploadImage = function(uri, isFromAlbum) {
-        $log.debug('Uploading an image');
-        var d = new Date(),
-            options = {};
-
-        if (typeof(uri) === 'undefined' || uri === ''){
-            // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
-            // and cancel, this function is called with an empty uri. Let's filter it.
-            $log.debug('Received invalid URI in $mmaFiles.uploadImage()');
-            return $q.reject();
-        }
-
-        options.deleteAfterUpload = !isFromAlbum;
-        options.fileKey = "file";
-        options.fileName = "image_" + d.getTime() + ".jpg";
-        options.mimeType = "image/jpeg";
-
-        return self.uploadFile(uri, options);
-    };
-
-    /**
-     * Upload media.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadMedia
-     * @param  {Array} mediaFiles Array of file objects.
-     * @return {Array} Array of promises.
-     */
-    self.uploadMedia = function(mediaFiles) {
-        $log.debug('Uploading media');
-        var promises = [];
-        angular.forEach(mediaFiles, function(mediaFile, index) {
-            var options = {};
-            options.fileKey = null;
-            options.fileName = mediaFile.name;
-            options.mimeType = null;
-            options.deleteAfterUpload = true;
-            promises.push(self.uploadFile(mediaFile.fullPath, options));
-        });
-        return promises;
-    };
-
-    /**
-     * Upload a file of any type.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadGenericFile
-     * @param  {String} uri      File URI.
-     * @param  {String} name     File name.
-     * @param  {String} type     File type.
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}     Promise resolved when the file is uploaded.
-     */
-    self.uploadGenericFile = function(uri, name, type, siteid) {
-        var options = {};
-        options.fileKey = null;
-        options.fileName = name;
-        options.mimeType = type;
-        // Don't delete the file on iOS, it's going to be deleted on $mmaFiles#checkIOSNewFiles.
-        options.deleteAfterUpload = !ionic.Platform.isIOS();
-
-        return self.uploadFile(uri, options, siteid);
     };
 
     return self;

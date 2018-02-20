@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Veuillez choisir un compte dans lequel enregistrer le fichier.",
+    "chooseactionrepeatedfile": "Un fichier de ce nom existe déjà. Voulez-vous remplacer le fichier existant ou le renommer en « {{$a}} » ?",
+    "errorreceivefilenosites": "Aucun site n'est enregistré. Veuillez ajouter un site avant de partager un fichier avec l'app.",
+    "nosharedfiles": "Il n'y a pas de fichier partagé sur ce site.",
+    "nosharedfilestoupload": "Il n'y a pas de fichier à déposer ici. Si vous voulez déposer un fichier à partir d'une autre app, localiser le fichier et tapoter « Ouvrir dans ».",
+    "rename": "Renommer",
+    "replace": "Remplacer",
+    "sharedfiles": "Fichiers partagés",
+    "successstorefile": "Fichier enregistré. Vous pouvez maintenant le sélectionner pour le déposer dans vos fichiers privés ou le joindre à des activités."
+}

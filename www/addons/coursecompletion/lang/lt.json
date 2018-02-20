@@ -1,0 +1,21 @@
+{
+    "complete": "Užbaigti",
+    "completecourse": "Visa kursų medžiaga",
+    "completed": "Baigtas",
+    "completiondate": "Užbaigimo data",
+    "couldnotloadreport": "Nepavyko įkelti kursų baigimo ataskaitos, prašome pabandyti vėliau.",
+    "coursecompletion": "Kurso baigimas",
+    "criteria": "Kriterijai",
+    "criteriagroup": "Kriterijų grupė",
+    "criteriarequiredall": "Visi žemiau pateikti kriterijai yra būtini",
+    "criteriarequiredany": "Bet kuris žemiau pateiktas kriterijus yra būtinas",
+    "inprogress": "Atliekama",
+    "manualselfcompletion": "Savas užbaigimas neautomatiniu būdu",
+    "notyetstarted": "Dar nepradėta",
+    "pending": "Laukiama",
+    "required": "Būtina",
+    "requiredcriteria": "Būtini kriterijai",
+    "requirement": "Būtina sąlyga",
+    "status": "Pasiekimo būsena",
+    "viewcoursereport": "Peržiūrėti kursų ataskaitą"
+}

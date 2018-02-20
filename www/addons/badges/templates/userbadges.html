@@ -1,0 +1,20 @@
+<ion-view view-title="{{ 'mma.badges.badges' | translate }}">
+    <mm-split-view load-when="badgesLoaded" component="mmaUserBadges">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="badgesLoaded" on-refresh="refreshBadges()">
+            </ion-refresher>
+            <mm-loading hide-until="badgesLoaded">
+                <ul class="list" ng-if="badges && badges.length > 0">
+                    <li ng-repeat="badge in badges">
+                        <a class="item item-avatar" mm-split-view-link="site.issuedbadge({cid: courseId, uid: userId, uniquehash: badge.uniquehash})" title="{{badge.name}}">
+                            <img ng-src="{{badge.badgeurl}}" alt="{{badge.name}}" mm-external-content>
+                            <h2><mm-format-text>{{badge.name}}</mm-format-text></h2>
+                            <p>{{ badge.dateissued | mmToLocaleString }}</p>
+                        </a>
+                    </li>
+                </ul>
+                <mm-empty-box ng-if="badges && badges.length == 0" icon="ion-trophy" message="{{ 'mma.badges.nobadges' | translate }}"></mm-empty-box>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

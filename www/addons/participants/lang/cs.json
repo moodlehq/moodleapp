@@ -1,3 +1,4 @@
 {
-    "participants": "Účastníci"
+    "noparticipants": "Pro tento kurz nenalezen žádný účastník",
+    "participants": "Přispěvatelé"
 }

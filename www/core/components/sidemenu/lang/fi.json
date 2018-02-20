@@ -1,0 +1,9 @@
+{
+    "appsettings": "Mobiilisovelluksen asetukset",
+    "changesite": "Vaihda sivustoa",
+    "help": "Ohje",
+    "logout": "Kirjaudu ulos",
+    "mycourses": "Omat kurssini",
+    "togglemenu": "Valikko päälle/pois",
+    "website": "Www-sivusto"
+}

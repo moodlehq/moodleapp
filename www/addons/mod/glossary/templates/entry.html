@@ -1,0 +1,42 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-content mm-state-class>
+
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="entryLoaded" on-refresh="refreshEntry()"></ion-refresher>
+
+        <mm-loading hide-until="entryLoaded">
+
+            <div class="list" ng-if="entry != false">
+                <a class="item item-avatar" ng-if="showAuthor" ui-sref="{{userStateName}}({courseid: courseId, userid: entry.userid})">
+                    <img ng-src="{{entry.userpictureurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: entry.userfullname} }}" mm-external-content role="presentation">
+                    <h2><mm-format-text watch="true">{{ entry.concept }}</mm-format-text></h2>
+                    <p ng-if="showDate" class="item-note">{{ entry.timemodified | mmDateDayOrTime }}</p>
+                    <p><mm-format-text watch="true" clean="true">{{ entry.userfullname }}</mm-format-text></p>
+                </a>
+
+                <div class="item" ng-if="!showAuthor">
+                    <h2><mm-format-text watch="true">{{ entry.concept }}</mm-format-text></h2>
+                    <p ng-if="showDate" class="item-note">{{ entry.timemodified | mmDateDayOrTime }}</p>
+                </div>
+
+                <div class="item item-body">
+                    <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ entry.definition }}</mm-format-text>
+                    <div class="list" ng-if="entry.attachment">
+                        <mm-file ng-repeat="file in entry.attachments track by $index" file="file" component="{{component}}" component-id="{{componentId}}"></mm-file>
+                    </div>
+                </div>
+
+                <div class="item" ng-if="entry.approved != 1">
+                    <p><em>{{ 'mma.mod_glossary.entrypendingapproval' | translate }}</em></p>
+                </div>
+            </div>
+
+            <div class="card" ng-if="entry == false">
+                <p class="item">
+                    {{ 'mma.mod_glossary.errorloadingentry' | translate }}
+                </p>
+            </div>
+
+        </mm-loading>
+    </ion-content>
+</ion-view>

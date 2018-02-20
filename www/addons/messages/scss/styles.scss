@@ -1,7 +1,8 @@
 $mma-messages-date-badge: "stable" !default;
 
 // The date displayed in the list.
-.mma-messages-date {
+.mma-messages-date,
+.mma-messages-unreadfrom {
 
   text-align: center;
   margin-top: 10px;
@@ -10,6 +11,10 @@ $mma-messages-date-badge: "stable" !default;
     @extend .badge;
     @extend .badge-#{$mma-messages-date-badge};
   }
+}
+
+.mma-messages-unreadfrom {
+  color: $positive;
 }
 
 .mma-messages-input-inset {
@@ -41,4 +46,56 @@ $mma-messages-date-badge: "stable" !default;
     font-size: 100%;
     line-height: initial;
   }
+}
+
+.mma-messages-send-message-bar {
+  width: 100%;
+}
+.mm-site_messages-discussion {
+  background: $white;
+
+  .list-left-editing .item-message.item-left-editable,
+  .item-left-editing.item-message.item-left-editable {
+    max-width: calc(80% + 35px);
+    -moz-transition: max-width ease-in-out 125ms;
+    -o-transition: max-width ease-in-out 125ms;
+    -webkit-transition: max-width ease-in-out 125ms;
+    transition: max-width ease-in-out 125ms;
+  }
+
+  .list-left-editing .item-left-editable .item-content,
+  .item-left-editing.item-left-editable .item-content {
+    -webkit-transform: none;
+    transform: none;
+    padding-left: 35px;
+    -moz-transition: padding-left ease-in-out 125ms;
+    -o-transition: padding-left ease-in-out 125ms;
+    -webkit-transition: padding-right ease-in-out 125ms;
+    transition: padding-left ease-in-out 125ms;
+    background-color: transparent;
+  }
+
+  .list-left-editing .item-left-editable.item-message-mine .item-content,
+  .item-left-editing.item-left-editable.item-message-mine .item-content {
+    padding-left: 0;
+    padding-right: 35px;
+    -moz-transition: padding-right ease-in-out 125ms;
+    -o-transition: padding-right ease-in-out 125ms;
+    -webkit-transition: right-right ease-in-out 125ms;
+    transition: padding-right ease-in-out 125ms;
+  }
+
+  .item-message-mine .item-left-edit.visible.active {
+    right: 0;
+    left: initial;
+  }
+}
+
+.tab-content .mm-site_messages-discussion {
+  background: $base-background-color;
+}
+
+.mma-messages-showprevious-spinner-container {
+  width: 100%;
+  text-align: center;
 }

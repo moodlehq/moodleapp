@@ -1,0 +1,96 @@
+
+$mma-mod-quiz-warning-color:      $red !default;
+$mma-mod-quiz-highlight-bgcolor:  $blue-light !default;
+$mma-mod-quiz-highlight-color:    $blue-dark !default;
+$mma-mod-quiz-alternate-color:    $gray-lighter !default;
+$mma-mod-quiz-conecterr-color:    $red-light !default;
+$mma-mod-quiz-selected-color:     $blue-light !default;
+
+// Deprecated use mm-error-item instead.
+p.mma-mod-quiz-warning {
+  color: $mma-mod-quiz-warning-color;
+}
+
+.mm-site_mod_quiz, .mm-site_mod_quiz-player {
+  .row {
+    min-height: $button-height + $grid-padding-width + 5px;
+
+    .button.button-block {
+      margin: 0;
+    }
+  }
+}
+
+.item.mma-mod-quiz-highlighted,
+.platform-android .item.mma-mod-quiz-highlighted,
+.platform-ios .item.mma-mod-quiz-highlighted,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-highlighted,
+.item.mma-mod-quiz-highlighted p {
+  background-color: $mma-mod-quiz-highlight-bgcolor;
+  color: $mma-mod-quiz-highlight-color;
+}
+
+.mma-quiz-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
+
+// Remove padding-top and bottom from navigation bar to minimize height used.
+.mma-mod-quiz-subheader {
+  padding-top: 0px;
+  padding-bottom: 0px;
+
+  .row, .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .mm-timer {
+    min-height: 41px;
+    border: 0;
+    padding: 1px 0 1px 25px;
+
+    .icon {
+      left: 0;
+      font-size: $item-font-size * 3 /2;
+    }
+
+    label {
+      font-size: $item-font-size - 2;
+    }
+
+    span {
+      display: block;
+    }
+
+    span.mm-timesup {
+      line-height: 40px;
+    }
+  }
+}
+
+// Alternate background color in rows.
+.mma-mod-quiz-table .row:nth-child(odd) {
+  background-color: $mma-mod-quiz-alternate-color;
+}
+
+.mma-mod_quiz-connection-error, ion-popover-view.popover.mma-mod_quiz-connection-error {
+  background-color: $mma-mod-quiz-conecterr-color;
+}
+
+.mm-site_mod_quiz-review .item {
+  h3 {
+    font-size: 18px;
+  }
+}
+
+.item.mma-mod-quiz-selected,
+.platform-android .item.mma-mod-quiz-selected,
+.platform-ios .item.mma-mod-quiz-selected,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-selected {
+  background: $mma-mod-quiz-selected-color;
+}
+
+#mma-mod-quiz-toc .item {
+  border-color: $gray-dark;
+}

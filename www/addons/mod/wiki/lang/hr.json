@@ -1,0 +1,15 @@
+{
+    "cannoteditpage": "Ne možete urediti ovu stranicu.",
+    "createpage": "Stvori stranicu",
+    "editingpage": "Uređivanje stranice '{{$a}}'",
+    "map": "Sadržaj",
+    "newpagehdr": "Nova stranica",
+    "newpagetitle": "Naslov nove stranice",
+    "nocontent": "Na ovoj stranici nema sadržaja",
+    "notingroup": "Nije u grupi",
+    "page": "Stranica: {{$a}}",
+    "pageexists": "Ova stranica već postoji. Preusmjeravam na postojeću.",
+    "pagename": "Naziv stranice",
+    "viewpage": "Prikaži stranicu",
+    "wrongversionlock": "Drugi korisnik je uređivao ovu stranicu kada i vi, vaš sadržaj je zastario."
+}

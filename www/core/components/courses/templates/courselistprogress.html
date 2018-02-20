@@ -1,0 +1,32 @@
+<div class="card">
+    <a class="item item-text-wrap item-icon-right item-borderless item-course" ng-class="{'item-progress': roundProgress}" ui-sref="site.mm_course({courseid: course.id, course: course})" title="{{course.fullname}}">
+        <div class="progress-chart-container" ng-if="roundProgress">
+            <div ng-if="course.progress !== false" class="progress-doughnut">
+                <div class="progress-text has-percent">{{course.progress}}&#37;</div>
+                <div class="progress-indicator">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <title>{{course.progress}}&#37;</title>
+                            <circle class="circle percent-{{course.progress}}" r="27.5" cx="35" cy="35"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            <div ng-if="course.progress === false" class="no-progress">
+                <i class="icon ion-ionic"></i>
+            </div>
+        </div>
+        <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
+        <mm-progress-bar ng-if="!roundProgress && course.progress !== false" progress="course.progress"></mm-progress-bar>
+        <i ng-if="showActions && loaded" class="icon ion-android-more-vertical mm-animate-show-hide" ng-click="showCourseActions($event)"></i>
+        <ion-spinner ng-if="!loaded" class="mm-animate-show-hide"></ion-spinner>
+    </a>
+    <div class="item item-text-wrap item-borderless" ng-show="course.summary" ng-if="showSummary">
+        <p>
+            <summary>
+                <mm-format-text watch="true" max-height="60">{{course.summary}}</mm-format-text>
+            </summary>
+        </p>
+    </div>
+    <div ng-transclude></div>
+</div>

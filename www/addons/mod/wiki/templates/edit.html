@@ -1,0 +1,19 @@
+<ion-view can-swipe-back="false">
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()" aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content padding="true" mm-state-class delegate-handle="mmaModWikiEditPage">
+        <mm-loading hide-until="wikiLoaded">
+            <form>
+                <div class="item-title" ng-if="canEditTitle">
+                    <input type="text" placeholder="{{ 'mma.mod_wiki.newpagetitle' | translate }}" ng-model="page.title">
+                </div>
+                <div class="item item-noborder mm-item-has-rich-text-editor">
+                    <mm-rich-text-editor model="page" placeholder="{{ 'mm.core.content' | translate }}" name="wiki_page_content" scroll-handle="mmaModWikiEditPage" first-render="firstRender()" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
+                </div>
+                <div class="badge badge-inline badge-assertive" ng-if="wrongVersionLock">{{ 'mma.mod_wiki.wrongversionlock' | translate }}</div>
+            </form>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,18 @@
+{
+    "future": "Toekomst",
+    "inprogress": "Actief",
+    "morecourses": "Meer cursussen",
+    "next30days": "Komende 30 dagen",
+    "next7days": "Komende 7 dagen",
+    "nocourses": "Geen cursussen",
+    "nocoursesfuture": "Geen toekomstige cursussen",
+    "nocoursesinprogress": "Geen actieve cursussen",
+    "nocoursespast": "Geen voltooide cursussen",
+    "noevents": "Er zijn geen verwachte activiteiten",
+    "past": "Voltooid",
+    "pluginname": "Cursusoverzicht",
+    "recentlyoverdue": "Deadline verstreken",
+    "sortbycourses": "Op cursus sorteren",
+    "sortbydates": "Op datum sorteren",
+    "timeline": "Tijdlijn"
+}

@@ -1,0 +1,21 @@
+{
+    "address": "Adresse",
+    "city": "Sted",
+    "contact": "Kontakt",
+    "country": "Land",
+    "description": "Beskrivelse",
+    "details": "Detaljer",
+    "email": "E-postadresse",
+    "emailagain": "E-post (igjen)",
+    "firstname": "Fornavn",
+    "interests": "Interesser",
+    "invaliduser": "Ugyldig bruker",
+    "lastname": "Etternavn",
+    "newpicture": "Nytt bilde",
+    "phone1": "Telefon",
+    "phone2": "Mobiltelefon",
+    "roles": "Roller",
+    "student": "Student",
+    "viewprofile": "Vis profilen",
+    "webpage": "Nettside"
+}

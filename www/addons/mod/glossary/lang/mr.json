@@ -1,0 +1,19 @@
+{
+    "browsemode": "आयोग पद्धती",
+    "byalphabet": "वर्णानुक्रमाने",
+    "byauthor": "लेखकानुसार गट",
+    "bycategory": "श्रेणीनुसार गट",
+    "bynewestfirst": "नवीनतम प्रथम",
+    "byrecentlyupdated": "अलीकडेच अद्यन्वित",
+    "bysearch": "शोधा",
+    "cannoteditentry": "प्रविष्टी संपादित करू शकत नाही",
+    "casesensitive": "नियमीत शब्दांचा वापर करा.",
+    "categories": "गट",
+    "entriestobesynced": "सिंक केलेल्या प्रविष्ट्या",
+    "entrypendingapproval": "ही प्रविष्टी मंजूरीसाठी प्रलंबित आहे.",
+    "errorloadingentries": "नोंदी लोड करताना त्रुटी आली",
+    "errorloadingentry": "नोंद लोड करताना एक त्रुटी आली.",
+    "errorloadingglossary": "शब्दकोशाचे लोड करताना त्रुटी आली.",
+    "noentriesfound": "नोंदी सापडल्या नाहीत.",
+    "searchquery": "शोध क्वेरी"
+}

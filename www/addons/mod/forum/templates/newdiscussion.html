@@ -1,0 +1,30 @@
+<ion-view view-title="{{ 'mma.mod_forum.addanewdiscussion' | translate }}">
+    <ion-content mm-state-class delegate-handle="mmaModForumNewDiscussion">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="groupsLoaded" on-refresh="refreshGroups()">
+        </ion-refresher>
+        <mm-loading hide-until="groupsLoaded">
+            <form ng-if="showForm" class="list">
+                <ion-input class="item item-input item-stacked-label">
+                    <ion-label>{{ 'mma.mod_forum.subject' | translate }}</ion-label>
+                    <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newDiscussion.subject">
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor">
+                    <ion-label>{{ 'mma.mod_forum.message' | translate }}</ion-label>
+                    <mm-rich-text-editor model="newDiscussion" placeholder="{{ 'mma.mod_forum.message' | translate }}" scroll-handle="mmaModForumNewDiscussion" name="mod_forum_new_discussion" first-render="firstRender()"></mm-rich-text-editor>
+                </ion-input>
+                <div class="item item-input item-select" ng-if="showGroups">
+                    <ion-label id="mma-forum-groupslabel">{{ 'mma.mod_forum.group' | translate }}</ion-label>
+                    <select ng-model="newDiscussion.groupid" ng-options="group.id as group.name for group in groups" aria-labelledby="mma-forum-groupslabel" mm-ios-select-fix>
+                    </select>
+                </div>
+                <ion-toggle ng-model="newDiscussion.subscribe">{{ 'mma.mod_forum.discussionsubscription' | translate }}</ion-toggle>
+                <ion-toggle ng-if="canPin" ng-model="newDiscussion.pin">{{ 'mma.mod_forum.discussionpinned' | translate }}</ion-toggle>
+                <mm-attachments ng-if="canAddAttachments && canCreateAttachments && forum && forum.maxattachments > 0" files="newDiscussion.files" max-size="{{forum.maxbytes}}" max-submissions="{{forum.maxattachments}}" component="{{component}}" component-id="{{forum.cmid}}" allow-offline="true"></mm-attachments>
+                <div class="item">
+                    <button class="button button-block button-positive" ng-click="add()" ng-disabled="newDiscussion.subject == '' || newDiscussion.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+                    <button ng-if="hasOffline" class="button button-block button-outline button-positive" ng-click="discard()">{{ 'mm.core.discard' | translate }}</button>
+                </div>
+            </form>
+        </mm-loading>
+    </ion-content>
+</ion-view>

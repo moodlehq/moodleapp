@@ -22,7 +22,7 @@ angular.module('mm.core')
  * @name mmLoading
  * @description
  * Usage:
- * <mm-loading message="{{loadingMessage}}" hide-until="dataLoaded" loading-padding-top="paddingTop">
+ * <mm-loading message="{{loadingMessage}}" hide-until="dataLoaded">
  *     <!-- CONTENT TO HIDE UNTIL LOADED -->
  * </mm-loading>
  * This directive will show a ion-spinner with a message and hide all the content until 'dataLoaded' variable is set to true.
@@ -35,9 +35,6 @@ angular.module('mm.core')
  *                                     to change during execution. Has priority over message.
  * @param {String} hideUntil           Scope variable to determine when should the contents be shown. When the variable is set
  *                                     to true, the loading is hidden and the contents are shown.
- * @param {String} [loadingPaddingTop] Padding top to set to loading view. If not set, no padding top is set. This attribute is
- *                                     meant to be used with dynamic paddings (e.g. to move the loading spinner to the user
- *                                     scrollTop). Static padding-top should be set using CSS.
  */
 .directive('mmLoading', function($translate) {
 
@@ -48,31 +45,13 @@ angular.module('mm.core')
         scope: {
             hideUntil: '=?',
             message: '@?',
-            dynMessage: '=?',
-            loadingPaddingTop: '=?'
+            dynMessage: '=?'
         },
         link: function(scope, element, attrs) {
-            var el = element[0],
-                loading = angular.element(el.querySelector('.mm-loading-container'));
-
             if (!attrs.message) {
                 // Default loading message.
                 $translate('mm.core.loading').then(function(loadingString) {
                     scope.message = loadingString;
-                });
-            }
-
-            if (attrs.loadingPaddingTop) {
-                scope.$watch('loadingPaddingTop', function(newValue) {
-                    // parseInt of an invalid string is NaN, but parseInt('a') == NaN is FALSE and typeof NaN = 'number'.
-                    // That's why we use num >= 0 or num < 0 to check if it's a valid number.
-                    var num = parseInt(newValue);
-                    if (num >= 0 || num < 0) {
-                        loading.css('padding-top', newValue + 'px');
-                    } else if(typeof newValue == 'string') {
-                        // Maybe they set a value like '200px'.
-                        loading.css('padding-top', newValue);
-                    }
                 });
             }
         }

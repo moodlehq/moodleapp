@@ -1,0 +1,21 @@
+{
+    "answer": "Одговор",
+    "answersaved": "Одговор је сачуван",
+    "complete": "Потпуно",
+    "correct": "Тачно",
+    "errorattachmentsnotsupported": "Апликација још увек не подржава могућност да се датотеке придруже уз одговоре.",
+    "errorinlinefilesnotsupported": "Апликација још увек не подржава уређивање унутар датотека.",
+    "errorquestionnotsupported": "Апликација не подржава овај тип питања: {{$a}}.",
+    "feedback": "Повратне информације",
+    "howtodraganddrop": "Додирните за избор, затим још једном за спуштање.",
+    "incorrect": "Нетачно",
+    "information": "Информација",
+    "invalidanswer": "Непотпун одговор",
+    "notanswered": "Још нису одговорили",
+    "notyetanswered": "Није још одговорено",
+    "partiallycorrect": "Делимично тачно",
+    "questionmessage": "Питање {{$a}}: {{$b}}",
+    "questionno": "Питање {{$a}}",
+    "requiresgrading": "Захтева оцењивање",
+    "unknown": "Није могуће утврдити статус"
+}

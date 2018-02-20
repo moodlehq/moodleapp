@@ -21,56 +21,47 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($scope, $mmaMessages, $mmSite, $mmUtil, $mmApp, mmUserProfileState, $translate) {
+.controller('mmaMessagesContactsCtrl', function($scope, $mmaMessages, $mmSite, $mmUtil, $mmApp, mmUserProfileState, $q,
+            $translate) {
 
     var currentUserId = $mmSite.getUserId(),
         searchingMessage = $translate.instant('mm.core.searching'),
-        loadingMessage = $translate.instant('mm.core.loading');
+        loadingMessage = $translate.instant('mm.core.loading'),
+        searchedString;
 
     $scope.loaded = false;
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
     $scope.searchType = 'search';
     $scope.hasContacts = false;
-    $scope.canSearch = $mmaMessages.isSearchEnabled;
     $scope.formData = {
         searchString: ''
     };
     $scope.userStateName = mmUserProfileState;
 
     $scope.refresh = function() {
-        $mmaMessages.invalidateAllContactsCache(currentUserId).then(function() {
-            return fetchContacts(true).then(function() {
-                $scope.formData.searchString = '';
+        var promise;
+
+        if (searchedString) {
+            // User has searched, update the search.
+            promise = search(searchedString);
+        } else {
+            // Update contacts.
+            promise = $mmaMessages.invalidateAllContactsCache(currentUserId).then(function() {
+                return fetchContacts(true);
             });
-        }).finally(function() {
+        }
+
+        promise.finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
     $scope.search = function(query) {
-        if (query.length < 3) {
-            // The view should handle this case, but adding this check here to document that
-            // we do not want users to query on less than 3 characters as they could retrieve
-            // too many users!
-            return;
-        }
-
         $mmApp.closeKeyboard();
 
         $scope.loaded = false;
         $scope.loadingMessage = searchingMessage;
-        return $mmaMessages.searchContacts(query).then(function(result) {
-            $scope.hasContacts = result.length > 0;
-            $scope.contacts = {
-                search: result
-            };
-        }).catch(function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
-            }
-        }).finally(function() {
+        return search(query).finally(function() {
             $scope.loaded = true;
         });
     };
@@ -82,24 +73,39 @@ angular.module('mm.addons.messages')
         });
     };
 
+    // Search users.
+    function search(query) {
+        return $mmaMessages.searchContacts(query).then(function(result) {
+            $scope.hasContacts = result.length > 0;
+            searchedString = query;
+            $scope.contacts = {
+                search: result
+            };
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingcontacts', true);
+            return $q.reject();
+        });
+    }
+
+    // Fetch contacts.
     function fetchContacts() {
         $scope.loadingMessage = loadingMessage;
+        $scope.canSearch = $mmaMessages.isSearchContactsEnabled();
         return $mmaMessages.getAllContacts().then(function(contacts) {
             $scope.contacts = contacts;
+            searchedString = false; // Reset searched string.
 
             angular.forEach(contacts, function(contact) {
                 if (contact.length > 0) {
                     $scope.hasContacts = true;
                 }
             });
-        }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
-            }
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingcontacts', true);
+            return $q.reject();
         });
     }
+
     fetchContacts().finally(function() {
         $scope.loaded = true;
     });

@@ -1,0 +1,10 @@
+<ion-popover-view class="mma-mod_glossary-mode-picker">
+    <ion-content>
+        <div class="list">
+            <ion-item ng-repeat="mode in modes track by $index" ng-class="{'item-icon-right': data.selectedMode == mode.key}" ng-click="modePicked(mode.key)">
+                {{ mode.langkey | translate }}
+                <i class="icon ion-checkmark" ng-if="data.selectedMode == mode.key"></i>
+            </ion-item>
+        </div>
+    </ion-content>
+</ion-popover-view>

@@ -1,0 +1,17 @@
+{
+    "addfiletext": "Dodaj plik",
+    "audio": "Archiwum ({{$a.EXT}})",
+    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "errorcapturingaudio": "Błąd poczas nagrywania dźwięku",
+    "errorcapturingvideo": "Błąd podczas przechwytywania wideo",
+    "errorreadingfile": "Błąd podczas odczytu z pliku \"{{$a}}\"",
+    "file": "Plik",
+    "fileuploaded": "Plik wysłany",
+    "invalidfiletype": "Typ pliku nie jest akceptowany: {{$a}}",
+    "maxbytesfile": "Plik {{$a.file}} jest za duży Maksymalny rozmiar pliku, który możesz przesłać, może wynosić {{$a.size}}.",
+    "more": "Więcej",
+    "readingfile": "Odczytywanie pliku",
+    "uploadafile": "Prześlij plik",
+    "uploading": "Przesyłanie ...",
+    "video": "Plik wideo ({{$a.EXT}})"
+}

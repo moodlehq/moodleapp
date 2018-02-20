@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Hi ha hagut un problema en la tramesa de la vostra resposta. Torneu-ho a intentar.",
+    "choiceoptions": "Opcions de la tria",
+    "errorgetchoice": "S'ha produït un error en recuperar les dades de la consulta.",
+    "expired": "Aquesta activitat es va tancar el dia {{$a}} i ja no està disponible.",
+    "full": "(Complet)",
+    "noresultsviewable": "A hores d'ara no es poden veure els resultats",
+    "notopenyet": "Aquesta activitat no estarà disponible fins al dia {{$a}}",
+    "numberofuser": "Nombre de respostes",
+    "numberofuserinpercentage": "Percentatge de respostes (%)",
+    "previewonly": "Això és sols una vista prèvia de les opcions disponibles en aquesta activitat. No esteu habilitat per enviar consultes fins {{$a}}.",
+    "removemychoice": "Suprimeix la meva resposta",
+    "responses": "Respostes",
+    "responsesresultgraphdescription": "{{number}}% dels usuaris han escollit l'opció: {{text}}.",
+    "responsesresultgraphheader": "Mostra la gràfica",
+    "resultsnotsynced": "Els resultats no inclouen la vostra darrera resposta. Sincronitzeu per actualitzar-los.",
+    "savemychoice": "Desa la meva resposta",
+    "userchoosethisoption": "Usuaris que han escollit aquesta opció",
+    "yourselection": "La vostra selecció"
+}

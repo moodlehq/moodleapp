@@ -1,0 +1,88 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button ng-show="canSearch" class="button button-icon ion-ios-search-strong" ng-click="showSearch($event)" aria-label="{{ 'mma.mod_data.search' | translate }}"></button>
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="databaseLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshDatabase(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="databaseLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshDatabase(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-show="canAdd" content="'mma.mod_data.addentries' | translate" icon-action="'ion-plus-round'" action="gotoAddEntries($event)"></mm-context-menu-item>
+            <mm-context-menu-item priority="450" ng-show="firstEntry" content="'mma.mod_data.single' | translate" icon-action="'ion-document'" action="gotoEntry(firstEntry)"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="300" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModDataIndexScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="databaseLoaded" on-refresh="refreshDatabase(false)"></ion-refresher>
+        <mm-loading hide-until="databaseLoaded">
+            <div class="card" ng-if="description" ng-click="expandDescription()">
+                <div class="item item-text-wrap">
+                    <mm-format-text max-height="120" fullview-on-click="true" component="{{component}}" component-id="{{data.cmid}}">{{ description }}</mm-format-text>
+                </div>
+            </div>
+
+            <!-- Database entries found to be synchronized -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
+            <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                <ion-label id="mma-data-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                <ion-label id="mma-data-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-data-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                </select>
+            </div>
+            <div class="mm-info-card-icon" ng-if="!access.timeavailable && timeAvailableFrom">
+                <i class="icon ion-information-circled padding"></i> {{ 'mma.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}
+            </div>
+
+            <div class="mm-info-card-icon" ng-if="!access.timeavailable && timeAvailableTo">
+                <i class="icon ion-information-circled padding"></i> {{ 'mma.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}
+            </div>
+
+            <div class="mm-info-card-icon" ng-if="access.entrieslefttoview">
+                <i class="icon ion-information-circled padding"></i> {{ 'mma.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
+            </div>
+
+            <div class="mm-info-card-icon" ng-if="access.entrieslefttoadd">
+                <i class="icon ion-information-circled padding"></i> {{ 'mma.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
+            </div>
+
+            <div class="item" ng-if="search.searching && !isEmpty">
+                <a ng-click="searchReset()">{{ 'mma.mod_data.resetsettings' | translate}}</a>
+            </div>
+
+            <div class="mm-data-contents mma-data-entries-{{data.id}}" ng-if="!isEmpty">
+                <style ng-if="cssTemplate">
+                    {{ cssTemplate }}
+                </style>
+
+                <mm-format-text component="{{component}}" component-id="{{data.cmid}}" watch="true">
+                    {{ entriesRendered }}
+                </mm-format-text>
+            </div>
+
+            <div ng-if="search.page > 0 || hasNextPage" class="item item-text-wrap row-buttons responsive-sm">
+                <button ng-if="search.page > 0" class="button button-block icon-left ion-chevron-left" ng-click="searchEntries(search.page - 1)">
+                    {{ 'mm.core.previous' | translate }}
+                </button>
+                <button ng-if="hasNextPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="searchEntries(search.page + 1)">
+                    {{ 'mm.core.next' | translate }}
+                </button>
+            </div>
+
+            <mm-empty-box ng-if="isEmpty && !search.searching" icon="ion-archive" message="{{ 'mma.mod_data.norecords' | translate}}">
+                <div class="padding-top" ng-if="canAdd">
+                    <button class="button button-block" ng-click="gotoAddEntries($event)">
+                        {{ 'mma.mod_data.addentries' | translate }}
+                    </button>
+                </div>
+            </mm-empty-box>
+
+            <mm-empty-box ng-if="isEmpty && search.searching" icon="ion-archive" message="{{ 'mma.mod_data.nomatch' | translate}}">
+                <a ng-click="searchReset()">{{ 'mma.mod_data.resetsettings' | translate}}</a>
+            </mm-empty-box>
+        </mm-loading>
+    </ion-content>
+</ion-view>

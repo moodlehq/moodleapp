@@ -1,0 +1,91 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-content delegate-handle="mmaModFeedbackFormScroll" mm-state-class>
+        <mm-loading hide-until="feedbackLoaded">
+            <section ng-if="items && items.length">
+                <div class="list">
+                    <div class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_feedback.mode' | translate }}</p>
+                        <p ng-if="access.isanonymous">{{ 'mma.mod_feedback.anonymous' | translate }}</p>
+                        <p ng-if="!access.isanonymous">{{ 'mma.mod_feedback.non_anonymous' | translate }}</p>
+                    </div>
+                </div>
+                <div class="list" ng-if="items && items.length">
+                    <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak', 'item-stable': item.dependitem > 0, 'mm-error-item': item.isEmpty || item.hasError}">
+                        <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span>{{ item.name }}</p>
+                        <div class="item-text-wrap" ng-class="item.class" ng-if="item.template" ng-include="item.template"></div>
+                    </div>
+                </div>
+
+                <script type="text/ng-template" id="label">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ item.presentation }}</mm-format-text></p>
+                </script>
+
+                <script type="text/ng-template" id="textfield">
+                    <input ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" type="text" ng-model="item.value" autocorrect="off" maxlength="{{item.length}}"/>
+                </script>
+
+                <script type="text/ng-template" id="numeric">
+                    <input ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" type="number" ng-model="item.value"/>
+                    <p ng-if="item.hasError" class="assertive">{{ 'mma.mod_feedback.numberoutofrange' |translate }} [{{item.rangefrom}}<span ng-if="item.rangefrom && item.rangeto">, </span>{{item.rangeto}}]</p>
+                </script>
+
+                <script type="text/ng-template" id="textarea">
+                    <textarea ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" aria-multiline="true" ng-model="item.value"></textarea>
+                </script>
+
+                <script type="text/ng-template" id="multichoice-r">
+                    <ion-radio ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-radio>
+                </script>
+
+                <script type="text/ng-template" id="multichoice-c">
+                    <ion-checkbox ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="option.checked" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-checkbox>
+                </script>
+
+                <script type="text/ng-template" id="multichoice-d">
+                    <select ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-options="option.value as option.label for option in item.choices" mm-ios-select-fix>
+                    </select>
+                </script>
+
+                <script type="text/ng-template" id="captcha">
+                    <div ng-if="!preview && item.captcha && item.captcha.challengehash && item.captcha.imageurl && !offline">
+                        <img ng-src="{{item.captcha.imageurl}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
+                        <ion-input class="item-input">
+                            <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="item.value" autocapitalize="none" autocorrect="off" required>
+                        </ion-input>
+                        <!-- Use anchor instead of button to prevent marking form as submitted. -->
+                        <a class="button button-block" ng-click="requestCaptcha(item)">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+                    </div>
+                    <div ng-if="!preview && (!item.captcha || !item.captcha.challengehash || !item.captcha.imageurl || offline)" class="mm-warning-card-icon">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_feedback.captchaofflinewarning' | translate }}
+                    </div>
+                </script>
+
+                <div ng-if="!preview" class="item item-text-wrap row-buttons responsive-sm">
+                    <button ng-if="hasPrevPage" class="button button-block icon-left ion-chevron-left" ng-click="gotoPage(true)">
+                        {{ 'mma.mod_feedback.previous_page' | translate }}
+                    </button>
+                    <button ng-if="hasNextPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoPage(false)">
+                        {{ 'mma.mod_feedback.next_page' | translate }}
+                    </button>
+                    <button ng-if="!hasNextPage" class="button button-block button-positive" ng-click="gotoPage(false)">
+                        {{ 'mma.mod_feedback.save_entries' | translate }}
+                    </button>
+                </div>
+            </section>
+            <div class="mm-success-card-icon" ng-if="completed">
+                <i class="icon ion-checkmark-round padding"></i> <p ng-if="!completionPageContents && !completedOffline">{{ 'mma.mod_feedback.this_feedback_is_already_submitted' | translate }}</p>
+                <i class="icon ion-checkmark-round padding"></i> <p ng-if="!completionPageContents && completedOffline">{{ 'mma.mod_feedback.feedback_submitted_offline' | translate }}</p>
+                <p ng-if="completionPageContents"><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ completionPageContents }}</mm-format-text></p>
+            </div>
+            <div class="item item-text-wrap row-buttons responsive-sm" ng-if="completed">
+                <button ng-if="access.canviewanalysis" class="button button-block icon-left ion-stats-bars" ng-click="showAnalysis()">
+                    {{ 'mma.mod_feedback.completed_feedbacks' | translate }}
+                </button>
+                <button class="button button-block button-positive icon-right ion-chevron-right" ng-click="continue()">
+                    {{ 'mm.core.continue' | translate }}
+                </button>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

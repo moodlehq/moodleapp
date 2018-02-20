@@ -1,0 +1,138 @@
+
+$mm-question-correct-color:         $green-dark !default;
+$mm-question-correct-color-bg:      $green-light !default;
+$mm-question-incorrect-color:       $red !default;
+$mm-question-incorrect-color-bg:    $red-light !default;
+$mm-question-feedback-color:        $yellow-dark !default;
+$mm-question-feedback-color-bg:     $yellow-light !default;
+
+$mm-question-state-correct-color:   $green-light !default;
+$mm-question-state-partial-color:   $yellow-light !default;
+$mm-question-state-incorrect-color: $red-light !default;
+
+$mm-question-warning-color:         $red !default;
+
+.mm-question-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
+
+.mm-question-answer-correct,
+select.mm-question-answer-correct,
+input.mm-question-answer-correct,
+input[readonly]:not(.cloned-text-input).mm-question-answer-correct,
+textarea.mm-question-answer-correct,
+textarea[readonly]:not(.cloned-text-input).mm-question-answer-correct,
+label.mm-question-answer-correct,
+li.mm-question-answer-correct,
+.mm-question-answer-correct p,
+.mm-question-answer-correct input,
+.mm-question-answer-correct select,
+.mm-question-answer-correct .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-correct.item-radio input:checked + .radio-content .item-content,
+.mm-question-comment,
+.mm-question-comment p {
+  color: $mm-question-correct-color;
+  -webkit-text-fill-color: $mm-question-correct-color; /* Override iOS / Android font color change */
+  background-color: $mm-question-correct-color-bg;
+}
+
+.mm-question-answer-correct .checkbox input:disabled:checked:before,
+.mm-question-answer-correct .checkbox input:disabled:checked + .checkbox-icon:before,
+.mm-question-answer-correct.item-radio input:checked + .radio-content .radio-icon:before {
+  background-color: $mm-question-correct-color;
+  border-color: $mm-question-correct-color;
+}
+
+.mm-question-answer-incorrect,
+select.mm-question-answer-incorrect,
+input.mm-question-answer-incorrect,
+input[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
+textarea.mm-question-answer-incorrect,
+textarea[readonly]:not(.cloned-text-input).mm-question-answer-incorrect,
+label.mm-question-answer-incorrect,
+li.mm-question-answer-incorrect,
+.mm-question-answer-incorrect p,
+.mm-question-answer-incorrect input,
+.mm-question-answer-incorrect select,
+.mm-question-answer-incorrect .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-incorrect.item-radio input:checked + .radio-content .item-content,
+.mm-question-incorrect,
+.mm-question-incorrect p {
+  color: $mm-question-incorrect-color;
+  -webkit-text-fill-color: $mm-question-incorrect-color; /* Override iOS / Android font color change */
+  background-color: $mm-question-incorrect-color-bg;
+}
+
+.mm-question-answer-incorrect .checkbox input:disabled:checked:before,
+.mm-question-answer-incorrect .checkbox input:disabled:checked + .checkbox-icon:before,
+.mm-question-answer-incorrect.item-radio input:checked + .radio-content .radio-icon:before {
+  background-color: $mm-question-incorrect-color;
+  border-color: $mm-question-incorrect-color;
+}
+
+.mm-question-answer-correct input:disabled,
+.mm-question-answer-incorrect input:disabled {
+  opacity: 1;
+}
+
+.mm-question-feedback-container,
+.mm-question-feedback-container p {
+  background-color: $mm-question-feedback-color-bg;
+  color: $mm-question-feedback-color;
+
+  .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+    margin: 0 0 .5em;
+  }
+
+  .correctness {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: bold;
+    line-height: 14px;
+    color: $white;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: $gray-dark;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+
+    &.incorrect {
+      background-color: $red;
+    }
+    &.correct {
+      background-color: $green;
+    }
+  }
+}
+
+.mm-question-feedback-inline {
+  display: inline-block;
+}
+
+.mm-question-feedback-padding {
+  padding: 8px 35px 8px 14px;
+}
+
+.item,
+.platform-android .item,
+.platform-ios .item {
+  &.mm-question-correct {
+    background-color: $mm-question-state-correct-color;
+  }
+  &.mm-question-partiallycorrect {
+    background-color: $mm-question-state-partial-color;
+  }
+  &.mm-question-notanswered,
+  &.mm-question-incorrect {
+    background-color: $mm-question-state-incorrect-color;
+  }
+}
+
+.mm-question-warning, p.mm-question-warning, .item .mm-question-warning {
+  color: $mm-question-warning-color;
+}
+
+.questioncorrectnessicon {
+  font-size: 20px;
+}

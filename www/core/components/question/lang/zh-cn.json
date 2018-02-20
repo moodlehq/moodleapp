@@ -1,0 +1,16 @@
+{
+    "answer": "答案",
+    "answersaved": "答案已保存",
+    "complete": "完成",
+    "correct": "正确",
+    "feedback": "反馈",
+    "incorrect": "不正确",
+    "information": "说明",
+    "invalidanswer": "答案不完成",
+    "notanswered": "未回答",
+    "notyetanswered": "还未回答",
+    "partiallycorrect": "部分正确",
+    "questionno": "题目{{$a}}",
+    "requiresgrading": "需要评分",
+    "unknown": "未知"
+}

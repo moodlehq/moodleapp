@@ -1,0 +1,19 @@
+<ion-modal-view>
+    <ion-header-bar>
+        <button class="button button-icon ion-close-round" ng-click="closeModal();"></button>
+        <h1 class="title">{{ 'mma.mod_workshop.selectphase' | translate }}</h1>
+    </ion-header-bar>
+    <ion-content>
+        <ion-list>
+            <div ng-repeat="phase in phases">
+                <ion-radio ng-model="selectedPhase" ng-value="phase.code" ng-click="switchPhase(phase.code)" ng-if="workshop.phase >= phase.code || phase.tasks.length || phase.switchUrl">
+                    {{ phase.title }}
+                    <p class="item-text-wrap" ng-if="workshop.phase == phase.code">{{ 'mma.mod_workshop.userplancurrentphase' | translate }}</p>
+                </ion-radio>
+                <ion-item ng-if="!(workshop.phase >= phase.code || phase.tasks.length || phase.switchUrl)">
+                    {{ phase.title }}
+                </ion-item>
+            </div>
+        </ion-list>
+    </ion-content>
+</ion-modal-view>

@@ -1,0 +1,16 @@
+<div ng-repeat="(n, field) in assessment.form.fields" class="list card">
+    <div class="item item-text-wrap">
+        <h2>{{ field.dimtitle }}</h2>
+        <mm-format-text watch="true">{{field.description}}</mm-format-text>
+    </div>
+    <label class="item" ng-class="{'item-input item-stacked-label': edit, 'mm-input-has-errors': edit && fieldErrors['peercomment_' + n]}">
+        <h2>{{ 'mma.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+        <div class="item-input-wrapper" mm-mark-required="true" ng-if="edit">
+            <textarea class="mm-textarea" aria-multiline="true" ng-model="selectedValues[n].peercomment" mm-auto-rows ng-required="true" name="peercomment_{{n}}"></textarea>
+        </div>
+        <p ng-if="fieldErrors['peercomment_' + n]" class="mm-error">{{fieldErrors['peercomment_' + n]}}</p>
+        <p class="item-text-wrap" ng-if="!edit">
+            <mm-format-text watch="true">{{selectedValues[n].peercomment}}</mm-format-text>
+        </p>
+    </label>
+</div>

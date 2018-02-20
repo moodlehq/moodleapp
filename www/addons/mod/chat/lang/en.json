@@ -1,0 +1,19 @@
+{
+    "beep": "Beep",
+    "currentusers": "Current users",
+    "enterchat": "Click here to enter the chat now",
+    "entermessage": "Enter your message",
+    "errorwhileconnecting": "Error while connecting to the chat.",
+    "errorwhilegettingchatdata": "Error while getting chat data.",
+    "errorwhilegettingchatusers": "Error while getting chat users.",
+    "errorwhileretrievingmessages": "Error while retrieving messages from the server.",
+    "errorwhilesendingmessage": "Error while sending the message.",
+    "messagebeepsyou": "{{$a}} has just beeped you!",
+    "messageenter": "{{$a}} has just entered this chat",
+    "messageexit": "{{$a}} has left this chat",
+    "mustbeonlinetosendmessages": "You must be online to send messages.",
+    "nomessages": "No messages yet",
+    "send": "Send",
+    "sessionstart": "The next chat session will start on {{$a.date}}, ({{$a.fromnow}} from now)",
+    "talk": "Talk"
+}

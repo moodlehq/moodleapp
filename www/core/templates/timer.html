@@ -1,0 +1,4 @@
+<i class="icon ion-clock"></i>
+<label ng-if="timeLeft > 0 && text">{{text}} </label>
+<span ng-if="timeLeft > 0">{{ timeLeft | mmSecondsToHMS }}</span>
+<span class="mm-timesup" ng-if="timeLeft <= 0">{{ 'mm.core.timesup' | translate }}</span>

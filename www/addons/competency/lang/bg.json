@@ -1,0 +1,16 @@
+{
+    "activities": "Дейности",
+    "competencies": "Компетенции",
+    "coursecompetencies": "Компетенции на курса",
+    "duedate": "Краен срок",
+    "learningplans": "Учебни планове",
+    "myplans": "Моите учебни планове",
+    "noplanswerecreated": "Не бяха създадени учебни планове.",
+    "path": "Път",
+    "planstatusactive": "Активен",
+    "planstatuscomplete": "Завършен",
+    "planstatusdraft": "Чернова",
+    "status": "Състояние",
+    "template": "Шаблон",
+    "userplans": "Учебни планове"
+}

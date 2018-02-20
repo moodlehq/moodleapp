@@ -1,5 +1,5 @@
 {
-  "name": "mm2",
+  "name": "moodlemobile2",
   "app_id": "",
   "gulpStartupTasks": [
     "build",
@@ -9,7 +9,9 @@
     "config"
   ],
   "watchPatterns": [
-    "www/**/*",
+    "www/**/*.html",
+    "www/build/**/*",
+    "www/index.html",
     "!www/lib/**/*"
   ]
 }

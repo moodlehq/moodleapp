@@ -1,0 +1,16 @@
+{
+    "answer": "Svar",
+    "answersaved": "Svar lagret",
+    "complete": "Fullført",
+    "correct": "Riktig",
+    "feedback": "Tilbakemelding",
+    "incorrect": "Feil",
+    "information": "Informasjon",
+    "invalidanswer": "Ufullstendig svar",
+    "notanswered": "Ikke besvart ennå",
+    "notyetanswered": "Ikke besvart ennå",
+    "partiallycorrect": "Delvis riktig",
+    "questionno": "Spørsmål {{$a}}",
+    "requiresgrading": "Karaktersetting påkrevet",
+    "unknown": "Ukjent"
+}

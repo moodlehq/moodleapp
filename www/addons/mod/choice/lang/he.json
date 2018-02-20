@@ -1,0 +1,19 @@
+{
+    "cannotsubmit": "קרתה תקלה בשליחת הבחירה שלך, ניתן לנסות שנית מאוחר יותר.",
+    "choiceoptions": "אפשרויות שאלת־סקר",
+    "errorgetchoice": "שגיאה בטעינת המידע של שאלת הבחירה.",
+    "expired": "מצטערים, פעילות זו נסגרה על {{$a}} והיא איננה זמינה יותר",
+    "full": "(מלא)",
+    "noresultsviewable": "כרגע לא ניתן לצפות בתוצאות.",
+    "notopenyet": "לצערנו, פעילות זו אינה זמינה עד {{$a}}",
+    "numberofuser": "מספר המשתתפים",
+    "numberofuserinpercentage": "מספר  המשתתפים באחוזים",
+    "previewonly": "זוהי תצוגה מקדימה לאפשרויות הזמינות עבור פעילות זו. לא ניתן יהיה הגיש את הבחירה שלך עד {{$a}}.",
+    "removemychoice": "הסרת בחירתי",
+    "responses": "תשובות",
+    "responsesresultgraphdescription": "{{number}}% מהמשתמשים בחרו באפשרות {{text}}.",
+    "responsesresultgraphheader": "תצוגה גרפית",
+    "savemychoice": "שמירת הבחירה שלי",
+    "userchoosethisoption": "משתמשים הבוחרים את האפשרות הזו",
+    "yourselection": "הבחירה שלך"
+}

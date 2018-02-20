@@ -4,9 +4,10 @@
     "eventnotecreated": "Oharra gehituta",
     "nonotes": "Oraindik ez dago mota honetako oharrik.",
     "note": "Oharra",
-    "notes": "Oharrak",
+    "notes": "Zure analisi pribatua eta oharrak",
     "personalnotes": "Ohar pertsonalak",
     "publishstate": "Testuingurua",
     "sitenotes": "Guneko oharrak",
-    "userwithid": "{{id}} IDa duen erabiltzailea"
+    "userwithid": "{{id}} IDa duen erabiltzailea",
+    "warningnotenotsent": "Ezin izan da {{course}} ikastaroan oharrak gehitu. {{error}}"
 }

@@ -1,0 +1,91 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="surveyLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshSurvey(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="surveyLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshSurvey(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="550" ng-if="prefetchStatusIcon" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content delegate-handle="mmaModSurveyScroll" mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="surveyLoaded" on-refresh="refreshSurvey(false)"></ion-refresher>
+        <mm-loading hide-until="surveyLoaded">
+            <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+            <!-- Survey already done -->
+            <section class="card padding" ng-if="survey.surveydone">
+                <p class="padding">{{ 'mma.mod_survey.surveycompletednograph' | translate }}</p>
+                <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mma.mod_survey.results' | translate }}</a>
+            </section>
+
+            <!-- Survey done in offline but not synchronized -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
+            <!-- Survey questions -->
+            <section ng-if="!survey.surveydone && !hasOffline && questions && questions.length">
+                <div ng-repeat="question in questions">
+                    <!-- Parent question (Category header) -->
+                    <div ng-if="question.multi && question.multi.length" ng-class="{'mma-mod_survey-padding-top': !$first}">
+                        <h3 class="padding-horizontal">{{ question.text }}</h3>
+                        <div class="item item-text-wrap" ng-if="isTablet">
+                            <div class="row row-no-padding row-center">
+                                <div class="col col-50">{{ 'mma.mod_survey.responses' | translate }}</div>
+                                <div class="col text-center" ng-repeat="option in question.options">
+                                    {{ option }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item item-text-wrap" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <p>{{ question.intro }}</p>
+                        </div>
+                    </div>
+                    <!-- Subquestion -->
+                    <div ng-if="question.parent !== 0" class="item item-text-wrap mm-item-padding" ng-class="{'mma-mod_survey-darkbg': $even}">
+                        <div class="row row-no-padding">
+                            <div class="col col-center" ng-class="{'col-50': isTablet, 'col-60': !isTablet}">
+                                <label id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</label>
+                            </div>
+                            <!-- Tablet view: radio buttons -->
+                            <div ng-if="isTablet" class="col col-center" ng-repeat="option in question.options track by $index">
+                                <input type="radio" class="mm-radio" name="{{question.name}}" ng-model="answers[question.name]" ng-value="$index + 1" aria-labelledby="mma-mod_survey-{{question.name}}">
+                            </div>
+                            <!-- Phone view: select -->
+                            <div ng-if="!isTablet" class="col col-40 item-select">
+                                <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="question.options.indexOf(o)+1 as o for o in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
+                                    <option class="mma-mod_survey-defaultoption" value="" disabled selected>{{ 'mm.core.choose' | translate }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Single question (don't belong to a category) -->
+                    <div ng-if="question.multi && question.multi.length == 0 && question.parent === 0">
+                        <div ng-if="question.type > 0" class="item item-text-wrap mm-item-padding" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <div class="row row-no-padding">
+                                <div class="col col-60">
+                                    <label id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</label>
+                                </div>
+                                <div class="col col-40 item-select">
+                                    <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <label ng-if="question.type === 0" class="item item-input item-stacked-label item-text-wrap mm-item-padding" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <span class="input-label" id="mma-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</span>
+                            <textarea ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
+                        </label>
+                    </div>
+                </div>
+                <div class="item">
+                    <button class="button button-block button-positive" ng-click="submit()" ng-disabled="!isValidResponse()">{{ 'mm.core.submit' | translate }}</button>
+                </div>
+            </section>
+
+        </mm-loading>
+    </ion-content>
+</ion-view>

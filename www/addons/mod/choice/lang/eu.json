@@ -1,0 +1,20 @@
+{
+    "cannotsubmit": "Barkatu, arazoa gertatu da zure aukera bidaltzean. Mesedez, saiatu berriz.",
+    "choiceoptions": "Kontsultaren aukerak",
+    "errorgetchoice": "Errorea kontsultaren datuak eskuratzean.",
+    "expired": "Barkatu, jarduera hau {{$a}}(e)an itxi zen eta dagoeneko ez dago eskuragarri.",
+    "full": "(Beteta)",
+    "noresultsviewable": "Emaitzak ezin dira orain ikusi",
+    "notopenyet": "Barkatu, baina jarduera hau ez dago erabiltzeko moduan {{$a}} arte.",
+    "numberofuser": "Erantzun-kopurua",
+    "numberofuserinpercentage": "Erantzunen portzentajea",
+    "previewonly": "Hau jarduera honetan eskuragarri dauden aukeren aurrebista besterik ez da. Ezingo duzu zure erantzuna bidali {{$a}}-(e)ra arte.",
+    "removemychoice": "Ezabatu nire aukera",
+    "responses": "Erantzunak",
+    "responsesresultgraphdescription": "Erabiltzaileen %{{number}}-ak aukera hau aukeratu zuten: {{text}}.",
+    "responsesresultgraphheader": "Erakutsi grafikoa",
+    "resultsnotsynced": "Emaitzek ez dute zure azken erantzunak barne hartzen. Mesedez, sinkronizatu datuak eguneratzeko.",
+    "savemychoice": "Gorde nire aukera",
+    "userchoosethisoption": "Aukera hau hautatu duten erabiltzaileak",
+    "yourselection": "Zure aukera"
+}

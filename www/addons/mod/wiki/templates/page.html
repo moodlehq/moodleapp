@@ -1,0 +1,23 @@
+<ion-content delegate-handle="mmaModWikiIndexScroll" padding="true" mm-state-class>
+    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="wikiLoaded" on-refresh="refreshWiki()"></ion-refresher>
+    <mm-loading hide-until="wikiLoaded">
+        <mm-course-mod-description description="description" watch="true" ng-if="mainpage" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+        <!-- Wiki has something offline. -->
+        <div class="mm-warning-card-icon" ng-if="pageIsOffline || wikiHasOffline">
+            <i class="icon ion-alert-circled padding"></i>
+            <span ng-if="pageIsOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+            <span ng-if="!pageIsOffline && wikiHasOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+        </div>
+
+        <!-- Page warning. -->
+        <div class="mm-warning-card-icon" ng-if="pageWarning">
+            <i class="icon ion-alert-circled padding"></i> {{ pageWarning }}
+        </div>
+
+        <article ng-class="{'mma-mod_wiki-noedit': !canEdit}">
+            <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}" ng-if="pageContent">{{ pageContent }}</mm-format-text>
+            <mm-empty-box ng-if="!pageContent" icon="ion-document" message="{{ 'mma.mod_wiki.nocontent' | translate }}"></mm-empty-box>
+        </article>
+    </mm-loading>
+</ion-content>

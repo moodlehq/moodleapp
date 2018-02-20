@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.courses', [])
+angular.module('mm.core.courses', ['mm.core.contentlinks', 'mm.core.sidemenu'])
 
 .constant('mmCoursesSearchComponent', 'mmCoursesSearch')
 .constant('mmCoursesSearchPerPage', 20) // Max of courses per page when searching courses.
 .constant('mmCoursesEnrolInvalidKey', 'mmCoursesEnrolInvalidKey')
 .constant('mmCoursesEventMyCoursesUpdated', 'my_courses_updated')
+.constant('mmCoursesEventMyCoursesRefreshed', 'my_courses_refreshed') // User refreshed My Courses.
+.constant('mmCoursesEventCourseOptionsInvalidated', 'course_options_invalidated') // @deprecated since 3.4
 .constant('mmCoursesAccessMethods', {
      guest: 'guest',
      default: 'default'
 })
+.constant('mmaMyCoursesSideMenuPriority', 1100)
 
 .config(function($stateProvider) {
 
@@ -58,17 +61,46 @@ angular.module('mm.core.courses', [])
                 controller: 'mmCoursesViewResultCtrl'
             }
         }
+    })
+
+    .state('site.mm_coursescategories', {
+        url: '/mm_coursescategories',
+        params: {
+            categoryid: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/courses/templates/coursecategories.html',
+                controller: 'mmCourseCategoriesCtrl'
+            }
+        }
+    })
+
+    .state('site.mm_availablecourses', {
+        url: '/mm_availablecourses',
+        views: {
+            'site': {
+                templateUrl: 'core/components/courses/templates/availablecourses.html',
+                controller: 'mmCoursesAvailableCtrl'
+            }
+        }
     });
 
 })
 
-.config(function($mmContentLinksDelegateProvider) {
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses', '$mmCoursesHandlers.linksHandler');
+.config(function($mmContentLinksDelegateProvider, $mmSideMenuDelegateProvider, mmaMyCoursesSideMenuPriority) {
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:courses', '$mmCoursesHandlers.coursesLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:course', '$mmCoursesHandlers.courseLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:dashboard', '$mmCoursesHandlers.dashboardLinksHandler');
+    // Register side menu addon.
+    $mmSideMenuDelegateProvider.registerNavHandler('mmCourses', '$mmCoursesHandlers.sideMenuNav', mmaMyCoursesSideMenuPriority);
 })
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmCoursesDelegate, $mmCourses) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmCoursesDelegate, $mmCourses,
+            mmCoreEventRemoteAddonsLoaded) {
     $mmEvents.on(mmCoreEventLogin, $mmCoursesDelegate.updateNavHandlers);
     $mmEvents.on(mmCoreEventSiteUpdated, $mmCoursesDelegate.updateNavHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmCoursesDelegate.updateNavHandlers);
     $mmEvents.on(mmCoreEventLogout, function() {
         $mmCoursesDelegate.clearCoursesHandlers();
         $mmCourses.clearCurrentCourses();

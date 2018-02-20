@@ -1,0 +1,6 @@
+<div class="item item-input item-stacked-label item-icon-right">
+    <ion-label>{{ title }}</ion-label>
+    <p class="item-text-wrap">{{ selectedOptions }}</p>
+    <input ng-if="name" type="hidden" value="{{ selectedValues }}" name="{{name}}">
+    <i class="icon ion-android-arrow-dropdown"></i>
+</div>

@@ -1,0 +1,18 @@
+{
+    "future": "Tulevat kurssit",
+    "inprogress": "Keskeneräiset kurssit",
+    "morecourses": "Lisää kursseja",
+    "next30days": "Seuraavat 30 päivää",
+    "next7days": "Seuraavat 7 päivää",
+    "nocourses": "Ei kursseja",
+    "nocoursesfuture": "Ei tulevia kursseja",
+    "nocoursesinprogress": "Ei keskeneräisiä kursseja",
+    "nocoursespast": "Ei menneitä kursseja",
+    "noevents": "Ei tulevia aktiviteettien määräaikoja",
+    "past": "Menneet kurssit",
+    "pluginname": "Kurssien yhteenveto",
+    "recentlyoverdue": "Lähiaikoina ylittyneet (määräaika)",
+    "sortbycourses": "Lajittele kurssien nimien mukaan",
+    "sortbydates": "Lajittele päivämäärien mukaan",
+    "timeline": "Aikajana"
+}

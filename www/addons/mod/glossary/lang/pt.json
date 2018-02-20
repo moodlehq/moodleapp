@@ -1,0 +1,20 @@
+{
+    "attachment": "Anexo",
+    "browsemode": "Modo de pré-visualização",
+    "byalphabet": "Alfabeticamente",
+    "byauthor": "Agrupar por autor",
+    "bycategory": "Agrupar por categoria",
+    "bynewestfirst": "Ordenar por mais recentes",
+    "byrecentlyupdated": "Recentemente atualizados",
+    "bysearch": "Pesquisar",
+    "cannoteditentry": "Não é possível editar a entrada",
+    "casesensitive": "Usar regular expressions",
+    "categories": "Categorias de disciplinas",
+    "entriestobesynced": "Entradas a ser sincronizadas",
+    "entrypendingapproval": "Este termo aguarda aprovação.",
+    "errorloadingentries": "Ocorreu um erro ao carregar os termos.",
+    "errorloadingentry": "Ocorreu um erro ao carregar o termo.",
+    "errorloadingglossary": "Ocorreu um erro ao carregar o glossário.",
+    "noentriesfound": "Não foi encontrado nenhum termo.",
+    "searchquery": "Pesquisa"
+}

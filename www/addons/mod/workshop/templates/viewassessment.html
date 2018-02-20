@@ -1,0 +1,58 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary" ng-show="evaluating">
+        <a class="button button-clear" ng-click="saveEvaluation()" aria-label="{{ 'mm.core.save' | translate }}" ng-if="evaluating"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModWorkshopAssessmentScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assessmentLoaded" on-refresh="refreshAssessment()"></ion-refresher>
+        <mm-loading hide-until="assessmentLoaded">
+            <div class="item item-heading item-text-wrap item-border item-avatar clearfix">
+                <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseId}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+                <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+                <h2 ng-if="profile.fullname">{{profile.fullname}}</h2>
+                <p ng-if="showGrade(assessment.grade)">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{assessment.grade}}</p>
+                <p ng-if="access.canviewallsubmissions && showGrade(assessment.gradinggrade)" ng-class="{'mm-has-overriden-grade': showGrade(assessment.gradinggrade)}">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}</p>
+                <p ng-if="access.canviewallsubmissions && showGrade(assessment.gradinggradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.gradinggradeover' | translate }}: {{assessment.gradinggradeover}}</p>
+                <p ng-if="assessment.weight && assessment.weight != 1">{{ 'mma.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}</p>
+                <p ng-if="!showGrade(assessment.grade)" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
+            </div>
+
+            <mma-mod-workshop-assessment-strategy ng-if="assessmentId && showGrade(assessment.grade)" workshop="workshop" access="access" assessment-id="assessmentId" user-id="profile.id" strategy="strategy"></mma-mod-workshop-assessment-strategy>
+
+            <div class="list" ng-if="evaluating">
+                <div class="item item-text-wrap">
+                    <h2>{{ 'mma.mod_workshop.assessmentsettings' | translate }}</h2>
+                </div>
+                <label class="item item-input item-stacked-label" ng-if="access.canallocate">
+                    <h2>{{ 'mma.mod_workshop.assessmentweight' | translate }}</h2>
+                    <div class="item-select item-input-wrapper">
+                        <select name="weight" ng-model="evaluate.weight" mm-ios-select-fix ng-required="true" ng-options="w as w for w in weights | orderBy:$index:true track by w" required></select>
+                    </div>
+                </label>
+                <div class="item item-text-wrap">
+                    <h2>{{ 'mma.mod_workshop.gradinggradecalculated' | translate }}</h2>
+                    <p>{{ assessment.gradinggrade }}</p>
+                </div>
+                <label class="item item-input item-stacked-label" ng-if="access.canoverridegrades">
+                    <h2> {{ 'mma.mod_workshop.gradinggradeover' | translate }}</h2>
+                    <div class="item-select item-input-wrapper">
+                        <select ng-model="evaluate.grade" mm-ios-select-fix ng-options="grade as grade.label for grade in evaluationGrades track by grade.value">
+                        </select>
+                    </div>
+                </label>
+                <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor"  ng-if="access.canoverridegrades">
+                    <ion-label>{{ 'mma.mod_workshop.feedbackreviewer' | translate }}</ion-label>
+                    <mm-rich-text-editor model="evaluate" scroll-handle="mmaModWorkshopAssessmentScroll" first-render="firstRenderFeedbackReviewer()"></mm-rich-text-editor>
+                </ion-input>
+            </div>
+            <div class="list" ng-if="!evaluating && evaluate && evaluate.text">
+                <div class="item item-text-wrap item-border item-avatar clearfix">
+                    <img ng-if="evaluateByProfile.profileimageurl" ng-src="{{evaluateByProfile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseId}}" userid="{{evaluateByProfile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: evaluateByProfile.fullname} }}" role="presentation">
+                    <img ng-if="evaluateByProfile && !evaluateByProfile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: evaluateByProfile.fullname} }}" role="presentation">
+                    <h2 ng-if="evaluateByProfile.fullname">{{ 'mma.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
+                    <mm-format-text watch="true">{{ evaluate.text }}</mm-format-text>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,8 @@
+<section class="list" ng-if="question.text || question.text === ''">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+    </div>
+    <ion-input class="item item-input" ng-class='{"mm-question-answer-correct": input.isCorrect === 1, "mm-question-answer-incorrect": input.isCorrect === 0}'>
+        <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off" ng-disabled="input.readOnly" >
+    </ion-input>
+</section>

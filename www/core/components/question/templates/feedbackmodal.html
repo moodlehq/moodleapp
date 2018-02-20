@@ -1,0 +1,9 @@
+<ion-modal-view class="mm-question-feedback-modal">
+    <ion-header-bar>
+        <h1 class="title">{{ 'mm.question.feedback' | translate }}</h1>
+        <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+    </ion-header-bar>
+    <ion-content class="mm-question-feedback-container padding">
+        <mm-format-text watch="true" class="padding" component="{{component}}" component-id="{{componentId}}">{{ currentFeedback }}</mm-format-text>
+    </ion-content>
+</ion-modal-view>

@@ -1,0 +1,19 @@
+<ion-view view-title="{{ 'mm.grades.grades' | translate }}">
+    <mm-split-view load-when="gradesLoaded" component="mmaCoursesGrades" menu-state="site.coursesgrades">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="gradesLoaded" on-refresh="refreshGrades()">
+            </ion-refresher>
+            <mm-loading hide-until="gradesLoaded">
+                <ul class="list">
+                    <li ng-repeat="grade in grades">
+                        <a class="item item-icon-right" mm-split-view-link="site.grades({courseid: grade.courseid, user: userid, forcephoneview: 1})" title="{{grade.coursefullname}}">
+                            <mm-format-text watch="true">{{grade.coursefullname}}</mm-format-text>
+                            <span class="badge badge-stable">{{grade.grade}}</span>
+                        </a>
+                    </li>
+                </ul>
+                <mm-empty-box ng-if="grades.length == 0" icon="ion-stats-bars" message="{{ 'mma.grades.nogradesreturned' | translate }}"></mm-empty-box>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

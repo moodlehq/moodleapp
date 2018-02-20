@@ -1,0 +1,29 @@
+.mm-site_mod_survey {
+  .row, .input-label {
+    font-size: $font-size-base;
+  }
+
+  .mma-mod_survey-darkbg {
+    background-color: $item-divider-bg;
+  }
+
+  .mma-mod_survey-padding-top {
+    padding-top: 20px;
+  }
+
+  textarea.mma-mod_survey-textarea {
+    height: 100px;
+    border: 1px solid $item-default-border;
+  }
+
+  select.mma-mod_survey-select {
+    background-color: transparent;
+    padding-left: 0px;
+    padding-right: $item-padding * 2;
+    max-width: 100%;
+
+    .mma-mod_survey-defaultoption {
+      display: none;
+    }
+  }
+}

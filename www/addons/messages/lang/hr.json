@@ -1,0 +1,21 @@
+{
+    "addcontact": "Dodaj kontakt",
+    "blockcontact": "Blokiraj kontakt",
+    "blocknoncontacts": "Blokiraj nepoznate korisnike",
+    "contactlistempty": "Vaš adresar je prazan",
+    "contacts": "Kontakti",
+    "message": "Tijelo poruke",
+    "messagepreferences": "Postavke za poruke",
+    "messages": "Poruke",
+    "newmessage": "Nova poruka",
+    "newmessages": "Nove poruke",
+    "nomessages": "Nema poruka (još)",
+    "nousersfound": "Nema korisnika",
+    "removecontact": "Ukloni kontakt",
+    "send": "Pošalji",
+    "sendmessage": "Slanje poruke",
+    "type_offline": "Offline",
+    "type_online": "Online",
+    "type_strangers": "Ostali",
+    "unblockcontact": "Odblokiraj osobu (kontakt)"
+}

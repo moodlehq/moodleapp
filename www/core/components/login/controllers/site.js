@@ -21,26 +21,11 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate, $ionicHistory, $mmApp,
-        $ionicModal, $mmLoginHelper) {
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp, $ionicModal, $ionicPopup,
+        $mmLoginHelper, $q, mmCoreConfigConstants) {
 
-    $scope.siteurl = '';
-    $scope.isInvalidUrl = true;
-
-    $scope.validate = function(url) {
-        if (!url) {
-            $scope.isInvalidUrl = true;
-            return;
-        }
-
-        if ($mmSitesManager.getDemoSiteData(url)) {
-            // Is demo site.
-            $scope.isInvalidUrl = false;
-        } else {
-            // formatURL adds the protocol if is missing.
-            var formattedurl = $mmUtil.formatURL(url);
-            $scope.isInvalidUrl = formattedurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(formattedurl);
-        }
+    $scope.loginData = {
+        siteurl: ''
     };
 
     $scope.connect = function(url) {
@@ -52,13 +37,18 @@ angular.module('mm.core.login')
             return;
         }
 
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mm.core.networkerrormsg', true);
+            return;
+        }
+
         var modal = $mmUtil.showModalLoading(),
             sitedata = $mmSitesManager.getDemoSiteData(url);
 
         if (sitedata) {
             // It's a demo site.
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {
-                $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
+                $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function() {
                     $ionicHistory.nextViewOptions({disableBack: true});
                     return $mmLoginHelper.goToSiteInitialPage();
                 }, function(error) {
@@ -68,7 +58,7 @@ angular.module('mm.core.login')
                 });
             }, function(error) {
                 modal.dismiss();
-                $mmUtil.showErrorModal(error);
+                $mmLoginHelper.treatUserTokenError(sitedata.url, error);
             });
 
         } else {
@@ -81,25 +71,48 @@ angular.module('mm.core.login')
 
                 if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
                     // SSO. User needs to authenticate in a browser.
-                    $mmUtil.showConfirm($translate('mm.login.logininsiterequired')).then(function() {
-                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
-                    });
+                    $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                                result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                 } else {
-                    $state.go('mm_login.credentials', {siteurl: result.siteurl});
+                    $state.go('mm_login.credentials', {siteurl: result.siteurl, siteconfig: result.config});
                 }
-
             }, function(error) {
-                $mmUtil.showErrorModal(error);
+                showLoginIssue(url, error);
             }).finally(function() {
                 modal.dismiss();
             });
         }
     };
 
+    // Load fixed sites if they're set.
+    if ($mmLoginHelper.hasSeveralFixedSites()) {
+        $scope.fixedSites = $mmLoginHelper.getFixedSites();
+        $scope.loginData.siteurl = $scope.fixedSites[0].url;
+        $scope.displayAsButtons = mmCoreConfigConstants.multisitesdisplay == 'buttons';
+    }
+
     // Get docs URL for help modal.
     $mmUtil.getDocsUrl().then(function(docsurl) {
         $scope.docsurl = docsurl;
     });
+
+    // Show an error that aims people to solve the issue.
+    function showLoginIssue(siteurl, issue) {
+        $scope.loginData.siteurl = siteurl;
+        $scope.issue = issue;
+        var popup = $ionicPopup.show({
+            templateUrl:  'core/components/login/templates/login-issue.html',
+            scope: $scope,
+            cssClass: 'mm-nohead mm-bigpopup'
+        });
+
+        $scope.closePopup = function() {
+            popup.close();
+        };
+        return popup.then(function() {
+            return $q.reject();
+        });
+    }
 
     // Setup help modal.
     $ionicModal.fromTemplateUrl('core/components/login/templates/help-modal.html', {
