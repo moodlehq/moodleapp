@@ -13,14 +13,20 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreSiteAddonsCallWSDirective } from './call-ws';
+import { CoreSiteAddonsCallWSNewContentDirective } from './call-ws-new-content';
 import { CoreSiteAddonsNewContentDirective } from './new-content';
 
 @NgModule({
     declarations: [
+        CoreSiteAddonsCallWSDirective,
+        CoreSiteAddonsCallWSNewContentDirective,
         CoreSiteAddonsNewContentDirective
     ],
     imports: [],
     exports: [
+        CoreSiteAddonsCallWSDirective,
+        CoreSiteAddonsCallWSNewContentDirective,
         CoreSiteAddonsNewContentDirective
     ]
 })

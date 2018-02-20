@@ -15,6 +15,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
 import { CoreSiteAddonsProvider } from '../../providers/siteaddons';
+import { Subject } from 'rxjs';
 
 /**
  * Component to render a site addon content.
@@ -32,20 +33,21 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
 
     content: string; // Content.
     javascript: string; // Javascript to execute.
+    otherData: any; // Other data of the content.
     dataLoaded: boolean;
+    invalidateObservable: Subject<void>; // An observable to notify observers when to invalidate data.
 
     constructor(protected domUtils: CoreDomUtilsProvider, protected siteAddonsProvider: CoreSiteAddonsProvider) {
         this.onContentLoaded = new EventEmitter();
         this.onLoadingContent = new EventEmitter();
+        this.invalidateObservable = new Subject<void>();
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.fetchContent().finally(() => {
-            this.dataLoaded = true;
-        });
+        this.fetchContent();
     }
 
     /**
@@ -60,17 +62,28 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
         return this.siteAddonsProvider.getContent(this.component, this.method, this.args).then((result) => {
             this.content = result.html;
             this.javascript = result.javascript;
+            this.otherData = result.otherdata;
 
             this.onContentLoaded.emit(refresh);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+        }).finally(() => {
+            this.dataLoaded = true;
         });
     }
 
     /**
      * Refresh the data.
+     *
+     * @param {boolean} [showSpinner] Whether to show spinner while refreshing.
      */
-    refreshData(): Promise<any> {
+    refreshData(showSpinner?: boolean): Promise<any> {
+        if (showSpinner) {
+            this.dataLoaded = false;
+        }
+
+        this.invalidateObservable.next(); // Notify observers.
+
         return this.siteAddonsProvider.invalidateContent(this.component, this.method, this.args).finally(() => {
             return this.fetchContent(true);
         });
@@ -89,8 +102,6 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
         this.args = args;
         this.dataLoaded = false;
 
-        this.fetchContent().finally(() => {
-            this.dataLoaded = true;
-        });
+        this.fetchContent();
     }
 }

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Platform } from 'ionic-angular';
+import { CoreAppProvider } from '../../../providers/app';
 import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSite, CoreSiteWSPreSets } from '../../../classes/site';
@@ -80,8 +82,56 @@ export class CoreSiteAddonsProvider {
     protected moduleSiteAddons: {[modName: string]: CoreSiteAddonsModuleHandler} = {};
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private langProvider: CoreLangProvider) {
+            private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform) {
         this.logger = logger.getInstance('CoreUserProvider');
+    }
+
+    /**
+     * Add some params that will always be sent for get content.
+     *
+     * @param {any} args Original params.
+     * @param {CoreSite} [site] Site. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the new params.
+     */
+    protected addDefaultArgs(args: any, site?: CoreSite): Promise<any> {
+        args = args || {};
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return this.langProvider.getCurrentLanguage().then((lang) => {
+
+            // Clone the object so the original one isn't modified.
+            const argsToSend = this.utils.clone(args);
+
+            argsToSend.userid = args.userid || site.getUserId();
+            argsToSend.appid = CoreConfigConstants.app_id;
+            argsToSend.appversioncode = CoreConfigConstants.versioncode;
+            argsToSend.appversionname = CoreConfigConstants.versionname;
+            argsToSend.applang = lang;
+            argsToSend.appcustomurlscheme = CoreConfigConstants.customurlscheme;
+            argsToSend.appisdesktop = this.appProvider.isDesktop();
+            argsToSend.appismobile = this.appProvider.isMobile();
+            argsToSend.appiswide = this.appProvider.isWide();
+
+            if (argsToSend.appisdevice) {
+                if (this.platform.is('ios')) {
+                    argsToSend.appplatform = 'ios';
+                } else {
+                    argsToSend.appplatform = 'android';
+                }
+            } else if (argsToSend.appisdesktop) {
+                if (this.appProvider.isMac()) {
+                    argsToSend.appplatform = 'mac';
+                } else if (this.appProvider.isLinux()) {
+                    argsToSend.appplatform = 'linux';
+                } else {
+                    argsToSend.appplatform = 'windows';
+                }
+            } else {
+                argsToSend.appplatform = 'browser';
+            }
+
+            return argsToSend;
+        });
     }
 
     /**
@@ -120,7 +170,7 @@ export class CoreSiteAddonsProvider {
      * @return {string} Cache key.
      */
     protected getCallWSCommonCacheKey(method: string): string {
-        return this.ROOT_CACHE_KEY + method;
+        return this.ROOT_CACHE_KEY + 'ws:' + method;
     }
 
     /**
@@ -136,15 +186,9 @@ export class CoreSiteAddonsProvider {
         this.logger.debug(`Get content for component '${component}' and method '${method}'`);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            // Get current language to be added to params.
-            return this.langProvider.getCurrentLanguage().then((lang) => {
-                // Add some params that will always be sent. Clone the object so the original one isn't modified.
-                const argsToSend = this.utils.clone(args);
-                argsToSend.userid = args.userid || site.getUserId();
-                argsToSend.appid = CoreConfigConstants.app_id;
-                argsToSend.versionname = CoreConfigConstants.versionname;
-                argsToSend.lang = lang;
 
+            // Add some params that will always be sent.
+            return this.addDefaultArgs(args, site).then((argsToSend) => {
                 // Now call the WS.
                 const data = {
                         component: component,
@@ -209,12 +253,13 @@ export class CoreSiteAddonsProvider {
      *
      * @param {string} method WS method to use.
      * @param {any} data Data to send to the WS.
+     * @param {CoreSiteWSPreSets} [preSets] Extra options.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
-    invalidateCallWS(method: string, data: any, siteId?: string): Promise<any> {
+    invalidateCallWS(method: string, data: any, preSets?: CoreSiteWSPreSets, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getCallWSCacheKey(method, data));
+            return site.invalidateWsCacheForKey(preSets.cacheKey || this.getCallWSCacheKey(method, data));
         });
     }
 
@@ -242,6 +287,44 @@ export class CoreSiteAddonsProvider {
         site = site || this.sitesProvider.getCurrentSite();
 
         return site.wsAvailable('tool_mobile_get_content');
+    }
+
+    /**
+     * Load other data into args as determined by useOtherData list.
+     * If useOtherData is undefined, it won't add any data.
+     * If useOtherData is defined but empty (null, false or empty string) it will copy all the data from otherData to args.
+     * If useOtherData is an array, it will only copy the properties whose names are in the array.
+     *
+     * @param {any} args The current args.
+     * @param {any} otherData All the other data.
+     * @param {any[]} useOtherData Names of the attributes to include.
+     * @return {any} New args.
+     */
+    loadOtherDataInArgs(args: any, otherData: any, useOtherData: any[]): any {
+        if (!args) {
+            args = {};
+        } else {
+            args = this.utils.clone(args);
+        }
+
+        otherData = otherData || {};
+
+        if (typeof useOtherData == 'undefined') {
+            // No need to add other data, return args as they are.
+            return args;
+        } else if (!useOtherData) {
+            // Use other data is defined but empty. Add all the data to args.
+            for (const name in otherData) {
+                args[name] = otherData[name];
+            }
+        } else {
+            for (const i in useOtherData) {
+                const name = useOtherData[i];
+                args[name] = otherData[name];
+            }
+        }
+
+        return args;
     }
 
     /**
