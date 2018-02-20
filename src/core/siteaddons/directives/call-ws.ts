@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, Input, ElementRef, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreSiteAddonsProvider } from '../providers/siteaddons';
-import { CoreSiteAddonsCallWSBaseDirective } from '../classes/call-ws-directive';
+import { CoreSiteAddonsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
 import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content/addon-content';
 
 /**
@@ -27,7 +27,7 @@ import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content
  *
  * If you want to load a new content when the WS call is done, @see CoreSiteAddonsCallWSNewContentDirective.
  *
- * @see CoreSiteAddonsCallWSBaseDirective.
+ * @see CoreSiteAddonsCallWSOnClickBaseDirective.
  *
  * Example usages:
  *
@@ -49,12 +49,10 @@ import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content
 @Directive({
     selector: '[core-site-addons-call-ws]'
 })
-export class CoreSiteAddonsCallWSDirective extends CoreSiteAddonsCallWSBaseDirective {
+export class CoreSiteAddonsCallWSDirective extends CoreSiteAddonsCallWSOnClickBaseDirective {
     @Input() successMessage: string; // Message to show on success. If not supplied, no message. If empty, default message.
     @Input() goBackOnSuccess: boolean | string; // Whether to go back if the WS call is successful.
     @Input() refreshOnSuccess: boolean | string; // Whether to refresh the current view if the WS call is successful.
-
-    protected element: HTMLElement;
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             siteAddonsProvider: CoreSiteAddonsProvider, @Optional() parentContent: CoreSiteAddonsAddonContentComponent,

@@ -15,18 +15,21 @@
 import { NgModule } from '@angular/core';
 import { CoreSiteAddonsCallWSDirective } from './call-ws';
 import { CoreSiteAddonsCallWSNewContentDirective } from './call-ws-new-content';
+import { CoreSiteAddonsCallWSOnLoadDirective } from './call-ws-on-load';
 import { CoreSiteAddonsNewContentDirective } from './new-content';
 
 @NgModule({
     declarations: [
         CoreSiteAddonsCallWSDirective,
         CoreSiteAddonsCallWSNewContentDirective,
+        CoreSiteAddonsCallWSOnLoadDirective,
         CoreSiteAddonsNewContentDirective
     ],
     imports: [],
     exports: [
         CoreSiteAddonsCallWSDirective,
         CoreSiteAddonsCallWSNewContentDirective,
+        CoreSiteAddonsCallWSOnLoadDirective,
         CoreSiteAddonsNewContentDirective
     ]
 })

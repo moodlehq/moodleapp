@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, Input, ElementRef, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreSiteAddonsProvider } from '../providers/siteaddons';
-import { CoreSiteAddonsCallWSBaseDirective } from '../classes/call-ws-directive';
+import { CoreSiteAddonsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
 import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content/addon-content';
 
 /**
@@ -27,7 +27,7 @@ import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content
  *
  * If you don't need to load some new content when done, @see CoreSiteAddonsCallWSDirective.
  *
- * @see CoreSiteAddonsCallWSBaseDirective.
+ * @see CoreSiteAddonsCallWSOnClickBaseDirective.
  *
  * Example usages:
  *
@@ -52,15 +52,13 @@ import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content
 @Directive({
     selector: '[core-site-addons-call-ws-new-content]'
 })
-export class CoreSiteAddonsCallWSNewContentDirective extends CoreSiteAddonsCallWSBaseDirective {
+export class CoreSiteAddonsCallWSNewContentDirective extends CoreSiteAddonsCallWSOnClickBaseDirective {
     @Input() component: string; // The component of the new content.
     @Input() method: string; // The method to get the new content.
     @Input() args: any; // The params to get the new content.
     @Input() title: string; // The title to display with the new content. Only if samePage=false.
     @Input() samePage: boolean | string; // Whether to display the content in same page or open a new one. Defaults to new page.
     @Input() useOtherData: any[]; // Whether to include other data in the args. @see CoreSiteAddonsProvider.loadOtherDataInArgs.
-
-    protected element: HTMLElement;
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             siteAddonsProvider: CoreSiteAddonsProvider, @Optional() parentContent: CoreSiteAddonsAddonContentComponent,

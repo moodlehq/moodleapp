@@ -20,15 +20,12 @@ import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content
 import { Subscription } from 'rxjs';
 
 /**
- * Base class for directives to call a WS when the element is clicked.
- *
- * The directives that inherit from this class will call a WS method when the element is clicked.
+ * Base class for directives that need to call a WS.
  */
 export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
     @Input() name: string; // The name of the WS to call.
     @Input() params: any; // The params for the WS call.
     @Input() preSets: any; // The preSets for the WS call.
-    @Input() confirmMessage: string; // Message to confirm the action. If not supplied, no confirmation. If empty, default message.
     @Input() useOtherDataForWS: any[]; // Whether to include other data in the params for the WS.
                                        // @see CoreSiteAddonsProvider.loadOtherDataInArgs.
     @Input() form: string; // ID or name to identify a form. The form will be obtained from document.forms.
@@ -46,22 +43,6 @@ export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.element.addEventListener('click', (ev: Event): void => {
-            ev.preventDefault();
-            ev.stopPropagation();
-
-            if (typeof this.confirmMessage != 'undefined') {
-                // Ask for confirm.
-                this.domUtils.showConfirm(this.confirmMessage || this.translate.instant('core.areyousure')).then(() => {
-                    this.callWS();
-                }).catch(() => {
-                    // User cancelled, ignore.
-                });
-            } else {
-                this.callWS();
-            }
-        });
-
         if (this.parentContent && this.parentContent.invalidateObservable) {
             this.invalidateObserver = this.parentContent.invalidateObservable.subscribe(() => {
                 this.invalidate();
@@ -75,15 +56,12 @@ export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected callWS(): Promise<any> {
-        const modal = this.domUtils.showModalLoading(),
-            params = this.getParamsForWS();
+        const params = this.getParamsForWS();
 
         return this.siteAddonsProvider.callWS(this.name, params, this.preSets).then((result) => {
             return this.wsCallSuccess(result);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.serverconnection', true);
-        }).finally(() => {
-            modal.dismiss();
         });
     }
 
