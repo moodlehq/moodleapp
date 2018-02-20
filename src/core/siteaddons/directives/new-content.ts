@@ -14,6 +14,7 @@
 
 import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreSiteAddonsProvider } from '../providers/siteaddons';
 import { CoreSiteAddonsAddonContentComponent } from '../components/addon-content/addon-content';
@@ -48,11 +49,13 @@ export class CoreSiteAddonsNewContentDirective implements OnInit {
     @Input() title: string; // The title to display with the new content. Only if samePage=false.
     @Input() samePage: boolean | string; // Whether to display the content in same page or open a new one. Defaults to new page.
     @Input() useOtherData: any[]; // Whether to include other data in the args. @see CoreSiteAddonsProvider.loadOtherDataInArgs.
+    @Input() form: string; // ID or name to identify a form. The form will be obtained from document.forms.
+                           // If supplied and form is found, the form data will be retrieved and sent to the new content.
 
     protected element: HTMLElement;
 
     constructor(element: ElementRef, protected utils: CoreUtilsProvider, protected navCtrl: NavController,
-            @Optional() protected parentContent: CoreSiteAddonsAddonContentComponent,
+            @Optional() protected parentContent: CoreSiteAddonsAddonContentComponent, protected domUtils: CoreDomUtilsProvider,
             protected siteAddonsProvider: CoreSiteAddonsProvider) {
         this.element = element.nativeElement || element;
     }
@@ -65,10 +68,14 @@ export class CoreSiteAddonsNewContentDirective implements OnInit {
             ev.preventDefault();
             ev.stopPropagation();
 
-            let args = this.args;
+            let args = this.args || {};
 
             if (this.parentContent) {
                 args = this.siteAddonsProvider.loadOtherDataInArgs(this.args, this.parentContent.otherData, this.useOtherData);
+            }
+
+            if (this.form && document.forms[this.form]) {
+                args = Object.assign(args, this.domUtils.getDataFromForm(document.forms[this.form]));
             }
 
             if (this.utils.isTrueOrOne(this.samePage)) {

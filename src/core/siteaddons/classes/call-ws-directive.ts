@@ -31,6 +31,8 @@ export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
     @Input() confirmMessage: string; // Message to confirm the action. If not supplied, no confirmation. If empty, default message.
     @Input() useOtherDataForWS: any[]; // Whether to include other data in the params for the WS.
                                        // @see CoreSiteAddonsProvider.loadOtherDataInArgs.
+    @Input() form: string; // ID or name to identify a form. The form will be obtained from document.forms.
+                           // If supplied and form is found, the form data will be retrieved and sent to the WS.
 
     protected element: HTMLElement;
     protected invalidateObserver: Subscription;
@@ -73,13 +75,8 @@ export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected callWS(): Promise<any> {
-        const modal = this.domUtils.showModalLoading();
-
-        let params = this.params;
-
-        if (this.parentContent) {
-            params = this.siteAddonsProvider.loadOtherDataInArgs(params, this.parentContent.otherData, this.useOtherDataForWS);
-        }
+        const modal = this.domUtils.showModalLoading(),
+            params = this.getParamsForWS();
 
         return this.siteAddonsProvider.callWS(this.name, params, this.preSets).then((result) => {
             return this.wsCallSuccess(result);
@@ -88,6 +85,25 @@ export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
         }).finally(() => {
             modal.dismiss();
         });
+    }
+
+    /**
+     * Get the params for the WS call.
+     *
+     * @return {any} Params.
+     */
+    protected getParamsForWS(): any {
+        let params = this.params || {};
+
+        if (this.parentContent) {
+            params = this.siteAddonsProvider.loadOtherDataInArgs(params, this.parentContent.otherData, this.useOtherDataForWS);
+        }
+
+        if (this.form && document.forms[this.form]) {
+            params = Object.assign(params, this.domUtils.getDataFromForm(document.forms[this.form]));
+        }
+
+        return params;
     }
 
     /**
@@ -105,11 +121,7 @@ export class CoreSiteAddonsCallWSBaseDirective implements OnInit, OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     invalidate(): Promise<any> {
-        let params = this.params;
-
-        if (this.parentContent) {
-            params = this.siteAddonsProvider.loadOtherDataInArgs(params, this.parentContent.otherData, this.useOtherDataForWS);
-        }
+        const params = this.getParamsForWS();
 
         return this.siteAddonsProvider.invalidateCallWS(this.name, params, this.preSets);
     }
