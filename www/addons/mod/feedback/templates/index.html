@@ -96,8 +96,10 @@
                     </div>
                     <div class="list" ng-if="items && items.length">
                         <div ng-repeat="item in items track by $index" class="item item-text-wrap">
-                            <p class="item-heading">{{item.number}}. {{ item.name }}</p>
-                            <p>{{ item.label }}</p>
+                            <p class="item-heading">{{item.number}}.
+                                <mm-format-text watch="true">{{ item.name }}</mm-format-text>
+                            </p>
+                            <p><mm-format-text watch="true">{{ item.label }}</mm-format-text></p>
                             <div ng-if="item.template" ng-include="item.template"></div>
                         </div>
 
