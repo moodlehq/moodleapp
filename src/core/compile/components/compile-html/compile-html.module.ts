@@ -13,22 +13,18 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSiteAddonsProvider } from './providers/siteaddons';
-import { CoreSiteAddonsHelperProvider } from './providers/helper';
-import { CoreSiteAddonsComponentsModule } from './components/components.module';
-
-// List of providers.
-export const CORE_SITEADDONS_PROVIDERS = [
-    CoreSiteAddonsProvider,
-    CoreSiteAddonsHelperProvider
-];
+import { CommonModule } from '@angular/common';
+import { CoreCompileHtmlComponent } from './compile-html';
 
 @NgModule({
     declarations: [
+        CoreCompileHtmlComponent
     ],
     imports: [
-        CoreSiteAddonsComponentsModule
+        CommonModule
     ],
-    providers: CORE_SITEADDONS_PROVIDERS
+    exports: [
+        CoreCompileHtmlComponent
+    ]
 })
-export class CoreSiteAddonsModule { }
+export class CoreCompileHtmlComponentModule {}

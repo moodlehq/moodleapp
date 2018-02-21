@@ -37,6 +37,7 @@ export class CoreSiteAddonsModuleIndexComponent implements OnInit, OnDestroy, Co
     component: string;
     method: string;
     args: any;
+    bootstrapResult: any;
 
     // Data for context menu.
     externalUrl: string;
@@ -60,7 +61,7 @@ export class CoreSiteAddonsModuleIndexComponent implements OnInit, OnDestroy, Co
         this.refreshIcon = 'spinner';
 
         if (this.module) {
-            const handler = this.siteAddonsProvider.getModuleSiteAddonHandler(this.module.modname);
+            const handler = this.siteAddonsProvider.getSiteAddonHandler(this.module.modname);
             if (handler) {
                 this.component = handler.addon.component;
                 this.method = handler.handlerSchema.method;
@@ -68,6 +69,7 @@ export class CoreSiteAddonsModuleIndexComponent implements OnInit, OnDestroy, Co
                     courseid: this.courseId,
                     cmid: this.module.id
                 };
+                this.bootstrapResult = handler.bootstrapResult;
             }
 
             // Get the data for the context menu.

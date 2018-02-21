@@ -91,7 +91,8 @@ export class CoreSiteAddonsCallWSNewContentDirective extends CoreSiteAddonsCallW
                 title: this.title,
                 component: this.component,
                 method: this.method,
-                args: args
+                args: args,
+                bootstrapResult: this.parentContent && this.parentContent.bootstrapResult
             });
         }
     }

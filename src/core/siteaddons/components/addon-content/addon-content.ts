@@ -28,6 +28,7 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
+    @Input() bootstrapResult: any; // Result of the bootstrap JS of the handler.
     @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
     @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 

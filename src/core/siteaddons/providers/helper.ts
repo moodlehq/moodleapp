@@ -18,16 +18,18 @@ import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSite } from '../../../classes/site';
 import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreMainMenuDelegate, CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/mainmenu/providers/delegate';
+import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreMainMenuDelegate, CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../mainmenu/providers/delegate';
 import {
     CoreCourseModuleDelegate, CoreCourseModuleHandler, CoreCourseModuleHandlerData
-} from '../../../core/course/providers/module-delegate';
-import { CoreCourseModulePrefetchDelegate } from '../../../core/course/providers/module-prefetch-delegate';
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../../core/user/providers/user-delegate';
+} from '../../course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '../../course/providers/module-prefetch-delegate';
+import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../user/providers/user-delegate';
 import { CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreSiteAddonsModuleIndexComponent } from '../components/module-index/module-index';
 import { CoreSiteAddonsProvider } from './siteaddons';
 import { CoreSiteAddonsModulePrefetchHandler } from '../classes/module-prefetch-handler';
+import { CoreCompileProvider } from '../../compile/providers/compile';
 
 /**
  * Helper service to provide functionalities regarding site addons. It basically has the features to load and register site
@@ -42,8 +44,40 @@ export class CoreSiteAddonsHelperProvider {
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,  private injector: Injector,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
-            private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+            private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
+    }
+
+    /**
+     * Bootstrap a handler if it has some bootstrap JS.
+     *
+     * @param {any} addon Data of the addon.
+     * @param {string} handlerName Name of the handler in the addon.
+     * @param {any} handlerSchema Data about the handler.
+     * @return {Promise<any>} Promise resolved when done. The resolve param is the result of the javascript execution (if any).
+     */
+    protected bootstrapHandler(addon: any, handlerName: string, handlerSchema: any): Promise<any> {
+        if (!handlerSchema.bootstrap) {
+            return Promise.resolve();
+        }
+
+        const siteId = this.sitesProvider.getCurrentSiteId(),
+            preSets = {getFromCache: false}; // Try to ignore cache.
+
+        return this.siteAddonsProvider.getContent(addon.component, handlerSchema.bootstrap, {}, preSets).then((result) => {
+            if (!result.javascript || this.sitesProvider.getCurrentSiteId() != siteId) {
+                // No javascript or site has changed, stop.
+                return;
+            }
+
+            // Create a "fake" instance to hold all the libraries.
+            const instance = {};
+            this.compileProvider.injectLibraries(instance);
+
+            // Now execute the javascript using this instance.
+            return this.compileProvider.executeJavascript(instance, result.javascript);
+        });
     }
 
     /**
@@ -87,17 +121,6 @@ export class CoreSiteAddonsHelperProvider {
     }
 
     /**
-     * Get the unique name of a handler (addon + handler).
-     *
-     * @param {any} addon Data of the addon.
-     * @param {string} handlerName Name of the handler inside the addon.
-     * @return {string} Unique name.
-     */
-    protected getHandlerUniqueName(addon: any, handlerName: string): string {
-        return addon.addon + '_' + handlerName;
-    }
-
-    /**
      * Check if a certain addon is a site addon and it's enabled in a certain site.
      *
      * @param {any} addon Data of the addon.
@@ -134,7 +157,7 @@ export class CoreSiteAddonsHelperProvider {
         }
 
         for (const lang in handlerSchema.lang) {
-            const prefix = this.getHandlerPrefixForStrings(this.getHandlerUniqueName(addon, handlerName));
+            const prefix = this.getHandlerPrefixForStrings(this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName));
 
             this.langProvider.addSiteAddonsStrings(lang, handlerSchema.lang[lang], prefix);
         }
@@ -144,8 +167,11 @@ export class CoreSiteAddonsHelperProvider {
      * Load a site addon.
      *
      * @param {any} addon Data of the addon.
+     * @return {Promise<any>} Promise resolved when loaded.
      */
-    loadSiteAddon(addon: any): void {
+    loadSiteAddon(addon: any): Promise<any> {
+        const promises = [];
+
         try {
             if (!addon.parsedHandlers) {
                 addon.parsedHandlers = JSON.parse(addon.handlers);
@@ -153,11 +179,13 @@ export class CoreSiteAddonsHelperProvider {
 
             // Register all the handlers.
             for (const name in addon.parsedHandlers) {
-                this.registerHandler(addon, name, addon.parsedHandlers[name]);
+                promises.push(this.registerHandler(addon, name, addon.parsedHandlers[name]));
             }
         } catch (ex) {
             this.logger.warn('Error parsing site addon', ex);
         }
+
+        return this.utils.allPromises(promises);
     }
 
     /**
@@ -166,26 +194,42 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
+     * @return {Promise<any>} Promise resolved when done.
      */
-    registerHandler(addon: any, handlerName: string, handlerSchema: any): void {
+    registerHandler(addon: any, handlerName: string, handlerSchema: any): Promise<any> {
         this.loadHandlerLangStrings(addon, handlerName, handlerSchema);
 
-        switch (handlerSchema.delegate) {
-            case 'CoreMainMenuDelegate':
-                this.registerMainMenuHandler(addon, handlerName, handlerSchema);
-                break;
+        // Wait for the bootstrap JS to be executed.
+        return this.bootstrapHandler(addon, handlerName, handlerSchema).then((result) => {
+            let uniqueName;
 
-            case 'CoreCourseModuleDelegate':
-                this.registerModuleHandler(addon, handlerName, handlerSchema);
-                break;
+            switch (handlerSchema.delegate) {
+                case 'CoreMainMenuDelegate':
+                    uniqueName = this.registerMainMenuHandler(addon, handlerName, handlerSchema, result);
+                    break;
 
-            case 'CoreUserDelegate':
-                this.registerUserProfileHandler(addon, handlerName, handlerSchema);
-                break;
+                case 'CoreCourseModuleDelegate':
+                    uniqueName = this.registerModuleHandler(addon, handlerName, handlerSchema, result);
+                    break;
 
-            default:
-                // Nothing to do.
-        }
+                case 'CoreUserDelegate':
+                    uniqueName = this.registerUserProfileHandler(addon, handlerName, handlerSchema, result);
+                    break;
+
+                default:
+                    // Nothing to do.
+            }
+
+            if (uniqueName) {
+                // Store the handler data.
+                this.siteAddonsProvider.setSiteAddonHandler(uniqueName, {
+                    addon: addon,
+                    handlerName: handlerName,
+                    handlerSchema: handlerSchema,
+                    bootstrapResult: result
+                });
+            }
+        });
     }
 
     /**
@@ -194,15 +238,18 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
+     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @return {string} A string to identify the handler.
      */
-    protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any): void {
+    protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
         }
 
         // Create the base handler.
-        const baseHandler = this.getBaseHandler(this.getHandlerUniqueName(addon, handlerName)),
+        const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
+            baseHandler = this.getBaseHandler(uniqueName),
             prefixedTitle = this.getHandlerPrefixedString(baseHandler.name, handlerSchema.displaydata.title);
         let mainMenuHandler: CoreMainMenuHandler;
 
@@ -219,12 +266,15 @@ export class CoreSiteAddonsHelperProvider {
                         title: prefixedTitle,
                         component: addon.component,
                         method: handlerSchema.method,
+                        bootstrapResult: bootstrapResult
                     }
                 };
             }
         });
 
         this.mainMenuDelegate.registerHandler(mainMenuHandler);
+
+        return uniqueName;
     }
 
     /**
@@ -233,8 +283,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
+     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any): void {
+    protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -243,15 +295,9 @@ export class CoreSiteAddonsHelperProvider {
         // Create the base handler.
         const modName = addon.component.replace('mod_', ''),
             baseHandler = this.getBaseHandler(modName),
-            hasOfflineFunctions = !!(handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length);
+            hasOfflineFunctions = !!(handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length),
+            showDowloadButton = handlerSchema.downloadbutton;
         let moduleHandler: CoreCourseModuleHandler;
-
-        // Store the handler data.
-        this.siteAddonsProvider.setModuleSiteAddonHandler(modName, {
-            addon: addon,
-            handlerName: handlerName,
-            handlerSchema: handlerSchema
-        });
 
         // Extend the base handler, adding the properties required by the delegate.
         moduleHandler = Object.assign(baseHandler, {
@@ -260,7 +306,7 @@ export class CoreSiteAddonsHelperProvider {
                     title: module.name,
                     icon: handlerSchema.displaydata.icon,
                     class: handlerSchema.displaydata.class,
-                    showDownloadButton: hasOfflineFunctions,
+                    showDownloadButton: typeof showDowloadButton != 'undefined' ? showDowloadButton : hasOfflineFunctions,
                     action: (event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -285,6 +331,8 @@ export class CoreSiteAddonsHelperProvider {
         }
 
         this.moduleDelegate.registerHandler(moduleHandler);
+
+        return modName;
     }
 
     /**
@@ -293,15 +341,18 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
+     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @return {string} A string to identify the handler.
      */
-    protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any): void {
+    protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
         }
 
         // Create the base handler.
-        const baseHandler = this.getBaseHandler(this.getHandlerUniqueName(addon, handlerName)),
+        const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
+            baseHandler = this.getBaseHandler(uniqueName),
             prefixedTitle = this.getHandlerPrefixedString(baseHandler.name, handlerSchema.displaydata.title);
         let userHandler: CoreUserProfileHandler;
 
@@ -332,7 +383,8 @@ export class CoreSiteAddonsHelperProvider {
                             args: {
                                 courseid: courseId,
                                 userid: user.id
-                            }
+                            },
+                            bootstrapResult: bootstrapResult
                         });
                     }
                 };
@@ -340,5 +392,7 @@ export class CoreSiteAddonsHelperProvider {
         });
 
         this.userDelegate.registerHandler(userHandler);
+
+        return uniqueName;
     }
 }

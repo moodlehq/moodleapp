@@ -17,6 +17,7 @@ import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
 import { CoreSiteWSPreSets } from '../classes/site';
+import { CoreUtilsProvider } from './utils/utils';
 import { CoreSiteAddonsProvider } from '../core/siteaddons/providers/siteaddons';
 import { CoreSiteAddonsHelperProvider } from '../core/siteaddons/providers/helper';
 
@@ -29,7 +30,8 @@ export class CoreAddonManagerProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-            private siteAddonsProvider: CoreSiteAddonsProvider, private siteAddonsHelperProvider: CoreSiteAddonsHelperProvider) {
+            private siteAddonsProvider: CoreSiteAddonsProvider, private siteAddonsHelperProvider: CoreSiteAddonsHelperProvider,
+            private utils: CoreUtilsProvider) {
         logger = logger.getInstance('CoreAddonManagerProvider');
 
         // Fetch the addons on login.
@@ -39,9 +41,10 @@ export class CoreAddonManagerProvider {
                 // Addons fetched, check that site hasn't changed.
                 if (siteId == this.sitesProvider.getCurrentSiteId() && addons.length) {
                     // Site is still the same. Load the addons and trigger the event.
-                    this.loadSiteAddons(addons);
+                    this.loadSiteAddons(addons).then(() => {
+                        eventsProvider.trigger(CoreEventsProvider.SITE_ADDONS_LOADED, {}, siteId);
+                    });
 
-                    eventsProvider.trigger(CoreEventsProvider.SITE_ADDONS_LOADED, {}, siteId);
                 }
             });
         });
@@ -85,10 +88,15 @@ export class CoreAddonManagerProvider {
      * Load site addons.
      *
      * @param {any[]} addons The addons to load.
+     * @return {Promise<any>} Promise resolved when loaded.
      */
-    loadSiteAddons(addons: any[]): void {
+    loadSiteAddons(addons: any[]): Promise<any> {
+        const promises = [];
+
         addons.forEach((addon) => {
-            this.siteAddonsHelperProvider.loadSiteAddon(addon);
+            promises.push(this.siteAddonsHelperProvider.loadSiteAddon(addon));
         });
+
+        return this.utils.allPromises(promises);
     }
 }

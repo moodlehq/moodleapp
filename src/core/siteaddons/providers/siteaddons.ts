@@ -23,9 +23,9 @@ import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 
 /**
- * Handler of a site addon representing a module.
+ * Handler of a site addon.
  */
-export interface CoreSiteAddonsModuleHandler {
+export interface CoreSiteAddonsHandler {
     /**
      * The site addon data.
      * @type {any}
@@ -43,6 +43,12 @@ export interface CoreSiteAddonsModuleHandler {
      * @type {any}
      */
     handlerSchema: any;
+
+    /**
+     * Result of executing the bootstrap JS.
+     * @type {any}
+     */
+    bootstrapResult?: any;
 }
 
 export interface CoreSiteAddonsGetContentResult {
@@ -79,7 +85,7 @@ export class CoreSiteAddonsProvider {
     protected ROOT_CACHE_KEY = 'CoreSiteAddons:';
 
     protected logger;
-    protected moduleSiteAddons: {[modName: string]: CoreSiteAddonsModuleHandler} = {};
+    protected siteAddons: {[name: string]: CoreSiteAddonsHandler} = {}; // Site addons registered.
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform) {
@@ -179,10 +185,12 @@ export class CoreSiteAddonsProvider {
      * @param {string} component Component where the class is. E.g. mod_assign.
      * @param {string} method Method to execute in the class.
      * @param {any} args The params for the method.
+     * @param {CoreSiteWSPreSets} [preSets] Extra options.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<CoreSiteAddonsGetContentResult>} Promise resolved with the result.
      */
-    getContent(component: string, method: string, args: any, siteId?: string): Promise<CoreSiteAddonsGetContentResult> {
+    getContent(component: string, method: string, args: any, preSets?: CoreSiteWSPreSets, siteId?: string)
+            : Promise<CoreSiteAddonsGetContentResult> {
         this.logger.debug(`Get content for component '${component}' and method '${method}'`);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -194,9 +202,10 @@ export class CoreSiteAddonsProvider {
                         component: component,
                         method: method,
                         args: this.utils.objectToArrayOfObjects(argsToSend, 'name', 'value', true)
-                    }, preSets = {
-                        cacheKey: this.getContentCacheKey(component, method, args)
                     };
+
+                preSets = preSets || {};
+                preSets.cacheKey = this.getContentCacheKey(component, method, args);
 
                 return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
             }).then((result) => {
@@ -226,13 +235,24 @@ export class CoreSiteAddonsProvider {
     }
 
     /**
-     * Get the site addon handler for a certain module.
+     * Get the unique name of a handler (addon + handler).
      *
-     * @param {string} modName Name of the module.
-     * @return {CoreSiteAddonsModuleHandler} Handler.
+     * @param {any} addon Data of the addon.
+     * @param {string} handlerName Name of the handler inside the addon.
+     * @return {string} Unique name.
      */
-    getModuleSiteAddonHandler(modName: string): CoreSiteAddonsModuleHandler {
-        return this.moduleSiteAddons[modName];
+    getHandlerUniqueName(addon: any, handlerName: string): string {
+        return addon.addon + '_' + handlerName;
+    }
+
+    /**
+     * Get a site addon handler.
+     *
+     * @param {string} name Unique name of the handler.
+     * @return {CoreSiteAddonsHandler} Handler.
+     */
+    getSiteAddonHandler(name: string): CoreSiteAddonsHandler {
+        return this.siteAddons[name];
     }
 
     /**
@@ -328,12 +348,12 @@ export class CoreSiteAddonsProvider {
     }
 
     /**
-     * Set the site addon handler for a certain module.
+     * Store a site addon handler.
      *
-     * @param {string} modName Name of the module.
-     * @param {CoreSiteAddonsModuleHandler} handler Handler to set.
+     * @param {string} name A unique name to identify the handler.
+     * @param {CoreSiteAddonsHandler} handler Handler to set.
      */
-    setModuleSiteAddonHandler(modName: string, handler: CoreSiteAddonsModuleHandler): void {
-        this.moduleSiteAddons[modName] = handler;
+    setSiteAddonHandler(name: string, handler: CoreSiteAddonsHandler): void {
+        this.siteAddons[name] = handler;
     }
 }

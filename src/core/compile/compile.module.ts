@@ -13,18 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CoreCompileHtmlComponent } from './compile-html';
+import { CoreCompileProvider } from './providers/compile';
 
 @NgModule({
     declarations: [
-        CoreCompileHtmlComponent
     ],
     imports: [
-        CommonModule
     ],
-    exports: [
-        CoreCompileHtmlComponent
+    providers: [
+        CoreCompileProvider
     ]
 })
-export class CoreCompileHtmlComponentsModule {}
+export class CoreCompileModule { }
