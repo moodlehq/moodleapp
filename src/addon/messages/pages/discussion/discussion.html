@@ -7,7 +7,7 @@
         <button ion-button icon-only clear="true" (click)="toggleDelete()" [hidden]="!canDelete">
             <ion-icon name="trash"></ion-icon>
         </button>
-        <a *ngIf="showProfileLink" core-user-link [userId]="userId" [attr.aria-label]=" 'core.user.viewprofile' | translate">
+        <a [hidden]="!showProfileLink" core-user-link [userId]="userId" [attr.aria-label]=" 'core.user.viewprofile' | translate">
             <img class="button core-bar-button-image" [src]="profileLink" core-external-content onError="this.src='assets/img/user-avatar.png'">
         </a>
     </core-navbar-buttons>

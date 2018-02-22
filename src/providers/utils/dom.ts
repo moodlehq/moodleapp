@@ -480,11 +480,19 @@ export class CoreDomUtilsProvider {
      *
      * @param {HTMLElement} oldParent The old parent.
      * @param {HTMLElement} newParent The new parent.
+     * @return {Node[]} List of moved children.
      */
-    moveChildren(oldParent: HTMLElement, newParent: HTMLElement): void {
+    moveChildren(oldParent: HTMLElement, newParent: HTMLElement): Node[] {
+        const movedChildren: Node[] = [];
+
         while (oldParent.childNodes.length > 0) {
-            newParent.appendChild(oldParent.childNodes[0]);
+            const child = oldParent.childNodes[0];
+            movedChildren.push(child);
+
+            newParent.appendChild(child);
         }
+
+        return movedChildren;
     }
 
     /**
