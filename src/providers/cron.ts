@@ -72,13 +72,13 @@ export interface CoreCronHandler {
      * Whether the handler is running. Used internally by the provider, there's no need to set it.
      * @type {boolean}
      */
-    running: boolean;
+    running?: boolean;
 
     /**
      * Timeout ID for the handler scheduling. Used internally by the provider, there's no need to set it.
      * @type {number}
      */
-    timeout: number;
+    timeout?: number;
 }
 
 /*
@@ -387,18 +387,18 @@ export class CoreCronDelegate {
             return;
         }
         if (typeof this.handlers[handler.name] != 'undefined') {
-            this.logger.debug(`The cron handler '${name}' is already registered.`);
+            this.logger.debug(`The cron handler '${handler.name}' is already registered.`);
 
             return;
         }
 
-        this.logger.debug.debug(`Register handler '${name}' in cron.`);
+        this.logger.debug(`Register handler '${handler.name}' in cron.`);
 
         handler.running = false;
         this.handlers[handler.name] = handler;
 
         // Start the handler.
-        this.startHandler(name);
+        this.startHandler(handler.name);
     }
 
     /**

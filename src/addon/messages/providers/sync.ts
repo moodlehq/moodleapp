@@ -59,9 +59,11 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
      * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllDiscussionsFunc(onlyDeviceOffline: boolean = false, siteId?: string): Promise<any> {
-        const fn = onlyDeviceOffline ? this.messagesOffline.getAllDeviceOfflineMessages : this.messagesOffline.getAllMessages;
+        const promise = onlyDeviceOffline ?
+            this.messagesOffline.getAllDeviceOfflineMessages(siteId) :
+            this.messagesOffline.getAllMessages(siteId);
 
-        return fn(siteId).then((messages) => {
+        return promise.then((messages) => {
             const userIds = [],
                 promises = [];
 

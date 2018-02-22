@@ -67,9 +67,9 @@ export class CoreConfigProvider {
         }).catch((error) => {
             if (typeof defaultValue != 'undefined') {
                 return defaultValue;
-            } else {
-                return Promise.reject(error);
             }
+
+            return Promise.reject(error);
         });
     }
 

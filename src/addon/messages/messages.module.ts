@@ -13,12 +13,20 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { Network } from '@ionic-native/network';
 import { AddonMessagesProvider } from './providers/messages';
 import { AddonMessagesOfflineProvider } from './providers/messages-offline';
 import { AddonMessagesSyncProvider } from './providers/sync';
 import { AddonMessagesMainMenuHandler } from './providers/mainmenu-handler';
-
 import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '../../core/contentlinks/providers/delegate';
+import { CoreUserDelegate } from '../../core/user/providers/user-delegate';
+import { CoreCronDelegate } from '../../providers/cron';
+import { AddonMessagesSendMessageUserHandler } from './providers/user-send-message-handler';
+import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
+import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
+import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
+import { CoreEventsProvider } from '../../providers/events';
 
 @NgModule({
     declarations: [
@@ -29,12 +37,29 @@ import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
         AddonMessagesProvider,
         AddonMessagesOfflineProvider,
         AddonMessagesSyncProvider,
-        AddonMessagesMainMenuHandler
+        AddonMessagesMainMenuHandler,
+        AddonMessagesSendMessageUserHandler,
+        AddonMessagesDiscussionLinkHandler,
+        AddonMessagesIndexLinkHandler,
+        AddonMessagesSyncCronHandler
     ]
 })
 export class AddonMessagesModule {
-    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainmenuHandler: AddonMessagesMainMenuHandler) {
+    constructor(mainMenuDelegate: CoreMainMenuDelegate, mainmenuHandler: AddonMessagesMainMenuHandler,
+            contentLinksDelegate: CoreContentLinksDelegate, indexLinkHandler: AddonMessagesIndexLinkHandler,
+            discussionLinkHandler: AddonMessagesDiscussionLinkHandler, sendMessageHandler: AddonMessagesSendMessageUserHandler,
+            userDelegate: CoreUserDelegate, cronDelegate: CoreCronDelegate, syncHandler: AddonMessagesSyncCronHandler,
+            network: Network, messagesSync: AddonMessagesSyncProvider) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
+        contentLinksDelegate.registerHandler(indexLinkHandler);
+        contentLinksDelegate.registerHandler(discussionLinkHandler);
+        userDelegate.registerHandler(sendMessageHandler);
+        cronDelegate.register(syncHandler);
+
+        // Sync some discussions when device goes online.
+        network.onConnect().subscribe(() => {
+            messagesSync.syncAllDiscussions(undefined, true);
+        });
     }
 }

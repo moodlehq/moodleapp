@@ -216,7 +216,7 @@ export class CoreSyncBaseProvider {
             return Promise.reject(null);
         }
 
-        if (this[syncFunction]) {
+        if (!this[syncFunction]) {
             this.logger.debug(`Cannot sync '${syncFunctionLog}' function '${syncFunction}' does not exist.`);
 
             return Promise.reject(null);
@@ -238,9 +238,7 @@ export class CoreSyncBaseProvider {
             siteIds.forEach((siteId) => {
                 params['siteId'] = siteId;
                 // Execute function for every site selected.
-                if (this[syncFunction]) {
-                    sitePromises.push(this[syncFunction].apply(this, params));
-                }
+                sitePromises.push(this[syncFunction].apply(this, params));
             });
 
             return Promise.all(sitePromises);
