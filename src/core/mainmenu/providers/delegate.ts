@@ -32,7 +32,6 @@ export interface CoreMainMenuHandler extends CoreDelegateHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @param {number} courseId The course ID.
      * @return {CoreMainMenuHandlerData} Data.
      */
     getDisplayData(): CoreMainMenuHandlerData;
@@ -65,13 +64,30 @@ export interface CoreMainMenuHandlerData {
      * @type {string}
      */
     class?: string;
+
+    /**
+     * If the handler has badge to show or not.
+     * @type {boolean}
+     */
+    showBadge?: boolean;
+
+    /**
+     * Text to display on the badge. Only used if showBadge is true.
+     * @type {string}
+     */
+    badge?: string;
+
+    /**
+     * If true, the badge number is being loaded. Only used if showBadge is true.
+     * @type {boolean}
+     */
+    loading?: boolean;
 }
 
 /**
  * Data returned by the delegate for each handler.
  */
 export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
-
     /**
      * Name of the handler.
      * @type {string}
@@ -90,6 +106,8 @@ export class CoreMainMenuDelegate extends CoreDelegate {
     protected loaded = false;
     protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
     protected featurePrefix = '$mmSideMenuDelegate_';
+
+    static UPDATE_BADGE_EVENT = 'update_main_menu_badge';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {
@@ -135,6 +153,7 @@ export class CoreMainMenuDelegate extends CoreDelegate {
                 data = handler.getDisplayData();
 
             handlersData.push({
+                name: name,
                 data: data,
                 priority: handler.priority
             });
@@ -147,6 +166,8 @@ export class CoreMainMenuDelegate extends CoreDelegate {
 
         // Return only the display data.
         const displayData = handlersData.map((item) => {
+            item.data.name = item.name;
+
             return item.data;
         });
 

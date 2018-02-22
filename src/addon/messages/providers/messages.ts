@@ -140,9 +140,9 @@ export class AddonMessagesProvider {
             if (lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0) {
                 // Do not use cache when retrieving older messages. This is to prevent storing too much data
                 // and to prevent inconsistencies between "pages" loaded.
-                preSets['getFromCache'] = 0;
-                preSets['saveToCache'] = 0;
-                preSets['emergencyCache'] = 0;
+                preSets['getFromCache'] = false;
+                preSets['saveToCache'] = false;
+                preSets['emergencyCache'] = false;
             }
 
             // Get message received by current user.
@@ -386,6 +386,94 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get unread conversations count. Do not cache calls.
+     *
+     * @param  {number} [userId] The user id who received the message. If not defined, use current user.
+     * @param  {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>}    Promise resolved with the message unread count.
+     */
+    getUnreadConversationsCount(userId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            // @since 3.2
+            if (site.wsAvailable('core_message_get_unread_conversations_count')) {
+                const params = {
+                        useridto: userId
+                    },
+                    preSets = {
+                        getFromCache: false,
+                        emergencyCache: false,
+                        saveToCache: false,
+                        typeExpected: 'number'
+                    };
+
+                return site.read('core_message_get_unread_conversations_count', params, preSets).catch(() => {
+                    // Return no messages if the call fails.
+                    return 0;
+                });
+            }
+
+            // Fallback call.
+            const params = {
+                read: 0,
+                limitfrom: 0,
+                limitnum: this.LIMIT_MESSAGES + 1,
+                useridto: userId,
+                useridfrom: 0,
+            };
+
+            return this.getMessages(params, undefined, false, siteId).then((response) => {
+                // Count the discussions by filtering same senders.
+                const discussions = {};
+                let count;
+                response.messages.forEach((message) => {
+                    discussions[message.useridto] = 1;
+                });
+                count = Object.keys(discussions).length;
+
+                // Add + sign if there are more than the limit reachable.
+                return (count > this.LIMIT_MESSAGES) ? count + '+' : count;
+            }).catch(() => {
+                // Return no messages if the call fails.
+                return 0;
+            });
+        });
+    }
+
+    /**
+     * Get the latest unread received messages.
+     *
+     * @param  {boolean} [toDisplay=true] True if messages will be displayed to the user, either in view or in a notification.
+     * @param  {boolean} [forceCache]     True if it should return cached data. Has priority over ignoreCache.
+     * @param  {boolean} [ignoreCache]    True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {string} [siteId]          Site ID. If not defined, use current site.
+     * @return {Promise<any>}                  Promise resolved with the message unread count.
+     */
+    getUnreadReceivedMessages(toDisplay: boolean = true, forceCache: boolean = false, ignoreCache: boolean = false,
+            siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    read: 0,
+                    limitfrom: 0,
+                    limitnum: this.LIMIT_MESSAGES,
+                    useridto: site.getUserId(),
+                    useridfrom: 0
+                },
+                preSets = {};
+
+            if (forceCache) {
+                preSets['omitExpires'] = true;
+            } else if (ignoreCache) {
+                preSets['getFromCache'] = false;
+                preSets['emergencyCache'] = false;
+            }
+
+            return this.getMessages(params, preSets, toDisplay, siteId);
+        });
+    }
+
+    /**
      * Invalidate contacts cache.
      *
      * @param  {string} [siteId] Site ID. If not defined, current site.
@@ -434,6 +522,16 @@ export class AddonMessagesProvider {
      */
     isMarkAllMessagesReadEnabled(): boolean {
         return this.sitesProvider.getCurrentSite().wsAvailable('core_message_mark_all_messages_as_read');
+    }
+
+    /**
+     * Returns whether or not we can count unread messages.
+     *
+     * @return {boolean} True if enabled, false otherwise.
+     * @since  3.2
+     */
+    isMessageCountEnabled(): boolean {
+        return this.sitesProvider.getCurrentSite().wsAvailable('core_message_get_unread_conversations_count');
     }
 
     /**

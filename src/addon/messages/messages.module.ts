@@ -56,6 +56,7 @@ export class AddonMessagesModule {
         contentLinksDelegate.registerHandler(discussionLinkHandler);
         userDelegate.registerHandler(sendMessageHandler);
         cronDelegate.register(syncHandler);
+        cronDelegate.register(mainmenuHandler);
 
         // Sync some discussions when device goes online.
         network.onConnect().subscribe(() => {

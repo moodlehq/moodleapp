@@ -18,9 +18,8 @@
         <ion-item *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class]" (click)="openHandler(handler)" title="{{ handler.title | translate }}" detail-push>
             <ion-icon [name]="handler.icon" item-start></ion-icon>
             <p>{{ handler.title | translate}}</p>
-            <!-- @todo: Badge. -->
-            <!-- <span ng-show="!loading && badge" class="badge badge-positive">{{badge}}</span>
-            <ion-spinner ng-if="loading" class="icon"></ion-spinner> -->
+            <ion-badge item-end *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge">{{badge}}</ion-badge>
+            <ion-spinner item-end *ngIf="handler.showBadge && handler.loading"></ion-spinner>
         </ion-item>
         <div *ngFor="let item of customItems" class="core-moremenu-customitem">
             <a ion-item *ngIf="item.type != 'embedded'" [href]="item.url" core-link [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" title="{{item.label}}">

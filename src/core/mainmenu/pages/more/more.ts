@@ -40,9 +40,11 @@ export class CoreMainMenuMorePage implements OnDestroy {
     protected subscription;
     protected langObserver;
     protected updateSiteObserver;
+    protected updateBadgeObserver;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
-            private navCtrl: NavController, private mainMenuProvider: CoreMainMenuProvider, eventsProvider: CoreEventsProvider) {
+            private navCtrl: NavController, private mainMenuProvider: CoreMainMenuProvider,
+            private eventsProvider: CoreEventsProvider) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
         this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.loadSiteInfo.bind(this),
@@ -59,6 +61,16 @@ export class CoreMainMenuMorePage implements OnDestroy {
             this.handlers = handlers.slice(CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Remove the main handlers.
             this.handlersLoaded = this.menuDelegate.areHandlersLoaded();
         });
+
+        this.updateBadgeObserver = this.eventsProvider.on(CoreMainMenuDelegate.UPDATE_BADGE_EVENT, (data) => {
+            const handler = this.handlers.find((handler) => {
+                return handler.showBadge && handler['name'] == data.name;
+            });
+            if (handler) {
+                handler.badge = data.badge;
+                handler.loading = false;
+            }
+        }, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -68,6 +80,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+        this.updateBadgeObserver && this.updateBadgeObserver.off();
     }
 
     /**
