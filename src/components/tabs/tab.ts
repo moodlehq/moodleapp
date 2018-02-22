@@ -15,6 +15,8 @@
 import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CoreTabsComponent } from './tabs';
 import { Content } from 'ionic-angular';
+import { CoreDomUtilsProvider } from '../../providers/utils/dom';
+import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 
 /**
  * A tab to use inside core-tabs. The content of this tab will be displayed when the tab is selected.
@@ -55,7 +57,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     element: HTMLElement; // The core-tab element.
     loaded = false;
 
-    constructor(private tabs: CoreTabsComponent, element: ElementRef) {
+    constructor(protected tabs: CoreTabsComponent, element: ElementRef, protected domUtils: CoreDomUtilsProvider) {
         this.element = element.nativeElement;
     }
 
@@ -81,6 +83,7 @@ export class CoreTabComponent implements OnInit, OnDestroy {
 
         this.loaded = true;
         this.ionSelect.emit(this);
+        this.showHideNavBarButtons(true);
 
         // Setup tab scrolling.
         setTimeout(() => {
@@ -97,5 +100,39 @@ export class CoreTabComponent implements OnInit, OnDestroy {
      */
     unselectTab(): void {
         this.element.classList.remove('selected');
+        this.showHideNavBarButtons(false);
+    }
+
+    /**
+     * Get all child core-navbar-buttons. We need to use querySelectorAll because ContentChildren doesn't work with ng-template.
+     * https://github.com/angular/angular/issues/14842
+     *
+     * @return {CoreNavBarButtonsComponent[]} List of component instances.
+     */
+    protected getChildrenNavBarButtons(): CoreNavBarButtonsComponent[] {
+        const elements = this.element.querySelectorAll('core-navbar-buttons'),
+            instances: CoreNavBarButtonsComponent[] = [];
+
+        for (let i = 0; i < elements.length; i++) {
+            const instance = this.domUtils.getInstanceByElement(elements[i]);
+            if (instance) {
+                instances.push(instance);
+            }
+        }
+
+        return instances;
+    }
+
+    /**
+     * Show all hide all children navbar buttons.
+     *
+     * @param {boolean} show Whether to show or hide the buttons.
+     */
+    protected showHideNavBarButtons(show: boolean): void {
+        const instances = this.getChildrenNavBarButtons();
+
+        for (const i in instances) {
+            instances[i].forceHide(!show);
+        }
     }
 }

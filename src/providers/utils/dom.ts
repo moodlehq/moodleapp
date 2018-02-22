@@ -152,7 +152,7 @@ export class CoreDomUtilsProvider {
         this.element.innerHTML = html;
         elements = this.element.querySelectorAll('a, img, audio, video, source, track');
 
-        for (const i in elements) {
+        for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
             let url = element.tagName === 'A' ? element.href : element.src;
 
@@ -525,7 +525,7 @@ export class CoreDomUtilsProvider {
 
         if (removeAll) {
             selected = this.element.querySelectorAll(selector);
-            for (const i in selected) {
+            for (let i = 0; i < selected.length; i++) {
                 selected[i].remove();
             }
         } else {
@@ -568,7 +568,7 @@ export class CoreDomUtilsProvider {
         for (const key in map) {
             const foundElements = element.querySelectorAll('.' + key);
 
-            for (const i in foundElements) {
+            for (let i = 0; i < foundElements.length; i++) {
                 const foundElement = foundElements[i];
                 foundElement.className = foundElement.className.replace(key, map[key]);
             }

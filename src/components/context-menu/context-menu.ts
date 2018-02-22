@@ -34,6 +34,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     hideMenu: boolean;
     ariaLabel: string;
     protected items: CoreContextMenuItemComponent[] = [];
+    protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
     protected instanceId: string;
     protected parentContextMenu: CoreContextMenuComponent;
@@ -74,7 +75,11 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         if (this.parentContextMenu) {
             // All items were moved to the "parent" menu. Add the item in there.
             this.parentContextMenu.addItem(item);
-        } else {
+
+            if (this.itemsMovedToParent.indexOf(item) == -1) {
+                this.itemsMovedToParent.push(item);
+            }
+        } else if (this.items.indexOf(item) == -1) {
             this.items.push(item);
             this.itemsChanged();
         }
@@ -103,7 +108,9 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
         // Add all the items to the other menu.
         for (let i = 0; i < this.items.length; i++) {
-            contextMenu.addItem(this.items[i]);
+            const item = this.items[i];
+            contextMenu.addItem(item);
+            this.itemsMovedToParent.push(item);
         }
 
         // Remove all items from the current menu.
@@ -120,12 +127,39 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         if (this.parentContextMenu) {
             // All items were moved to the "parent" menu. Remove the item from there.
             this.parentContextMenu.removeItem(item);
+
+            const index = this.itemsMovedToParent.indexOf(item);
+            if (index >= 0) {
+                this.itemsMovedToParent.splice(index, 1);
+            }
         } else {
             const index = this.items.indexOf(item);
             if (index >= 0) {
                 this.items.splice(index, 1);
             }
             this.itemsChanged();
+        }
+    }
+
+    /**
+     * Remove the items that were merged to a parent context menu.
+     */
+    removeMergedItems(): void {
+        if (this.parentContextMenu) {
+            for (let i = 0; i < this.itemsMovedToParent.length; i++) {
+                this.parentContextMenu.removeItem(this.itemsMovedToParent[i]);
+            }
+        }
+    }
+
+    /**
+     * Restore the items that were merged to a parent context menu.
+     */
+    restoreMergedItems(): void {
+        if (this.parentContextMenu) {
+            for (let i = 0; i < this.itemsMovedToParent.length; i++) {
+                this.parentContextMenu.addItem(this.itemsMovedToParent[i]);
+            }
         }
     }
 
@@ -146,5 +180,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.domUtils.removeInstanceById(this.instanceId);
+        this.removeMergedItems();
     }
 }
