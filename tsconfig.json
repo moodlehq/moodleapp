@@ -11,7 +11,18 @@
     "module": "es2015",
     "moduleResolution": "node",
     "sourceMap": true,
-    "target": "es5"
+    "target": "es5",
+    "baseUrl": "./src",
+    "paths": {
+      "@addon/*": ["addon/*"],
+      "@classes/*": ["classes/*"],
+      "@core/*": ["core/*"],
+      "@providers/*": ["providers/*"],
+      "@utils": ["providers/utils/*"],
+      "@components": ["components/*"],
+      "@directives": ["directives/directives.module"],
+      "@pipes": ["pipes/pipes.module"]
+    }
   },
   "include": [
     "src/**/*.ts"
