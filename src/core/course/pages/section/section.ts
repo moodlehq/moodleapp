@@ -45,7 +45,6 @@ export class CoreCourseSectionPage implements OnDestroy {
     sectionId: number;
     sectionNumber: number;
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
-    handlerData: any = {}; // Data to send to the handlers components.
     dataLoaded: boolean;
     downloadEnabled: boolean;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
@@ -70,7 +69,6 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
-        this.handlerData.courseId = this.course.id;
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -194,6 +192,12 @@ export class CoreCourseSectionPage implements OnDestroy {
 
             // Load the course handlers.
             promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.course, refresh, false).then((handlers) => {
+                // Add the courseId to the handler component data.
+                handlers.forEach((handler) => {
+                    handler.data.componentData = handler.data.componentData || {};
+                    handler.data.componentData.courseId = this.course.id;
+                });
+
                 this.courseHandlers = handlers;
             }));
 

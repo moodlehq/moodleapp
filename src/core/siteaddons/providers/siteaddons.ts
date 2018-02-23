@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreAppProvider } from '../../../providers/app';
+import { CoreFilepoolProvider } from '../../../providers/filepool';
 import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSite, CoreSiteWSPreSets } from '../../../classes/site';
@@ -62,7 +63,8 @@ export class CoreSiteAddonsProvider {
     protected siteAddons: {[name: string]: CoreSiteAddonsHandler} = {}; // Site addons registered.
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform) {
+            private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
+            private filepoolProvider: CoreFilepoolProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
     }
 
@@ -208,6 +210,30 @@ export class CoreSiteAddonsProvider {
     }
 
     /**
+     * Get the value of a WS param for prefetch.
+     *
+     * @param {string} component The component of the handler.
+     * @param {string} paramName Name of the param as defined by the handler.
+     * @param {number} [courseId] Course ID (if prefetching a course).
+     * @param {any} [module] The module object returned by WS (if prefetching a module).
+     * @return {any} The value.
+     */
+    protected getDownloadParam(component: string, paramName: string, courseId?: number, module?: any): any {
+        switch (paramName) {
+            case 'courseids':
+                // The WS needs the list of course IDs. Create the list.
+                return [courseId];
+
+            case component + 'id':
+                // The WS needs the instance id.
+                return module && module.instance;
+
+            default:
+                // No more params supported for now.
+        }
+    }
+
+    /**
      * Get the unique name of a handler (addon + handler).
      *
      * @param {any} addon Data of the addon.
@@ -318,6 +344,71 @@ export class CoreSiteAddonsProvider {
         }
 
         return args;
+    }
+
+    /**
+     * Prefetch offline functions for a site addon handler.
+     *
+     * @param {string} component The component of the handler.
+     * @param {any} args Params to send to the get_content calls.
+     * @param {any} handlerSchema The handler schema.
+     * @param {number} [courseId] Course ID (if prefetching a course).
+     * @param {any} [module] The module object returned by WS (if prefetching a module).
+     * @param {boolean} [prefetch] True to prefetch, false to download right away.
+     * @param {string} [dirPath] Path of the directory where to store all the content files.
+     * @param {CoreSite} [site] Site. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetchFunctions(component: string, args: any, handlerSchema: any, courseId?: number, module?: any, prefetch?: boolean,
+            dirPath?: string, site?: CoreSite): Promise<any> {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        const promises = [];
+
+        for (const method in handlerSchema.offlinefunctions) {
+            if (site.wsAvailable(method)) {
+                // The method is a WS.
+                const paramsList = handlerSchema.offlinefunctions[method],
+                    cacheKey = this.getCallWSCacheKey(method, args);
+                let params = {};
+
+                if (!paramsList.length) {
+                    // No params defined, send the default ones.
+                    params = args;
+                } else {
+                    for (const i in paramsList) {
+                        const paramName = paramsList[i];
+
+                        if (typeof args[paramName] != 'undefined') {
+                            params[paramName] = args[paramName];
+                        } else {
+                            // The param is not one of the default ones. Try to calculate the param to use.
+                            const value = this.getDownloadParam(component, paramName, courseId, module);
+                            if (typeof value != 'undefined') {
+                                params[paramName] = value;
+                            }
+                        }
+                    }
+                }
+
+                promises.push(this.callWS(method, params, {cacheKey: cacheKey}));
+            } else {
+                // It's a method to get content.
+                promises.push(this.getContent(component, method, args).then((result) => {
+                    const subPromises = [];
+
+                    // Prefetch the files in the content.
+                    if (result.files && result.files.length) {
+                        subPromises.push(this.filepoolProvider.downloadOrPrefetchFiles(site.id, result.files, prefetch, false,
+                            component, module.id, dirPath));
+                    }
+
+                    return Promise.all(subPromises);
+                }));
+            }
+        }
+
+        return Promise.all(promises);
     }
 
     /**

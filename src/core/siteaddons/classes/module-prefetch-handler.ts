@@ -80,48 +80,8 @@ export class CoreSiteAddonsModulePrefetchHandler extends CoreCourseModulePrefetc
             promises.push(this.downloadOrPrefetchFiles(site.id, module, courseId, prefetch, dirPath));
 
             // Call all the offline functions.
-            for (const method in this.handlerSchema.offlinefunctions) {
-                if (site.wsAvailable(method)) {
-                    // The method is a WS.
-                    const paramsList = this.handlerSchema.offlinefunctions[method],
-                        cacheKey = this.siteAddonsProvider.getCallWSCacheKey(method, args);
-                    let params = {};
-
-                    if (!paramsList.length) {
-                        // No params defined, send the default ones.
-                        params = args;
-                    } else {
-                        for (const i in paramsList) {
-                            const paramName = paramsList[i];
-
-                            if (typeof args[paramName] != 'undefined') {
-                                params[paramName] = args[paramName];
-                            } else {
-                                // The param is not one of the default ones. Try to calculate the param to use.
-                                const value = this.getDownloadParam(module, courseId, paramName);
-                                if (typeof value != 'undefined') {
-                                    params[paramName] = value;
-                                }
-                            }
-                        }
-                    }
-
-                    promises.push(this.siteAddonsProvider.callWS(method, params, {cacheKey: cacheKey}));
-                } else {
-                    // It's a method to get content.
-                    promises.push(this.siteAddonsProvider.getContent(this.component, method, args).then((result) => {
-                        const subPromises = [];
-
-                        // Prefetch the files in the content.
-                        if (result.files && result.files.length) {
-                            subPromises.push(this.filepoolProvider.downloadOrPrefetchFiles(siteId, result.files, prefetch, false,
-                                this.component, module.id, dirPath));
-                        }
-
-                        return Promise.all(subPromises);
-                    }));
-                }
-            }
+            promises.push(this.siteAddonsProvider.prefetchFunctions(this.component, args, this.handlerSchema, courseId,
+                    module, prefetch, dirPath, site));
 
             return Promise.all(promises);
         });
@@ -163,29 +123,6 @@ export class CoreSiteAddonsModulePrefetchHandler extends CoreCourseModulePrefetc
 
             return Promise.all(promises);
         });
-    }
-
-    /**
-     * Get the value of a WS param for prefetch.
-     *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} paramName Name of the param as defined by the handler.
-     * @return {any} The value.
-     */
-    protected getDownloadParam(module: any, courseId: number, paramName: string): any {
-        switch (paramName) {
-            case 'courseids':
-                // The WS needs the list of course IDs. Create the list.
-                return [courseId];
-
-            case this.component + 'id':
-                // The WS needs the instance id.
-                return module.instance;
-
-            default:
-                // No more params supported for now.
-        }
     }
 
     /**

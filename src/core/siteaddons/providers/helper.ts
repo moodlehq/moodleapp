@@ -24,9 +24,13 @@ import {
     CoreCourseModuleDelegate, CoreCourseModuleHandler, CoreCourseModuleHandlerData
 } from '../../course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../course/providers/module-prefetch-delegate';
+import {
+    CoreCourseOptionsDelegate, CoreCourseOptionsHandler, CoreCourseOptionsHandlerData
+} from '../../course/providers/options-delegate';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../user/providers/user-delegate';
 import { CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreSiteAddonsModuleIndexComponent } from '../components/module-index/module-index';
+import { CoreSiteAddonsCourseOptionComponent } from '../components/course-option/course-option';
 import { CoreSiteAddonsProvider } from './siteaddons';
 import { CoreSiteAddonsModulePrefetchHandler } from '../classes/module-prefetch-handler';
 import { CoreCompileProvider } from '../../compile/providers/compile';
@@ -47,7 +51,7 @@ export class CoreSiteAddonsHelperProvider {
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
             private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
-            private coursesProvider: CoreCoursesProvider) {
+            private coursesProvider: CoreCoursesProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
     }
 
@@ -128,6 +132,54 @@ export class CoreSiteAddonsHelperProvider {
      */
     protected getHandlerPrefixedString(handlerName: string, key: string): string {
         return this.getHandlerPrefixForStrings(handlerName) + key;
+    }
+
+    /**
+     * Check if a handler is enabled for a certain course.
+     *
+     * @param {number} courseId Course ID to check.
+     * @param {boolean} [restrictEnrolled] If true or undefined, handler is only enabled for courses the user is enrolled in.
+     * @param {any} [restrict] Users and courses the handler is restricted to.
+     * @return {boolean | Promise<boolean>} Whether the handler is enabled.
+     */
+    protected isHandlerEnabledForCourse(courseId: number, restrictEnrolled?: boolean, restrict?: any): boolean | Promise<boolean> {
+        if (restrict && restrict.courses && restrict.courses.indexOf(courseId) == -1) {
+            // Course is not in the list of restricted courses.
+            return false;
+        }
+
+        if (restrictEnrolled || typeof restrictEnrolled == 'undefined') {
+            // Only enabled for courses the user is enrolled to. Check if the user is enrolled in the course.
+            return this.coursesProvider.getUserCourse(courseId, true).then(() => {
+                return true;
+            }).catch(() => {
+                return false;
+            });
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if a handler is enabled for a certain user.
+     *
+     * @param {number} userId User ID to check.
+     * @param {boolean} [restrictCurrent] Whether handler is only enabled for current user.
+     * @param {any} [restrict] Users and courses the handler is restricted to.
+     * @return {boolean} Whether the handler is enabled.
+     */
+    protected isHandlerEnabledForUser(userId: number, restrictCurrent?: boolean, restrict?: any): boolean {
+        if (restrictCurrent && userId != this.sitesProvider.getCurrentSite().getUserId()) {
+            // Only enabled for current user.
+            return false;
+        }
+
+        if (restrict && restrict.users && restrict.users.indexOf(userId) == -1) {
+            // User is not in the list of restricted users.
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -227,6 +279,11 @@ export class CoreSiteAddonsHelperProvider {
                             result.restrict);
                     break;
 
+                case 'CoreCourseOptionsDelegate':
+                    uniqueName = this.registerCourseOptionHandler(addon, handlerName, handlerSchema, result.jsResult,
+                            result.restrict);
+                    break;
+
                 default:
                     // Nothing to do.
             }
@@ -241,6 +298,60 @@ export class CoreSiteAddonsHelperProvider {
                 });
             }
         });
+    }
+
+    /**
+     * Given a handler in an addon, register it in the course options delegate.
+     *
+     * @param {any} addon Data of the addon.
+     * @param {string} handlerName Name of the handler in the addon.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @return {string} A string to identify the handler.
+     */
+    protected registerCourseOptionHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any,
+            restrict?: any): string {
+        if (!handlerSchema || !handlerSchema.displaydata) {
+            // Required data not provided, stop.
+            return;
+        }
+
+        // Create the base handler.
+        const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
+            baseHandler = this.getBaseHandler(uniqueName),
+            prefixedTitle = this.getHandlerPrefixedString(baseHandler.name, handlerSchema.displaydata.title);
+        let handler: CoreCourseOptionsHandler;
+
+        // Extend the base handler, adding the properties required by the delegate.
+        handler = Object.assign(baseHandler, {
+            priority: handlerSchema.priority,
+            isEnabledForCourse: (courseId: number, accessData: any, navOptions?: any, admOptions?: any)
+                    : boolean | Promise<boolean> => {
+                return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, restrict);
+            },
+            getDisplayData: (courseId: number): CoreCourseOptionsHandlerData => {
+                return {
+                    title: prefixedTitle,
+                    class: handlerSchema.displaydata.class,
+                    component: CoreSiteAddonsCourseOptionComponent,
+                    componentData: {
+                        handlerUniqueName: uniqueName
+                    }
+                };
+            },
+            prefetch: (course: any): Promise<any> => {
+                const args = {
+                    courseid: course.id,
+                };
+
+                return this.siteAddonsProvider.prefetchFunctions(addon.component, args, handlerSchema, course.id, undefined, true);
+            }
+        });
+
+        this.courseOptionsDelegate.registerHandler(handler);
+
+        return uniqueName;
     }
 
     /**
@@ -378,31 +489,14 @@ export class CoreSiteAddonsHelperProvider {
             priority: handlerSchema.priority,
             type: handlerSchema.type,
             isEnabledForUser: (user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> => {
-                if (handlerSchema.restricttocurrentuser && user.id != this.sitesProvider.getCurrentSite().getUserId()) {
-                    // Only enabled for current user.
+                // First check if it's enabled for the user.
+                const enabledForUser = this.isHandlerEnabledForUser(user.id, handlerSchema.restricttocurrentuser, restrict);
+                if (!enabledForUser) {
                     return false;
                 }
 
-                if (restrict) {
-                    if (restrict.users && restrict.users.indexOf(user.id) == -1) {
-                        // User is not in the list of restricted users.
-                        return false;
-                    } else if (restrict.courses && restrict.courses.indexOf(courseId) == -1) {
-                        // Course is not in the list of restricted courses.
-                        return false;
-                    }
-                }
-
-                if (handlerSchema.restricttoenrolledcourses || typeof handlerSchema.restricttoenrolledcourses == 'undefined') {
-                    // Only enabled for courses the user is enrolled to. Check if the user is enrolled in the course.
-                    return this.coursesProvider.getUserCourse(courseId, true).then(() => {
-                        return true;
-                    }).catch(() => {
-                        return false;
-                    });
-                }
-
-                return true;
+                // Enabled for user, check if it's enabled for the course.
+                return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, restrict);
             },
             getDisplayData: (user: any, courseId: number): CoreUserProfileHandlerData => {
                 return {

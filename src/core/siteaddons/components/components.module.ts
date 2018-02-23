@@ -20,11 +20,13 @@ import { CoreComponentsModule } from '../../../components/components.module';
 import { CoreCompileHtmlComponentModule } from '../../compile/components/compile-html/compile-html.module';
 import { CoreSiteAddonsAddonContentComponent } from './addon-content/addon-content';
 import { CoreSiteAddonsModuleIndexComponent } from './module-index/module-index';
+import { CoreSiteAddonsCourseOptionComponent } from './course-option/course-option';
 
 @NgModule({
     declarations: [
         CoreSiteAddonsAddonContentComponent,
-        CoreSiteAddonsModuleIndexComponent
+        CoreSiteAddonsModuleIndexComponent,
+        CoreSiteAddonsCourseOptionComponent
     ],
     imports: [
         CommonModule,
@@ -37,10 +39,12 @@ import { CoreSiteAddonsModuleIndexComponent } from './module-index/module-index'
     ],
     exports: [
         CoreSiteAddonsAddonContentComponent,
-        CoreSiteAddonsModuleIndexComponent
+        CoreSiteAddonsModuleIndexComponent,
+        CoreSiteAddonsCourseOptionComponent
     ],
     entryComponents: [
-        CoreSiteAddonsModuleIndexComponent
+        CoreSiteAddonsModuleIndexComponent,
+        CoreSiteAddonsCourseOptionComponent
     ]
 })
 export class CoreSiteAddonsComponentsModule {}

@@ -90,6 +90,12 @@ export interface CoreCourseOptionsHandlerData {
      * When the component is created, it will receive the courseId as input.
      */
     component: any;
+
+    /**
+     * Data to pass to the component. All the properties in this object will be passed to the component as inputs.
+     * @type {any}
+     */
+    componentData?: any;
 }
 
 /**
