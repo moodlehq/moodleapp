@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { AddonMessagesProvider } from './messages';
 import { CoreMainMenuDelegate, CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@core/mainmenu/providers/delegate';
 import { CoreCronHandler } from '@providers/cron';
@@ -21,6 +21,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
 
 /**
  * Handler to inject an option into main menu.
@@ -34,7 +35,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
 
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider) {
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
+            private pushNotificationsProvider: AddonPushNotificationsProvider) {
 
         eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);

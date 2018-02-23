@@ -27,6 +27,10 @@ import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
 import { CoreEventsProvider } from '../../providers/events';
+import { CoreAppProvider } from '../../providers/app';
+import { CoreSitesProvider } from '../../providers/sites';
+import { CoreLocalNotificationsProvider } from '../../providers/local-notifications';
+import { CoreContentLinksHelperProvider } from '../../core/contentlinks/providers/helper';
 
 @NgModule({
     declarations: [
@@ -49,7 +53,9 @@ export class AddonMessagesModule {
             contentLinksDelegate: CoreContentLinksDelegate, indexLinkHandler: AddonMessagesIndexLinkHandler,
             discussionLinkHandler: AddonMessagesDiscussionLinkHandler, sendMessageHandler: AddonMessagesSendMessageUserHandler,
             userDelegate: CoreUserDelegate, cronDelegate: CoreCronDelegate, syncHandler: AddonMessagesSyncCronHandler,
-            network: Network, messagesSync: AddonMessagesSyncProvider) {
+            network: Network, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
+            localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
+            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
@@ -62,5 +68,25 @@ export class AddonMessagesModule {
         network.onConnect().subscribe(() => {
             messagesSync.syncAllDiscussions(undefined, true);
         });
+
+        const notificationClicked = (notification: any): void => {
+            messagesProvider.isMessagingEnabledForSite(notification.site).then(() => {
+                sitesProvider.isFeatureDisabled('$mmSideMenuDelegate_mmaMessages', notification.site).then((disabled) => {
+                    if (disabled) {
+                        // Messages are disabled, stop.
+                        return;
+                    }
+
+                    messagesProvider.invalidateDiscussionsCache().finally(() => {
+                        linkHelper.goInSite(undefined, 'AddonMessagesIndexPage', undefined, notification.site);
+                    });
+                });
+            });
+        };
+
+        if (appProvider.isDesktop()) {
+            // Listen for clicks in simulated push notifications.
+            localNotifications.registerClick(AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
+        }
     }
 }

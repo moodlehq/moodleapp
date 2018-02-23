@@ -16,10 +16,10 @@ import { Component, OnInit } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { CoreAppProvider } from '../providers/app';
-import { CoreEventsProvider } from '../providers/events';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreLoginHelperProvider } from '../core/login/providers/helper';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 
 @Component({
     templateUrl: 'app.html'

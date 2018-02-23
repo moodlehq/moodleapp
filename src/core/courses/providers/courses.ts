@@ -355,7 +355,7 @@ export class CoreCoursesProvider {
      * @return {boolean} Whether get courses by field is available.
      */
     isGetCoursesByFieldAvailable(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_course_get_courses_by_field');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_course_get_courses_by_field');
     }
 
     /**

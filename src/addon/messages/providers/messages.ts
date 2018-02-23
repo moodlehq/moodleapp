@@ -33,6 +33,7 @@ export class AddonMessagesProvider {
     static READ_CRON_EVENT = 'read_cron_event';
     static SPLIT_VIEW_LOAD_EVENT = 'split_view_load_event';
     static POLL_INTERVAL = 10000;
+    static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
 
     protected logger;
 
@@ -521,7 +522,7 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_message_mark_all_messages_as_read');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
     }
 
     /**
@@ -531,7 +532,25 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMessageCountEnabled(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_message_get_unread_conversations_count');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_get_unread_conversations_count');
+    }
+
+    /**
+     * Returns whether or not messaging is enabled for a certain site.
+     *
+     * This could call a WS so do not abuse this method.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}   Resolved when enabled, otherwise rejected.
+     */
+    isMessagingEnabledForSite(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (!site.canUseAdvancedFeature('messaging')) {
+                return Promise.reject(null);
+            }
+
+            return Promise.resolve(true);
+        });
     }
 
     /**
@@ -553,7 +572,7 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isSearchMessagesEnabled(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_message_data_for_messagearea_search_messages');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_data_for_messagearea_search_messages');
     }
 
     /**

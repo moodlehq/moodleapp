@@ -1212,4 +1212,17 @@ export class CoreSitesProvider {
             this.sites[id].getDb().createTablesFromSchema(tables);
         }
     }
+
+    /**
+     * Check if a WS is available in the current site, if any.
+     *
+     * @param {string} method WS name.
+     * @param {boolean} [checkPrefix=true] When true also checks with the compatibility prefix.
+     * @return {boolean} Whether the WS is available.
+     */
+    wsAvailableInCurrentSite(method: string, checkPrefix: boolean = true): boolean {
+        const site = this.getCurrentSite();
+
+        return site && site.wsAvailable(method, checkPrefix);
+    }
 }

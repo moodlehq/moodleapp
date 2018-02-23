@@ -901,7 +901,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        if (!this.sitesProvider.getCurrentSite().wsAvailable('core_user_agree_site_policy')) {
+        if (!this.sitesProvider.wsAvailableInCurrentSite('core_user_agree_site_policy')) {
             // WS not available, stop.
             return;
         }

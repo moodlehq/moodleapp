@@ -238,7 +238,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * @return {boolean} True if can check updates, false otherwise.
      */
     canCheckUpdates(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_course_check_updates');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_course_check_updates');
     }
 
     /**

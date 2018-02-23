@@ -35,7 +35,7 @@ export class AddonFilesProvider {
      * @return {boolean} Whether the WS is available, false otherwise.
      */
     canGetPrivateFilesInfo(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_user_get_private_files_info');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_user_get_private_files_info');
     }
 
     /**
