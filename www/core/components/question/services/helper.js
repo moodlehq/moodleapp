@@ -52,6 +52,108 @@ angular.module('mm.core.question')
     }
 
     /**
+     * Generic link function for question directives with an input of type "text" and, optionally, a select for the units.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#calculatedDirective
+     * @param  {Object} scope Directive's scope.
+     * @param  {Object} log   $log instance to log messages.
+     * @return {Void}
+     */
+    self.calculatedDirective = function(scope, log) {
+        // Treat the input text first.
+        var questionEl = self.inputTextDirective(scope, log);
+        if (questionEl) {
+            questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
+
+            // Check if the question has a select for units.
+            var selectModel = {},
+                select = questionEl.querySelector('select[name*=unit]'),
+                options = select && select.querySelectorAll('option');
+
+            if (select && options && options.length) {
+
+                selectModel.id = select.id;
+                selectModel.name = select.name;
+                selectModel.disabled = select.disabled;
+                selectModel.selected = false;
+                selectModel.options = [];
+
+                // Treat each option.
+                angular.forEach(options, function(option) {
+                    if (typeof option.value == 'undefined') {
+                        log.warn('Aborting because couldn\'t find option value.', question.name);
+                        return self.showDirectiveError(scope);
+                    }
+                    var opt = {
+                        value: option.value,
+                        label: option.innerHTML,
+                        selected: option.selected
+                    };
+
+                    if (opt.selected) {
+                        selectModel.selected = opt;
+                    }
+
+                    selectModel.options.push(opt);
+                });
+
+                // Get the accessibility label.
+                accessibilityLabel = questionEl.querySelector('label[for="' + select.id + '"]');
+                selectModel.accessibilityLabel = accessibilityLabel.innerHTML;
+
+                scope.select = selectModel;
+
+                return;
+            }
+
+            // Check if the question has radio buttons for units.
+            options = questionEl.querySelectorAll('input[type="radio"]');
+            if (!options || !options.length) {
+                return;
+            }
+
+            scope.options = [];
+
+            angular.forEach(options, function(element) {
+
+                var option = {
+                        id: element.id,
+                        name: element.name,
+                        value: element.value,
+                        checked: element.checked,
+                        disabled: element.disabled
+                    },
+                    label;
+
+                // Get the label with the question text.
+                label = questionEl.querySelector('label[for="' + option.id + '"]');
+                if (label) {
+                    option.text = label.innerText;
+
+                    // Check that we were able to successfully extract options required data.
+                    if (typeof option.name != 'undefined' && typeof option.value != 'undefined' &&
+                                typeof option.text != 'undefined') {
+
+                        if (element.checked) {
+                            // If the option is checked and it's a single choice we use the model to select the one.
+                            scope.unit = option.value;
+                        }
+
+                        scope.options.push(option);
+                        return;
+                    }
+                }
+
+                // Something went wrong when extracting the questions data. Abort.
+                log.warn('Aborting because of an error parsing options.', question.name, option.name);
+                return self.showDirectiveError(scope);
+            });
+        }
+    };
+
+    /**
      * Convenience function to initialize a question directive.
      * Performs some common checks and extracts the question's text.
      *
@@ -554,7 +656,7 @@ angular.module('mm.core.question')
      * @name $mmQuestionHelper#inputTextDirective
      * @param  {Object} scope Directive's scope.
      * @param  {Object} log   $log instance to log messages.
-     * @return {Void}
+     * @return {Oject} The question element.
      */
     self.inputTextDirective = function(scope, log) {
         var questionEl = self.directiveInit(scope, log);
@@ -582,6 +684,8 @@ angular.module('mm.core.question')
                 scope.input.isCorrect = 1;
             }
         }
+
+        return questionEl;
     };
 
     /**

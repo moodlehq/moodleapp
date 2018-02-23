@@ -27,9 +27,9 @@ angular.module('mm.addons.qtype_calculated')
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/qtype/shortanswer/template.html',
+        templateUrl: 'addons/qtype/calculated/template.html',
         link: function(scope) {
-            $mmQuestionHelper.inputTextDirective(scope, $log);
+            $mmQuestionHelper.calculatedDirective(scope, $log);
         }
     };
 });

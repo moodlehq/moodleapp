@@ -21,7 +21,7 @@ angular.module('mm.addons.qtype_calculated')
  * @ngdoc service
  * @name $mmaQtypeCalculatedHandler
  */
-.factory('$mmaQtypeCalculatedHandler', function($mmaQtypeNumericalHandler) {
+.factory('$mmaQtypeCalculatedHandler', function($mmaQtypeNumericalHandler, $mmUtil) {
 
     var self = {};
 
@@ -34,7 +34,15 @@ angular.module('mm.addons.qtype_calculated')
      */
     self.isCompleteResponse = function(question, answers) {
         // This question type depends on numerical.
-        return $mmaQtypeNumericalHandler.isCompleteResponse(question, answers);
+        if (!self.isGradableResponse(question, answers) || !$mmaQtypeNumericalHandler.validateUnits(answers['answer'])) {
+            return false;
+        }
+
+        if (self.requiresUnits(question)) {
+            return self.isValidValue(answers['unit']);
+        }
+
+        return -1;
     };
 
     /**
@@ -56,7 +64,13 @@ angular.module('mm.addons.qtype_calculated')
      */
     self.isGradableResponse = function(question, answers) {
         // This question type depends on numerical.
-        return $mmaQtypeNumericalHandler.isGradableResponse(question, answers);
+        var hasAnswer = self.isValidValue(answers['answer']);
+        if (self.requiresUnits(question)) {
+            // The question requires a unit.
+            return hasAnswer && self.isValidValue(answers['unit']);
+        } else {
+            return hasAnswer;
+        }
     };
 
     /**
@@ -69,7 +83,18 @@ angular.module('mm.addons.qtype_calculated')
      */
     self.isSameResponse = function(question, prevAnswers, newAnswers) {
         // This question type depends on numerical.
-        return $mmaQtypeNumericalHandler.isSameResponse(question, prevAnswers, newAnswers);
+        return $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
+            $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
+    };
+
+    /**
+     * Check if a value is valid (not empty).
+     *
+     * @param  {Mixed} value Value to check.
+     * @return {Boolean}     Whether the value is valid.
+     */
+    self.isValidValue = function(value) {
+        return value || value === '0' || value === 0;
     };
 
     /**
@@ -80,6 +105,19 @@ angular.module('mm.addons.qtype_calculated')
      */
     self.getDirectiveName = function(question) {
         return 'mma-qtype-calculated';
+    };
+
+    /**
+     * Check if a question requires units in a separate input.
+     *
+     * @param {Object} question The questions.
+     * @return {Boolean}        Whether the question requires units.
+     */
+    self.requiresUnits = function(question) {
+        var div = document.createElement('div');
+        div.innerHTML = question.html;
+
+        return div.querySelector('select[name*=unit]') || div.querySelector('input[type="radio"]');
     };
 
     return self;
