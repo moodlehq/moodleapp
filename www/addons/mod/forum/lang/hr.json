@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Dodaj novu raspravu",
+    "addanewquestion": "Dodajte novo pitanje",
+    "addanewtopic": "Dodajte novu temu",
     "cannotadddiscussion": "Za dodavanje rasprave u ovaj forum treba biti član grupe.",
     "cannotadddiscussionall": "Nemate ovlasti da biste dodali novu raspravu za sve sudionike. ",
     "cannotcreatediscussion": "Nije moguće otvoriti novu raspravu",

@@ -3,6 +3,7 @@
     "badges": "Medalhas",
     "contact": "Contacto",
     "dateawarded": "Data de emissão",
+    "expired": "Esta atividade terminou em {{$a}} e já não está disponível",
     "expirydate": "Data de validade",
     "issuancedetails": "Data de validade da Medalha",
     "issuerdetails": "Detalhes do emissor",

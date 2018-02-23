@@ -1,7 +1,7 @@
 {
     "complete": "पूर्ण",
     "completecourse": "पूर्ण अभ्यासक्रम",
-    "completed": "पूर्ण झालेले",
+    "completed": "पूर्ण केले",
     "completiondate": "Completion date",
     "couldnotloadreport": "अभ्यासक्रम पूर्ण केल्याचे अहवाल लोड करणे शक्य नाही, कृपया नंतर पुन्हा प्रयत्न करा.",
     "coursecompletion": "अभ्यासक्रम पूर्ण",
@@ -13,7 +13,7 @@
     "manualselfcompletion": "स्वयं पूर्ण",
     "notyetstarted": "स्वतःच्या हाताने पूर्ण",
     "pending": "प्रलंबित",
-    "required": "गरजेचे आहे.",
+    "required": "आवश्यक",
     "requiredcriteria": "आवश्यक निकष",
     "requirement": "आवश्यकता",
     "status": "स्थिती",

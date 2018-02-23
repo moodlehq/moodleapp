@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Lisää uusi keskustelu",
+    "addanewquestion": "Lisää uusi kysymys",
+    "addanewtopic": "Lisää uusi aihe",
     "cannotadddiscussion": "Vain ryhmän jäsenet voivat lisätä viestejä tälle keskustelualueelle.",
     "cannotadddiscussionall": "Sinulla ei ole oikeuksia lisätä kaikille osallistujille näkyvää viestiä.",
     "cannotcreatediscussion": "Ei voitu luoda uutta keskustelua",

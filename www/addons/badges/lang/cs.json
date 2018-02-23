@@ -3,6 +3,7 @@
     "badges": "Odznaky",
     "contact": "Kontakt",
     "dateawarded": "Datum udělení",
+    "expired": "Je nám líto, tato činnost byla uzavřena {{$a}} a není nadále dostupná",
     "expirydate": "Datum vypršení platnosti",
     "issuancedetails": "Vypršení platnosti odznaku",
     "issuerdetails": "Podrobnosti o vydavateli",

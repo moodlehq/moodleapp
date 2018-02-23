@@ -1,6 +1,6 @@
 {
     "addfiletext": "Lisää tiedosto",
-    "audio": "Äänitiedosto ({{$a.EXT}})",
+    "audio": "Ääni",
     "camera": "Kamera",
     "confirmuploadfile": "Olet lataamassa {{size}}. Oletko varma, että haluat jatkaa?",
     "confirmuploadunknownsize": "Lataamaasi tiedoston kokoa ei pystytty määrittelemään. Oletko varma, että haluat jatkaa?",
@@ -10,7 +10,7 @@
     "errorgettingimagealbum": "Tapahtui virhe kun kuvaa yritettiin hakea albumista.",
     "errormustbeonlinetoupload": "Sinun täytyy olla verkossa, jotta voit lähettää tiedostoja.",
     "errornoapp": "Sinulla ei ole asennettuna sovellusta, joka osaisi käsitellä tämän toiminnon.",
-    "errorreadingfile": "Tiedoston lukemisessa tapahtui virhe: {{$a}}",
+    "errorreadingfile": "Tiedostoa luettaessa tapahtui virhe.",
     "errorwhileuploading": "Tiedostonlähetyksessä tapahtui virhe.",
     "file": "Tiedosto",
     "filesofthesetypes": "Nämä tiedostomuodot voidaan lisätä palautukseen:",
@@ -21,8 +21,8 @@
     "photoalbums": "Valokuva-albumit",
     "readingfile": "Luetaan tiedostoa",
     "selectafile": "Valitse tiedosto",
-    "uploadafile": "Hae tiedosto",
-    "uploading": "Ladataan...",
+    "uploadafile": "Lataa tiedosto",
+    "uploading": "Lähetetään",
     "uploadingperc": "Lähetetään: {{$a}}%",
     "video": "Video"
 }

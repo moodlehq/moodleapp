@@ -3,7 +3,7 @@
     "anonymous": "Anonimoa",
     "anonymous_entries": "Sarrera anonimoak ({{$a}})",
     "average": "Batez bestekoa",
-    "captchaofflinewarning": "captcha-dun feedback-ak ezin dira lineaz kanpo osatu, ezta konfiguratuta ez badaude edo zerbitzaria eskuragarri ez badago ere.",
+    "captchaofflinewarning": "CAPTCHA-dun feedback-ak ezin dira lineaz kanpo osatu, ezta konfiguratuta ez badaude edo zerbitzaria eskuragarri ez badago ere.",
     "complete_the_form": "Erantzun galderei...",
     "completed_feedbacks": "Bidalitako erantzunak",
     "continue_the_form": "Jarraitu galderei erantzuten...",

@@ -1,8 +1,8 @@
 {
-    "complete": "Potpuno",
-    "completed": "Završeno",
+    "complete": "Dovršeno",
+    "completed": "završeno",
     "completiondate": "Datum dovršetka",
-    "coursecompletion": "Dovršenost e-kolegija",
+    "coursecompletion": "Polaznici moraju završiti ovaj e-kolegij.",
     "criteria": "Kriterij",
     "criteriagroup": "Grupa kriterija",
     "criteriarequiredall": "Potrebno je zadovoljenje svih doljnjih kriterija",
@@ -11,9 +11,9 @@
     "manualselfcompletion": "Ručni dovršetak",
     "notyetstarted": "Nije još započelo",
     "pending": "Na čekanju",
-    "required": "Obvezatno",
-    "requiredcriteria": "Obvezatni kriterij",
+    "required": "Obvezno",
+    "requiredcriteria": "Obvezni kriterij",
     "requirement": "Uvjet",
-    "status": "Status",
+    "status": "Stanje",
     "viewcoursereport": "Prikaz izvješća e-kolegija"
 }

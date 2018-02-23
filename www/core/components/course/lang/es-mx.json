@@ -8,7 +8,7 @@
     "confirmdownload": "Usted está a punto de descargar {{size}}. ¿Está Usted seguro de querer continuar?",
     "confirmdownloadunknownsize": "No pudimos calcular el tamaño de la descarga. ¿Está Usted seguro de querer continuar?",
     "confirmpartialdownloadsize": "Usted está a punto de descargar <strong>al menos</strong> {{size}}. ¿Está Usted seguro de querer continuar?",
-    "contents": "Contenido",
+    "contents": "Contenidos",
     "couldnotloadsectioncontent": "No pudo cargarse el contenido de la sección. Por favor inténtelo nuevamente después.",
     "couldnotloadsections": "No pudieron cargarse las secciones. Por favor inténtelo nuevamente después.",
     "errordownloadingsection": "Error al descargar sección",

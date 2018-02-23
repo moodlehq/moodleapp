@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Criar um novo tópico",
+    "addanewquestion": "Criar uma nova pergunta",
+    "addanewtopic": "Criar um novo tópico",
     "cannotadddiscussion": "Criar novos tópicos neste fórum requer adesão a grupo.",
     "cannotadddiscussionall": "Não tem permissão para criar um novo tópico disponível para todos os participantes",
     "cannotcreatediscussion": "Não foi possível criar o novo tópico de discussão",

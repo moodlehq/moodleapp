@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Yeni tartışma konusu ekle",
+    "addanewquestion": "Yeni soru ekle",
+    "addanewtopic": "Yeni konu ekle",
     "cannotadddiscussion": "Bu foruma tartışma ekleme, grup üyeliği gerektirir.",
     "cannotadddiscussionall": "Tüm katılımcılar için yeni bir tartışma konusu ekleme izniniz yok.",
     "cannotcreatediscussion": "Yeni tartışma oluşturulamadı",
