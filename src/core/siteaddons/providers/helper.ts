@@ -30,6 +30,7 @@ import { CoreSiteAddonsModuleIndexComponent } from '../components/module-index/m
 import { CoreSiteAddonsProvider } from './siteaddons';
 import { CoreSiteAddonsModulePrefetchHandler } from '../classes/module-prefetch-handler';
 import { CoreCompileProvider } from '../../compile/providers/compile';
+import { CoreCoursesProvider } from '../../courses/providers/courses';
 
 /**
  * Helper service to provide functionalities regarding site addons. It basically has the features to load and register site
@@ -45,30 +46,37 @@ export class CoreSiteAddonsHelperProvider {
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
             private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider) {
+            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
+            private coursesProvider: CoreCoursesProvider) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
     }
 
     /**
-     * Bootstrap a handler if it has some bootstrap JS.
+     * Bootstrap a handler if it has some bootstrap method.
      *
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @return {Promise<any>} Promise resolved when done. The resolve param is the result of the javascript execution (if any).
+     * @return {Promise<{restrict?: any, jsResult?: any}>} Promise resolved when done. It returns the "restrict" of the handler and
+     *                                                     the result of the javascript execution (if any).
      */
-    protected bootstrapHandler(addon: any, handlerName: string, handlerSchema: any): Promise<any> {
+    protected bootstrapHandler(addon: any, handlerName: string, handlerSchema: any): Promise<{restrict?: any, jsResult?: any}> {
         if (!handlerSchema.bootstrap) {
-            return Promise.resolve();
+            return Promise.resolve({});
         }
 
         const siteId = this.sitesProvider.getCurrentSiteId(),
             preSets = {getFromCache: false}; // Try to ignore cache.
 
         return this.siteAddonsProvider.getContent(addon.component, handlerSchema.bootstrap, {}, preSets).then((result) => {
+            const data = {
+                restrict: result.restrict,
+                jsResult: undefined
+            };
+
             if (!result.javascript || this.sitesProvider.getCurrentSiteId() != siteId) {
                 // No javascript or site has changed, stop.
-                return;
+                return data;
             }
 
             // Create a "fake" instance to hold all the libraries.
@@ -76,7 +84,9 @@ export class CoreSiteAddonsHelperProvider {
             this.compileProvider.injectLibraries(instance);
 
             // Now execute the javascript using this instance.
-            return this.compileProvider.executeJavascript(instance, result.javascript);
+            data.jsResult = this.compileProvider.executeJavascript(instance, result.javascript);
+
+            return data;
         });
     }
 
@@ -205,15 +215,16 @@ export class CoreSiteAddonsHelperProvider {
 
             switch (handlerSchema.delegate) {
                 case 'CoreMainMenuDelegate':
-                    uniqueName = this.registerMainMenuHandler(addon, handlerName, handlerSchema, result);
+                    uniqueName = this.registerMainMenuHandler(addon, handlerName, handlerSchema, result.jsResult, result.restrict);
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    uniqueName = this.registerModuleHandler(addon, handlerName, handlerSchema, result);
+                    uniqueName = this.registerModuleHandler(addon, handlerName, handlerSchema, result.jsResult, result.restrict);
                     break;
 
                 case 'CoreUserDelegate':
-                    uniqueName = this.registerUserProfileHandler(addon, handlerName, handlerSchema, result);
+                    uniqueName = this.registerUserProfileHandler(addon, handlerName, handlerSchema, result.jsResult,
+                            result.restrict);
                     break;
 
                 default:
@@ -239,9 +250,11 @@ export class CoreSiteAddonsHelperProvider {
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
      * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @param {any} [restrict] List of users and courses the handler is restricted to.
      * @return {string} A string to identify the handler.
      */
-    protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any): string {
+    protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any, restrict?: any)
+            : string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -284,9 +297,11 @@ export class CoreSiteAddonsHelperProvider {
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
      * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @param {any} [restrict] List of users and courses the handler is restricted to.
      * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any): string {
+    protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any, restrict?: any)
+            : string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -342,9 +357,11 @@ export class CoreSiteAddonsHelperProvider {
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
      * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @param {any} [restrict] List of users and courses the handler is restricted to.
      * @return {string} A string to identify the handler.
      */
-    protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any): string {
+    protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any, restrict?: any)
+            : string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -360,9 +377,29 @@ export class CoreSiteAddonsHelperProvider {
         userHandler = Object.assign(baseHandler, {
             priority: handlerSchema.priority,
             type: handlerSchema.type,
-            isEnabledForUser: (user: any, courseId: number, navOptions?: any, admOptions?: any): boolean => {
-                if (handlerSchema.restricted == 'current' && user.id != this.sitesProvider.getCurrentSite().getUserId()) {
+            isEnabledForUser: (user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> => {
+                if (handlerSchema.restricttocurrentuser && user.id != this.sitesProvider.getCurrentSite().getUserId()) {
+                    // Only enabled for current user.
                     return false;
+                }
+
+                if (restrict) {
+                    if (restrict.users && restrict.users.indexOf(user.id) == -1) {
+                        // User is not in the list of restricted users.
+                        return false;
+                    } else if (restrict.courses && restrict.courses.indexOf(courseId) == -1) {
+                        // Course is not in the list of restricted courses.
+                        return false;
+                    }
+                }
+
+                if (handlerSchema.restricttoenrolledcourses || typeof handlerSchema.restricttoenrolledcourses == 'undefined') {
+                    // Only enabled for courses the user is enrolled to. Check if the user is enrolled in the course.
+                    return this.coursesProvider.getUserCourse(courseId, true).then(() => {
+                        return true;
+                    }).catch(() => {
+                        return false;
+                    });
                 }
 
                 return true;

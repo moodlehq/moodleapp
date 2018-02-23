@@ -51,32 +51,6 @@ export interface CoreSiteAddonsHandler {
     bootstrapResult?: any;
 }
 
-export interface CoreSiteAddonsGetContentResult {
-    /**
-     * The content in HTML.
-     * @type {string}
-     */
-    html: string;
-
-    /**
-     * The javascript for the content.
-     * @type {string}
-     */
-    javascript: string;
-
-    /**
-     * The files for the content.
-     * @type {any[]}
-     */
-    files?: any[];
-
-    /**
-     * Other data.
-     * @type {any}
-     */
-    otherdata?: any;
-}
-
 /**
  * Service to provide functionalities regarding site addons.
  */
@@ -187,10 +161,9 @@ export class CoreSiteAddonsProvider {
      * @param {any} args The params for the method.
      * @param {CoreSiteWSPreSets} [preSets] Extra options.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreSiteAddonsGetContentResult>} Promise resolved with the result.
+     * @return {Promise<any>} Promise resolved with the result.
      */
-    getContent(component: string, method: string, args: any, preSets?: CoreSiteWSPreSets, siteId?: string)
-            : Promise<CoreSiteAddonsGetContentResult> {
+    getContent(component: string, method: string, args: any, preSets?: CoreSiteWSPreSets, siteId?: string): Promise<any> {
         this.logger.debug(`Get content for component '${component}' and method '${method}'`);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
