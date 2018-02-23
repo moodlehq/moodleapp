@@ -3,6 +3,7 @@
     "badges": "Auszeichnungen",
     "contact": "Kontakt",
     "dateawarded": "Verleihdatum",
+    "expired": "Diese Abstimmung ist seit {{$a}} beendet. Eine Auswahl ist nicht mehr möglich.",
     "expirydate": "Ablaufdatum",
     "issuancedetails": "Ablauf festlegen",
     "issuerdetails": "Verleiher",

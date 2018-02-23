@@ -1,6 +1,6 @@
 {
-    "attachment": "Erantsi domina mezuari",
-    "browsemode": "Aurrebista-modua",
+    "attachment": "Eranskina",
+    "browsemode": "Aztertu sarrerak",
     "byalphabet": "Alfabetikoki",
     "byauthor": "Taldekatu egilearen arabera",
     "bycategory": "Taldekatu kategoriaren arabera",
@@ -8,13 +8,13 @@
     "byrecentlyupdated": "Duela gutxi eguneratuak",
     "bysearch": "Bilatu",
     "cannoteditentry": "Ezin da sarrera editatu",
-    "casesensitive": "Erabil adierazpen erregularrak",
-    "categories": "Ikastaro-kategoriak",
+    "casesensitive": "Letra larriak eta xeheak bereiziz",
+    "categories": "Kategoriak",
     "entriestobesynced": "Sinkronizatu beharreko sarrerak",
     "entrypendingapproval": "Sarrera hau onarpenaren zain dago.",
-    "errorloadingentries": "Errorea gertatu da sarrerak kargatzean.",
-    "errorloadingentry": "Errorea gertatu da sarrera kargatzean.",
-    "errorloadingglossary": "Errorea gertatu da glosategia kargatzean.",
+    "errorloadingentries": "Errore bat gertatu da sarrerak kargatzean.",
+    "errorloadingentry": "Errore bat gertatu da sarrera kargatzean.",
+    "errorloadingglossary": "Errore bat gertatu da glosategia kargatzean.",
     "noentriesfound": "Ez da sarrerarik aurkitu",
     "searchquery": "Egin bilaketa"
 }

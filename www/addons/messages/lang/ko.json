@@ -1,0 +1,21 @@
+{
+    "blockcontactconfirm": "이 연락처의 메시지는 더 이상 수신되지 않습니다.",
+    "contactlistempty": "연락처가 비어 있습니다.",
+    "contactname": "연락처 이름",
+    "errordeletemessage": "메시지를 지우는 중 오류 발생",
+    "errorwhileretrievingcontacts": "서버에서 연락처를 검색하는 동안 오류 발생",
+    "errorwhileretrievingdiscussions": "서버에서 토론을 가져 오는 중에 오류 발생",
+    "errorwhileretrievingmessages": "서버에서 메시지를 검색하는 중 오류 발생",
+    "loadpreviousmessages": "이전 메시지 로드",
+    "messagenotsent": "메시지가 전송되지 않았습니다. 다시 시도해 주세요.",
+    "mustbeonlinetosendmessages": "메시지를 전송하기 위해서는 온라인 상태여야 합니다.",
+    "newmessages": "새로운 메시지",
+    "nousersfound": "사용자가 없습니다.",
+    "removecontactconfirm": "연락처가 연락처 목록에서 제거됩니다.",
+    "type_blocked": "차단된",
+    "type_offline": "오프라인",
+    "type_online": "온라인",
+    "type_search": "검색 결과",
+    "type_strangers": "기타",
+    "warningmessagenotsent": "{{user}} 사용자에게 메시지를 보낼 수 없습니다. {{오류}}"
+}

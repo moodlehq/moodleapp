@@ -1,5 +1,5 @@
 {
-    "attachment": "Privitak",
+    "attachment": "Dodaj značku u poruku",
     "browsemode": "Način pregleda",
     "byalphabet": "Abecedno",
     "byauthor": "Grupirano po autoru",
@@ -7,6 +7,6 @@
     "bynewestfirst": "Prvo najnoviji",
     "byrecentlyupdated": "Nedavno osvježeno",
     "bysearch": "Pretraživanje",
-    "casesensitive": "Koristi regularne izraze",
-    "categories": "Popis e-kolegija"
+    "casesensitive": "Postoji li razlika između malih i VELIKIH slova",
+    "categories": "Kategorije"
 }

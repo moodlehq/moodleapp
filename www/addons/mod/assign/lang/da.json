@@ -83,7 +83,7 @@
     "submissionteam": "Gruppe",
     "submitassignment": "Aflever",
     "submitassignment_help": "Når opgaven er afleveret kan du ikke længere foretage ændringer i den.",
-    "submittedearly": "Opgaven blev afleveret {{$a}} for tidligt",
+    "submittedearly": "Opgaven blev afleveret {{$a}} inden fristens udløb.",
     "submittedlate": "Opgaven blev afleveret {{$a}} for sent",
     "timemodified": "Seneste ændring",
     "timeremaining": "Resterende tid",

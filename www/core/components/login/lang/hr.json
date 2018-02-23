@@ -1,6 +1,6 @@
 {
     "cancel": "Odustani",
-    "connect": "Poveži",
+    "connect": "Prijavi se!",
     "connecttomoodle": "Prijavi se na Moodle",
     "createaccount": "Stvori moj novi korisnički račun",
     "createuserandpass": "Stvori novo korisničko ime i lozinku s kojom se mogu prijaviti sustavu",
@@ -14,7 +14,7 @@
     "invaliddate": "Neispravan datum",
     "invalidemail": "Nevažeća adresa e-pošte",
     "invalidtime": "Neispravno vrijeme",
-    "invalidurl": "Neispravan URL",
+    "invalidurl": "URL koji ste unijeli nije valjan",
     "login": "Prijava",
     "loginbutton": "Prijava",
     "loginsteps": "Kako biste imali puni pristup e-kolegijima na ovom sustavu, morate stvoriti novi korisnički račun.\nSvaki od pojedinih e-kolegija može također imati i od vas tražiti \"lozinku e-kolegija\", koju trebate dobiti od svog nastavnika i koja se unosi samo prilikom prvog prijavljivanja na e-kolegij. Slijedite ove upute:\n   <ol size=\"2\">\n   <li>Ispunite online obrazac <a href=\"{{$a}}\">Novi korisnički račun</a> unosom osobnih podataka.</li>\n   <li>Po predaji online obrasca trebala bi vam doći poruka e-pošte na adresu koju ste naveli.</li>\n   <li>Pažljivo pročitajte poruku e-pošte i kliknite na poveznicu koja se nalazi u njoj.</li>\n   <li>Vaš korisnički račun će time biti potvrđen i vi ćete se moći prijaviti sustavu.</li>\n   <li>Potom biste trebali odabrati e-kolegij u radu kojeg želite ili trebate sudjelovati.</li>\n   <li>Ako vas sustav zatraži \"lozinku e-kolegija\" - upotrijebite onu koju vam je dao vaš nastavnik na navedenom e-kolegiju.</li>\n   <li>Nakon unosa ispravne \"lozinke e-kolegija\" možete pristupiti e-kolegiju (odnosno, od tog trenutka ste upisani na isti). Ubuduće vam za pristup e-kolegiju treba samo vaše korisničko ime i lozinka.</li>\n   </ol>",

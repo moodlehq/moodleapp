@@ -1,6 +1,6 @@
 {
-    "addfiletext": "Ajouter un fichier",
-    "audio": "Fichier audio ({{$a.EXT}})",
+    "addfiletext": "Ajouter le fichier",
+    "audio": "Audio",
     "camera": "Caméra",
     "confirmuploadfile": "Vous allez déposer {{size}}. Voulez-vous vraiment continuer ?",
     "confirmuploadunknownsize": "Impossible de calculer la taille du fichier à dépasser. Voulez-vous malgré tout continuer ?",
@@ -10,19 +10,19 @@
     "errorgettingimagealbum": "Erreur lors de la récupération de l'image de l'album.",
     "errormustbeonlinetoupload": "Vous devez être en ligne pour déposer des fichiers.",
     "errornoapp": "Vous n'avez pas d'app installée pour effectuer cette action.",
-    "errorreadingfile": "Erreur lors de la lecture du fichier « {{$a}} »",
+    "errorreadingfile": "Erreur de lecture du fichier.",
     "errorwhileuploading": "Une erreur est survenue lors du dépôt du fichier.",
     "file": "Fichier",
     "filesofthesetypes": "Des fichiers de ces types peuvent être ajoutés au devoir :",
     "fileuploaded": "Le fichier a été déposé.",
     "invalidfiletype": "Le type de fichier {{$a}} ne peut pas être accepté.",
-    "maxbytesfile": "La taille du fichier {{$a.file}} est trop grande. La taille maximale d'un fichier à déposer est de {{$a.size}}.",
+    "maxbytesfile": "Le fichier {{$a.file}} est trop gros. La taille maximale permise est de {{$a.size}}.",
     "more": "Plus",
     "photoalbums": "Albums photos",
     "readingfile": "Lecture du fichier",
     "selectafile": "Choisir un fichier",
     "uploadafile": "Déposer un fichier",
-    "uploading": "En cours de dépôt...",
+    "uploading": "Envoi",
     "uploadingperc": "Dépôt en cours : {{$a}} %",
-    "video": "Fichier vidéo ({{$a.EXT}})"
+    "video": "Vidéo"
 }

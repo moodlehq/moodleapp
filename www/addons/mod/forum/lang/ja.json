@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "新しいディスカッショントピックを追加する",
+    "addanewquestion": "新しい質問を追加する",
+    "addanewtopic": "新しいトピックを追加する",
     "cannotadddiscussion": "このフォーラムにディスカッションを追加するにはグループのメンバーである必要があります。",
     "cannotadddiscussionall": "あなたにはすべての参加者のための新しいディスカッショントピックを追加するパーミッションがありません。",
     "cannotcreatediscussion": "新しいディスカッションを作成できませんでした。",

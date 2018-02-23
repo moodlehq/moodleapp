@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Lägg till ett nytt diskussionsämne",
+    "addanewquestion": "Lägg till en ny fråga",
+    "addanewtopic": "Lägg till ett nytt ämne",
     "cannotadddiscussion": "För att lägga till diskussionsämnen till det här forumet krävs det att man är medlem av en grupp.",
     "cannotadddiscussionall": "Du har inte tillstånd att lägga till ett nytt diskussionsämne för alla deltagare. ",
     "cannotcreatediscussion": "Det gick inte att skapa en ny diskussion",

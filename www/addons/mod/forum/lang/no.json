@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Skriv i dette forumet",
+    "addanewquestion": "Legg til et nytt spørsmål",
+    "addanewtopic": "Skriv i dette forumet",
     "cannotadddiscussion": "Du må være medlem av en gruppe for å legge til ny diskusjon i dette forumet.",
     "cannotadddiscussionall": "Du har ikke tillatelse til å legge til et nytt diskusjonsemne for alle deltakerne.",
     "cannotcreatediscussion": "Kan ikke lage ny diskusjon",

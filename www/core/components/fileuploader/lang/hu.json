@@ -4,7 +4,7 @@
     "errorcapturingaudio": "Hiba a hang rögzítélse közben.",
     "errorcapturingvideo": "Nem sikerült videofelvételt készíteni.",
     "errorreadingfile": "Hiba a(z) \"{{$a}}\" állomány olvasása közben",
-    "file": "Állomány",
+    "file": "Leadás állományban",
     "filesofthesetypes": "Az ilyen típusú fájlokat hozzáadhatja a leadott munkához:",
     "fileuploaded": "Fájl feltöltve",
     "invalidfiletype": "{{$a}} típusú állomány nem fogadható el.",

@@ -13,6 +13,7 @@
     "responses": "Ответы",
     "responsesresultgraphdescription": "{{number}}% пользователей выбрало вариант: {{text}}.",
     "responsesresultgraphheader": "Отображать график",
+    "resultsnotsynced": "Ваш последний ответ должен быть синхронизирован прежде, чем будет включён в результат.",
     "savemychoice": "Сохранить мой выбор",
     "userchoosethisoption": "Пользователи, которые выбрали этот вариант",
     "yourselection": "Ваш выбор"

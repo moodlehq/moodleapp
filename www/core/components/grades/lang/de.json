@@ -1,9 +1,9 @@
 {
-    "average": "Mittelwert",
+    "average": "Durchschnitt",
     "badgrade": "Ungültige Bewertung",
     "contributiontocoursetotal": "Beiträge zum Kurs insgesamt",
-    "feedback": "Rückmeldung",
-    "grade": "Relative Bewertung",
+    "feedback": "Feedback",
+    "grade": "Bewertung",
     "grades": "Bewertungen",
     "itemname": "Name des Aspekts",
     "lettergrade": "Notenstufenbewertung",

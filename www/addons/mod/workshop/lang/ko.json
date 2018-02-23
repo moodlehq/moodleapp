@@ -1,0 +1,6 @@
+{
+    "assessmentstrategynotsupported": "평가 전략 {{$ a}}이(가) 지원되지 않습니다.",
+    "selectphase": "단계 선택",
+    "warningassessmentmodified": "사이트에서 제출이 수정되었습니다.",
+    "warningsubmissionmodified": "평가가 사이트에서 수정되었습니다."
+}

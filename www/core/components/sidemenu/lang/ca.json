@@ -2,7 +2,7 @@
     "appsettings": "Paràmetres de l'aplicació",
     "changesite": "Canvia de lloc",
     "help": "Ajuda",
-    "logout": "Surt",
+    "logout": "Desconnecta",
     "mycourses": "Els meus cursos",
     "togglemenu": "Canvia menú",
     "website": "Lloc web"

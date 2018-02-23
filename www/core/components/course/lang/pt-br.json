@@ -8,7 +8,7 @@
     "confirmdownload": "Você está prestes a baixar {{size}}. Você tem certeza que quer continuar?",
     "confirmdownloadunknownsize": "Não fomos capazes de calcular o tamanho do download. Tem certeza de que deseja fazer o download?",
     "confirmpartialdownloadsize": "Você está prestes a baixar <strong>pelo menos</strong> {{size}}. Você tem certeza que quer continuar?",
-    "contents": "Conteúdo",
+    "contents": "Conteúdos",
     "couldnotloadsectioncontent": "Não foi possível carregar o conteúdo da seção, por favor tente mais tarde.",
     "couldnotloadsections": "Não foi possível carregar a seção, por favor tente mais tarde.",
     "errordownloadingsection": "Erro ao baixar seção.",
