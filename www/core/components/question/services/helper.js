@@ -77,7 +77,7 @@ angular.module('mm.core.question')
                 selectModel.id = select.id;
                 selectModel.name = select.name;
                 selectModel.disabled = select.disabled;
-                selectModel.selected = false;
+                selectModel.selected = "";
                 selectModel.options = [];
 
                 // Treat each option.
@@ -88,11 +88,10 @@ angular.module('mm.core.question')
                     }
                     var opt = {
                         value: option.value,
-                        label: option.innerHTML,
-                        selected: option.selected
+                        label: option.innerHTML
                     };
 
-                    if (opt.selected) {
+                    if (option.selected) {
                         selectModel.selected = opt;
                     }
 

@@ -1,18 +1,20 @@
-<section class="list" ng-if="question.text || question.text === ''">
+<section class="list mma-qtype-calculated-container" ng-if="question.text || question.text === ''">
     <div class="item item-text-wrap">
         <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
     </div>
-    <ion-input class="item item-input" ng-class='{"mm-question-answer-correct": input.isCorrect === 1, "mm-question-answer-incorrect": input.isCorrect === 0}'>
-        <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off" ng-disabled="input.readOnly" >
-    </ion-input>
-    <!-- Units can be entered using a select. -->
-    <div class="item" ng-if="select" ng-class='{"item-select": !select.disabled}'>
-        <label class="accesshide" for="{{select.id}}" ng-if="select.accessibilityLabel">{{ select.accessibilityLabel }}</label>
-        <select ng-if="!select.disabled" id="{{select.id}}" name="{{select.name}}" aria-labelledby="mma-question-{{row.id}}" ng-options="option.label for option in select.options track by option.value" ng-model="select.selected" mm-ios-select-fix>
-        </select>
-        <p class="mm-select-fix" ng-if="select.selected && select.selected.label">
-            {{select.selected.label}}
-        </p>
+    <div class="item item-text-wrap row mm-item-padding">
+        <ion-input class="col item-input" ng-class='{"mm-question-answer-correct": input.isCorrect === 1, "mm-question-answer-incorrect": input.isCorrect === 0}'>
+            <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off" ng-disabled="input.readOnly" >
+        </ion-input>
+        <!-- Units can be entered using a select. -->
+        <div class="col" ng-if="select" ng-class='{"item-select": !select.disabled}'>
+            <label class="accesshide" for="{{select.id}}" ng-if="select.accessibilityLabel">{{ select.accessibilityLabel }}</label>
+            <select ng-if="!select.disabled" id="{{select.id}}" name="{{select.name}}" aria-labelledby="mma-question-{{row.id}}" ng-options="option.label for option in select.options" ng-model="select.selected" mm-ios-select-fix>
+            </select>
+            <p class="mm-select-fix" ng-if="select.selected && select.selected.label">
+                {{select.selected.label}}
+            </p>
+        </div>
     </div>
     <!-- Units can be entered using radio buttons. -->
     <ion-radio ng-repeat="option in options" name="{{option.name}}" ng-model="unit" ng-value="option.value" ng-disabled="option.disabled">
