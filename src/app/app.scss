@@ -50,7 +50,7 @@
   }
 }
 
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(sm) {
   .hidden-phone {
     display: none !important;
     opacity: 0 !important;

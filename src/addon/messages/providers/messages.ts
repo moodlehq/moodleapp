@@ -536,6 +536,16 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Returns whether or not the message preferences are enabled for the current site.
+     *
+     * @return {boolean} True if enabled, false otherwise.
+     * @since  3.2
+     */
+    isMessagePreferencesEnabled(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_get_user_message_preferences');
+    }
+
+    /**
      * Returns whether or not messaging is enabled for a certain site.
      *
      * This could call a WS so do not abuse this method.

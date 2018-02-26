@@ -6,13 +6,17 @@ page-core-user-profile {
         font-size: 24px;
     }
     .core-user-communication-handlers {
-        padding: 6px 2px;
         background: $list-background-color;
+        border-bottom: 1px solid $list-border-color;
 
         .core-user-profile-handler {
             background: $list-background-color;
             border: 0;
             color: $core-user-profile-communication-icons-color;
+
+            p {
+                margin: 0;
+            }
 
             .icon {
                 border-radius: 50%;

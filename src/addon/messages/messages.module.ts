@@ -18,19 +18,21 @@ import { AddonMessagesProvider } from './providers/messages';
 import { AddonMessagesOfflineProvider } from './providers/messages-offline';
 import { AddonMessagesSyncProvider } from './providers/sync';
 import { AddonMessagesMainMenuHandler } from './providers/mainmenu-handler';
-import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
-import { CoreContentLinksDelegate } from '../../core/contentlinks/providers/delegate';
-import { CoreUserDelegate } from '../../core/user/providers/user-delegate';
-import { CoreCronDelegate } from '../../providers/cron';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreUserDelegate } from '@core/user/providers/user-delegate';
+import { CoreCronDelegate } from '@providers/cron';
 import { AddonMessagesSendMessageUserHandler } from './providers/user-send-message-handler';
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
-import { CoreEventsProvider } from '../../providers/events';
-import { CoreAppProvider } from '../../providers/app';
-import { CoreSitesProvider } from '../../providers/sites';
-import { CoreLocalNotificationsProvider } from '../../providers/local-notifications';
-import { CoreContentLinksHelperProvider } from '../../core/contentlinks/providers/helper';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreAppProvider } from '@providers/app';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
+import { AddonMessagesSettingsHandler } from './providers/settings-handler';
 
 @NgModule({
     declarations: [
@@ -45,7 +47,8 @@ import { CoreContentLinksHelperProvider } from '../../core/contentlinks/provider
         AddonMessagesSendMessageUserHandler,
         AddonMessagesDiscussionLinkHandler,
         AddonMessagesIndexLinkHandler,
-        AddonMessagesSyncCronHandler
+        AddonMessagesSyncCronHandler,
+        AddonMessagesSettingsHandler
     ]
 })
 export class AddonMessagesModule {
@@ -55,7 +58,8 @@ export class AddonMessagesModule {
             userDelegate: CoreUserDelegate, cronDelegate: CoreCronDelegate, syncHandler: AddonMessagesSyncCronHandler,
             network: Network, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
-            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider) {
+            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider,
+            settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
@@ -63,6 +67,7 @@ export class AddonMessagesModule {
         userDelegate.registerHandler(sendMessageHandler);
         cronDelegate.register(syncHandler);
         cronDelegate.register(mainmenuHandler);
+        settingsDelegate.registerHandler(settingsHandler);
 
         // Sync some discussions when device goes online.
         network.onConnect().subscribe(() => {

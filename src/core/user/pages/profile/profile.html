@@ -22,14 +22,16 @@
                 </p>
             </ion-item>
 
-            <ion-grid ion-item class="core-user-communication-handlers" *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
-                <ion-row no-padding align-items-center text-center>
-                    <ion-col align-self-center *ngIf="communicationHandlers && communicationHandlers.length">
-                        <a *ngFor="let comHandler of communicationHandlers" (click)="handlerClicked($event, comHandler)" [ngClass]="['core-user-profile-handler', comHandler.class]" title="{{comHandler.title | translate}}">
+            <ion-grid class="core-user-communication-handlers" *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
+                <ion-row no-padding justify-content-between *ngIf="communicationHandlers && communicationHandlers.length">
+                    <ion-col align-self-center *ngFor="let comHandler of communicationHandlers" text-center>
+                        <a (click)="handlerClicked($event, comHandler)" [ngClass]="['core-user-profile-handler', comHandler.class]" title="{{comHandler.title | translate}}" tappable>
                             <ion-icon [name]="comHandler.icon"></ion-icon>
                             <p>{{comHandler.title | translate}}</p>
                         </a>
                     </ion-col>
+                </ion-row>
+                <ion-row no-padding>
                     <ion-col text-center class="core-loading-handlers" *ngIf="isLoadingHandlers">
                         <ion-spinner></ion-spinner>
                     </ion-col>

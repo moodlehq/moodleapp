@@ -7,6 +7,7 @@
     "errorwhileretrievingmessages": "Error while retrieving messages from the server.",
     "messagenotsent": "The message was not sent. Please try again later.",
     "message": "Message",
+    "messagepreferences": "Message preferences",
     "messages": "Messages",
     "newmessage": "New message",
     "newmessages": "New messages",
