@@ -33,6 +33,8 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { AddonMessagesSettingsHandler } from './providers/settings-handler';
+import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 @NgModule({
     declarations: [
@@ -59,7 +61,8 @@ export class AddonMessagesModule {
             network: Network, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider,
-            settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate) {
+            settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
+pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
@@ -92,6 +95,18 @@ export class AddonMessagesModule {
         if (appProvider.isDesktop()) {
             // Listen for clicks in simulated push notifications.
             localNotifications.registerClick(AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
+        }
+
+        // @todo: use addon manager $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate');
+        // Register push notification clicks.
+        if (pushNotificationsDelegate) {
+            pushNotificationsDelegate.registerHandler('mmaMessages', (notification) => {
+                if (utils.isFalseOrZero(notification.notif)) {
+                    notificationClicked(notification);
+
+                    return true;
+                }
+            });
         }
     }
 }

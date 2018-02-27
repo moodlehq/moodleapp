@@ -19,7 +19,7 @@ import { Network } from '@ionic-native/network';
 
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
-import { SQLiteDB } from '../classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Data stored for a redirect to another page/site.

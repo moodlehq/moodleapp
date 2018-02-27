@@ -97,12 +97,11 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         this.messagesProvider.getUnreadConversationsCount(undefined, siteId).then((unread) => {
             // Leave badge enter if there is a 0+ or a 0.
             this.badge = parseInt(unread, 10) > 0 ? unread : '';
+            // @todo: use addon manager $mmaPushNotifications = $mmAddonManager.get('$mmaPushNotifications');
             // Update badge.
-            /*
-            $mmaPushNotifications = $mmAddonManager.get('$mmaPushNotifications');
-            if ($mmaPushNotifications) {
-                $mmaPushNotifications.updateAddonCounter(siteId, 'mmaMessages', unread);
-            }*/
+            if (this.pushNotificationsProvider) {
+                this.pushNotificationsProvider.updateAddonCounter('mmaMessages', unread, siteId);
+            }
         }).catch(() => {
             this.badge = '';
         }).finally(() => {
