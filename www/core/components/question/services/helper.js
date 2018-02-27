@@ -77,7 +77,6 @@ angular.module('mm.core.question')
                 selectModel.id = select.id;
                 selectModel.name = select.name;
                 selectModel.disabled = select.disabled;
-                selectModel.selected = "";
                 selectModel.options = [];
 
                 // Treat each option.
@@ -92,11 +91,18 @@ angular.module('mm.core.question')
                     };
 
                     if (option.selected) {
-                        selectModel.selected = opt;
+                        selectModel.selected = opt.value;
+                        selectModel.selectedLabel = opt.label;
                     }
 
                     selectModel.options.push(opt);
                 });
+
+                if (!selectModel.selected) {
+                    // No selected option, select the first one.
+                    selectModel.selected = selectModel.options[0].value;
+                    selectModel.selectedLabel = selectModel.options[0].label;
+                }
 
                 // Get the accessibility label.
                 accessibilityLabel = questionEl.querySelector('label[for="' + select.id + '"]');

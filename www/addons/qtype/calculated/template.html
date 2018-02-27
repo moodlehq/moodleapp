@@ -9,10 +9,10 @@
         <!-- Units can be entered using a select. -->
         <div class="col" ng-if="select" ng-class='{"item-select": !select.disabled}'>
             <label class="accesshide" for="{{select.id}}" ng-if="select.accessibilityLabel">{{ select.accessibilityLabel }}</label>
-            <select ng-if="!select.disabled" id="{{select.id}}" name="{{select.name}}" aria-labelledby="mma-question-{{row.id}}" ng-options="option.label for option in select.options" ng-model="select.selected" mm-ios-select-fix>
+            <select ng-if="!select.disabled" id="{{select.id}}" name="{{select.name}}" aria-labelledby="mma-question-{{row.id}}" ng-options="option.value as option.label for option in select.options" ng-model="select.selected" ng-change="valueChanged()" mm-ios-select-fix>
             </select>
-            <p class="mm-select-fix" ng-if="select.selected && select.selected.label">
-                {{select.selected.label}}
+            <p class="mm-select-fix" ng-if="select.selectedLabel">
+                {{select.selectedLabel}}
             </p>
         </div>
     </div>

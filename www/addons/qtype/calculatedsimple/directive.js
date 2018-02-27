@@ -30,6 +30,17 @@ angular.module('mm.addons.qtype_calculatedsimple')
         templateUrl: 'addons/qtype/calculated/template.html',
         link: function(scope) {
             $mmQuestionHelper.calculatedDirective(scope, $log);
+
+            scope.valueChanged = function() {
+                // The value has changed. Update selected label.
+                for (var i = 0; i < scope.select.options.length; i++) {
+                    var option = scope.select.options[i];
+                    if (option.value == scope.select.selected) {
+                        scope.select.selectedLabel = option.label;
+                        break;
+                    }
+                }
+            };
         }
     };
 });

@@ -108,6 +108,30 @@ angular.module('mm.addons.qtype_calculated')
     };
 
     /**
+     * Prepare the answers for a certain question.
+     * This function should only be implemented if the answers must be processed before being sent.
+     *
+     * @param  {Object} question The question.
+     * @param  {Object} answers  The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param  {Boolean} offline True if data should be saved in offline.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise|Void}    Promise resolved when data has been prepared.
+     */
+    self.prepareAnswers = function(question, answers, offline, siteId) {
+        // If the units are sent using a select, remove a "string:" added by Angular to the values.
+        // First check if there really is a select in the question HTML.
+        var div = document.createElement('div'),
+            select;
+
+        div.innerHTML = question.html;
+        select = div.querySelector('select[name*=unit]');
+        if (select && typeof answers[select.name] == 'string') {
+            // Remove the "string:" from the beginning of the answer if it's there.
+            answers[select.name] = answers[select.name].replace(/^string:/, '');
+        }
+    };
+
+    /**
      * Check if a question requires units in a separate input.
      *
      * @param {Object} question The questions.
