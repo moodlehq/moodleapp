@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Tempo de notificação padrão",
     "errorloadevent": "Erro ao carregar evento.",
     "errorloadevents": "Erro ao carregar eventos.",
-    "noevents": "Sem eventos",
-    "notifications": "Notificação"
+    "noevents": "Não há atividades pendentes",
+    "notifications": "Avisos"
 }

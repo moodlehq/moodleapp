@@ -1,11 +1,11 @@
 {
-    "activities": "أنشطة",
-    "duedate": "موعد التسليم",
+    "activities": "الأنشطة",
+    "duedate": "تاريخ تقديم مهمة",
     "errornocompetenciesfound": "لا يوجد أي قدرات موجودة",
     "myplans": "خططي للتعلم",
     "nocompetencies": "لا يوجد أي قدرات",
     "path": "مسار",
     "progress": "تقدّم الطالب",
-    "status": "الوضع",
+    "status": "الحالة",
     "template": "قالب"
 }

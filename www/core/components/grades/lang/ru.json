@@ -1,5 +1,5 @@
 {
-    "average": "Средняя оценка",
+    "average": "Средний",
     "badgrade": "Указана некорректная оценка",
     "contributiontocoursetotal": "Вклад в итог курса",
     "feedback": "Отзыв",
@@ -10,6 +10,6 @@
     "nooutcome": "Нет показателя",
     "percentage": "Проценты",
     "range": "Диапазон",
-    "rank": "Место",
+    "rank": "Ранг",
     "weight": "Вес"
 }

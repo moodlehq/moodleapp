@@ -2,12 +2,12 @@
     "admindisableddownload": "L'amministratore del sito Moodle ha disabilitato il download dei file. Puoi navigare tra i file ma non potrai scaricarli.",
     "clicktoupload": "Fai click sul pulsante sotto per caricare i file nei File personali",
     "couldnotloadfiles": "Non è stato possibile caricare l'elenco dei file.",
-    "emptyfilelist": "Non ci sono file da visualizzare.",
+    "emptyfilelist": "Non ci sono file da visualizzare",
     "erroruploadnotworking": "Al momento non è possibile caricare file sul sito.",
     "files": "File",
     "myprivatefilesdesc": "I file memorizzati nell'omonima area di Moodle",
     "privatefiles": "File personali",
     "sitefiles": "File del sito",
     "sitefilesdesc": "Altri file del sito Moodle ai quali puoi accedere.",
-    "uploadfiles": "Carica file"
+    "uploadfiles": "Invia file di commento"
 }

@@ -1,5 +1,5 @@
 {
-    "attachment": "Legg til utmerkelsen i meldingen",
+    "attachment": "Vedlegg",
     "browsemode": "Forhåndsvisningsmodus",
     "byalphabet": "Alfabetisk",
     "byauthor": "Gruppér etter forfatter",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Nylig oppdatert",
     "bysearch": "Søk",
     "cannoteditentry": "Kan ikke redigere oppføring",
-    "casesensitive": "Store/små bokstaver må stemme",
-    "categories": "Kategorier",
+    "casesensitive": "Skiller mellom store/små bokstaver",
+    "categories": "Kurskategorier",
     "entriestobesynced": "Oppføringer som skal synkroniseres",
     "entrypendingapproval": "Denne oppføringen venter på godkjenning",
     "errorloadingentries": "Feil ved lasting av oppføringer.",
