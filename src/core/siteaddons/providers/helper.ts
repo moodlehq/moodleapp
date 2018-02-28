@@ -27,10 +27,12 @@ import { CoreCourseModulePrefetchDelegate } from '../../course/providers/module-
 import {
     CoreCourseOptionsDelegate, CoreCourseOptionsHandler, CoreCourseOptionsHandlerData
 } from '../../course/providers/options-delegate';
+import { CoreCourseFormatDelegate, CoreCourseFormatHandler } from '../../course/providers/format-delegate';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../user/providers/user-delegate';
 import { CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreSiteAddonsModuleIndexComponent } from '../components/module-index/module-index';
 import { CoreSiteAddonsCourseOptionComponent } from '../components/course-option/course-option';
+import { CoreSiteAddonsCourseFormatComponent } from '../components/course-format/course-format';
 import { CoreSiteAddonsProvider } from './siteaddons';
 import { CoreSiteAddonsModulePrefetchHandler } from '../classes/module-prefetch-handler';
 import { CoreCompileProvider } from '../../compile/providers/compile';
@@ -51,7 +53,8 @@ export class CoreSiteAddonsHelperProvider {
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
             private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
-            private coursesProvider: CoreCoursesProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate) {
+            private coursesProvider: CoreCoursesProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
+            private courseFormatDelegate: CoreCourseFormatDelegate) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
     }
 
@@ -284,6 +287,11 @@ export class CoreSiteAddonsHelperProvider {
                             result.restrict);
                     break;
 
+                case 'CoreCourseFormatDelegate':
+                    uniqueName = this.registerCourseFormatHandler(addon, handlerName, handlerSchema, result.jsResult,
+                            result.restrict);
+                    break;
+
                 default:
                     // Nothing to do.
             }
@@ -298,6 +306,51 @@ export class CoreSiteAddonsHelperProvider {
                 });
             }
         });
+    }
+
+    /**
+     * Given a handler in an addon, register it in the course format delegate.
+     *
+     * @param {any} addon Data of the addon.
+     * @param {string} handlerName Name of the handler in the addon.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
+     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @return {string} A string to identify the handler.
+     */
+    protected registerCourseFormatHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any,
+            restrict?: any): string {
+        if (!handlerSchema) {
+            // Required data not provided, stop.
+            return;
+        }
+
+        // Create the base handler.
+        const formatName = addon.component.replace('format_', ''),
+            baseHandler = this.getBaseHandler(formatName);
+        let handler: CoreCourseFormatHandler;
+
+        // Extend the base handler, adding the properties required by the delegate.
+        handler = Object.assign(baseHandler, {
+            canViewAllSections: (course: any): boolean => {
+                return typeof handlerSchema.canviewallsections != 'undefined' ? handlerSchema.canviewallsections : true;
+            },
+            displayEnableDownload: (course: any): boolean => {
+                return typeof handlerSchema.displayenabledownload != 'undefined' ? handlerSchema.displayenabledownload : true;
+            },
+            displaySectionSelector: (course: any): boolean => {
+                return typeof handlerSchema.displaysectionselector != 'undefined' ? handlerSchema.displaysectionselector : true;
+            },
+            getCourseFormatComponent: (course: any): any => {
+                if (handlerSchema.method) {
+                    return CoreSiteAddonsCourseFormatComponent;
+                }
+            }
+        });
+
+        this.courseFormatDelegate.registerHandler(handler);
+
+        return formatName;
     }
 
     /**
