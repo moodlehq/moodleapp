@@ -70,7 +70,8 @@ angular.module('mm.core.question')
             // Check if the question has a select for units.
             var selectModel = {},
                 select = questionEl.querySelector('select[name*=unit]'),
-                options = select && select.querySelectorAll('option');
+                options = select && select.querySelectorAll('option'),
+                input;
 
             if (select && options && options.length) {
 
@@ -109,6 +110,10 @@ angular.module('mm.core.question')
                 selectModel.accessibilityLabel = accessibilityLabel.innerHTML;
 
                 scope.select = selectModel;
+
+                // Check which one should be displayed first: the select or the input.
+                input = questionEl.querySelector('input[type="text"][name*=answer]');
+                scope.selectFirst = questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(select.outerHTML);
 
                 return;
             }
@@ -155,6 +160,10 @@ angular.module('mm.core.question')
                 log.warn('Aborting because of an error parsing options.', question.name, option.name);
                 return self.showDirectiveError(scope);
             });
+
+            // Check which one should be displayed first: the options or the input.
+            input = questionEl.querySelector('input[type="text"][name*=answer]');
+            scope.optionsFirst = questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(options[0].outerHTML);
         }
     };
 
