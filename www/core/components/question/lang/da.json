@@ -16,5 +16,5 @@
     "questionmessage": "Spørgsmål {{$a}}: {{$b}}",
     "questionno": "Spørgsmål {{$a}}",
     "requiresgrading": "Kræver bedømmelse",
-    "unknown": "Ukendt"
+    "unknown": "Kan ikke bestemme status"
 }

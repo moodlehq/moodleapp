@@ -15,7 +15,7 @@
     "erroremptysubject": "L'oggetto non può essere vuoto",
     "errorgetforum": "Si è verificato un errore durante la ricezione dei dati del forum.",
     "errorgetgroups": "Si è verificato un errore durante la ricezione delle impostazioni gruppo.",
-    "forumnodiscussionsyet": "In questo forum non sono presenti discussioni",
+    "forumnodiscussionsyet": "In questo forum non sono presenti discussioni.",
     "group": "Gruppo",
     "message": "Messaggio",
     "modeflatnewestfirst": "Visualizza le repliche in formato lineare, con le più recenti all'inizio",

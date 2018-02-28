@@ -11,7 +11,7 @@
     "createaccount": "Mein neues Konto anlegen",
     "createuserandpass": "Wähle deinen Anmeldenamen und dein Kennwort",
     "credentialsdescription": "Gib den Anmeldenamen und das Kennwort ein. ",
-    "emailconfirmsent": "<p>Um sicherzugehen, dass sich niemand unberechtigt über die von dir angegebene E-Mail anmeldet, wird eine automatische Benachrichtigung an diese Adresse <b>{{$a}}</b> gesendet. Je nach Netzlast trifft sie sofort oder auch etwas später bei dir ein.</p>\n<p>Die Benachrichtigung enthält eine Anleitung, wie du deine Registrierung bestätigst.\nDanach bist du auf dieser Moodle-Seite registriert und kannst sofort loslegen.</p>\n<p>Bei Problemen wende dich bitte an die Administrator/innen der Website.</p>",
+    "emailconfirmsent": "<p>In Kürze wird eine E-Mail an <b>{{$a}}</b> gesendet.</p><p>Du findest eine einfache Anleitung, wie du die Registrierung abschließt. Bei Schwierigkeiten frage den Administrator der Website.</p>",
     "emailnotmatch": "Die E-Mail-Adressen stimmen nicht überein.",
     "enterthewordsabove": "Geben Sie die gezeigten Wörter ein",
     "erroraccesscontrolalloworigin": "Der Cross-Origin Aufruf wurde zurückgewiesen. Weitere Informationen: https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",

@@ -11,7 +11,7 @@
     "createaccount": "Crear cuenta",
     "createuserandpass": "Crear un nuevo usuario y contraseña para acceder al sistema",
     "credentialsdescription": "Introduzca su nombre se usuario y contraseña para entrar",
-    "emailconfirmsent": "<p>Hemos enviado un correo electrónico a <b>{{$a}}</b></p>\n<p>En él encontrará instrucciones sencillas para concluir el proceso.</p>\n<p>Si tuviera alguna dificultad, contacte con el Administrador del Sistema.</p>",
+    "emailconfirmsent": "<p>Se ha enviado un email a su dirección <b>{{$a}}</b></p><p>Contiene instrucciones para completar el proceso de registro.</p><p>Si continúa teniendo algún problema, contacte con el administrador de su sitio.</p>",
     "emailnotmatch": "Las direcciones de correo no coinciden.",
     "enterthewordsabove": "Escriba las palabras de arriba",
     "erroraccesscontrolalloworigin": "La llamada Cross-Origin que está intentando ha sido rechazada. Por favor visite https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",

@@ -15,7 +15,7 @@
     "errordownloadscorm": "Si è verificato un errore durante lo scaricamento dello SCORM \"{{name}}\".",
     "errorgetscorm": "Si è verificato un errore durante la ricezione dei dati SCORM.",
     "errorinvalidversion": "Spiacente, l'applicazione supporta solamente SCORM 1.2.",
-    "errornotdownloadable": "Lo scaricamento di pacchetti SCORM è disabilitato a livello di sito Moodle. Per favore contatta l'amministratore del sito.",
+    "errornotdownloadable": "Lo scaricamento di pacchetti SCORM è disabilitato. Per favore contatta l'amministratore del sito.",
     "errornovalidsco": "Questo SCORM non ha SCO visibili da caricare.",
     "errorpackagefile": "Spiacente, l'applicazione supporta solamente pacchetti ZIP.",
     "errorsyncscorm": "Si è verificato un errore durante la sincronizzazione. Per favore riprova.",
@@ -46,6 +46,6 @@
     "scormstatusnotdownloaded": "Questo SCORM non è stato scaricato, lo sarà non appena lo aprirai.",
     "scormstatusoutdated": "Questo SCORM è stato modificato dall'ultimo scaricamento e sarà scaricato nuovamente non appena lo aprirai.",
     "suspended": "Sospeso",
-    "warningofflinedatadeleted": "Alcuni dati offline del tentativo {{number}}  sono stati eliminati perché non è stato possibile inserirli in un nuovo tentativo.",
+    "warningofflinedatadeleted": "Alcuni dati offline del tentativo {{number}} sono stati eliminati perché non è stato possibile inserirli in un nuovo tentativo.",
     "warningsynconlineincomplete": "Alcuni tentativi non sono stati sincronizzati sul sito poiché è presente un tentativo svolto online che non è stato terminato. Per sincronizzare, devi prima terminare il tentativo online."
 }
