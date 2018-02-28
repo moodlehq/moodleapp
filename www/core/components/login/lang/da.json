@@ -28,7 +28,7 @@
     "invalidmoodleversion": "Ugyldig Moodle version. Der kræves minimum 2.4.",
     "invalidsite": "Denne webadresse er ugyldig.",
     "invalidtime": "Ugyldigt klokkeslæt",
-    "invalidurl": "Den URL, du har skrevet, er ikke korrekt",
+    "invalidurl": "Ugyldig URL",
     "invalidvaluemax": "Højeste værdi er {{$a}}",
     "invalidvaluemin": "Mindste værdi er {{$a}}",
     "localmobileunexpectedresponse": "Du har fået en uventet reaktion fra Moodle Mobile Additional Features, så du vil blive godkendt ved hjælp af standard Mobile service.",

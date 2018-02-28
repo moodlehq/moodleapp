@@ -13,7 +13,7 @@
     "errorreadingfile": "Erreur de lecture du fichier.",
     "errorwhileuploading": "Une erreur est survenue lors du dépôt du fichier.",
     "file": "Fichier",
-    "filesofthesetypes": "Des fichiers de ces types peuvent être ajoutés au devoir :",
+    "filesofthesetypes": "Types de fichier acceptés :",
     "fileuploaded": "Le fichier a été déposé.",
     "invalidfiletype": "Le type de fichier {{$a}} ne peut pas être accepté.",
     "maxbytesfile": "Le fichier {{$a.file}} est trop gros. La taille maximale permise est de {{$a.size}}.",

@@ -11,6 +11,8 @@
     "contents": "Contenidos",
     "couldnotloadsectioncontent": "No pudo cargarse el contenido de la sección. Por favor inténtelo nuevamente después.",
     "couldnotloadsections": "No pudieron cargarse las secciones. Por favor inténtelo nuevamente después.",
+    "downloadcourse": "Descargar curso",
+    "errordownloadingcourse": "Error al descargar curso.",
     "errordownloadingsection": "Error al descargar sección",
     "errorgetmodule": "Error al obtener datos de la actividad.",
     "hiddenfromstudents": "Oculto de estudiantes",

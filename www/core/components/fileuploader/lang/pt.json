@@ -13,7 +13,7 @@
     "errorreadingfile": "Erro ao ler o ficheiro",
     "errorwhileuploading": "Ocorreu um erro durante o carregamento do ficheiro.",
     "file": "Ficheiro",
-    "filesofthesetypes": "Podem ser adicionados à submissão os seguintes tipos de ficheiros:",
+    "filesofthesetypes": "Tipos de ficheiros permitidos:",
     "fileuploaded": "Ficheiro carregado com sucesso",
     "invalidfiletype": "O tipo de ficheiro \"{{$a}}\" não é permitido.",
     "maxbytesfile": "O ficheiro {{$a.file}} é muito grande. O tamanho máximo que pode carregar é de {{$a.size}}.",

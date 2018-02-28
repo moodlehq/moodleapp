@@ -1,0 +1,15 @@
+{
+    "choiceoptions": "설문 요건",
+    "expired": "죄송합니다. 이 활동은 {{$a}} 에 종료되어서 더 이상 사용할 수 없습니다.",
+    "full": "(마감됨)",
+    "noresultsviewable": "지금은 결과를 볼 수 없습니다.",
+    "notopenyet": "죄송합니다만, {{$a}} 까지는 이용할 수 없습니다.",
+    "numberofuser": "사용자",
+    "numberofuserinpercentage": "백분율로 환산한 사용자 수",
+    "removemychoice": "기존 응답 취소",
+    "responses": "응답",
+    "responsesresultgraphheader": "그래프 표시",
+    "savemychoice": "응답내용 저장",
+    "userchoosethisoption": "사용자가 이 옵션을 선택했습니다.",
+    "yourselection": "당신의 선택"
+}

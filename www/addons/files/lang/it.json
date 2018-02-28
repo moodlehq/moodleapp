@@ -5,9 +5,9 @@
     "emptyfilelist": "Non ci sono file da visualizzare.",
     "erroruploadnotworking": "Al momento non è possibile caricare file sul sito.",
     "files": "File",
-    "myprivatefilesdesc": "I file memorizzati nell'omonima area di Moodle",
+    "myprivatefilesdesc": "I file memorizzati nei File personali",
     "privatefiles": "File personali",
     "sitefiles": "File del sito",
-    "sitefilesdesc": "Altri file del sito Moodle ai quali puoi accedere.",
+    "sitefilesdesc": "Altri file del sito ai quali puoi accedere.",
     "uploadfiles": "Carica file"
 }

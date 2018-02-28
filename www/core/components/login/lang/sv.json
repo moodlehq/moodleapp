@@ -21,7 +21,7 @@
     "invalidemail": "Ogiltig e-postadress",
     "invalidmoodleversion": "Ogiltig Moodle version. Lägsta version som krävs är",
     "invalidsite": "Den webbadress är ogiltig.",
-    "invalidurl": "Den URL som Du just matade in är inte giltig",
+    "invalidurl": "Ogiltig url",
     "localmobileunexpectedresponse": "Kontrollen för Moodle mobila funktioner returnerade  ett oväntat svar. Du kommer att autentiseras med mobila standard tjänsten.",
     "login": "Logga in",
     "loginbutton": "Logga In!",

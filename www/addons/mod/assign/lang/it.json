@@ -25,10 +25,12 @@
     "editingstatus": "Possibilità di modifica",
     "editsubmission": "Modifica consegna",
     "extensionduedate": "Data scadenza proroga",
-    "grade": "Valutazione",
+    "feedbacknotsupported": "Questo feedback non è supportato dalla app e può non contenere tutte le informazioni.",
+    "grade": "Punteggio",
     "graded": "Valutata",
     "gradedby": "Valutatore",
     "gradedon": "Data di valutazione",
+    "gradenotsynced": "Valutazione non sincronizzata",
     "gradeoutof": "Punteggio (su {{$a}})",
     "gradingstatus": "Stato valutazione",
     "groupsubmissionsettings": "Impostazioni consegna di gruppo",
@@ -47,7 +49,7 @@
     "nomoresubmissionsaccepted": "Consentito solamente ai partecipanti ai quali è stata concessa una proroga",
     "noonlinesubmissions": "Questo compito non richiede consegne online",
     "nosubmission": "Non sono presenti consegne da valutare",
-    "notallparticipantsareshown": "I partecipanti che non hanno consegnato non sono visualizzati",
+    "notallparticipantsareshown": "I partecipanti che non hanno consegnato non sono visualizzati.",
     "noteam": "Non appartieni a nessun gruppo",
     "notgraded": "Non valutata",
     "numberofdraftsubmissions": "Bozze",
@@ -82,6 +84,8 @@
     "ungroupedusers": "L'impostazione 'Consegna di gruppo obbligatoria' è abilitata ma alcuni utenti non fanno parte di gruppi o fanno parte di più gruppi e pertanto non potranno effettuare consegne.",
     "unlimitedattempts": "Illimitati",
     "userswhoneedtosubmit": "Utenti che non hanno consegnato: {{$a}}",
-    "userwithid": "Utente con id {{id}}",
-    "viewsubmission": "Visualizza consegne"
+    "userwithid": "Utente con ID {{id}}",
+    "viewsubmission": "Visualizza consegne",
+    "warningsubmissiongrademodified": "La valutazione dell'utente è stata modificata sul sito.",
+    "warningsubmissionmodified": "La consegna dell'utente è stata modificata sul sito."
 }

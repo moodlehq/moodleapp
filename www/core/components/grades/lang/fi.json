@@ -3,13 +3,13 @@
     "badgrade": "Virhe annetussa arvosanassa",
     "contributiontocoursetotal": "Osuus kurssin kokonaisarvosanasta",
     "feedback": "Palaute",
-    "grade": "Arviointi",
+    "grade": "Arvosana",
     "grades": "Arvioinnit",
     "itemname": "Kohteen nimi",
     "lettergrade": "Kirjainarvosana",
     "nooutcome": "Ei tavoitetta",
     "percentage": "Prosenttia",
     "range": "Vaihteluväli",
-    "rank": "Luokitus",
+    "rank": "Sijoitus",
     "weight": "painotus"
 }

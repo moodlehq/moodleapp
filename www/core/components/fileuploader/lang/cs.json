@@ -13,7 +13,7 @@
     "errorreadingfile": "Chyba při čtení souboru.",
     "errorwhileuploading": "Při pokusu o nahrání souboru došlo k chybě .",
     "file": "Soubor",
-    "filesofthesetypes": "K řešení úkolu mohou být přidány soubory těchto typů:",
+    "filesofthesetypes": "Povolené typy souborů:",
     "fileuploaded": "Soubor nahrán",
     "invalidfiletype": "Typ souboru {{$a}} nemůže být přijat",
     "maxbytesfile": "Soubor {{$a.file}} je příliš veliký. Maximální velikost nahrávaného souboru je {{$a.size}}.",

@@ -4,10 +4,10 @@
     "currentlanguage": "Aktualny język",
     "deletesitefiles": "Czy na pewno chcesz usunąć pliki pobrane z tej strony?",
     "disableall": "Wyłącz powiadomienia",
-    "disabled": "Wyłączone",
+    "disabled": "Wyłączony",
     "enabledebugging": "Włącz debugowanie",
     "estimatedfreespace": "Szacowana wolna przestrzeń",
-    "general": "Dane ogólne",
+    "general": "Ogólne",
     "language": "Język",
     "license": "Licencja",
     "loggedin": "On-line",
@@ -15,5 +15,5 @@
     "settings": "Ustawienia",
     "sites": "Serwisy",
     "spaceusage": "Użyta przestrzeń",
-    "total": "Ogólnie"
+    "total": "Razem"
 }

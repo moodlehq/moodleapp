@@ -1,16 +1,16 @@
 {
     "activities": "Aktivnosti",
     "competencies": "Kompetencije",
-    "duedate": "Rok",
+    "duedate": "Rok predaje",
     "evidence": "Dokaz",
     "evidence_coursecompleted": "Kolegij '{{$a}}' je dovršen.",
     "evidence_coursemodulecompleted": "Aktivnost '{{$a}}' je dovršena.",
-    "path": "Putanja (PATH)",
+    "path": "Putanja",
     "planstatusactive": "Aktivno",
     "planstatuscomplete": "Dovršeno",
     "planstatusdraft": "Nacrt",
     "progress": "Napredak studenta",
     "rating": "Ocjena",
-    "status": "Stanje značke",
+    "status": "Status",
     "template": "Predložak"
 }

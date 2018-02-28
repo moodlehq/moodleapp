@@ -13,7 +13,7 @@
     "errorreadingfile": "Erro ao ler arquivo.",
     "errorwhileuploading": "Houve um erro durante o envio do arquivo.",
     "file": "Arquivo",
-    "filesofthesetypes": "Arquivos destes tipos podem ser adicionados ao envio:",
+    "filesofthesetypes": "Tipos de ficheiros permitidos:",
     "fileuploaded": "Arquivo enviado",
     "invalidfiletype": "{{$a}} não é um tipo de arquivo aceito.",
     "maxbytesfile": "O arquivo {{$a.file}} é muito grande. O tamanho máximo que você pode enviar é {{$a.size}}.",

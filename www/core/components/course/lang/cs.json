@@ -11,6 +11,8 @@
     "contents": "Obsah",
     "couldnotloadsectioncontent": "Nelze načíst obsah sekce. Zkuste to prosím později.",
     "couldnotloadsections": "Nelze načíst sekce. Zkuste to prosím později.",
+    "downloadcourse": "Stáhnout kurz",
+    "errordownloadingcourse": "Chyba stahování kurzu.",
     "errordownloadingsection": "Chyba při stahování sekce.",
     "errorgetmodule": "Chyba při načítání",
     "hiddenfromstudents": "Skryté před studenty",
