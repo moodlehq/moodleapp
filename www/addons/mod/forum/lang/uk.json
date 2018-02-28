@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Додати тему для обговорення",
+    "addanewquestion": "Додати нове питання",
+    "addanewtopic": "Додати нову тему",
     "cannotadddiscussion": "Додання тем обговорення на цей форум вимагає членства у групі.",
     "cannotadddiscussionall": "Ви не маєте права створювати нові теми дискусії для всіх учасників",
     "cannotcreatediscussion": "Не вдається створити нову дискусію",

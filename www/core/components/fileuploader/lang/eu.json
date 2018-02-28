@@ -1,6 +1,6 @@
 {
     "addfiletext": "Gehitu fitxategia",
-    "audio": "Audio-fitxategia ({{$a.EXT}})",
+    "audio": "Audioa",
     "camera": "Kamera",
     "confirmuploadfile": "{{size}} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
     "confirmuploadunknownsize": "Ezin izan dugu igotzera zoazenaren tamaina kalkulatu. Ziur zaude jarraitu nahi duzula?",
@@ -10,9 +10,9 @@
     "errorgettingimagealbum": "Errorea irudia bildumatik jasotzean.",
     "errormustbeonlinetoupload": "Online egon behar zara fitxategiak igotzeko.",
     "errornoapp": "Ez daukazu ekintza hau burutzeko app-ik instalatuta.",
-    "errorreadingfile": "Errorea \"{{$a}}\" fitxategia irakurtzean",
+    "errorreadingfile": "Errorea fitxategia irakurtzean.",
     "errorwhileuploading": "Errorea gertatu da fitxategia igotzean.",
-    "file": "Fitxategi-bidalketak",
+    "file": "Fitxategia",
     "filesofthesetypes": "Mota hauetako fitxategiak gehitu daitezke bidalketa honetara:",
     "fileuploaded": "Fitxategia ondo igo da.",
     "invalidfiletype": "{{$a}} fitxategi-mota ezin da onartu.",
@@ -21,8 +21,8 @@
     "photoalbums": "Argazki-bildumak",
     "readingfile": "Fitxategia irakurtzen",
     "selectafile": "Aukeratu fitxategi bat",
-    "uploadafile": "Fitxategia igo",
-    "uploading": "Igotzen...",
+    "uploadafile": "Igo fitxategia",
+    "uploading": "Igotzen",
     "uploadingperc": "Igotzen: %{{$a}}",
-    "video": "Bideo fitxategia ({{$a.EXT}})"
+    "video": "Bideoa"
 }

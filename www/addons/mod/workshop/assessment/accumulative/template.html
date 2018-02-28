@@ -1,4 +1,4 @@
-<div ng-repeat="(n, field) in assessment.form.fields" class="list card">
+<div ng-repeat="(n, field) in assessment.form.fields" class="list card" ng-if="n < assessment.form.dimenssionscount">
     <div class="item item-text-wrap">
         <h2>{{ field.dimtitle }}</h2>
         <mm-format-text watch="true">{{field.description}}</mm-format-text>

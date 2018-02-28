@@ -153,12 +153,12 @@ MM.loginAs = function (username, password) {
 
     browser.ignoreSynchronization = true;
     browser.waitForAngular();
-    browser.wait(EC.visibilityOf(element(by.model('siteurl'))), 15000);
+    browser.wait(EC.visibilityOf(element(by.model('loginData.siteurl'))), 15000);
 
-    element(by.model('siteurl'))
+    element(by.model('loginData.siteurl'))
         .sendKeys(SITEURL);
-    browser.wait(EC.elementToBeClickable($('[ng-click="connect(siteurl)"]')), 15000);
-    return $('[ng-click="connect(siteurl)"]').click()
+    browser.wait(EC.elementToBeClickable($('[ng-click="connect(loginData.siteurl)"]')), 15000);
+    return $('[ng-click="connect(loginData.siteurl)"]').click()
         .then(function () {
             waitForCondition();
             browser.wait(EC.visibilityOf($('[ng-click="login()"]')), 15000);

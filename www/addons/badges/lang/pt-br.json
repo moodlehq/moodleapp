@@ -3,6 +3,7 @@
     "badges": "Emblemas",
     "contact": "Contato",
     "dateawarded": "Data de emissão",
+    "expired": "Esta atividade está encerrada desde {{$a}}",
     "expirydate": "Data de validade",
     "issuancedetails": "Expiração do emblema",
     "issuerdetails": "Detalhes do emissor",

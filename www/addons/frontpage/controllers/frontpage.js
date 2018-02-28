@@ -22,7 +22,7 @@ angular.module('mm.addons.frontpage')
  * @name mmaFrontpageCtrl
  */
 .controller('mmaFrontpageCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $mmSite, $q, $mmCoursePrefetchDelegate,
-            $mmCourseHelper) {
+            $mmCourseHelper, $mmAddonManager) {
 
     // Default values are Site Home and all sections.
     var courseId = $mmSite.getSiteHomeId(),
@@ -34,6 +34,7 @@ angular.module('mm.addons.frontpage')
 
     // Convenience function to fetch section(s).
     function loadContent() {
+        var hasNewsItem = false;
         $scope.hasContent = false;
 
         var config = $mmSite.getStoredConfig() || {numsections: 1};
@@ -59,6 +60,10 @@ angular.module('mm.addons.frontpage')
                 var item = frontpageItems[parseInt(itemNumber, 10)];
                 if (!item || $scope.items.indexOf(item) >= 0) {
                     return;
+                }
+
+                if (item == 'mma-frontpage-item-news') {
+                    hasNewsItem = true;
                 }
 
                 $scope.hasContent = true;
@@ -87,6 +92,29 @@ angular.module('mm.addons.frontpage')
 
             // Add log in Moodle.
             $mmCourse.logView(courseId);
+
+            // Remove duplicated news forum.
+
+            // Remove forum activity (news one only). This should be fast since the same calls are done by the
+            // frontpageitemnews directive.
+            if (hasNewsItem && $scope.block && $scope.block.modules) {
+                $mmaModForum = $mmAddonManager.get('$mmaModForum');
+                if ($mmaModForum) {
+                    return $mmaModForum.getCourseForums(courseId).then(function(forums) {
+                        for (var x in forums) {
+                            if (forums[x].type == 'news') {
+                                angular.forEach($scope.block.modules, function(blockModule, key) {
+                                    if (blockModule.modname == 'forum' && blockModule.instance == forums[x].id) {
+                                        $scope.block.modules.splice(key, 1);
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    });
+                }
+            }
+
         }, function(error) {
             $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsectioncontent', true);
         });

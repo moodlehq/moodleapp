@@ -11,6 +11,7 @@
                 <i ng-if="(item.href || item.action) && item.iconAction && item.iconAction != 'spinner'" class="icon {{item.iconAction}}"></i>
                 <i ng-if="item.href && !item.iconAction" class="icon ion-arrow-right-c"></i>
                 <ion-spinner ng-if="(item.href || item.action) && item.iconAction == 'spinner'" class="icon spinner spinner-ios-small"></ion-spinner>
+                <span class="badge {{item.badgeClass}}" ng-if="item.badge">{{item.badge}}</span>
             </a>
         </div>
     </ion-content>

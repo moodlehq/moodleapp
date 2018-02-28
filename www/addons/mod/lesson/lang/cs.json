@@ -22,7 +22,7 @@
     "emptypassword": "Heslo nemůže být prázdné",
     "enterpassword": "Zadejte prosím heslo:",
     "eolstudentoutoftimenoanswers": "Nezodpověděli jste žádnou otázku. Za tuto přednášku nezískáváte žádný bod.",
-    "errorprefetchrandombranch": "Tato přednáška obsahuje skok na náhodnou stránku, nelze ji v aplikaci zkoušet, dokud nebude spuštěna na webu.",
+    "errorprefetchrandombranch": "Tato přednáška obsahuje skok na náhodnou stránku. V aplikaci ji nelze zkoušet, dokud nebude spuštěna na webu.",
     "errorreviewretakenotlast": "Tento pokus již nelze prohlédnout, protože byl dokončen další pokus.",
     "finish": "Skončit",
     "finishretakeoffline": "Tento pokus byl dokončen offline.",

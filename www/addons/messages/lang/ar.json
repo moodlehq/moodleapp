@@ -7,6 +7,7 @@
     "errordeletemessage": "خطأ عند حذف الرسالة",
     "message": "رسالة",
     "messagenotsent": "لم يتم إرسال الرسالة، يرجي المحاولة لاحقا",
+    "messagepreferences": "مراجع الرسالة",
     "messages": "رسائل",
     "mustbeonlinetosendmessages": "لابد أن تكون متصل بالأنترنت لكي ترسل أي رسائل",
     "newmessage": "رسالة جديدة",

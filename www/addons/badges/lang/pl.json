@@ -1,11 +1,12 @@
 {
-    "badgedetails": "Szczegóły odznak",
+    "badgedetails": "Szczegóły odznaki",
     "badges": "Odznaki",
-    "contact": "Połącz",
+    "contact": "Kontakt",
     "dateawarded": "Data wydania",
+    "expired": "Niestety ta aktywność została zamknięta {{$a}} i nie jest już dostępna.",
     "expirydate": "Data ważności",
     "issuancedetails": "Wygaśnięcie odznaki",
-    "issuerdetails": "Szczegóły o wydawcy",
+    "issuerdetails": "Dane wystawcy",
     "issuername": "Nazwa wydawcy",
     "nobadges": "Brak dostępnych odznak",
     "recipientdetails": "Dane odbiorcy"

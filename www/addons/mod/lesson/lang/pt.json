@@ -68,7 +68,7 @@
     "reviewquestioncontinue": "Não, quero avançar para a pergunta seguinte",
     "secondpluswrong": "Resposta incorreta. Quer voltar a tentar?",
     "submit": "Submeter",
-    "teacherjumpwarning": "Nesta lição, há páginas que seguem para {{$a.cluster}} ou para {{$a.unseen}}. Esta sequência será ignorada e a lição seguirá para a página seguinte. Para testar a sequência das páginas entre como aluno.",
+    "teacherjumpwarning": "Nesta lição, há páginas que seguem para {{$a.cluster}} ou para {{$a.unseen}}. Esta sequência será ignorada e a lição seguirá para a página seguinte. Para testar a sequência das páginas, assuma o papel de aluno.",
     "teacherongoingwarning": "A exibição da pontuação no decorrer da lição só é visível para os alunos. Para ver a pontuação no decorrer da lição entre como aluno.",
     "teachertimerwarning": "O cronómetro só é visível para os alunos. Para testar esta funcionalidade, entre como aluno.",
     "thatsthecorrectanswer": "A sua resposta está correta.",

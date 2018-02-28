@@ -96,9 +96,9 @@ angular.module('mm.addons.mod_lesson')
                     downloadBtn.hidden = true;
                     refreshBtn.hidden = true;
 
-                    $mmaModLessonPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
+                    $mmaModLessonPrefetchHandler.getDownloadSize(module, courseId, true).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            return $mmaModLessonPrefetchHandler.prefetch(module, courseId).catch(function(error) {
+                            return $mmaModLessonPrefetchHandler.prefetch(module, courseId, true).catch(function(error) {
                                 if (!$scope.$$destroyed) {
                                     $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                                     return $q.reject();

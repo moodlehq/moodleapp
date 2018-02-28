@@ -295,6 +295,27 @@ angular.module('mm.addons.notes')
             });
         };
 
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmaNotes.invalidateNotes(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmaNotes.getNotes(course.id, false, true);
+            }).then(function(notesTypes) {
+                var promises = [];
+                angular.forEach(notesTypes, function(notes) {
+                    promises.push($mmaNotes.getNotesUserData(notes, course.id));
+                });
+                return $mmUtil.allPromises(promises);
+            });
+        };
+
         return self;
     };
 

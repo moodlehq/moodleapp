@@ -1,7 +1,8 @@
 {
     "calendarevents": "Eventi nel calendario",
+    "defaultnotificationtime": "Orario di notifica di default",
     "errorloadevent": "Si è verificato un errore durante il caricamento degli eventi.",
     "errorloadevents": "Si è verificato un errore durante il caricamento degli eventi.",
-    "noevents": "Non ci sono attività da svolgere",
+    "noevents": "Non ci sono eventi",
     "notifications": "Notifiche"
 }

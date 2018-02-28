@@ -1,5 +1,5 @@
 {
-    "audio": "Ljudfil ({{$a.EXT}})",
+    "audio": "Audio",
     "camera": "Kamera",
     "confirmuploadfile": "Du är på väg att ladda upp {{size}}. Är du säker på att du vill fortsätta?",
     "errorcapturingaudio": "Fel med att spela in ljud",
@@ -8,9 +8,9 @@
     "errorgettingimagealbum": "Fel att få bild från album.",
     "errormustbeonlinetoupload": "Du måste vara online för att ladda upp filer.",
     "errornoapp": "Du behöver att ha en app installerat för att utföra den här åtgärden.",
-    "errorreadingfile": "Fel i samband med läsningen av filen  \"{{$a}}\"",
+    "errorreadingfile": "Fel vid läsning av fil.",
     "errorwhileuploading": "Ett fel uppstod under filöverföringen.",
-    "file": "Filinlämningar",
+    "file": "Fil",
     "filesofthesetypes": "Dessa filtyper kan bifogas i inlämningsuppgiften",
     "fileuploaded": "Fil laddades upp",
     "invalidfiletype": "filtypen {{$a}} kan inte accepteras",
@@ -18,6 +18,6 @@
     "photoalbums": "Fotoalbum",
     "readingfile": "Läsa fil",
     "uploadafile": "Ladda upp en fil",
-    "uploading": "Laddar upp...",
+    "uploading": "Laddar upp",
     "video": "Video"
 }

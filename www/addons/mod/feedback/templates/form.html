@@ -12,7 +12,9 @@
                 </div>
                 <div class="list" ng-if="items && items.length">
                     <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak', 'item-stable': item.dependitem > 0, 'mm-error-item': item.isEmpty || item.hasError}">
-                        <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span>{{ item.name }}</p>
+                        <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span>
+                            <mm-format-text watch="true">{{ item.name }}</mm-format-text>
+                        </p>
                         <div class="item-text-wrap" ng-class="item.class" ng-if="item.template" ng-include="item.template"></div>
                     </div>
                 </div>
@@ -35,15 +37,20 @@
                 </script>
 
                 <script type="text/ng-template" id="multichoice-r">
-                    <ion-radio ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-radio>
+                    <ion-radio ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-value="option.value" ng-repeat="option in item.choices">
+                        <mm-format-text watch="true">{{option.label}}</mm-format-text>
+                    </ion-radio>
                 </script>
 
                 <script type="text/ng-template" id="multichoice-c">
-                    <ion-checkbox ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="option.checked" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-checkbox>
+                    <ion-checkbox ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="option.checked" ng-value="option.value" ng-repeat="option in item.choices">
+                        <mm-format-text watch="true">{{option.label}}</mm-format-text>
+                    </ion-checkbox>
                 </script>
 
                 <script type="text/ng-template" id="multichoice-d">
-                    <select ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-options="option.value as option.label for option in item.choices" mm-ios-select-fix>
+                    <select ng-required="{{item.required}}" name="{{item.typ}}_{{item.id}}" ng-model="item.value" mm-ios-select-fix>
+                        <option ng-value="option.value" ng-repeat="option in item.choices"><mm-format-text watch="true">{{option.label}}</mm-format-text></option>
                     </select>
                 </script>
 

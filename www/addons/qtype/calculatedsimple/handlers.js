@@ -82,5 +82,20 @@ angular.module('mm.addons.qtype_calculatedsimple')
         return 'mma-qtype-calculated-simple';
     };
 
+    /**
+     * Prepare the answers for a certain question.
+     * This function should only be implemented if the answers must be processed before being sent.
+     *
+     * @param  {Object} question The question.
+     * @param  {Object} answers  The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param  {Boolean} offline True if data should be saved in offline.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise|Void}    Promise resolved when data has been prepared.
+     */
+    self.prepareAnswers = function(question, answers, offline, siteId) {
+        // This question type depends on calculated.
+        return $mmaQtypeCalculatedHandler.prepareAnswers(question, answers, offline, siteId);
+    };
+
     return self;
 });

@@ -59,7 +59,7 @@ angular.module('mm.core')
      *                             - (Optional) updatesNames (RegExp) RegExp of update names to check. If getCourseUpdates returns
      *                                                                 an update whose names matches this, the module will be marked
      *                                                                 as outdated. Ignored if hasUpdates function is defined.
-     *                             - getDownloadSize(module, courseid) (Object|Promise) Get the download size of a module.
+     *                             - getDownloadSize(module, courseid, single) (Object|Promise) Get the download size of a module.
      *                                                                 The returning object should have size field with file size
      *                                                                 in bytes and and total field which indicates if it's been
      *                                                                 able to calculate the total size (true) or only partial size
@@ -619,14 +619,15 @@ angular.module('mm.core')
          * @name $mmCoursePrefetchDelegate#prefetchModule
          * @param  {Object} module      Module to be prefetch.
          * @param  {Number} courseid    Course ID the module belongs to.
+         * @param  {Boolean} single     True if we're downloading a single module, false if we're downloading a whole section.
          * @return {Promise}            Promise resolved when finished.
          */
-        self.prefetchModule = function(module, courseid) {
+        self.prefetchModule = function(module, courseid, single) {
             var handler = enabledHandlers[module.modname];
 
             // Check if the module has a prefetch handler.
             if (handler) {
-                return handler.prefetch(module, courseid);
+                return handler.prefetch(module, courseid, single);
             }
             return $q.when();
         };
@@ -639,9 +640,10 @@ angular.module('mm.core')
          * @name $mmCoursePrefetchDelegate#getModuleDownloadSize
          * @param  {Object} module      Module to be get info from.
          * @param  {Number} courseid    Course ID the module belongs to.
+         * @param  {Boolean} single     True if we're downloading a single module, false if we're downloading a whole section.
          * @return {Promise}            Promise with the size.
          */
-        self.getModuleDownloadSize = function(module, courseid) {
+        self.getModuleDownloadSize = function(module, courseid, single) {
             var downloadSize,
                 handler = enabledHandlers[module.modname];
 
@@ -649,7 +651,7 @@ angular.module('mm.core')
             if (handler) {
                 return self.isModuleDownloadable(module, courseid).then(function(downloadable) {
                     if (!downloadable) {
-                        return;
+                        return {size: 0, total: true};
                     }
 
                     downloadSize = statusCache.getValue(handler.component, module.id, 'downloadSize');
@@ -657,15 +659,19 @@ angular.module('mm.core')
                         return downloadSize;
                     }
 
-                    return $q.when(handler.getDownloadSize(module, courseid)).then(function(size) {
+                    return $q.when(handler.getDownloadSize(module, courseid, single)).then(function(size) {
                         return statusCache.setValue(handler.component, module.id, 'downloadSize', size);
-                    }).catch(function() {
-                        return statusCache.getValue(handler.component, module.id, 'downloadSize', true);
+                    }).catch(function(error) {
+                        var cachedSize = statusCache.getValue(handler.component, module.id, 'downloadSize', true);
+                        if (cachedSize) {
+                            return cachedSize;
+                        }
+                        return $q.reject(error);
                     });
                 });
             }
 
-            return $q.when(0);
+            return $q.when({size: 0, total: false});
         };
 
         /**

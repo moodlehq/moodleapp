@@ -1,0 +1,16 @@
+{
+    "cannoteditpage": "이 페이지를 편집 할 수 없습니다.",
+    "createpage": "페이지 만들기",
+    "editingpage": "페이지 '{{$a}}' 편집 중",
+    "map": "맵",
+    "newpagehdr": "세 페이지",
+    "newpagetitle": "새 페이지 제목",
+    "nocontent": "이 페이지에 내용이 없습니다.",
+    "notingroup": "모둠에 없음",
+    "page": "페이지",
+    "pageexists": "이 페이지는 이미 존재합니다. 그곳으로 넘어갑니다.",
+    "pagename": "페이지 이름",
+    "viewpage": "페이지 보기",
+    "wikipage": "위키 페이지",
+    "wrongversionlock": "당신이 편집하는 동안 다른 사용자가 이 페이지를 편집하였으며 당신이 편집한 내용은 쓸모없게 되었습니다."
+}

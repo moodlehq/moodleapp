@@ -125,6 +125,21 @@ angular.module('mm.addons.participants')
             return $mmaParticipants.isPluginEnabledForCourse(courseId);
         };
 
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmaParticipants.invalidateParticipantsList(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmaParticipants.getAllParticipants(course.id);
+            });
+        };
+
         return self;
     };
 

@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Acrescentar um novo tópico de discussão",
+    "addanewquestion": "Acrescentar uma nova questão",
+    "addanewtopic": "Acrescentar um novo tópico",
     "cannotadddiscussion": "Apenas os participantes inscritos nos grupos podem escrever mensagens neste fórum.",
     "cannotadddiscussionall": "Você não tem permissão para abrir um novo tópico de discussão para todos os participantes.",
     "cannotcreatediscussion": "Não foi possível criar uma nova discussão",

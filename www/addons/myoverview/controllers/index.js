@@ -21,7 +21,8 @@ angular.module('mm.addons.myoverview')
  * @ngdoc controller
  * @name mmaMyOverviewCtrl
  */
-.controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourses, $mmCoursesDelegate) {
+.controller('mmaMyOverviewCtrl', function($scope, $mmaMyOverview, $mmUtil, $q, $mmCourses, $mmCoursesDelegate, $mmCourseHelper) {
+    var prefetchIconsInitialized = false;
 
     $scope.tabShown = 'courses';
     $scope.timeline = {
@@ -44,6 +45,11 @@ angular.module('mm.addons.myoverview')
     $scope.showFilter = false;
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable() && !$mmCourses.isSearchCoursesDisabledInSite();
+    $scope.prefetchCoursesData = {
+        inprogress: {},
+        past: {},
+        future: {}
+    };
 
     function fetchMyOverviewTimeline(afterEventId, refresh) {
         return $mmaMyOverview.getActionEventsByTimesort(afterEventId).then(function(events) {
@@ -104,6 +110,8 @@ angular.module('mm.addons.myoverview')
                     $scope.courses.inprogress.push(course);
                 }
             });
+
+            initPrefetchCoursesIcons();
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'Error getting my overview data.');
             return $q.reject();
@@ -134,6 +142,34 @@ angular.module('mm.addons.myoverview')
                     return compareA.localeCompare(compareB);
                 });
             });
+        });
+    }
+
+    // Initialize the prefetch icon for selected courses.
+    function initPrefetchCoursesIcons() {
+        if (prefetchIconsInitialized) {
+            // Already initialized.
+            return;
+        }
+
+        prefetchIconsInitialized = true;
+
+        Object.keys($scope.prefetchCoursesData).forEach(function(filter) {
+            if (!$scope.courses[filter] || $scope.courses[filter].length < 2) {
+                // Not enough courses.
+                $scope.prefetchCoursesData[filter].icon = '';
+                return;
+            }
+
+            $mmCourseHelper.determineCoursesStatus($scope.courses[filter]).then(function(status) {
+                var icon = $mmCourseHelper.getCourseStatusIconFromStatus(status);
+                if (icon == 'spinner') {
+                    // It seems all courses are being downloaded, show a download button instead.
+                    icon = 'ion-ios-cloud-download-outline';
+                }
+                $scope.prefetchCoursesData[filter].icon = icon;
+            });
+
         });
     }
 
@@ -175,6 +211,7 @@ angular.module('mm.addons.myoverview')
                     }
                     break;
                 case 'courses':
+                    prefetchIconsInitialized = false;
                     promise = fetchMyOverviewCourses();
                     break;
             }
@@ -236,6 +273,28 @@ angular.module('mm.addons.myoverview')
         return $mmaMyOverview.getActionEventsByCourse(course.id, course.canLoadMore).then(function(courseEvents) {
             course.events = course.events.concat(courseEvents.events);
             course.canLoadMore = courseEvents.canLoadMore;
+        });
+    };
+
+    // Download all the shown courses.
+    $scope.downloadCourses = function() {
+        var selected = $scope.courses.selected,
+            selectedData = $scope.prefetchCoursesData[selected],
+            initialIcon = selectedData.icon;
+
+        selectedData.icon = 'spinner';
+        selectedData.badge = '';
+        return $mmCourseHelper.confirmAndPrefetchCourses($scope.courses[selected]).then(function(downloaded) {
+            selectedData.icon = downloaded ? 'ion-android-refresh' : initialIcon;
+        }, function(error) {
+            if (!$scope.$$destroyed) {
+                $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+                selectedData.icon = initialIcon;
+            }
+        }, function(progress) {
+            selectedData.badge = progress.count + ' / ' + progress.total;
+        }).finally(function() {
+            selectedData.badge = '';
         });
     };
 });

@@ -13,6 +13,8 @@
     "emptyaddform": "Você não completou nenhum campo!",
     "entrieslefttoadd": "Você precisa adicionar mais {{$a.entriesleft}} item(ns) para completar esta atividade",
     "entrieslefttoaddtoview": "Você precisa adicionar mais {{$a.entrieslefttoview}} item(ns) antes de poder ver os itens dos outros participantes.",
+    "errorapproving": "Erro ao aprovar ou desaprovar uma entrada.",
+    "errordeleting": "Erro ao apagar a entrada.",
     "errormustsupplyvalue": "Você precisa fornecer um valor aqui.",
     "expired": "Sinto muito, mas esta atividade foi fechada em {{$a}} e não está mais disponível",
     "fields": "Campos",

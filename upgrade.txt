@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.4.1 ===
+
+ * Some modules implemented a siteId param in the getDownloadSize of their prefetch handler. This param was never sent, so it has been replaced by a "single" param.
+
 === 3.4 ===
 
  * For performance reasons, $mmCoursesDelegate has changed a bit:

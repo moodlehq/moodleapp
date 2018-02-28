@@ -128,6 +128,21 @@ angular.module('mm.addons.grades')
             };
         };
 
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmGrades.invalidateGradesTableData(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmGrades.getGradesTable(course.id);
+            });
+        };
+
         return self;
     };
 
