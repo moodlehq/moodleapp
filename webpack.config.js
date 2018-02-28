@@ -9,7 +9,6 @@ const customConfig = {
       '@classes': resolve('./src/classes'),
       '@core': resolve('./src/core'),
       '@providers': resolve('./src/providers'),
-      '@utils': resolve('./src/providers/utils'),
       '@components': resolve('./src/components'),
       '@directives': resolve('./src/directives/directives.module'),
       '@pipes': resolve('./src/pipes/pipes.module')

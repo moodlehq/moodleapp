@@ -237,7 +237,14 @@ core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-heig
 
 core-format-text[singleLine="true"], *[core-format-text][singleLine="true"],
 core-format-text[ng-reflect-single-line="true"], *[core-format-text][ng-reflect-single-line="true"] {
+    cursor: pointer;
+    pointer-events: auto;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    position: relative;
+    width: 100%;
 }
 
 .core-media-adapt-width {

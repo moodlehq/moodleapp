@@ -415,7 +415,7 @@ export class CoreUserProvider {
      * @param  {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>}    Promise resolved if success.
      */
-    updateUserPreference(name:string, value: any, userId?: number, siteId?: string): Promise<any> {
+    updateUserPreference(name: string, value: any, userId?: number, siteId?: string): Promise<any> {
         const preferences = [
             {
                 type: name,

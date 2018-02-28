@@ -18,7 +18,6 @@
       "@classes/*": ["classes/*"],
       "@core/*": ["core/*"],
       "@providers/*": ["providers/*"],
-      "@utils": ["providers/utils/*"],
       "@components": ["components/*"],
       "@directives": ["directives/directives.module"],
       "@pipes": ["pipes/pipes.module"]

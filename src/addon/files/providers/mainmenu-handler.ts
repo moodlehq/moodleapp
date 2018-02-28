@@ -22,7 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/main
 @Injectable()
 export class AddonFilesMainMenuHandler implements CoreMainMenuHandler {
     name = 'AddonFiles';
-    priority = 200;
+    priority = 400;
 
     constructor(private filesProvider: AddonFilesProvider) { }
 

@@ -1,34 +1,31 @@
 core-courses-course-progress {
-    &.core-courseoverview {
-        @include media-breakpoint-down(sm) {
-            ion-card.card {
-                margin: 0;
-                border-radius: 0;
-                box-shadow: none;
-                border-bottom: 1px solid $list-border-color;
-                width: 100%;
-                height: 100% !important;
+    ion-card.card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .core-course-link {
+            .item-inner {
+                padding-right: 0;
+            }
+            .label {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            h2 {
+                margins: 6px 0;
+                flex-grow: 1;
             }
         }
-
-        ion-card.card {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+        .label {
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
         }
     }
 
     button {
         z-index: 1;
-    }
-
-    .core-course-link {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        h2 {
-            flex-grow: 1;
-        }
     }
 }

@@ -22,7 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/main
 @Injectable()
 export class AddonCalendarMainMenuHandler implements CoreMainMenuHandler {
     name = 'AddonCalendar';
-    priority = 400;
+    priority = 900;
 
     constructor(private calendarProvider: AddonCalendarProvider) { }
 

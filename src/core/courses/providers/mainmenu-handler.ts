@@ -54,7 +54,7 @@ export class CoreCoursesMainMenuHandler implements CoreMainMenuHandler {
     getDisplayData(): CoreMainMenuHandlerData {
         if (this.isOverviewEnabled) {
             return {
-                icon: 'ionic',
+                icon: 'home',
                 title: 'core.courses.courseoverview',
                 page: 'CoreCoursesMyOverviewPage',
                 class: 'core-courseoverview-handler'

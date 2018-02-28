@@ -29,7 +29,7 @@ import { AddonPushNotificationsProvider } from '@addon/pushnotifications/provide
 @Injectable()
 export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCronHandler {
     name = 'AddonMessages';
-    priority = 600;
+    priority = 800;
     protected badge = '';
     protected loading = true;
 
