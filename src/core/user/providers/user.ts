@@ -405,4 +405,52 @@ export class CoreUserProvider {
 
         return Promise.all(promises);
     }
+
+    /**
+     * Update a preference for a user.
+     *
+     * @param  {string} name     Preference name.
+     * @param  {any} value       Preference new value.
+     * @param  {number} [userId] User ID. If not defined, site's current user.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved if success.
+     */
+    updateUserPreference(name:string, value: any, userId?: number, siteId?: string): Promise<any> {
+        const preferences = [
+            {
+                type: name,
+                value: value
+            }
+        ];
+        return this.updateUserPreferences(preferences, undefined, userId, siteId);
+    }
+
+    /**
+     * Update some preferences for a user.
+     *
+     * @param  {any} preferences                List of preferences.
+     * @param  {boolean} [disableNotifications] Whether to disable all notifications. Undefined to not update this value.
+     * @param  {number} [userId]                User ID. If not defined, site's current user.
+     * @param  {string} [siteId]                Site ID. If not defined, current site.
+     * @return {Promise<any>}                   Promise resolved if success.
+     */
+    updateUserPreferences(preferences: any, disableNotifications: boolean, userId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const data = {
+                    userid: userId,
+                    preferences: preferences
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            if (typeof disableNotifications != 'undefined') {
+                data['emailstop'] = disableNotifications ? 1 : 0;
+            }
+
+            return site.write('core_user_update_user_preferences', data, preSets);
+        });
+    }
 }

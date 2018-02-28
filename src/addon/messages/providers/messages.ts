@@ -305,6 +305,41 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get the cache key for the get message preferences call.
+     *
+     * @return {string} Cache key.
+     */
+    protected getMessagePreferencesCacheKey(): string {
+        return this.ROOT_CACHE_KEY + 'messagePreferences';
+    }
+
+    /**
+     * Get message preferences.
+     *
+     * @param  {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>}         Promise resolved with the message preferences.
+     */
+    getMessagePreferences(siteId?: string): Promise<any> {
+        this.logger.debug('Get message preferences');
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const preSets = {
+                    cacheKey: this.getMessagePreferencesCacheKey()
+                };
+
+            return site.read('core_message_get_user_message_preferences', {}, preSets).then((data) => {
+                if (data.preferences) {
+                    data.preferences.blocknoncontacts = !!data.blocknoncontacts;
+
+                    return data.preferences;
+                }
+
+                return Promise.reject(null);
+            });
+        });
+    }
+
+    /**
      * Get messages according to the params.
      *
      * @param  {any} params            Parameters to pass to the WS.
@@ -512,6 +547,18 @@ export class AddonMessagesProvider {
             return site.invalidateWsCacheForKey(this.getCacheKeyForDiscussions()).then(() => {
                 return this.invalidateContactsCache(site.getId());
             });
+        });
+    }
+
+    /**
+     * Invalidate get message preferences.
+     *
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}         Promise resolved when data is invalidated.
+     */
+    invalidateMessagePreferences(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getMessagePreferencesCacheKey());
         });
     }
 
