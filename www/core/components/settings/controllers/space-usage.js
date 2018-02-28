@@ -23,7 +23,7 @@ angular.module('mm.core.settings')
  * @todo When "mock site" is implemented we should have functions to calculate the site usage and delete its files.
  */
 .controller('mmSettingsSpaceUsageCtrl', function($log, $scope, $mmSitesManager, $mmFS, $q, $mmUtil, $translate, $mmSite,
-            $mmText, $mmFilepool) {
+            $mmText, $mmFilepool, $mmCourse) {
     $log = $log.getInstance('mmSettingsSpaceUsageCtrl');
 
     $scope.currentSiteId = $mmSite.getId();
@@ -110,6 +110,7 @@ angular.module('mm.core.settings')
                     return $mmSitesManager.getSite(siteid);
                 }).then(function(site) {
                     return site.deleteFolder().then(function() {
+                        $mmCourse.clearAllCoursesStatus(siteid);
                         $mmFilepool.clearAllPackagesStatus(siteid);
                         $mmFilepool.clearFilepool(siteid);
                         updateSiteUsage(siteData, 0);

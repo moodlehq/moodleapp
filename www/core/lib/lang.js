@@ -258,27 +258,47 @@ angular.module('mm.core')
     $translateProvider.preferredLanguage(lang);
 })
 
-.config(function($provide) {
+.config(function($provide, $translateProvider) {
     // Decorate $translate to use custom strings if needed.
     $provide.decorator('$translate', ['$delegate', '$q', '$injector', function($delegate, $q, $injector) {
         var $mmLang; // Inject it using $injector to prevent circular dependencies.
+        var translationsTable = $translateProvider.translations();
 
         // Redefine $translate default function.
         var newTranslate = function(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage) {
+
+            var originalString = null;
             var value = getCustomString(translationId, forceLanguage);
             if (value !== false) {
-                return $q.when(value);
+                language = forceLanguage || $delegate.preferredLanguage();
+                originalString = translationsTable[language][translationId]; // May be undefined for new strings.
+                translationsTable[language][translationId] = value;
             }
-            return $delegate(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage);
+            return $delegate(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage)
+            .finally(function() {
+                if (originalString) {
+                    // Recover original translation.
+                    translationsTable[language][translationId] = originalString;
+                }
+            });
         };
 
         // Redefine $translate.instant.
         newTranslate.instant = function(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy) {
+
+            var originalString = null;
             var value = getCustomString(translationId, forceLanguage);
             if (value !== false) {
-                return value;
+                language = forceLanguage || $delegate.preferredLanguage();
+                originalString = translationsTable[language][translationId]; // May be undefined for new strings.
+                translationsTable[language][translationId] = value;
             }
-            return $delegate.instant(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy);
+            translation = $delegate.instant(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy);
+            if (originalString) {
+                // Recover original translation.
+                translationsTable[language][translationId] = originalString;
+            }
+            return translation;
         };
 
         // Copy the rest of functions and properties.

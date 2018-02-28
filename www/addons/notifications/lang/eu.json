@@ -1,7 +1,7 @@
 {
-    "errorgetnotifications": "Errorea jakinarazpenak jasotzean",
-    "notificationpreferences": "Jakinarazpenen hobespenak",
+    "errorgetnotifications": "Errore bat gertatu da jakinarazpenak jasotzean.",
+    "notificationpreferences": "Jakinarazpen hobespenak",
     "notifications": "Jakinarazpenak",
     "playsound": "Erreproduzitu soinua",
-    "therearentnotificationsyet": "Ez dago jakinarazpenik"
+    "therearentnotificationsyet": "Ez dago jakinarazpenik."
 }

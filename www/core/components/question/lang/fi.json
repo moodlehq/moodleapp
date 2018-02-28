@@ -17,5 +17,5 @@
     "questionmessage": "Kysymys {{$a}}: {{$b}}",
     "questionno": "Kysymys {{$a}}",
     "requiresgrading": "Vaatii arvioinnin",
-    "unknown": "Tuntematon"
+    "unknown": "Statusta ei pysty määrittelemään"
 }

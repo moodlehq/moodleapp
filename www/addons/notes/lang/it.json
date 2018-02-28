@@ -4,9 +4,9 @@
     "eventnotecreated": "Creata annotazione",
     "nonotes": "Non sono presenti annotazioni di questo tipo.",
     "note": "Annotazione",
-    "notes": "Le tue note e analisi",
+    "notes": "Annotazioni",
     "personalnotes": "Annotazioni personali",
     "publishstate": "Contesto",
     "sitenotes": "Annotazioni del sito",
-    "userwithid": "Utente con id {{id}}"
+    "userwithid": "Utente con iID {{id}}"
 }

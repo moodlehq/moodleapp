@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Afegeix un tema de debat nou",
+    "addanewquestion": "Afegeix una pregunta nova",
+    "addanewtopic": "Afegeix un tema nou",
     "cannotadddiscussion": "Afegir debats en aquest fòrum requereix pertànyer al grup.",
     "cannotadddiscussionall": "No teniu permís per a afegir un tema de debat nou per a tots els participants.",
     "cannotcreatediscussion": "No s'ha pogut obrir un debat nou",

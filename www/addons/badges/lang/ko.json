@@ -1,0 +1,13 @@
+{
+    "badgedetails": "뱃지 세부사항",
+    "badges": "뱃지",
+    "contact": "연락처",
+    "dateawarded": "발행일",
+    "expired": "죄송합니다. 이 활동은 {{$a}} 에 종료되어서 더 이상 사용할 수 없습니다.",
+    "expirydate": "만료일",
+    "issuancedetails": "뱃지 만료기한",
+    "issuerdetails": "발행자 세부정보",
+    "issuername": "발행자 이름",
+    "nobadges": "사용가능한 뱃지가 없습니다.",
+    "recipientdetails": "수신자 세부사항"
+}

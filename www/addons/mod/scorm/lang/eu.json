@@ -15,8 +15,8 @@
     "errordownloadscorm": "Errorea SCORMa jaistean: \"{{name}}\".",
     "errorgetscorm": "Errorea SCORM datuak eskuratzean.",
     "errorinvalidversion": "Barkatu, aplikazioak SCORM 1.2 besterik ez du onartzen.",
-    "errornotdownloadable": "SCORM paketeen deskarga desgaituta dago zure Moodle gunean. Mesedez jarri harremanetan zure Moodle guneko kudeatzailearekin.",
-    "errornovalidsco": "SCORM honek ez du kargatzeko SCOrik ikusgai.",
+    "errornotdownloadable": "SCORM paketeen deskarga desgaituta dago.Mesedez jarri harremanetan zure guneko kudeatzailearekin.",
+    "errornovalidsco": "SCORM pakete honek ez du kargatzeko SCOrik ikusgai.",
     "errorpackagefile": "Barkatu, aplikazioak ZIP paketeak besterik ez du onartzen.",
     "errorsyncscorm": "Errorea gertatu da sinkronizatzean. Mesedez, saiatu berriz.",
     "exceededmaxattempts": "Gehienezko saiakera-kopurua egin duzu.",
@@ -43,9 +43,9 @@
     "organizations": "Erakundeak",
     "passed": "Gainditua",
     "reviewmode": "Berrikusketa-modua",
-    "scormstatusnotdownloaded": "SCORM hau ez dago aurretik jaitsita. Automatikoki jaitsiko da irekitzen duzunean.",
-    "scormstatusoutdated": "SCORM hau eguneratua izan da azkenekoz jaitsi zenuenetik. Automatikoki jaitsiko da irekitzen duzunean.",
+    "scormstatusnotdownloaded": "SCORM pakete hau ez dago aurretik jaitsita. Automatikoki jaitsiko da irekitzen duzunean.",
+    "scormstatusoutdated": "SCORM pakete hau eguneratua izan da azkenekoz jaitsi zenuenetik. Automatikoki jaitsiko da irekitzen duzunean.",
     "suspended": "Bere horretan utzia",
-    "warningofflinedatadeleted": "{{number}}. saiakeraren lineaz kanpoko datu batzuk ezabatu dira ezin izan direlako saiakera berri batean sortu.",
-    "warningsynconlineincomplete": "Saiakera batzuk ezin izan dira Moodle gunearekin sinkronizatu azken online saiakera ez delako bukatu. Mesedez, bukatu online saiakera aurretik."
+    "warningofflinedatadeleted": "{{number}}. saiakeraren lineaz kanpoko datu batzuk ezabatu dira ezin izan direlako saiakera berri gisa hartu.",
+    "warningsynconlineincomplete": "Saiakera batzuk ezin izan dira gunearekin sinkronizatu azken online saiakera ez delako oraindik bukatu. Mesedez, bukatu online saiakera aurretik."
 }

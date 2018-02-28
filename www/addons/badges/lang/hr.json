@@ -3,6 +3,7 @@
     "badges": "Značke",
     "contact": "Kontakt",
     "dateawarded": "Datum izdavanja",
+    "expired": "Nažalost, ova aktivnost je zatvorena od {{$a}} i nije više dostupna",
     "expirydate": "Datum isteka",
     "issuancedetails": "Istek značke",
     "issuerdetails": "Detalji o izdavaču",

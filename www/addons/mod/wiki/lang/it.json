@@ -4,7 +4,7 @@
     "editingpage": "Modifica pagina '{{$a}}'",
     "errorloadingpage": "Si è verificato un errore durante il caricamento della pagina.",
     "errornowikiavailable": "Il wiki non ha contenuti.",
-    "gowikihome": "Home del wiki",
+    "gowikihome": "Vai alla prima pagina del wiki",
     "map": "Mappa",
     "newpagehdr": "Nuova pagina",
     "newpagetitle": "Titolo nuova pagina",
@@ -16,5 +16,6 @@
     "subwiki": "Subwiki",
     "titleshouldnotbeempty": "Il titolo non può essere vuoto",
     "viewpage": "Visualizza pagina",
+    "wikipage": "Pagina wiki",
     "wrongversionlock": "Un altro utente ha modificato questa pagina mentre la stavi modificando anche tu. Le tue modifiche son ora obsolete."
 }

@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Új vitatéma hozzáadása",
+    "addanewquestion": "Új kérdés hozzáadása",
+    "addanewtopic": "Új téma hozzáadása",
     "cannotadddiscussion": "Ahhoz, hogy hozzáadhasson vitát, ezen a fórumon csoporttagságra van szükség.",
     "cannotadddiscussionall": "Ön nem adhat hozzá új vitatémát az összes résztvevő számára.",
     "cannotcreatediscussion": "Nem sikerült új vitát létrehozni.",

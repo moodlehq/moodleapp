@@ -8,7 +8,7 @@
     "allowsubmissionsfromdate": "Insturen toestaan vanaf",
     "allowsubmissionsfromdatesummary": "Deze opdracht zal inzendingen ontvangen vanaf <strong>{{$a}}</strong>",
     "applytoteam": "Cijfers en feedback aan de hele groep geven",
-    "assignmentisdue": "Opdracht tegen",
+    "assignmentisdue": "Opdracht moet worden ingeleverd",
     "attemptnumber": "Pogingnummer",
     "attemptreopenmethod": "Heropende pogingen",
     "attemptreopenmethod_manual": "Manueel",

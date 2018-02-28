@@ -25,6 +25,7 @@ exports.config = {
         "../../../www/**/e2e/mod_glossary.spec.js",
         "../../../www/**/e2e/mod_wiki.spec.js",
         "../../../www/**/e2e/mod_data.spec.js",
+        "../../../www/**/e2e/mod_workshop.spec.js",
         "../../../www/**/e2e/notifications.spec.js",
         "../../../www/**/e2e/contacts.spec.js",
         "../../../www/**/e2e/messages.spec.js",
@@ -86,7 +87,7 @@ exports.config = {
         global.DEVICEURL = 'http://localhost:8100/';
         global.DEVICEVERSION = undefined;
         global.SITEURL = 'http://school.demo.moodle.net';
-        global.SITEVERSION = 3.3;
+        global.SITEVERSION = 3.4;
         global.SITEHASLM = false;
         global.USERS = {
             "STUDENT": {

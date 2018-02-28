@@ -1,5 +1,7 @@
 {
     "addanewdiscussion": "Añadir un nuevo tema de discusión",
+    "addanewquestion": "Añadir una nueva pregunta",
+    "addanewtopic": "Añadir un nuevo tema",
     "cannotadddiscussion": "Para añadir debates a este foro hay que ser miembro de un grupo.",
     "cannotadddiscussionall": "No tiene permiso para añadir un nuevo tema de discusión para todos los participantes.",
     "cannotcreatediscussion": "No se pudo crear un debate nuevo",

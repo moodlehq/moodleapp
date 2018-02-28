@@ -31,6 +31,7 @@ angular.module('mm.addons.badges')
         var promises = [],
             promise;
 
+        $scope.currentTime = $mmUtil.timestamp();
         promise = $mmUser.getProfile($scope.userId, $scope.courseId, true).then(function(user) {
             $scope.user = user;
         });

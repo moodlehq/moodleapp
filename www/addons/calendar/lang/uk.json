@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Час сповіщень за-замовчуванням",
     "errorloadevent": "Помилка завантаження події.",
     "errorloadevents": "Помилка завантаження подій.",
-    "noevents": "Наразі, заплановані активності відсутні",
-    "notifications": "Повідомлення"
+    "noevents": "Немає подій",
+    "notifications": "Сповіщення"
 }

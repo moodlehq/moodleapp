@@ -1,0 +1,18 @@
+{
+    "allowguests": "이 강좌는 손님 계정을 허용함",
+    "availablecourses": "이용할 수 있는 강좌",
+    "categories": "강좌 범주",
+    "courses": "강좌",
+    "enrolme": "등록 요청",
+    "mycourses": "내 강좌",
+    "nocourses": "볼 수 있는 강좌 정보가 없습니다.",
+    "nocoursesyet": "검색된 결과가 없습니다.",
+    "nosearchresults": "검색 결과 없음",
+    "notenroled": "이 강좌에 등록되지 않았습니다.",
+    "password": "비밀번호",
+    "paymentrequired": "이 강좌는 수강하기 위해 등록금이 필요합니다.",
+    "paypalaccepted": "PayPal 지불 접수됨",
+    "search": "검색",
+    "searchcourses": "강좌 찾기",
+    "sendpaymentbutton": "페이팔을 통해 송금하기"
+}

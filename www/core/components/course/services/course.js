@@ -15,12 +15,22 @@
 angular.module('mm.core.course')
 
 .constant('mmCoreCourseModulesStore', 'course_modules') // @deprecated since version 2.6. Please do not use.
+.constant('mmCoreCourseStatusStore', 'course_status')
 
-.config(function($mmSitesFactoryProvider, mmCoreCourseModulesStore) {
+.config(function($mmSitesFactoryProvider, mmCoreCourseModulesStore, mmCoreCourseStatusStore) {
     var stores = [
         {
             name: mmCoreCourseModulesStore,
             keyPath: 'id'
+        },
+        {
+            name: mmCoreCourseStatusStore,
+            keyPath: 'id',
+            indexes: [
+                {
+                    name: 'status',
+                }
+            ]
         }
     ];
     $mmSitesFactoryProvider.registerStores(stores);
@@ -33,7 +43,8 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourse
  */
-.factory('$mmCourse', function($mmSite, $translate, $q, $log, $mmEvents, $mmSitesManager, mmCoreEventCompletionModuleViewed) {
+.factory('$mmCourse', function($mmSite, $translate, $q, $log, $mmEvents, $mmSitesManager, mmCoreEventCompletionModuleViewed,
+        mmCoreCourseStatusStore, mmCoreDownloading, mmCoreNotDownloaded, mmCoreEventCourseStatusChanged, $mmUtil) {
 
     $log = $log.getInstance('$mmCourse');
 
@@ -111,6 +122,32 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Clear all courses status in a site.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#clearAllCoursesStatus
+     * @param {String} siteId Site ID.
+     * @return {Promise}      Promise resolved when all status are cleared.
+     */
+    self.clearAllCoursesStatus = function(siteId) {
+        var promises = [];
+        $log.debug('Clear all course status for site ' + siteId);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+            return db.getAll(mmCoreCourseStatusStore).then(function(entries) {
+                angular.forEach(entries, function(entry) {
+                    promises.push(db.remove(mmCoreCourseStatusStore, entry.id).then(function() {
+                        // Trigger course status changed, setting it as not downloaded.
+                        self._triggerCourseStatusChanged(entry.id, mmCoreNotDownloaded, siteId);
+                    }));
+                });
+                return $q.all(promises);
+            });
+        });
+    };
+
+    /**
      * Get completion status of all the activities in a course for a certain user.
      *
      * @module mm.core.course
@@ -155,6 +192,47 @@ angular.module('mm.core.course')
     function getActivitiesCompletionCacheKey(courseid, userid) {
         return 'mmCourse:activitiescompletion:' + courseid + ':' + userid;
     }
+
+    /**
+     * Get the data stored for a course.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getCourseStatusData
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with the data.
+     */
+    self.getCourseStatusData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+
+            return db.get(mmCoreCourseStatusStore, courseId).then(function(entry) {
+                if (!entry) {
+                    return $q.reject();
+                }
+                return entry;
+            });
+        });
+    };
+
+    /**
+     * Get a course status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getCourseStatus
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with the status.
+     */
+    self.getCourseStatus = function(courseId, siteId) {
+        return self.getCourseStatusData(courseId, siteId).then(function(entry) {
+            return entry.status || mmCoreNotDownloaded;
+        }).catch(function() {
+            return mmCoreNotDownloaded;
+        });
+    };
 
     /**
      * Gets a module basic info by module ID.
@@ -631,6 +709,107 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Change the course status, setting it to the previous status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#setCoursePreviousStatus
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the status is changed. Resolve param: new status.
+     */
+    self.setCoursePreviousStatus = function(courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        $log.debug('Set previous status for course ' + courseId + ' in site ' + siteId);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+
+            // Get current stored data, we'll only update 'status' and 'updated' fields.
+            return db.get(mmCoreCourseStatusStore, courseId).then(function(entry) {
+                if (entry.status == mmCoreDownloading) {
+                    // Going back from downloading to previous status, restore previous download time.
+                    entry.downloadtime = entry.previousdownloadtime;
+                }
+                entry.status = entry.previous || mmCoreNotDownloaded;
+                entry.updated = Date.now();
+                $log.debug('Set previous status \'' + entry.status + '\' for course ' + courseId);
+
+                return db.insert(mmCoreCourseStatusStore, entry).then(function() {
+                    // Success updating, trigger event.
+                    self._triggerCourseStatusChanged(courseId, entry.status, siteId);
+                    return entry.status;
+                });
+            });
+        });
+    };
+
+    /**
+     * Store course status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#setCourseStatus
+     * @param {Number} courseId Course ID.
+     * @param {String} status   New course status.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the status is stored.
+     */
+    self.setCourseStatus = function(courseId, status, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        $log.debug('Set status \'' + status + '\' for course ' + courseId + ' in site ' + siteId);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                downloadTime,
+                previousDownloadTime;
+
+            if (status == mmCoreDownloading) {
+                // Set download time if course is now downloading.
+                downloadTime = $mmUtil.timestamp();
+            }
+
+            // Search current status to set it as previous status.
+            return db.get(mmCoreCourseStatusStore, courseId).then(function(entry) {
+                if (typeof downloadTime == 'undefined') {
+                    // Keep previous download time.
+                    downloadTime = entry.downloadtime;
+                    previousDownloadTime = entry.previousdownloadtime;
+                } else {
+                    // downloadTime will be updated, store current time as previous.
+                    previousDownloadTime = entry.downloadTime;
+                }
+
+                return entry.status;
+            }).catch(function() {
+                return undefined; // No previous status.
+            }).then(function(previousStatus) {
+                var promise;
+                if (previousStatus === status) {
+                    // The course already has this status, no need to change it.
+                    promise = $q.when();
+                } else {
+                    promise = db.insert(mmCoreCourseStatusStore, {
+                        id: courseId,
+                        status: status,
+                        previous: previousStatus,
+                        updated: new Date().getTime(),
+                        downloadtime: downloadTime,
+                        previousdownloadtime: previousDownloadTime
+                    });
+                }
+
+                return promise.then(function() {
+                    // Success inserting, trigger event.
+                    self._triggerCourseStatusChanged(courseId, status, siteId);
+                });
+            });
+        });
+    };
+
+    /**
      * Translate a module name to current language.
      *
      * @module mm.core.course
@@ -650,6 +829,26 @@ angular.module('mm.core.course')
         return translated !== langKey ? translated : moduleName;
     };
 
+    /**
+     * Trigger mmCoreEventCourseStatusChanged with the right data.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#_triggerCourseStatusChanged
+     * @param {Number} courseId Course ID.
+     * @param {String} status New course status.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Void}
+     * @protected
+     */
+    self._triggerCourseStatusChanged = function(courseId, status, siteId) {
+        var data = {
+            siteId: siteId,
+            courseId: courseId,
+            status: status
+        };
+        $mmEvents.trigger(mmCoreEventCourseStatusChanged, data);
+    };
 
     return self;
 });

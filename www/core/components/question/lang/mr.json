@@ -11,5 +11,5 @@
     "notanswered": "आत्ताप्रर्यत उत्तर नाही",
     "partiallycorrect": "अंशतः बरोबर",
     "questionmessage": "प्रश्न {{$a}}: {{$b}}",
-    "unknown": "अनोळखी"
+    "unknown": "स्थिती निर्धारित करू शकत नाही"
 }

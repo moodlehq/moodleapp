@@ -25,7 +25,7 @@
                 <ul class="list" ng-if="forum && count > 0">
                     <li class="padding-horizontal" ng-if="isCreateEnabled && forum.cancreatediscussions">
                         <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
-                            {{ 'mma.mod_forum.addanewdiscussion' | translate }}
+                            {{addDiscussionText}}
                         </button>
                     </li>
                     <li class="card" ng-repeat="discussion in offlineDiscussions | orderBy:'-timecreated'">
@@ -86,7 +86,7 @@
                 <mm-empty-box ng-if="forum && count == 0" icon="ion-chatboxes" message="{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}">
                     <div class="padding-top" ng-if="isCreateEnabled && forum.cancreatediscussions">
                         <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
-                            {{ 'mma.mod_forum.addanewdiscussion' | translate }}
+                            {{addDiscussionText}}
                         </button>
                     </div>
                 </mm-empty-box>

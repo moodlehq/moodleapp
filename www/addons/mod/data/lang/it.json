@@ -13,6 +13,8 @@
     "emptyaddform": "Non hai riempito nessun campo!",
     "entrieslefttoadd": "Per poter visualizzare i record inseriti dagli altri partecipanti è necessario inserire altri {{$a.entriesleft}} record.",
     "entrieslefttoaddtoview": "Devi aggiungere {{$a.entrieslefttoview}} altri record prima di poter vedere i record degli altri partecipanti.",
+    "errorapproving": "Si è verificato un errore durante l'approvazione o disapprovazione del record.",
+    "errordeleting": "Si è verificato un errore durante l'eliminazione del record.",
     "errormustsupplyvalue": "Devi inserire un valore.",
     "expired": "Spiacente, l'attività non è più disponibile poiché è stata chiusa il {{$a}} ",
     "fields": "Campi",
