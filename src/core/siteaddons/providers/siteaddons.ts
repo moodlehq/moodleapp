@@ -46,7 +46,7 @@ export interface CoreSiteAddonsHandler {
     handlerSchema: any;
 
     /**
-     * Result of executing the bootstrap JS.
+     * Result of the bootstrap WS call.
      * @type {any}
      */
     bootstrapResult?: any;
@@ -135,6 +135,31 @@ export class CoreSiteAddonsProvider {
     }
 
     /**
+     * Given the result of a bootstrap get_content and, optionally, the result of another get_content,
+     * build an object with the data to pass to the JS of the get_content.
+     *
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} [contentResult] Result of the content WS call (if any).
+     * @return {any} An object with the data to pass to the JS.
+     */
+    createDataForJS(bootstrapResult: any, contentResult?: any): any {
+        // First of all, add the data returned by the bootstrap JS (if any).
+        const data = this.utils.clone(bootstrapResult.jsResult || {});
+
+        // Now add some data returned by the bootstrap WS call.
+        data.BOOTSTRAP_TEMPLATES = this.utils.objectToKeyValueMap(bootstrapResult.templates, 'id', 'html');
+        data.BOOTSTRAP_OTHERDATA = bootstrapResult.otherdata;
+
+        if (contentResult) {
+            // Now add the data returned by the content WS call.
+            data.CONTENT_TEMPLATES = this.utils.objectToKeyValueMap(contentResult.templates, 'id', 'html');
+            data.CONTENT_OTHERDATA = contentResult.otherdata;
+        }
+
+        return data;
+    }
+
+    /**
      * Get cache key for a WS call.
      *
      * @param {string} method Name of the method.
@@ -186,10 +211,12 @@ export class CoreSiteAddonsProvider {
             }).then((result) => {
                 if (result.otherdata) {
                     try {
-                        result.otherdata = JSON.parse(result.otherdata);
+                        result.otherdata = JSON.parse(result.otherdata) || {};
                     } catch (ex) {
                         // Ignore errors.
                     }
+                } else {
+                    result.otherdata = {};
                 }
 
                 return result;

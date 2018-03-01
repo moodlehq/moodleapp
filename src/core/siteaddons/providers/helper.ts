@@ -64,10 +64,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @return {Promise<{restrict?: any, jsResult?: any}>} Promise resolved when done. It returns the "restrict" of the handler and
-     *                                                     the result of the javascript execution (if any).
+     * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
+     *                        the bootstrap JS (if any).
      */
-    protected bootstrapHandler(addon: any, handlerName: string, handlerSchema: any): Promise<{restrict?: any, jsResult?: any}> {
+    protected bootstrapHandler(addon: any, handlerName: string, handlerSchema: any): Promise<any> {
         if (!handlerSchema.bootstrap) {
             return Promise.resolve({});
         }
@@ -76,24 +76,25 @@ export class CoreSiteAddonsHelperProvider {
             preSets = {getFromCache: false}; // Try to ignore cache.
 
         return this.siteAddonsProvider.getContent(addon.component, handlerSchema.bootstrap, {}, preSets).then((result) => {
-            const data = {
-                restrict: result.restrict,
-                jsResult: undefined
-            };
-
             if (!result.javascript || this.sitesProvider.getCurrentSiteId() != siteId) {
                 // No javascript or site has changed, stop.
-                return data;
+                return result;
             }
 
             // Create a "fake" instance to hold all the libraries.
             const instance = {};
             this.compileProvider.injectLibraries(instance);
 
-            // Now execute the javascript using this instance.
-            data.jsResult = this.compileProvider.executeJavascript(instance, result.javascript);
+            // Add some data of the WS call result.
+            const jsData = this.siteAddonsProvider.createDataForJS(result);
+            for (const name in jsData) {
+                instance[name] = jsData[name];
+            }
 
-            return data;
+            // Now execute the javascript using this instance.
+            result.jsResult = this.compileProvider.executeJavascript(instance, result.javascript);
+
+            return result;
         });
     }
 
@@ -270,26 +271,23 @@ export class CoreSiteAddonsHelperProvider {
 
             switch (handlerSchema.delegate) {
                 case 'CoreMainMenuDelegate':
-                    uniqueName = this.registerMainMenuHandler(addon, handlerName, handlerSchema, result.jsResult, result.restrict);
+                    uniqueName = this.registerMainMenuHandler(addon, handlerName, handlerSchema, result);
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    uniqueName = this.registerModuleHandler(addon, handlerName, handlerSchema, result.jsResult, result.restrict);
+                    uniqueName = this.registerModuleHandler(addon, handlerName, handlerSchema, result);
                     break;
 
                 case 'CoreUserDelegate':
-                    uniqueName = this.registerUserProfileHandler(addon, handlerName, handlerSchema, result.jsResult,
-                            result.restrict);
+                    uniqueName = this.registerUserProfileHandler(addon, handlerName, handlerSchema, result);
                     break;
 
                 case 'CoreCourseOptionsDelegate':
-                    uniqueName = this.registerCourseOptionHandler(addon, handlerName, handlerSchema, result.jsResult,
-                            result.restrict);
+                    uniqueName = this.registerCourseOptionHandler(addon, handlerName, handlerSchema, result);
                     break;
 
                 case 'CoreCourseFormatDelegate':
-                    uniqueName = this.registerCourseFormatHandler(addon, handlerName, handlerSchema, result.jsResult,
-                            result.restrict);
+                    uniqueName = this.registerCourseFormatHandler(addon, handlerName, handlerSchema, result);
                     break;
 
                 default:
@@ -314,12 +312,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
-     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerCourseFormatHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any,
-            restrict?: any): string {
+    protected registerCourseFormatHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
         if (!handlerSchema) {
             // Required data not provided, stop.
             return;
@@ -359,12 +355,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
-     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerCourseOptionHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any,
-            restrict?: any): string {
+    protected registerCourseOptionHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -381,7 +375,7 @@ export class CoreSiteAddonsHelperProvider {
             priority: handlerSchema.priority,
             isEnabledForCourse: (courseId: number, accessData: any, navOptions?: any, admOptions?: any)
                     : boolean | Promise<boolean> => {
-                return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, restrict);
+                return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, bootstrapResult.restrict);
             },
             getDisplayData: (courseId: number): CoreCourseOptionsHandlerData => {
                 return {
@@ -413,12 +407,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
-     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any, restrict?: any)
-            : string {
+    protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -460,12 +452,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
-     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any, restrict?: any)
-            : string {
+    protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -520,12 +510,10 @@ export class CoreSiteAddonsHelperProvider {
      * @param {any} addon Data of the addon.
      * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
-     * @param {any} [bootstrapResult] Result of executing the bootstrap JS.
-     * @param {any} [restrict] List of users and courses the handler is restricted to.
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
      * @return {string} A string to identify the handler.
      */
-    protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult?: any, restrict?: any)
-            : string {
+    protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
         if (!handlerSchema || !handlerSchema.displaydata) {
             // Required data not provided, stop.
             return;
@@ -543,13 +531,14 @@ export class CoreSiteAddonsHelperProvider {
             type: handlerSchema.type,
             isEnabledForUser: (user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> => {
                 // First check if it's enabled for the user.
-                const enabledForUser = this.isHandlerEnabledForUser(user.id, handlerSchema.restricttocurrentuser, restrict);
+                const enabledForUser = this.isHandlerEnabledForUser(user.id, handlerSchema.restricttocurrentuser,
+                        bootstrapResult.restrict);
                 if (!enabledForUser) {
                     return false;
                 }
 
                 // Enabled for user, check if it's enabled for the course.
-                return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, restrict);
+                return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, bootstrapResult.restrict);
             },
             getDisplayData: (user: any, courseId: number): CoreUserProfileHandlerData => {
                 return {

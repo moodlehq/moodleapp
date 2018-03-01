@@ -28,7 +28,7 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
-    @Input() bootstrapResult: any; // Result of the bootstrap JS of the handler.
+    @Input() bootstrapResult: any; // Result of the bootstrap WS call of the handler.
     @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
     @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 
@@ -37,6 +37,7 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
     otherData: any; // Other data of the content.
     dataLoaded: boolean;
     invalidateObservable: Subject<void>; // An observable to notify observers when to invalidate data.
+    jsData: any; // Data to pass to the component.
 
     constructor(protected domUtils: CoreDomUtilsProvider, protected siteAddonsProvider: CoreSiteAddonsProvider) {
         this.onContentLoaded = new EventEmitter();
@@ -61,9 +62,10 @@ export class CoreSiteAddonsAddonContentComponent implements OnInit {
         this.onLoadingContent.emit(refresh);
 
         return this.siteAddonsProvider.getContent(this.component, this.method, this.args).then((result) => {
-            this.content = result.html;
+            this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;
+            this.jsData = this.siteAddonsProvider.createDataForJS(this.bootstrapResult, result);
 
             this.onContentLoaded.emit(refresh);
         }).catch((error) => {
