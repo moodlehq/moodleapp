@@ -14,7 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays a course grades.

@@ -18,8 +18,8 @@ import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
 import { CoreLoggerProvider } from './logger';
 import { CoreUtilsProvider } from './utils/utils';
-import { CoreConstants } from '../core/constants';
-import { SQLiteDB } from '../classes/sqlitedb';
+import { CoreConstants } from '@core/constants';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Interface that all cron handlers must implement.

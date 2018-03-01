@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreSyncBaseProvider } from '../../../classes/base-sync';
-import { CoreAppProvider } from '../../../providers/app';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreAppProvider } from '@providers/app';
 import { AddonMessagesOfflineProvider } from './messages-offline';
 import { AddonMessagesProvider } from './messages';
-import { CoreUserProvider } from '../../../core/user/providers/user';
-import { CoreEventsProvider } from '../../../providers/events';
+import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreEventsProvider } from '@providers/events';
 import { TranslateService } from '@ngx-translate/core';
 
 /**

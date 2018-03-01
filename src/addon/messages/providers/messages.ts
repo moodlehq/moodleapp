@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreUserProvider } from '../../../core/user/providers/user';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreAppProvider } from '@providers/app';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonMessagesOfflineProvider } from './messages-offline';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
-import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Service to handle messages.
@@ -872,13 +872,11 @@ export class AddonMessagesProvider {
     protected storeUsersFromDiscussions(discussions: any, siteId?: string): void {
         const users = [];
         for (const userId in discussions) {
-            if (typeof userId != 'undefined' && !isNaN(parseInt(userId))) {
-                users.push({
-                    id: userId,
-                    fullname: discussions[userId].fullname,
-                    profileimageurl: discussions[userId].profileimageurl
-                });
-            }
+            users.push({
+                id: userId,
+                fullname: discussions[userId].fullname,
+                profileimageurl: discussions[userId].profileimageurl
+            });
         }
         this.userProvider.storeUsers(users, siteId);
     }

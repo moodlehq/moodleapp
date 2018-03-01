@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
-import { CoreTimeUtilsProvider } from '../../../../../providers/utils/time';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreConstants } from '../../../../constants';
 
 /**

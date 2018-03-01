@@ -13,15 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCoursesProvider } from '../../courses/providers/courses';
 import { CoreCourseProvider } from '../../course/providers/course';
 import { CoreGradesProvider } from './grades';
-import { CoreTextUtilsProvider } from '../../../providers/utils/text';
-import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Service that provides some features regarding grades information.

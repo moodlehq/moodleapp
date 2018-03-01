@@ -17,6 +17,7 @@ import { Platform } from 'ionic-angular';
 import { AddonPushNotificationsProvider } from './providers/pushnotifications';
 import { AddonPushNotificationsDelegate } from './providers/delegate';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 
 @NgModule({
@@ -31,7 +32,9 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 })
 export class AddonPushNotificationsModule {
     constructor(platform: Platform, pushNotificationsProvider: AddonPushNotificationsProvider, eventsProvider: CoreEventsProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, loggerProvider: CoreLoggerProvider) {
+
+        const logger = loggerProvider.getInstance('AddonPushNotificationsModule');
 
         // Register device on GCM or APNS server.
         platform.ready().then(() => {
@@ -45,11 +48,15 @@ export class AddonPushNotificationsModule {
 
         // Register device on Moodle site when login.
         eventsProvider.on(CoreEventsProvider.LOGIN, () => {
-            pushNotificationsProvider.registerDeviceOnMoodle();
+            pushNotificationsProvider.registerDeviceOnMoodle().catch((error) => {
+                logger.warn('Can\'t register device', error);
+            });
         });
 
         eventsProvider.on(CoreEventsProvider.SITE_DELETED, (site) => {
-            pushNotificationsProvider.unregisterDeviceOnMoodle(site);
+            pushNotificationsProvider.unregisterDeviceOnMoodle(site).catch((error) => {
+                logger.warn('Can\'t unregister device', error);
+            });
             pushNotificationsProvider.cleanSiteCounters(site.id);
         });
 

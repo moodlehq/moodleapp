@@ -16,15 +16,15 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { MediaFile } from '@ionic-native/media-capture';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreFileProvider } from '../../../providers/file';
-import { CoreFilepoolProvider } from '../../../providers/filepool';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreMimetypeUtilsProvider } from '../../../providers/utils/mimetype';
-import { CoreTextUtilsProvider } from '../../../providers/utils/text';
-import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
-import { CoreWSFileUploadOptions } from '../../../providers/ws';
+import { CoreFileProvider } from '@providers/file';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreWSFileUploadOptions } from '@providers/ws';
 
 /**
  * File upload options.

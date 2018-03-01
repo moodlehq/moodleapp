@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSite } from '../../../classes/site';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSite } from '@classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Service to provide user functionalities.
@@ -398,8 +398,8 @@ export class CoreUserProvider {
         const promises = [];
 
         users.forEach((user) => {
-            if (typeof user.id != 'undefined') {
-                promises.push(this.storeUser(user.id, user.fullname, user.profileimageurl, siteId));
+            if (typeof user.id != 'undefined' && !isNaN(parseInt(user.id, 10))) {
+                promises.push(this.storeUser(parseInt(user.id, 10), user.fullname, user.profileimageurl, siteId));
             }
         });
 
@@ -422,6 +422,7 @@ export class CoreUserProvider {
                 value: value
             }
         ];
+
         return this.updateUserPreferences(preferences, undefined, userId, siteId);
     }
 

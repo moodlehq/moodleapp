@@ -14,8 +14,8 @@
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '../../providers/sites';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Component to display a site selector. It will display a select with the list of sites. If the selected site changes,

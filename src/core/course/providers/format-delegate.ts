@@ -14,12 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from './course';
 import { CoreCourseFormatDefaultHandler } from './default-format';
-import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
+import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 
 /**
  * Interface that all course format handlers must implement.

@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { AddonFilesProvider } from './providers/files';
 import { AddonFilesHelperProvider } from './providers/helper';
 import { AddonFilesMainMenuHandler } from './providers/mainmenu-handler';
-import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 
 @NgModule({
     declarations: [

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
+import { CoreLoggerProvider } from '@providers/logger';
 
 /**
  * Service to handle push notifications clicks.

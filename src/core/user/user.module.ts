@@ -18,8 +18,8 @@ import { CoreUserProfileFieldDelegate } from './providers/user-profile-field-del
 import { CoreUserProvider } from './providers/user';
 import { CoreUserHelperProvider } from './providers/helper';
 import { CoreUserProfileMailHandler } from './providers/user-handler';
-import { CoreEventsProvider } from '../../providers/events';
-import { CoreSitesProvider } from '../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
 import { CoreUserProfileLinkHandler } from './providers/user-link-handler';
 import { CoreUserParticipantsCourseOptionHandler } from './providers/course-option-handler';

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SQLiteDB } from '../../../classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Class to mock the interaction with the SQLite database.

@@ -20,8 +20,8 @@ import { CoreConfigProvider } from './config';
 import { CoreLoggerProvider } from './logger';
 import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '../classes/sqlitedb';
-import { CoreConstants } from '../core/constants';
+import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreConstants } from '@core/constants';
 import { Subject } from 'rxjs';
 
 /**

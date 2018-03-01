@@ -15,8 +15,8 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { AddonCalendarProvider } from '../../providers/calendar';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays the calendar settings.

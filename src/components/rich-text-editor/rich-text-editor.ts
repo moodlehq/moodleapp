@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { TextInput } from 'ionic-angular';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { FormControl } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 

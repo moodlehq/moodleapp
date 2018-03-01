@@ -14,11 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
-import { CoreCoursesProvider } from '../../../core/courses/providers/courses';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreEventsProvider } from '../../../providers/events';
+import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreEventsProvider } from '@providers/events';
 
 /**
  * Interface that all user profile handlers must implement.

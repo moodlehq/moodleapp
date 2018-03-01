@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '../../../course/providers/course';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';

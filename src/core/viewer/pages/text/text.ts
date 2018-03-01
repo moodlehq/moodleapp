@@ -14,7 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Page to render a certain text. If opened as a modal, it will have a button to close the modal.

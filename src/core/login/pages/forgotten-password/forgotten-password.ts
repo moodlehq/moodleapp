@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 

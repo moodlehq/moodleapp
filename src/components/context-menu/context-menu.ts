@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 import { Subject } from 'rxjs';

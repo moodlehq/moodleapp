@@ -15,16 +15,16 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
 import { AddonMessagesSyncProvider } from '../../providers/sync';
-import { CoreUserProvider } from '../../../../core/user/providers/user';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
-import { CoreLoggerProvider } from '../../../../providers/logger';
-import { CoreAppProvider } from '../../../../providers/app';
-import { coreSlideInOut } from '../../../../classes/animations';
+import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreAppProvider } from '@providers/app';
+import { coreSlideInOut } from '@classes/animations';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as moment from 'moment';
 

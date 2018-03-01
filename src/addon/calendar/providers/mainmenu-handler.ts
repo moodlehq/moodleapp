@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { AddonCalendarProvider } from './calendar';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/mainmenu/providers/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 
 /**
  * Handler to inject an option into main menu.

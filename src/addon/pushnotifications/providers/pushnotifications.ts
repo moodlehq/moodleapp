@@ -78,14 +78,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<any>}  Resolved when done.
      */
     cleanSiteCounters(siteId: string): Promise<any> {
-        return this.appDB.getRecords(this.BADGE_TABLE, {siteid: siteId} ).then((entries) => {
-            const promises =  [];
-            entries.forEach((entry) => {
-                promises.push(this.appDB.remove(this.BADGE_TABLE, { siteid: entry.siteid, addon: entry.addon }));
-            });
-
-            return Promise.all(promises);
-        }).finally(() => {
+        return this.appDB.deleteRecords(this.BADGE_TABLE, {siteid: siteId} ).finally(() => {
             this.updateAppCounter();
         });
     }
@@ -95,7 +88,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<PushOptions>} [description]
      */
     protected getOptions(): Promise<PushOptions> {
-        // @TODO: CoreSettingsProvider.NOTIFICATION_SOUND
+        // @todo: CoreSettingsProvider.NOTIFICATION_SOUND
         return this.configProvider.get('CoreSettingsProvider.NOTIFICATION_SOUND', true).then((soundEnabled) => {
             return {
                android: {
@@ -195,8 +188,8 @@ export class AddonPushNotificationsProvider {
                     this.pushNotificationsDelegate.received(data);
                 });
             } else {
-                // The notification was clicked. For compatibility with old push plugin implementation
-                // we'll merge all the notification data in a single object.
+                // The notification was clicked.
+                // For compatibility with old push plugin implementation we'll merge all the notification data in a single object.
                 data.title = notification.title;
                 data.message = notification.message;
                 this.notificationClicked(data);
@@ -289,9 +282,9 @@ export class AddonPushNotificationsProvider {
         const addons = this.pushNotificationsDelegate.getCounterHandlers(),
             promises = [];
 
-        addons.forEach((addon) => {
-            promises.push(this.getAddonBadge(siteId, addon));
-        });
+        for (const x in addons) {
+            promises.push(this.getAddonBadge(siteId, addons[x]));
+        }
 
         return Promise.all(promises).then((counters) => {
             let plus = false,
@@ -334,7 +327,9 @@ export class AddonPushNotificationsProvider {
 
                 pushObject.on('registration').subscribe((registrationId: any) => {
                     this.pushID = registrationId;
-                    this.registerDeviceOnMoodle();
+                    this.registerDeviceOnMoodle().catch((error) => {
+                        this.logger.warn('Can\'t register device', error);
+                    });
                 });
 
                 pushObject.on('error').subscribe((error: any) => {

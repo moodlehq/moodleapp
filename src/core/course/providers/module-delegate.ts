@@ -14,12 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from './course';
-import { CoreSite } from '../../../classes/site';
-import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
+import { CoreSite } from '@classes/site';
+import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 
 /**
  * Interface that all course module handlers must implement.

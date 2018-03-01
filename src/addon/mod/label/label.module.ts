@@ -15,8 +15,8 @@
 import { NgModule } from '@angular/core';
 import { AddonModLabelModuleHandler } from './providers/module-handler';
 import { AddonModLabelLinkHandler } from './providers/link-handler';
-import { CoreCourseModuleDelegate } from '../../../core/course/providers/module-delegate';
-import { CoreContentLinksDelegate } from '../../../core/contentlinks/providers/delegate';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 
 @NgModule({
     declarations: [

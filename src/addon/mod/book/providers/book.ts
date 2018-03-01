@@ -14,14 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { CoreFileProvider } from '../../../../providers/file';
-import { CoreFilepoolProvider } from '../../../../providers/filepool';
-import { CoreLoggerProvider } from '../../../../providers/logger';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
-import { CoreCourseProvider } from '../../../../core/course/providers/course';
+import { CoreFileProvider } from '@providers/file';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreCourseProvider } from '@core/course/providers/course';
 
 /**
  * A book chapter inside the toc list.

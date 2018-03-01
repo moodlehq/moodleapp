@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreFileProvider } from '../../../providers/file';
-import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFileProvider } from '@providers/file';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { Observable, Observer } from 'rxjs';
 import { InAppBrowserObject, InAppBrowserEvent } from '@ionic-native/in-app-browser';
 

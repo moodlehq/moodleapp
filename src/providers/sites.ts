@@ -21,10 +21,10 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
-import { CoreConstants } from '../core/constants';
+import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
-import { CoreSite } from '../classes/site';
-import { SQLiteDB } from '../classes/sqlitedb';
+import { CoreSite } from '@classes/site';
+import { SQLiteDB } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 
 /**
@@ -745,28 +745,13 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Check if there are no sites stored.
-     *
-     * @return {Promise<void>} Promise resolved if there are no sites, and rejected if there is at least one.
-     */
-    hasNoSites(): Promise<void> {
-        return this.appDB.countRecords(this.SITES_TABLE).then((count) => {
-            if (count > 0) {
-                return Promise.reject(null);
-            }
-        });
-    }
-
-    /**
      * Check if there are sites stored.
      *
-     * @return {Promise<void>} Promise resolved if there is at least one site, and rejected if there aren't.
+     * @return {Promise<boolean>} Promise resolved with true if there are sites and false if there aren't.
      */
-    hasSites(): Promise<void> {
+    hasSites(): Promise<boolean> {
         return this.appDB.countRecords(this.SITES_TABLE).then((count) => {
-            if (count == 0) {
-                return Promise.reject(null);
-            }
+            return count > 0;
         });
     }
 

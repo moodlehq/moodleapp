@@ -13,15 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreSite } from '../../../classes/site';
-import { CoreCoursesProvider } from '../../../core/courses/providers/courses';
-import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
-import { CoreGroupsProvider } from '../../../providers/groups';
-import { CoreConstants } from '../../../core/constants';
-import { CoreLocalNotificationsProvider } from '../../../providers/local-notifications';
-import { CoreConfigProvider } from '../../../providers/config';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreGroupsProvider } from '@providers/groups';
+import { CoreConstants } from '@core/constants';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreConfigProvider } from '@providers/config';
 
 /**
  * Service to handle calendar events.

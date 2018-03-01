@@ -15,8 +15,8 @@
 import { NavController } from 'ionic-angular';
 import { CoreContentLinksAction } from '../providers/delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseHelperProvider } from '../../course/providers/helper';
 
 /**

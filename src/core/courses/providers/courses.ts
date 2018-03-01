@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreSite } from '../../../classes/site';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features regarding lists of courses and categories.

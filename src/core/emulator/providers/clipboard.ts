@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
-import { CoreAppProvider } from '../../../providers/app';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Emulates the Cordova Clipboard plugin in desktop apps and in browser.

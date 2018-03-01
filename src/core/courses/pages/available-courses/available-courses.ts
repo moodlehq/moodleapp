@@ -14,8 +14,8 @@
 
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
 
 /**

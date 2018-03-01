@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLangProvider } from '../../../providers/lang';
-import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreLangProvider } from '@providers/lang';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreConfigConstants } from '../../../configconstants';
 
 /**

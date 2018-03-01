@@ -14,8 +14,8 @@
 
 import { Component, Input, OnInit, AfterViewInit, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to add a red asterisk for required input fields.

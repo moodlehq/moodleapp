@@ -13,20 +13,20 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreFileProvider } from '../../../providers/file';
-import { CoreFilepoolProvider } from '../../../providers/filepool';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFileProvider } from '@providers/file';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from './course';
-import { CoreCache } from '../../../classes/cache';
-import { CoreSiteWSPreSets } from '../../../classes/site';
+import { CoreCache } from '@classes/cache';
+import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
+import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 
 /**
  * Progress of downloading a list of modules.

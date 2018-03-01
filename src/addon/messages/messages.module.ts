@@ -97,16 +97,13 @@ pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvi
             localNotifications.registerClick(AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
         }
 
-        // @todo: use addon manager $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate');
         // Register push notification clicks.
-        if (pushNotificationsDelegate) {
-            pushNotificationsDelegate.registerHandler('mmaMessages', (notification) => {
-                if (utils.isFalseOrZero(notification.notif)) {
-                    notificationClicked(notification);
+        pushNotificationsDelegate.registerHandler('mmaMessages', (notification) => {
+            if (utils.isFalseOrZero(notification.notif)) {
+                notificationClicked(notification);
 
-                    return true;
-                }
-            });
-        }
+                return true;
+            }
+        });
     }
 }

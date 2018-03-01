@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreLoggerProvider } from '../providers/logger';
+import { CoreLoggerProvider } from '@providers/logger';
 import * as moment from 'moment';
 
 /**

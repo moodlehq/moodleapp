@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component that displays site home news.

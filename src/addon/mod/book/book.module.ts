@@ -18,9 +18,9 @@ import { AddonModBookProvider } from './providers/book';
 import { AddonModBookModuleHandler } from './providers/module-handler';
 import { AddonModBookLinkHandler } from './providers/link-handler';
 import { AddonModBookPrefetchHandler } from './providers/prefetch-handler';
-import { CoreCourseModuleDelegate } from '../../../core/course/providers/module-delegate';
-import { CoreContentLinksDelegate } from '../../../core/contentlinks/providers/delegate';
-import { CoreCourseModulePrefetchDelegate } from '../../../core/course/providers/module-prefetch-delegate';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 
 @NgModule({
     declarations: [

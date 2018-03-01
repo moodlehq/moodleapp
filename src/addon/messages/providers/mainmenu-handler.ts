@@ -20,8 +20,10 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
+import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 
 /**
  * Handler to inject an option into main menu.
@@ -36,7 +38,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
-            private pushNotificationsProvider: AddonPushNotificationsProvider) {
+            private pushNotificationsProvider: AddonPushNotificationsProvider, utils: CoreUtilsProvider,
+            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
 
         eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);
@@ -51,6 +54,17 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             this.badge = '';
             this.loading = true;
         });
+
+        // If a message push notification is received, refresh the count.
+        pushNotificationsDelegate.registerReceiveHandler('AddonMessagesMainMenuHandler', (notification) => {
+            // New message received. If it's from current site, refresh the data.
+            if (utils.isFalseOrZero(notification.notif) && this.sitesProvider.isCurrentSite(notification.site)) {
+                this.updateBadge(notification.site);
+            }
+        });
+
+        // Register Badge counter.
+        pushNotificationsDelegate.registerCounterHandler('mmaMessages');
     }
 
     /**
@@ -97,11 +111,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         this.messagesProvider.getUnreadConversationsCount(undefined, siteId).then((unread) => {
             // Leave badge enter if there is a 0+ or a 0.
             this.badge = parseInt(unread, 10) > 0 ? unread : '';
-            // @todo: use addon manager $mmaPushNotifications = $mmAddonManager.get('$mmaPushNotifications');
             // Update badge.
-            if (this.pushNotificationsProvider) {
-                this.pushNotificationsProvider.updateAddonCounter('mmaMessages', unread, siteId);
-            }
+            this.pushNotificationsProvider.updateAddonCounter('mmaMessages', unread, siteId);
         }).catch(() => {
             this.badge = '';
         }).finally(() => {
@@ -126,6 +137,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         }
 
         if (this.appProvider.isDesktop() && this.localNotificationsProvider.isAvailable()) {
+            // @todo
             /*$mmEmulatorHelper.checkNewNotifications(
                     AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, this.fetchMessages, this.getTitleAndText, siteId);*/
         }

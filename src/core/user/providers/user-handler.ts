@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from './user-delegate';
-import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Profile links email handler.

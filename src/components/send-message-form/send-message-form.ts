@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Component to display a "send message form".

@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreViewerImagePage } from './image';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
+import { CoreDirectivesModule } from '@directives';
 
 @NgModule({
     declarations: [

@@ -14,8 +14,8 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
 import { CoreMainMenuProvider, CoreMainMenuCustomItem } from '../../providers/mainmenu';
 

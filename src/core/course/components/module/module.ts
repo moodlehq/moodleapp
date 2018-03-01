@@ -14,9 +14,9 @@
 
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseHelperProvider } from '../../providers/helper';
 import { CoreCourseModuleHandlerButton } from '../../providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from '../../providers/module-prefetch-delegate';

@@ -15,13 +15,13 @@
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreFilepoolProvider } from '../../../providers/filepool';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../providers/utils/text';
-import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './options-delegate';
 import { CoreSiteHomeProvider } from '../../sitehome/providers/sitehome';
 import { CoreCourseProvider } from './course';
@@ -29,7 +29,7 @@ import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';
 import { CoreConstants } from '../../constants';
-import { CoreSite } from '../../../classes/site';
+import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
 
 /**

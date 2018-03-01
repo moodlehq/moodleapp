@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Page that displays info about an unsupported module.

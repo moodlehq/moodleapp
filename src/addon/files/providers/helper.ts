@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
-import { CoreFileUploaderHelperProvider } from '../../../core/fileuploader/providers/helper';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/helper';
 import { AddonFilesProvider } from './files';
 
 /**

@@ -17,14 +17,14 @@ import {
 } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '../../../course/providers/course';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
-import { CoreDynamicComponent } from '../../../../components/dynamic-component/dynamic-component';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.

@@ -23,9 +23,9 @@ import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
-import { CoreConstants } from '../core/constants';
+import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
-import { CoreInterceptor } from '../classes/interceptor';
+import { CoreInterceptor } from '@classes/interceptor';
 
 /**
  * PreSets accepted by the WS call.

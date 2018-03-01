@@ -14,10 +14,10 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
-import { CoreFileProvider } from '../../../../providers/file';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
-import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
+import { CoreFileProvider } from '@providers/file';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
  * Page to capture media in browser or desktop.

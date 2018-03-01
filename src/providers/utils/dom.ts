@@ -22,7 +22,7 @@ import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
-import { CoreConstants } from '../../core/constants';
+import { CoreConstants } from '@core/constants';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.

@@ -16,15 +16,15 @@ import { Component, Optional } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCoursesProvider } from '../../../courses/providers/courses';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreMimetypeUtilsProvider } from '../../../../providers/utils/mimetype';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreFileUploaderHelperProvider } from '../../../fileuploader/providers/helper';
 import { CoreUserDelegate, CoreUserProfileHandlerData } from '../../providers/user-delegate';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays an user profile page.

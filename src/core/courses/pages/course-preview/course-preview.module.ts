@@ -16,9 +16,9 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreCoursesCoursePreviewPage } from './course-preview';
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
-import { CorePipesModule } from '../../../../pipes/pipes.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives';
+import { CorePipesModule } from '@pipes';
 
 @NgModule({
     declarations: [

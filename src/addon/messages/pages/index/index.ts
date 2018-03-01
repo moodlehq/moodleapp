@@ -14,10 +14,10 @@
 
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays the messages index page.

@@ -15,11 +15,13 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Platform, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreAppProvider } from '../../../../providers/app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
+import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
 
 /**
  * Component that displays the list of discussions.
@@ -51,7 +53,8 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-            private appProvider: CoreAppProvider, platform: Platform) {
+            private appProvider: CoreAppProvider, platform: Platform, utils: CoreUtilsProvider,
+            private pushNotificationsDelegate: AddonPushNotificationsDelegate) {
 
         this.search.loading =  translate.instant('core.searching');
         this.loadingMessages = translate.instant('core.loading');
@@ -109,6 +112,14 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         });
 
         this.discussionUserId = navParams.get('discussionUserId') || false;
+
+        // If a message push notification is received, refresh the view.
+        pushNotificationsDelegate.registerReceiveHandler('AddonMessagesDiscussionsComponent', (notification) => {
+            // New message received. If it's from current site, refresh the data.
+            if (utils.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
+                this.refreshData();
+            }
+        });
     }
 
     /**
@@ -234,5 +245,6 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.readChangedObserver && this.readChangedObserver.off();
         this.cronObserver && this.cronObserver.off();
         this.appResumeSubscription && this.appResumeSubscription.unsubscribe();
+        this.pushNotificationsDelegate.unregisterReceiveHandler('AddonMessagesDiscussionsComponent');
     }
 }

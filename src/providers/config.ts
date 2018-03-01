@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreAppProvider } from './app';
-import { SQLiteDB } from '../classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.

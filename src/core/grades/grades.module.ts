@@ -25,8 +25,8 @@ import { CoreGradesOverviewLinkHandler } from './providers/overview-link-handler
 import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
 import { CoreGradesUserHandler } from './providers/user-handler';
 import { CoreUserDelegate } from '../user/providers/user-delegate';
-import { CoreEventsProvider } from '../../providers/events';
-import { CoreSitesProvider } from '../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '../user/providers/user';
 
 @NgModule({

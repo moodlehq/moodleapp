@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Component to display a "search box".

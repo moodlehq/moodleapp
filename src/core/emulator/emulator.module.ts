@@ -48,13 +48,13 @@ import { ZipMock } from './providers/zip';
 
 import { CoreEmulatorHelperProvider } from './providers/helper';
 import { CoreEmulatorCaptureHelperProvider } from './providers/capture-helper';
-import { CoreAppProvider } from '../../providers/app';
-import { CoreFileProvider } from '../../providers/file';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
-import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
-import { CoreUrlUtilsProvider } from '../../providers/utils/url';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
-import { CoreInitDelegate } from '../../providers/init';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFileProvider } from '@providers/file';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreInitDelegate } from '@providers/init';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -71,7 +71,7 @@ import { CoreInitDelegate } from '../../providers/init';
     imports: [
     ],
     providers: [
-        Badge,
+        Badge, // @todo: Mock
         CoreEmulatorHelperProvider,
         CoreEmulatorCaptureHelperProvider,
         {
@@ -144,7 +144,7 @@ import { CoreInitDelegate } from '../../providers/init';
                 return platform.is('cordova') ? new Network() : new NetworkMock();
             }
         },
-        Push,
+        Push, // @todo: Mock
         SplashScreen,
         StatusBar,
         SQLite,

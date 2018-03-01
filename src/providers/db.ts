@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 import { SQLite } from '@ionic-native/sqlite';
 import { Platform } from 'ionic-angular';
-import { SQLiteDB } from '../classes/sqlitedb';
-import { SQLiteDBMock } from '../core/emulator/classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDBMock } from '@core/emulator/classes/sqlitedb';
 
 /**
  * This service allows interacting with the local database to store and retrieve data.

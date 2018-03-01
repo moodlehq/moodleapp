@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreSitesProvider } from '../providers/sites';
-import { CoreEventsProvider } from '../providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreEventsProvider } from '@providers/events';
 
 export interface CoreDelegateHandler {
     /**

@@ -16,10 +16,10 @@ import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddonUserProfileFieldDatetimeHandler } from './providers/handler';
-import { CoreUserProfileFieldDelegate } from '../../../core/user/providers/user-profile-field-delegate';
+import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldDatetimeComponent } from './component/datetime';
-import { CoreComponentsModule } from '../../../components/components.module';
-import { CorePipesModule } from '../../../pipes/pipes.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CorePipesModule } from '@pipes';
 
 @NgModule({
     declarations: [

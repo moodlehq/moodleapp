@@ -17,11 +17,11 @@ import { IonicPage, Content, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
-import { CoreCoursesProvider } from '../../../../core/courses/providers/courses';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreLocalNotificationsProvider } from '../../../../providers/local-notifications';
-import { CoreCourseProvider } from '../../../../core/course/providers/course';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import * as moment from 'moment';
 
 /**

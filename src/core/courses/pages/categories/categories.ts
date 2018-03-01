@@ -15,9 +15,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '../../providers/courses';
 
 /**

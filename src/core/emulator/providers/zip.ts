@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Zip } from '@ionic-native/zip';
 import { JSZip } from 'jszip';
 import { File } from '@ionic-native/file';
-import { CoreMimetypeUtilsProvider } from '../../../providers/utils/mimetype';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 
 /**
  * Emulates the Cordova Zip plugin in desktop apps and in browser.

@@ -15,7 +15,7 @@
 import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CoreTabsComponent } from './tabs';
 import { Content } from 'ionic-angular';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 
 /**

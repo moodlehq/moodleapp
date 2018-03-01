@@ -14,15 +14,15 @@
 
 import { Component, Input, Output, OnInit, OnDestroy, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../providers/app';
-import { CoreEventsProvider } from '../../providers/events';
-import { CoreFileProvider } from '../../providers/file';
-import { CoreFilepoolProvider } from '../../providers/filepool';
-import { CoreSitesProvider } from '../../providers/sites';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
-import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
-import { CoreConstants } from '../../core/constants';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFileProvider } from '@providers/file';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSitesProvider } from '../providers/sites';
-import { CoreSyncProvider } from '../providers/sync';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreAppProvider } from '../providers/app';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSyncProvider } from '@providers/sync';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Base class to create sync providers. It provides some common functions.

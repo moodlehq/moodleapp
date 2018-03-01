@@ -14,8 +14,8 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';

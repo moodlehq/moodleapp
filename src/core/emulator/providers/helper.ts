@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreFileProvider } from '../../../providers/file';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreFileProvider } from '@providers/file';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { File } from '@ionic-native/file';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { CoreInitDelegate, CoreInitHandler } from '../../../providers/init';
+import { CoreInitDelegate, CoreInitHandler } from '@providers/init';
 import { FileTransferErrorMock } from './file-transfer';
 import { CoreEmulatorCaptureHelperProvider } from './capture-helper';
 

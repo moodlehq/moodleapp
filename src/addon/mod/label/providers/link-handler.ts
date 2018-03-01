@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreContentLinksModuleIndexHandler } from '../../../../core/contentlinks/classes/module-index-handler';
-import { CoreCourseHelperProvider } from '../../../../core/course/providers/helper';
+import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * Handler to treat links to label.

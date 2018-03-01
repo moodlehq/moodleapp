@@ -15,11 +15,11 @@
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../../providers/app';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonFilesProvider } from '../../providers/files';
 import { AddonFilesHelperProvider } from '../../providers/helper';
 

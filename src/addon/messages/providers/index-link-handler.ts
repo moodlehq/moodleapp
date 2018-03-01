@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreContentLinksHandlerBase } from '../../../core/contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '../../../core/contentlinks/providers/delegate';
-import { CoreContentLinksHelperProvider } from '../../../core/contentlinks/providers/helper';
+import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
+import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonMessagesProvider } from './messages';
 
 /**

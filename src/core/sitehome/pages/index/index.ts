@@ -14,7 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 
 /**
