@@ -59,6 +59,8 @@ core-course-module {
     a.core-course-module-handler .core-module-icon {
         margin-top: $label-md-margin-top;
         margin-bottom: $label-md-margin-bottom;
+        width: 24px;
+        height: 24px;
     }
 
     .core-module-title core-format-text {
