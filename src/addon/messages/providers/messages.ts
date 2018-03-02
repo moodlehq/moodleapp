@@ -28,6 +28,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 export class AddonMessagesProvider {
     protected ROOT_CACHE_KEY = 'mmaMessages:';
     protected LIMIT_MESSAGES = 50;
+    protected LIMIT_SEARCH_MESSAGES = 50;
     static NEW_MESSAGE_EVENT = 'new_message_event';
     static READ_CHANGED_EVENT = 'read_changed_event';
     static READ_CRON_EVENT = 'read_cron_event';
@@ -41,6 +42,44 @@ export class AddonMessagesProvider {
             private userProvider: CoreUserProvider, private messagesOffline: AddonMessagesOfflineProvider,
             private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
         this.logger = logger.getInstance('AddonMessagesProvider');
+    }
+
+    /**
+     * Add a contact.
+     *
+     * @param {number} userId  User ID of the person to add.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    addContact(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                userids: [ userId ]
+            };
+
+            return site.write('core_message_create_contacts', params).then(() => {
+                return this.invalidateAllContactsCache(site.getUserId(), site.getId());
+            });
+        });
+    }
+
+    /**
+     * Block a contact.
+     *
+     * @param {number} userId User ID of the person to block.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    blockContact(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                userids: [ userId ]
+            };
+
+            return site.write('core_message_block_contacts', params).then(() => {
+                return this.invalidateAllContactsCache(site.getUserId(), site.getId());
+            });
+        });
     }
 
     /**
@@ -680,6 +719,46 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Checks if the a user is blocked by the current user.
+     *
+     * @param {number} userId The user ID to check against.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<boolean>} Resolved with boolean, rejected when we do not know.
+     */
+    isBlocked(userId: number, siteId?: string): Promise<boolean> {
+        return this.getBlockedContacts(siteId).then((blockedContacts) => {
+            if (!blockedContacts.users || blockedContacts.users.length < 1) {
+                return false;
+            }
+
+            return blockedContacts.users.some((user) => {
+                return userId == user.id;
+            });
+        });
+    }
+
+    /**
+     * Checks if the a user is a contact of the current user.
+     *
+     * @param {number} userId The user ID to check against.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<boolean>} Resolved with boolean, rejected when we do not know.
+     */
+    isContact(userId: number, siteId?: string): Promise<boolean> {
+        return this.getContacts(siteId).then((contacts) => {
+            return ['online', 'offline'].some((type) => {
+                if (contacts[type] && contacts[type].length > 0) {
+                    return contacts[type].some((user) => {
+                        return userId == user.id;
+                    });
+                }
+
+                return false;
+            });
+        });
+    }
+
+    /**
      * Returns whether or not we can mark all messages as read.
      *
      * @return {boolean} If related WS is avalaible on current site.
@@ -783,6 +862,28 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Remove a contact.
+     *
+     * @param {number} userId User ID of the person to remove.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    removeContact(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    userids: [ userId ]
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            return site.write('core_message_delete_contacts', params, preSets).then(() => {
+                return this.invalidateContactsCache(site.getId());
+            });
+        });
+    }
+
+    /**
      * Search for contacts.
      *
      * By default this only returns the first 100 contacts, but note that the WS can return thousands
@@ -821,11 +922,11 @@ export class AddonMessagesProvider {
      * @param  {string} query        The query string
      * @param  {number} [userId]     The user ID. If not defined, current user.
      * @param  {number} [from=0]     Position of the first result to get. Defaults to 0.
-     * @param  {number} [limit]      Number of results to get. Defaults to LIMIT_MESSAGES.
+     * @param  {number} [limit]      Number of results to get. Defaults to LIMIT_SEARCH_MESSAGES.
      * @param  {string} [siteId]     Site ID. If not defined, current site.
      * @return {Promise<any>}              Promise resolved with the results.
      */
-    searchMessages(query: string, userId?: number, from: number = 0, limit: number = this.LIMIT_MESSAGES, siteId?: string):
+    searchMessages(query: string, userId?: number, from: number = 0, limit: number = this.LIMIT_SEARCH_MESSAGES, siteId?: string):
             Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const param = {
@@ -1040,5 +1141,27 @@ export class AddonMessagesProvider {
             });
         }
         this.userProvider.storeUsers(users, siteId);
+    }
+
+    /**
+     * Unblock a user.
+     *
+     * @param {number} userId User ID of the person to unblock.
+     * @param {string} [siteId]  Site ID. If not defined, use current site.
+     * @return {Promise<any>}  Resolved when done.
+     */
+    unblockContact(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    userids: [ userId ]
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            return site.write('core_message_unblock_contacts', params, preSets).then(() => {
+                return this.invalidateAllContactsCache(site.getUserId(), site.getId());
+            });
+        });
     }
 }

@@ -560,7 +560,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Wait for new content height to be calculated.
         setTimeout(() => {
             // Visible content size changed, maintain the bottom position.
-            if (this.content.contentHeight != this.oldContentHeight) {
+            if (this.content && this.content.contentHeight != this.oldContentHeight) {
                 if (!top) {
                     top = this.content.getContentDimensions().scrollTop;
                 }

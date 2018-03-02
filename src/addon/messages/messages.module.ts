@@ -23,6 +23,8 @@ import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate'
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 import { CoreCronDelegate } from '@providers/cron';
 import { AddonMessagesSendMessageUserHandler } from './providers/user-send-message-handler';
+import { AddonMessagesAddContactUserHandler } from './providers/user-add-contact-handler';
+import { AddonMessagesBlockContactUserHandler } from './providers/user-block-contact-handler';
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
@@ -47,6 +49,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
         AddonMessagesSyncProvider,
         AddonMessagesMainMenuHandler,
         AddonMessagesSendMessageUserHandler,
+        AddonMessagesAddContactUserHandler,
+        AddonMessagesBlockContactUserHandler,
         AddonMessagesDiscussionLinkHandler,
         AddonMessagesIndexLinkHandler,
         AddonMessagesSyncCronHandler,
@@ -62,12 +66,15 @@ export class AddonMessagesModule {
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
             sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
-pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider) {
+            pushNotificationsDelegate: AddonPushNotificationsDelegate, utils: CoreUtilsProvider,
+            addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler) {
         // Register handlers.
         mainMenuDelegate.registerHandler(mainmenuHandler);
         contentLinksDelegate.registerHandler(indexLinkHandler);
         contentLinksDelegate.registerHandler(discussionLinkHandler);
         userDelegate.registerHandler(sendMessageHandler);
+        userDelegate.registerHandler(addContactHandler);
+        userDelegate.registerHandler(blockContactHandler);
         cronDelegate.register(syncHandler);
         cronDelegate.register(mainmenuHandler);
         settingsDelegate.registerHandler(settingsHandler);

@@ -39,6 +39,7 @@ export class CoreUserProfilePage {
     protected userId: number;
     protected site;
     protected obsProfileRefreshed: any;
+    protected subscription;
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -102,9 +103,7 @@ export class CoreUserProfilePage {
             this.user = user;
             this.title = user.fullname;
 
-            this.isLoadingHandlers = true;
-
-            this.userDelegate.getProfileHandlersFor(user, this.courseId).then((handlers) => {
+            this.subscription = this.userDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
@@ -122,8 +121,8 @@ export class CoreUserProfilePage {
                             break;
                     }
                 });
-            }).finally(() => {
-                this.isLoadingHandlers = false;
+
+                this.isLoadingHandlers = !this.userDelegate.areHandlersLoaded();
             });
 
         }).catch((error) => {
@@ -208,6 +207,8 @@ export class CoreUserProfilePage {
      * Page destroyed.
      */
     ngOnDestroy(): void {
+        this.subscription && this.subscription.unsubscribe();
         this.obsProfileRefreshed && this.obsProfileRefreshed.off();
+        this.userDelegate.clearUserHandlers();
     }
 }
