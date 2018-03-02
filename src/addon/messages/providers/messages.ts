@@ -81,6 +81,16 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Get the cache key for blocked contacts.
+     *
+     * @param {number} userId The user who's contacts we're looking for.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForBlockedContacts(userId: number): string {
+        return this.ROOT_CACHE_KEY + 'blockedContacts:' + userId;
+    }
+
+    /**
      * Get the cache key for contacts.
      *
      * @return {string} Cache key.
@@ -106,6 +116,85 @@ export class AddonMessagesProvider {
      */
     protected getCacheKeyForDiscussions(): string {
         return this.ROOT_CACHE_KEY + 'discussions';
+    }
+
+    /**
+     * Get all the contacts of the current user.
+     *
+     * @param  {string} [siteId]  Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved with the WS data.
+     */
+    getAllContacts(siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.getContacts(siteId).then((contacts) => {
+            return this.getBlockedContacts(siteId).then((blocked) => {
+                contacts.blocked = blocked.users;
+                this.storeUsersFromAllContacts(contacts);
+
+                return contacts;
+            }).catch(() => {
+                // The WS for blocked contacts might fail, but we still want the contacts.
+                contacts.blocked = [];
+                this.storeUsersFromAllContacts(contacts);
+
+                return contacts;
+            });
+        });
+    }
+
+    /**
+     * Get all the blocked contacts of the current user.
+     *
+     * @param  {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved with the WS data.
+     */
+    getBlockedContacts(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const userId = site.getUserId(),
+                params = {
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: this.getCacheKeyForBlockedContacts(userId)
+                };
+
+            return site.read('core_message_get_blocked_users', params, preSets);
+        });
+    }
+
+    /**
+     * Get the contacts of the current user.
+     *
+     * This excludes the blocked users.
+     *
+     * @param  {string} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise<any>} Resolved with the WS data.
+     */
+    getContacts(siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const preSets = {
+                cacheKey: this.getCacheKeyForContacts()
+            };
+
+            return site.read('core_message_get_contacts', undefined, preSets).then((contacts) => {
+                // Filter contacts with negative ID, they are notifications.
+                const validContacts = {};
+                for (const typeName in contacts) {
+                    if (!validContacts[typeName]) {
+                        validContacts[typeName] = [];
+                    }
+
+                    contacts[typeName].forEach((contact) => {
+                        if (contact.id > 0) {
+                            validContacts[typeName].push(contact);
+                        }
+                    });
+                }
+
+                return validContacts;
+            });
+        });
     }
 
     /**
@@ -510,6 +599,34 @@ export class AddonMessagesProvider {
     }
 
     /**
+     * Invalidate all contacts cache.
+     *
+     * @param {number} userId    The user ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Resolved when done.
+     */
+    invalidateAllContactsCache(userId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.invalidateContactsCache(siteId).then(() => {
+            return this.invalidateBlockedContactsCache(userId, siteId);
+        });
+    }
+
+    /**
+     * Invalidate blocked contacts cache.
+     *
+     * @param {number} userId    The user ID.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}
+     */
+    invalidateBlockedContactsCache(userId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKey(this.getCacheKeyForBlockedContacts(userId));
+        });
+    }
+
+    /**
      * Invalidate contacts cache.
      *
      * @param  {string} [siteId] Site ID. If not defined, current site.
@@ -663,6 +780,39 @@ export class AddonMessagesProvider {
             };
 
         return this.sitesProvider.getCurrentSite().write('core_message_mark_all_messages_as_read', params, preSets);
+    }
+
+    /**
+     * Search for contacts.
+     *
+     * By default this only returns the first 100 contacts, but note that the WS can return thousands
+     * of results which would take a while to process. The limit here is just a convenience to
+     * prevent viewed to crash because too many DOM elements are created.
+     *
+     * @param {string} query The query string.
+     * @param {number} [limit=100] The number of results to return, 0 for none.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}
+     */
+    searchContacts(query: string, limit: number = 100, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                    searchtext: query,
+                    onlymycourses: 0
+                },
+                preSets = {
+                    getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
+                };
+
+            return site.read('core_message_search_contacts', data, preSets).then((contacts) => {
+                if (limit && contacts.length > limit) {
+                    contacts = contacts.splice(0, limit);
+                }
+                this.userProvider.storeUsers(contacts);
+
+                return contacts;
+            });
+        });
     }
 
     /**
@@ -861,6 +1011,17 @@ export class AddonMessagesProvider {
             return $mmEmulatorHelper.storeLastReceivedNotification(component, message, siteId);
         });*/
         return Promise.resolve();
+    }
+
+    /**
+     * Store user data from contacts in local DB.
+     *
+     * @param {any} contactTypes List of contacts grouped in types.
+     */
+    protected storeUsersFromAllContacts(contactTypes: any): void {
+        for (const x in contactTypes) {
+            this.userProvider.storeUsers(contactTypes[x]);
+        }
     }
 
     /**

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Platform, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -190,6 +190,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     clearSearch(): void {
         this.loaded = false;
         this.search.showResults = false;
+        this.search.text = ''; // Reset searched string.
         this.fetchData().finally(() => {
             this.loaded = true;
         });

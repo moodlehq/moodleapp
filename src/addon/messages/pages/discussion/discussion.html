@@ -44,8 +44,8 @@
                     </button>
                 </ion-item>
             </ng-container>
-            <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
         </ion-list>
+        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
     </core-loading>
 </ion-content>
 <ion-footer color="light" class="footer-adjustable">

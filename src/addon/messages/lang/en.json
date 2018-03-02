@@ -1,5 +1,7 @@
 {
     "blocknoncontacts": "Prevent non-contacts from messaging me",
+    "contactlistempty": "The contact list is empty",
+    "contactname": "Contact name",
     "contacts": "Contacts",
     "deletemessage": "Delete message",
     "deletemessageconfirmation": "Are you sure you want to delete this message? It will only be deleted from your messaging history and will still be viewable by the user who sent or received the message.",
@@ -13,5 +15,11 @@
     "newmessage": "New message",
     "newmessages": "New messages",
     "nomessages": "No messages",
+    "nousersfound": "No users found",
+    "type_blocked": "Blocked",
+    "type_offline": "Offline",
+    "type_online": "Online",
+    "type_search": "Search results",
+    "type_strangers": "Others",
     "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}"
 }
