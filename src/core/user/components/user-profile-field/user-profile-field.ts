@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Injector } from '@angular/core';
 import { CoreUserProfileFieldDelegate } from '../../providers/user-profile-field-delegate';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
@@ -33,13 +33,16 @@ export class CoreUserProfileFieldComponent implements OnInit {
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
 
-    constructor(private ufDelegate: CoreUserProfileFieldDelegate, private utilsProvider: CoreUtilsProvider) { }
+    constructor(private ufDelegate: CoreUserProfileFieldDelegate, private utilsProvider: CoreUtilsProvider,
+            private injector: Injector) { }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.componentClass = this.ufDelegate.getComponent(this.field, this.signup);
+        this.ufDelegate.getComponent(this.injector, this.field, this.signup).then((component) => {
+            this.componentClass = component;
+        });
 
         this.data.field = this.field;
         this.data.edit = this.utilsProvider.isTrueOrOne(this.edit);

@@ -62,7 +62,7 @@ export class CoreFormatTextDirective implements OnChanges {
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController,
+            private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.

@@ -144,7 +144,10 @@ export class CoreSiteAddonsProvider {
      */
     createDataForJS(bootstrapResult: any, contentResult?: any): any {
         // First of all, add the data returned by the bootstrap JS (if any).
-        const data = this.utils.clone(bootstrapResult.jsResult || {});
+        let data = this.utils.clone(bootstrapResult.jsResult || {});
+        if (typeof data == 'boolean') {
+            data = {};
+        }
 
         // Now add some data returned by the bootstrap WS call.
         data.BOOTSTRAP_TEMPLATES = this.utils.objectToKeyValueMap(bootstrapResult.templates, 'id', 'html');

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -22,10 +22,12 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
 
     /**
      * Return the Component to use to display the user profile field.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return {any} The component to use, undefined if not found.
+     * @param {Injector} injector Injector.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(): any;
+    getComponent(injector: Injector): any | Promise<any>;
 
     /**
      * Get the data to send for the field based on the input data.
@@ -75,17 +77,23 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
     /**
      * Get the component to use to display an user field.
      *
+     * @param {Injector} injector Injector.
      * @param  {any} field      User field to get the directive for.
      * @param  {boolean} signup         True if user is in signup page.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getComponent(field: any, signup: boolean): any {
+    getComponent(injector: Injector, field: any, signup: boolean): Promise<any> {
         const type = field.type || field.datatype;
+        let result;
         if (signup) {
-            return this.executeFunction(type, 'getComponent');
+            result = this.executeFunction(type, 'getComponent', [injector]);
         } else {
-            return this.executeFunctionOnEnabled(type, 'getComponent');
+            result = this.executeFunctionOnEnabled(type, 'getComponent', [injector]);
         }
+
+        return Promise.resolve(result).catch((err) => {
+            this.logger.error('Error getting component for field', type, err);
+        });
     }
 
     /**

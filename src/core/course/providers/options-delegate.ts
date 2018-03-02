@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -45,10 +45,11 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
     /**
      * Returns the data needed to render the handler.
      *
+     * @param {Injector} injector Injector.
      * @param {number} courseId The course ID.
-     * @return {CoreCourseOptionsHandlerData} Data.
+     * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData?(courseId: number): CoreCourseOptionsHandlerData;
+    getDisplayData?(injector: Injector, courseId: number): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData>;
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -243,6 +244,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
      * Get the list of handlers that should be displayed for a course.
      * This function should be called only when the handlers need to be displayed, since it can call several WebServices.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course object.
      * @param {boolean} [refresh] True if it should refresh the list.
      * @param {boolean} [isGuest] Whether it's guest.
@@ -250,7 +252,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
      * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return {Promise<CoreCourseOptionsHandlerToDisplay[]>} Promise resolved with array of handlers.
      */
-    getHandlersToDisplay(course: any, refresh?: boolean, isGuest?: boolean, navOptions?: any, admOptions?: any):
+    getHandlersToDisplay(injector: Injector, course: any, refresh?: boolean, isGuest?: boolean, navOptions?: any, admOptions?: any):
             Promise<CoreCourseOptionsHandlerToDisplay[]> {
         course.id = parseInt(course.id, 10);
 
@@ -269,14 +271,19 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
             // Call getHandlersForAccess to make sure the handlers have been loaded.
             return this.getHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions);
         }).then(() => {
-            const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [];
+            const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] = [],
+                promises = [];
 
             this.coursesHandlers[course.id].enabledHandlers.forEach((handler) => {
-                handlersToDisplay.push({
-                    data: handler.getDisplayData(course),
-                    priority: handler.priority,
-                    prefetch: handler.prefetch
-                });
+                promises.push(Promise.resolve(handler.getDisplayData(injector, course)).then((data) => {
+                    handlersToDisplay.push({
+                        data: data,
+                        priority: handler.priority,
+                        prefetch: handler.prefetch
+                    });
+                }).catch((err) => {
+                    this.logger.error('Error getting data for handler', handler.name, err);
+                }));
             });
 
             // Sort them by priority.

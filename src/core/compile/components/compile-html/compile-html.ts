@@ -13,23 +13,11 @@
 // limitations under the License.
 
 import {
-    Component, NgModule, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, Compiler, ViewChild, ComponentRef,
-    SimpleChange, ChangeDetectorRef
+    Component, Input, OnInit, OnChanges, OnDestroy, ViewContainerRef, ViewChild, ComponentRef, SimpleChange, ChangeDetectorRef,
+    ElementRef, Optional
 } from '@angular/core';
-import { IonicModule, NavController } from 'ionic-angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { NavController } from 'ionic-angular';
 import { CoreCompileProvider } from '../../../compile/providers/compile';
-
-// Import all modules that define components, directives and pipes.
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
-import { CorePipesModule } from '../../../../pipes/pipes.module';
-import { CoreCourseComponentsModule } from '../../../course/components/components.module';
-import { CoreCourseDirectivesModule } from '../../../course/directives/directives.module';
-import { CoreCoursesComponentsModule } from '../../../courses/components/components.module';
-import { CoreSiteAddonsDirectivesModule } from '../../../siteaddons/directives/directives.module';
-import { CoreSiteHomeComponentsModule } from '../../../sitehome/components/components.module';
-import { CoreUserComponentsModule } from '../../../user/components/components.module';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -51,13 +39,6 @@ import { CoreUserComponentsModule } from '../../../user/components/components.mo
     template: '<ng-container #dynamicComponent></ng-container>'
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
-    // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
-    protected IMPORTS = [
-        IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
-        CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreSiteAddonsDirectivesModule
-    ];
-
     @Input() text: string; // The HTML text to display.
     @Input() javascript: string; // The Javascript to execute in the component.
     @Input() jsData; // Data to pass to the fake component.
@@ -66,9 +47,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container: ViewContainerRef;
 
     protected componentRef: ComponentRef<any>;
+    protected element;
 
-    constructor(protected compileProvider: CoreCompileProvider, protected compiler: Compiler,
-            protected cdr: ChangeDetectorRef, protected navCtrl: NavController) { }
+    constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
+            @Optional() protected navCtrl: NavController) {
+        this.element = element.nativeElement;
+    }
 
     /**
      * Detect changes on input properties.
@@ -76,26 +60,14 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if ((changes.text || changes.javascript) && this.text) {
             // Create a new component and a new module.
-            const component = this.createComponent(),
-                module = NgModule({imports: this.IMPORTS, declarations: [component]})(class {});
-
-            // Compile the module and the component.
-            this.compiler.compileModuleAndAllComponentsAsync(module).then((factories) => {
-                // Search the factory of the component we just created.
-                let componentFactory;
-                for (const i in factories.componentFactories) {
-                    const factory = factories.componentFactories[i];
-                    if (factory.componentType == component) {
-                        componentFactory = factory;
-                        break;
-                    }
-                }
-
+            this.compileProvider.createAndCompileComponent(this.text, this.getComponentClass()).then((factory) => {
                 // Destroy previous components.
                 this.componentRef && this.componentRef.destroy();
 
-                // Create the component.
-                this.componentRef = this.container.createComponent(componentFactory);
+                if (factory) {
+                    // Create the component.
+                    this.componentRef = this.container.createComponent(factory);
+                }
             });
         }
     }
@@ -108,20 +80,16 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Create a dynamic component to compile the HTML and run the javascript.
+     * Get a class that defines the dynamic component.
      *
      * @return {any} The component class.
      */
-    protected createComponent(): any {
+    protected getComponentClass(): any {
         // tslint:disable: no-this-assignment
         const compileInstance = this;
 
         // Create the component, using the text as the template.
-        return Component({
-            template: this.text
-        })
-        (class CoreCompileHtmlFakeComponent implements OnInit {
-
+        return class CoreCompileHtmlFakeComponent implements OnInit {
             constructor() {
                 // If there is some javascript to run, prepare the instance.
                 if (compileInstance.javascript) {
@@ -130,7 +98,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                     // Add some more components and classes.
                     this['ChangeDetectorRef'] = compileInstance.cdr;
                     this['NavController'] = compileInstance.navCtrl;
-                    this['componentContainer'] = compileInstance.container;
+                    this['componentContainer'] = compileInstance.element;
 
                     // Add the data passed to the component.
                     for (const name in compileInstance.jsData) {
@@ -145,6 +113,6 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                     compileInstance.compileProvider.executeJavascript(this, compileInstance.javascript);
                 }
             }
-        });
+        };
     }
 }

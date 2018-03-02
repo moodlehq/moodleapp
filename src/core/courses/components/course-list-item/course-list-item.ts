@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCoursesProvider } from '../../providers/courses';
@@ -31,7 +31,8 @@ import { CoreCoursesProvider } from '../../providers/courses';
 export class CoreCoursesCourseListItemComponent implements OnInit {
     @Input() course: any; // The course to render.
 
-    constructor(private navCtrl: NavController, private translate: TranslateService, private coursesProvider: CoreCoursesProvider) {
+    constructor(@Optional() private navCtrl: NavController, private translate: TranslateService,
+            private coursesProvider: CoreCoursesProvider) {
     }
 
     /**

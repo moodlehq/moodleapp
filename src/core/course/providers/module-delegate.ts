@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -38,12 +38,14 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
      * The component returned must implement CoreCourseModuleMainComponent.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course object.
      * @param {any} module The module object.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getMainComponent(course: any, module: any): any;
+    getMainComponent(injector: Injector, course: any, module: any): any | Promise<any>;
 }
 
 /**
@@ -176,17 +178,17 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
     /**
      * Get the component to render the module.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course object.
      * @param {any} module The module object.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getMainComponent?(course: any, module: any): any {
+    getMainComponent(injector: Injector, course: any, module: any): Promise<any> {
         const handler = this.enabledHandlers[module.modname];
         if (handler && handler.getMainComponent) {
-            const component = handler.getMainComponent(course, module);
-            if (component) {
-                return component;
-            }
+            return Promise.resolve(handler.getMainComponent(injector, course, module)).catch((err) => {
+                this.logger.error('Error getting main component', err);
+            });
         }
     }
 

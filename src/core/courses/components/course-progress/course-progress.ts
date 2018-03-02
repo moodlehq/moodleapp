@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -44,7 +44,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected courseStatusObserver;
 
-    constructor(private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
+    constructor(@Optional() private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
             private courseProvider: CoreCourseProvider, eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
         // Listen for status change in course.

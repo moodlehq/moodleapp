@@ -54,7 +54,7 @@ export class CoreSiteAddonsNewContentDirective implements OnInit {
 
     protected element: HTMLElement;
 
-    constructor(element: ElementRef, protected utils: CoreUtilsProvider, protected navCtrl: NavController,
+    constructor(element: ElementRef, protected utils: CoreUtilsProvider, @Optional() protected navCtrl: NavController,
             @Optional() protected parentContent: CoreSiteAddonsAddonContentComponent, protected domUtils: CoreDomUtilsProvider,
             protected siteAddonsProvider: CoreSiteAddonsProvider) {
         this.element = element.nativeElement || element;

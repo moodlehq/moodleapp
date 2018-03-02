@@ -12,7 +12,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from
     '../../../../core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldMenuComponent } from '../component/menu';
@@ -60,10 +60,12 @@ export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHan
 
     /**
      * Return the Component to use to display the user profile field.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return {any}     The component to use, undefined if not found.
+     * @param {Injector} injector Injector.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(): any {
+    getComponent(injector: Injector): any | Promise<any> {
         return AddonUserProfileFieldMenuComponent;
     }
 }

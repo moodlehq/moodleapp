@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnChanges, EventEmitter, SimpleChange } from '@angular/core';
+import { Component, Input, Output, OnChanges, EventEmitter, SimpleChange, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -43,9 +43,10 @@ export class CoreCoursesOverviewEventsComponent implements OnChanges {
     next30Days: any[] = [];
     future: any[] = [];
 
-    constructor(private navCtrl: NavController, private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            private domUtils: CoreDomUtilsProvider, private sitesProvider: CoreSitesProvider,
-            private courseProvider: CoreCourseProvider, private contentLinksHelper: CoreContentLinksHelperProvider) {
+    constructor(@Optional() private navCtrl: NavController, private utils: CoreUtilsProvider,
+            private textUtils: CoreTextUtilsProvider, private domUtils: CoreDomUtilsProvider,
+            private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
+            private contentLinksHelper: CoreContentLinksHelperProvider) {
         this.loadMore = new EventEmitter();
     }
 

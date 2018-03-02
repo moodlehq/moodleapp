@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Optional } from '@angular/core';
-import { NavParams, NavController, Content, PopoverController } from 'ionic-angular';
+import { Content, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';

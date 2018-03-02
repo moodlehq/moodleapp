@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -120,7 +120,7 @@ export class CoreCourseHelperProvider {
         private utils: CoreUtilsProvider, private translate: TranslateService, private loginHelper: CoreLoginHelperProvider,
         private courseOptionsDelegate: CoreCourseOptionsDelegate, private siteHomeProvider: CoreSiteHomeProvider,
         private eventsProvider: CoreEventsProvider, private fileHelper: CoreFileHelperProvider,
-        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider) { }
+        private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider, private injector: Injector) { }
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -275,7 +275,7 @@ export class CoreCourseHelperProvider {
                 if (courseHandlers) {
                     promise = Promise.resolve(courseHandlers);
                 } else {
-                    promise = this.courseOptionsDelegate.getHandlersToDisplay(course);
+                    promise = this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course);
                 }
 
                 return promise.then((handlers: CoreCourseOptionsHandlerToDisplay[]) => {
@@ -323,7 +323,7 @@ export class CoreCourseHelperProvider {
                 subPromises.push(this.courseProvider.getSections(course.id, false, true).then((courseSections) => {
                     sections = courseSections;
                 }));
-                subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(course).then((cHandlers) => {
+                subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course).then((cHandlers) => {
                     handlers = cHandlers;
                 }));
 

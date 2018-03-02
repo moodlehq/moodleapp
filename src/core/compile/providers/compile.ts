@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef } from '@angular/core';
 import {
-    Platform, ActionSheetController, AlertController, LoadingController, ModalController, PopoverController, ToastController
+    Platform, ActionSheetController, AlertController, LoadingController, ModalController, PopoverController, ToastController,
+    IonicModule
 } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '../../../providers/logger';
 
 // Import core providers.
@@ -55,6 +56,24 @@ import { CoreContentLinksModuleGradeHandler } from '../../contentlinks/classes/m
 import { CoreContentLinksModuleIndexHandler } from '../../contentlinks/classes/module-index-handler';
 import { CoreCourseModulePrefetchHandlerBase } from '../../course/classes/module-prefetch-handler';
 
+// Import all modules that define components, directives and pipes.
+import { CoreComponentsModule } from '../../../components/components.module';
+import { CoreDirectivesModule } from '../../../directives/directives.module';
+import { CorePipesModule } from '../../../pipes/pipes.module';
+import { CoreCourseComponentsModule } from '../../course/components/components.module';
+import { CoreCourseDirectivesModule } from '../../course/directives/directives.module';
+import { CoreCoursesComponentsModule } from '../../courses/components/components.module';
+import { CoreSiteAddonsDirectivesModule } from '../../siteaddons/directives/directives.module';
+import { CoreSiteHomeComponentsModule } from '../../sitehome/components/components.module';
+import { CoreUserComponentsModule } from '../../user/components/components.module';
+
+// Import some components listed in entryComponents so they can be injected dynamically.
+import { CoreCourseUnsupportedModuleComponent } from '../../course/components/unsupported-module/unsupported-module';
+import { CoreCourseFormatSingleActivityComponent } from '../../course/formats/singleactivity/components/singleactivity';
+import { CoreSiteAddonsModuleIndexComponent } from '../../siteaddons/components/module-index/module-index';
+import { CoreSiteAddonsCourseOptionComponent } from '../../siteaddons/components/course-option/course-option';
+import { CoreSiteAddonsCourseFormatComponent } from '../../siteaddons/components/course-format/course-format';
+
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
  */
@@ -69,8 +88,44 @@ export class CoreCompileProvider {
         ModalController, PopoverController, ToastController, FormBuilder
     ];
 
-    constructor(protected injector: Injector, logger: CoreLoggerProvider) {
+    // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
+    protected IMPORTS = [
+        IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
+        CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
+        CoreCourseDirectivesModule, CoreSiteAddonsDirectivesModule
+    ];
+
+    constructor(protected injector: Injector, logger: CoreLoggerProvider, protected compiler: Compiler) {
         this.logger = logger.getInstance('CoreCompileProvider');
+    }
+
+    /**
+     * Create and compile a dynamic component.
+     *
+     * @param {string} template The template of the component.
+     * @param {any} componentClass The JS class of the component.
+     * @return {Promise<ComponentFactory<any>>} Promise resolved with the factory to instantiate the component.
+     */
+    createAndCompileComponent(template: string, componentClass: any): Promise<ComponentFactory<any>> {
+        // Create the component using the template and the class.
+        const component = Component({
+            template: template
+        })
+        (componentClass);
+
+        // Now create the module containing the component.
+        const module = NgModule({imports: this.IMPORTS, declarations: [component]})(class {});
+
+        // Compile the module and the component.
+        return this.compiler.compileModuleAndAllComponentsAsync(module).then((factories) => {
+            // Search and return the factory of the component we just created.
+            for (const i in factories.componentFactories) {
+                const factory = factories.componentFactories[i];
+                if (factory.componentType == component) {
+                    return factory;
+                }
+            }
+        });
     }
 
     /**
@@ -124,6 +179,9 @@ export class CoreCompileProvider {
             }
         }
 
+        // Inject current service.
+        instance['CoreCompileProvider'] = this;
+
         // Add some final classes.
         instance['injector'] = this.injector;
         instance['Validators'] = Validators;
@@ -138,5 +196,29 @@ export class CoreCompileProvider {
         instance['CoreContentLinksModuleGradeHandler'] = CoreContentLinksModuleGradeHandler;
         instance['CoreContentLinksModuleIndexHandler'] = CoreContentLinksModuleIndexHandler;
         instance['CoreCourseModulePrefetchHandlerBase'] = CoreCourseModulePrefetchHandlerBase;
+        instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
+        instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
+        instance['CoreSiteAddonsModuleIndexComponent'] = CoreSiteAddonsModuleIndexComponent;
+        instance['CoreSiteAddonsCourseOptionComponent'] = CoreSiteAddonsCourseOptionComponent;
+        instance['CoreSiteAddonsCourseFormatComponent'] = CoreSiteAddonsCourseFormatComponent;
+    }
+
+    /**
+     * Instantiate a dynamic component.
+     *
+     * @param {string} template The template of the component.
+     * @param {any} componentClass The JS class of the component.
+     * @param {Injector} [injector] The injector to use. It's recommended to pass it so NavController and similar can be injected.
+     * @return {Promise<ComponentRef<any>>} Promise resolved with the component instance.
+     */
+    instantiateDynamicComponent(template: string, componentClass: any, injector?: Injector): Promise<ComponentRef<any>> {
+        injector = injector || this.injector;
+
+        return this.createAndCompileComponent(template, componentClass).then((factory) => {
+            if (factory) {
+                // Create and return the component.
+                return factory.create(injector, undefined, undefined, injector.get(NgModuleRef));
+            }
+        });
     }
 }

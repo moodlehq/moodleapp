@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
 /**
@@ -27,7 +27,7 @@ export class CoreUserLinkDirective implements OnInit {
 
     protected element: HTMLElement;
 
-    constructor(element: ElementRef, private navCtrl: NavController) {
+    constructor(element: ElementRef, @Optional() private navCtrl: NavController) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }

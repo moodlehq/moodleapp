@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModBookProvider } from './book';
 import { AddonModBookIndexComponent } from '../components/index/index';
@@ -60,12 +60,14 @@ export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
      * The component returned must implement CoreCourseModuleMainComponent.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course object.
      * @param {any} module The module object.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getMainComponent(course: any, module: any): any {
+    getMainComponent(injector: Injector, course: any, module: any): any | Promise<any> {
         return AddonModBookIndexComponent;
     }
 }

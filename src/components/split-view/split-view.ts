@@ -14,7 +14,7 @@
 
 // Code based on https://github.com/martinpritchardelevate/ionic-split-pane-demo
 
-import { Component, ViewChild, Input, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit, Optional } from '@angular/core';
 import { NavController, Nav } from 'ionic-angular';
 
 /**
@@ -54,7 +54,7 @@ export class CoreSplitViewComponent implements OnInit {
     // Empty placeholder for the 'detail' page.
     detailPage: any = null;
 
-    constructor(private masterNav: NavController, element: ElementRef) {
+    constructor(@Optional() private masterNav: NavController, element: ElementRef) {
         this.element = element.nativeElement;
     }
 

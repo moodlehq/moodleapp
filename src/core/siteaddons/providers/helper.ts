@@ -43,6 +43,9 @@ import { CoreCoursesProvider } from '../../courses/providers/courses';
  * addons.
  *
  * This code is split from CoreSiteAddonsProvider to prevent circular dependencies.
+ *
+ * @todo: Support ViewChild and similar in site addons. Possible solution: make components and directives inject the instance
+ * inside the host DOM element?
  */
 @Injectable()
 export class CoreSiteAddonsHelperProvider {
@@ -337,7 +340,7 @@ export class CoreSiteAddonsHelperProvider {
             displaySectionSelector: (course: any): boolean => {
                 return typeof handlerSchema.displaysectionselector != 'undefined' ? handlerSchema.displaysectionselector : true;
             },
-            getCourseFormatComponent: (course: any): any => {
+            getCourseFormatComponent: (injector: Injector, course: any): any | Promise<any> => {
                 if (handlerSchema.method) {
                     return CoreSiteAddonsCourseFormatComponent;
                 }
@@ -377,7 +380,8 @@ export class CoreSiteAddonsHelperProvider {
                     : boolean | Promise<boolean> => {
                 return this.isHandlerEnabledForCourse(courseId, handlerSchema.restricttoenrolledcourses, bootstrapResult.restrict);
             },
-            getDisplayData: (courseId: number): CoreCourseOptionsHandlerData => {
+            getDisplayData: (injector: Injector, courseId: number):
+                    CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> => {
                 return {
                     title: prefixedTitle,
                     class: handlerSchema.displaydata.class,
@@ -488,7 +492,7 @@ export class CoreSiteAddonsHelperProvider {
                     }
                 };
             },
-            getMainComponent: (course: any, module: any): any => {
+            getMainComponent: (injector: Injector, course: any, module: any): any | Promise<any> => {
                 return CoreSiteAddonsModuleIndexComponent;
             }
         });

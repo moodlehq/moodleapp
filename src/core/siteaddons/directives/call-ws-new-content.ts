@@ -62,7 +62,7 @@ export class CoreSiteAddonsCallWSNewContentDirective extends CoreSiteAddonsCallW
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             siteAddonsProvider: CoreSiteAddonsProvider, @Optional() parentContent: CoreSiteAddonsAddonContentComponent,
-            protected utils: CoreUtilsProvider, protected navCtrl: NavController) {
+            protected utils: CoreUtilsProvider, @Optional() protected navCtrl: NavController) {
         super(element, translate, domUtils, siteAddonsProvider, parentContent);
     }
 
