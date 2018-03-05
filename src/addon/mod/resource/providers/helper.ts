@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonModResourceProvider } from './resource';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
@@ -37,19 +38,9 @@ export class AddonModResourceHelperProvider {
     protected DISPLAY_AUTO = 0;
     // Display using object tag.
     protected DISPLAY_EMBED = 1;
-    // Display inside frame.
-    protected DISPLAY_FRAME = 2;
-    // Display normal link in new window.
-    protected DISPLAY_NEW = 3;
-    // Force download of file instead of display.
-    protected DISPLAY_DOWNLOAD = 4;
-    // Open directly.
-    protected DISPLAY_OPEN = 5;
-    // Open in "emulated" pop-up without navigation.
-    protected DISPLAY_POPUP = 6;
 
     constructor(private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-            private resourceProvider: AddonModResourceProvider,
+            private resourceProvider: AddonModResourceProvider, private courseHelper: CoreCourseHelperProvider,
             private textUtils: CoreTextUtilsProvider, private mimetypeUtils: CoreMimetypeUtilsProvider,
             private fileProvider: CoreFileProvider, private appProvider: CoreAppProvider,
             private filepoolProvider: CoreFilepoolProvider, private utils: CoreUtilsProvider,
@@ -61,17 +52,12 @@ export class AddonModResourceHelperProvider {
      *
      * @param {any} module The module object.
      * @return {Promise<any>}      Promise resolved with the iframe src.
-     * @since 3.3
      */
     getEmbeddedHtml(module: any): Promise<any> {
-        if (!module.contents || !module.contents.length) {
-            return Promise.reject(null);
-        }
-
-        const file = module.contents[0];
-
-        return this.treatResourceMainFile(file, module.id).then((result) => {
-            const ext = this.mimetypeUtils.getFileExtension(file.filename),
+        return this.courseHelper.downloadModuleWithMainFileIfNeeded(module, module.course, AddonModResourceProvider.COMPONENT,
+                module.id, module.contents).then((result) => {
+            const file = module.contents[0],
+                ext = this.mimetypeUtils.getFileExtension(file.filename),
                 type = this.mimetypeUtils.getExtensionType(ext),
                 mimeType = this.mimetypeUtils.getMimeType(ext);
 
@@ -85,7 +71,7 @@ export class AddonModResourceHelperProvider {
                     '</' + type + '>';
             }
 
-            // Shouldn't reach here, the user should have called $mmFS#canBeEmbedded.
+            // Shouldn't reach here, the user should have called CoreMimetypeUtilsProvider#canBeEmbedded.
             return '';
         });
     }
@@ -94,9 +80,9 @@ export class AddonModResourceHelperProvider {
      * Download all the files needed and returns the src of the iframe.
      *
      * @param {any} module The module object.
-     * @return {Promise<any>} Promise resolved with the iframe src.
+     * @return {Promise<string>} Promise resolved with the iframe src.
      */
-    getIframeSrc(module: any): Promise<any> {
+    getIframeSrc(module: any): Promise<string> {
         if (!module.contents.length) {
             return Promise.reject(null);
         }
@@ -127,8 +113,7 @@ export class AddonModResourceHelperProvider {
      *
      * @param {any} module    The module object.
      * @param {number} [display] The display mode (if available).
-     * @return {boolean}         Whether the resource should be displayed in an iframe.
-     * @since 3.3
+     * @return {boolean}         Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: any, display: number): boolean {
         if (!module.contents.length || !this.fileProvider.isAvailable()) {
@@ -167,7 +152,9 @@ export class AddonModResourceHelperProvider {
     openModuleFile(module: any, courseId: number): Promise<any> {
         const modal = this.domUtils.showModalLoading();
 
-        return this.openFile(module.contents, module.id).then(() => {
+        // Download and open the file from the resource contents.
+        return this.courseHelper.downloadModuleAndOpenFile(module, courseId, AddonModResourceProvider.COMPONENT, module.id,
+                module.contents).then(() => {
             this.resourceProvider.logView(module.instance).then(() => {
                 this.courseProvider.checkModuleCompletion(courseId, module.completionstatus);
             });
@@ -176,181 +163,5 @@ export class AddonModResourceHelperProvider {
         }).finally(() => {
             modal.dismiss();
         });
-    }
-
-    /**
-     * Download and open the file from the resource.
-     *
-     * @param {any} contents Array of content objects.
-     * @param {number} moduleId The module ID.
-     * @return {Promise<any>}
-     */
-    protected openFile(contents: any, moduleId: number): Promise<any> {
-        if (!contents || !contents.length) {
-            return Promise.reject(null);
-        }
-
-        const siteId = this.sitesProvider.getCurrentSiteId(),
-            file = contents[0],
-            files = [file],
-            component = AddonModResourceProvider.COMPONENT;
-
-        if (this.shouldOpenInBrowser(contents[0])) {
-            if (this.appProvider.isOnline()) {
-                // Open in browser.
-                let fixedUrl = this.sitesProvider.getCurrentSite().fixPluginfileURL(file.fileurl).replace('&offline=1', '');
-                fixedUrl = fixedUrl.replace(/forcedownload=\d+&/, ''); // Remove forcedownload when followed by another param.
-                fixedUrl = fixedUrl.replace(/[\?|\&]forcedownload=\d+/, ''); // Remove forcedownload when not followed by any param.
-                this.utils.openInBrowser(fixedUrl);
-
-                if (this.fileProvider.isAvailable()) {
-                    // Download the file if needed (file outdated or not downloaded).
-                    // Download will be in background, don't return the promise.
-                    this.filepoolProvider.downloadPackage(siteId, files, component, moduleId);
-                }
-
-                return Promise.resolve();
-            }
-
-            // Not online, get the offline file. It will fail if not found.
-            return this.filepoolProvider.getInternalUrlByUrl(siteId, file.fileurl).then((path) => {
-                return this.utils.openFile(path);
-            }).catch(() => {
-                return Promise.reject(this.translate.instant('core.networkerrormsg'));
-            });
-        }
-
-        return this.treatResourceMainFile(file, moduleId).then((result) => {
-            if (result.path.indexOf('http') === 0) {
-                return this.utils.openOnlineFile(result.path).catch((error) => {
-                    // Error opening the file, some apps don't allow opening online files.
-                    if (!this.fileProvider.isAvailable()) {
-                        return Promise.reject(error);
-                    }
-
-                    let subPromise;
-                    if (result.status === CoreConstants.DOWNLOADING) {
-                        subPromise = Promise.reject(this.translate.instant('core.erroropenfiledownloading'));
-                    } else if (result.status === CoreConstants.NOT_DOWNLOADED) {
-                        subPromise = this.filepoolProvider.downloadPackage(siteId, files, AddonModResourceProvider.COMPONENT,
-                                moduleId).then(() => {
-                            return this.filepoolProvider.getInternalUrlByUrl(siteId, file.fileurl);
-                        });
-                    } else {
-                        // File is outdated or stale and can't be opened in online, return the local URL.
-                        subPromise = this.filepoolProvider.getInternalUrlByUrl(siteId, file.fileurl);
-                    }
-
-                    return subPromise.then((path) => {
-                        return this.utils.openFile(path);
-                    });
-                });
-            }
-
-            return this.utils.openFile(result.path);
-        });
-    }
-
-    /**
-     * Treat the main file of a resource, downloading it if needed and returning the URL to use and the status of the resource.
-     *
-     * @param  {any} file     Resource's main file.
-     * @param  {number} moduleId The module ID.
-     * @return {Promise<any>}         Promise resolved with an object containing:
-     *                               * path: The URL to use; can be an online URL or an offline path.
-     *                               * status: The status of the resource.
-     */
-    protected treatResourceMainFile(file: any, moduleId: number): Promise<any> {
-        const files = [file],
-            url = file.fileurl,
-            fixedUrl = this.sitesProvider.getCurrentSite().fixPluginfileURL(url),
-            result = {
-                status: '',
-                path: fixedUrl
-            };
-
-        if (!this.fileProvider.isAvailable()) {
-            // We use the live URL.
-            return Promise.resolve(result);
-        }
-
-        const siteId = this.sitesProvider.getCurrentSiteId(),
-            component = AddonModResourceProvider.COMPONENT;
-
-        // The file system is available.
-        return this.filepoolProvider.getPackageStatus(siteId, component, moduleId).then((status) => {
-            result.status = status;
-
-            const isWifi = !this.appProvider.isNetworkAccessLimited(),
-                isOnline = this.appProvider.isOnline();
-
-            if (status === CoreConstants.DOWNLOADED) {
-                // Get the local file URL.
-                return this.filepoolProvider.getInternalUrlByUrl(siteId, url);
-            }
-
-            if (status === CoreConstants.DOWNLOADING && !this.appProvider.isDesktop()) {
-                // Return the online URL.
-                return fixedUrl;
-            }
-
-            if (!isOnline && status === CoreConstants.NOT_DOWNLOADED) {
-                // Not downloaded and we're offline, reject.
-                return Promise.reject(null);
-            }
-
-            return this.filepoolProvider.shouldDownloadBeforeOpen(fixedUrl, file.filesize).then(() => {
-                // Download and then return the local URL.
-                return this.filepoolProvider.downloadPackage(siteId, files, component, moduleId).then(() => {
-                    return this.filepoolProvider.getInternalUrlByUrl(siteId, url);
-                });
-            }).catch(() => {
-                // Start the download if in wifi, but return the URL right away so the file is opened.
-                if (isWifi && isOnline) {
-                    this.filepoolProvider.downloadPackage(siteId, files, component, moduleId);
-                }
-
-                if (status === CoreConstants.NOT_DOWNLOADED || isOnline) {
-                    // Not downloaded or outdated and online, return the online URL.
-                    return fixedUrl;
-                }
-
-                const timeMod = this.filepoolProvider.getTimemodifiedFromFileList(files);
-
-                // Outdated but offline, so we return the local URL.
-                return this.filepoolProvider.getUrlByUrl(siteId, url, component, moduleId, timeMod, false, false, file);
-            });
-        }).then((path) => {
-            result.path = path;
-
-            return result;
-        });
-    }
-
-    /**
-     * Whether the resource has to be opened in browser.
-     *
-     * @param {any} file Module's main file.
-     * @return {boolean}    Whether the resource should be opened in browser.
-     * @since 3.3
-     */
-    shouldOpenInBrowser(file: any): boolean {
-        if (!file || !file.isexternalfile || !file.mimetype) {
-            return false;
-        }
-
-        const mimetype = file.mimetype;
-        if (mimetype.indexOf('application/vnd.google-apps.') != -1) {
-            // Google Docs file, always open in browser.
-            return true;
-        }
-
-        if (file.repositorytype == 'onedrive') {
-            // In OneDrive, open in browser the office docs
-            return mimetype.indexOf('application/vnd.openxmlformats-officedocument') != -1 ||
-                    mimetype == 'text/plain' || mimetype == 'document/unknown';
-        }
-
-        return false;
     }
 }

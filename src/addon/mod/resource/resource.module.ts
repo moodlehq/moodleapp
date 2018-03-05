@@ -17,9 +17,13 @@ import { AddonModResourceComponentsModule } from './components/components.module
 import { AddonModResourceModuleHandler } from './providers/module-handler';
 import { AddonModResourceProvider } from './providers/resource';
 import { AddonModResourcePrefetchHandler } from './providers/prefetch-handler';
+import { AddonModResourceLinkHandler } from './providers/link-handler';
+import { AddonModResourcePluginFileHandler } from './providers/pluginfile-handler';
 import { AddonModResourceHelperProvider } from './providers/helper';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 @NgModule({
     declarations: [
@@ -31,13 +35,19 @@ import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-
         AddonModResourceProvider,
         AddonModResourceModuleHandler,
         AddonModResourceHelperProvider,
-        AddonModResourcePrefetchHandler
+        AddonModResourcePrefetchHandler,
+        AddonModResourceLinkHandler,
+        AddonModResourcePluginFileHandler
     ]
 })
 export class AddonModResourceModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModResourceModuleHandler,
-            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModResourcePrefetchHandler) {
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModResourcePrefetchHandler,
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModResourceLinkHandler,
+            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModResourcePluginFileHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
+        contentLinksDelegate.registerHandler(linkHandler);
+        pluginfileDelegate.registerHandler(pluginfileHandler);
     }
 }

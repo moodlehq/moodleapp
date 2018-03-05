@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModResourceProvider } from './resource';
+import { AddonModResourceHelperProvider } from './helper';
 import { AddonModResourceIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -28,7 +29,7 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     name = 'resource';
 
     constructor(protected resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
-            protected mimetypeUtils: CoreMimetypeUtilsProvider) { }
+            protected mimetypeUtils: CoreMimetypeUtilsProvider, private resourceHelper: AddonModResourceHelperProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -48,28 +49,61 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-        this.getIcon(module, courseId);
-
-        return {
+        const handlerData = {
             icon: this.courseProvider.getModuleIconSrc('resource'),
             title: module.name,
             class: 'addon-mod_resource-handler',
             showDownloadButton: true,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
                 navCtrl.push('AddonModResourceIndexPage', {module: module, courseId: courseId}, options);
-            }
+            },
+            buttons: [ {
+                hidden: !this.resourceHelper.isDisplayedInIframe(module),
+                icon: 'document',
+                label: 'addon.mod_resource.openthefile',
+                action: (event: Event, navCtrl: NavController, module: any, courseId: number): void => {
+                    this.hideOpenButton(module, courseId).then((hide) => {
+                        if (!hide) {
+                            this.resourceHelper.openModuleFile(module, courseId);
+                        }
+                    });
+                }
+            } ]
         };
+
+        this.getIcon(module, courseId).then((icon) => {
+            handlerData.icon = icon;
+        });
+
+        this.hideOpenButton(module, courseId).then((hideOpenButton) => {
+            handlerData.buttons[0].hidden = hideOpenButton;
+        });
+
+        return handlerData;
+    }
+
+    /**
+     * Returns if contents are loaded to show open button.
+     *
+     * @param {any} module The module object.
+     * @param {number} courseId The course ID.
+     * @return {Promise<boolean>} Resolved when done.
+     */
+    protected hideOpenButton(module: any, courseId: number): Promise<boolean> {
+        return this.courseProvider.loadModuleContents(module, courseId).then(() => {
+            return this.resourceHelper.isDisplayedInIframe(module);
+        });
     }
 
     /**
      * Returns the activity icon.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @return {string}         Icon URL.
+     * @param {any} module        The module object.
+     * @param {number} courseId   The course ID.
+     * @return {Promise<string>}  Icon URL.
      */
-    protected getIcon(module: any, courseId: number): string {
-        this.courseProvider.loadModuleContents(module, courseId).then(() => {
+    protected getIcon(module: any, courseId: number): Promise<string> {
+        return this.courseProvider.loadModuleContents(module, courseId).then(() => {
             if (module.contents.length) {
                 const filename = module.contents[0].filename,
                     extension = this.mimetypeUtils.getFileExtension(filename);
@@ -80,8 +114,6 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
 
             return this.courseProvider.getModuleIconSrc('resource');
         });
-
-        return this.courseProvider.getModuleIconSrc('resource');
     }
 
     /**

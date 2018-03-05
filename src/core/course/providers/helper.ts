@@ -585,7 +585,7 @@ export class CoreCourseHelperProvider {
      * @param {string} [siteId] The site ID. If not defined, current site.
      * @return {Promise<{fixedUrl: string, path: string, status: string}>} Promise resolved when done.
      */
-    protected downloadModuleWithMainFileIfNeeded(module: any, courseId: number, component?: string, componentId?: string | number,
+    downloadModuleWithMainFileIfNeeded(module: any, courseId: number, component?: string, componentId?: string | number,
             files?: any[], siteId?: string): Promise<{fixedUrl: string, path: string, status: string}> {
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -598,7 +598,6 @@ export class CoreCourseHelperProvider {
         const mainFile = files[0],
             fileUrl = this.fileHelper.getFileUrl(mainFile),
             timemodified = this.fileHelper.getFileTimemodified(mainFile),
-            prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(module),
             result = {
                 fixedUrl: undefined,
                 path: undefined,

@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Optional } from '@angular/core';
-import { NavParams, NavController, Content } from 'ionic-angular';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -60,8 +59,7 @@ export class AddonModResourceIndexComponent implements OnInit, OnDestroy, CoreCo
     constructor(private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             private domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
             private courseHelper: CoreCourseHelperProvider, private translate: TranslateService,
-            @Optional() private content: Content, private prefetchHandler: AddonModResourcePrefetchHandler,
-            private resourceHelper: AddonModResourceHelperProvider) {
+            private prefetchHandler: AddonModResourcePrefetchHandler, private resourceHelper: AddonModResourceHelperProvider) {
         this.resourceRetrieved = new EventEmitter();
 
     }
@@ -166,7 +164,6 @@ export class AddonModResourceIndexComponent implements OnInit, OnDestroy, CoreCo
                     downloadFailed = true;
                 }).then(() => {
                     return this.resourceHelper.getIframeSrc(this.module).then((src) => {
-                        console.error(src);
                         this.mode = 'iframe';
 
                         if (this.src && src.toString() == this.src.toString()) {

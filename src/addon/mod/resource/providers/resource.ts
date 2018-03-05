@@ -41,7 +41,7 @@ export class AddonModResourceProvider {
      * @return {string}         Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
-        return this.ROOT_CACHE_KEY + ':resource:' + courseId;
+        return this.ROOT_CACHE_KEY + 'resource:' + courseId;
     }
 
     /**
@@ -64,11 +64,8 @@ export class AddonModResourceProvider {
 
             return site.read('mod_resource_get_resources_by_courses', params, preSets).then((response) => {
                 if (response && response.resources) {
-                    let currentResource;
-                    response.resources.forEach((resource) => {
-                        if (!currentResource && resource[key] == value) {
-                            currentResource = resource;
-                        }
+                    const currentResource = response.resources.find((resource) => {
+                        return resource[key] == value;
                     });
                     if (currentResource) {
                         return currentResource;
@@ -154,14 +151,10 @@ export class AddonModResourceProvider {
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
     logView(id: number): Promise<any> {
-        if (id) {
-            const params = {
-                resourceid: id
-            };
+        const params = {
+            resourceid: id
+        };
 
-            return this.sitesProvider.getCurrentSite().write('mod_resource_view_resource', params);
-        }
-
-        return Promise.reject(null);
+        return this.sitesProvider.getCurrentSite().write('mod_resource_view_resource', params);
     }
 }
