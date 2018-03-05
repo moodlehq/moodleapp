@@ -122,6 +122,7 @@ export class AddonModFolderProvider {
      * Returns whether or not getFolder WS available or not.
      *
      * @return {boolean} If WS is avalaible.
+     * @since 3.3
      */
     isGetFolderWSAvailable(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('mod_folder_get_folders_by_courses');
@@ -134,14 +135,10 @@ export class AddonModFolderProvider {
      * @return {Promise<any>}  Promise resolved when the WS call is successful.
      */
     logView(id: number): Promise<any> {
-        if (id) {
-            const params = {
-                folderid: id
-            };
+        const params = {
+            folderid: id
+        };
 
-            return this.sitesProvider.getCurrentSite().write('mod_folder_view_folder', params);
-        }
-
-        return Promise.reject(null);
+        return this.sitesProvider.getCurrentSite().write('mod_folder_view_folder', params);
     }
 }

@@ -17,7 +17,6 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModFolderIndexComponent } from './index/index';
 
@@ -30,7 +29,6 @@ import { AddonModFolderIndexComponent } from './index/index';
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule,
         CoreCourseComponentsModule
     ],
     providers: [

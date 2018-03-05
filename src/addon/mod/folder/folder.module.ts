@@ -18,6 +18,12 @@ import { AddonModFolderHelperProvider } from './providers/helper';
 import { AddonModFolderModuleHandler } from './providers/module-handler';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { AddonModFolderComponentsModule } from './components/components.module';
+import { AddonModFolderPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModFolderLinkHandler } from './providers/link-handler';
+import { AddonModFolderPluginFileHandler } from './providers/pluginfile-handler';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 @NgModule({
     declarations: [
@@ -28,11 +34,20 @@ import { AddonModFolderComponentsModule } from './components/components.module';
     providers: [
         AddonModFolderProvider,
         AddonModFolderHelperProvider,
-        AddonModFolderModuleHandler
+        AddonModFolderModuleHandler,
+        AddonModFolderPrefetchHandler,
+        AddonModFolderLinkHandler,
+        AddonModFolderPluginFileHandler
     ]
 })
 export class AddonModFolderModule {
-    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFolderModuleHandler) {
+    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFolderModuleHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModFolderPrefetchHandler,
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModFolderLinkHandler,
+            pluginfileDelegate: CorePluginFileDelegate, pluginfileHandler: AddonModFolderPluginFileHandler) {
         moduleDelegate.registerHandler(moduleHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
+        contentLinksDelegate.registerHandler(linkHandler);
+        pluginfileDelegate.registerHandler(pluginfileHandler);
     }
 }

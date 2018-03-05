@@ -49,7 +49,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() badge?: string; // A badge to show in the item.
     @Input() badgeClass?: number; // A class to set in the badge.
     @Input() hidden?: boolean; // Whether the item should be hidden.
-    @Output() action?: EventEmitter<string>; // Will emit an event when the item clicked.
+    @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
 
     protected hasAction = false;
     protected destroyed = false;

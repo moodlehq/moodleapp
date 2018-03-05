@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Optional } from '@angular/core';
-import { NavParams, NavController, Content } from 'ionic-angular';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -27,7 +26,7 @@ import { AddonModFolderHelperProvider } from '../../providers/helper';
 /**
  * Component that displays a folder.
  * @todo Adding a new file in a folder updates the revision of all the files, so they're all shown as outdated.
- *       To ignore revision in folders we'll have to modify $mmCoursePrefetchDelegate, core-file and $mmFilepool.
+ *       To ignore revision in folders we'll have to modify CoreCourseModulePrefetchDelegate, core-file and CoreFilepoolProvider.
  */
 @Component({
     selector: 'addon-mod-folder-index',
@@ -60,7 +59,7 @@ export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCour
     constructor(private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
             private domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
             private courseHelper: CoreCourseHelperProvider, private translate: TranslateService,
-            @Optional() private content: Content, private folderHelper: AddonModFolderHelperProvider) {
+            private folderHelper: AddonModFolderHelperProvider) {
         this.folderRetrieved = new EventEmitter();
     }
 
@@ -107,7 +106,7 @@ export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCour
         if (this.canReload) {
             this.refreshIcon = 'spinner';
 
-            return this.folderProvider.invalidateContent(this.module.id, this.courseId).catch(() => {
+            this.folderProvider.invalidateContent(this.module.id, this.courseId).catch(() => {
                 // Ignore errors.
             }).then(() => {
                 return this.fetchContent(true);
@@ -117,6 +116,8 @@ export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCour
                 done && done();
             });
         }
+
+        return Promise.resolve();
     }
 
     /**

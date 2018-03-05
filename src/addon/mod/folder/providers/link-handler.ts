@@ -15,16 +15,16 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { AddonModBookProvider } from './book';
+import { AddonModFolderProvider } from './folder';
 
 /**
- * Handler to treat links to book.
+ * Handler to treat links to resource.
  */
 @Injectable()
-export class AddonModBookLinkHandler extends CoreContentLinksModuleIndexHandler {
-    name = 'AddonModBookLinkHandler';
+export class AddonModFolderLinkHandler extends CoreContentLinksModuleIndexHandler {
+    name = 'AddonModFolderLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModBookProvider.COMPONENT, 'book');
+        super(courseHelper, AddonModFolderProvider.COMPONENT, 'folder');
     }
 }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '@providers/logger';
 import { CoreCourseProvider } from '@core/course/providers/course';
 
 /**
@@ -22,7 +21,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 @Injectable()
 export class AddonModFolderHelperProvider {
 
-    constructor(logger: CoreLoggerProvider, private courseProvider: CoreCourseProvider) {
+    constructor(private courseProvider: CoreCourseProvider) {
     }
 
     /**
