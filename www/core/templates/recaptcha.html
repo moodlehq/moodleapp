@@ -1,0 +1,27 @@
+<!-- ReCAPTCHA V1 -->
+<div ng-if="recaptchaV1Enabled">
+    <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
+    <div class="item">
+        <img ng-src="{{challengeimage}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
+    </div>
+    <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors>
+        <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
+        <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="model.recaptcharesponse" autocapitalize="none" autocorrect="off" required>
+    </ion-input>
+    <div class="item padding">
+        <!-- Use anchor instead of button to prevent marking form as submitted. -->
+        <a class="button button-block" ng-click="requestCaptchaV1()">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+    </div>
+</div>
+
+<!-- ReCAPTCHA V2 -->
+<div ng-if="recaptchaV2Enabled">
+    <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
+    <div class="item padding">
+        <!-- A button to open the recaptcha modal. -->
+        <!-- Use anchor instead of button to prevent marking form as submitted. -->
+        <a ng-if="!model.recaptcharesponse" class="button button-block" ng-click="answerRecaptchaV2()">{{ 'mm.core.answer' | translate }}</a>
+        <p ng-if="model.recaptcharesponse" class="text-success">{{ 'mm.core.answered' | translate }}</p>
+        <p ng-if="expired" class="text-danger">{{ 'mm.login.recaptchaexpired' | translate }}</p>
+    </div>
+</div>

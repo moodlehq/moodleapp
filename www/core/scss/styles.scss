@@ -1813,10 +1813,24 @@ ol.list-with-style, ul.list-with-style {
   padding-bottom: 0;
 }
 
-.text-success {
+.text-success, p.text-success, .item p.text-success {
   color: $mm-success-color;
 }
 
-.text-danger {
+.text-danger, p.text-danger, .item p.text-danger {
   color: $mm-error-color;
+}
+
+// ReCaptcha modal.
+.mm-recaptcha-modal {
+    background-color: $gray-light;
+
+    .bar-header {
+        @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
+
+        .button {
+            color: $bar-content-text;
+            font-weight: normal;
+        }
+    }
 }

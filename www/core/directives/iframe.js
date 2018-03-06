@@ -26,6 +26,7 @@ angular.module('mm.core')
  * Accepts the following attributes:
  *
  * @param {String} src          The source of the iframe.
+ * @param {Function} [loaded]   Function to call when the iframe is loaded.
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
@@ -199,7 +200,8 @@ angular.module('mm.core')
         restrict: 'E',
         templateUrl: 'core/templates/iframe.html',
         scope: {
-            src: '='
+            src: '=',
+            loaded: '&?'
         },
         link: function(scope, element, attrs) {
             var url = (scope.src && scope.src.toString()) || '',  // Convert $sce URLs to string URLs.
@@ -216,6 +218,7 @@ angular.module('mm.core')
             if (scope.loading) {
                 iframe.on('load', function() {
                     scope.loading = false;
+                    scope.loaded && scope.loaded(); // Notify iframe was loaded.
                     $timeout(); // Use $timeout to force a digest and update the view.
                 });
 
