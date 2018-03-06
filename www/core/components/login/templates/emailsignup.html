@@ -59,7 +59,12 @@
                     <mm-user-profile-field ng-repeat="field in category.fields" field="field" edit="true" signup="true" register-auth="email" model="data" scroll-handle="mmLoginEmailSignupScroll"></mm-user-profile-field>
                 </div>
                 <!-- ReCAPTCHA -->
-                <mm-recaptcha publickey="{{settings.recaptchapublickey}}" challengehash="{{settings.recaptchachallengehash}}" challengeimage="{{settings.recaptchachallengeimage}}" model="data" siteurl="{{siteurl}}" request-captcha="requestCaptchaV1()"></mm-recaptcha>
+                <div ng-if="settings.recaptchapublickey">
+                    <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
+                    <div class="item item-text-wrap">
+                        <mm-recaptcha publickey="{{settings.recaptchapublickey}}" challengehash="{{settings.recaptchachallengehash}}" challengeimage="{{settings.recaptchachallengeimage}}" model="data" siteurl="{{siteurl}}" request-captcha="requestCaptchaV1()"></mm-recaptcha>
+                    </div>
+                </div>
                 <!-- Site policy (if any). -->
                 <div ng-if="settings.sitepolicy">
                     <div class="item item-divider item-text-wrap">{{ 'mm.login.policyagreement' | translate }}</div>

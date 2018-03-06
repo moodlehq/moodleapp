@@ -23,8 +23,9 @@ angular.module('mm.core')
  * @description
  * Accepts the following attributes:
  *
- * @param {Object} model The model where to store the recaptcha response. It will be stored in model.recaptcharesponse.
+ * @param {Object} model The model where to store the recaptcha response.
  * @param {String} publickey The site public key.
+ * @param {Object} [modelValueName] Name of the model property where to store the response. Defaults to 'recaptcharesponse'.
  * @param {String} [siteurl] The site URL. If not defined, current site.
  * @param {String} [challengehash] The recaptcha challenge hash. Required for V1.
  * @param {String} [challengeimage] The recaptcha challenge image. Required for V1.
@@ -32,9 +33,6 @@ angular.module('mm.core')
  */
 .directive('mmRecaptcha', function($log, $mmLang, $mmSite, $mmFS, $sce, $ionicModal, $timeout) {
     $log = $log.getInstance('mmIframe');
-
-    var initializedV2 = false,
-        initializedV1 = false;
 
     /**
      * Setup the data and functions for the captcha.
@@ -46,8 +44,8 @@ angular.module('mm.core')
         scope.recaptchaV1Enabled = !!(scope.publickey && scope.challengehash && scope.challengeimage);
         scope.recaptchaV2Enabled = !!(scope.publickey && !scope.challengehash && !scope.challengeimage);
 
-        if (scope.recaptchaV2Enabled && !initializedV2) {
-            initializedV2 = true;
+        if (scope.recaptchaV2Enabled && !scope.initializedV2) {
+            scope.initializedV2 = true;
 
             // Get the current language of the app.
             $mmLang.getCurrentLanguage().then(function(lang) {
@@ -85,19 +83,19 @@ angular.module('mm.core')
                     // Set the callbacks we're interested in.
                     contentWindow.recaptchacallback = function(value) {
                         scope.expired = false;
-                        scope.model.recaptcharesponse = value;
+                        scope.model[scope.modelValueName] = value;
                         scope.closeModal();
                     };
                     contentWindow.recaptchaexpiredcallback = function() {
                         scope.expired = true;
-                        scope.model.recaptcharesponse = '';
+                        scope.model[scope.modelValueName] = '';
                         $timeout(); // Use $timeout to force a digest and update the view.
                     };
                     // Verification expired. Check the checkbox again.
                 }
             };
-        } else if (scope.recaptchaV1Enabled && !initializedV1) {
-            initializedV1 = true;
+        } else if (scope.recaptchaV1Enabled && !scope.initializedV1) {
+            scope.initializedV1 = true;
 
             // Set the function to request another captcha.
             scope.requestCaptchaV1 = function() {
@@ -116,6 +114,7 @@ angular.module('mm.core')
         scope: {
             model: '=',
             publickey: '@',
+            modelValueName: '@?',
             siteurl: '@?',
             challengehash: '@?',
             challengeimage: '@?',
@@ -123,6 +122,9 @@ angular.module('mm.core')
         },
         link: function(scope) {
             scope.siteurl = scope.siteurl || $mmSite.getURL();
+            scope.modelValueName = scope.modelValueName || 'recaptcharesponse';
+            scope.initializedV2 = false;
+            scope.initializedV1 = false;
 
             setupCaptcha(scope);
 
