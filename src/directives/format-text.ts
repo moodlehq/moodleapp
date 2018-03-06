@@ -177,7 +177,7 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
-        this.text = this.text.trim();
+        this.text = this.text ? this.text.trim() : '';
 
         this.formatContents().then((div: HTMLElement) => {
             // Disable media adapt to correctly calculate the height.
