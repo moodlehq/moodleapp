@@ -848,7 +848,9 @@ angular.module('mm.core.course')
             // Prefetch course options.
             angular.forEach(courseOptions, function(option) {
                 if (option.prefetch) {
-                    promises.push($q.when(option.prefetch(course)));
+                    promises.push($q.when(option.prefetch(course)).catch(function() {
+                        // Ignore errors when downloading course options.
+                    }));
                 }
             });
 
