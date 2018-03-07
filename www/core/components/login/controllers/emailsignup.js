@@ -26,7 +26,8 @@ angular.module('mm.core.login')
 
     var siteConfig,
         modalInitialized = false,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmLoginEmailSignupScroll');
+        scrollView = $ionicScrollDelegate.$getByHandle('mmLoginEmailSignupScroll'),
+        recaptchaV1Enabled = false;
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.data = {};
@@ -74,6 +75,8 @@ angular.module('mm.core.login')
             $scope.settings = settings;
             $scope.countries = $mmUtil.getCountryList();
             $scope.categories = $mmLoginHelper.formatProfileFieldsForSignup(settings.profilefields);
+            recaptchaV1Enabled = !!(settings.recaptchapublickey && settings.recaptchachallengehash &&
+                    settings.recaptchachallengeimage);
 
             if (settings.defaultcity && !$scope.data.city) {
                 $scope.data.city = settings.defaultcity;
@@ -81,7 +84,9 @@ angular.module('mm.core.login')
             if (settings.country && !$scope.data.country) {
                 $scope.data.country = settings.country;
             }
-            $scope.data.recaptcharesponse = ''; // Reset captcha.
+            if (recaptchaV1Enabled) {
+                $scope.data.recaptcharesponse = ''; // Reset captcha.
+            }
 
             $scope.namefieldsErrors = {};
             angular.forEach(settings.namefields, function(field) {
@@ -123,8 +128,8 @@ angular.module('mm.core.login')
         });
     };
 
-    // Request another captcha.
-    $scope.requestCaptcha = function(ignoreError) {
+    // Request another captcha (V1).
+    $scope.requestCaptchaV1 = function(ignoreError) {
         var modal = $mmUtil.showModalLoading();
         getSignupSettings().catch(function(err) {
             if (!ignoreError && err) {
@@ -164,9 +169,12 @@ angular.module('mm.core.login')
                 params.redirect = $mmLoginHelper.prepareForSSOLogin($scope.siteurl, service, siteConfig.launchurl);
             }
 
-            if ($scope.settings.recaptchachallengehash && $scope.settings.recaptchachallengeimage) {
-                params.recaptchachallengehash = $scope.settings.recaptchachallengehash;
+            // Get the recaptcha response (if needed).
+            if ($scope.data.recaptcharesponse) {
                 params.recaptcharesponse = $scope.data.recaptcharesponse;
+            }
+            if ($scope.settings.recaptchachallengehash) {
+                params.recaptchachallengehash = $scope.settings.recaptchachallengehash;
             }
 
             // Get the data for the custom profile fields.
@@ -180,20 +188,29 @@ angular.module('mm.core.login')
                         $ionicHistory.goBack();
                     } else {
                         if (result.warnings && result.warnings.length) {
-                            $mmUtil.showErrorModal(result.warnings[0].message);
+                            var error = result.warnings[0].message;
+                            if (error == 'incorrect-captcha-sol') {
+                                error = $translate.instant('mm.login.recaptchaincorrect');
+                            }
+
+                            $mmUtil.showErrorModal(error);
                         } else {
                             $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
                         }
 
-                        // Error sending, request another capctha since the current one is probably invalid now.
-                        $scope.requestCaptcha(true);
+                        if (recaptchaV1Enabled) {
+                            // Error sending, request another capctha since the current one is probably invalid now.
+                            $scope.requestCaptchaV1(true);
+                        }
                     }
                 });
             }).catch(function(error) {
                 $mmUtil.showErrorModalDefault(error && error.error, 'mm.login.usernotaddederror', true);
 
-                // Error sending, request another capctha since the current one is probably invalid now.
-                $scope.requestCaptcha(true);
+                if (recaptchaV1Enabled) {
+                    // Error sending, request another capctha since the current one is probably invalid now.
+                    $scope.requestCaptchaV1(true);
+                }
             }).finally(function() {
                 modal.dismiss();
             });

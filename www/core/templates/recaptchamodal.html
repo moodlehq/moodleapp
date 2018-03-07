@@ -1,0 +1,9 @@
+<ion-modal-view class="mm-fullscreen-modal mm-recaptcha-modal">
+    <ion-header-bar>
+        <h1 class="title">{{ 'mm.login.security_question' | translate }}</h1>
+        <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+    </ion-header-bar>
+    <ion-content>
+        <mm-iframe src="iframeSrc" loaded="iframeLoaded()"></mm-iframe>
+    </ion-content>
+</ion-modal-view>

@@ -55,15 +55,10 @@
                 </script>
 
                 <script type="text/ng-template" id="captcha">
-                    <div ng-if="!preview && item.captcha && item.captcha.challengehash && item.captcha.imageurl && !offline">
-                        <img ng-src="{{item.captcha.imageurl}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
-                        <ion-input class="item-input">
-                            <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="item.value" autocapitalize="none" autocorrect="off" required>
-                        </ion-input>
-                        <!-- Use anchor instead of button to prevent marking form as submitted. -->
-                        <a class="button button-block" ng-click="requestCaptcha(item)">{{ 'mm.login.getanothercaptcha' | translate }}</a>
-                    </div>
-                    <div ng-if="!preview && (!item.captcha || !item.captcha.challengehash || !item.captcha.imageurl || offline)" class="mm-warning-card-icon">
+                    <!-- ReCaptcha element. -->
+                    <mm-recaptcha ng-if="!preview && !offline" publickey="{{item.captcha.recaptchapublickey}}" challengehash="{{item.captcha.challengehash}}" challengeimage="{{item.captcha.imageurl}}" model="item" model-value-name="value" request-captcha="requestCaptcha(item)"></mm-recaptcha>
+                    <!-- ReCaptcha not supported warning. -->
+                    <div ng-if="!preview && (!item.captcha || offline)" class="mm-warning-card-icon">
                         <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_feedback.captchaofflinewarning' | translate }}
                     </div>
                 </script>

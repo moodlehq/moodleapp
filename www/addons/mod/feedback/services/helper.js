@@ -269,7 +269,26 @@ angular.module('mm.addons.mod_feedback')
 
         angular.forEach(items, function(itemData) {
             itemData.hasError = false;
-            if (itemData.hasvalue) {
+
+             if (itemData.typ == "captcha") {
+                var value = itemData.value || "",
+                    name = itemData.typ + '_' + itemData.id,
+                    answered = false;
+
+                answered = !!value;
+                responses[name] = 1;
+                responses.recaptcha_challenge_field = itemData.captcha && itemData.captcha.challengehash;
+                responses.recaptcha_response_field = value;
+                responses['g-recaptcha-response'] = value;
+                responses.recaptcha_element = 'dummyvalue';
+
+                if (itemData.required && !answered) {
+                    // Check if it has any value.
+                    itemData.isEmpty = true;
+                } else {
+                    itemData.isEmpty = false;
+                }
+            } else if (itemData.hasvalue) {
                 var name, value,
                     nameTemp = itemData.typ + '_' + itemData.id,
                     answered = false;
@@ -309,23 +328,6 @@ angular.module('mm.addons.mod_feedback')
                     answered = !!value;
                     responses[name] = value;
                 }
-
-                if (itemData.required && !answered) {
-                    // Check if it has any value.
-                    itemData.isEmpty = true;
-                } else {
-                    itemData.isEmpty = false;
-                }
-            } else if (itemData.typ == "captcha") {
-                var value = itemData.value || "",
-                    name = itemData.typ + '_' + itemData.id,
-                    answered = false;
-
-                answered = !!value;
-                responses[name] = 1;
-                responses.recaptcha_challenge_field = itemData.captcha && itemData.captcha.challengehash;
-                responses.recaptcha_response_field = value;
-                responses.recaptcha_element = 'dummyvalue';
 
                 if (itemData.required && !answered) {
                     // Check if it has any value.

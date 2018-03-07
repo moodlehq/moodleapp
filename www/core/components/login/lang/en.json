@@ -58,6 +58,8 @@
     "problemconnectingerrorcontinue": "Double check you've entered the address correctly and try again.",
     "profileinvaliddata": "Invalid value",
     "recaptchachallengeimage": "reCAPTCHA challenge image",
+    "recaptchaexpired": "Verification expired. Answer the security question again.",
+    "recaptchaincorrect": "The security question answer is incorrect.",
     "reconnect": "Reconnect",
     "reconnectdescription": "Your authentication token is invalid or has expired. You have to reconnect to the site.",
     "reconnectssodescription": "Your authentication token is invalid or has expired. You have to reconnect to the site. You need to log in to the site in a browser window.",
