@@ -531,7 +531,7 @@ export class CoreSite {
             } else {
                 this.logger.error(`WS function '${method}' is not available, even in compatibility mode.`);
 
-                return Promise.reject(this.wsProvider.createFakeWSError('core.wsfunctionnotavailable', true));
+                return Promise.reject(this.utils.createFakeWSError('core.wsfunctionnotavailable', true));
             }
         }
 
@@ -560,7 +560,7 @@ export class CoreSite {
             data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
         } catch (e) {
             // Empty cleaned text found.
-            return Promise.reject(this.wsProvider.createFakeWSError('core.unicodenotsupportedcleanerror', true));
+            return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
 
         return this.getFromCache(method, data, preSets).catch(() => {

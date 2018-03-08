@@ -48,6 +48,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
 
     /**
      * Fetches preference data.
+     *
      * @return {Promise<any>} Resolved when done.
      */
     protected fetchPreferences(): Promise<any> {
@@ -85,6 +86,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
 
     /**
      * Block non contacts.
+     *
      * @param {boolean} block If it should be blocked or not.
      */
     blockNonContacts(block: boolean): void {
@@ -103,6 +105,7 @@ export class AddonMessagesSettingsPage implements OnDestroy {
 
     /**
      * Change the value of a certain preference.
+     *
      * @param {any}    notification Notification object.
      * @param {string} state        State name, ['loggedin', 'loggedoff'].
      * @param {any}    processor    Notification processor.

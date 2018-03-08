@@ -42,7 +42,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     loadingMessage: string;
     discussions: any;
     discussionUserId: number;
-    messageId: number;
+    pushObserver: any;
     search = {
         enabled: false,
         showResults: false,
@@ -54,7 +54,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, translate: TranslateService,
             private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
             private appProvider: CoreAppProvider, platform: Platform, utils: CoreUtilsProvider,
-            private pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
 
         this.search.loading =  translate.instant('core.searching');
         this.loadingMessages = translate.instant('core.loading');
@@ -114,7 +114,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.discussionUserId = navParams.get('discussionUserId') || false;
 
         // If a message push notification is received, refresh the view.
-        pushNotificationsDelegate.registerReceiveHandler('AddonMessagesDiscussionsComponent', (notification) => {
+        this.pushObserver = pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
             if (utils.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
                 this.refreshData();
@@ -211,7 +211,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
             this.search.showResults = true;
             this.search.results = searchResults;
         }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingmessages', true);
+            this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
         }).finally(() => {
             this.loaded = true;
         });
@@ -233,7 +233,6 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         };
         if (messageId) {
             params['message'] = messageId;
-            this.messageId = messageId;
         }
         this.eventsProvider.trigger(AddonMessagesProvider.SPLIT_VIEW_LOAD_EVENT, params, this.siteId);
     }
@@ -246,6 +245,6 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
         this.readChangedObserver && this.readChangedObserver.off();
         this.cronObserver && this.cronObserver.off();
         this.appResumeSubscription && this.appResumeSubscription.unsubscribe();
-        this.pushNotificationsDelegate.unregisterReceiveHandler('AddonMessagesDiscussionsComponent');
+        this.pushObserver && this.pushObserver.unsubscribe();
     }
 }

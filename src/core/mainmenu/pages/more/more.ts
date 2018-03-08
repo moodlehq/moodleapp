@@ -68,7 +68,6 @@ export class CoreMainMenuMorePage implements OnDestroy {
             });
             if (handler) {
                 handler.badge = data.badge;
-                handler.loading = false;
             }
         }, this.sitesProvider.getCurrentSiteId());
     }

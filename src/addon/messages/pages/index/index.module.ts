@@ -17,8 +17,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddonMessagesIndexPage } from './index';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
-import { CorePipesModule } from '@pipes';
 import { AddonMessagesComponentsModule } from '../../components/components.module';
 
 @NgModule({
@@ -27,8 +25,6 @@ import { AddonMessagesComponentsModule } from '../../components/components.modul
     ],
     imports: [
         CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
         AddonMessagesComponentsModule,
         IonicPageModule.forChild(AddonMessagesIndexPage),
         TranslateModule.forChild()

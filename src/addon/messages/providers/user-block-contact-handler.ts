@@ -33,8 +33,8 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
      */
     static UPDATED_EVENT = 'AddonMessagesBlockContactUserHandler_updated_event';
 
-    name = 'mmaMessages:addContact';
-    priority = 800;
+    name = 'AddonMessages:blockContact';
+    priority = 600;
     type = CoreUserDelegate.TYPE_ACTION;
 
     protected disabled = false;
@@ -52,9 +52,9 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
     /**
      * Check if handler is enabled.
      *
-     * @return {Promise<any>} Promise resolved with true if enabled, rejected or resolved with false otherwise.
+     * @return {Promise<boolean>} Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
-    isEnabled(): Promise<any> {
+    isEnabled(): Promise<boolean> {
         return this.messagesProvider.isPluginEnabled();
     }
 
@@ -104,12 +104,12 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
 
                         return this.domUtils.showConfirm(template, title, title).then(() => {
                             return this.messagesProvider.blockContact(user.id);
-                        }).catch(() => {
+                        }, () => {
                             // Ignore on cancel.
                         });
                     }
                 }).catch((error) => {
-                    this.domUtils.showErrorModal(error);
+                    this.domUtils.showErrorModalDefault(error, 'core.error', true);
                 }).finally(() => {
                     this.eventsProvider.trigger(AddonMessagesBlockContactUserHandler.UPDATED_EVENT, {userId: user.id});
                     this.checkButton(user.id).finally(() => {
@@ -133,7 +133,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
             if (isBlocked) {
                 this.updateButton({
                     title: 'addon.messages.unblockcontact',
-                    class: 'mma-messages-unblockcontact-handler',
+                    class: 'addon-messages-unblockcontact-handler',
                     icon: 'checkmark-circle',
                     hidden: false,
                     spinner: false
@@ -141,7 +141,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
             } else {
                 this.updateButton({
                     title: 'addon.messages.blockcontact',
-                    class: 'mma-messages-blockcontact-handler',
+                    class: 'addon-messages-blockcontact-handler',
                     icon: 'close-circle',
                     hidden: false,
                     spinner: false

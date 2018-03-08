@@ -26,7 +26,7 @@ export class AddonMessagesOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected MESSAGES_TABLE = 'mma_messages_offline_messages';
+    protected MESSAGES_TABLE = 'addon_messages_offline_messages';
     protected tablesSchema = [
         {
             name: this.MESSAGES_TABLE,
@@ -140,7 +140,7 @@ export class AddonMessagesOfflineProvider {
      */
     saveMessage(toUserId: number, message: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const  entry = {
+            const entry = {
                 touserid: toUserId,
                 useridfrom: site.getUserId(),
                 smallmessage: message,

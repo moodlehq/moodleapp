@@ -91,7 +91,6 @@ export class CoreMainMenuPage implements OnDestroy {
             });
             if (tab) {
                 tab.badge = data.badge;
-                tab.loading = false;
             }
         }, site.getId());
 

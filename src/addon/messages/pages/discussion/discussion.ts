@@ -172,7 +172,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             }).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
             }).finally(() => {
-                this.triggerDiscussionLoadedEvent();
+                this.checkCanDelete();
                 this.resizeContent();
                 this.loaded = true;
             });
@@ -201,9 +201,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected fetchData(): Promise<any> {
         this.logger.debug(`Polling new messages for discussion with user '${this.userId}'`);
         if (this.messagesBeingSent > 0) {
-            // We do not poll while a message is being sent or we could confuse the user
-            // as his message would disappear from the list, and he'd have to wait for the
-            // interval to check for new messages.
+            // We do not poll while a message is being sent or we could confuse the user.
+            // Otherwise, his message would disappear from the list, and he'd have to wait for the interval to check for messages.
             return Promise.reject(null);
         } else if (this.fetching) {
             // Already fetching.
@@ -384,7 +383,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             // Update navBar links and buttons.
             const newCanDelete = (last && last.id && this.messages.length == 1) || this.messages.length > 1;
             if (this.canDelete != newCanDelete) {
-                this.triggerDiscussionLoadedEvent();
+                this.checkCanDelete();
             }
         }
     }
@@ -425,7 +424,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Check if there's any message in the list that can be deleted.
      */
-    protected triggerDiscussionLoadedEvent(): void {
+    protected checkCanDelete(): void {
         // All messages being sent should be at the end of the list.
         const first = this.messages[0];
         this.canDelete = first && !first.sending;
@@ -502,7 +501,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     copyMessage(text: string): void {
         this.utils.copyToClipboard(text);
     }
-
 
     /**
      * Function to delete a message.
@@ -627,8 +625,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 }
 
                 promise.catch(() => {
-                    // Fetch failed or is offline message, mark the message as sent. If fetch is successful there's no need
-                    // to mark it because the fetch will already show the message received from the server.
+                    // Fetch failed or is offline message, mark the message as sent.
+                    // If fetch is successful there's no need to mark it because the fetch will already show the message received.
                     message.sending = false;
                     if (data.sent) {
                         // Message sent to server, not pending anymore.
@@ -642,8 +640,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             }).catch((error) => {
                 this.messagesBeingSent--;
 
-                // Only close the keyboard if an error happens, we want the user to be able to send multiple
-                // messages without the keyboard being closed.
+                // Only close the keyboard if an error happens.
+                // We want the user to be able to send multiple messages without the keyboard being closed.
                 this.appProvider.closeKeyboard();
 
                 this.domUtils.showErrorModalDefault(error, 'addon.messages.messagenotsent', true);

@@ -29,10 +29,10 @@ export class AddonMessagesProvider {
     protected ROOT_CACHE_KEY = 'mmaMessages:';
     protected LIMIT_MESSAGES = 50;
     protected LIMIT_SEARCH_MESSAGES = 50;
-    static NEW_MESSAGE_EVENT = 'new_message_event';
-    static READ_CHANGED_EVENT = 'read_changed_event';
-    static READ_CRON_EVENT = 'read_cron_event';
-    static SPLIT_VIEW_LOAD_EVENT = 'split_view_load_event';
+    static NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
+    static READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
+    static READ_CRON_EVENT = 'addon_messages_read_cron_event';
+    static SPLIT_VIEW_LOAD_EVENT = 'addon_messages_split_view_load_event';
     static POLL_INTERVAL = 10000;
     static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
 
@@ -146,6 +146,16 @@ export class AddonMessagesProvider {
      */
     protected getCacheKeyForDiscussion(userId: number): string {
         return this.ROOT_CACHE_KEY + 'discussion:' + userId;
+    }
+
+    /**
+     * Get the cache key for the message count.
+     *
+     * @param {number} userId  User ID.
+     * @return {string} Cache key.
+     */
+    protected getCacheKeyForMessageCount(userId: number): string {
+        return this.ROOT_CACHE_KEY + 'count:' + userId;
     }
 
     /**
@@ -267,8 +277,8 @@ export class AddonMessagesProvider {
                 hasSent;
 
             if (lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0) {
-                // Do not use cache when retrieving older messages. This is to prevent storing too much data
-                // and to prevent inconsistencies between "pages" loaded.
+                // Do not use cache when retrieving older messages.
+                // This is to prevent storing too much data and to prevent inconsistencies between "pages" loaded.
                 preSets['getFromCache'] = false;
                 preSets['saveToCache'] = false;
                 preSets['emergencyCache'] = false;
@@ -566,9 +576,10 @@ export class AddonMessagesProvider {
                         useridto: userId
                     },
                     preSets = {
+                        cacheKey: this.getCacheKeyForMessageCount(userId),
                         getFromCache: false,
-                        emergencyCache: false,
-                        saveToCache: false,
+                        emergencyCache: true,
+                        saveToCache: true,
                         typeExpected: 'number'
                     };
 
@@ -590,11 +601,11 @@ export class AddonMessagesProvider {
             return this.getMessages(params, undefined, false, siteId).then((response) => {
                 // Count the discussions by filtering same senders.
                 const discussions = {};
-                let count;
+
                 response.messages.forEach((message) => {
                     discussions[message.useridto] = 1;
                 });
-                count = Object.keys(discussions).length;
+                const count = Object.keys(discussions).length;
 
                 // Add + sign if there are more than the limit reachable.
                 return (count > this.LIMIT_MESSAGES) ? count + '+' : count;
@@ -700,9 +711,11 @@ export class AddonMessagesProvider {
      */
     invalidateDiscussionsCache(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getCacheKeyForDiscussions()).then(() => {
-                return this.invalidateContactsCache(site.getId());
-            });
+            const promises = [];
+            promises.push(site.invalidateWsCacheForKey(this.getCacheKeyForDiscussions()));
+            promises.push(this.invalidateContactsCache(site.getId()));
+
+            return Promise.all(promises);
         });
     }
 
@@ -797,12 +810,10 @@ export class AddonMessagesProvider {
      * @return {Promise<any>}   Resolved when enabled, otherwise rejected.
      */
     isMessagingEnabledForSite(siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            if (!site.canUseAdvancedFeature('messaging')) {
+        return this.isPluginEnabled(siteId).then((enabled) => {
+            if (!enabled) {
                 return Promise.reject(null);
             }
-
-            return Promise.resolve(true);
         });
     }
 
@@ -986,14 +997,14 @@ export class AddonMessagesProvider {
             // Online and no messages stored. Send it to server.
             return this.sendMessageOnline(toUserId, message).then(() => {
                 return { sent: true };
-            }).catch((data) => {
-                if (data.wserror) {
+            }).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.
-                    return Promise.reject(data.error);
-                } else {
-                    // Error sending message, store it to retry later.
-                    return storeOffline();
+                    return Promise.reject(error);
                 }
+
+                // Error sending message, store it to retry later.
+                return storeOffline();
             });
         });
     }
@@ -1004,9 +1015,7 @@ export class AddonMessagesProvider {
      * @param {number} toUserId  User ID to send the message to.
      * @param {string} message   The message to send
      * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if success, rejected if failure. Reject param is an object with:
-     *                               - error: The error message.
-     *                               - wserror: True if it's an error returned by the WebService, false otherwise.
+     * @return {Promise<any>}    Promise resolved if success, rejected if failure.
      */
     sendMessageOnline(toUserId: number, message: string, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1019,18 +1028,10 @@ export class AddonMessagesProvider {
                 }
             ];
 
-        return this.sendMessagesOnline(messages, siteId).catch((error) => {
-            return Promise.reject({
-                error: error,
-                wserror: this.utils.isWebServiceError(error)
-            });
-        }).then((response) => {
+        return this.sendMessagesOnline(messages, siteId).then((response) => {
             if (response && response[0] && response[0].msgid === -1) {
                 // There was an error, and it should be translated already.
-                return Promise.reject({
-                    error: response[0].errormessage,
-                    wserror: true
-                });
+                return this.utils.createFakeWSError(response[0].errormessage);
             }
 
             return this.invalidateDiscussionCache(toUserId, siteId).catch(() => {

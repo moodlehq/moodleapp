@@ -38,6 +38,7 @@ export class CoreSearchBoxComponent implements OnInit {
     @Input() autoFocus?: string | boolean; // Enables/disable Autofocus when entering view.
     @Input() lengthCheck? = 3; // Check value length before submit. If 0, any string will be submitted.
     @Input() showClear? = true; // Show/hide clear button.
+    @Input() disabled? = false; // Disables the input text.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear?: EventEmitter<void>; // Send event when clearing the search form.
 

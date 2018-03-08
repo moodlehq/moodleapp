@@ -20,11 +20,11 @@ import { CoreUserHelperProvider } from './providers/helper';
 import { CoreUserProfileMailHandler } from './providers/user-handler';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreUserProfileLinkHandler } from './providers/user-link-handler';
 import { CoreUserParticipantsCourseOptionHandler } from './providers/course-option-handler';
 import { CoreUserParticipantsLinkHandler } from './providers/participants-link-handler';
-import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreUserComponentsModule } from './components/components.module';
 
 @NgModule({

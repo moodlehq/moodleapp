@@ -56,7 +56,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         });
 
         // If a message push notification is received, refresh the count.
-        pushNotificationsDelegate.registerReceiveHandler('AddonMessagesMainMenuHandler', (notification) => {
+        pushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New message received. If it's from current site, refresh the data.
             if (utils.isFalseOrZero(notification.notif) && this.sitesProvider.isCurrentSite(notification.site)) {
                 this.updateBadge(notification.site);
@@ -64,7 +64,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         });
 
         // Register Badge counter.
-        pushNotificationsDelegate.registerCounterHandler('mmaMessages');
+        pushNotificationsDelegate.registerCounterHandler('AddonMessages');
     }
 
     /**
@@ -91,7 +91,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             title: 'addon.messages.messages',
             page: 'AddonMessagesIndexPage',
             class: 'addon-messages-handler',
-            showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.,
+            showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.
             badge: this.badge,
             loading: this.loading
         };
@@ -112,7 +112,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             // Leave badge enter if there is a 0+ or a 0.
             this.badge = parseInt(unread, 10) > 0 ? unread : '';
             // Update badge.
-            this.pushNotificationsProvider.updateAddonCounter('mmaMessages', unread, siteId);
+            this.pushNotificationsProvider.updateAddonCounter('AddonMessages', unread, siteId);
         }).catch(() => {
             this.badge = '';
         }).finally(() => {

@@ -21,7 +21,9 @@ import { AddonMessagesOfflineProvider } from './messages-offline';
 import { AddonMessagesProvider } from './messages';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSyncProvider } from '@providers/sync';
 
 /**
  * Service to sync messages.
@@ -34,8 +36,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     constructor(protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
             protected appProvider: CoreAppProvider, private messagesOffline: AddonMessagesOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private messagesProvider: AddonMessagesProvider,
-            private userProvider: CoreUserProvider, private translate: TranslateService) {
-        super('AddonMessagesSync', sitesProvider, loggerProvider, appProvider);
+            private userProvider: CoreUserProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
+            syncProvider: CoreSyncProvider) {
+        super('AddonMessagesSync', sitesProvider, loggerProvider, appProvider, syncProvider);
     }
 
     /**
@@ -49,7 +52,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     syncAllDiscussions(siteId?: string, onlyDeviceOffline: boolean = false): Promise<any> {
         const syncFunctionLog = 'all discussions' + (onlyDeviceOffline ? ' (Only offline)' : '');
 
-        return this.syncOnSites(syncFunctionLog, 'syncAllDiscussionsFunc', {onlyDeviceOffline: onlyDeviceOffline}, siteId);
+        return this.syncOnSites(syncFunctionLog, this.syncAllDiscussionsFunc.bind(this), [onlyDeviceOffline], siteId);
     }
 
     /**
@@ -106,13 +109,12 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
             return this.getOngoingSync(userId, siteId);
         }
 
-        let syncPromise;
         const warnings = [];
 
         this.logger.debug(`Try to sync discussion with user '${userId}'`);
 
         // Get offline messages to be sent.
-        syncPromise = this.messagesOffline.getMessages(userId, siteId).then((messages) => {
+        const syncPromise = this.messagesOffline.getMessages(userId, siteId).then((messages) => {
             if (!messages.length) {
                 // Nothing to sync.
                 return [];
@@ -123,33 +125,35 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
                 return Promise.reject(null);
             }
 
-            let promise: Promise<any>;
-            promise = Promise.resolve();
+            let promise: Promise<any> = Promise.resolve();
             const errors = [];
 
             // Order message by timecreated.
             messages = this.messagesProvider.sortMessages(messages);
 
-            // Send the messages. We don't use $mmaMessages#sendMessagesOnline because there's a problem with display order.
-            // @todo Use $mmaMessages#sendMessagesOnline once the display order is fixed.
+            // Send the messages.
+            // We don't use AddonMessagesProvider#sendMessagesOnline because there's a problem with display order.
+            // @todo Use AddonMessagesProvider#sendMessagesOnline once the display order is fixed.
             messages.forEach((message, index) => {
                 // Chain message sending. If 1 message fails to be sent we'll stop sending.
                 promise = promise.then(() => {
-                    return this.messagesProvider.sendMessageOnline(userId, message.smallmessage, siteId).catch((data) => {
-                        if (data.wserror) {
+                    return this.messagesProvider.sendMessageOnline(userId, message.smallmessage, siteId).catch((error) => {
+                        if (this.utils.isWebServiceError(error)) {
                             // Error returned by WS. Store the error to show a warning but keep sending messages.
-                            if (errors.indexOf(data.error) == -1) {
-                                errors.push(data.error);
-                            }
-                        } else {
-                            // Error sending, stop execution.
-                            if (this.appProvider.isOnline()) {
-                                // App is online, unmark deviceoffline if marked.
-                                this.messagesOffline.setMessagesDeviceOffline(messages, false);
+                            if (errors.indexOf(error) == -1) {
+                                errors.push(error);
                             }
 
-                            return Promise.reject(data.error);
+                            return;
                         }
+
+                        // Error sending, stop execution.
+                        if (this.appProvider.isOnline()) {
+                            // App is online, unmark deviceoffline if marked.
+                            this.messagesOffline.setMessagesDeviceOffline(messages, false);
+                        }
+
+                        return Promise.reject(error);
                     }).then(() => {
                         // Message was sent, delete it from local DB.
                         return this.messagesOffline.deleteMessage(userId, message.smallmessage, message.timecreated, siteId);

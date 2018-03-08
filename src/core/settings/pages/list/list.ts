@@ -29,7 +29,6 @@ export class CoreSettingsListPage {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     handlers: CoreSettingsHandlerData[];
-    areHandlersLoaded: Function;
     isIOS: boolean;
     selectedPage: string;
 
@@ -61,7 +60,7 @@ export class CoreSettingsListPage {
      */
     openHandler(page: string, params?: any): void {
         this.selectedPage = page;
-        this.navCtrl.push(page, params);
+        this.splitviewCtrl.push(page, params);
     }
 
 }

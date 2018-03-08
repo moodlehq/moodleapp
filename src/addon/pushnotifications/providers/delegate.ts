@@ -14,20 +14,22 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { Subject } from 'rxjs';
 
 /**
- * Service to handle push notifications clicks.
+ * Service to handle push notifications actions to perform when clicked and received.
  */
 @Injectable()
 export class AddonPushNotificationsDelegate {
 
     protected logger;
-    protected clickHandlers: { [s: string]: Function } = {};
-    protected receiveHandlers: { [s: string]: Function } = {};
+    protected observables: { [s: string]: Subject<any> } = {};
     protected counterHandlers: { [s: string]: string } = {};
 
     constructor(loggerProvider: CoreLoggerProvider) {
         this.logger = loggerProvider.getInstance('AddonPushNotificationsDelegate');
+        this.observables['click'] = new Subject<any>();
+        this.observables['receive'] = new Subject<any>();
     }
 
     /**
@@ -36,15 +38,7 @@ export class AddonPushNotificationsDelegate {
      * @param {any} notification Notification clicked.
      */
     clicked(notification: any): void {
-        for (const name in this.clickHandlers) {
-            const callback = this.clickHandlers[name];
-            if (typeof callback == 'function') {
-                const treated = callback(notification);
-                if (treated) {
-                    return; // Stop execution when notification is treated.
-                }
-            }
-        }
+        this.observables['click'].next(notification);
     }
 
     /**
@@ -54,60 +48,42 @@ export class AddonPushNotificationsDelegate {
      * @param {any} notification Notification received.
      */
     received(notification: any): void {
-        for (const name in this.receiveHandlers) {
-            const callback = this.receiveHandlers[name];
-            if (typeof callback == 'function') {
-                callback(notification);
-            }
+        this.observables['receive'].next(notification);
+    }
+
+    /**
+     * Register a push notifications observable for click and receive notification event.
+     * When a notification is clicked or received, the observable will receive a notification to treat.
+     * let observer = pushNotificationsDelegate.on('click').subscribe((notification) => {
+     * ...
+     * observer.unsuscribe();
+     *
+     * @param {string}  eventName Only click and receive are permitted.
+     * @return {Subject<any>} Observer to subscribe.
+     */
+    on(eventName: string): Subject<any> {
+        if (typeof this.observables[eventName] == 'undefined') {
+            const eventNames = Object.keys(this.observables).join(', ');
+            this.logger.warn(`'${eventName}' event name is not allowed. Use one of the following: '${eventNames}'.`);
+
+            return new Subject<any>();
         }
-    }
 
-    /**
-     * Register a push notifications handler for CLICKS.
-     * When a notification is clicked, the handler will receive a notification to treat.
-     *
-     * @param {string} name       Handler's name.
-     * @param {Function} callback The callback function. Will get as parameter the clicked notification.
-     * @description
-     * The handler should return true if the notification is the one expected, false otherwise.
-     * @see {@link AddonPushNotificationsDelegate#clicked}
-     */
-    registerHandler(name: string, callback: Function): void {
-        this.logger.debug(`Registered handler '${name}' as CLICK push notification handler.`);
-        this.clickHandlers[name] = callback;
-    }
-
-    /**
-     * Register a push notifications handler for RECEIVE notifications in foreground (cannot tell when it's received in background).
-     * When a notification is received, the handler will receive a notification to treat.
-     *
-     * @param {string} name       Handler's name.
-     * @param {Function} callback The callback function. Will get as parameter the clicked notification.
-     * @see {@link AddonPushNotificationsDelegate#received}
-     */
-    registerReceiveHandler(name: string, callback: Function): void {
-        this.logger.debug(`Registered handler '${name}' as RECEIVE push notification handler.`);
-        this.receiveHandlers[name] = callback;
-    }
-
-    /**
-     * Unregister a push notifications handler for RECEIVE notifications.
-     *
-     * @param {string} name       Handler's name.
-     */
-    unregisterReceiveHandler(name: string): void {
-        this.logger.debug(`Unregister handler '${name}' from RECEIVE push notification handlers.`);
-        delete this.receiveHandlers[name];
+        return this.observables[eventName];
     }
 
     /**
      * Register a push notifications handler for update badge counter.
      *
-     * @param {string} name       Handler's name.
+     * @param {string} name  Handler's name.
      */
     registerCounterHandler(name: string): void {
-        this.logger.debug(`Registered handler '${name}' as badge counter handler.`);
-        this.counterHandlers[name] = name;
+        if (typeof this.counterHandlers[name] == 'undefined') {
+            this.logger.debug(`Registered handler '${name}' as badge counter handler.`);
+            this.counterHandlers[name] = name;
+        } else {
+            this.logger.log(`Handler '${name}' as badge counter handler already registered.`);
+        }
     }
 
     /**

@@ -33,8 +33,8 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
      */
     static UPDATED_EVENT = 'AddonMessagesAddContactUserHandler_updated_event';
 
-    name = 'mmaMessages:blockContact';
-    priority = 600;
+    name = 'AddonMessages:addContact';
+    priority = 800;
     type = CoreUserDelegate.TYPE_ACTION;
 
     protected disabled = false;
@@ -52,9 +52,9 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
     /**
      * Check if handler is enabled.
      *
-     * @return {Promise<any>} Promise resolved with true if enabled, rejected or resolved with false otherwise.
+     * @return {Promise<boolean>} Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
-    isEnabled(): Promise<any> {
+    isEnabled(): Promise<boolean> {
         return this.messagesProvider.isPluginEnabled();
     }
 
@@ -101,14 +101,14 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
 
                         return this.domUtils.showConfirm(template, title, title).then(() => {
                             return this.messagesProvider.removeContact(user.id);
-                        }).catch(() => {
+                        }, () => {
                             // Ignore on cancel.
                         });
                     } else {
                         return this.messagesProvider.addContact(user.id);
                     }
                 }).catch((error) => {
-                    this.domUtils.showErrorModal(error);
+                    this.domUtils.showErrorModalDefault(error, 'core.error', true);
                 }).finally(() => {
                     this.eventsProvider.trigger(AddonMessagesAddContactUserHandler.UPDATED_EVENT, {userId: user.id});
                     this.checkButton(user.id).finally(() => {
@@ -132,7 +132,7 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
             if (isContact) {
                 this.updateButton({
                     title: 'addon.messages.removecontact',
-                    class: 'mma-messages-removecontact-handler',
+                    class: 'addon-messages-removecontact-handler',
                     icon: 'remove',
                     hidden: false,
                     spinner: false
@@ -140,7 +140,7 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
             } else {
                 this.updateButton({
                     title: 'addon.messages.addcontact',
-                    class: 'mma-messages-addcontact-handler',
+                    class: 'addon-messages-addcontact-handler',
                     icon: 'add',
                     hidden: false,
                     spinner: false

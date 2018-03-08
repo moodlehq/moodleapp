@@ -105,7 +105,7 @@ export class AddonMessagesModule {
         }
 
         // Register push notification clicks.
-        pushNotificationsDelegate.registerHandler('mmaMessages', (notification) => {
+        pushNotificationsDelegate.on('click').subscribe((notification) => {
             if (utils.isFalseOrZero(notification.notif)) {
                 notificationClicked(notification);
 

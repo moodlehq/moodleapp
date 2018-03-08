@@ -31,4 +31,10 @@ page-core-user-profile {
           }
         }
     }
+
+    .core-user-profile-handler {
+        ion-spinner {
+            margin-left: 0.3em;
+        }
+    }
 }

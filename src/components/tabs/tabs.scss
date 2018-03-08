@@ -83,4 +83,8 @@ core-tabs {
         top: 0;
         height: 100%;
     }
+    ion-content core-tabs core-tab .core-avoid-header ion-content {
+        top: 0;
+        height: 100%;
+    }
 }

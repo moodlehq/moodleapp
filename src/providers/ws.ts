@@ -174,9 +174,9 @@ export class CoreWSProvider {
         let siteUrl;
 
         if (!preSets) {
-            return Promise.reject(this.createFakeWSError('core.unexpectederror', true));
+            return Promise.reject(this.utils.createFakeWSError('core.unexpectederror', true));
         } else if (!this.appProvider.isOnline()) {
-            return Promise.reject(this.createFakeWSError('core.networkerrormsg', true));
+            return Promise.reject(this.utils.createFakeWSError('core.networkerrormsg', true));
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
@@ -318,23 +318,6 @@ export class CoreWSProvider {
         }
 
         return result;
-    }
-
-    /**
-     * Create a "fake" WS error for local errors.
-     *
-     * @param {string} message The message to include in the error.
-     * @param {boolean} [needsTranslate] If the message needs to be translated.
-     * @return {CoreWSError} Fake WS error.
-     */
-    createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
-        if (needsTranslate) {
-            message = this.translate.instant(message);
-        }
-
-        return {
-            message: message
-        };
     }
 
     /**
@@ -532,11 +515,11 @@ export class CoreWSProvider {
             }
 
             if (!data) {
-                return Promise.reject(this.createFakeWSError('core.serverconnection', true));
+                return Promise.reject(this.utils.createFakeWSError('core.serverconnection', true));
             } else if (typeof data != preSets.typeExpected) {
                 this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
 
-                return Promise.reject(this.createFakeWSError('core.errorinvalidresponse', true));
+                return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
             }
 
             if (typeof data.exception !== 'undefined') {
@@ -544,7 +527,7 @@ export class CoreWSProvider {
             }
 
             if (typeof data.debuginfo != 'undefined') {
-                return Promise.reject(this.createFakeWSError('Error. ' + data.message));
+                return Promise.reject(this.utils.createFakeWSError('Error. ' + data.message));
             }
 
             return data;
@@ -572,7 +555,7 @@ export class CoreWSProvider {
                 return retryPromise;
             }
 
-            return Promise.reject(this.createFakeWSError('core.serverconnection', true));
+            return Promise.reject(this.utils.createFakeWSError('core.serverconnection', true));
         });
 
         promise = this.setPromiseHttp(promise, 'post', preSets.siteUrl, ajaxData);

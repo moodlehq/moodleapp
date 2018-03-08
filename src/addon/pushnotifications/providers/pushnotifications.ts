@@ -36,17 +36,17 @@ export class AddonPushNotificationsProvider {
     protected logger;
     protected pushID: string;
     protected appDB: any;
-    static COMPONENT = 'mmaPushNotifications';
+    static COMPONENT = 'AddonPushNotificationsProvider';
 
     // Variables for database.
-    protected BADGE_TABLE = 'mma_pushnotifications_badge';
+    protected BADGE_TABLE = 'addon_pushnotifications_badge';
     protected tablesSchema = [
         {
             name: this.BADGE_TABLE,
             columns: [
                 {
                     name: 'siteid',
-                    type: 'INTEGER'
+                    type: 'TEXT'
                 },
                 {
                     name: 'addon',
@@ -84,25 +84,26 @@ export class AddonPushNotificationsProvider {
     }
 
     /**
-     * Returns options for push notifications based on
-     * @return {Promise<PushOptions>} [description]
+     * Returns options for push notifications based on device.
+     *
+     * @return {Promise<PushOptions>} Promise with the push options resolved when done.
      */
     protected getOptions(): Promise<PushOptions> {
         // @todo: CoreSettingsProvider.NOTIFICATION_SOUND
         return this.configProvider.get('CoreSettingsProvider.NOTIFICATION_SOUND', true).then((soundEnabled) => {
             return {
-               android: {
-                   senderID: CoreConfigConstants.gcmpn,
-                   sound: !!soundEnabled
-               },
-               ios: {
-                   alert: 'true',
-                   badge: true,
-                   sound: !!soundEnabled
-               },
-               windows: {
-                   sound: !!soundEnabled
-               }
+                android: {
+                    senderID: CoreConfigConstants.gcmpn,
+                    sound: !!soundEnabled
+                },
+                ios: {
+                    alert: 'true',
+                    badge: true,
+                    sound: !!soundEnabled
+                },
+                windows: {
+                    sound: !!soundEnabled
+                }
             };
         });
     }
@@ -259,9 +260,9 @@ export class AddonPushNotificationsProvider {
 
             return Promise.all(promises).then((counters) => {
                 const total = counters.reduce((previous, counter) => {
-                        // The app badge counter does not support strings, so parse to int before.
-                        return previous + parseInt(counter, 10);
-                    }, 0);
+                    // The app badge counter does not support strings, so parse to int before.
+                    return previous + parseInt(counter, 10);
+                }, 0);
 
                 // Set the app badge.
                 return this.badge.set(total).then(() => {

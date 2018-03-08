@@ -23,9 +23,9 @@ import { CoreSitesProvider } from './sites';
 export class CoreSyncProvider {
 
     // Variables for the database.
-    static SYNC_TABLE = 'sync';
+    protected SYNC_TABLE = 'sync';
     protected tableSchema = {
-        name: CoreSyncProvider.SYNC_TABLE,
+        name: this.SYNC_TABLE,
         columns: [
             {
                 name: 'component',
@@ -34,7 +34,7 @@ export class CoreSyncProvider {
             },
             {
                 name: 'id',
-                type: 'INTEGER',
+                type: 'TEXT',
                 notNull: true
             },
             {
@@ -114,6 +114,36 @@ export class CoreSyncProvider {
         if (this.blockedItems[siteId]) {
             delete this.blockedItems[siteId][uniqueId];
         }
+    }
+
+    /**
+     * Returns a sync record.
+     * @param  {string}           component Component name.
+     * @param  {string | number}  id        Unique ID per component.
+     * @param  {string}           [siteId]  Site ID. If not defined, current site.
+     * @return {Promise<any>}     Record if found or reject.
+     */
+    getSyncRecord(component: string, id: string | number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSiteDb(siteId).then((db) => {
+            return db.getRecord(this.SYNC_TABLE, { component: component, id: id });
+        });
+    }
+
+    /**
+     * Inserts or Updates info of a sync record.
+     * @param  {string}           component Component name.
+     * @param  {string | number}  id        Unique ID per component.
+     * @param  {any}              data      Data that updates the record.
+     * @param  {string}           [siteId]  Site ID. If not defined, current site.
+     * @return {Promise<any>}     Promise resolved with done.
+     */
+    insertOrUpdateSyncRecord(component: string, id: string | number, data: any, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSiteDb(siteId).then((db) => {
+            data.component = component;
+            data.id = id;
+
+            return db.insertOrUpdateRecord(this.SYNC_TABLE, data, { component: component, id: id });
+        });
     }
 
     /**

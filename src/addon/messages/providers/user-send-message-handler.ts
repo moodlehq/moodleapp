@@ -23,7 +23,7 @@ import { AddonMessagesProvider } from './messages';
  */
 @Injectable()
 export class AddonMessagesSendMessageUserHandler implements CoreUserProfileHandler {
-    name = 'mmaMessages:sendMessage';
+    name = 'AddonMessages:sendMessage';
     priority = 1000;
     type = CoreUserDelegate.TYPE_COMMUNICATION;
 

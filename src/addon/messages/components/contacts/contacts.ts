@@ -134,8 +134,6 @@ export class AddonMessagesContactsComponent {
             this.clearSearch();
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
-
-            return Promise.reject(null);
         });
     }
 
@@ -202,8 +200,6 @@ export class AddonMessagesContactsComponent {
             this.contacts['search'] = this.sortUsers(result);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
-
-            return Promise.reject(null);
         });
     }
 
