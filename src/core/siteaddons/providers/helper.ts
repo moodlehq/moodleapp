@@ -29,10 +29,14 @@ import {
 } from '../../course/providers/options-delegate';
 import { CoreCourseFormatDelegate, CoreCourseFormatHandler } from '../../course/providers/format-delegate';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../user/providers/user-delegate';
+import {
+    CoreUserProfileFieldDelegate, CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData
+} from '../../user/providers/user-profile-field-delegate';
 import { CoreDelegateHandler } from '../../../classes/delegate';
 import { CoreSiteAddonsModuleIndexComponent } from '../components/module-index/module-index';
 import { CoreSiteAddonsCourseOptionComponent } from '../components/course-option/course-option';
 import { CoreSiteAddonsCourseFormatComponent } from '../components/course-format/course-format';
+import { CoreSiteAddonsUserProfileFieldComponent } from '../components/user-profile-field/user-profile-field';
 import { CoreSiteAddonsProvider } from './siteaddons';
 import { CoreSiteAddonsModulePrefetchHandler } from '../classes/module-prefetch-handler';
 import { CoreCompileProvider } from '../../compile/providers/compile';
@@ -57,7 +61,7 @@ export class CoreSiteAddonsHelperProvider {
             private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
             private coursesProvider: CoreCoursesProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private courseFormatDelegate: CoreCourseFormatDelegate) {
+            private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
     }
 
@@ -65,20 +69,31 @@ export class CoreSiteAddonsHelperProvider {
      * Bootstrap a handler if it has some bootstrap method.
      *
      * @param {any} addon Data of the addon.
-     * @param {string} handlerName Name of the handler in the addon.
      * @param {any} handlerSchema Data about the handler.
      * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
      *                        the bootstrap JS (if any).
      */
-    protected bootstrapHandler(addon: any, handlerName: string, handlerSchema: any): Promise<any> {
+    protected bootstrapHandler(addon: any, handlerSchema: any): Promise<any> {
         if (!handlerSchema.bootstrap) {
             return Promise.resolve({});
         }
 
+        return this.executeMethodAndJS(addon, handlerSchema.bootstrap);
+    }
+
+    /**
+     * Execute a get_content method and run its javascript (if any).
+     *
+     * @param {any} addon Data of the addon.
+     * @param {string} method The method to call.
+     * @return {Promise<any>} Promise resolved when done. It returns the results of the getContent call and the data returned by
+     *                        the JS (if any).
+     */
+    protected executeMethodAndJS(addon: any, method: string): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId(),
             preSets = {getFromCache: false}; // Try to ignore cache.
 
-        return this.siteAddonsProvider.getContent(addon.component, handlerSchema.bootstrap, {}, preSets).then((result) => {
+        return this.siteAddonsProvider.getContent(addon.component, method, {}, preSets).then((result) => {
             if (!result.javascript || this.sitesProvider.getCurrentSiteId() != siteId) {
                 // No javascript or site has changed, stop.
                 return result;
@@ -269,43 +284,52 @@ export class CoreSiteAddonsHelperProvider {
         this.loadHandlerLangStrings(addon, handlerName, handlerSchema);
 
         // Wait for the bootstrap JS to be executed.
-        return this.bootstrapHandler(addon, handlerName, handlerSchema).then((result) => {
-            let uniqueName;
+        return this.bootstrapHandler(addon, handlerSchema).then((result) => {
+            let promise;
 
             switch (handlerSchema.delegate) {
                 case 'CoreMainMenuDelegate':
-                    uniqueName = this.registerMainMenuHandler(addon, handlerName, handlerSchema, result);
+                    promise = Promise.resolve(this.registerMainMenuHandler(addon, handlerName, handlerSchema, result));
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    uniqueName = this.registerModuleHandler(addon, handlerName, handlerSchema, result);
+                    promise = Promise.resolve(this.registerModuleHandler(addon, handlerName, handlerSchema, result));
                     break;
 
                 case 'CoreUserDelegate':
-                    uniqueName = this.registerUserProfileHandler(addon, handlerName, handlerSchema, result);
+                    promise = Promise.resolve(this.registerUserProfileHandler(addon, handlerName, handlerSchema, result));
                     break;
 
                 case 'CoreCourseOptionsDelegate':
-                    uniqueName = this.registerCourseOptionHandler(addon, handlerName, handlerSchema, result);
+                    promise = Promise.resolve(this.registerCourseOptionHandler(addon, handlerName, handlerSchema, result));
                     break;
 
                 case 'CoreCourseFormatDelegate':
-                    uniqueName = this.registerCourseFormatHandler(addon, handlerName, handlerSchema, result);
+                    promise = Promise.resolve(this.registerCourseFormatHandler(addon, handlerName, handlerSchema, result));
+                    break;
+
+                case 'CoreUserProfileFieldDelegate':
+                    promise = Promise.resolve(this.registerUserProfileFieldHandler(addon, handlerName, handlerSchema, result));
                     break;
 
                 default:
                     // Nothing to do.
+                    promise = Promise.resolve();
             }
 
-            if (uniqueName) {
-                // Store the handler data.
-                this.siteAddonsProvider.setSiteAddonHandler(uniqueName, {
-                    addon: addon,
-                    handlerName: handlerName,
-                    handlerSchema: handlerSchema,
-                    bootstrapResult: result
-                });
-            }
+            return promise.then((uniqueName) => {
+                if (uniqueName) {
+                    // Store the handler data.
+                    this.siteAddonsProvider.setSiteAddonHandler(uniqueName, {
+                        addon: addon,
+                        handlerName: handlerName,
+                        handlerSchema: handlerSchema,
+                        bootstrapResult: result
+                    });
+                }
+            });
+        }).catch((err) => {
+            this.logger.error('Error executing bootstrap method', handlerSchema.bootstrap, err);
         });
     }
 
@@ -527,12 +551,18 @@ export class CoreSiteAddonsHelperProvider {
         const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
             baseHandler = this.getBaseHandler(uniqueName),
             prefixedTitle = this.getHandlerPrefixedString(baseHandler.name, handlerSchema.displaydata.title);
-        let userHandler: CoreUserProfileHandler;
+        let userHandler: CoreUserProfileHandler,
+            type = handlerSchema.type;
+
+        // Only support TYPE_COMMUNICATION and TYPE_NEW_PAGE.
+        if (type != CoreUserDelegate.TYPE_COMMUNICATION) {
+            type = CoreUserDelegate.TYPE_NEW_PAGE;
+        }
 
         // Extend the base handler, adding the properties required by the delegate.
         userHandler = Object.assign(baseHandler, {
             priority: handlerSchema.priority,
-            type: handlerSchema.type,
+            type: type,
             isEnabledForUser: (user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> => {
                 // First check if it's enabled for the user.
                 const enabledForUser = this.isHandlerEnabledForUser(user.id, handlerSchema.restricttocurrentuser,
@@ -571,5 +601,63 @@ export class CoreSiteAddonsHelperProvider {
         this.userDelegate.registerHandler(userHandler);
 
         return uniqueName;
+    }
+
+    /**
+     * Given a handler in an addon, register it in the user profile field delegate.
+     *
+     * @param {any} addon Data of the addon.
+     * @param {string} handlerName Name of the handler in the addon.
+     * @param {any} handlerSchema Data about the handler.
+     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @return {string|Promise<string>} A string (or a promise resolved with a string) to identify the handler.
+     */
+    protected registerUserProfileFieldHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any)
+            : string | Promise<string> {
+        if (!handlerSchema || !handlerSchema.method) {
+            // Required data not provided, stop.
+            return;
+        }
+
+        // Execute the main method and its JS. The template returned will be used in the profile field component.
+        return this.executeMethodAndJS(addon, handlerSchema.method).then((result) => {
+            // Create the base handler.
+            const fieldType = addon.component.replace('profilefield_', ''),
+                baseHandler = this.getBaseHandler(fieldType);
+            let fieldHandler: CoreUserProfileFieldHandler;
+
+            // Store in handlerSchema some data required by the component.
+            handlerSchema.methodTemplates = result.templates;
+            handlerSchema.methodJSResult = result.jsResult;
+
+            // Extend the base handler, adding the properties required by the delegate.
+            fieldHandler = Object.assign(baseHandler, {
+                getData: (field: any, signup: boolean, registerAuth: string, formValues: any):
+                        Promise<CoreUserProfileFieldHandlerData> | CoreUserProfileFieldHandlerData => {
+                    if (result && result.jsResult && result.jsResult.getData) {
+                        // The JS of the main method implements the getData function, use it.
+                        return result.jsResult.getData();
+                    }
+
+                    // No getData function implemented, use a default behaviour.
+                    const name = 'profile_field_' + field.shortname;
+
+                    return {
+                        type: field.type || field.datatype,
+                        name: name,
+                        value: formValues[name]
+                    };
+                },
+                getComponent: (injector: Injector): any | Promise<any> => {
+                    return CoreSiteAddonsUserProfileFieldComponent;
+                }
+            });
+
+            this.profileFieldDelegate.registerHandler(fieldHandler);
+
+            return fieldType;
+        }).catch((err) => {
+            this.logger.error('Error executing main method', handlerSchema.method, err);
+        });
     }
 }

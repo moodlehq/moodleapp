@@ -22,13 +22,15 @@ import { CoreSiteAddonsAddonContentComponent } from './addon-content/addon-conte
 import { CoreSiteAddonsModuleIndexComponent } from './module-index/module-index';
 import { CoreSiteAddonsCourseOptionComponent } from './course-option/course-option';
 import { CoreSiteAddonsCourseFormatComponent } from './course-format/course-format';
+import { CoreSiteAddonsUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 
 @NgModule({
     declarations: [
         CoreSiteAddonsAddonContentComponent,
         CoreSiteAddonsModuleIndexComponent,
         CoreSiteAddonsCourseOptionComponent,
-        CoreSiteAddonsCourseFormatComponent
+        CoreSiteAddonsCourseFormatComponent,
+        CoreSiteAddonsUserProfileFieldComponent
     ],
     imports: [
         CommonModule,
@@ -43,12 +45,14 @@ import { CoreSiteAddonsCourseFormatComponent } from './course-format/course-form
         CoreSiteAddonsAddonContentComponent,
         CoreSiteAddonsModuleIndexComponent,
         CoreSiteAddonsCourseOptionComponent,
-        CoreSiteAddonsCourseFormatComponent
+        CoreSiteAddonsCourseFormatComponent,
+        CoreSiteAddonsUserProfileFieldComponent
     ],
     entryComponents: [
         CoreSiteAddonsModuleIndexComponent,
         CoreSiteAddonsCourseOptionComponent,
-        CoreSiteAddonsCourseFormatComponent
+        CoreSiteAddonsCourseFormatComponent,
+        CoreSiteAddonsUserProfileFieldComponent
     ]
 })
 export class CoreSiteAddonsComponentsModule {}

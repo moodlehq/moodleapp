@@ -18,6 +18,7 @@ import {
 } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCompileProvider } from '../../../compile/providers/compile';
+import { BehaviorSubject } from 'rxjs';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -48,10 +49,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
 
     protected componentRef: ComponentRef<any>;
     protected element;
+    componentObservable: BehaviorSubject<any>; // An observable to notify observers when the component is instantiated.
 
     constructor(protected compileProvider: CoreCompileProvider, protected cdr: ChangeDetectorRef, element: ElementRef,
             @Optional() protected navCtrl: NavController) {
         this.element = element.nativeElement;
+        this.componentObservable = new BehaviorSubject<any>(null);
     }
 
     /**
@@ -67,6 +70,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                 if (factory) {
                     // Create the component.
                     this.componentRef = this.container.createComponent(factory);
+                    this.componentObservable.next(this.componentRef.instance);
                 }
             });
         }
@@ -99,11 +103,11 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy {
                     this['ChangeDetectorRef'] = compileInstance.cdr;
                     this['NavController'] = compileInstance.navCtrl;
                     this['componentContainer'] = compileInstance.element;
+                }
 
-                    // Add the data passed to the component.
-                    for (const name in compileInstance.jsData) {
-                        this[name] = compileInstance.jsData[name];
-                    }
+                // Add the data passed to the component.
+                for (const name in compileInstance.jsData) {
+                    this[name] = compileInstance.jsData[name];
                 }
             }
 
