@@ -1,0 +1,21 @@
+<ion-view view-title="{{ 'mma.mod_workshop.editsubmission' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()" aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModWorkshopEditSubmissionScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="submissionLoaded" on-refresh="refreshSubmission()"></ion-refresher>
+        <mm-loading hide-until="submissionLoaded">
+            <form class="list">
+                <ion-input class="item item-input item-stacked-label">
+                    <ion-label mm-mark-required="true">{{ 'mma.mod_workshop.submissiontitle' | translate }}</ion-label>
+                    <input type="text" placeholder="{{ 'mma.mod_workshop.submissiontitle' | translate }}" ng-model="submission.title" ng-required="true">
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor">
+                    <ion-label>{{ 'mma.mod_workshop.submissioncontent' | translate }}</ion-label>
+                    <mm-rich-text-editor model="submission" placeholder="{{ 'mma.mod_workshop.submissioncontent' | translate }}" scroll-handle="mmaModWorkshopEditSubmissionScroll" name="mod_workshop_content" first-render="firstRender()"></mm-rich-text-editor>
+                </ion-input>
+                <mm-attachments ng-if="workshop.nattachments > 0" files="submission.attachmentfiles" max-size="{{workshop.maxbytes}}" max-submissions="{{workshop.nattachments}}" component="{{component}}" component-id="{{workshop.cmid}}" allow-offline="true" accepted-types="workshop.submissionfiletypes"></mm-attachments>
+            </form>
+        </mm-loading>
+    </ion-content>
+</ion-view>

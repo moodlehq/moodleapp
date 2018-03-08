@@ -1,0 +1,18 @@
+{
+    "future": "Budoucí",
+    "inprogress": "Probíhající",
+    "morecourses": "Další kurzy",
+    "next30days": "Následujících 30 dní",
+    "next7days": "Následujících 7 dní",
+    "nocourses": "Žádné kurzy",
+    "nocoursesfuture": "Žádné budoucí kurzy",
+    "nocoursesinprogress": "Žádné probíhající kurzy",
+    "nocoursespast": "Žádné minulé kurzy",
+    "noevents": "Žádné nadcházející činnosti",
+    "past": "Minulé",
+    "pluginname": "Přehled kurzů",
+    "recentlyoverdue": "Nedávno zpožděné",
+    "sortbycourses": "Řadit podle kurzů",
+    "sortbydates": "Řadit podle data",
+    "timeline": "Časová osa"
+}

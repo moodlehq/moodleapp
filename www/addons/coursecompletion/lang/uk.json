@@ -1,0 +1,21 @@
+{
+    "complete": "Завершити",
+    "completecourse": "Завершити курсу",
+    "completed": "Завершено",
+    "completiondate": "Дата завершення",
+    "couldnotloadreport": "Не вдалося завантажити звіт про закінчення курсу, будь ласка, спробуйте ще раз пізніше.",
+    "coursecompletion": "Завершення курсу",
+    "criteria": "Критерія",
+    "criteriagroup": "Група критеріїв",
+    "criteriarequiredall": "Всі критерії нижче обов'язкові",
+    "criteriarequiredany": "Будь-яка критерія нижче обов'язкова",
+    "inprogress": "В процесі...",
+    "manualselfcompletion": "Самостійне завершення",
+    "notyetstarted": "Не розпочато",
+    "pending": "В очікуванні",
+    "required": "Необхідно",
+    "requiredcriteria": "Необхідна критерія",
+    "requirement": "Вимога",
+    "status": "Статус",
+    "viewcoursereport": "Переглянути звіт курсу"
+}

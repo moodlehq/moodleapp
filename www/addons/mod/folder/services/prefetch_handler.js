@@ -21,9 +21,92 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolderPrefetchHandler
  */
-.factory('$mmaModFolderPrefetchHandler', function($mmPrefetchFactory, mmaModFolderComponent) {
+.factory('$mmaModFolderPrefetchHandler', function($mmPrefetchFactory, mmaModFolderComponent, $mmaModFolder, $q, $mmCourse) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModFolderComponent, true);
+
+    /**
+     * Prefetch the module.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    self.download = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, false);
+    };
+
+    /**
+     * Download or prefetch the module.
+     *
+     * @param  {Object} module    The module object returned by WS.
+     * @param  {Number} courseId  Course ID the module belongs to.
+     * @param  {Boolean} prefetch True to prefetch, false to download right away.
+     * @return {Promise}          Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    function downloadOrPrefetch(module, courseId, prefetch) {
+        var promises = [];
+
+        promises.push(self.downloadOrPrefetch(module, courseId, prefetch));
+
+        if ($mmaModFolder.isGetFolderWSAvailable()) {
+            promises.push($mmaModFolder.getFolder(courseId, module.id));
+        }
+
+        return $q.all(promises);
+    }
+
+    /**
+     * Prefetch the module.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderPrefetchHandler#prefetch
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    self.prefetch = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, true);
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModFolder.invalidateContent(moduleId, courseId);
+    };
+
+    /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderPrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        var promises = [];
+
+        promises.push($mmaModFolder.invalidateFolderData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+
+        return $q.all(promises);
+    };
 
     return self;
 });

@@ -1,0 +1,26 @@
+<ion-view view-title="{{ 'mm.grades.grades' | translate }}">
+    <ion-content mm-state-class>
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="gradesLoaded && gradesTable" on-refresh="refreshGrades()">
+        </ion-refresher>
+        <mm-loading hide-until="gradesLoaded">
+            <div ng-if="gradesTable" class="mm-grades-container">
+                <table cellspacing="0" cellpadding="0" class="mm-grades-table">
+                    <thead>
+                        <tr>
+                            <th ng-repeat="column in gradesTable.columns track by $index" id="{{column.id}}" class="header" ng-class="{'hidden-phone': !column.showAlways}"" colspan="{{column.width}}" ng-hide="!column.showAlways && forcePhoneView">
+                                {{column.name | translate}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="myrow in gradesTable.rows track by $index" ng-bind-html="myrow.text" ng-click="expandGradeInfo(myrow.id)"></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="!gradesTable" class="padding">
+                <p>{{errormessage}}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

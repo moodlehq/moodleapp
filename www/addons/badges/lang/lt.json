@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Pasiekimo detalės",
+    "badges": "Pasiekimai",
+    "contact": "Kontaktas",
+    "dateawarded": "Suteikimo data",
+    "expired": "Atsiprašome, veikla uždaryta {{$a}} ir nebegalima",
+    "expirydate": "Galiojimo laikas",
+    "issuancedetails": "Pasiekimo galiojimas",
+    "issuerdetails": "Suteikėjo detalesnė informacija",
+    "issuername": "Suteikėjo vardas",
+    "nobadges": "Nėra sukurtų pasiekimų.",
+    "recipientdetails": "Informacija apie gavėją"
+}

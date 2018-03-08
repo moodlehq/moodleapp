@@ -1,0 +1,13 @@
+{
+    "badgedetails": "Osaamismerkin tiedot",
+    "badges": "Osaamismerkit",
+    "contact": "Yhteystieto",
+    "dateawarded": "Myöntämispäivä",
+    "expired": "Tämä aktiviteeti on suljettu {{$a}} eikä ole enää käytettävissä.",
+    "expirydate": "Vanhenemispäivä",
+    "issuancedetails": "Osaamismerkin vanhentuminen",
+    "issuerdetails": "Osaamismerkin myöntäjän tiedot",
+    "issuername": "Osaamismerkin myöntäjän nimi",
+    "nobadges": "Yhtään osaamismerkkiä ei ole tarjolla",
+    "recipientdetails": "Vastaanottajan tiedot"
+}

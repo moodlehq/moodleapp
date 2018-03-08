@@ -3,12 +3,10 @@
     "clicktoupload": "להעלאת הקבצים לקבצים הפרטיים שלך, יש להקליק על הכפתור למטה.",
     "couldnotloadfiles": "לא ניתן לטעון את רשימת הקבצים.",
     "emptyfilelist": "אין קבצים להצגה.",
-    "errorreceivefilenosites": "לא קיימים אתרים שמורים. יש להוסף אתר לפני הניסיון להעלות קובץ.",
-    "myfiles": "הקבצים שלי",
-    "myprivatefiles": "הקבצים הפרטיים שלי",
+    "files": "קבצים",
     "myprivatefilesdesc": "הקבצים הזמינים לך באזור הפרטי באתר מוודל זה.",
+    "privatefiles": "הקבצים שלי",
     "sitefiles": "קבצי האתר",
     "sitefilesdesc": "הקבצים האחרים הזמינים לך באתר מוודל זה.",
-    "success": "הצלחה!",
-    "uploadfiles": "העלה קבצים"
+    "uploadfiles": "שליחת קובצי משוב"
 }

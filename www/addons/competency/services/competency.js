@@ -474,14 +474,17 @@ angular.module('mm.addons.competency')
                 userId = userId || site.getUserId();
 
                 var params = {
-                    planid: planId,
-                    competencyid: competencyId,
-                    userid: userId
-                };
+                        planid: planId,
+                        competencyid: competencyId,
+                        userid: userId
+                    },
+                    preSets = {
+                      typeExpected: 'boolean'
+                    };
                 if (planStatus == mmaCompetencyStatusComplete) {
-                    return site.write('core_competency_user_competency_plan_viewed', params);
+                    return site.write('core_competency_user_competency_plan_viewed', params, preSets);
                 } else {
-                    return site.write('core_competency_user_competency_viewed_in_plan', params);
+                    return site.write('core_competency_user_competency_viewed_in_plan', params, preSets);
                 }
             });
         }

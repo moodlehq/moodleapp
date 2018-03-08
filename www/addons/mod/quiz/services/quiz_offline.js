@@ -40,11 +40,8 @@ angular.module('mm.addons.mod_quiz')
                     name: 'finished'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'quizAndUser',
-                    generator: function(obj) {
-                        return [obj.quizid, obj.userid];
-                    }
+                    keyPath: ['quizid', 'userid']
                 }
             ]
         }

@@ -1,5 +1,6 @@
 {
     "calendarevents": "Eventos de calendario",
+    "defaultnotificationtime": "Tiempo de notificación por defecto",
     "errorloadevent": "Error cargando el evento.",
     "errorloadevents": "Error cargando los eventos.",
     "noevents": "No hay eventos",

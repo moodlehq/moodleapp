@@ -1,0 +1,18 @@
+{
+    "future": "Jövőbeni",
+    "inprogress": "Folyamatban lévő",
+    "morecourses": "További kurzusok",
+    "next30days": "A következő 30 nap",
+    "next7days": "A következő 7 nap",
+    "nocourses": "Nincs kurzus",
+    "nocoursesfuture": "Nincs jövőbeni kurzus",
+    "nocoursesinprogress": "Nincs folyamatban lévő kurzus",
+    "nocoursespast": "Nincs korábbi kurzus",
+    "noevents": "Nincs esedékes tevékenység",
+    "past": "Korábbi",
+    "pluginname": "Kurzusáttekintés",
+    "recentlyoverdue": "Mostanában lejárt",
+    "sortbycourses": "Rendezés kurzusok szerint",
+    "sortbydates": "Rendezés dátum szerint",
+    "timeline": "Idősor"
+}

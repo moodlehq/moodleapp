@@ -186,14 +186,16 @@ angular.module('mm.addons.mod_quiz')
         $log.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
         // Remove offline data if needed, prefetch quiz data, set sync time and return warnings.
-        function finishSync(attemptId, removeAttempt) {
+        function finishSync(attemptId, removeAttempt, updated) {
             return $mmaModQuiz.invalidateAllQuizData(quiz.id, courseId, attemptId, siteId).catch(function() {}).then(function() {
                 if (removeAttempt && offlineAttempt) {
                     return $mmaModQuizOffline.removeAttemptAndAnswers(offlineAttempt.id, siteId);
                 }
             }).then(function() {
-                // Update data.
-                return $mmaModQuizPrefetchHandler.prefetchQuizAndLastAttempt(quiz, siteId);
+                if (updated) {
+                    // Data has been sent. Update prefetched data.
+                    return $mmaModQuizPrefetchHandler.prefetchQuizAndLastAttempt(quiz, siteId);
+                }
             }).then(function() {
                 return self.setSyncTime(quiz.id, siteId).catch(function() {
                     // Ignore errors.
@@ -297,7 +299,7 @@ angular.module('mm.addons.mod_quiz')
                         }
                     }).then(function() {
                         // Data sent. Finish the sync.
-                        return finishSync(lastAttemptId, true);
+                        return finishSync(lastAttemptId, true, true);
                     });
                 });
             });

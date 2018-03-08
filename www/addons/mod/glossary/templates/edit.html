@@ -1,0 +1,34 @@
+<ion-view can-swipe-back="false">
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModGlossaryEditEntry">
+        <mm-loading hide-until="glossaryLoaded">
+            <form>
+                <div class="item-title">
+                    <input type="text" placeholder="{{ 'mma.mod_glossary.concept' | translate }}" ng-model="entry.concept">
+                </div>
+                <div class="item item-noborder mm-item-has-rich-text-editor">
+                    <mm-rich-text-editor model="entry" placeholder="{{ 'mma.mod_glossary.definition' | translate }}" name="glossary_entry_definition" scroll-handle="mmaModGlossaryEditEntry" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
+                </div>
+                <mm-multiple-select ng-if="categories.length > 0" title="{{ 'mma.mod_glossary.categories' | translate }}" options="categories" key-property="id" value-property="name" selected-property="selected">
+                </mm-multiple-select>
+
+                <div class="item item-input item-stacked-label">
+                    <ion-label id="mma-glossary-aliaseslabel">{{ 'mma.mod_glossary.aliases' | translate }}</ion-label>
+                    <textarea class="mm-textarea" ng-model="options.aliases" rows="1" mm-auto-rows aria-labelledby="mma-glossary-aliaseslabel"></textarea>
+                </div>
+                <div class="item item-divider">{{ 'mma.mod_glossary.attachment' | translate }}</div>
+                <mm-attachments files="attachments" component="{{component}}" component-id="{{componentId}}" allow-offline="true"></mm-attachments>
+
+                <div ng-if="autolinking">
+                    <div class="item item-divider">{{ 'mma.mod_glossary.linking' | translate }}</div>
+                    <ion-toggle ng-model="options.usedynalink" class="item-text-wrap">{{ 'mma.mod_glossary.entryusedynalink' | translate }}</ion-toggle>
+                    <ion-toggle ng-disabled="!options.usedynalink" ng-model="options.casesensitive" class="item-text-wrap">{{ 'mma.mod_glossary.casesensitive' | translate }}</ion-toggle>
+                    <ion-toggle ng-disabled="!options.usedynalink" ng-model="options.fullmatch" class="item-text-wrap">{{ 'mma.mod_glossary.fullmatch' | translate }}</ion-toggle>
+                </div>
+            </form>
+        </mm-loading>
+    </ion-content>
+</ion-view>

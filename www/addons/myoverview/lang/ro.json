@@ -1,0 +1,16 @@
+{
+    "future": "Viitoare",
+    "inprogress": "În desfășurare",
+    "morecourses": "Mai multe cursuri",
+    "next30days": "Următoarele 30 de zile",
+    "next7days": "Următoarele 7 zile",
+    "nocourses": "Nu există cursuri",
+    "nocoursesfuture": "Nu există cursuri viitoare",
+    "nocoursesinprogress": "Nu există cursuri în desfășurare",
+    "nocoursespast": "Nu există cursuri anterioare",
+    "past": "În trecut",
+    "pluginname": "Numele plugin-ului depozitului",
+    "sortbycourses": "Sortează după cursuri",
+    "sortbydates": "Sortează după date",
+    "timeline": "Timeline"
+}

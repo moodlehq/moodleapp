@@ -11,7 +11,7 @@
   }
 
   div.droparea img {
-    border: 1px solid #000000;
+    border: 1px solid $gray-darker;
     max-width: 100%;
   }
 
@@ -25,7 +25,7 @@
   }
 
   div.draghome {
-    border: 1px solid black;
+    border: 1px solid $gray-darker;
     cursor: pointer;
     background-color: #B0C4DE;
     display:inline-block;
@@ -35,10 +35,10 @@
   }
 
   .group1 {
-    background-color: #FFFFFF;
+    background-color: $white;
   }
   .group2 {
-    background-color: #B0C4DE;
+    background-color: $blue-light;
   }
   .group3 {
     background-color: #DCDCDC;
@@ -59,7 +59,7 @@
     background-color: #F0E68C;
   }
   .drag {
-    border: 1px solid black;
+    border: 1px solid $gray-darker;
     cursor: pointer;
     z-index: 2;
   }
@@ -87,7 +87,7 @@
     margin:0 auto;
   }
   .dropzone {
-    border: 1px solid black;
+    border: 1px solid $gray-darker;
     position: absolute;
     z-index: 1;
     cursor: pointer;
@@ -101,6 +101,6 @@
   }
   .drag.beingdragged {
     z-index: 3;
-    box-shadow: 3px 3px 4px #000;
+    box-shadow: 3px 3px 4px $gray-darker;
   }
 }

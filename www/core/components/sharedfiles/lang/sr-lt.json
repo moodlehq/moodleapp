@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Izaberite nalog za čuvanje datoteke.",
+    "chooseactionrepeatedfile": "Već postoji datoteka sa ovim nazivom. Da li želite da zamenite postojeću datoteku ili da joj naziv promenite u \"{{$a}}\"?",
+    "errorreceivefilenosites": "Ne postoje memorisani sajtovi. Molimo, dodajte sajt pre nego što pokušate da podelite datoteke sa aplikacijom.",
+    "nosharedfiles": "Ne postoje deljene datoteke koje se nalaze na ovom sajtu.",
+    "nosharedfilestoupload": "Ovde nemate datoteke koje možete da otpremite. Ako želite da otpremite datoteku iz druge aplikacije, pronađite tu datoteku i kliknite na dugme 'Otvori u'.",
+    "rename": "Promeni naziv",
+    "replace": "Zameni",
+    "sharedfiles": "Deljene datoteke",
+    "successstorefile": "Datoteka je uspešno sačuvana. Sada možete da izaberete ovu datoteku da biste je otpremili među svoje privatne datoteke ili je pridružili nekoj aktivnosti."
+}

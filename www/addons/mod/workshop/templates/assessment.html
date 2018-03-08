@@ -1,0 +1,16 @@
+<mm-loading hide-until="loaded" class="mm-loading-noheight">
+    <a class="item item-heading item-text-wrap item-border item-avatar clearfix" ng-if="summary" ng-class="{'item-icon-right': canViewAssessment && !canSelfAssess}" ng-click="gotoAssessment()">
+        <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseId}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+        <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+        <h2 ng-if="profile.fullname">{{profile.fullname}}</h2>
+        <p ng-if="showGrade(assessment.grade)">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{assessment.grade}}</p>
+        <p ng-if="access.canviewallsubmissions && !showGrade(assessment.gradinggradeover) && showGrade(assessment.gradinggrade)">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}</p>
+        <p ng-if="access.canviewallsubmissions && showGrade(assessment.gradinggradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggradeover}}</p>
+        <p ng-if="assessment.weight && assessment.weight != 1">{{ 'mma.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}</p>
+        <p ng-if="!assessment.grade" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
+        <button ng-if="canSelfAssess && !showGrade(assessment.grade)" class="button button-block" ng-click="gotoOwnAssessment()">{{ 'mma.mod_workshop.assess' | translate }}</button>
+        <button ng-if="canSelfAssess && showGrade(assessment.grade)" class="button button-block" ng-click="gotoOwnAssessment()">{{ 'mma.mod_workshop.reassess' | translate }}</button>
+        <div class="item-note text-right" ng-if="offline"><i class="icon ion-clock"></i>{{ 'mm.core.notsent' | translate }}</div>
+        <i ng-if="canViewAssessment && !canSelfAssess" class="icon icon-accessory ion-chevron-right"></i>
+    </a>
+</mm-loading>

@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline, $state,
-            $mmaModScormOffline, $mmUtil, $log, $mmSitesManager, mmaModScormComponent) {
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline,
+            $mmaModScormOffline, $mmUtil, $log, $mmSitesManager, mmaModScormComponent, mmCoreOutdated, mmCoreDownloading) {
     $log = $log.getInstance('$mmaModScorm');
 
     var self = {},
@@ -735,16 +735,40 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}        Promise resolved with the URL.
      */
     self.getScoSrc = function(scorm, sco, siteId) {
-        if (sco.launch.match(/http(s)?:\/\//)) {
-            // It's an online URL.
-            return $q.when($sce.trustAsResourceUrl(sco.launch));
+        siteId = siteId || $mmSite.getId();
+
+        // Build the launch URL. Moodle web checks SCORM version, we don't need to, it's always SCORM 1.2.
+        var launchUrl = sco.launch,
+            connector = '',
+            parameters;
+
+        if (sco.extradata && sco.extradata.length) {
+            for (var i = 0; i < sco.extradata.length; i++) {
+                var entry = sco.extradata[i];
+                if (entry.element == 'parameters') {
+                    parameters = entry.value;
+                    break;
+                }
+            }
         }
 
-        siteId = siteId || $mmSite.getId();
+        if (parameters) {
+            connector = launchUrl.indexOf('?') > -1 ? '&' : '?';
+            if (parameters.charAt(0) == '?') {
+                parameters = parameters.substr(1);
+            }
+
+            launchUrl += connector + parameters;
+        }
+
+        if (isExternalLink(launchUrl)) {
+            // It's an online URL.
+            return $q.when($sce.trustAsResourceUrl(launchUrl));
+        }
 
         return $mmFilepool.getPackageDirUrlByUrl(siteId, scorm.moduleurl).then(function(dirPath) {
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
-            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, sco.launch));
+            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, launchUrl));
         });
     };
 
@@ -1072,6 +1096,25 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Given a launch URL, check if it's a external link.
+     * Based on Moodle's scorm_external_link.
+     *
+     * @param  {String}  link Link to check.
+     * @return {Boolean}      Whether it's an external link.
+     */
+    function isExternalLink(link) {
+        link = link.toLowerCase();
+
+        if (link.match(/https?:\/\//)) {
+            return true;
+        } else if (link.substr(0, 4) == 'www.') {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the scorm WS are available.
      *
      * @module mm.addons.mod_scorm
@@ -1312,6 +1355,44 @@ angular.module('mm.addons.mod_scorm')
                 self._updateUserDataAfterSave($mmSite.getId(), scorm.id, attempt, tracks);
             }
             return success;
+        }
+    };
+
+    /**
+     * Check if the SCORM main file should be downloaded.
+     * This function should only be called if the SCORM can be downloaded (not downloaded or outdated).
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#shouldDownloadMainFile
+     * @param  {Object} scorm         SCORM to check.
+     * @param  {Boolean} [isOutdated] True if package outdated, false if not downloaded, undefined to calculate it.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with true if it should be downloaded, false otherwise.
+     */
+    self.shouldDownloadMainFile = function(scorm, isOutdated, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (typeof isOutdated == 'undefined') {
+            // Calculate if it's outdated.
+            return $mmFilepool.getPackageData(siteId, mmaModScormComponent, scorm.coursemodule).then(function(data) {
+                var isOutdated = data.status == mmCoreOutdated ||
+                        (data.status == mmCoreDownloading && data.previous == mmCoreOutdated);
+                return !isOutdated || data.revision != scorm.sha1hash;
+            }).catch(function() {
+                //Package not found, not downloaded.
+                return $q.when(true);
+            });
+        } else if (isOutdated) {
+            // The package is outdated, but maybe the file hasn't changed.
+            return $mmFilepool.getPackageRevision(siteId, mmaModScormComponent, scorm.coursemodule).then(function(revision) {
+                return scorm.sha1hash != revision;
+            }).catch(function() {
+                //Package not found, not downloaded.
+                return $q.when(true);
+            });
+        } else {
+            return $q.when(true);
         }
     };
 

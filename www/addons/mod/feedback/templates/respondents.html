@@ -1,0 +1,54 @@
+<ion-view view-title="{{ 'mma.mod_feedback.responses' |translate }}">
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="feedbackLoaded" content="'mm.core.refresh' | translate" action="refreshFeedback()" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <mm-split-view load-when="feedbackLoaded" component="{{component}}">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback()"></ion-refresher>
+            <mm-loading hide-until="feedbackLoaded">
+                <section class="list">
+                    <div class="item item-text-wrap item-input item-select" ng-if="groupInfo.separateGroups || groupInfo.visibleGroups">
+                        <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                        <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                        <select ng-model="selectedGroup" ng-change="loadGroupAttempts(selectedGroup)" aria-labelledby="mma-feedback-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                        </select>
+                    </div>
+                    <div class="item item-divider" ng-if="responses.totalattempts > 0">
+                        {{ 'mma.mod_feedback.non_anonymous_entries' |translate : {$a: responses.totalattempts } }}
+                    </div>
+                    <div ng-repeat="attempt in responses.attempts" ng-if="responses.totalattempts > 0">
+                        <a ng-class="{'item-avatar': attempt.profileimageurl}" class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_feedback-attempt({'attemptid': attempt.id, 'attempt': attempt, 'feedbackid': feedbackId, 'moduleid': componentId})">
+                            <img ng-if="attempt.profileimageurl" ng-src="{{attempt.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: attempt.fullname} }}" role="presentation">
+                            <h2>{{attempt.fullname}}</h2>
+                            <p ng-if="attempt.timemodified">{{attempt.timemodified * 1000 | mmFormatDate:"dffulldate"}}</p>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
+                        </a>
+                    </div>
+                    <div class="item padding text-center" ng-if="canLoadMoreNonAnon">
+                        <!-- Button and spinner to show more attempts. -->
+                        <button ng-if="!loadingMore" class="button button-block" ng-click="loadGroupAttempts()">{{ 'mm.core.loadmore' | translate }}</button>
+                        <ion-spinner ng-if="loadingMore"></ion-spinner>
+                    </div>
+                    <div class="item item-divider" ng-if="responses.totalanonattempts > 0">
+                        {{ 'mma.mod_feedback.anonymous_entries' |translate : {$a: responses.totalanonattempts } }}
+                    </div>
+                    <div ng-repeat="attempt in responses.anonattempts" ng-if="responses.totalanonattempts > 0">
+                        <a class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_feedback-attempt({'attemptid': attempt.id, 'attempt': attempt, 'feedbackid': feedbackId, 'moduleid': componentId})">
+                            <h2>{{ 'mma.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
+                        </a>
+                    </div>
+                    <div class="item padding text-center" ng-if="canLoadMoreAnon">
+                        <!-- Button and spinner to show more attempts. -->
+                        <button ng-if="!loadingMore" class="button button-block" ng-click="loadGroupAttempts()">{{ 'mm.core.loadmore' | translate }}</button>
+                        <ion-spinner ng-if="loadingMore"></ion-spinner>
+                    </div>
+                </section>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

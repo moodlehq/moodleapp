@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_glossary')
  */
 .factory('$mmaModGlossaryHandlers', function($mmCourse, $mmaModGlossary, $state, $q, $mmContentLinksHelper, $mmUtil, $mmEvents,
             $mmCourseHelper, $mmaModGlossaryPrefetchHandler, mmaModGlossaryComponent, mmCoreEventPackageStatusChanged,
-            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreDownloaded, mmCoreNotDownloaded, mmCoreOutdated, $mmSite) {
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreDownloaded, mmCoreNotDownloaded, mmCoreOutdated, $mmSite,
+            $mmaModGlossarySync, $mmContentLinkHandlerFactory) {
     var self = {};
 
     /**
@@ -104,9 +105,10 @@ angular.module('mm.addons.mod_glossary')
                     // Get download size to ask for confirm if it's high.
                     $mmaModGlossaryPrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
                         $mmUtil.confirmDownloadSize(size).then(function() {
-                            $mmaModGlossaryPrefetchHandler.prefetch(module, courseId).catch(function() {
+                            return $mmaModGlossaryPrefetchHandler.prefetch(module, courseId).catch(function(error) {
                                 if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                    $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+                                    return $q.reject();
                                 }
                             });
                         }).catch(function() {
@@ -115,11 +117,7 @@ angular.module('mm.addons.mod_glossary')
                         });
                     }).catch(function(error) {
                         $scope.spinner = false;
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 }
 
@@ -157,147 +155,123 @@ angular.module('mm.addons.mod_glossary')
     };
 
     /**
-     * Content links handler.
+     * Content links handler for glossary index.
      *
      * @module mm.addons.mod_glossary
      * @ngdoc method
-     * @name $mmaModGlossaryHandlers#linksHandler
+     * @name $mmaModGlossaryHandlers#indexLinksHandler
      */
-    self.linksHandler = function() {
+    self.indexLinksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModGlossary', 'glossary', $mmaModGlossary);
 
-        var self = {},
-            patterns = ['/mod/glossary/view.php', '/mod/glossary/showentry.php'];
+    /**
+     * Content links handler for a glossary entry.
+     * Match mod/glossary/showentry.php with a valid entry id.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryHandlers#entryLinksHandler
+     */
+    self.entryLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/glossary\/showentry\.php.*([\&\?]eid=\d+)/, '$mmCourseDelegate_mmaModGlossary');
 
-        /**
-         * Whether or not the handler is enabled to see glossary index for a certain site.
-         *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
-         */
-        function isIndexEnabled(siteId, courseId) {
-            return $mmaModGlossary.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
-        }
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.entryLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
+        return $mmContentLinksHelper.isModuleIndexEnabled($mmaModGlossary, siteId, courseId);
+    };
 
-        /**
-         * Whether or not the handler is enabled to see glossary entry for a certain site.
-         *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
-         */
-        function isEntryEnabled(siteId, courseId) {
-            return $mmaModGlossary.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleByInstance(siteId);
-            });
-        }
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.entryLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = courseId || params.courseid || params.cid;
 
-        function getEntry(entryId, siteId) {
-            return $mmaModGlossary.getEntry(entryId, siteId).then(function(result) {
-                return result.entry;
-            }).catch(function(error) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
+        return [{
+            action: function(siteId) {
+                var modal = $mmUtil.showModalLoading(),
+                    entryId = parseInt(params.eid, 10),
+                    promise;
+
+                if (courseId) {
+                    promise = $q.when(courseId);
                 } else {
-                    $mmUtil.showErrorModal('mma.mod_glossary.errorloadingentry', true);
+                    promise = getEntry(entryId, siteId).then(function(entry) {
+                        return $mmCourseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
+                    });
                 }
-                return $q.reject();
-            });
-        }
 
-        /**
-         * Treat a glossary entry link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         */
-        function treatEntryLink(siteIds, url, courseId) {
-            var params = $mmUtil.extractUrlParams(url);
-            if (params.eid != 'undefined') {
-                // If courseId is not set we check if it's set in the URL as a param.
-                courseId = courseId || params.courseid || params.cid;
-
-                // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEntryEnabled, false, courseId).then(function(ids) {
-                    if (!ids.length) {
-                        return [];
-                    }
-
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: ids,
-                        action: function(siteId) {
-                            var modal = $mmUtil.showModalLoading();
-                            return getEntry(parseInt(params.eid, 10), siteId).then(function(entry) {
-                                var promise;
-                                if (courseId) {
-                                    promise = $q.when(courseId);
-                                } else {
-                                    promise = $mmCourseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
-                                }
-                                return promise.then(function(courseId) {
-                                    var stateParams = {
-                                        entry: entry,
-                                        entryid: entry.id,
-                                        cid: courseId
-                                    };
-                                    $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
-                                });
-                            }).finally(function() {
-                                modal.dismiss();
-                            });
-                        }
-                    }];
+                return promise.then(function(courseId) {
+                    var stateParams = {
+                        entryid: entryId,
+                        cid: courseId
+                    };
+                    $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
+                }).finally(function() {
+                    modal.dismiss();
                 });
             }
-        }
+        }];
+    };
+
+    /**
+     * Get an entry.
+     *
+     * @param  {Number} entryId Entry ID.
+     * @param  {String} siteId  Site ID.
+     * @return {Promise}        Promise resolved with the entry.
+     */
+    function getEntry(entryId, siteId) {
+        return $mmaModGlossary.getEntry(entryId, siteId).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.errorloadingentry', true);
+            return $q.reject();
+        });
+    }
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
 
         /**
-         * Get actions to perform with the link.
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
          *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
          */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's a glossary URL.
-            if (url.indexOf(patterns[0]) > -1) {
-                // Glossary index.
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isIndexEnabled, courseId);
-            } else if (url.indexOf(patterns[1]) > -1) {
-                // Glossary entry.
-                return treatEntryLink(siteIds, url, courseId);
-            }
-            return $q.when([]);
+        self.execute = function(siteId) {
+            return $mmaModGlossarySync.syncAllGlossaries(siteId);
         };
 
         /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         * Get the time between consecutive executions.
          *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         * @return {Number} Time between consecutive executions (in ms).
          */
-        self.handles = function(url) {
-            for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
-            }
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;

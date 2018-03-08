@@ -1,0 +1,15 @@
+{
+    "choiceoptions": "Postavke odabira",
+    "expired": "Nažalost, ova aktivnost je zatvorena od {{$a}} i nije više dostupna",
+    "full": "(Popunjeno)",
+    "noresultsviewable": "Rezultate trenutačno nije moguće prikazati.",
+    "notopenyet": "Nažalost, ova aktivnost nije dostupna do {{$a}}",
+    "numberofuser": "Broj sudionika",
+    "numberofuserinpercentage": "Broj sudionika u postotcima",
+    "removemychoice": "Ukloni moj odabir",
+    "responses": "Odabiri",
+    "responsesresultgraphheader": "Grafički prikaz",
+    "savemychoice": "Spremi moj odabir",
+    "userchoosethisoption": "Korisnik je odabrao ovu opciju",
+    "yourselection": "Vaš odabir"
+}

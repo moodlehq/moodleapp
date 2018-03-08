@@ -1,0 +1,41 @@
+<h3 class="padding">{{ 'mma.mod_workshop.assessmentform' | translate }}</h3>
+
+<form name="mma-mod_workshop-assessment-form">
+    <!-- Assessment strategy container. We'll inject the directive here. -->
+    <span class="mma-mod-workshop-assessment-strategy-container">
+        <mm-loading hide-until="assessmentStrategyLoaded">
+            <!-- This content will be replaced by the directive if any is applied. -->
+            <div class="item item-text-wrap" ng-if="notSupported">
+                <p class="badge badge-inline badge-positive">{{ 'mma.mod_workshop.assessmentstrategynotsupported' | translate : {'$a' : assessment.strategy } }}</p>
+            </div>
+        </mm-loading>
+    </span>
+
+    <div class="list card" ng-if="assessmentStrategyLoaded && overallFeedkback && (edit || assessment.feedbackauthor || assessment.feedbackattachmentfiles.length) ">
+        <div class="item-heading item item-text-wrap">
+            <h2>{{ 'mma.mod_workshop.overallfeedback' | translate }}</h2>
+        </div>
+        <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor" ng-if="edit" ng-class="{'mm-input-has-errors': edit && overallFeedkbackRequired && fieldErrors['feedbackauthor']}">
+            <ion-label mm-mark-required="{{overallFeedkbackRequired}}">{{ 'mma.mod_workshop.feedbackauthor' | translate }}</ion-label>
+            <mm-rich-text-editor model="feedback" scroll-handle="mmaModWorkshopSubmissionScroll" first-render="firstRender()"></mm-rich-text-editor>
+            <p ng-if="edit && overallFeedkbackRequired && fieldErrors['feedbackauthor']" class="mm-error">{{fieldErrors['feedbackauthor']}}</p>
+        </ion-input>
+        <mm-attachments ng-if="edit && workshop.overallfeedbackfiles" files="assessment.feedbackattachmentfiles" max-size="{{workshop.overallfeedbackmaxbytes}}" max-submissions="{{workshop.overallfeedbackfiles}}" component="{{component}}" component-id="{{componentId}}" allow-offline="true"></mm-attachments>
+        <label class="item item-input item-stacked-label" ng-if="edit && access.canallocate">
+            <h2>{{ 'mma.mod_workshop.assessmentweight' | translate }}</h2>
+            <div class="item-select item-input-wrapper">
+                <select name="weight" ng-model="weight" mm-ios-select-fix ng-required="true" ng-options="w as w for w in weights | orderBy:$index:true track by w" required></select>
+            </div>
+        </label>
+        <div class="item item-body" ng-if="!edit">
+            <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{assessment.feedbackauthor}}</mm-format-text>
+        </div>
+        <div class="item" ng-if="!edit && workshop.overallfeedbackfiles" ng-repeat="attachment in assessment.feedbackattachmentfiles">
+            <!-- Files already attached to the submission. -->
+            <mm-file ng-if="!attachment.name" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
+            <!-- Files stored in offline to be sent later. -->
+            <mm-local-file ng-if="attachment.name" file="attachment"></mm-local-file>
+        </div>
+    </div>
+</form>
+

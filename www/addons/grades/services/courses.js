@@ -66,9 +66,8 @@ angular.module('mm.addons.grades')
                 return false;
             }
             // Now check that the configurable mygradesurl is pointing to the gradereport_overview plugin.
-            return site.getConfig('mygradesurl').then(function(url) {
-                return url.indexOf('/grade/report/overview/') !== -1;
-            });
+            var url = site.getStoredConfig('mygradesurl') || '';
+            return url.indexOf('/grade/report/overview/') !== -1;
         });
     };
 

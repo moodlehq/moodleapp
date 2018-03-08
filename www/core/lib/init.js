@@ -94,28 +94,26 @@ angular.module('mm.core')
          * @return {Function}
          */
         function prepareProcess(data) {
-            return function() {
-                var promise,
-                    fn;
+            var promise,
+                fn;
 
-                $log.debug('Executing init process \'' + data.name + '\'');
+            $log.debug('Executing init process \'' + data.name + '\'');
 
-                try {
-                    fn = $mmUtil.resolveObject(data.callable);
-                } catch (e) {
-                    $log.error('Could not resolve object of init process \'' + data.name + '\'. ' + e);
-                    return;
-                }
+            try {
+                fn = $mmUtil.resolveObject(data.callable);
+            } catch (e) {
+                $log.error('Could not resolve object of init process \'' + data.name + '\'. ' + e);
+                return;
+            }
 
-                try {
-                    promise = fn($injector);
-                } catch (e) {
-                    $log.error('Error while calling the init process \'' + data.name + '\'. ' + e);
-                    return;
-                }
+            try {
+                promise = fn($injector);
+            } catch (e) {
+                $log.error('Error while calling the init process \'' + data.name + '\'. ' + e);
+                return;
+            }
 
-                return promise;
-            };
+            return promise;
         }
 
         /**
@@ -130,9 +128,7 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.executeInitProcesses = function() {
-            var ordered = [],
-                promises = [],
-                dependency = $q.when();
+            var ordered = [];
 
             if (typeof readiness === 'undefined') {
                 readiness = $q.defer();
@@ -146,21 +142,16 @@ angular.module('mm.core')
                 return b.priority - a.priority;
             });
 
-            // Execute all the processes.
-            angular.forEach(ordered, function(data) {
-                var promise;
-
-                // Add the process to the dependency stack.
-                promise = dependency.finally(prepareProcess(data));
-                promises.push(promise);
-
-                // If the new process is blocking, we set it as the dependency.
-                if (data.blocking) {
-                    dependency = promise;
-                }
+            ordered = ordered.map(function (data) {
+                return {
+                    func: prepareProcess,
+                    params: [data],
+                    blocking: !!data.blocking
+                };
             });
 
-            $mmUtil.allPromises(promises).finally(readiness.resolve);
+            // Execute all the processes in order to solve dependencies.
+            $mmUtil.executeOrderedPromises(ordered, true).finally(readiness.resolve);
         };
 
         /**

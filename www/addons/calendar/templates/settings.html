@@ -1,0 +1,21 @@
+<ion-view view-title="{{ 'mm.settings.settings' | translate }}">
+    <ion-content mm-state-class>
+        <ul class="list">
+            <li class="item item-input item-select">
+                <div class="input-label" id="mm-settings-languagelabel">
+                    {{ 'mma.calendar.defaultnotificationtime' | translate }}
+                </div>
+                <select ng-model="defaultTime" convert-to-number ng-change="updateDefaultTime(defaultTime)" mm-ios-select-fix>
+                    <option value="0">{{ 'mm.settings.disabled' | translate }}</option>
+                    <option value="10">{{ 600 | mmDuration }}</option>
+                    <option value="30">{{ 1800 | mmDuration }}</option>
+                    <option value="60">{{ 3600 | mmDuration }}</option>
+                    <option value="120">{{ 7200 | mmDuration }}</option>
+                    <option value="360">{{ 21600 | mmDuration }}</option>
+                    <option value="720">{{ 43200 | mmDuration }}</option>
+                    <option value="1440">{{ 86400 | mmDuration }}</option>
+                </select>
+            </li>
+        </ul>
+    </ion-content>
+</ion-view>

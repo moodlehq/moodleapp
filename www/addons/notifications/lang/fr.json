@@ -2,5 +2,6 @@
     "errorgetnotifications": "Erreur lors de la récupération des notifications.",
     "notificationpreferences": "Préférences de notification",
     "notifications": "Notifications",
-    "therearentnotificationsyet": "Aucune notification"
+    "playsound": "Jouer le son",
+    "therearentnotificationsyet": "Aucune notification."
 }

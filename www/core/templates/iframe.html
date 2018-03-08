@@ -1,0 +1,4 @@
+<div class="iframe-wrapper" ng-class="{'mm-loading-container': loading}">
+    <iframe ng-show="!loading" class="mm-iframe" ng-style="{'width': width, 'height': height}" ng-src="{{src}}"></iframe>
+    <ion-spinner ng-if="loading"></ion-spinner>
+</div>

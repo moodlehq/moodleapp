@@ -1,0 +1,20 @@
+{
+    "address": "주소",
+    "city": "도시",
+    "contact": "연락처",
+    "country": "국가",
+    "description": "설명",
+    "email": "이메일 주소",
+    "emailagain": "이메일 (다시)",
+    "firstname": "성",
+    "interests": "관심분야",
+    "invaliduser": "잘못된 사용자",
+    "lastname": "이름",
+    "newpicture": "새 사진",
+    "phone1": "전화",
+    "phone2": "휴대 전화",
+    "roles": "역할",
+    "student": "학생",
+    "viewprofile": "개인정보 보기",
+    "webpage": "웹 페이지"
+}

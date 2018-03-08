@@ -1,0 +1,22 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ attempt.fullname }}</mm-format-text></ion-nav-title>
+    <ion-content mm-state-class>
+        <mm-loading hide-until="feedbackLoaded">
+            <div class="list">
+                <a ng-if="attempt.fullname" ng-class="{'item-avatar': attempt.profileimageurl}" class="item item-text-wrap" mm-user-link userid="{{attempt.userid}}" courseid="{{attempt.courseid}}" title="{{attempt.fullname}}">
+                    <img ng-src="{{attempt.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: attempt.fullname} }}" role="presentation">
+                    <h2>{{attempt.fullname}}</h2>
+                    <p ng-if="attempt.timemodified">{{attempt.timemodified * 1000 | mmFormatDate:"dffulldate"}}</p>
+                </a>
+                <div ng-if="!attempt.fullname" class="item item-text-wrap">
+                    <h2>{{ 'mma.mod_feedback.response_nr' |translate }}: {{attempt.number}} ({{ 'mma.mod_feedback.anonymous' |translate }})</h2>
+                    <p ng-if="attempt.timemodified">{{attempt.timemodified * 1000 | mmFormatDate:"dffulldate"}}</p>
+                </div>
+                <div ng-if="items && items.length" ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak', 'item-stable': item.dependitem > 0}">
+                    <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span><mm-format-text watch="true">{{ item.name }}</mm-format-text></p>
+                    <p ng-if="item.submittedValue"><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ item.submittedValue }}</mm-format-text></p>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

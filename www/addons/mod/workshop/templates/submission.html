@@ -1,0 +1,59 @@
+<mm-loading hide-until="loaded" class="mm-loading-noheight">
+    <div ng-if="!summary">
+        <div class="item item-heading item-text-wrap item-avatar clearfix">
+            <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+            <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+            <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
+            <h2>{{submission.title}}</h2>
+            <p ng-if="profile.fullname">{{profile.fullname}}</p>
+            <p ng-if="showGrade(submission.submissiongrade)" ng-class="{'mm-has-overriden-grade': showGrade(submission.submissiongradeover)}">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
+            <p ng-if="showGrade(submission.submissiongradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.gradeover' | translate }}: {{submission.submissiongradeover}}</p>
+            <p ng-if="access.canviewallsubmissions && showGrade(submission.gradinggrade)">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
+            <div class="item-note" ng-if="!submission.timemodified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+            <div class="item-note text-right" ng-if="submission.timemodified">
+                {{submission.timemodified | mmDateDayOrTime}}
+                <div ng-if="submission.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+                <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
+            </div>
+        </div>
+        <div class="item item-body" ng-if="submission.content">
+            <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{submission.content}}</mm-format-text>
+        </div>
+        <div class="item" ng-repeat="attachment in submission.attachmentfiles">
+            <!-- Files already attached to the submission. -->
+            <mm-file ng-if="!attachment.name" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
+            <!-- Files stored in offline to be sent later. -->
+            <mm-local-file ng-if="attachment.name" file="attachment"></mm-local-file>
+        </div>
+        <div class="item item-text-wrap item-border item-avatar clearfix" ng-if="viewDetails && submission.feedbackauthor">
+            <img ng-if="evaluateByProfile.profileimageurl" ng-src="{{evaluateByProfile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseId}}" userid="{{evaluateByProfile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: evaluateByProfile.fullname} }}" role="presentation">
+            <img ng-if="evaluateByProfile && !evaluateByProfile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: evaluateByProfile.fullname} }}" role="presentation">
+            <h2 ng-if="evaluateByProfile.fullname">{{ 'mma.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
+            <mm-format-text watch="true">{{ submission.feedbackauthor }}</mm-format-text>
+        </div>
+        <div class="item" ng-if="viewDetails">
+            <a class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoSubmission()">{{ 'mm.core.showmore' | translate }}</a>
+        </div>
+    </div>
+
+    <a class="item item-text-wrap item-avatar item-border clearfix" ng-if="summary" ng-class="{'item-icon-right': submission.timemodified}" ng-click="gotoSubmission()">
+        <img ng-if="profile.profileimageurl" ng-src="{{profile.profileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{profile.id}}" alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+        <img ng-if="profile && !profile.profileimageurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: profile.fullname} }}" role="presentation">
+        <img ng-if="!profile" src="img/user-avatar.png" alt="" role="presentation">
+        <h2>{{submission.title}}</h2>
+        <p ng-if="profile.fullname">{{profile.fullname}}</p>
+        <p ng-if="submission.reviewedbycount">{{ 'mma.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbycount}} / {{submission.reviewedby.length}}</p>
+        <p ng-if="submission.reviewerofcount">{{ 'mma.mod_workshop.givengrades' | translate }}: {{submission.reviewerofcount}} / {{submission.reviewerof.length}}</p>
+        <p ng-if="!showGrade(submission.submissiongradeover) && showGrade(submission.submissiongrade)">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}</p>
+        <p ng-if="showGrade(submission.submissiongradeover)" class="mm-overriden-grade">{{ 'mma.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongradeover}}</p>
+        <p ng-if="access.canviewallsubmissions && showGrade(submission.gradinggrade)">{{ 'mma.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}</p>
+        <p ng-if="assessment && (showGrade(assessment.grade) || assessment.offline)" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_workshop.assessedsubmission' | translate }}</p>
+        <p ng-if="assessment && !showGrade(assessment.grade) && !assessment.offline" class="badge badge-inline text-center badge-assertive">{{ 'mma.mod_workshop.notassessed' | translate }}</p>
+        <div class="item-note text-right" ng-if="submission.timemodified">
+            {{submission.timemodified | mmDateDayOrTime}}
+            <div ng-if="offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+            <div ng-if="submission.deleted"><i class="icon ion-trash-a"></i> {{ 'mm.core.deletedoffline' | translate }}</div>
+        </div>
+        <i ng-if="submission.timemodified" class="icon icon-accessory ion-chevron-right"></i>
+    </a>
+</mm-loading>

@@ -1,0 +1,21 @@
+{
+    "complete": "Završi",
+    "completecourse": "Završi kurs",
+    "completed": "Završeno",
+    "completiondate": "Datum završetka",
+    "couldnotloadreport": "Nije moguće učitati izveštaj o završetku kursa. Molimo vas, pokušajte ponovo kasnije.",
+    "coursecompletion": "Završetak kursa",
+    "criteria": "Kriterijumi",
+    "criteriagroup": "Grupa kriterijuma",
+    "criteriarequiredall": "Svi dole navedeni kriterijumi su neophodni",
+    "criteriarequiredany": "Bilo koji od dole navedenih kriterijuma je neophodan",
+    "inprogress": "U toku",
+    "manualselfcompletion": "Ručni samostalni završetak",
+    "notyetstarted": "Još nije započeto",
+    "pending": "Na čekanju",
+    "required": "Neophodno",
+    "requiredcriteria": "Neophodni kriterijumi",
+    "requirement": "Uslov",
+    "status": "Status",
+    "viewcoursereport": "Prikaži izveštaj sa kursa"
+}

@@ -72,23 +72,23 @@ angular.module('mm.core')
      * @return {Promise}         Promise to be resolved when the operation finishes.
      */
     function callDBFunction(db, func) {
+        if (typeof db == 'undefined') {
+            return $q.reject();
+        }
+
         var deferred = $q.defer();
 
         try {
-            if (typeof(db) != 'undefined') {
-                db[func].apply(db, Array.prototype.slice.call(arguments, 2)).then(function(result) {
-                    if (typeof(result) == 'undefined') {
-                        deferred.reject();
-                    } else {
-                        deferred.resolve(result);
-                    }
-                });
-            } else {
-                deferred.reject();
-            }
+            db[func].apply(db, Array.prototype.slice.call(arguments, 2)).then(function(result) {
+                if (typeof result == 'undefined') {
+                    deferred.reject();
+                } else {
+                    deferred.resolve(result);
+                }
+            }, deferred.reject);
         } catch(ex) {
-            $log.error('Error executing function '+func+' to DB '+db.getName());
-            $log.error(ex.name+': '+ex.message);
+            $log.error('Error executing function ' + func + ' to DB ' + db.getName());
+            $log.error(ex.name + ': ' + ex.message);
             deferred.reject();
         }
 
@@ -103,24 +103,32 @@ angular.module('mm.core')
      * @return {Promise}
      */
     function callCount(db, store, where) {
-        var deferred = $q.defer(),
-            query;
+        if (typeof db == 'undefined') {
+            return $q.reject();
+        }
+
+        var deferred = $q.defer();
 
         try {
-            if (typeof(db) != 'undefined') {
-                query = db.from(store);
-                query = applyWhere(query, where);
-                query.count().then(function(count) {
-                    deferred.resolve(count);
-                }, function() {
-                    deferred.reject();
+            var query = db.from(store);
+            query = applyWhere(query, where);
+            query.count().then(deferred.resolve, deferred.reject);
+        } catch(ex) {
+            var promise;
+
+            if (where[1] == '=') {
+                // Fallback, not using all options.
+                promise = callWhereEqualFallBack(db, store, where[0], where[2]).then(function(list) {
+                    deferred.resolve(list.length);
                 });
             } else {
-                deferred.reject();
+                promise = $q.reject();
             }
-        } catch(ex) {
-            $log.error('Error querying db '+db.getName()+'. '+ex.name+': '+ex.message);
-            deferred.reject();
+
+            promise.catch(function () {
+                $log.error('Error counting on db ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+                deferred.reject();
+            });
         }
 
         return deferred.promise;
@@ -138,21 +146,28 @@ angular.module('mm.core')
      * @return {Promise}            Promise to be resolved when the list is retrieved.
      */
     function callWhere(db, store, field_name, op, value, op2, value2) {
+        if (typeof db == 'undefined') {
+            return $q.reject();
+        }
+
         var deferred = $q.defer();
 
         try {
-            if (typeof(db) != 'undefined') {
-                db.from(store).where(field_name, op, value, op2, value2).list().then(function(list) {
-                    deferred.resolve(list);
-                }, function() {
-                    deferred.reject();
-                });
-            } else {
-                deferred.reject();
-            }
+            db.from(store).where(field_name, op, value, op2, value2).list().then(deferred.resolve, deferred.reject);
         } catch(ex) {
-            $log.error('Error querying db '+db.getName()+'. '+ex.name+': '+ex.message);
-            deferred.reject();
+            var promise;
+
+            if (op == '=') {
+                // Fallback, not using all options.
+                promise = callWhereEqualFallBack(db, store, field_name, value).then(deferred.resolve).catch(deferred.reject);
+            } else {
+                promise = $q.reject();
+            }
+
+            promise.catch(function () {
+                $log.error('Error getting where from db ' + db.getName() + '. ' + ex.name+': ' + ex.message);
+                deferred.reject();
+            });
         }
 
         return deferred.promise;
@@ -168,24 +183,134 @@ angular.module('mm.core')
      * @return {Promise}            Promise to be resolved when the list is retrieved.
      */
     function callWhereEqual(db, store, field_name, value) {
+        if (typeof db == 'undefined') {
+            return $q.reject();
+        }
+
         var deferred = $q.defer();
 
         try {
-            if (typeof(db) != 'undefined') {
-                db.from(store).where(field_name, '=', value).list().then(function(list) {
-                    deferred.resolve(list);
-                }, function() {
-                    deferred.reject();
-                });
-            } else {
-                deferred.reject();
-            }
+            db.from(store).where(field_name, '=', value).list().then(deferred.resolve, deferred.reject);
         } catch(ex) {
-            $log.error('Error getting where equal from db '+db.getName()+'. '+ex.name+': '+ex.message);
+            callWhereEqualFallBack(db, store, field_name, value).then(deferred.resolve).catch(function () {
+                $log.error('Error getting where equal from db ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+                deferred.reject();
+            });
+        }
+
+        return deferred.promise;
+    }
+
+    // FallBack Method when where equal is not supported by the DB. See callWhereEqual for more info.
+    // It will only be used if the field_name is a compound index and the database does not support where equals on IndexedDB.
+    function callWhereEqualFallBack(db, store, field_name, values) {
+        var fields = getCompoundIndex(db, store, field_name);
+        if (!fields) {
+            return $q.reject();
+        }
+
+        if (typeof fields == "string") {
+            // This should not happen.
+            fields = [fields];
+        }
+
+        var deferred = $q.defer();
+
+        try {
+            db.from(store).where(fields[0], '=', values[0]).list().then(function(list) {
+                var results = filterWhereList(list, fields, values, 1);
+                deferred.resolve(results);
+            }, deferred.reject);
+        } catch(ex) {
             deferred.reject();
         }
 
         return deferred.promise;
+    }
+
+    /**
+     * Convenience function that returns the store object for a given store name and db.
+     *
+     * @param  {Object} db        Database to get the schema.
+     * @param  {String} storeName The store to found.
+     * @return {Object|false}     Store object or false if not found.
+     */
+    function getStoreFromName(db, storeName) {
+        var stores = db.getSchema().stores;
+        for (var x in stores) {
+            if (stores[x].name == storeName) {
+                return stores[x];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Convenience function that returns the Compound Index for a given store and db.
+     *
+     * @param  {Object} db        Database to get the schema.
+     * @param  {String} storeName The store where to find the index.
+     * @param  {String} index     Index to get.
+     * @return {Mixed}            KeyPath of the index found or false.
+     */
+    function getCompoundIndex(db, storeName, index) {
+        var store = getStoreFromName(db, storeName);
+        if (store) {
+            var indexes = store.indexes;
+            for (var y in indexes) {
+                if (indexes[y].name == index) {
+                    return indexes[y].keyPath;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Convenience function that checks if a value has all required fields of the key path store.
+     *
+     * @param  {Object} db        Database to get the schema.
+     * @param  {String} storeName The store to be found.
+     * @param  {Object} value     Value to be stored.
+     */
+    function checkKeyPathIsPresent(db, storeName, value) {
+        var store = getStoreFromName(db, storeName);
+        if (store) {
+            keyPath = Array.isArray(store.keyPath) ? store.keyPath : [store.keyPath];
+            for (var x in keyPath) {
+                var val = value[keyPath[x]];
+                if (typeof val == "undefined" || val === null || (typeof val == "number" && isNaN(val))) {
+                    var error = "Value inserted does not have key " + keyPath[x] + " required on store " + storeName;
+                    if (typeof sendErrorReport == 'function') {
+                        sendErrorReport(error);
+                    }
+                    throw new Error(error);
+                }
+            }
+        }
+    }
+
+    /**
+     * Convenience function to filter results by a list of fields and values. Recursive.
+     *
+     * @param  {Array] list      List of results to be filtered.
+     * @param  {Array} fields    List of field names to filter.
+     * @param  {Array} values    List of field values to filter, in the same order as fields.
+     * @param  {Number} indexNum What field - value have to be filtered.
+     * @return {Array}           Filtered list.
+     */
+    function filterWhereList(list, fields, values, indexNum) {
+        if (list.length == 0 || fields.length < indexNum || values.length < indexNum) {
+            return list;
+        }
+
+        var field = fields[indexNum],
+            value = values[indexNum];
+
+        list = list.filter(function (item) {
+            return item[field] == value;
+        });
+        return filterWhereList(list, fields, values, indexNum + 1);
     }
 
     /**
@@ -203,9 +328,7 @@ angular.module('mm.core')
                 callback(entries[i]);
             }
             deferred.resolve();
-        }, function() {
-            deferred.reject();
-        });
+        }, deferred.reject);
 
         return deferred.promise;
     }
@@ -222,22 +345,18 @@ angular.module('mm.core')
      * @return {Promise}
      */
     function doQuery(db, store, where, order, reverse, limit) {
+        if (typeof db == 'undefined') {
+            return $q.reject();
+        }
+
         var deferred = $q.defer(),
             query;
 
         try {
-            if (typeof(db) != 'undefined') {
-                query = db.from(store);
-                query = applyWhere(query, where);
-                query = applyOrder(query, order, reverse);
-                query.list(limit).then(function(list) {
-                    deferred.resolve(list);
-                }, function() {
-                    deferred.reject();
-                });
-            } else {
-                deferred.reject();
-            }
+            query = db.from(store);
+            query = applyWhere(query, where);
+            query = applyOrder(query, order, reverse);
+            query.list(limit).then(deferred.resolve, deferred.reject);
         } catch(ex) {
             $log.error('Error querying ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
             deferred.reject();
@@ -256,23 +375,20 @@ angular.module('mm.core')
      * @return {Promise}
      */
     function doUpdate(db, store, values, where) {
+        if (typeof db == 'undefined') {
+            return $q.reject();
+        }
+
         var deferred = $q.defer(),
             query;
 
         try {
-            if (typeof(db) != 'undefined') {
-                query = db.from(store);
-                query = applyWhere(query, where);
-                query.patch(values).then(function(count) {
-                    deferred.resolve(count);
-                }, function() {
-                    deferred.reject();
-                });
-            } else {
-                deferred.reject();
-            }
+            checkKeyPathIsPresent(db, store, values);
+            query = db.from(store);
+            query = applyWhere(query, where);
+            query.patch(values).then(deferred.resolve, deferred.reject);
         } catch(ex) {
-            $log.error('Error querying ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+            $log.error('Error updating ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
             deferred.reject();
         }
 
@@ -287,16 +403,17 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmDB#getDB
-     * @param  {String} name    DB name.
-     * @param  {Object} schema  DB schema.
-     * @param  {Object} options DB options.
-     * @return {Object}         DB.
+     * @param  {String} name      DB name.
+     * @param  {Object} schema    DB schema.
+     * @param  {Object} options   DB options.
+     * @param  {Boolean} forceNew True if it should always create a new instance.
+     * @return {Object}           DB.
      */
-    self.getDB = function(name, schema, options) {
-        if (typeof dbInstances[name] === 'undefined') {
+    self.getDB = function(name, schema, options, forceNew) {
+        if (typeof dbInstances[name] === 'undefined' || forceNew) {
 
-            var isSafari = !ionic.Platform.isIOS() && !ionic.Platform.isAndroid() && navigator.userAgent.indexOf('Safari') != -1
-                            && navigator.userAgent.indexOf('Chrome') == -1 && navigator.userAgent.indexOf('Firefox') == -1;
+            var isSafari = !ionic.Platform.isIOS() && !ionic.Platform.isAndroid() && navigator.userAgent.indexOf('Safari') != -1 &&
+                            navigator.userAgent.indexOf('Chrome') == -1 && navigator.userAgent.indexOf('Firefox') == -1;
             if (typeof IDBObjectStore == 'undefined' || typeof IDBObjectStore.prototype.count == 'undefined' || isSafari) {
                 // IndexedDB not implemented or not fully implemented (Galaxy S4 Mini). Use WebSQL.
                 if (typeof options.mechanisms == 'undefined') {
@@ -358,7 +475,14 @@ angular.module('mm.core')
                  * @return {Promise}     Promise resolved when the entry is inserted. Resolve param: new entry's primary key.
                  */
                 insert: function(store, value, id) {
-                    return callDBFunction(db, 'put', store, value, id);
+                    try {
+                        checkKeyPathIsPresent(db, store, value);
+                        return callDBFunction(db, 'put', store, value, id);
+                    } catch(ex) {
+                        $log.error('Error executing function put to DB ' + db.getName());
+                        $log.error(ex.name + ': ' + ex.message);
+                    }
+                    return false;
                 },
                 /**
                  * Add an entry to a store, returning a synchronous value.
@@ -374,11 +498,12 @@ angular.module('mm.core')
                 insertSync: function(store, value) {
                     if (db) {
                         try {
+                            checkKeyPathIsPresent(db, store, value);
                             db.put(store, value);
                             return true;
                         } catch(ex) {
-                            $log.error('Error executing function sync put to DB '+db.getName());
-                            $log.error(ex.name+': '+ex.message);
+                            $log.error('Error executing function sync put to DB ' + db.getName());
+                            $log.error(ex.name + ': ' + ex.message);
                         }
                     }
 
@@ -386,6 +511,7 @@ angular.module('mm.core')
                 },
                 /**
                  * Query the database.
+                 * WARNING: Do not use it with compound indexes, on Android versions lower than 4.4 will fail.
                  *
                  * @param {String} store Name of the store.
                  * @param {Array} [where] Array of where conditions, see applyWhere.
@@ -418,6 +544,7 @@ angular.module('mm.core')
                 },
                 /**
                  * Update records matching.
+                 * WARNING: Do not use it with compound indexes, on Android versions lower than 4.4 will fail.
                  *
                  * @param {String} store Name of the store.
                  * @param {Object} values The values to update.
@@ -429,6 +556,8 @@ angular.module('mm.core')
                 },
                 /**
                  * Get the entries where a field match certain conditions.
+                 * WARNING: Do not use it with compound indexes, on Android versions lower than 4.4 will fail.
+                 *     Try to use whereEqual instead.
                  *
                  * @param {String} store      Name of the store.
                  * @param {String} field_name Name of the field to match.
@@ -503,8 +632,12 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         function deleteDB() {
-            delete dbInstances[name];
-            $q.when(ydn.db.deleteDatabase(name)).then(deferred.resolve, deferred.reject);
+            var type = dbInstances[name].getType();
+
+            $q.when(ydn.db.deleteDatabase(name, type).then(function() {
+                delete dbInstances[name];
+                deferred.resolve();
+            }, deferred.reject));
         }
 
         if (typeof dbInstances[name] != 'undefined') {

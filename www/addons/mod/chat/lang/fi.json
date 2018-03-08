@@ -1,0 +1,19 @@
+{
+    "beep": "kutsu",
+    "currentusers": "Tämänhetkiset osallistujat",
+    "enterchat": "Napsauta tästä päästäksesi mukaan chattiin",
+    "entermessage": "Kirjoita viesti",
+    "errorwhileconnecting": "Virhe yhdistettäessä chattiin",
+    "errorwhilegettingchatdata": "Käyttäjän chat-tietoja haettaessa tapahtui virhe.",
+    "errorwhilegettingchatusers": "Chatin osallistujia haettaessa tapahtui virhe.",
+    "errorwhileretrievingmessages": "Virhe ladattaessa viestejä palvelimelta.",
+    "errorwhilesendingmessage": "Virhe viestinlähetyksessä.",
+    "messagebeepsyou": "{{$a}} on juuri kutsunut sinua!",
+    "messageenter": "{{$a}} on juuri tullut mukaan chattiin",
+    "messageexit": "{{$a}} on lopettanut chatin",
+    "mustbeonlinetosendmessages": "Sinun on oltava online-tilassa lähettääksesi viestejä.",
+    "nomessages": "Ei viestejä",
+    "send": "Lähetä",
+    "sessionstart": "Keskustelun aloitusaika: {{$a}}",
+    "talk": "Puhu"
+}

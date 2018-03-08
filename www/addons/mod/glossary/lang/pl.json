@@ -1,3 +1,6 @@
 {
-    "browsemode": "Tryb przeglądania"
+    "attachment": "Dołącz odznakę do wiadomości",
+    "browsemode": "Tryb przeglądania",
+    "casesensitive": "Użyj wyrażeń regularnych",
+    "categories": "Kategorie kursów"
 }

@@ -1,0 +1,31 @@
+<!-- Template for units entered using a select. -->
+<script type="text/ng-template" id="question-select">
+    <label class="accesshide" for="{{select.id}}" ng-if="select.accessibilityLabel">{{ select.accessibilityLabel }}</label>
+    <select ng-if="!select.disabled" id="{{select.id}}" name="{{select.name}}" aria-labelledby="mma-question-{{row.id}}" ng-options="option.value as option.label for option in select.options" ng-model="select.selected" ng-change="valueChanged()" mm-ios-select-fix>
+    </select>
+    <p class="mm-select-fix" ng-if="select.selectedLabel">
+        {{select.selectedLabel}}
+    </p>
+</script>
+
+<!-- Template for units entered using radio buttons. -->
+<script type="text/ng-template" id="question-options">
+    <ion-radio ng-repeat="option in options" name="{{option.name}}" ng-model="unit" ng-value="option.value" ng-disabled="option.disabled">
+        <p>{{option.text}}</p>
+    </ion-radio>
+</script>
+
+<section class="list mma-qtype-calculated-container" ng-if="question.text || question.text === ''">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+    </div>
+    <div ng-if="options && options.length && optionsFirst" ng-include="'question-options'"></div>
+    <div class="item item-text-wrap row mm-item-padding">
+        <div ng-if="select && selectFirst" ng-include="'question-select'" class="col" ng-class='{"item-select": !select.disabled}'></div>
+        <ion-input class="col item-input" ng-class='{"mm-question-answer-correct": input.isCorrect === 1, "mm-question-answer-incorrect": input.isCorrect === 0}'>
+            <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off" ng-disabled="input.readOnly" >
+        </ion-input>
+        <div ng-if="select && !selectFirst" ng-include="'question-select'" class="col" ng-class='{"item-select": !select.disabled}'></div>
+    </div>
+    <div ng-if="options && options.length && !optionsFirst" ng-include="'question-options'"></div>
+</section>

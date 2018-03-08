@@ -12,123 +12,125 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course glossary', function() {
-
-    it('Click All sections course glossary tabs', function (done) {
-        return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses');
-        }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
-        }).then(function () {
-            return MM.clickOn('All sections');
-        }).then(function () {
-            return MM.clickOn('Concepts and Characters');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function() {
-            done();
-        });
-    });
+describe('User can manage course glossary', function () {
 
     it('View course glossary windows', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('A glossary of the key concepts and characters involved');
-            expect(MM.getView().getText()).toMatch('Dissociative Identity Disorder');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            return MM.clickOn('A glossary of the key concepts and characters involved');
+            expect(MM.getView().getText()).toContain('Read through and add some common terms');
+            expect(MM.getView().getText()).toContain('Accessibility');
         }).then(function () {
-            expect(MM.getView().getText()).toMatch('A glossary of the key concepts and characters involved');
-        }).then(function () {
-            return MM.goBack()
-        }).then(function() {
             done();
         });
     });
 
     it('Click course glossary tabs', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            return MM.clickOn('Dissociative Identity Disorder');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('John Nash');
+            return MM.clickOn('Accessibility');
         }).then(function () {
             return MM.goBack();
         }).then(function () {
-            return MM.clickOn('Paranoid schizophrenia');
+            return MM.clickOn('Blended learning');
         }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('Robert');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.clickOn('Tyler Durden');
-        }).then(function () {
-            return MM.goBack();
-        }).then(function () {
-            return MM.goBack()
-        }).then(function() {
             done();
         });
     });
 
     it('Search course glossary', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
+            browser.sleep(10000);
             return $('[ng-click="pickMode($event)"]').click();
         }).then(function () {
             return MM.clickOn('Search');
         }).then(function () {
-            return $('[ng-model="searchData.searchQuery"]').sendKeys('Tyler Durden');
+            browser.sleep(10000);
+            return $('[ng-model="data.value"]').sendKeys('Accessibility');
         }).then(function () {
             return MM.clickOn('Search');
         }).then(function () {
-            return MM.clickOn('Tyler Durden');
+            return MM.clickOn('Accessibility');
         }).then(function () {
-            return MM.goBack()
-        }).then(function() {
             done();
         });
     });
 
     it('Click secondary button', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Background information');
+            return MM.clickOn('Background reading');
         }).then(function () {
-            return MM.clickOn('Concepts and Characters');
+            return MM.clickOn('Common terms used in digital literacy');
         }).then(function () {
-            return $('.secondary-buttons').click();
-        }).then(function() {
-            return MM.goBack();
+            browser.sleep(5000); // Wait for button css to render.
+            return $('[ng-click="showContextMenu($event)"]').click();
         }).then(function () {
+           browser.sleep(5000); // Wait for css to render.
+           expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
+            done();
+        });
+    });
+
+    it('Add a new glossary entry', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('Course overview');
+        }).then(function () {
+            return MM.clickOn('Digital Literacy');
+        }).then(function () {
+            return MM.clickOn('Background reading');
+        }).then(function () {
+            return MM.clickOn('Common terms used in digital literacy');
+        }).then(function () {
+            browser.sleep(5000); // Wait for button css to render.
+            return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
+        }).then(function () {
+            return MM.clickOn('Add a new entry');
+        }).then(function () {
+            return MM.clickOnElement($('input[ng-model="entry.concept"]'));
+        }).then(function () {
+            browser.sleep(5000);
+            $('input[ng-model="entry.concept"]').sendKeys('ASampleEntry');
+            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('ASampleDescription'));
+        }).then(function () {
+            return MM.clickOn('Categories');
+        }).then(function () {
+            return MM.clickOn('21st century terminology');
+        }).then(function () {
+            return MM.clickOnElement($('button[ng-click="saveOptions();"]'));
+        }).then(function () {
+            $('textarea[ng-model="options.aliases"]').sendKeys('sample');
+        }).then(function () {
+            return MM.clickOnElement($('a[ng-click="save()"]'));
+        }).then(function () {
+            return MM.clickOn('ASampleEntry');
+        }).then(function () {
+            expect(MM.getView().getText()).toContain('ASampleDescription');
             done();
         });
     });

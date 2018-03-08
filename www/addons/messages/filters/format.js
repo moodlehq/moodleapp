@@ -24,8 +24,8 @@ angular.module('mm.addons.messages')
 .filter('mmaMessagesFormat', function($mmText) {
   return function(text) {
     text = text.replace(/-{4,}/ig, '');
-    text = text.replace(/<br \/><br \/>/ig, "<br />");
-    text = $mmText.replaceNewLines(text, '<br />');
+    text = text.replace(/<br \/><br \/>/ig, "<br>");
+    text = $mmText.replaceNewLines(text, '<br>');
     return text;
   };
 });

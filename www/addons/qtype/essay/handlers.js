@@ -21,13 +21,16 @@ angular.module('mm.addons.qtype_essay')
  * @ngdoc service
  * @name $mmaQtypeEssayHandler
  */
-.factory('$mmaQtypeEssayHandler', function($mmUtil, $mmQuestionHelper) {
+.factory('$mmaQtypeEssayHandler', function($mmUtil, $mmQuestionHelper, $mmText, $q) {
 
     var self = {};
 
     /**
      * Get the behaviour for this question.
      *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#getBehaviour
      * @param  {Object} question  Question to get the directive for.
      * @param  {String} behaviour Default behaviour.
      * @return {String}           Behaviour name.
@@ -40,9 +43,9 @@ angular.module('mm.addons.qtype_essay')
      * Check if a question can be submitted.
      * If a question cannot be submitted it should return a message explaining why (translated or not).
      *
-     * @module mm.core.question
+     * @module mm.addons.qtype_essay
      * @ngdoc method
-     * @name $mmQuestionDelegate#getPreventSubmitMessage
+     * @name $mmaQtypeEssayHandler#getPreventSubmitMessage
      * @param  {Object} question Question.
      * @return {String}          Prevent submit message. Undefined or empty if cannot be submitted.
      */
@@ -62,6 +65,9 @@ angular.module('mm.addons.qtype_essay')
     /**
      * Check if a response is complete.
      *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#isCompleteResponse
      * @param  {Object} question Question.
      * @param  {Object} answers  Question answers (without prefix).
      * @return {Mixed}           True if complete, false if not complete, -1 if cannot determine.
@@ -82,6 +88,9 @@ angular.module('mm.addons.qtype_essay')
     /**
      * Whether or not the module is enabled for the site.
      *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#isEnabled
      * @return {Boolean}
      */
     self.isEnabled = function() {
@@ -92,6 +101,9 @@ angular.module('mm.addons.qtype_essay')
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#isGradableResponse
      * @param  {Object} question Question.
      * @param  {Object} answers  Question answers (without prefix).
      * @return {Mixed}           True if gradable, false if not gradable, -1 if cannot determine.
@@ -103,6 +115,9 @@ angular.module('mm.addons.qtype_essay')
     /**
      * Check if two responses are the same.
      *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#isSameResponse
      * @param  {Object} question    Question.
      * @param  {Object} prevAnswers Previous answers.
      * @param  {Object} newAnswers  New answers.
@@ -116,11 +131,47 @@ angular.module('mm.addons.qtype_essay')
     /**
      * Get the directive.
      *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#getDirectiveName
      * @param {Object} question The question.
      * @return {String}         Directive's name.
      */
     self.getDirectiveName = function(question) {
         return 'mma-qtype-essay';
+    };
+
+    /**
+     * Prepare the answers for a certain question.
+     * This function should only be implemented if the answers must be processed before being sent.
+     *
+     * @module mm.addons.qtype_essay
+     * @ngdoc method
+     * @name $mmaQtypeEssayHandler#prepareAnswers
+     * @param  {Object} question The question.
+     * @param  {Object} answers  The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param  {Boolean} offline True if data should be saved in offline.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise|Void}    Promise resolved when data has been prepared.
+     */
+    self.prepareAnswers = function(question, answers, offline, siteId) {
+        // First get the name of the question from the HTML.
+        var div = document.createElement('div'),
+            textarea,
+            promises = [];
+
+        div.innerHTML = question.html;
+        textarea = div.querySelector('textarea[name*=_answer]');
+        if (textarea && typeof answers[textarea.name] != 'undefined') {
+            promises.push($mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+                if (!enabled) {
+                    // Rich text editor not enabled, add some HTML to the text if needed.
+                    answers[textarea.name] = $mmText.formatHtmlLines(answers[textarea.name]);
+                }
+            }));
+        }
+
+        return $q.all(promises);
     };
 
     return self;

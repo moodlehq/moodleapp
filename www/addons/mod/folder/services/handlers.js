@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolderHandlers
  */
-.factory('$mmaModFolderHandlers', function($mmCourse, $mmaModFolder, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
+.factory('$mmaModFolderHandlers', function($mmCourse, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmaModFolder,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-            mmaModFolderComponent, $mmContentLinksHelper, $q, $mmaModFolderPrefetchHandler, $mmUtil) {
+            mmaModFolderComponent, $mmContentLinksHelper, $mmaModFolderPrefetchHandler, $mmUtil) {
     var self = {};
 
     /**
@@ -163,52 +163,48 @@ angular.module('mm.addons.mod_folder')
      * @ngdoc method
      * @name $mmaModFolderHandlers#linksHandler
      */
-    self.linksHandler = function() {
+    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModFolder', 'folder', $mmaModFolder);
 
+    /**
+     * Plugin file handler.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderHandlers#pluginfileHandler
+     */
+    self.pluginfileHandler = function() {
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for a certain site.
+         * Get the RegExp of the component and filearea described in the URL.
          *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
+         * @module mm.addons.mod_folder
+         * @ngdoc method
+         * @name $mmaModFolderPluginfileHandler#getComponentRevisionRegExp
+         * @param {Array} args    Arguments of the pluginfile URL defining component and filearea at least.
+         * @return {RegExp}       To match the revision.
          */
-        function isEnabled(siteId, courseId) {
-            if (courseId) {
-                return $q.when(true);
+        self.getComponentRevisionRegExp = function(args) {
+            // Check filearea.
+            if (args[2] == 'content') {
+                // Component + Filearea + Revision
+                return new RegExp('/mod_folder/content/([0-9]+)/');
             }
-            return $mmCourse.canGetModuleWithoutCourseId(siteId);
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's a folder URL.
-            if (typeof self.handles(url) != 'undefined') {
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
-            }
-            return $q.when([]);
+            return false;
         };
 
         /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         * Returns an string to remove revision when matching the RegExp provided.
          *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         * @module mm.addons.mod_folder
+         * @ngdoc method
+         * @name $mmaModFolderPluginfileHandler#getComponentRevisionReplace
+         * @param {Array} args    Arguments of the pluginfile URL defining component and filearea at least.
+         * @return {String}       String to remove revision when matching the RegExp provided.
          */
-        self.handles = function(url) {
-            var position = url.indexOf('/mod/folder/view.php');
-            if (position > -1) {
-                return url.substr(0, position);
-            }
+        self.getComponentRevisionReplace = function(args) {
+            // Component + Filearea + Revision
+            return '/mod_folder/content/0/';
         };
 
         return self;

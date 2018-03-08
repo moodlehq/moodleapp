@@ -1,0 +1,3 @@
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<input ng-if="mode != 'show'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}" ng-model="val">
+<a ng-if="mode == 'show' && value && value.content" ng-href="{{value.content}}" mm-link capture-link="true">{{field.name}}</a>

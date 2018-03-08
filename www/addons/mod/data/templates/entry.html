@@ -1,0 +1,44 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModDataEntryScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="databaseLoaded" on-refresh="refreshDatabase(false)"></ion-refresher>
+        <mm-loading hide-until="databaseLoaded">
+
+            <!-- Database entries found to be synchronized -->
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+            </div>
+
+            <div ng-if="(groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                <ion-label id="mma-data-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                <ion-label id="mma-data-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-data-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                </select>
+            </div>
+            <div class="mm-data-contents mma-data-entries-{{data.id}}">
+                <style ng-if="cssTemplate">
+                    {{ cssTemplate }}
+                </style>
+
+                <mm-format-text component="{{component}}" component-id="{{data.cmid}}" watch="true">
+                    {{ entryRendered }}
+                </mm-format-text>
+            </div>
+            <mm-comments class="item" ng-if="showComments" context-level="module" instance-id="{{data.coursemodule}}" component="mod_data" item-id="{{entry.id}}" area="database_entry"></mm-comments>
+            <div ng-if="previousId || nextId" class="item item-text-wrap row-buttons responsive-sm">
+                <button ng-if="previousId" class="button button-block icon-left ion-chevron-left" ng-click="gotoEntry(previousId)">
+                    {{ 'mm.core.previous' | translate }}
+                </button>
+                <button ng-if="nextId" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoEntry(nextId)">
+                    {{ 'mm.core.next' | translate }}
+                </button>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

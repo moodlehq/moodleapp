@@ -30,6 +30,9 @@ angular.module('mm.core')
  *
  * Attributes accepted:
  *     - siteid: Reference to the site ID if different than the site the user is connected to.
+ *
+ * @todo We can't detect changes in files from external repositories. A solution would be to always download them,
+ * but we could increase the data usage A LOT if we're always downloading the embedded files.
  */
 .directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q, $mmApp, $ionicPlatform) {
     $log = $log.getInstance('mmExternalContent');
@@ -72,7 +75,7 @@ angular.module('mm.core')
      */
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
-        if (dom.tagName == 'VIDEO' && dom.textTracks) {
+        if (dom.tagName == 'VIDEO' && dom.textTracks && targetAttr != 'poster') {
             // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
             dom.textTracks.onaddtrack = function(event) {
                 if (event.track) {
@@ -91,7 +94,7 @@ angular.module('mm.core')
             };
         }
 
-        if (!url || !$mmUtil.isDownloadableUrl(url)) {
+        if (!url || !url.match(/^https?:\/\//i) || (dom.tagName === 'A' && !$mmUtil.isDownloadableUrl(url))) {
             $log.debug('Ignoring non-downloadable URL: ' + url);
             if (dom.tagName === 'SOURCE') {
                 // Restoring original src.
@@ -107,7 +110,9 @@ angular.module('mm.core')
                 return $q.reject();
             }
 
-            var fn;
+            // Download images, tracks and posters if size is unknown.
+            var fn,
+                downloadUnknown = dom.tagName == 'IMG' || dom.tagName == 'TRACK' || targetAttr == 'poster';
 
             if (targetAttr === 'src' && dom.tagName !== 'SOURCE' && dom.tagName !== 'TRACK') {
                 fn = $mmFilepool.getSrcByUrl;
@@ -115,7 +120,7 @@ angular.module('mm.core')
                 fn = $mmFilepool.getUrlByUrl;
             }
 
-            return fn(siteId, url, component, componentId).then(function(finalUrl) {
+            return fn(siteId, url, component, componentId, 0, true, downloadUnknown).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
                 if (dom.tagName === 'SOURCE') {
                     // The browser does not catch changes in SRC, we need to add a new source.
@@ -125,7 +130,7 @@ angular.module('mm.core')
                 }
 
                 // Set events to download big files (not downloaded automatically).
-                if (finalUrl.indexOf('http') === 0 &&
+                if (finalUrl.indexOf('http') === 0 && targetAttr != 'poster' &&
                             (dom.tagName == 'VIDEO' || dom.tagName == 'AUDIO' || dom.tagName == 'A' || dom.tagName == 'SOURCE')) {
                     var eventName = dom.tagName == 'A' ? 'click' : 'play';
 
@@ -181,6 +186,11 @@ angular.module('mm.core')
                 sourceAttr = 'targetSrc';
                 if (attrs.hasOwnProperty('ngSrc')) {
                     observe = true;
+                }
+
+                if (dom.tagName === 'VIDEO' && attrs.poster) {
+                    // Handle poster.
+                    handleExternalContent(siteid, dom, 'poster', attrs.poster, component, componentId);
                 }
 
             } else {

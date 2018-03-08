@@ -1,0 +1,124 @@
+<mm-loading hide-until="reportLoaded">
+    <!-- Group selector if the activity uses groups. -->
+    <div ng-if="groupInfo.separateGroups || groupInfo.visibleGroups" class="item item-text-wrap item-input item-select">
+        <ion-label id="mma-mod_lesson-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+        <ion-label id="mma-mod_lesson-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+        <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-mod_lesson-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+        </select>
+    </div>
+
+    <!-- No lesson retakes. -->
+    <mm-empty-box ng-if="!overview && selectedGroupName" icon="ion-stats-bars" message="{{ 'mma.mod_lesson.nolessonattemptsgroup' | translate:{$a: selectedGroupName} }}">
+    </mm-empty-box>
+    <mm-empty-box ng-if="!overview && !selectedGroupName" icon="ion-stats-bars" message="{{ 'mma.mod_lesson.nolessonattempts' | translate }}">
+    </mm-empty-box>
+
+    <!-- General statistics for the current group. -->
+    <div class="card mma-mod_lesson-lessonstats" ng-if="overview">
+        <div class="item item-divider">
+            <h2>{{ 'mma.mod_lesson.lessonstats' | translate }}</h2>
+        </div>
+
+        <!-- In tablet, max 2 rows with 3 columns. -->
+        <div class="hidden-phone">
+            <div class="item item-text-wrap row row-no-padding" ng-if="overview.lessonscored">
+                <div class="col-33 text-center padding">
+                    <p class="item-heading">{{ 'mma.mod_lesson.averagescore' | translate }}</p>
+                    <p ng-if="overview.numofattempts > 0">{{ 'mm.core.percentagenumber' | translate:{$a: overview.avescore} }}</p>
+                    <p ng-if="overview.numofattempts <= 0">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="col-33 text-center padding">
+                    <p class="item-heading">{{ 'mma.mod_lesson.highscore' | translate }}</p>
+                    <p ng-if="overview.highscore != null">{{ 'mm.core.percentagenumber' | translate:{$a: overview.highscore} }}</p>
+                    <p ng-if="overview.highscore == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="col-33 text-center padding">
+                    <p class="item-heading">{{ 'mma.mod_lesson.lowscore' | translate }}</p>
+                    <p ng-if="overview.lowscore != null">{{ 'mm.core.percentagenumber' | translate:{$a: overview.lowscore} }}</p>
+                    <p ng-if="overview.lowscore == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+            </div>
+
+            <div class="item item-text-wrap row row-no-padding">
+                <div class="col-33 text-center padding">
+                    <p class="item-heading">{{ 'mma.mod_lesson.averagetime' | translate }}</p>
+                    <p ng-if="overview.avetime != null && overview.numofattempts">{{ overview.avetimeReadable }}</p>
+                    <p ng-if="overview.avetime == null || !overview.numofattempts">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="col-33 text-center padding">
+                    <p class="item-heading">{{ 'mma.mod_lesson.hightime' | translate }}</p>
+                    <p ng-if="overview.hightime != null">{{ overview.hightimeReadable }}</p>
+                    <p ng-if="overview.hightime == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="col-33 text-center padding">
+                    <p class="item-heading">{{ 'mma.mod_lesson.lowtime' | translate }}</p>
+                    <p ng-if="overview.lowtime != null">{{ overview.lowtimeReadable }}</p>
+                    <p ng-if="overview.lowtime == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- In phone, 3 rows with 1 or 2 columns. -->
+        <div class="hidden-tablet">
+            <div class="item item-text-wrap row row-no-padding">
+                <div class="col-50 text-center padding" ng-if="overview.lessonscored">
+                    <p class="item-heading">{{ 'mma.mod_lesson.averagescore' | translate }}</p>
+                    <p ng-if="overview.numofattempts > 0">{{ 'mm.core.percentagenumber' | translate:{$a: overview.avescore} }}</p>
+                    <p ng-if="overview.numofattempts <= 0">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="padding" ng-class="{'text-center col-50': overview.lessonscored}">
+                    <p class="item-heading">{{ 'mma.mod_lesson.averagetime' | translate }}</p>
+                    <p ng-if="overview.avetime != null && overview.numofattempts">{{ overview.avetimeReadable }}</p>
+                    <p ng-if="overview.avetime == null || !overview.numofattempts">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+            </div>
+
+            <div class="item item-text-wrap row row-no-padding">
+                <div class="col-50 text-center padding" ng-if="overview.lessonscored">
+                    <p class="item-heading">{{ 'mma.mod_lesson.highscore' | translate }}</p>
+                    <p ng-if="overview.highscore != null">{{ 'mm.core.percentagenumber' | translate:{$a: overview.highscore} }}</p>
+                    <p ng-if="overview.highscore == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="padding" ng-class="{'text-center col-50': overview.lessonscored}">
+                    <p class="item-heading">{{ 'mma.mod_lesson.hightime' | translate }}</p>
+                    <p ng-if="overview.hightime != null">{{ overview.hightimeReadable }}</p>
+                    <p ng-if="overview.hightime == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+            </div>
+
+            <div class="item item-text-wrap row row-no-padding">
+                <div class="col-50 text-center padding" ng-if="overview.lessonscored">
+                    <p class="item-heading">{{ 'mma.mod_lesson.lowscore' | translate }}</p>
+                    <p ng-if="overview.lowscore != null">{{ 'mm.core.percentagenumber' | translate:{$a: overview.lowscore} }}</p>
+                    <p ng-if="overview.lowscore == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+
+                <div class="padding" ng-class="{'text-center col-50': overview.lessonscored}">
+                    <p class="item-heading">{{ 'mma.mod_lesson.lowtime' | translate }}</p>
+                    <p ng-if="overview.lowtime != null">{{ overview.lowtimeReadable }}</p>
+                    <p ng-if="overview.lowtime == null">{{ 'mma.mod_lesson.notcompleted' | translate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- List of students that have retakes. -->
+    <div class="card" ng-if="overview">
+        <div class="item item-divider">
+            <h2>{{ 'mma.mod_lesson.overview' | translate }}</h2>
+        </div>
+
+        <a ng-repeat="student in overview.students" class="item item-text-wrap item-icon-right" ng-class="{'item-avatar': student.profileimageurl}" ui-sref="site.mod_lesson-userretake({courseid: courseId, lessonid: lesson.id, userid: student.id})">
+            <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" mm-user-link userid="{{student.id}}" courseid="{{courseId}}">
+            <h2>{{student.fullname}}</h2>
+            <mm-progress-bar progress="student.bestgrade"></mm-progress-bar>
+            <i class="icon icon-accessory ion-chevron-right"></i>
+        </a>
+    </div>
+</mm-loading>

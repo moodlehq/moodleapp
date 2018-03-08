@@ -24,7 +24,7 @@ angular.module('mm.addons.notes')
  * @name $mmaNotesHandlers
  */
 .factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, $q, $mmaNotesSync,
-            mmCoursesAccessMethods) {
+            mmCoursesAccessMethods, mmUserProfileHandlersTypeCommunication) {
 
     // We use "caches" to decrease network usage.
     var self = {},
@@ -68,7 +68,9 @@ angular.module('mm.addons.notes')
      */
     self.addNote = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeCommunication
+        };
 
         /**
          * Check if handler is enabled.
@@ -123,6 +125,7 @@ angular.module('mm.addons.notes')
                 // Button title.
                 $scope.title = 'mma.notes.addnewnote';
                 $scope.class = 'mma-notes-add-handler';
+                $scope.icon = 'ion-ios-list';
 
                 $ionicModal.fromTemplateUrl('addons/notes/templates/add.html', {
                     scope: $scope,
@@ -189,6 +192,23 @@ angular.module('mm.addons.notes')
         var self = {};
 
         /**
+         * Invalidate data to determine if handler is enabled for a course.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}             Promise resolved when done.
+         */
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.notes != 'undefined') {
+                // No need to invalidate anything.
+                return $q.when();
+            }
+
+            return $mmaNotes.invalidateNotes(courseId);
+        };
+
+        /**
          * Check if handler is enabled.
          *
          * @return {Promise} Promise resolved with true if enabled, resolved with false or rejected otherwise.
@@ -199,6 +219,8 @@ angular.module('mm.addons.notes')
 
         /**
          * Check if handler is enabled for this course.
+         *
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
          *
          * @param  {Number} courseId     Course ID.
          * @param  {Object} accessData   Type of access to the course: default, guest, ...
@@ -215,13 +237,8 @@ angular.module('mm.addons.notes')
                 return navOptions.notes;
             }
 
-            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
-                return coursesNavEnabledCache[courseId];
-            }
-            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId).then(function(enabled) {
-                coursesNavEnabledCache[courseId] = enabled;
-                return enabled;
-            });
+            // Assume it's enabled for now, further checks will be done in shouldDisplayForCourse.
+            return true;
         };
 
         /**
@@ -251,6 +268,52 @@ angular.module('mm.addons.notes')
                     });
                 };
             };
+        };
+
+        /**
+         * Check if handler should be displayed in a course. Will only be called if the handler is enabled for the course.
+         *
+         * This function shouldn't be called too much, so WebServices calls are allowed.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise|Boolean}     True or promise resolved with true if handler should be displayed.
+         */
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.notes != 'undefined') {
+                return navOptions.notes;
+            }
+
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId).then(function(enabled) {
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
+        };
+
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmaNotes.invalidateNotes(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmaNotes.getNotes(course.id, false, true);
+            }).then(function(notesTypes) {
+                var promises = [];
+                angular.forEach(notesTypes, function(notes) {
+                    promises.push($mmaNotes.getNotesUserData(notes, course.id));
+                });
+                return $mmUtil.allPromises(promises);
+            });
         };
 
         return self;

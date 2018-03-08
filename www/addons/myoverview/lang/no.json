@@ -1,0 +1,18 @@
+{
+    "future": "Fremtidige",
+    "inprogress": "Aktive",
+    "morecourses": "Flere kurs",
+    "next30days": "Neste 30 dager",
+    "next7days": "Neste 7 dager",
+    "nocourses": "Ingen kurs",
+    "nocoursesfuture": "Ingen fremtidige kurs",
+    "nocoursesinprogress": "Ingen aktive kurs",
+    "nocoursespast": "Ingen avsluttede kurs",
+    "noevents": "Det er ingen aktiviteter som må gjøres i nærmeste fremtid.",
+    "past": "Avsluttede",
+    "pluginname": "Kursoversikt",
+    "recentlyoverdue": "Forefalte",
+    "sortbycourses": "Sorter etter kursnavn",
+    "sortbydates": "Sorter etter dato",
+    "timeline": "Tidsvisning"
+}

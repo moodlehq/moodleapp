@@ -1,0 +1,138 @@
+
+.mm-site_mod_data {
+  .recordcheckbox {
+    display: none;
+  }
+}
+
+.mm-data-contents {
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+  padding: $item-padding;
+  background-color: white;
+  border-top-width: $item-border-width;
+  border-bottom-width: $item-border-width;
+  border-style: solid;
+  border-color: $item-default-border;
+
+  table, tbody {
+    display: block;
+  }
+
+  tr {
+    @extend .row;
+    padding: 0;
+  }
+
+  td, th {
+    @extend .col;
+  }
+}
+
+#mma-mod_data-advanced-search-form,
+#mma-mod_data-edit-form  {
+  table {
+    width: 100%;
+  }
+  td {
+    vertical-align: top;
+  }
+
+  textarea,
+  input[type="text"],
+  input[type="password"],
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="month"],
+  input[type="time"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="color"],
+  .item-select,
+  mm-attachments>.item-border {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    padding: 16px 0 16px 16px;
+    height: 56px;
+  }
+
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"] {
+    -webkit-appearance: none;
+  }
+
+  mm-attachments .item-media {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    height: 56px;
+  }
+
+  mm-multiple-select .item {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    padding: 16px 0 16px 16px;
+  }
+
+  mm-attachments + .item-stacked-label {
+    border-top: 0px;
+    padding: 0;
+    margin-right: 1px;
+
+    ion-label {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    input {
+      border: 0;
+      margin: 0;
+    }
+  }
+
+  mm-attachments .item {
+    width: 100%;
+    margin: -1px;
+    border: 1px solid $gray;
+    overflow: hidden;
+  }
+
+  .item-checkbox {
+    margin-right: 1px;
+  }
+
+  .item-input.item-select {
+    margin-bottom: -6px;
+
+    select {
+      width: 100%;
+      left: 0;
+      max-width: none;
+    }
+  }
+
+  .item-input.mm-latlong {
+    width: 100%;
+    margin: -1px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+
+    input {
+      border: 0;
+    }
+  }
+
+  .mm-item-has-rich-text-editor {
+    margin-right: 1px;
+  }
+}

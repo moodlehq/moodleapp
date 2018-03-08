@@ -22,7 +22,7 @@ angular.module('mm.core.question')
  * @name $mmQuestionHelper
  */
 .factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q,
-            $mmQuestion, $mmSite) {
+            $mmQuestion, $mmSite, $mmQuestionDelegate) {
 
     var self = {},
         lastErrorShown = 0;
@@ -50,6 +50,122 @@ angular.module('mm.core.question')
             disabled: button.disabled
         });
     }
+
+    /**
+     * Generic link function for question directives with an input of type "text" and, optionally, a select for the units.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#calculatedDirective
+     * @param  {Object} scope Directive's scope.
+     * @param  {Object} log   $log instance to log messages.
+     * @return {Void}
+     */
+    self.calculatedDirective = function(scope, log) {
+        // Treat the input text first.
+        var questionEl = self.inputTextDirective(scope, log);
+        if (questionEl) {
+            questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
+
+            // Check if the question has a select for units.
+            var selectModel = {},
+                select = questionEl.querySelector('select[name*=unit]'),
+                options = select && select.querySelectorAll('option'),
+                input;
+
+            if (select && options && options.length) {
+
+                selectModel.id = select.id;
+                selectModel.name = select.name;
+                selectModel.disabled = select.disabled;
+                selectModel.options = [];
+
+                // Treat each option.
+                angular.forEach(options, function(option) {
+                    if (typeof option.value == 'undefined') {
+                        log.warn('Aborting because couldn\'t find option value.', question.name);
+                        return self.showDirectiveError(scope);
+                    }
+                    var opt = {
+                        value: option.value,
+                        label: option.innerHTML
+                    };
+
+                    if (option.selected) {
+                        selectModel.selected = opt.value;
+                        selectModel.selectedLabel = opt.label;
+                    }
+
+                    selectModel.options.push(opt);
+                });
+
+                if (!selectModel.selected) {
+                    // No selected option, select the first one.
+                    selectModel.selected = selectModel.options[0].value;
+                    selectModel.selectedLabel = selectModel.options[0].label;
+                }
+
+                // Get the accessibility label.
+                accessibilityLabel = questionEl.querySelector('label[for="' + select.id + '"]');
+                selectModel.accessibilityLabel = accessibilityLabel.innerHTML;
+
+                scope.select = selectModel;
+
+                // Check which one should be displayed first: the select or the input.
+                input = questionEl.querySelector('input[type="text"][name*=answer]');
+                scope.selectFirst = questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(select.outerHTML);
+
+                return;
+            }
+
+            // Check if the question has radio buttons for units.
+            options = questionEl.querySelectorAll('input[type="radio"]');
+            if (!options || !options.length) {
+                return;
+            }
+
+            scope.options = [];
+
+            angular.forEach(options, function(element) {
+
+                var option = {
+                        id: element.id,
+                        name: element.name,
+                        value: element.value,
+                        checked: element.checked,
+                        disabled: element.disabled
+                    },
+                    label;
+
+                // Get the label with the question text.
+                label = questionEl.querySelector('label[for="' + option.id + '"]');
+                if (label) {
+                    option.text = label.innerText;
+
+                    // Check that we were able to successfully extract options required data.
+                    if (typeof option.name != 'undefined' && typeof option.value != 'undefined' &&
+                                typeof option.text != 'undefined') {
+
+                        if (element.checked) {
+                            // If the option is checked and it's a single choice we use the model to select the one.
+                            scope.unit = option.value;
+                        }
+
+                        scope.options.push(option);
+                        return;
+                    }
+                }
+
+                // Something went wrong when extracting the questions data. Abort.
+                log.warn('Aborting because of an error parsing options.', question.name, option.name);
+                return self.showDirectiveError(scope);
+            });
+
+            // Check which one should be displayed first: the options or the input.
+            input = questionEl.querySelector('input[type="text"][name*=answer]');
+            scope.optionsFirst = questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(options[0].outerHTML);
+        }
+    };
 
     /**
      * Convenience function to initialize a question directive.
@@ -554,7 +670,7 @@ angular.module('mm.core.question')
      * @name $mmQuestionHelper#inputTextDirective
      * @param  {Object} scope Directive's scope.
      * @param  {Object} log   $log instance to log messages.
-     * @return {Void}
+     * @return {Oject} The question element.
      */
     self.inputTextDirective = function(scope, log) {
         var questionEl = self.directiveInit(scope, log);
@@ -582,6 +698,8 @@ angular.module('mm.core.question')
                 scope.input.isCorrect = 1;
             }
         }
+
+        return questionEl;
     };
 
     /**
@@ -591,8 +709,6 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#loadLocalAnswersInHtml
-     * @param  {String} component Component the answers belong to.
-     * @param  {Number} attemptId Attempt ID.
      * @param  {Object} question  Question.
      * @return {Void}
      */
@@ -687,6 +803,7 @@ angular.module('mm.core.question')
                 rowModel.id = select.id;
                 rowModel.name = select.name;
                 rowModel.disabled = select.disabled;
+                rowModel.selected = false;
                 rowModel.options = [];
 
                 // Check if answer is correct.
@@ -702,12 +819,17 @@ angular.module('mm.core.question')
                         log.warn('Aborting because couldn\'t find option value.', question.name);
                         return self.showDirectiveError(scope);
                     }
-
-                    rowModel.options.push({
+                    var opt = {
                         value: option.value,
                         label: option.innerHTML,
                         selected: option.selected
-                    });
+                    };
+
+                    if (opt.selected) {
+                        rowModel.selected = opt;
+                    }
+
+                    rowModel.options.push(opt);
                 });
 
                 // Get the accessibility label.
@@ -855,6 +977,38 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Prepare and return the answers.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#prepareAnswers
+     * @param  {Object[]} questions The list of questions.
+     * @param  {Object} answers     The input data.
+     * @param  {Boolean} offline    True if data should be saved in offline.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with answers to send to server.
+     */
+    self.prepareAnswers = function(questions, answers, offline, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [],
+            error;
+
+        angular.forEach(questions, function(question) {
+            promises.push($mmQuestionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId).catch(function(e) {
+                error = e;
+                return $q.reject();
+            }));
+        });
+
+        return $mmUtil.allPromises(promises).then(function() {
+            return answers;
+        }).catch(function() {
+            return $q.reject(error);
+        });
+    };
+
+    /**
      * Replace Moodle's correct/incorrect classes with the Mobile ones.
      *
      * @module mm.core.question
@@ -921,25 +1075,42 @@ angular.module('mm.core.question')
     self.treatCorrectnessIcons = function(scope, element) {
         element = element[0] || element; // Convert from jqLite to plain JS if needed.
 
-        var icons = element.querySelectorAll('.questioncorrectnessicon');
+        var icons = element.querySelectorAll('img.icon, img.questioncorrectnessicon');
         angular.forEach(icons, function(icon) {
-            var parent;
+            // Replace the icon with the font version. This will avoid some errors when adding mm-adapt-img class.
+            if (icon.src) {
+                var newIcon = document.createElement('i');
 
-            // Replace the icon with the local version.
-            if (icon.src && icon.src.indexOf('incorrect') > -1) {
-                icon.src = 'img/icons/grade_incorrect.svg';
-            } else if (icon.src && icon.src.indexOf('correct') > -1) {
-                icon.src = 'img/icons/grade_correct.svg';
+                if (icon.src.indexOf('incorrect') > -1) {
+                    newIcon.className = 'icon fa fa-remove text-danger fa-fw questioncorrectnessicon';
+                } else if (icon.src.indexOf('correct') > -1) {
+                    newIcon.className = 'icon fa fa-check text-success fa-fw questioncorrectnessicon';
+                } else {
+                    return;
+                }
+
+                newIcon.title = icon.title;
+                newIcon.ariaLabel = icon.title;
+                icon.parentNode.replaceChild(newIcon, icon);
+                icon = newIcon;
             }
+        });
 
+        var spans = element.querySelectorAll('.feedbackspan.accesshide');
+        angular.forEach(spans, function(span) {
             // Search if there's a hidden feedback for this element.
-            parent = icon.parentNode;
-            if (!parent) {
+            var icon = span.previousSibling,
+                iconAng;
+            if (!icon) {
                 return;
             }
-            if (!parent.querySelector('.feedbackspan.accesshide')) {
+
+            iconAng = angular.element(icon);
+            if (!iconAng.hasClass('icon') && !iconAng.hasClass('questioncorrectnessicon')) {
                 return;
             }
+
+            iconAng.addClass('questioncorrectnessicon');
 
             // There's a hidden feedback, set up ngClick to show the feedback.
             icon.setAttribute('ng-click', 'questionCorrectnessIconClicked($event)');

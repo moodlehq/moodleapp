@@ -39,7 +39,7 @@ angular.module('mm.addons.grades')
 
     fetchCoursesGrades().then(function() {
         // Add log in Moodle.
-        var courseId = $mmSite.getInfo().siteid || 1;
+        var courseId = $mmSite.getSiteHomeId();
         $mmSite.write('gradereport_overview_view_grade_report', {
             courseid: courseId,
         });

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpHandlers
  */
-.factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
+.factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmCourseHelper,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
             mmaModImscpComponent, $mmContentLinksHelper, $q, $mmaModImscpPrefetchHandler, $mmUtil) {
     var self = {};
@@ -167,54 +167,53 @@ angular.module('mm.addons.mod_imscp')
      * @ngdoc method
      * @name $mmaModImscpHandlers#linksHandler
      */
-    self.linksHandler = function() {
+    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModImscp', 'imscp', $mmaModImscp);
 
+    /**
+     * Plugin file handler.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscpHandlers#pluginfileHandler
+     */
+    self.pluginfileHandler = function() {
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for a certain site.
+         * Get the RegExp of the component and filearea described in the URL.
          *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
+         * @module mm.addons.mod_imscp
+         * @ngdoc method
+         * @name $mmaModImscpPluginfileHandler#getComponentRevisionRegExp
+         * @param {Array} args    Arguments of the pluginfile URL defining component and filearea at least.
+         * @return {RegExp}       To match the revision.
          */
-        function isEnabled(siteId, courseId) {
-            return $mmaModImscp.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's an IMSCP URL.
-            if (typeof self.handles(url) != 'undefined') {
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
+        self.getComponentRevisionRegExp = function(args) {
+            // Check filearea.
+            if (args[2] == 'content') {
+                // Component + Filearea + Revision
+                return new RegExp('/mod_imscp/content/([0-9]+)/');
             }
-            return $q.when([]);
+
+            if (args[2] == 'backup') {
+                // Component + Filearea + Revision
+                return new RegExp('/mod_imscp/backup/([0-9]+)/');
+            }
+            return false;
         };
 
         /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         * Returns an string to remove revision when matching the RegExp provided.
          *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         * @module mm.addons.mod_imscp
+         * @ngdoc method
+         * @name $mmaModImscpPluginfileHandler#getComponentRevisionReplace
+         * @param {Array} args    Arguments of the pluginfile URL defining component and filearea at least.
+         * @return {String}       String to remove revision when matching the RegExp provided.
          */
-        self.handles = function(url) {
-            var position = url.indexOf('/mod/imscp/view.php');
-            if (position > -1) {
-                return url.substr(0, position);
-            }
+        self.getComponentRevisionReplace = function(args) {
+            // Component + Filearea + Revision
+            return '/mod_imscp/' + args[2] + '/0/';
         };
 
         return self;

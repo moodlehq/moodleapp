@@ -16,6 +16,7 @@
     "gradesofar": "{{$a.method}}: {{$a.mygrade}} / {{$a.quizgrade}}.",
     "marks": "Puncte",
     "noquestions": "Nici o întrebare nu a fost adăugată încă",
+    "notyetgraded": "Nu este notat încă",
     "outof": "{{$a.grade}} din maxim {{$a.maxgrade}} posibil",
     "outofpercent": "{{$a.grade}} din maxim {{$a.maxgrade}} ({{$a.percent}}%) posibil",
     "outofshort": "{{$a.grade}}/{{$a.maxgrade}}",

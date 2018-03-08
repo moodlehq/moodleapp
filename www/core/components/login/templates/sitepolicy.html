@@ -1,0 +1,21 @@
+<ion-view view-title="{{ 'mm.login.policyagreement' | translate }}">
+    <ion-content mm-state-class>
+        <mm-loading hide-until="policyLoaded">
+            <ul class="list">
+                <div class="item item-text-wrap">
+                    {{ 'mm.login.policyagree' | translate }}
+                </div>
+                <div class="item item-text-wrap">
+                    <p><a ng-href="{{sitePolicy}}" mm-link capture-link="false">{{ 'mm.login.policyagreementclick' | translate }}</a></p>
+                </div>
+                <div class="card" ng-if="showInline">
+                    <mm-iframe class="item mm-login-sitepolicy-iframe" src="trustedSitePolicy"></mm-iframe>
+                </div>
+                <div class="item item-text-wrap padding">
+                    <button class="button button-block button-positive" ng-click="accept()">{{ 'mm.login.policyaccept' | translate }}</button>
+                    <button class="button button-block button-outline button-positive" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+                </div>
+            </ul>
+        </mm-loading>
+    </ion-content>
+</ion-view>

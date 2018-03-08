@@ -1,0 +1,42 @@
+<ion-modal-view class="mma-mod_data-search-modal">
+    <ion-header-bar class="bar bar-header">
+        <button class="button button-icon ion-close-round" ng-click="closeSearch()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+        <h1 class="title">{{ 'mma.mod_data.search' | translate}}</h1>
+        <button class="button button-icon ion-search" ng-click="searchEntries(0)"></button>
+    </ion-header-bar>
+    <ion-content>
+        <div class="tabs tabs-striped tabs-free mm-tabs-color">
+            <a class="tab-item" ng-class="{'active': !search.searchingAdvanced}" ng-click="switchAdvanced(false)">{{ 'mma.mod_data.search' | translate}}</a>
+            <a class="tab-item" ng-class="{'active': search.searchingAdvanced}" ng-click="switchAdvanced(true)">{{ 'mma.mod_data.advancedsearch' | translate }}</a>
+        </div>
+        <div class="list">
+            <label class="item item-input" ng-if="!search.searchingAdvanced">
+                <input type="text" placeholder="{{ 'mma.mod_data.search' | translate}}" ng-model="search.text">
+            </label>
+            <div class="item item-text-wrap item-input item-select">
+                <ion-label id="mma-data-sortby">{{ 'mm.core.sortby' | translate }}</ion-label>
+                <select ng-model="search.sortBy" aria-labelledby="mma-data-sortby" mm-ios-select-fix>
+                    <optgroup ng-if="fields.length" label="{{ 'mma.mod_data.fields' | translate }}">
+                        <option ng-repeat="field in fields | orderBy:'name'" value="{{field.id}}">{{field.name}}</option>
+                    </optgroup>
+                    <optgroup label="{{ 'mma.mod_data.other' | translate }}">
+                        <option value="0">{{ 'mma.mod_data.timeadded' | translate }}</option>
+                        <option value="-4">{{ 'mma.mod_data.timemodified' | translate }}</option>
+                        <option value="-1">{{ 'mma.mod_data.authorfirstname' | translate }}</option>
+                        <option value="-2">{{ 'mma.mod_data.authorlastname' | translate }}</option>
+                        <option value="-3" ng-if="data.approval">{{ 'mma.mod_data.approved' | translate }}</option>
+                    </optgroup>
+                </select>
+            </div>
+            <ion-list id="mma-data-sortdir">
+                <ion-radio ng-model="search.sortDirection" value="ASC">{{ 'mma.mod_data.ascending' | translate }}</ion-radio>
+                <ion-radio ng-model="search.sortDirection" value="DESC">{{ 'mma.mod_data.descending' | translate }}</ion-radio>
+            </ion-list>
+            <form id="mma-mod_data-advanced-search-form" class="padding" ng-if="advancedSearch && search.searchingAdvanced">
+                <mm-format-text component="{{component}}" component-id="{{data.cmid}}" watch="true">
+                    {{ advancedSearch }}
+                </mm-format-text>
+            </form>
+        </div>
+    </ion-content>
+</ion-modal-view>

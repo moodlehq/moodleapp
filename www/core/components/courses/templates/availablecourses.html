@@ -1,0 +1,12 @@
+<ion-view view-title="{{ 'mm.courses.availablecourses' | translate }}">
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="coursesLoaded" on-refresh="refreshCourses()">
+        </ion-refresher>
+        <mm-loading hide-until="coursesLoaded">
+            <div ng-if="courses.length > 0">
+                <mm-course-list-item ng-repeat="course in courses track by course.id" course="course"></mm-course-list-item>
+            </div>
+            <mm-empty-box ng-if="!courses.length" icon="ion-ionic" message="{{ 'mm.courses.nocourses' | translate }}"></mm-empty-box>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignSubmissionListCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $q, $mmEvents,
         mmaModAssignComponent, mmaModAssignSubmissionInvalidatedEvent, mmaModAssignSubmissionStatusSubmitted, $mmaModAssignOffline,
-        mmaModAssignNeedGrading, mmaModAssignGradedEvent, $mmSite) {
+        mmaModAssignNeedGrading, mmaModAssignGradedEvent, $mmSite, $mmaModAssignHelper) {
 
     var courseId = $stateParams.courseid,
         selectedStatus = $stateParams.status,
@@ -60,9 +60,9 @@ angular.module('mm.addons.mod_assign')
                 }
 
                 // We want to show the user data on each submission.
-                return $mmaModAssign.listParticipants(assign.id).then(function(p) {
-                    participants = p;
+                return $mmaModAssignHelper.getParticipants(assign).then(function(p) {
                     $scope.haveAllParticipants = true;
+                    participants = p;
                 }).catch(function() {
                     $scope.haveAllParticipants = false;
                     return $q.when();
@@ -133,11 +133,7 @@ angular.module('mm.addons.mod_assign')
                 });
             });
         }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('Error getting assigment data.');
-            }
+            $mmUtil.showErrorModalDefault(message, 'Error getting assigment data.');
             return $q.reject();
         });
     }

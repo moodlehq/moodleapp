@@ -22,39 +22,63 @@ angular.module('mm.core.courses')
  * @name mmCoursesListCtrl
  */
 .controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite, $q,
-            mmCoursesEventMyCoursesUpdated, mmCoursesEventMyCoursesRefreshed) {
+            mmCoursesEventMyCoursesUpdated, mmCoreEventSiteUpdated, $mmCourseHelper) {
 
-    $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable();
-    $scope.areNavHandlersLoadedFor = $mmCoursesDelegate.areNavHandlersLoadedFor;
+    var updateSiteObserver,
+        myCoursesObserver,
+        prefetchIconInitialized = false;
+
+    $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable() && !$mmCourses.isSearchCoursesDisabledInSite();
     $scope.filter = {};
+    $scope.prefetchCoursesData = {};
+    $scope.showFilter = false;
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses().then(function(courses) {
-            $scope.courses = courses;
             $scope.filter.filterText = ''; // Filter value MUST be set after courses are shown.
 
-            return loadCoursesNavHandlers(refresh);
+            var courseIds = courses.map(function(course) {
+                return course.id;
+            });
+
+            return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
+                angular.forEach(courses, function(course) {
+                    course.progress = isNaN(parseInt(course.progress, 10)) ? false : parseInt(course.progress, 10);
+                    course.navOptions = options.navOptions[course.id];
+                    course.admOptions = options.admOptions[course.id];
+                });
+                $scope.courses = courses;
+
+                initPrefetchCoursesIcon();
+            });
         }, function(error) {
-            if (typeof error != 'undefined' && error !== '') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mm.courses.errorloadcourses', true);
         });
     }
 
-    // Convenience function to load the handlers of each course.
-    function loadCoursesNavHandlers(refresh) {
-        var courseIds = $scope.courses.map(function(course) {
-            return course.id;
-        });
+    // Initialize the prefetch icon for the list of courses.
+    function initPrefetchCoursesIcon() {
+        if (prefetchIconInitialized) {
+            // Already initialized.
+            return;
+        }
 
-        return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
-            angular.forEach($scope.courses, function(course) {
-                course._handlers = $mmCoursesDelegate.getNavHandlersFor(
-                            course.id, refresh, options.navOptions[course.id], options.admOptions[course.id]);
-            });
+        prefetchIconInitialized = true;
+
+        if (!$scope.courses || $scope.courses.length < 2) {
+            // Not enough courses.
+            $scope.prefetchCoursesData.icon = '';
+            return;
+        }
+
+        $mmCourseHelper.determineCoursesStatus($scope.courses).then(function(status) {
+            var icon = $mmCourseHelper.getCourseStatusIconFromStatus(status);
+            if (icon == 'spinner') {
+                // It seems all courses are being downloaded, show a download button instead.
+                icon = 'ion-ios-cloud-download-outline';
+            }
+            $scope.prefetchCoursesData.icon = icon;
         });
     }
 
@@ -65,24 +89,58 @@ angular.module('mm.core.courses')
     $scope.refreshCourses = function() {
         var promises = [];
 
-        $mmEvents.trigger(mmCoursesEventMyCoursesRefreshed);
-
         promises.push($mmCourses.invalidateUserCourses());
-        promises.push($mmCourses.invalidateUserNavigationOptions());
-        promises.push($mmCourses.invalidateUserAdministrationOptions());
-
-        $mmCoursesDelegate.clearCoursesHandlers();
+        promises.push($mmCoursesDelegate.clearAndInvalidateCoursesOptions());
 
         $q.all(promises).finally(function() {
+
+            prefetchIconInitialized = false;
             fetchCourses(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
         });
     };
 
-    $mmEvents.on(mmCoursesEventMyCoursesUpdated, function(siteid) {
+    $scope.switchFilter = function() {
+        $scope.filter.filterText = '';
+        $scope.showFilter = !$scope.showFilter;
+    };
+
+    // Download all the courses.
+    $scope.downloadCourses = function() {
+        var initialIcon = $scope.prefetchCoursesData.icon;
+
+        $scope.prefetchCoursesData.icon = 'spinner';
+        $scope.prefetchCoursesData.badge = '';
+        return $mmCourseHelper.confirmAndPrefetchCourses($scope.courses).then(function(downloaded) {
+            $scope.prefetchCoursesData.icon = downloaded ? 'ion-android-refresh' : initialIcon;
+        }, function(error) {
+            if (!$scope.$$destroyed) {
+                $mmUtil.showErrorModalDefault(error, 'mm.course.errordownloadingcourse', true);
+                $scope.prefetchCoursesData.icon = initialIcon;
+            }
+        }, function(progress) {
+            $scope.prefetchCoursesData.badge = progress.count + ' / ' + progress.total;
+        }).finally(function() {
+            $scope.prefetchCoursesData.badge = '';
+        });
+    };
+
+    myCoursesObserver = $mmEvents.on(mmCoursesEventMyCoursesUpdated, function(siteid) {
         if (siteid == $mmSite.getId()) {
             fetchCourses();
         }
+    });
+
+
+    updateSiteObserver = $mmEvents.on(mmCoreEventSiteUpdated, function(siteId) {
+        if ($mmSite.getId() === siteId) {
+            $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable() && !$mmCourses.isSearchCoursesDisabledInSite();
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        myCoursesObserver && myCoursesObserver.off && myCoursesObserver.off();
+        updateSiteObserver && updateSiteObserver.off && updateSiteObserver.off();
     });
 });

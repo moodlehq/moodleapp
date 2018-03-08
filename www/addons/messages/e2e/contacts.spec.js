@@ -12,60 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage their contacts', function() {
+describe('User can manage their contacts', function () {
 
-    it('Adding a new contact', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Search and Add a new contact', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Messages');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Contacts');
-        }).then(function() {
-            expect(MM.getView().getText()).not.toMatch('Heather Reyes');
-            element(by.model('formData.searchString')).sendKeys('Heather');
-            return MM.clickOnElement(element(by.binding('search')));
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait to render
+            $('input[placeholder="Contact name"]').sendKeys('Heather');
+            return element.all(by.css('button[type="submit"]')).get(2).click();
+        }).then(function () {
             return MM.clickOn('Heather Reyes');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Add contact');
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait for spinner
             return MM.goBack();
-        }).then(function() {
+        }).then(function () {
             return MM.goBack();
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Clear search');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getView().getText()).toMatch('Heather Reyes');
             done();
         });
     });
 
-    it('Blocking a contact', function(done) {
-        return MM.loginAsStudent().then(function() {
+    it('Search and Block a contact', function (done) {
+        return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Messages');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOn('Contacts');
-        }).then(function() {
+        }).then(function () {
+            browser.sleep(7500); // Wait to render
             expect(MM.getView().getText()).not.toMatch('Blocked');
             expect(MM.getView().getText()).not.toMatch('Anna Alexander');
-            element(by.model('formData.searchString')).sendKeys('Anna Alexander');
-            return MM.clickOnElement(element(by.binding('search')));
-        }).then(function() {
+            $('input[placeholder="Contact name"]').sendKeys('Anna Alexander');
+            return element.all(by.css('button[type="submit"]')).get(2).click();
+        }).then(function () {
             return MM.clickOn('Anna Alexander');
-        }).then(function() {
+        }).then(function () {
             return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
-        }).then(function() {
-            return MM.clickOn('Block contact');
-        }).then(function() {
-            return MM.goBack();
-        }).then(function() {
-            return MM.goBack();
-        }).then(function() {
-            return MM.clickOn('Clear search');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Blocked');
-            expect(MM.getView().getText()).toMatch('Anna Alexander');
+        }).then(function () {
+            browser.sleep(7500); // Wait to render
+            return $('a[title="Block contact"]').click();
+        }).then(function () {
+            browser.sleep(75000); // Wait to render
+            return $('.popup-buttons button[class="button ng-binding button-positive"').click();
+        }).then(function () {
+            browser.sleep(5000); // Wait to render
+            expect(MM.getView().getText()).toMatch('Unblock contact');
             done();
         });
     });

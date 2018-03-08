@@ -1,8 +1,9 @@
 {
     "appsettings": "Настройки приложения",
-    "changesite": "Выход",
+    "changesite": "Сменить сайт",
     "help": "Помощь",
-    "logout": "Выход",
+    "logout": "Выйти",
     "mycourses": "Мои курсы",
+    "togglemenu": "Переключить меню",
     "website": "Сайт"
 }

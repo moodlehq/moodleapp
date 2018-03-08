@@ -1,7 +1,8 @@
 $mma-messages-date-badge: "stable" !default;
 
 // The date displayed in the list.
-.mma-messages-date {
+.mma-messages-date,
+.mma-messages-unreadfrom {
 
   text-align: center;
   margin-top: 10px;
@@ -10,6 +11,10 @@ $mma-messages-date-badge: "stable" !default;
     @extend .badge;
     @extend .badge-#{$mma-messages-date-badge};
   }
+}
+
+.mma-messages-unreadfrom {
+  color: $positive;
 }
 
 .mma-messages-input-inset {
@@ -47,6 +52,8 @@ $mma-messages-date-badge: "stable" !default;
   width: 100%;
 }
 .mm-site_messages-discussion {
+  background: $white;
+
   .list-left-editing .item-message.item-left-editable,
   .item-left-editing.item-message.item-left-editable {
     max-width: calc(80% + 35px);
@@ -82,4 +89,13 @@ $mma-messages-date-badge: "stable" !default;
     right: 0;
     left: initial;
   }
+}
+
+.tab-content .mm-site_messages-discussion {
+  background: $base-background-color;
+}
+
+.mma-messages-showprevious-spinner-container {
+  width: 100%;
+  text-align: center;
 }

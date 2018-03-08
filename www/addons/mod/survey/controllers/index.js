@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_survey')
  */
 .controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
             $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent, $mmaModSurveySync, $mmSite,
-            $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
+            $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmCourseHelper, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         survey,
@@ -80,6 +80,9 @@ angular.module('mm.addons.mod_survey')
             if (!survey.surveydone && !hasOffline) {
                 return fetchQuestions();
             }
+        }).then(function() {
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModSurveyComponent);
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -106,6 +109,13 @@ angular.module('mm.addons.mod_survey')
                     if (q.name) {
                         var isTextArea = q.multi && q.multi.length === 0 && q.type === 0;
                         $scope.answers[q.name] = q.required ? -1 : (isTextArea ? '' : '0');
+                    }
+
+                    if (q.multi && !q.multi.length && q.parent === 0 && q.type > 0) {
+                        // Options shown in a select. Remove all HTML.
+                        q.options = q.options.map(function(option) {
+                            return $mmText.cleanTags(option);
+                        });
                     }
                 });
             });
@@ -169,6 +179,16 @@ angular.module('mm.addons.mod_survey')
                 modal.dismiss();
             });
         });
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseid);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseid);
     };
 
     // Context Menu Description action.

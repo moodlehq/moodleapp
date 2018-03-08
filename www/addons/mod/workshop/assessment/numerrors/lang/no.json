@@ -1,0 +1,5 @@
+{
+    "dimensioncommentfor": "Kommenter for {{$a}}",
+    "dimensiongradefor": "Vurder for {{$a}}",
+    "dimensionnumber": "Stadfesting {{$a}}"
+}

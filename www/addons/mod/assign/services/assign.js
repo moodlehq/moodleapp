@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments, $mmUtil,
         $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmText, $mmApp,
-        $mmaModAssignOffline, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, $mmAddonManager,
+        $mmaModAssignOffline, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, $mmGrades,
         mmaModMarkingWorkflowStateReleased) {
     var self = {},
         gradingOfflineEnabled = {};
@@ -380,6 +380,11 @@ angular.module('mm.addons.mod_assign')
         var promises = [],
             subs = [];
 
+        // Empty participants list will be treated as no list.
+        if (participants && participants.length == 0) {
+            participants = false;
+        }
+
         angular.forEach(submissions, function(submission) {
             submission.submitid = submission.userid > 0 ? submission.userid : submission.blindid;
             if (submission.submitid <= 0) {
@@ -506,7 +511,7 @@ angular.module('mm.addons.mod_assign')
                 return $q.reject();
             }
 
-            groupId = 0;
+            groupId = groupId || 0;
             var params = {
                     "assignid": assignId,
                     "groupid": groupId,
@@ -699,12 +704,7 @@ angular.module('mm.addons.mod_assign')
         }).finally(function() {
             var ps = [];
             ps.push(self.invalidateAssignmentData(courseId, siteId));
-
-            // Get grade addon if avalaible.
-            var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-            if ($mmaGrades) {
-                ps.push($mmaGrades.invalidateGradeCourseItems(courseId));
-            }
+            ps.push($mmGrades.invalidateGradeCourseItems(courseId));
 
             return $q.all(ps);
         });
@@ -1181,17 +1181,7 @@ angular.module('mm.addons.mod_assign')
             return $q.when(gradingOfflineEnabled[siteId]);
         }
 
-        var promise;
-
-        // Get grade addon if avalaible.
-        var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-        if (!$mmaGrades) {
-            promise = $q.when(false);
-        } else {
-            promise = $mmaGrades.isGradeItemsAvalaible(siteId);
-        }
-
-        return promise.then(function(enabled) {
+        return $mmGrades.isGradeItemsAvalaible(siteId).then(function(enabled) {
             gradingOfflineEnabled[siteId] = enabled;
             return enabled;
         });

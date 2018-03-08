@@ -23,7 +23,7 @@ angular.module('mm.addons.coursecompletion')
  * @ngdoc service
  * @name $mmaCourseCompletionHandlers
  */
-.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $state, mmCoursesAccessMethods) {
+.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $state, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
     // We use "caches" to decrease network usage.
     var self = {},
@@ -79,7 +79,9 @@ angular.module('mm.addons.coursecompletion')
      */
     self.viewCompletion = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.
@@ -135,8 +137,9 @@ angular.module('mm.addons.coursecompletion')
             return function($scope) {
 
                 // Button title.
-                $scope.title = 'mma.coursecompletion.viewcoursereport';
+                $scope.title = 'mma.coursecompletion.coursecompletion';
                 $scope.class = 'mma-coursecompletion-user-handler';
+                $scope.icon = 'ion-android-checkbox-outline';
 
                 $scope.action = function($event) {
                     $event.preventDefault();
@@ -166,6 +169,18 @@ angular.module('mm.addons.coursecompletion')
         var self = {};
 
         /**
+         * Invalidate data to determine if handler is enabled for a course.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}             Promise resolved when done.
+         */
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            return $mmaCourseCompletion.invalidateCourseCompletion(courseId);
+        };
+
+        /**
          * Check if handler is enabled.
          *
          * @return {Boolean} True if handler is enabled, false otherwise.
@@ -176,6 +191,8 @@ angular.module('mm.addons.coursecompletion')
 
         /**
          * Check if handler is enabled for this course.
+         *
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
          *
          * @param  {Number} courseId     Course ID.
          * @param  {Object} accessData   Type of access to the course: default, guest, ...
@@ -188,20 +205,7 @@ angular.module('mm.addons.coursecompletion')
                 return false; // Not enabled for guests.
             }
 
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function(courseEnabled) {
-                // If is not enabled in the course, is not enabled for the user.
-                if (!courseEnabled) {
-                    coursesNavEnabledCache[courseId] = false;
-                }
-                // Check if the user can see his own report, teachers can't.
-                if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
-                    return coursesNavEnabledCache[courseId];
-                }
-                return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId).then(function(enabled) {
-                    coursesNavEnabledCache[courseId] = enabled;
-                    return enabled;
-                });
-            });
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId, true);
         };
 
         /**
@@ -231,6 +235,44 @@ angular.module('mm.addons.coursecompletion')
                     });
                 };
             };
+        };
+
+        /**
+         * Check if handler should be displayed in a course. Will only be called if the handler is enabled for the course.
+         *
+         * This function shouldn't be called too much, so WebServices calls are allowed.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise|Boolean}     True or promise resolved with true if handler should be displayed.
+         */
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+
+            // Check if the user can see his own report, teachers can't.
+            return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId).then(function(enabled) {
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
+        };
+
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmaCourseCompletion.invalidateCourseCompletion(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmaCourseCompletion.getCompletion(course.id);
+            });
         };
 
         return self;

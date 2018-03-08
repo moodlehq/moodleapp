@@ -14,26 +14,25 @@
 
 angular.module('mm.core.fileuploader', ['mm.core'])
 
-.config(function($stateProvider) {
+.constant('mmFileUploaderAlbumPriority', 2000)
+.constant('mmFileUploaderCameraPriority', 1800)
+.constant('mmFileUploaderAudioPriority', 1600)
+.constant('mmFileUploaderVideoPriority', 1400)
+.constant('mmFileUploaderFilePriority', 1200)
 
-    $stateProvider
-
-    .state('site.fileuploader-picker', {
-        url: '/fileuploader-picker',
-        params: {
-            maxsize: -1,
-            upload: true, // True if file should be uploaded, false to only pick the file.
-            allowOffline: false, // To allow picking files in offline. Only supported if upload=false.
-            title: null, // Page title.
-            filterMethods: null, // Allow only this upload methods.
-        },
-        views: {
-            'site': {
-                templateUrl: 'core/components/fileuploader/templates/picker.html',
-                controller: 'mmFileUploaderPickerCtrl'
-            }
-        }
-    });
+.config(function($mmFileUploaderDelegateProvider, mmFileUploaderAlbumPriority, mmFileUploaderCameraPriority,
+            mmFileUploaderAudioPriority, mmFileUploaderVideoPriority, mmFileUploaderFilePriority) {
+    // Register fileuploader handlers.
+    $mmFileUploaderDelegateProvider.registerHandler('mmFileUploaderAlbum',
+                '$mmFileUploaderHandlers.albumFilePicker', mmFileUploaderAlbumPriority);
+    $mmFileUploaderDelegateProvider.registerHandler('mmFileUploaderCamera',
+                '$mmFileUploaderHandlers.cameraFilePicker', mmFileUploaderCameraPriority);
+    $mmFileUploaderDelegateProvider.registerHandler('mmFileUploaderAudio',
+                '$mmFileUploaderHandlers.audioFilePicker', mmFileUploaderAudioPriority);
+    $mmFileUploaderDelegateProvider.registerHandler('mmFileUploaderVideo',
+                '$mmFileUploaderHandlers.videoFilePicker', mmFileUploaderVideoPriority);
+    $mmFileUploaderDelegateProvider.registerHandler('mmFileUploaderFile',
+                '$mmFileUploaderHandlers.filePicker', mmFileUploaderFilePriority);
 })
 
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmFileUploaderDelegate,

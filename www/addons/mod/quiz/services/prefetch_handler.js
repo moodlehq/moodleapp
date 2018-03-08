@@ -65,7 +65,7 @@ angular.module('mm.addons.mod_quiz')
     self.gatherPreflightData = function(quiz, quizAccessInfo, attempt, preflightData, siteId, askPreflight, modalTitle) {
         if (askPreflight) {
             // Check if the quiz requires preflight data.
-            scope = $rootScope.$new();
+            var scope = $rootScope.$new();
             scope.preflightData = preflightData;
             scope.preflightModalTitle = modalTitle;
 
@@ -139,10 +139,10 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuizPrefetchHandler#getDownloadSize
      * @param  {Object} module   Module to get the size.
      * @param  {Number} courseId Course ID the module belongs to.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
      * @return {Object}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
-    self.getDownloadSize = function(module, courseId, siteId) {
+    self.getDownloadSize = function(module, courseId, single) {
         return {size: -1, total: false};
     };
 
@@ -272,6 +272,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
+        // Always invalidate all the data since it's needed to check if the quiz is downloadable.
         return $mmaModQuiz.getQuizIdFromModule(module, courseId).then(function(quizId) {
             var promises = [];
 
@@ -293,13 +294,14 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModQuiz.getQuiz(courseId, module.id, false, true).then(function(quiz) {
+        var siteId = $mmSite.getId();
+        return $mmaModQuiz.getQuiz(courseId, module.id, siteId).then(function(quiz) {
             if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
                 return false;
             }
 
             // Not downloadable if we reached max attempts.
-            return $mmaModQuiz.getUserAttempts(quiz.id).then(function(attempts) {
+            return $mmaModQuiz.getUserAttempts(quiz.id, false, true, false, false, siteId).then(function(attempts) {
                 var isLastFinished = !attempts.length || $mmaModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
                 return quiz.attempts === 0 || quiz.attempts > attempts.length || !isLastFinished;
             });
@@ -370,10 +372,7 @@ angular.module('mm.addons.mod_quiz')
                 attemptAccessInfo = info;
             }));
 
-            angular.forEach(introFiles, function(file) {
-                var url = file.fileurl;
-                promises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, introFiles, self.component, module.id));
 
             return $q.all(promises);
         }).then(function() {
@@ -401,14 +400,19 @@ angular.module('mm.addons.mod_quiz')
                 promises.push($mmaModQuiz.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                     attempts = atts;
                 }));
+
+                // Update the download time to prevent detecting the new attempt as an update.
+                promises.push($mmFilepool.updatePackageDownloadTime(siteId, self.component, module.id).catch(function() {
+                    // Ignore errors.
+                }));
             }
 
             // Fetch attempt related data.
             promises.push($mmaModQuiz.getCombinedReviewOptions(quiz.id, true, siteId));
             promises.push($mmaModQuiz.getUserBestGrade(quiz.id, true, siteId));
             promises.push($mmaModQuiz.getGradeFromGradebook(courseId, module.id, true, siteId).then(function(gradebookData) {
-                if (typeof gradebookData.grade != 'undefined') {
-                    return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                if (typeof gradebookData.graderaw != 'undefined') {
+                    return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
                 }
             }).catch(function() {
                 // Ignore failures.
@@ -555,7 +559,7 @@ angular.module('mm.addons.mod_quiz')
         }));
         promises.push($mmaModQuiz.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId).then(function(gradebookData) {
             if (typeof gradebookData.grade != 'undefined') {
-                return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
             }
         }));
         promises.push($mmaModQuiz.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_label')
  * @ngdoc service
  * @name $mmaModLabelHandlers
  */
-.factory('$mmaModLabelHandlers', function($mmText, $translate, $state, $mmContentLinksHelper, $q, $mmCourse) {
+.factory('$mmaModLabelHandlers', function($mmContentLinksHelper) {
     var self = {};
 
     /**
@@ -52,24 +52,15 @@ angular.module('mm.addons.mod_label')
          */
         self.getController = function(module) {
             return function($scope) {
-                var title = $mmText.shortenText($mmText.cleanTags(module.description).trim(), 128);
-                if (title.length <= 0) {
-                    $translate('mma.mod_label.taptoview').then(function(taptoview) {
-                        $scope.title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
-                    });
-                } else {
-                    $scope.title = title;
-                }
+                $scope.title = module.description || module.descriptioncopy;
+
+                // Store the description so it can be retrieved if this controller is instantiated more than once.
+                module.descriptioncopy = module.description;
+                module.description = "";
 
                 $scope.icon = false;
                 $scope.class = 'mma-mod_label-handler';
-                $scope.action = function(e) {
-                    if (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                    $state.go('site.mod_label', {description: module.description});
-                };
+                $scope.action = false;
             };
         };
 
@@ -83,56 +74,7 @@ angular.module('mm.addons.mod_label')
      * @ngdoc method
      * @name $mmaModLabelHandlers#linksHandler
      */
-    self.linksHandler = function() {
-
-        var self = {};
-
-        /**
-         * Whether or not the handler is enabled for a certain site.
-         *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            if (courseId) {
-                return $q.when(true);
-            }
-            return $mmCourse.canGetModuleWithoutCourseId(siteId);
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's a label URL.
-            if (typeof self.handles(url) != 'undefined') {
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
-            }
-            return $q.when([]);
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            var position = url.indexOf('/mod/label/view.php');
-            if (position > -1) {
-                return url.substr(0, position);
-            }
-        };
-
-        return self;
-    };
+    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModLabel', 'label', {});
 
     return self;
 });

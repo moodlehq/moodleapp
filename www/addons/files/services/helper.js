@@ -26,9 +26,10 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFilesHelper#selectAndUploadFile
-     * @return {Promise} Promise resolved when a file is uploaded, rejected otherwise.
+     * @param  {Object} [info] Private files info. See $mmaFiles#getPrivateFilesInfo.
+     * @return {Promise}       Promise resolved when a file is uploaded, rejected otherwise.
      */
-    self.selectAndUploadFile = function() {
+    self.selectAndUploadFile = function(info) {
         // Open the file picker.
         var maxSize = $mmSite.getInfo().usermaxuploadfilesize,
             userQuota = $mmSite.getInfo().userquota;
@@ -36,6 +37,8 @@ angular.module('mm.addons.files')
         if (userQuota === 0) {
             // 0 means ignore user quota. In the app it is -1.
             userQuota = -1;
+        } else if (userQuota > 0 && typeof info != 'undefined') {
+            userQuota = userQuota - info.filesizewithoutreferences;
         }
 
         if (typeof maxSize == 'undefined') {

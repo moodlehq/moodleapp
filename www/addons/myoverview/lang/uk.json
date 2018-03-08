@@ -1,0 +1,18 @@
+{
+    "future": "Заплановані",
+    "inprogress": "В процесі",
+    "morecourses": "Більше курсів",
+    "next30days": "Наступні 30 днів",
+    "next7days": "Наступні 7 днів",
+    "nocourses": "Курси відсутні",
+    "nocoursesfuture": "Немає запланових курсів",
+    "nocoursesinprogress": "Курси в прогресі відсутні",
+    "nocoursespast": "Пройдені курси відсутні",
+    "noevents": "Наразі, заплановані активності відсутні",
+    "past": "Минулі",
+    "pluginname": "Огляд курсу",
+    "recentlyoverdue": "Нещодавно прострочені",
+    "sortbycourses": "Сортувати за назвою курсів",
+    "sortbydates": "Сортувати за датою",
+    "timeline": "Часова пряма"
+}

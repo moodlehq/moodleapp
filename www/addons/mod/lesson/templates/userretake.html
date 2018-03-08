@@ -1,0 +1,123 @@
+<ion-view view-title="{{ 'mma.mod_lesson.detailedstats' | translate }}">
+    <ion-content mm-state-class delegate-handle="mmaModLessonUserRetakeScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="retakeLoaded" on-refresh="refreshData()"></ion-refresher>
+        <mm-loading hide-until="retakeLoaded">
+            <div class="list" ng-if="student">
+                <a class="item item-text-wrap" ng-class="{'item-avatar': student.profileimageurl}" mm-user-link userid="{{student.id}}" courseid="{{courseId}}" title="{{student.fullname}}">
+                    <img ng-if="student.profileimageurl" ng-src="{{student.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: student.fullname} }}" role="presentation" >
+                    <h2>{{student.fullname}}</h2>
+                    <mm-progress-bar progress="student.bestgrade"></mm-progress-bar>
+                </a>
+
+                <!-- Retake selector if there is more than one retake. -->
+                <div ng-if="student.attempts && student.attempts.length > 1" class="item item-text-wrap item-input item-select">
+                    <ion-label id="mma-mod_lesson-retakeslabel">{{ 'mma.mod_lesson.attemptheader' | translate }}</ion-label>
+                    <select ng-model="selectedRetake" ng-change="setRetake(selectedRetake)" aria-labelledby="mma-mod_lesson-retakeslabel" ng-options="retake.try as retake.label for retake in student.attempts" mm-ios-select-fix>
+                    </select>
+                </div>
+
+                <!-- Retake stats. -->
+                <div ng-if="retake && retake.userstats && retake.userstats.gradeinfo" class="mma-mod_lesson-userstats">
+                    <div class="item item-text-wrap row mm-item-padding">
+                        <div class="col col-50">
+                            <p class="item-heading">{{ 'mma.mod_lesson.grade' | translate }}</p>
+                            <p>{{ 'mm.core.percentagenumber' | translate:{$a: retake.userstats.grade} }}</p>
+                        </div>
+
+                        <div class="col col-50">
+                            <p class="item-heading">{{ 'mma.mod_lesson.rawgrade' | translate }}</p>
+                            <p>{{ retake.userstats.gradeinfo.earned }} / {{ retake.userstats.gradeinfo.total }}</p>
+                        </div>
+                    </div>
+                    <div class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_lesson.timetaken' | translate }}</p>
+                        <p>{{ retake.userstats.timetakenReadable }}</p>
+                    </div>
+                    <div class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_lesson.completed' | translate }}</p>
+                        <p>{{ retake.userstats.completed * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+                    </div>
+                </div>
+
+                <!-- Not completed, no stats. -->
+                <div ng-if="retake && (!retake.userstats || !retake.userstats.gradeinfo)" class="item item-text-wrap">
+                    {{ 'mma.mod_lesson.notcompleted' | translate }}
+                </div>
+
+                <!-- Pages. -->
+                <div ng-if="retake" ng-repeat="page in retake.answerpages" class="mma-mod_lesson-answerpage card" ng-class="{'dimmed': page.grayout}">
+                    <div class="item item-divider item-text-wrap">
+                        <h2>{{page.qtype}}: {{page.title}}</h2>
+                    </div>
+                    <div class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_lesson.question' | translate }}</p>
+                        <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}" max-height="50">{{page.contents}}</mm-format-text></p>
+                    </div>
+                    <div class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_lesson.answer' | translate }}</p>
+                    </div>
+                    <div class="item item-text-wrap" ng-if="!page.answerdata || !page.answerdata.answers || !page.answerdata.answers.length">
+                        <p>{{ 'mma.mod_lesson.didnotanswerquestion' | translate }}</p>
+                    </div>
+                    <div ng-if="page.answerdata && page.answerdata.answers && page.answerdata.answers.length" class="mma-mod_lesson-answer">
+                        <div ng-repeat="answer in page.answerdata.answers">
+                            <div ng-if="page.isContent" class="item item-text-wrap row">
+                                <!-- Content page, display a button and the content. -->
+                                <div class="col col-50 padding">
+                                    <button class="button button-block" disabled="disabled">{{ answer[0].buttonText }}</button>
+                                </div>
+                                <div class="col col-50 padding">
+                                    <p ng-bind-html="answer[0].content"></p>
+                                </div>
+                            </div>
+                            <div ng-if="page.isQuestion">
+                                <!-- Question page, show the right input for the answer. -->
+
+                                <!-- Truefalse or matching. -->
+                                <ion-checkbox ng-if="answer[0].isCheckbox" name="{{answer[0].name}}" value="{{answer[0].value}}" ng-disabled="true" readonly="readonly" class="item-text-wrap item-checkbox-right" ng-checked="answer[0].checked" ng-class="{'highlight': answer[0].highlight}">
+                                    <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0].content}}</mm-format-text></p>
+                                    <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
+                                </ion-checkbox>
+
+                                <!-- Short answer or numeric. -->
+                                <div ng-if="answer[0].isText" class="item item-text-wrap">
+                                    <p>{{ answer[0].value }}</p>
+                                    <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
+                                </div>
+
+                                <!-- Matching. -->
+                                <div ng-if="answer[0].isSelect" class="item item-text-wrap row mm-item-padding">
+                                    <div class="col col-50">
+                                        <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{ answer[0].content }}</mm-format-text></p>
+                                    </div>
+                                    <div class="col  col-50">
+                                        <p>{{answer[0].value}}</p>
+                                        <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
+                                    </div>
+                                </div>
+
+                                <!-- Essay or couldn't determine. -->
+                                <div ng-if="!answer[0].isCheckbox && !answer[0].isText && !answer[0].isSelect" class="item item-text-wrap">
+                                    <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0]}}</mm-format-text></p>
+                                    <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
+                                </div>
+                            </div>
+                            <div ng-if="!page.isContent && !page.isQuestion" class="item item-text-wrap">
+                                <!-- Another page (end of branch, ...). -->
+                                <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[0]}}</mm-format-text></p>
+                                <div ng-if="answer[1]" class="badge badge-inline badge-dark"><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{answer[1]}}</mm-format-text></div>
+                            </div>
+                        </div>
+                        <div ng-if="page.answerdata.response" class="item item-text-wrap">
+                            <p class="item-heading">{{ 'mma.mod_lesson.response' | translate }}</p>
+                            <p><mm-format-text component="{{component}}" component-id="{{lesson.coursemodule}}">{{page.answerdata.response}}</mm-format-text></p>
+                        </div>
+                        <div ng-if="page.answerdata.score" class="item item-text-wrap">
+                            <p>{{page.answerdata.score}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

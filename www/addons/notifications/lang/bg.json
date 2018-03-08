@@ -1,5 +1,6 @@
 {
     "errorgetnotifications": "Грешка при получаването на уведомленията",
-    "notifications": "Уведомления",
+    "notificationpreferences": "Предпочитания за уведомленията",
+    "notifications": "Уведомление",
     "therearentnotificationsyet": "Няма уведомления."
 }

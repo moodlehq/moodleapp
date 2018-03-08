@@ -1,0 +1,6 @@
+{
+    "dimensioncommentfor": "{{$a}} のコメント",
+    "dimensiongradefor": "{{$a}} の評定",
+    "dimensionnumber": "アスペクト {{$a}}",
+    "mustchoosegrade": "あなたはこのアスペクトの評点を選択する必要があります。"
+}

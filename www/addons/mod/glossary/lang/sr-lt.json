@@ -1,0 +1,20 @@
+{
+    "attachment": "Prilog",
+    "browsemode": "Pregledaj pojmove",
+    "byalphabet": "Abecednim redom",
+    "byauthor": "Grupiši po autoru",
+    "bycategory": "Grupiši po kategoriji",
+    "bynewestfirst": "Najnoviji prvo",
+    "byrecentlyupdated": "Nedavno ažurirani",
+    "bysearch": "Pretraži",
+    "cannoteditentry": "Ne možete da uređujete pojam",
+    "casesensitive": "Koristi regularne izraze",
+    "categories": "Kategorije kurseva",
+    "entriestobesynced": "Pojmovi za sinhronizaciju",
+    "entrypendingapproval": "Ovaj pojam čeka odobrenje.",
+    "errorloadingentries": "Došlo je do greške prilikom učitavanja pojmova.",
+    "errorloadingentry": "Došlo je do greške prilikom učitavanja pojma.",
+    "errorloadingglossary": "Došlo je do greške prilikom učitavanja rečnika.",
+    "noentriesfound": "Nije pronađen nijedan pojam.",
+    "searchquery": "Upit za pretragu"
+}

@@ -119,9 +119,13 @@ angular.module('mm.addons.mod_assign')
         promises.push(self.getAssignSubmissionsGrade(assignId, siteId));
 
         return $q.all(promises).then(function(objects) {
-            return objects.reduce(function(a, b) {
-              return a.length > 0 || b.length > 0;
-            }, []);
+            for (var i = 0; i < objects.length; i++) {
+                var result = objects[i];
+                if (result && result.length) {
+                    return true;
+                }
+            }
+            return false;
         }).catch(function() {
             // No offline data found.
             return false;

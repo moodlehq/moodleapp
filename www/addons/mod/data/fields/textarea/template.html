@@ -1,0 +1,7 @@
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
+<input ng-if="mode == 'search'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}">
+<div ng-if="mode == 'edit'" class="item item-text-wrap mm-item-has-rich-text-editor">
+    <mm-rich-text-editor model="model" placeholder="{{ field.name }}" name="f_{{field.id}}" component="{{component}}" component-id="{{componentId}}" first-render="firstRender()"></mm-rich-text-editor>
+</div>
+<mm-format-text ng-if="mode == 'show' && value" watch="true" component="{{component}}" component-id="{{componentId}}">{{ value | mmaModDataFieldTextareaFormat }}</mm-format-text>

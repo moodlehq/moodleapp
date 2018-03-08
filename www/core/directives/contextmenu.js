@@ -85,6 +85,13 @@ angular.module('mm.core')
     function hideContextMenu(close) {
         if (close) {
             $scope.contextMenuPopover.hide();
+            $timeout(function() {
+                if (!document.querySelector('.popover-backdrop.active')) {
+                    // No popover open, remove class from body to prevent Ionic bug:
+                    // https://github.com/driftyco/ionic-v1/issues/53
+                    angular.element(document.body).removeClass('popover-open');
+                }
+            }, 1); // Using default hide time for popovers.
         }
     }
 
@@ -96,11 +103,15 @@ angular.module('mm.core')
 
     $scope.$on('$destroy', function() {
         if ($scope.contextMenuPopover) {
+            hideContextMenu(true);
             $scope.contextMenuPopover.remove();
         } else {
             // Directive destroyed before popover was initialized. Wait a bit and try again.
             $timeout(function() {
-                $scope.contextMenuPopover && $scope.contextMenuPopover.remove();
+                if ($scope.contextMenuPopover) {
+                    hideContextMenu(true);
+                    $scope.contextMenuPopover.remove();
+                }
             }, 200);
         }
     });
@@ -136,6 +147,9 @@ angular.module('mm.core')
         link: function(scope, element) {
             scope.contextMenuIcon = scope.icon || 'ion-android-more-vertical';
             scope.contextMenuAria = scope.title || $translate.instant('mm.core.info');
+            scope.filterNgShow = function(value) {
+                return value && value.ngShow;
+            };
 
             // The transclude should have been executed already. Remove ng-transclude to prevent errors with mm-nav-buttons.
             var div = element[0].querySelector('div[ng-transclude]');
@@ -175,6 +189,8 @@ angular.module('mm.core')
  * @param {Boolean}  [closeOnClick=true]   If close the popover when clicked. Only works if action or href is provided.
  * @param {Boolean}  [closeWhenDone=false] Close popover when action is done. Only if action is supplied and closeOnClick=false.
  * @param {Number}   [priority]            Used to sort items. The highest priority, the highest position.
+ * @param {String}   [badge]               A badge to show in the item.
+ * @param {String}   [badgeClass]          A class to set in the badge.
  */
 .directive('mmContextMenuItem', function($mmUtil, $timeout, $ionicPlatform) {
 
@@ -231,7 +247,9 @@ angular.module('mm.core')
             closeOnClick: '=?',
             closeWhenDone: '=?',
             priority: '=?',
-            ngShow: '=?'
+            ngShow: '=?',
+            badge: '=?',
+            badgeClass: '=?'
         },
         link: function(scope, element, attrs, CtxtMenuCtrl) {
             // Initialize values. Change the name of some of them to prevent being reconverted to string.

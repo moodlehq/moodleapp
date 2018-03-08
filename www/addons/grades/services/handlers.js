@@ -21,7 +21,8 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmaGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper, mmCoursesAccessMethods) {
+.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmContentLinksHelper, $mmContentLinkHandlerFactory,
+            mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
     var self = {},
         viewGradesEnabledCache = {}; // We use a "cache" to decrease network usage.
@@ -72,11 +73,13 @@ angular.module('mm.addons.grades')
          * @return {Promise} Promise resolved with true if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaGrades.isPluginEnabled();
+            return $mmGrades.isPluginEnabled();
         };
 
         /**
          * Check if handler is enabled for this course.
+         *
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
          *
          * @param  {Number} courseId     Course ID.
          * @param  {Object} accessData   Type of access to the course: default, guest, ...
@@ -93,7 +96,7 @@ angular.module('mm.addons.grades')
                 return navOptions.grades;
             }
 
-            return $mmaGrades.isPluginEnabledForCourse(courseId);
+            return $mmGrades.isPluginEnabledForCourse(courseId);
         };
 
         /**
@@ -113,7 +116,7 @@ angular.module('mm.addons.grades')
              */
             return function($scope, $state) {
                 $scope.icon = 'ion-stats-bars';
-                $scope.title = 'mma.grades.grades';
+                $scope.title = 'mm.grades.grades';
                 $scope.class = 'mma-grades-mine-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
@@ -123,6 +126,21 @@ angular.module('mm.addons.grades')
                     });
                 };
             };
+        };
+
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmGrades.invalidateGradesTableData(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmGrades.getGradesTable(course.id);
+            });
         };
 
         return self;
@@ -137,7 +155,9 @@ angular.module('mm.addons.grades')
      */
     self.viewGrades = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.
@@ -145,7 +165,7 @@ angular.module('mm.addons.grades')
          * @return {Promise} Promise resolved with true if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaGrades.isPluginEnabled();
+            return $mmGrades.isPluginEnabled();
         };
 
         /**
@@ -158,12 +178,12 @@ angular.module('mm.addons.grades')
          * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
          */
         self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
-            return $mmaGrades.isPluginEnabledForCourse(courseId).then(function() {
+            return $mmGrades.isPluginEnabledForCourse(courseId).then(function() {
                 var cacheKey = getCacheKey(courseId, user.id);
                 if (typeof viewGradesEnabledCache[cacheKey] != 'undefined') {
                     return viewGradesEnabledCache[cacheKey];
                 }
-                return $mmaGrades.isPluginEnabledForUser(courseId, user.id).then(function(enabled) {
+                return $mmGrades.isPluginEnabledForUser(courseId, user.id).then(function(enabled) {
                     viewGradesEnabledCache[cacheKey] = enabled;
                     return enabled;
                 });
@@ -187,8 +207,9 @@ angular.module('mm.addons.grades')
              * @name $mmaGradesHandlers#viewGrades:controller
              */
             return function($scope) {
-                $scope.title = 'mma.grades.viewgrades';
+                $scope.title = 'mm.grades.grades';
                 $scope.class = 'mma-grades-user-handler';
+                $scope.icon = 'ion-stats-bars';
 
                 $scope.action = function($event) {
                     $event.preventDefault();
@@ -206,110 +227,73 @@ angular.module('mm.addons.grades')
     };
 
     /**
-     * Content links handler.
+     * Content links handler for view user grades (can be current user).
      *
      * @module mm.addons.grades
      * @ngdoc method
-     * @name $mmaGradesHandlers#linksHandler
+     * @name $mmaGradesHandlers#userLinksHandler
      */
-    self.linksHandler = function() {
+    self.userLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                '/grade/report/user/index.php', '$mmUserDelegate_mmaGrades:viewGrades');
 
-        var self = {};
-
-        /**
-         * Whether or not the handler is enabled for a certain site and course.
-         *
-         * @param  {String} siteId   Site ID.
-         * @param  {Number} courseId Course ID.
-         * @return {Promise}         Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            return $mmaGrades.isPluginEnabled(siteId).then(function(enabled) {
-                if (enabled) {
-                    return $mmaGrades.isPluginEnabledForCourse(courseId, siteId);
-                }
-            });
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.userLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+        if (!courseId) {
+            return false;
         }
 
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds Site IDs the URL belongs to.
-         * @param {String} url       URL to treat.
-         * @return {Object[]}        Promise resolved with the list of actions.
-         *                           See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            // Check it's a grade URL.
-            if (typeof self.handles(url) != 'undefined') {
-                // Check for the courses grades link first.
-                if (url.indexOf('overview') > -1) {
-                    return $mmContentLinksHelper.filterSupportedSites(siteIds, $mmaCoursesGrades.isPluginEnabled, false).then(function(ids) {
-                        if (!ids.length) {
-                            return [];
-                        } else {
-                            // Return actions.
-                            return [{
-                                message: 'mm.core.view',
-                                icon: 'ion-eye',
-                                sites: ids,
-                                action: function(siteId) {
-                                    var stateParams = {};
-                                    $mmContentLinksHelper.goInSite('site.coursesgrades', stateParams, siteId);
-                                }
-                            }];
-                        }
-                    });
-                } else {
-                    var params = $mmUtil.extractUrlParams(url);
-                    if (typeof params.id != 'undefined') {
-                        var courseId = parseInt(params.id, 10);
-                        // Pass false because all sites should have the same siteurl.
-                        return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
-                            if (!ids.length) {
-                                return [];
-                            } else {
-                                // Return actions.
-                                return [{
-                                    message: 'mm.core.view',
-                                    icon: 'ion-eye',
-                                    sites: ids,
-                                    action: function(siteId) {
-                                        var stateParams = {
-                                            course: {id: courseId},
-                                            userid: parseInt(params.userid, 10),
-                                            courseid: courseId,
-                                            forcephoneview: false
-                                        };
-                                        $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
-                                    }
-                                }];
-                            }
-                        });
-                    }
-                }
+        return $mmGrades.isPluginEnabled(siteId).then(function(enabled) {
+            if (!enabled) {
+                return false;
             }
-            return [];
-        };
 
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            // Accept any of these patterns.
-            var patterns = ['/grade/report/user/index.php', '/grade/report/overview/index.php'];
-            for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
+            return $mmGrades.isPluginEnabledForCourse(courseId, siteId);
+        });
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.userLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+
+        return [{
+            action: function(siteId) {
+                var stateParams = {
+                    course: {id: courseId},
+                    userid: params.userid ? parseInt(params.userid, 10) : false,
+                    courseid: courseId,
+                    forcephoneview: false
+                };
+                $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
             }
-        };
+        }];
+    };
 
-        return self;
+    /**
+     * Content links handler for overview courses grades.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGradesHandlers#overviewLinksHandler
+     */
+    self.overviewLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                '/grade/report/overview/index.php', '$mmSideMenuDelegate_mmaGrades');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.overviewLinksHandler.isEnabled = $mmaCoursesGrades.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.overviewLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.coursesgrades',
+                    params: {}
+                });
+            }
+        }];
     };
 
     /**
@@ -349,7 +333,7 @@ angular.module('mm.addons.grades')
              */
             return function($scope) {
                 $scope.icon = 'ion-stats-bars';
-                $scope.title = 'mma.grades.grades';
+                $scope.title = 'mm.grades.grades';
                 $scope.state = 'site.coursesgrades';
                 $scope.class = 'mma-grades-coursesgrades';
             };

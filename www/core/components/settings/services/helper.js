@@ -118,6 +118,9 @@ angular.module('mm.core')
      */
     self.getSites = function() {
         return $mmSitesManager.getSites().then(function(dbSites) {
+            // Sort sites by url and fullname.
+            dbSites = $mmSitesManager.sortSites(dbSites);
+
             var newSites = {}; // Create a new object to prevent showing sites that have been deleted.
 
             angular.forEach(dbSites, function(site) {
@@ -181,7 +184,7 @@ angular.module('mm.core')
         var promises = [],
             syncPromise,
             deleted = false,
-            hasSyncHooks = $mmCronDelegate.hasSyncHooks();
+            hasSyncHooks = $mmCronDelegate.hasManualSyncHooks();
 
         if (hasSyncHooks && !$mmApp.isOnline()) {
             // We need connection to execute sync.
@@ -206,7 +209,7 @@ angular.module('mm.core')
                 // Check if local_mobile was installed in Moodle.
                 subPromises.push(site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
                     // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                    $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
+                    $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: siteId});
                     return $mmLang.translateAndReject('mm.core.lostconnection');
                 }, function() {
                     // Update site info.

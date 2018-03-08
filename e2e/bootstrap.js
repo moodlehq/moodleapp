@@ -37,5 +37,5 @@ beforeEach(function() {
       return browser.driver.isElementPresent(by.id('mm-login-site')).then(function(e) {
         return e === true;
       });
-    }, 50000);
+    }, 100000);
 });

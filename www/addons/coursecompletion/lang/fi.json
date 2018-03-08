@@ -1,0 +1,20 @@
+{
+    "complete": "Valmis",
+    "completed": "Suoritettu",
+    "completiondate": "Suorituspäivämäärä",
+    "couldnotloadreport": "Kurssin suoritusraporttia ei pystytty lataamaan. Ole hyvä ja yritä myöhemmin uudelleen.",
+    "coursecompletion": "Kurssin suoritus",
+    "criteria": "Kriteerit",
+    "criteriagroup": "Kriteeriryhmä",
+    "criteriarequiredall": "Kaikki alla mainitut kriteerit vaaditaan.",
+    "criteriarequiredany": "Jokin alla olevista kriteereistä vaaditaan",
+    "inprogress": "Meneillään",
+    "manualselfcompletion": "Opiskelijan itse hyväksymät suoritukset",
+    "notyetstarted": "Ei vielä alkanut",
+    "pending": "Odottaa",
+    "required": "Vaadittu",
+    "requiredcriteria": "Vaaditut kriteerit",
+    "requirement": "Vaatimus",
+    "status": "Status",
+    "viewcoursereport": "Näytä kurssiraportti"
+}

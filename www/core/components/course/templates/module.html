@@ -1,0 +1,21 @@
+<a id="mm-course-module-{{module.id}}" class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-click="module.uservisible !== false && action && action($event)" ng-class="{'item-media': icon, 'mm-not-clickable': !action || module.uservisible === false, 'item-dimmed': module.visible === 0 || module.uservisible === false}" ng-controller="module._controller" title="{{ module.name }}" ng-if="module.visibleoncoursepage !== 0">
+
+    <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
+
+    <div class="buttons mm-module-buttons" ng-class="{'mm-button-completion': module.completionstatus}" ng-if="module.uservisible !== false && ((buttons && buttons.length > 0) || spinner || module.completionstatus)">
+        <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="module.name" after-change="completionChanged"></mm-completion>
+
+        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon mm-animate-show-hide" aria-label="{{ button.label | translate }}">
+            <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
+        </button>
+
+        <ion-spinner ng-if="spinner" class="mm-animate-show-hide"></ion-spinner>
+    </div>
+
+    <mm-format-text watch="true">{{ title }}</mm-format-text>
+    <div class="padding-vertical" ng-if="module.visible === 0 || module.availabilityinfo">
+        <p class="badge badge-calm badge-inline" ng-if="module.visible === 0">{{ 'mm.course.hiddenfromstudents' | translate }}</p>
+        <p class="badge badge-calm badge-inline" ng-if="module.availabilityinfo"><mm-format-text watch="true">{{ module.availabilityinfo }}</mm-format-text></p>
+    </div>
+    <mm-format-text watch="true" max-height="80" ng-if="module.description">{{ module.description }}</mm-format-text>
+</a>

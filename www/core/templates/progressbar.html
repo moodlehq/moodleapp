@@ -1,0 +1,8 @@
+<div ng-if="progress !== false && progress >= 0">
+    <progress max="100" value="{{ progress }}">
+        <div class="progress-bar-fallback" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
+            <span style="width: {{ progress }}%;"></span>
+        </div>
+    </progress>
+    <span class="mm-progress-text">{{ 'mm.core.percentagenumber' | translate: {$a: text} }}</span>
+</div>

@@ -111,14 +111,10 @@ angular.module('mm.addons.mod_quiz')
             timeTaken = attempt.timefinish - attempt.timestart;
             if (timeTaken) {
                 // Format timeTaken.
-                $mmUtil.formatTime(timeTaken).then(function(takenTime) {
-                    attempt.timeTaken = takenTime;
-                });
+                attempt.timeTaken = $mmUtil.formatTimeInstant(timeTaken);
                 // Calculate overdue time.
                 if (quiz.timelimit && timeTaken > quiz.timelimit + 60) {
-                    $mmUtil.formatTime(timeTaken - quiz.timelimit).then(function(overTime) {
-                        attempt.overTime = overTime;
-                    });
+                    attempt.overTime = $mmUtil.formatTimeInstant(timeTaken - quiz.timelimit);
                 }
             }
 

@@ -2,6 +2,6 @@
     "calendarevents": "Събития от календара",
     "errorloadevent": "Грешка при зареждането на събитие.",
     "errorloadevents": "Грешка при зареждането на събитията.",
-    "noevents": "Няма събития",
-    "notifications": "Уведомления"
+    "noevents": "Няма предстоящи дейности",
+    "notifications": "Уведомление"
 }

@@ -27,25 +27,37 @@ angular.module('mm.core.contentlinks')
         self = {};
 
     /**
-     * Register a link handler.
+     * Register a link handler. An addon should register 1 handler for each type of URL to treat.
+     * E.g. if an addon should treat 2 URLs, one for viewing a list of items and the other to see a single item,
+     * it should register 2 different link handlers.
      *
      * @module mm.core.contentlinks
      * @ngdoc method
      * @name $mmContentLinksDelegateProvider#registerLinkHandler
-     * @param {String} name                    Handler's name.
+     * @param {String} name                    Handler's name. Must be unique.
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                         returning an object defining these functions. See {@link $mmUtil#resolveObject}.
-     *                             - getActions(siteIds, url, courseId) (Promise) Returns list of actions. Each action must have:
-     *                                                           - message: Message related to the action to do. E.g. 'View'.
-     *                                                           - icon: Icon related to the action to do.
-     *                                                           - sites: Sites IDs that support the action. Subset of 'siteIds'.
-     *                                                           - action(siteId): A function to be called when the link is clicked.
+     *                         It is recommended to use $mmContentLinkHandlerFactory to create the handler.
+     *                             - checkAllSites (Boolean) True if the isEnabled function should be called for all the site IDs.
+     *                                                 It should be true only if the isEnabled call can return different values for
+     *                                                 different users in same site.
+     *                             - getActions(siteIds, url, params, courseId) (Mixed) Returns list of actions, or promise
+     *                                                 resolved with the list of actions. Each action must have:
+     *                                                     - action(siteId): Required. A function to call when the link is clicked.
+     *                                                     - message: Optional. Message of the action. Default: 'mm.core.view'.
+     *                                                     - icon: Optional. Icon of to the action. Default: 'ion-eye'.
+     *                                                     - sites: Optional. Sites IDs that support the action. Subset of siteIds.
+     *                                                              Default: siteIds.
      *                             - handles(url) (String) Check if a URL is handled by this handler. If so, returns the site URL.
+     *                             - isEnabled(siteId, url, params, courseId) (Mixed) Optional. Returns a boolean or promise
+     *                                                 resolved with boolean. True if enabled, false otherwise. Enabled by default.
+     *                             - featureName (String) Optional. Name of the feature this handler is related to. It will be used
+     *                                                 to check if the feature is disabled (@see $mmSite#isFeatureDisabled).
      * @param {Number} [priority]              Handler's priority.
      */
     self.registerLinkHandler = function(name, handler, priority) {
         if (typeof linkHandlers[name] !== 'undefined') {
-            console.log("$mmContentLinksDelegateProvider: Addon '" + linkHandlers[name].name +
+            console.log("$mmContentLinksDelegateProvider: Handler '" + linkHandlers[name].name +
                         "' already registered as link handler");
             return false;
         }
@@ -84,22 +96,69 @@ angular.module('mm.core.contentlinks')
             // Get the list of sites the URL belongs to.
             return $mmSitesManager.getSiteIdsFromUrl(url, true, username).then(function(siteIds) {
                 var linkActions = [],
-                    promises = [];
+                    promises = [],
+                    params = $mmUtil.extractUrlParams(url);
 
                 angular.forEach(linkHandlers, function(handler) {
                     if (typeof handler.instance === 'undefined') {
                         handler.instance = $mmUtil.resolveObject(handler.handler, true);
                     }
 
-                    if (handler.instance) {
-                        promises.push($q.when(handler.instance.getActions(siteIds, url, courseId)).then(function(actions) {
+                    if (!handler.instance || !handler.instance.handles(url)) {
+                        // Invalid handler or it doesn't handle the URL. Stop.
+                        return;
+                    }
+
+                    // Filter the site IDs using the isEnabled function.
+                    var checkAll = handler.instance.checkAllSites;
+                    promises.push($mmUtil.filterEnabledSites(siteIds, isEnabled, checkAll).then(function(siteIds) {
+
+                        if (!siteIds.length) {
+                            // No sites supported, no actions.
+                            return;
+                        }
+
+                        return $q.when(handler.instance.getActions(siteIds, url, params, courseId)).then(function(actions) {
                             if (actions && actions.length) {
+                                // Set default values if any value isn't supplied.
+                                angular.forEach(actions, function(action) {
+                                    action.message = action.message || 'mm.core.view';
+                                    action.icon = action.icon || 'ion-eye';
+                                    action.sites = action.sites || siteIds;
+                                });
+
+                                // Add them to the list.
                                 linkActions.push({
                                     priority: handler.priority,
                                     actions: actions
                                 });
                             }
-                        }));
+                        });
+                    }));
+
+                    // Check if the feature and the handler are enabled.
+                    function isEnabled(siteId) {
+                        var promise;
+
+                        if (handler.instance.featureName) {
+                            // Check if the feature is disabled.
+                            promise = $mmSitesManager.isFeatureDisabled(handler.instance.featureName, siteId);
+                        } else {
+                            promise = $q.when(false);
+                        }
+
+                        return promise.then(function(disabled) {
+                            if (disabled) {
+                                return false;
+                            }
+
+                            if (!handler.instance.isEnabled) {
+                                // isEnabled function not provided, assume it's enabled.
+                                return true;
+                            }
+
+                            return handler.instance.isEnabled(siteId, url, params, courseId);
+                        });
                     }
                 });
 
@@ -132,7 +191,7 @@ angular.module('mm.core.contentlinks')
                 }
 
                 if (handler.instance && handler.instance.handles) {
-                    var siteUrl = handler.instance.handles(url);
+                    var siteUrl = handler.instance.getHandlerUrl(url);
                     if (siteUrl) {
                         return siteUrl;
                     }
@@ -152,7 +211,7 @@ angular.module('mm.core.contentlinks')
 
             // Sort by priority.
             actions = actions.sort(function(a, b) {
-                return a.priority > b.priority;
+                return a.priority >= b.priority ? 1 : -1;
             });
 
             // Fill result array.

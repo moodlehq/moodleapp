@@ -26,8 +26,29 @@ angular.module('mm.addons.mod_assign')
     var self = {};
 
     /**
+     * Check if the plugin can be edited in offline for existing submissions.
+     * In general, this should return false if the plugin uses Moodle filters. The reason is that the app only prefetches
+     * filtered data, and the user should edit unfiltered data.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionCommentsHandler#canEditOffline
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission.
+     * @param  {Object} plugin     Plugin.
+     * @return {Boolean}           Whether the plugin can be edited in offline for existing submissions.
+     */
+    self.canEditOffline = function(assign, submission, plugin) {
+        // This plugin is read only, but return true to prevent blocking the edition.
+        return true;
+    };
+
+    /**
      * Whether or not the rule is enabled for the site.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionCommentsHandler#isEnabled
      * @return {Promise} Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     self.isEnabled = function() {
@@ -39,7 +60,10 @@ angular.module('mm.addons.mod_assign')
      * This should return true if the plugin has no submission component (allow_submissions=false),
      * otherwise the user won't be able to edit submissions at all.
      *
-     * @return {Boolean}
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionCommentsHandler#isEnabledForEdit
+     * @return {Boolean} Whether the plugin is enabled.
      */
     self.isEnabledForEdit = function() {
         return true;
@@ -48,6 +72,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get the name of the directive to render this plugin.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionCommentsHandler#getDirectiveName
      * @param  {Object} plugin Plugin to get the directive for.
      * @param  {Boolean} edit  True if editing a submission, false if read only.
      * @return {String} Directive name.
@@ -59,6 +86,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Prefetch submission data.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionCommentsHandler#prefetch
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission to check data.
      * @param  {Object} plugin     Plugin.

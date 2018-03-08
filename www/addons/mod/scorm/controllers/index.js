@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_scorm')
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmEvents,
+            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmCourseHelper,
             mmCoreEventOnlineStatusChanged) {
 
     var module = $stateParams.module || {},
@@ -74,7 +74,7 @@ angular.module('mm.addons.mod_scorm')
                 return; // SCORM is closed or not open yet, we can't get more data.
             }
 
-            return syncScorm(!refresh, showErrors).catch(function() {
+            return syncScorm(showErrors).catch(function() {
                 // Ignore errors, keep getting data even if sync fails.
             }).then(function() {
 
@@ -145,6 +145,9 @@ angular.module('mm.addons.mod_scorm')
             return showError(message);
         }).then(function() {
             $scope.allDataLoaded = true;
+
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModScormComponent);
         });
     }
 
@@ -275,8 +278,11 @@ angular.module('mm.addons.mod_scorm')
     function showStatus(status) {
         currentStatus = status;
 
-        if (status == mmCoreOutdated) {
-            $scope.statusMessage = 'mma.mod_scorm.scormstatusoutdated';
+        if (status == mmCoreOutdated && scorm) {
+            // Only show the outdated message if the file should be downloaded.
+            $mmaModScorm.shouldDownloadMainFile(scorm, true).then(function(download) {
+                $scope.statusMessage = download ? 'mma.mod_scorm.scormstatusoutdated' : '';
+            });
         } else if (status == mmCoreNotDownloaded) {
             $scope.statusMessage = 'mma.mod_scorm.scormstatusnotdownloaded';
         } else if (status == mmCoreDownloading) {
@@ -317,6 +323,7 @@ angular.module('mm.addons.mod_scorm')
                 }
             } else if (progress.message) { // Show a message.
                 $scope.progressMessage = progress.message;
+                $scope.percentage = undefined;
             } else if (progress.loaded && progress.total) { // Unzipping package.
                 $scope.percentage = (parseFloat(progress.loaded / progress.total) * 100).toFixed(1);
             } else {
@@ -342,9 +349,8 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Tries to synchronize the current SCORM.
-    function syncScorm(checkTime, showErrors) {
-        var promise = checkTime ? $mmaModScormSync.syncScormIfNeeded(scorm) : $mmaModScormSync.syncScorm(scorm);
-        return promise.then(function(data) {
+    function syncScorm(showErrors) {
+        return $mmaModScormSync.syncScorm(scorm).then(function(data) {
             if (data) {
                 var message = $mmText.buildMessage(data.warnings);
                 if (message) {
@@ -400,21 +406,22 @@ angular.module('mm.addons.mod_scorm')
             return;
         }
 
-        if (currentStatus == mmCoreOutdated || currentStatus == mmCoreNotDownloaded) {
+        var isOutdated = currentStatus == mmCoreOutdated;
+
+        if (isOutdated || currentStatus == mmCoreNotDownloaded) {
             // SCORM needs to be downloaded.
-            $mmaModScormHelper.confirmDownload(scorm).then(function() {
-                // Invalidate file if SCORM is outdated.
-                var promise = currentStatus == mmCoreOutdated ?
-                                $mmaModScorm.invalidateContent(scorm.coursemodule, courseid) : $q.when();
+            $mmaModScormHelper.confirmDownload(scorm, isOutdated).then(function() {
+                // Invalidate WS data if SCORM is outdated.
+                var promise = isOutdated ? $mmaModScorm.invalidateAllScormData(scorm.id) : $q.when();
                 promise.finally(function() {
                     downloadScormPackage().then(function() {
                         // Success downloading, open scorm if user hasn't left the view.
                         if (!$scope.$$destroyed) {
                             openScorm(scoId);
                         }
-                    }).catch(function() {
+                    }).catch(function(error) {
                         if (!$scope.$$destroyed) {
-                            $mmaModScormHelper.showDownloadError(scorm);
+                            $mmaModScormHelper.showDownloadError(scorm, error);
                         }
                     });
                 });
@@ -422,6 +429,16 @@ angular.module('mm.addons.mod_scorm')
         } else {
             openScorm(scoId);
         }
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseid);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseid);
     };
 
     // Context Menu Description action.

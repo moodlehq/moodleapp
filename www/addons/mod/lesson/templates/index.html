@@ -1,0 +1,26 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="lessonLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshLesson(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="650" ng-show="lessonLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshLesson(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModLessonIndexScroll" >
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="lessonLoaded" on-refresh="refreshLesson(false)"></ion-refresher>
+        <mm-loading hide-until="lessonLoaded">
+            <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="canViewReports">
+                <a class="tab-item" ng-class="{'active': display == DISPLAY_VIEW}" ng-click="changeDisplay(DISPLAY_VIEW)">{{ 'mma.mod_lesson.preview' | translate }}</a>
+                <a class="tab-item" ng-class="{'active': display == DISPLAY_REPORTS}" ng-click="changeDisplay(DISPLAY_REPORTS)">{{ 'mma.mod_lesson.reports' | translate }}</a>
+            </div>
+
+            <ng-include ng-if="display == DISPLAY_VIEW" src="'addons/mod/lesson/templates/view.html'"></ng-include>
+
+            <ng-include ng-if="display == DISPLAY_REPORTS" src="'addons/mod/lesson/templates/reports.html'"></ng-include>
+        </mm-loading>
+    </ion-content>
+</ion-view>

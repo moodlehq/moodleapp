@@ -1,0 +1,13 @@
+<input ng-if="mode == 'search'" type="text" placeholder="{{field.name}}" name="f_{{field.id}}">
+<span ng-if="mode == 'edit'" mm-mark-required="{{field.required}}"></span>
+<span class="assertive mm-data-error" ng-if="error && mode == 'edit'">{{ error }}</span>
+<label ng-if="mode == 'edit'" class="item item-input mm-latlong">
+    <input type="text" name="f_{{field.id}}_0" ng-model="north" size="10"/>
+    <span class="placeholder-icon">°N</span>
+</label>
+<label ng-if="mode == 'edit'" class="item item-input mm-latlong">
+    <input type="text" name="f_{{field.id}}_1" ng-model="east" size="10"/>
+    <span class="placeholder-icon">°E</span>
+</label>
+
+<span ng-if="mode == 'show' && value" ng-bind-html="value | mmaModDataFieldLatLongFormat"></span>

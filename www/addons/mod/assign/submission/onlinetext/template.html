@@ -2,7 +2,7 @@
 <div class="item item-text-wrap" ng-if="!edit && model.text">
     <h2>{{plugin.name}}</h2>
     <p ng-if="words">{{ 'mma.mod_assign.numwords' | translate: {'$a': words} }}</p>
-    <p><mm-format-text expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
+    <p><mm-format-text expand-title="{{plugin.name}}" max-height="80" fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
         {{model.text}}
     </mm-format-text></p>
 </div>

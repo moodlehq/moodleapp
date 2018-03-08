@@ -1,13 +1,13 @@
 {
     "address": "Adres",
-    "city": "Stad",
+    "city": "Plaats",
     "contact": "Contact",
     "country": "Land",
-    "description": "Beschrijving",
+    "description": "Inleidende tekst",
     "details": "Details",
     "detailsnotavailable": "Je kunt de details voor deze gebruiker niet bekijken.",
     "editingteacher": "Leraar",
-    "email": "E-mail",
+    "email": "E-mailadres",
     "emailagain": "E-mail (nogmaals)",
     "firstname": "Voornaam",
     "interests": "Interesses",
@@ -18,8 +18,9 @@
     "phone1": "Telefoon",
     "phone2": "Mobiele telefoon",
     "roles": "Rollen",
+    "sendemail": "E-mail",
     "student": "Leerling",
     "teacher": "Leraar zonder bewerken",
     "viewprofile": "Bekijk profiel",
-    "webpage": "Webpagina"
+    "webpage": "Website"
 }

@@ -1,14 +1,13 @@
 {
-    "admindisableddownload": "Bemærk venligst at din Moodle administrator deaktiverede download af filer. Du kan se filerne men ikke downloade dem.",
+    "admindisableddownload": "Bemærk venligst at din Moodleadministrator har deaktiveret download af filer. Du kan se filerne men ikke downloade dem.",
     "clicktoupload": "Klik på knappen nedenfor for at uploade filer til dine private filer.",
-    "couldnotloadfiles": "Listen af filer kunne ikke læses ind.",
+    "couldnotloadfiles": "Fillisten kunne ikke hentes",
     "emptyfilelist": "Der er ingen filer at vise.",
-    "errorreceivefilenosites": "Der er ingen gemte websider. Tilføj en webside inden du prøver at uploade en fil.",
-    "myfiles": "Mine filer",
-    "myprivatefiles": "Mine private filer",
-    "myprivatefilesdesc": "Filerne som findes i dit private område på dette Moodle websted.",
-    "sitefiles": "Webside filer",
-    "sitefilesdesc": "De andre filer som er tilgængelige for dig på denne Moodle webside.",
-    "success": "Succes!",
+    "erroruploadnotworking": "Desværre er det p.t. ikke muligt at uploade filer til dit site.",
+    "files": "Filer",
+    "myprivatefilesdesc": "Filerne som er tilgængelige i dit private område på dette Moodlewebsted.",
+    "privatefiles": "Private filer",
+    "sitefiles": "Site filer",
+    "sitefilesdesc": "De andre filer som er tilgængelige for dig på denne Moodlewebside.",
     "uploadfiles": "Upload filer"
 }

@@ -1,0 +1,27 @@
+.mm-site_frontpage {
+    .mma-frontpage-item-container .item-media {
+        min-height: 55px;
+        padding-left: 54px;
+
+        img {
+            top: 11px;
+            left: 11px;
+        }
+    }
+
+    .mma-frontpage-item-container {
+        color: $black;
+    }
+
+    .mm-frontpageitemnews {
+        img {
+            max-width: 30px;
+            max-height: 30px;
+        }
+
+        .mm-module-buttons {
+            width: 30px;
+            height: 22px;
+        }
+    }
+}

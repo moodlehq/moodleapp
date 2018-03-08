@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "Imajte u vidu da je vaš Moodle administrator onemogućio preuzimanje datoteka. Datoteke možete da pregledate, ali ne i da ih preuzmete.",
+    "clicktoupload": "Kliknite na donje dugme kako biste otpremili datoteke među svoje privatne datoteke.",
+    "couldnotloadfiles": "Spisak datoteka ne može biti učitan.",
+    "emptyfilelist": "Nema datoteka za prikaz.",
+    "erroruploadnotworking": "Nažalost, trenutno nije moguće otpremiti datoteke na vaš sajt.",
+    "files": "Datoteke",
+    "myprivatefilesdesc": "Datoteke koje su dostupne u vašem privatnom prostoru na ovom Moodle sajtu.",
+    "privatefiles": "Privatne datoteke",
+    "sitefiles": "Datoteke sajta",
+    "sitefilesdesc": "Ostale datoteke koje su dostupne na ovom Moodle sajtu.",
+    "uploadfiles": "Otpremi datoteke"
+}

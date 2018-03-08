@@ -32,6 +32,9 @@ angular.module('mm.core')
 
         if (typeof seconds == 'undefined' || seconds < 0) {
             seconds = 0;
+        } else {
+            // Don't allow decimals.
+            seconds = Math.floor(seconds);
         }
 
         hours = Math.floor(seconds / mmCoreSecondsHour);

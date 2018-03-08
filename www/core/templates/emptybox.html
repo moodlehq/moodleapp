@@ -1,0 +1,9 @@
+<div class="mm-empty-box" ng-class="{'mm-empty-box-inline': !image && !icon}">
+    <div class="mm-empty-box-content">
+        <img ng-if="image" ng-src="{{image}}" role="presentation">
+        <i ng-if="icon" class="icon {{icon}}"></i>
+        <p ng-if="message">{{ message }}</p>
+        <div ng-transclude>
+        </div>
+    </div>
+</div>

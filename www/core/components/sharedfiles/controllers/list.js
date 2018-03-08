@@ -29,7 +29,6 @@ angular.module('mm.core.sharedfiles')
         pick = $stateParams.pick,
         shareObserver,
         siteId = $mmSite.getId();
-        window.path = path;
 
     $scope.manage = manage;
     $scope.pick = pick;

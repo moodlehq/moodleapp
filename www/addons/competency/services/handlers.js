@@ -23,7 +23,7 @@ angular.module('mm.addons.competency')
  * @ngdoc service
  * @name $mmaCompetencyHandlers
  */
-.factory('$mmaCompetencyHandlers', function($log, $mmaCompetency, mmCoursesAccessMethods) {
+.factory('$mmaCompetencyHandlers', function($log, $mmaCompetency, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage, $q) {
     $log = $log.getInstance('$mmaCompetencyHandlers');
 
     var self = {},
@@ -100,7 +100,7 @@ angular.module('mm.addons.competency')
              */
             return function($scope) {
                 $scope.icon = 'ion-map';
-                $scope.title = 'mma.competency.mylearningplans';
+                $scope.title = 'mma.competency.myplans';
                 $scope.state = 'site.learningplans';
                 $scope.class = 'mma-competency-handler';
             };
@@ -121,6 +121,23 @@ angular.module('mm.addons.competency')
         var self = {};
 
         /**
+         * Invalidate data to determine if handler is enabled for a course.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}             Promise resolved when done.
+         */
+        self.invalidateEnabledForCourse = function(courseId, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.competencies != 'undefined') {
+                // No need to invalidate anything.
+                return $q.when();
+            }
+
+            return $mmaCompetency.invalidateCourseCompetencies(courseId);
+        };
+
+        /**
          * Check if handler is enabled.
          *
          * @return {Boolean} True if handler is enabled, false otherwise.
@@ -131,6 +148,8 @@ angular.module('mm.addons.competency')
 
         /**
          * Check if handler is enabled for this course.
+         *
+         * For perfomance reasons, do NOT call WebServices in here, call them in shouldDisplayForCourse.
          *
          * @param  {Number} courseId     Course ID.
          * @param  {Object} accessData   Type of access to the course: default, guest, ...
@@ -147,17 +166,8 @@ angular.module('mm.addons.competency')
                 return navOptions.competencies;
             }
 
-            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
-                return coursesNavEnabledCache[courseId];
-            }
-
-            return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
-                var enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
-                // We can also cache call for participantsNav.
-                participantsNavEnabledCache[courseId] = !!competencies;
-                coursesNavEnabledCache[courseId] = enabled;
-                return enabled;
-            });
+            // Assume it's enabled for now, further checks will be done in shouldDisplayForCourse.
+            return true;
         };
 
         /**
@@ -189,6 +199,50 @@ angular.module('mm.addons.competency')
             };
         };
 
+        /**
+         * Check if handler should be displayed in a course. Will only be called if the handler is enabled for the course.
+         *
+         * This function shouldn't be called too much, so WebServices calls are allowed.
+         *
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise|Boolean}     True or promise resolved with true if handler should be displayed.
+         */
+        self.shouldDisplayForCourse = function(courseId, accessData, navOptions, admOptions) {
+            if (navOptions && typeof navOptions.competencies != 'undefined') {
+                return navOptions.competencies;
+            }
+
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+
+            return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
+                var enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
+                // We can also cache call for participantsNav.
+                participantsNavEnabledCache[courseId] = !!competencies;
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
+        };
+
+        /**
+         * Prefetch the addon for a certain course.
+         *
+         * @param  {Object} course Course to prefetch.
+         * @return {Promise}       Promise resolved when the prefetch is finished.
+         */
+        self.prefetch = function(course) {
+            // Invalidate data to be sure to get the latest info.
+            return $mmaCompetency.invalidateCourseCompetencies(course.id).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmaCompetency.getCourseCompetencies(course.id);
+            });
+        };
+
         return self;
     };
 
@@ -201,7 +255,9 @@ angular.module('mm.addons.competency')
      */
     self.learningPlan = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.

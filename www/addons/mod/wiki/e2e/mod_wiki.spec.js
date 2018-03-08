@@ -12,112 +12,118 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course notes wiki', function() {
+describe('User can manage course wiki', function () {
 
-    it('View course notes wiki collaborative window', function (done) {
+    it('View course wiki', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Reflection and Feedback');
+            return MM.clickOn('Group work and assessment');
         }).then(function () {
-            return MM.clickOn("Your course notes wiki (collaborative)");
+            return MM.clickOn("Share examples of digital literacy");
         }).then(function () {
-            expect(MM.getNavBar().getText()).toMatch('The Movies');
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Use this space to add notes on all aspects of the films studied,');
-            expect(MM.getView().getText()).toMatch('Fight Club');
-            expect(MM.getView().getText()).toMatch('A Beautiful Mind');
-            expect(MM.getView().getText()).toMatch('Spider');
+            browser.sleep(5000); // Wait for css to render.
+            expect(MM.getNavBar().getText()).toMatch("The 8 elements");
+            expect(MM.getView().getText()).toContain('Go to one of these pages and add examples');
+            expect(MM.getView().getText()).toContain('View page');
+            expect(MM.getView().getText()).toContain('Map');
         }).then(function () {
-            return MM.goBack()
-        }).then(function() {
             done();
         });
     });
 
-    it('View course notes wiki private window', function (done) {
+    it('Click Communicative in course wiki', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Reflection and Feedback');
+            return MM.clickOn('Group work and assessment');
         }).then(function () {
-            return MM.clickOn("Your course notes wiki (Private)");
+            return MM.clickOn("Share examples of digital literacy");
         }).then(function () {
-            expect(MM.getNavBar().getText()).toMatch("Back");
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('View page');
-            expect(MM.getView().getText()).toMatch('Map');
+            return MM.clickOn('Communicative');
         }).then(function () {
-            return MM.clickOn('OK');
-        }).then(function() {
+            browser.sleep(5000); // Wait for css to render.
+            expect(MM.getNavBar().getText()).toMatch("Communicative");
+            expect(MM.getView().getText()).toContain('This is about understanding the different ways');
+            expect(MM.getView().getText()).toContain('View page');
+            expect(MM.getView().getText()).toContain('Map');
+        }).then(function () {
             done();
         });
     });
 
-    it('Click Fight Club in course notes wiki private window', function (done) {
+    it('Click secondary buttons in course wiki', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Reflection and Feedback');
+            return MM.clickOn('Group work and assessment');
         }).then(function () {
-            return MM.clickOn("Your course notes wiki (collaborative)");
+            return MM.clickOn("Share examples of digital literacy");
         }).then(function () {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[4]/ion-tabs/ng-include/ion-content/div[1]/mm-loading/div/article/mm-format-text/p[1]/a')).click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Use this space to add notes on all aspects of the films studied.');
-            expect(MM.getView().getText()).toMatch('(Are we allowed to add stuff about any film or just our group choice film?)');
-            expect(MM.getView().getText()).toMatch('View page');
-            expect(MM.getView().getText()).toMatch('Map');
-        }).then(function() {
+            browser.sleep(7500); // Wait for button css to render.
+            return $('.secondary-buttons').click();
+        }).then(function () {
+            browser.sleep(5000); // Wait for css to render.
+            expect($('.popover-backdrop.active').isPresent()).toBeTruthy();
+        }).then(function () {
             done();
         });
     });
 
-    it('Click A Beautiful Mind in course notes wiki private window', function (done) {
+    it('Add a new wiki item', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Reflection and Feedback');
+            return MM.clickOn('Group work and assessment');
         }).then(function () {
-            return MM.clickOn("Your course notes wiki (collaborative)");
+            return MM.clickOn("Share examples of digital literacy");
         }).then(function () {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[4]/ion-tabs/ng-include/ion-content/div[1]/mm-loading/div/article/mm-format-text/p[3]/a')).click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Use this space to add notes on all aspects of the films studied.');
-            expect(MM.getView().getText()).toMatch('View page');
-            expect(MM.getView().getText()).toMatch('Map');
-        }).then(function() {
+            browser.sleep(7500); // Wait for button css to render.
+            return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
+        }).then(function () {
+            return MM.clickOn('Create page');
+        }).then(function () {
+            $('input[ng-model="page.title"]').sendKeys('ABCSampleEdit');
+            browser.sleep(10000);
+            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('Hello'));
+        }).then(function () {
+            return MM.clickOnElement($('a[ng-click="save()"]'));
+        }).then(function () {
+            return MM.clickOnElement($('a[ng-click="goHomeWiki()"]'));
+        }).then(function () {
             done();
         });
     });
 
-    it('Click Spider in course notes wiki private window', function (done) {
+    it('Edit a wiki item', function (done) {
         return MM.loginAsStudent().then(function () {
-            return MM.clickOnInSideMenu('My courses')
+            return MM.clickOnInSideMenu('Course overview');
         }).then(function () {
-            return MM.clickOn('Psychology in Cinema');
+            return MM.clickOn('Digital Literacy');
         }).then(function () {
-            return MM.clickOn('Reflection and Feedback');
+            return MM.clickOn('Group work and assessment');
         }).then(function () {
-            return MM.clickOn("Your course notes wiki (collaborative)");
+            return MM.clickOn("Share examples of digital literacy");
         }).then(function () {
-            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-view/ion-view[4]/ion-tabs/ng-include/ion-content/div[1]/mm-loading/div/article/mm-format-text/p[5]/a')).click();
-        }).then(function() {
-            expect(MM.getView().getText()).toMatch('Use this space to add notes on all aspects of the films studied.');
-            expect(MM.getView().getText()).toMatch('View page');
-            expect(MM.getView().getText()).toMatch('Map');
-        }).then(function() {
+            return MM.clickOnElement($('[ng-click="showContextMenu($event)"]'));
+        }).then(function () {
+            return MM.clickOn('Edit');
+        }).then(function () {
+            browser.sleep(10000);
+            browser.switchTo().frame($('.cke').$('.cke_inner').$('.cke_contents').$('iframe').click().sendKeys('HelloWorld'));
+        }).then(function () {
+            return MM.clickOnElement($('a[ng-click="save()"]'));
+        }).then(function () {
             done();
         });
     });
 
 });
-

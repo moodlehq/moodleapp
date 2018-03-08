@@ -72,11 +72,14 @@ angular.module('mm.core.user')
      * @return {String}         Formatted address.
      */
     self.formatAddress = function(address, city, country) {
-        if (address) {
-            address += city ? ', ' + city : '';
-            address += country ? ', ' + country : '';
-        }
-        return address;
+        var separator = $translate.instant('mm.core.listsep'),
+            values = [address, city, country];
+
+        values = values.filter(function (value) {
+            return value && value.length > 0;
+        });
+
+        return values.join(separator + " ");
     };
 
     /**
@@ -86,34 +89,26 @@ angular.module('mm.core.user')
      * @ngdoc method
      * @name $mmUser#formatRoleList
      * @param  {Array} roles List of user roles.
-     * @return {Promise}     Promise resolved with the formatted roles (string).
+     * @return {String}      The formatted roles.
      */
     self.formatRoleList = function(roles) {
-        var deferred = $q.defer();
-
-        if (roles && roles.length > 0) {
-            $translate('mm.core.elementseparator').then(function(separator) {
-                var rolekeys = roles.map(function(el) {
-                    return 'mm.user.'+el.shortname; // Set the string key to be translated.
-                });
-
-                $translate(rolekeys).then(function(roleNames) {
-                    var roles = '';
-                    for (var roleKey in roleNames) {
-                        var roleName = roleNames[roleKey];
-                        if (roleName.indexOf('mm.user.') > -1) {
-                            // Role name couldn't be translated, leave it like it was.
-                            roleName = roleName.replace('mm.user.', '');
-                        }
-                        roles += (roles != '' ? separator + " ": '') + roleName;
-                    }
-                    deferred.resolve(roles);
-                });
-            });
-        } else {
-            deferred.resolve('');
+        if (!roles || roles.length <= 0) {
+            return "";
         }
-        return deferred.promise;
+
+        var separator = $translate.instant('mm.core.listsep');
+
+        roles = roles.reduce(function (previousValue, currentValue) {
+            var role = $translate.instant('mm.user.' + currentValue.shortname);
+
+            if (role.indexOf('mm.user.') < 0) {
+                // Only add translated role names.
+                previousValue.push(role);
+            }
+            return previousValue;
+        }, []);
+
+        return roles.join(separator + " ");
     };
 
     /**
@@ -122,36 +117,30 @@ angular.module('mm.core.user')
      * @module mm.core.user
      * @ngdoc method
      * @name $mmUser#getProfile
-     * @param  {Number} userid      User's ID.
-     * @param  {Number} [courseid]  Course ID to get course profile, undefined or 0 to get site profile.
+     * @param  {Number} userId      User's ID.
+     * @param  {Number} [courseId]  Course ID to get course profile, undefined or 0 to get site profile.
      * @param  {Boolean} forceLocal True to retrieve the user data from local DB, false to retrieve it from WS.
      * @return {Promise}            Promise resolved with the user data.
      */
-    self.getProfile = function(userid, courseid, forceLocal) {
-
-        var deferred = $q.defer();
-
+    self.getProfile = function(userId, courseId, forceLocal) {
         if (forceLocal) {
-            self.getUserFromLocal(userid).then(deferred.resolve, function() {
-                self.getUserFromWS(userid, courseid).then(deferred.resolve, deferred.reject);
-            });
-        } else {
-            self.getUserFromWS(userid, courseid).then(deferred.resolve, function() {
-                self.getUserFromLocal(userid).then(deferred.resolve, deferred.reject);
+            return self.getUserFromLocal(userId).catch(function() {
+                return self.getUserFromWS(userId, courseId);
             });
         }
-
-        return deferred.promise;
+        return self.getUserFromWS(userId, courseId).catch(function() {
+            return self.getUserFromLocal(userId);
+        });
     };
 
     /**
      * Invalidates user WS calls.
      *
-     * @param  {Number} userid User ID.
+     * @param  {Number} userId User ID.
      * @return {String}        Cache key.
      */
-    function getUserCacheKey(userid) {
-        return 'mmUser:data:'+userid;
+    function getUserCacheKey(userId) {
+        return 'mmUser:data:' + userId;
     }
 
     /**
@@ -183,7 +172,7 @@ angular.module('mm.core.user')
      * @module mm.core.user
      * @ngdoc method
      * @name $mmUser#getUserFromWS
-     * @param  {Number} id         User ID.
+     * @param  {Number} userid         User ID.
      * @param  {Number} [courseid] Course ID to get course profile, undefined or 0 to get site profile.
      * @return {Promise}           Promise resolve when the user is retrieved.
      */
@@ -223,7 +212,7 @@ angular.module('mm.core.user')
 
         return $mmSite.read(wsName, data, preSets).then(function(users) {
             if (users.length == 0) {
-                return $q.reject();
+                return $q.reject('Cannot retrieve user info.');
             }
 
             var user = users.shift();
@@ -249,6 +238,35 @@ angular.module('mm.core.user')
     };
 
     /**
+     * Check if update profile picture is disabled in a certain site.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#isUpdatePictureDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUpdatePictureDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUpdatePictureDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if update profile picture is disabled in a certain site.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#isUpdatePictureDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUpdatePictureDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_picture');
+    };
+
+    /**
      * Prefetch user profiles and their images from a certain course. It prevents duplicates.
      *
      * @module mm.core.user
@@ -266,7 +284,9 @@ angular.module('mm.core.user')
             promises = [];
 
         angular.forEach(userIds, function(userId) {
-            if (!treated[userId]) {
+            userId = parseInt(userId, 10);
+            // Prevent repeats and errors.
+            if (!isNaN(userId) && !treated[userId]) {
                 treated[userId] = true;
 
                 promises.push(self.getProfile(userId, courseId).then(function(profile) {

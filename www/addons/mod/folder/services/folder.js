@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_folder')
  * @todo Adding a new file in a folder updates the revision of all the files, so they're all shown as outdated.
  *       To ignore revision in folders we'll have to modify $mmCoursePrefetchDelegate, mm-file and $mmFilepool.
  */
-.factory('$mmaModFolder', function($mmSite, $mmCourse, $q) {
+.factory('$mmaModFolder', function($mmSite, $mmCourse, $q, $mmSitesManager, $mmUtil) {
     var self = {};
 
     /**
@@ -94,6 +94,114 @@ angular.module('mm.addons.mod_folder')
         });
 
         return folders.concat(files);
+    };
+
+    /**
+     * Returns whether or not getFolder WS available or not.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#isGetFolderWSAvailable
+     * @return {Boolean}
+     */
+    self.isGetFolderWSAvailable = function() {
+        return $mmSite.wsAvailable('mod_folder_get_folders_by_courses');
+    };
+
+    /**
+     * Get a folder.
+     *
+     * @param  {String} siteId    Site ID.
+     * @param  {Number} courseId  Course ID.
+     * @param  {String} key       Name of the property to check.
+     * @param  {Mixed}  value     Value to search.
+     * @return {Promise}          Promise resolved when the book is retrieved.
+     */
+    function getFolder(siteId, courseId, key, value) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getFolderCacheKey(courseId)
+                };
+
+            return site.read('mod_folder_get_folders_by_courses', params, preSets).then(function(response) {
+                if (response && response.folders) {
+                    var currentFolder;
+                    angular.forEach(response.folders, function(folder) {
+                        if (!currentFolder && folder[key] == value) {
+                            currentFolder = folder;
+                        }
+                    });
+                    if (currentFolder) {
+                        return currentFolder;
+                    }
+                }
+                return $q.reject();
+            });
+        });
+    }
+
+    /**
+     * Get a folder by course module ID.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#getFolder
+     * @param {Number} courseId Course ID.
+     * @param {Number} cmId     Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the book is retrieved.
+     */
+    self.getFolder = function(courseId, cmId, siteId) {
+        return getFolder(siteId, courseId, 'coursemodule', cmId);
+    };
+
+    /**
+     * Get cache key for folder data WS calls.
+     *
+     * @param {Number} courseId Course ID.
+     * @return {String}         Cache key.
+     */
+    function getFolderCacheKey(courseId) {
+        return 'mmaModFolder:folder:' + courseId;
+    }
+
+    /**
+     * Invalidates folder data.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#invalidateFolderData
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateFolderData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getFolderCacheKey(courseId));
+        });
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId, siteId) {
+        var promises = [];
+
+        promises.push(self.invalidateFolderData(courseId, siteId));
+        promises.push($mmCourse.invalidateModule(moduleId, siteId));
+
+        return $mmUtil.allPromises(promises);
     };
 
     /**

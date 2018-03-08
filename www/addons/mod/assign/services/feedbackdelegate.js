@@ -118,14 +118,15 @@ angular.module('mm.addons.mod_assign')
      * @ngdoc method
      * @name $mmaModAssignFeedbackDelegate#hasPluginDataChanged
      * @param  {Object} assign     Assignment.
+     * @param  {Number} userId     User Id.
      * @param  {Object} plugin     Plugin.
      * @param  {Object} inputData  Data entered in the submission form.
      * @return {Promise}           Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    self.hasPluginDataChanged = function(assign, plugin, inputData) {
+    self.hasPluginDataChanged = function(assign, userId, plugin, inputData) {
         var handler = self.getPluginHandler(plugin.type);
         if (handler && handler.hasDataChanged) {
-            return $q.when(handler.hasDataChanged(assign, plugin, inputData));
+            return $q.when(handler.hasDataChanged(assign, plugin, inputData, userId));
         }
         return $q.when(false);
     };
@@ -343,7 +344,7 @@ angular.module('mm.addons.mod_assign')
      *                                                           based in the draft data saved.
      *                             - getFeedbackDataToDraft(plugin, inputData) Optional.
      *                                                           Get feedback data base in the input data to save as draft.
-     *                             - hasDataChanged(assign, plugin, inputData) (Promise|Boolean) Optional.
+     *                             - hasDataChanged(assign, plugin, inputData, userId) (Promise|Boolean) Optional.
      *                                                           Check if the feedback data has changed for this plugin.
      *                             - getDraft(assignId, userId, siteId) (Object|Boolean) Optional.
      *                                                           Return the draft saved data of the feedback plugin.

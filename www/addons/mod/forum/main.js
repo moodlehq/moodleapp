@@ -47,6 +47,7 @@ angular.module('mm.addons.mod_forum', [])
             cid: null, // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
             forumid: null,
             cmid: null,
+            trackposts: null, // Whether the discussion can track posts reading.
             locked: null // Whether the discussion is locked for the user.
         },
         views: {
@@ -77,8 +78,9 @@ angular.module('mm.addons.mod_forum', [])
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumHandlers.courseContent');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum', '$mmaModForumHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModForum', 'forum', '$mmaModForumPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum:index', '$mmaModForumHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum:discussion', '$mmaModForumHandlers.discussionLinksHandler');
 })
 .run(function($mmCronDelegate) {
     $mmCronDelegate.register('mmaModForum', '$mmaModForumHandlers.syncHandler');

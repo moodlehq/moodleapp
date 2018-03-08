@@ -8,12 +8,13 @@
     height: 30px;
     line-height: 30px;
     display: inline-block;
-    border: 1px solid #ccc;
+    border: 1px solid $gray-dark;
     padding: 4px 6px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
     margin-bottom: 10px;
+    background: $gray-lighter;
   }
 }
 

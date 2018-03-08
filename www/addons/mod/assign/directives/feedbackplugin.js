@@ -58,11 +58,13 @@ angular.module('mm.addons.mod_assign')
                 directive;
 
             if (!plugin || !container) {
+                scope.pluginLoaded = true;
                 return;
             }
 
             plugin.name = $mmaModAssignFeedbackDelegate.getPluginName(plugin);
             if (!plugin.name) {
+                scope.pluginLoaded = true;
                 return;
             }
 
@@ -100,6 +102,7 @@ angular.module('mm.addons.mod_assign')
                 scope.text = $mmaModAssign.getSubmissionPluginText(plugin);
                 scope.files = $mmaModAssign.getSubmissionPluginAttachments(plugin);
                 scope.notSupported = $mmaModAssignFeedbackDelegate.isPluginSupported(plugin.type);
+                scope.pluginLoaded = true;
             }
         }
     };

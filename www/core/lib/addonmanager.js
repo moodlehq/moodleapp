@@ -120,6 +120,11 @@ angular.module('mm.core')
                 var promises = [];
 
                 angular.forEach(data.plugins, function(addon) {
+                    if (site.isFeatureDisabled('remoteAddOn_' + addon.component + '_' + addon.addon)) {
+                        // The addon is disabled, don't load it.
+                        return;
+                    }
+
                     promises.push(self.downloadRemoteAddon(addon, siteId).then(function() {
                         downloaded[addon.addon]= addon;
                     }));

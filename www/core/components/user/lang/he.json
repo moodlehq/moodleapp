@@ -1,13 +1,13 @@
 {
     "address": "כתובת",
-    "city": "עיר",
+    "city": "ישוב",
     "contact": "צור קשר",
     "country": "ארץ",
     "description": "תיאור",
     "details": "פרטים",
     "detailsnotavailable": "פרטי משתמש זה אינם זמינים לך.",
     "editingteacher": "מרצה",
-    "email": "דואר אלקטרוני",
+    "email": "כתובת דואר אלקטרוני",
     "emailagain": "דואר אלקטרוני (שוב)",
     "firstname": "שם פרטי",
     "interests": "תחומי עניין",
@@ -16,10 +16,10 @@
     "manager": "מנהל",
     "newpicture": "תמונה חדשה",
     "phone1": "טלפון",
-    "phone2": "סלולרי",
+    "phone2": "טלפון נייד",
     "roles": "תפקידים",
     "student": "סטודנט",
     "teacher": "עוזר/ת הוראה",
     "viewprofile": "תצוגת מאפיינים",
-    "webpage": "עמוד אינטרנט"
+    "webpage": "דף בית באינטרנט"
 }

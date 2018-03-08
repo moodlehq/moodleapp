@@ -3,7 +3,9 @@
         <h1 class="title">{{ 'mm.core.imageviewer' | translate }}</h1>
         <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
     </ion-header-bar>
-    <ion-content direction="xy" mm-state-class>
-        <img ng-src="{{img}}" mm-external-content>
+    <ion-content mm-state-class scroll="false">
+        <ion-scroll zooming="true" direction="xy" class="mm-zoom-pane" scrollbar-x="false" scrollbar-y="false">
+            <img ng-src="{{img}}" mm-external-content>
+        </ion-scroll>
     </ion-content>
 </ion-modal-view>

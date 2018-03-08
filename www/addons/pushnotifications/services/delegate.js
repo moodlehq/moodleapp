@@ -25,7 +25,9 @@ angular.module('mm.addons.pushnotifications')
 
     $log = $log.getInstance('$mmPushNotificationsDelegate');
 
-    var handlers = {},
+    var clickHandlers = {},
+        receiveHandlers = {},
+        counterHandlers = {},
         self = {};
 
     /**
@@ -38,8 +40,8 @@ angular.module('mm.addons.pushnotifications')
      * @return {Void}
      */
     self.clicked = function(notification) {
-        for (var name in handlers) {
-            var callback = handlers[name];
+        for (var name in clickHandlers) {
+            var callback = clickHandlers[name];
             if (typeof callback == 'function') {
                 var treated = callback(notification);
                 if (treated) {
@@ -50,20 +52,107 @@ angular.module('mm.addons.pushnotifications')
     };
 
     /**
-     * Register a push notifications handler. The handler will receive a notification to treat.
+     * Function called when a push notification is received in foreground (cannot tell when it's received in background).
+     * Sends notification to all handlers.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#received
+     * @param {Object} notification Notification received.
+     * @return {Void}
+     */
+    self.received = function(notification) {
+        for (var name in receiveHandlers) {
+            var callback = receiveHandlers[name];
+            if (typeof callback == 'function') {
+                callback(notification);
+            }
+        }
+    };
+
+    /**
+     * Register a push notifications handler for CLICKS.
+     * When a notification is clicked, the handler will receive a notification to treat.
      *
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmPushNotificationsDelegate#registerHandler
      * @param {String} name       Handler's name.
-     * @param {Function} callback The callback function. Will get as parameter the URL to handle.
+     * @param {Function} callback The callback function. Will get as parameter the clicked notification.
      * @description
      * The handler should return true if the notification is the one expected, false otherwise.
      * @see {@link $mmPushNotificationsDelegate#clicked}
      */
     self.registerHandler = function(name, callback) {
-        $log.debug("Registered handler '" + name + "' as push notification handler.");
-        handlers[name] = callback;
+        $log.debug("Registered handler '" + name + "' as CLICK push notification handler.");
+        clickHandlers[name] = callback;
+    };
+
+    /**
+     * Register a push notifications handler for RECEIVE notifications in foreground (cannot tell when it's received in background).
+     * When a notification is received, the handler will receive a notification to treat.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#registerReceiveHandler
+     * @param {String} name       Handler's name.
+     * @param {Function} callback The callback function. Will get as parameter the clicked notification.
+     * @see {@link $mmPushNotificationsDelegate#received}
+     */
+    self.registerReceiveHandler = function(name, callback) {
+        $log.debug("Registered handler '" + name + "' as RECEIVE push notification handler.");
+        receiveHandlers[name] = callback;
+    };
+
+    /**
+     * Unregister a push notifications handler for RECEIVE notifications.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#unregisterReceiveHandler
+     * @param {String} name       Handler's name.
+     */
+    self.unregisterReceiveHandler = function(name) {
+        $log.debug("Unregister handler '" + name + "' from RECEIVE push notification handlers.");
+        delete receiveHandlers[name];
+    };
+
+    /**
+     * Register a push notifications handler for update badge counter.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#registerCounterHandler
+     * @param {String} name       Handler's name.
+     */
+    self.registerCounterHandler = function(name) {
+        $log.debug("Registered handler '" + name + "' as badge counter handler.");
+        counterHandlers[name] = name;
+    };
+
+    /**
+     * Check if a counter handler is present.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#isCounterHandlerRegistered
+     * @param {String} name       Handler's name.
+     * @return {Boolean}  If handler name is present.
+     */
+    self.isCounterHandlerRegistered = function(name) {
+        return typeof counterHandlers[name] != "undefined";
+    };
+
+    /**
+     * Get all counter badge handlers.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmPushNotificationsDelegate#getCounterHandlers
+     * @return {Object}  with all the handler names.
+     */
+    self.getCounterHandlers = function() {
+        return counterHandlers;
     };
 
     return self;

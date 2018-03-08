@@ -10,7 +10,7 @@
                 <span ng-if="!rsmScope.showAll">{{ 'mma.mod_quiz.showall' | translate }}</span>
                 <span ng-if="rsmScope.showAll">{{ 'mma.mod_quiz.showeachpage' | translate }}</span>
             </a>
-            <a menu-close ng-repeat="question in rsmScope.toc" class="item item-text-wrap {{question.stateClass}}" ng-class='{"mma-mod-quiz-selected": !rsmScope.showSummary && rsmScope.attempt.currentpage == question.page, "mma-mod-quiz-last-of-page": $last || rsmScope.toc[$index + 1].page != question.page}' ng-click="rsmScope.loadPage(question.page, true, question.slot)">
+            <a menu-close ng-repeat="question in rsmScope.toc" class="item item-text-wrap {{question.stateClass}}" ng-class='{"mma-mod-quiz-selected": !rsmScope.showSummary && rsmScope.attempt.currentpage == question.page}' ng-click="rsmScope.loadPage(question.page, true, question.slot)">
                 <span ng-if="question.number">{{ 'mm.question.questionno' | translate:{$a: question.number} }}</span>
                 <span ng-if="!question.number">{{ 'mm.question.information' | translate }}</span>
             </a>

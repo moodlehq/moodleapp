@@ -42,15 +42,17 @@ angular.module('mm.addons.mod_chat')
             $scope.title = chat.name || $scope.title;
             $scope.description = chat.intro || $scope.description;
             $scope.chatId = chat.id;
-            $scope.chatScheduled = '';
 
             var now = $mmUtil.timestamp();
             var span = chat.chattime - now;
 
             if (chat.chattime && chat.schedule > 0 && span > 0) {
-                $mmUtil.formatTime(span).then(function(time) {
-                    $scope.chatScheduled = time;
-                });
+                $scope.chatInfo = {
+                    date: moment(chat.chattime * 1000).format('LLL'),
+                    fromnow: $mmUtil.formatTimeInstant(span)
+                };
+            } else {
+                $scope.chatInfo = false;
             }
 
         }, function(error) {

@@ -1,0 +1,26 @@
+<div ng-repeat="(n, field) in assessment.form.fields" class="list card" ng-if="n < assessment.form.dimenssionscount">
+    <div class="item item-text-wrap">
+        <h2>{{ field.dimtitle }}</h2>
+        <mm-format-text watch="true">{{field.description}}</mm-format-text>
+    </div>
+    <label class="item" ng-class="{'item-input item-stacked-label': edit, 'mm-input-has-errors': edit && fieldErrors['grade_' + n]}">
+        <h2 mm-mark-required="{{edit}}">{{ 'mma.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a': field.dimtitle } }}</h2>
+        <div class="item-select item-input-wrapper" ng-if="edit && field.grades">
+            <select name="grade_{{n}}" ng-model="selectedValues[n].grade" mm-ios-select-fix ng-required="true" ng-options="grade as grade.label for grade in field.grades track by grade.value" required>
+            </select>
+        </div>
+        <p ng-if="edit && fieldErrors['grade_' + n]" class="mm-error">{{fieldErrors['grade_' + n]}}</p>
+        <div class="item-text-wrap" ng-if="!edit && field.grades">
+            {{selectedValues[n].grade.label}}
+        </div>
+    </label>
+    <label class="item" ng-class="{'item-input item-stacked-label': edit}">
+        <h2>{{ 'mma.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+        <div class="item-input-wrapper" ng-if="edit">
+            <textarea class="mm-textarea" aria-multiline="true" ng-model="selectedValues[n].peercomment" name="peercomment_{{n}}" mm-auto-rows></textarea>
+        </div>
+        <p class="item-text-wrap" ng-if="!edit">
+            <mm-format-text watch="true">{{selectedValues[n].peercomment}}</mm-format-text>
+        </p>
+    </label>
+</div>

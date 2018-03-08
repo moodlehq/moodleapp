@@ -1,0 +1,13 @@
+{
+    "admindisableddownload": "Din Moodleadministrator har slått av nedlasting av filer. Du kan bla igjennom filene men ikke laste dem ned",
+    "clicktoupload": "Klikk på knappen nedenfor for å laste opp filer til din private profil",
+    "couldnotloadfiles": "Liste med filer kunne ikke vises",
+    "emptyfilelist": "Det er ingen filer å vise",
+    "erroruploadnotworking": "Det er for øyeblikket ikke mulig å laste opp filer til din Moodle-side",
+    "files": "Filer",
+    "myprivatefilesdesc": "Tilgjengelige filer på ditt private område på Moodle-siden",
+    "privatefiles": "Private filer",
+    "sitefiles": "Nettstedfiler",
+    "sitefilesdesc": "Andre filer som er tilgjengelig på Moodle-siden",
+    "uploadfiles": "Send tilbakemeldingsfiler"
+}

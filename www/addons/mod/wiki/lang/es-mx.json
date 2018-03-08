@@ -4,7 +4,7 @@
     "editingpage": "Editando esta página '{{$a}}",
     "errorloadingpage": "Ocurrió un error al cargar la página.",
     "errornowikiavailable": "Este wiki todavía no tiene ningun contenido.",
-    "gowikihome": "Ir al inicio del wiki",
+    "gowikihome": "Ir a la primera página del wiki",
     "map": "Mapa",
     "newpagehdr": "Página nueva",
     "newpagetitle": "Título nuevo de la página",

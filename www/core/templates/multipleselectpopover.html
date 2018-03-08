@@ -1,0 +1,15 @@
+<ion-modal-view>
+    <ion-header-bar>
+        <button class="button button-icon ion-close-round" ng-click="closeModal();"></button>
+        <h1 class="title">{{ title }}</h1>
+        <button class="button button-icon ion-checkmark" ng-click="saveOptions();"></button>
+    </ion-header-bar>
+    <ion-content>
+        <ul class="list">
+            <li class="item item-checkbox" ng-repeat="option in optionsRender">
+               <label class="checkbox"><input type="checkbox" ng-model="option.selected"></label>
+               {{ option.value }}
+            </li>
+        </ul>
+    </ion-content>
+</ion-modal-view>

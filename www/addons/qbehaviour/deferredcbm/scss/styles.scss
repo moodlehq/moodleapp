@@ -1,7 +1,7 @@
 
-$mma-qbehaviour-deferredcbm-judgementok-color:  #080 !default;
-$mma-qbehaviour-deferredcbm-slightly-color:     #600 !default;
-$mma-qbehaviour-deferredcbm-confident-color:    #c00 !default;
+$mma-qbehaviour-deferredcbm-judgementok-color:  $green-dark !default;
+$mma-qbehaviour-deferredcbm-slightly-color:     $red-dark !default;
+$mma-qbehaviour-deferredcbm-confident-color:    $red !default;
 
 .qbehaviour_deferredcbm_actual_percentage {
   font-weight: bold;

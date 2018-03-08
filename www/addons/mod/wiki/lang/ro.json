@@ -5,7 +5,8 @@
     "newpagehdr": "Pagină nouă",
     "newpagetitle": "Un nou titlu de pagină",
     "nocontent": "Nu există conținut pentru această pagină",
-    "notingroup": "Ne pare rău, dar trebuie să faceţi parte dintr-un grup pentru a putea vizualiza această activitate.",
+    "notingroup": "Nu este în grup",
     "page": "Pagină",
+    "pageexists": "Această pagină există deja.",
     "pagename": "Nume pagină"
 }

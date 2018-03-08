@@ -1,6 +1,7 @@
 {
     "errorgetnotifications": "Chyba při načítání oznámení.",
     "notificationpreferences": "Nastavení oznámení",
-    "notifications": "Upozornění",
-    "therearentnotificationsyet": "Nejsou žádná sdělení"
+    "notifications": "Oznámení",
+    "playsound": "Přehrát zvuk",
+    "therearentnotificationsyet": "Nejsou žádná sdělení."
 }

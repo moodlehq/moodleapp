@@ -1,7 +1,7 @@
 <!-- Edit -->
 <div ng-if="edit">
     <h2 class="item item-text-wrap item-divider">{{plugin.name}}</h2>
-    <mm-attachments files="files" max-size="{{configs.maxsubmissionsizebytes}}" max-submissions="{{configs.maxfilesubmissions}}" component="{{assignComponent}}" component-id="{{assign.cmid}}" allow-offline="{{allowOffline}}"></mm-attachments>
+    <mm-attachments files="files" max-size="{{configs.maxsubmissionsizebytes}}" max-submissions="{{configs.maxfilesubmissions}}" component="{{assignComponent}}" accepted-types="configs.filetypeslist" component-id="{{assign.cmid}}" allow-offline="{{allowOffline}}"></mm-attachments>
 </div>
 
 <div class="item item-text-wrap" ng-if="files.length && !edit">

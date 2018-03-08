@@ -25,28 +25,54 @@ angular.module('mm.core')
 
     var self = {},
         fallbackLanguage = mmCoreConfigConstants.default_lang || 'en',
-        currentLanguage; // Save current language in a variable to speed up the get function.
+        currentLanguage, // Save current language in a variable to speed up the get function.
+        customStrings = {},
+        customStringsRaw;
 
     /**
-     * Register a folder to search language files into it.
+     * Change current language.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmLang#registerLanguageFolder
-     * @param  {String} path Path of the folder to use.
-     * @return {Promise}     Promise resolved when all the language files to be used are loaded.
+     * @name $mmLang#changeCurrentLanguage
+     * @param {String} language New language to use.
+     * @return {Promise}        Promise resolved when the change is finished.
      */
-    self.registerLanguageFolder = function(path) {
-        $translatePartialLoader.addPart(path);
-        // We refresh the languages one by one because if we refresh all of them at once and 1 file isn't found
-        // then no language will be loaded. This way if 1 language file is missing only that language won't be refreshed.
+    self.changeCurrentLanguage = function(language) {
         var promises = [];
-        promises.push($translate.refresh(currentLanguage));
-        if (currentLanguage !== fallbackLanguage) {
-            // Refresh fallback language.
-            promises.push($translate.refresh(fallbackLanguage));
-        }
+
+        promises.push($translate.use(language));
+        promises.push($translate.preferredLanguage(language));
+        promises.push($mmConfig.set('current_language', language));
+
+        moment.locale(language);
+        currentLanguage = language;
         return $q.all(promises);
+    };
+
+    /**
+     * Clear current custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#clearCustomStrings
+     * @return {Void}
+     */
+    self.clearCustomStrings = function() {
+        customStrings = {};
+        customStringsRaw = '';
+    };
+
+    /**
+     * Get all current custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#getAllCustomStrings
+     * @return {Object} Custom strings.
+     */
+    self.getAllCustomStrings = function() {
+        return customStrings;
     };
 
     /**
@@ -100,20 +126,74 @@ angular.module('mm.core')
     };
 
     /**
-     * Change current language.
+     * Get current custom strings.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmLang#changeCurrentLanguage
-     * @param {String} language New language to use.
-     * @return {Promise}        Promise resolved when the change is finished.
+     * @name $mmLang#getCustomStrings
+     * @param  {String} [lang] The language to get. If not defined, return current language.
+     * @return {Object}        Custom strings.
      */
-    self.changeCurrentLanguage = function(language) {
-        var p1 = $translate.use(language),
-            p2 = $mmConfig.set('current_language', language);
-        moment.locale(language);
-        currentLanguage = language;
-        return $q.all([p1, p2]);
+    self.getCustomStrings = function(lang) {
+        lang = lang || currentLanguage;
+
+        return customStrings[lang];
+    };
+
+    /**
+     * Load certain custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#loadCustomStrings
+     * @param  {String} Custom strings to load (tool_mobile_customlangstrings).
+     * @return {Void}
+     */
+    self.loadCustomStrings = function(strings) {
+        if (strings == customStringsRaw) {
+            // Strings haven't changed, stop.
+            return;
+        }
+
+        // Reset current values.
+        self.clearCustomStrings();
+
+        if (!strings || typeof strings != 'string') {
+            return;
+        }
+
+        var list = strings.split(/(?:\r\n|\r|\n)/);
+        angular.forEach(list, function(entry) {
+            var values = entry.split('|'),
+                lang;
+
+            if (values.length < 3) {
+                // Not enough data, ignore the entry.
+                return;
+            }
+
+            lang = values[2];
+
+            if (!customStrings[lang]) {
+                customStrings[lang] = {};
+            }
+
+            customStrings[lang][values[0]] = values[1];
+        });
+    };
+
+    /**
+     * Register a folder to search language files into it.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#registerLanguageFolder
+     * @param  {String} path Path of the folder to use.
+     * @return {Promise}     Promise resolved when all the language files to be used are loaded.
+     */
+    self.registerLanguageFolder = function(path) {
+        $translatePartialLoader.addPart(path);
+        return $translate.refresh();
     };
 
     /**
@@ -154,10 +234,19 @@ angular.module('mm.core')
     return self;
 })
 
+// Factory to handle errors loading language strings.
+.factory('$mmLangErrorHandler', function($q) {
+    return function() {
+        // A lang part failed to load, probably because a remote addon lacks a language file. Ignore errors.
+        return $q.when({});
+    };
+})
+
 .config(function($translateProvider, $translatePartialLoaderProvider, mmCoreConfigConstants) {
 
     $translateProvider.useLoader('$translatePartialLoader', {
-        urlTemplate: '{part}/{lang}.json'
+        urlTemplate: '{part}/{lang}.json',
+        loadFailureHandler: '$mmLangErrorHandler'
     });
 
     // Load the built language files from build/lang.
@@ -165,15 +254,102 @@ angular.module('mm.core')
 
     // Set fallback language and language to use until the app determines the right language to use.
     var lang = mmCoreConfigConstants.default_lang || 'en';
-    $translateProvider.fallbackLanguage(lang);
+    $translateProvider.fallbackLanguage('en'); // Always use English as fallback language.
     $translateProvider.preferredLanguage(lang);
 })
 
-.run(function($ionicPlatform, $translate, $mmLang) {
+.config(function($provide, $translateProvider) {
+    // Decorate $translate to use custom strings if needed.
+    $provide.decorator('$translate', ['$delegate', '$q', '$injector', function($delegate, $q, $injector) {
+        var $mmLang; // Inject it using $injector to prevent circular dependencies.
+        var translationsTable = $translateProvider.translations();
+
+        // Redefine $translate default function.
+        var newTranslate = function(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage) {
+
+            var originalString = null;
+            var value = getCustomString(translationId, forceLanguage);
+            if (value !== false) {
+                language = forceLanguage || $delegate.preferredLanguage();
+                originalString = translationsTable[language][translationId]; // May be undefined for new strings.
+                translationsTable[language][translationId] = value;
+            }
+            return $delegate(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage)
+            .finally(function() {
+                if (originalString) {
+                    // Recover original translation.
+                    translationsTable[language][translationId] = originalString;
+                }
+            });
+        };
+
+        // Redefine $translate.instant.
+        newTranslate.instant = function(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy) {
+
+            var originalString = null;
+            var value = getCustomString(translationId, forceLanguage);
+            if (value !== false) {
+                language = forceLanguage || $delegate.preferredLanguage();
+                originalString = translationsTable[language][translationId]; // May be undefined for new strings.
+                translationsTable[language][translationId] = value;
+            }
+            translation = $delegate.instant(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy);
+            if (originalString) {
+                // Recover original translation.
+                translationsTable[language][translationId] = originalString;
+            }
+            return translation;
+        };
+
+        // Copy the rest of functions and properties.
+        for (var name in $delegate) {
+            if (name != 'instant') {
+                newTranslate[name] = $delegate[name];
+            }
+        }
+
+        return newTranslate;
+
+        // Get a custom string.
+        function getCustomString(translationId, forceLanguage) {
+            if (!$mmLang) {
+                $mmLang = $injector.get('$mmLang');
+            }
+
+            var customStrings = $mmLang.getCustomStrings(forceLanguage);
+            if (customStrings && typeof customStrings[translationId] != 'undefined') {
+                return customStrings[translationId];
+            }
+
+            return false;
+        }
+    }]);
+})
+
+.run(function($ionicPlatform, $translate, $mmLang, $mmSite, $mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated,
+            mmCoreEventLogout) {
     $ionicPlatform.ready(function() {
         $mmLang.getCurrentLanguage().then(function(language) {
             $translate.use(language);
+            $translate.preferredLanguage(language);
             moment.locale(language);
         });
     });
+
+    $mmEvents.on(mmCoreEventLogin, loadCustomStrings);
+    $mmEvents.on(mmCoreEventSiteUpdated, function(siteId) {
+        if (siteId == $mmSite.getId()) {
+            loadCustomStrings();
+        }
+    });
+    $mmEvents.on(mmCoreEventLogout, function() {
+        $mmLang.clearCustomStrings();
+    });
+
+    function loadCustomStrings() {
+        var customStrings = $mmSite.getStoredConfig('tool_mobile_customlangstrings');
+        if (typeof customStrings != 'undefined') {
+            $mmLang.loadCustomStrings(customStrings);
+        }
+    }
 });

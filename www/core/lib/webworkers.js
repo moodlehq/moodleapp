@@ -36,7 +36,7 @@ angular.module('mm.core')
  *
  * Example usage:
  *
- * if ($mmWebWorkers.isSupportedByDevice() && $mmWebWorkers.isSupportedInSite(site.getInfo().version)) {
+ * if ($mmWebWorkers.isSupportedByDevice() && $mmWebWorkers.isSupportedInSite(site)) {
  *     $mmWebWorkers.startWorker(name, path, params).then(function() {
  *         // Final message will be received in here.
  *     }, function() {
@@ -103,21 +103,20 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmWebWorkers#isSupportedInSite
-     * @param  {Number} [version] The site version. If not defined, current site will be used.
-     * @return {Boolean}          True if supported, false otherwise.
+     * @param  {Object} [site] Site to check. If not defined, current site.
+     * @return {Boolean}       True if supported, false otherwise.
      */
-    self.isSupportedInSite = function(version) {
-        if (!version) {
+    self.isSupportedInSite = function(site) {
+        if (!site) {
             // We use injector to keep this service as independent as possible.
-            var site = $injector.get('$mmSite');
+            site = $injector.get('$mmSite');
             if (!site || !site.isLoggedIn()) {
                 return false;
             }
-            version = site.getInfo().version;
         }
 
         // WebWorkers needs CORS enabled at the Moodle site, it is supported from 2.8.
-        return version >= 2014111000;
+        return site.isVersionGreaterEqualThan('2.8');
     };
 
     /**

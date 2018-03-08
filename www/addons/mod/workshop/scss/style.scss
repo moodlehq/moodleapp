@@ -1,0 +1,13 @@
+.mm-site_mod_workshop,
+.mm-site_mod_workshop-submission,
+.mm-site_mod_workshop-assessment {
+
+  p.mm-overriden-grade {
+    color: $mm-success-color;
+  }
+
+  p.mm-has-overriden-grade {
+    color: $mm-error-color;
+    text-decoration: line-through;
+  }
+}

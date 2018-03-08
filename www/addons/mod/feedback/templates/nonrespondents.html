@@ -1,0 +1,38 @@
+<ion-view view-title="{{ 'mma.mod_feedback.responses' |translate }}">
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="feedbackLoaded" content="'mm.core.refresh' | translate" action="refreshFeedback()" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback()"></ion-refresher>
+        <mm-loading hide-until="feedbackLoaded">
+            <section class="list">
+                <div class="item item-text-wrap item-input item-select" ng-if="groupInfo.separateGroups || groupInfo.visibleGroups">
+                    <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                    <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                    <select ng-model="selectedGroup" ng-change="loadGroupUsers(selectedGroup)" aria-labelledby="mma-feedback-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                    </select>
+                </div>
+                <div class="item item-divider">
+                    {{ 'mma.mod_feedback.non_respondents_students' |translate : {$a: total } }}
+                </div>
+                <div ng-repeat="user in users" ng-if="total > 0">
+                    <div ng-class="{'item-avatar': user.profileimageurl}" class="item item-text-wrap item-icon-right">
+                        <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                        <h2>{{user.fullname}}</h2>
+                        <p ng-if="user.started" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_feedback.started' | translate}}</p>
+                        <p ng-if="!user.started" class="badge badge-inline text-center badge-balanced">{{ 'mma.mod_feedback.not_started' | translate}}</p>
+                    </div>
+                </div>
+                <div class="item padding text-center" ng-if="canLoadMore">
+                    <!-- Button and spinner to show more users. -->
+                    <button ng-if="!loadingMore" class="button button-block" ng-click="loadGroupUsers()">{{ 'mm.core.loadmore' | translate }}</button>
+                    <ion-spinner ng-if="loadingMore"></ion-spinner>
+                </div>
+            </section>
+        </mm-loading>
+    </ion-content>
+</ion-view>

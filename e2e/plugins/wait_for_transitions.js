@@ -68,4 +68,3 @@ exports.waitForCondition = function() {
         return inTransition;
     });
 };
-

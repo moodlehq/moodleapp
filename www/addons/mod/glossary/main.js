@@ -15,7 +15,13 @@
 angular.module('mm.addons.mod_glossary', ['mm.core'])
 
 .constant('mmaModGlossaryComponent', 'mmaModGlossary')
+.constant('mmaModGlossaryAddEntryEvent', 'mma-mod_glossary_add_entry')
+.constant('mmaModGlossaryAutomSyncedEvent', 'mma-mod_glossar_autom_synced')
 .constant('mmaModGlossaryLimitEntriesNum', 25)
+.constant('mmaModGlossaryLimitCategoriesNum', 20)
+.constant('mmaModGlossaryShowAllCategories', 0)
+.constant('mmaModGlossaryShowNotCategorised', -1)
+.constant('mmaModGlossarySyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -39,8 +45,7 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
       url: '/mod_glossary-entry',
       params: {
         cid: null, // Not naming it courseid because it collides with 'site.mod_glossary' param in split-view.
-        entry: null,
-        entryid: null // Required so Angular ui-router is able to compare states (it doesn't compare object properties).
+        entryid: null
       },
       views: {
         'site': {
@@ -48,12 +53,34 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
           templateUrl: 'addons/mod/glossary/templates/entry.html'
         }
       }
+    })
+
+    .state('site.mod_glossary-edit', {
+        url: '/mod_glossary-edit',
+        params: {
+            module: null,
+            cmid: null,
+            glossary: null,
+            glossaryid: null,
+            courseid: null,
+            entry: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModGlossaryEditCtrl',
+                templateUrl: 'addons/mod/glossary/templates/edit.html'
+            }
+        }
     });
 
 })
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryHandlers.courseContent');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary', '$mmaModGlossaryHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary:index', '$mmaModGlossaryHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary:entry', '$mmaModGlossaryHandlers.entryLinksHandler');
+})
+.run(function($mmCronDelegate) {
+    $mmCronDelegate.register('mmaModGlossary', '$mmaModGlossaryHandlers.syncHandler');
 });

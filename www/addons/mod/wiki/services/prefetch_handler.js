@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_wiki')
  * @name $mmaModWikiPrefetchHandler
  */
 .factory('$mmaModWikiPrefetchHandler', function($mmaModWiki, mmaModWikiComponent, $mmSite, $mmFilepool, $q, $mmGroups, $mmUtil,
-        $mmCourseHelper, $mmCourse, $mmPrefetchFactory) {
+        $mmCourseHelper, $mmCourse, $mmPrefetchFactory, $mmCoursePrefetchDelegate) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModWikiComponent);
 
@@ -52,12 +52,12 @@ angular.module('mm.addons.mod_wiki')
      * @name $mmaModWikiPrefetchHandler#getDownloadSize
      * @param  {Object} module    Module to get the size.
      * @param  {Number} courseId  Course ID the module belongs to.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @param  {Boolean} single   True if we're downloading a single module, false if we're downloading a whole section.
      * @return {Promise}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
-    self.getDownloadSize = function(module, courseId, siteId) {
-        var promises = [];
-        siteId = siteId || $mmSite.getId();
+    self.getDownloadSize = function(module, courseId, single) {
+        var promises = [],
+            siteId = $mmSite.getId();
 
         promises.push(self.getFiles(module, courseId, siteId).then(function(files) {
             return $mmUtil.sumFileSizes(files);
@@ -195,9 +195,13 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
+        if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
+            // If can check updates only get wiki by course is needed.
+            return $mmaModWiki.invalidateWikiData(courseId);
+        }
+
         return $mmaModWiki.getWiki(courseId, module.id, 'coursemodule').then(function(wiki) {
             var promises = [];
-
             promises.push($mmaModWiki.invalidateWikiData(courseId));
             promises.push($mmaModWiki.invalidateSubwikis(wiki.id));
             promises.push($mmaModWiki.invalidateSubwikiFiles(wiki.id));
@@ -282,16 +286,9 @@ angular.module('mm.addons.mod_wiki')
 
                 // Get related page files and fetch them.
                 promises.push(self.getFiles(module, courseId, siteId).then(function (files) {
-                    var filePromises = [];
-
                     revision = $mmFilepool.getRevisionFromFileList(files);
 
-                    angular.forEach(files, function(file) {
-                        var url = file.fileurl;
-                        filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
-                    });
-
-                    return $q.all(filePromises);
+                    return $mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id);
                 }));
 
                 // Get timemodified.

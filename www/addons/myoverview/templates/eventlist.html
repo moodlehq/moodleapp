@@ -1,0 +1,46 @@
+<script type="text/ng-template" id="event">
+    <a mm-link capture-link="true" class="item mm-course-module-handler item-media" href="{{ event.url }}" title="{{ event.name }}" ng-class="{'item-badge-right-phone': event.action && event.action.showitemcount}">
+        <img ng-src="{{ event.iconUrl }}" mm-external-content alt="" role="presentation" ng-if="event.iconUrl">
+        <button class="button button-clear item-note hidden-phone text-right" ng-click="action($event, event.action.url)" title="{{ event.action.name }}" ng-disabled="!event.action.actionable" ng-if="event.action">
+            {{event.action.name}}
+            <span class="badge badge-inline badge-dark text-center" ng-if="event.action.showitemcount">{{event.action.itemcount}}</span>
+        </button>
+        <span class="badge badge-dark hidden-tablet" ng-if="event.action && event.action.showitemcount">{{event.action.itemcount}}</span>
+        <p class="item-heading"><mm-format-text watch="true">{{ event.name }}</mm-format-text></p>
+        <p>{{event.timesort * 1000 | mmFormatDate:"dfmediumdate" }} <mm-format-text watch="true" ng-if="showCourse">{{ event.course.fullnamedisplay }}</mm-format-text></p>
+    </a>
+</script>
+
+<h5 ng-if="recentlyOverdue.length > 0" class="assertive mm-timelinetitle">{{ 'mma.myoverview.recentlyoverdue' | translate }}</h5>
+<ul class="list block" ng-if="recentlyOverdue.length > 0">
+    <li ng-repeat="event in recentlyOverdue" ng-include="'event'"></li>
+</ul>
+
+<h5 ng-if="today.length > 0" class="mm-timelinetitle">{{ 'mm.core.today' | translate }}</h5>
+<ul class="list block" ng-if="today.length > 0">
+    <li ng-repeat="event in today" ng-include="'event'"></li>
+</ul>
+
+<h5 ng-if="next7Days.length > 0" class="mm-timelinetitle">{{ 'mma.myoverview.next7days' | translate }}</h5>
+<ul class="list block" ng-if="next7Days.length > 0">
+    <li ng-repeat="event in next7Days" ng-include="'event'"></li>
+</ul>
+
+<h5 ng-if="next30Days.length > 0" class="mm-timelinetitle">{{ 'mma.myoverview.next30days' | translate }}</h5>
+<ul class="list block" ng-if="next30Days.length > 0">
+    <li ng-repeat="event in next30Days" ng-include="'event'"></li>
+</ul>
+
+<h5 ng-if="future.length > 0" class="mm-timelinetitle">{{ 'mma.myoverview.future' | translate }}</h5>
+<ul class="list block" ng-if="future.length > 0">
+    <li ng-repeat="event in future" ng-include="'event'"></li>
+</ul>
+
+<div class="padding text-center" ng-if="canLoadMore && !empty">
+    <!-- Button and spinner to show more attempts. -->
+    <button ng-if="!loadingMore" class="button button-block" ng-click="loadMoreEvents()">{{ 'mm.core.loadmore' | translate }}</button>
+    <ion-spinner ng-if="loadingMore"></ion-spinner>
+</div>
+
+<mm-empty-box ng-if="empty && showCourse" image="addons/myoverview/img/activities.svg" message="{{ 'mma.myoverview.noevents' | translate }}"></mm-empty-box>
+<mm-empty-box ng-if="empty && !showCourse" message="{{ 'mma.myoverview.noevents' | translate }}"></mm-empty-box>

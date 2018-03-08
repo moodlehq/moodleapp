@@ -33,6 +33,20 @@ angular.module('mm.core.sidemenu', [])
                 $state.go('mm_login.init');
             }
         }
+    })
+
+    .state('site.iframe-view', {
+        url: '/iframe-view',
+        params: {
+            title: null,
+            url: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/sidemenu/templates/iframe.html',
+                controller: 'mmSideMenuIframeViewCtrl'
+            }
+        }
     });
 
 })

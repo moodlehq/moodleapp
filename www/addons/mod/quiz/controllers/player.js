@@ -94,9 +94,7 @@ angular.module('mm.addons.mod_quiz')
 
             if (quiz.timelimit > 0) {
                 $scope.isTimed = true;
-                $mmUtil.formatTime(quiz.timelimit).then(function(time) {
-                    quiz.readableTimeLimit = time;
-                });
+                quiz.readableTimeLimit = $mmUtil.formatTimeInstant(quiz.timelimit);
             }
 
             $scope.quiz = quiz;
@@ -234,10 +232,19 @@ angular.module('mm.addons.mod_quiz')
         return $mmQuestionHelper.getAnswersFromForm(document.forms['mma-mod_quiz-player-form']);
     }
 
+    // Prepare the answers to be sent for the attempt.
+    function prepareAnswers() {
+        var answers = getAnswers();
+        return $mmQuestionHelper.prepareAnswers($scope.questions, answers, offline).then(function() {
+            return answers;
+        });
+    }
+
     // Process attempt.
     function processAttempt(finish, timeup) {
-        return $mmaModQuiz.processAttempt(quiz, attempt, getAnswers(), $scope.preflightData, finish, timeup, offline)
-                .then(function() {
+        return prepareAnswers().then(function(answers) {
+             return $mmaModQuiz.processAttempt(quiz, attempt, answers, $scope.preflightData, finish, timeup, offline);
+        }).then(function() {
             // Answers saved, cancel auto save.
             $mmaModQuizAutoSave.cancelAutoSave();
             $mmaModQuizAutoSave.hideAutoSaveError($scope);

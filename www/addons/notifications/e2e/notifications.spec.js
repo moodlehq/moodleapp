@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-describe('User can manage course notifications', function() {
+describe('User can manage course notifications', function () {
 
     it('Click the notification tab in main menu', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Notifications');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Notifications');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });
@@ -27,10 +27,10 @@ describe('User can manage course notifications', function() {
     it('User can land the notification page', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('Notifications');
-        }).then(function() {
+        }).then(function () {
             expect(MM.getNavBar().getText()).toMatch('Notifications');
             expect(MM.getView().getText()).toMatch('There are no notifications');
-        }).then(function() {
+        }).then(function () {
             done();
         });
     });

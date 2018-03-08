@@ -1,0 +1,130 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="feedbackLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshFeedback(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="feedbackLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshFeedback(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="prefetchStatusIcon" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback(false)"></ion-refresher>
+        <mm-loading hide-until="feedbackLoaded">
+
+            <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+            <div class="tabs tabs-striped tabs-free mm-tabs-color" ng-if="(access.canviewreports || access.canviewanalysis) && !access.isempty">
+                <a class="tab-item" ng-class="{'active': selectedTab == DISPLAY_OVERVIEW}" ng-click="setTab(DISPLAY_OVERVIEW)">{{ 'mma.mod_feedback.overview' | translate }}</a>
+                <a ng-if="access.canviewreports" class="tab-item" ng-class="{'active': selectedTab == DISPLAY_ANALYSIS}" ng-click="setTab(DISPLAY_ANALYSIS)">{{ 'mma.mod_feedback.analysis' | translate }}</a>
+                <a ng-if="!access.canviewreports" class="tab-item" ng-class="{'active': selectedTab == DISPLAY_ANALYSIS}" ng-click="setTab(DISPLAY_ANALYSIS)">{{ 'mma.mod_feedback.completed_feedbacks' | translate }}</a>
+            </div>
+
+            <mm-loading hide-until="tabSwitched">
+                <section class="list" ng-if="(access.canedititems || access.canviewreports) && !access.isempty">
+                    <div ng-if="access.canedititems && (groupInfo.separateGroups || groupInfo.visibleGroups)" class="item item-text-wrap item-input item-select">
+                        <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.separateGroups">{{ 'mm.core.groupsseparate' | translate }}</ion-label>
+                        <ion-label id="mma-feedback-groupslabel" ng-if="groupInfo.visibleGroups">{{ 'mm.core.groupsvisible' | translate }}</ion-label>
+                        <select ng-model="selectedGroup" ng-change="setGroup(selectedGroup)" aria-labelledby="mma-feedback-groupslabel" ng-options="group.id as group.name for group in groupInfo.groups" mm-ios-select-fix>
+                        </select>
+                    </div>
+                    <div ng-if="access.canviewreports || access.canedititems" class="item item-text-wrap" ng-class="{'item-icon-right': access.canviewreports}" ng-click="access.canviewreports && openFeature('respondents')">
+                        <p class="item-heading">{{ 'mma.mod_feedback.completed_feedbacks' | translate }}</p>
+                        <span class="badge badge-positive">{{feedback.completedCount}}</span>
+                        <i ng-if="access.canviewreports" class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                    <div ng-if="!access.isanonymous && access.canviewreports" class="item item-text-wrap item-icon-right" ng-click="openFeature('nonrespondents')">
+                        <p class="item-heading">{{ 'mma.mod_feedback.show_nonrespondents' | translate }}</p>
+                        <i class="icon icon-accessory ion-chevron-right"></i>
+                    </div>
+                    <div ng-if="access.canedititems" class="item item-text-wrap item-icon-right">
+                        <p class="item-heading">{{ 'mma.mod_feedback.questions' | translate }}</p>
+                        <span class="badge badge-positive">{{feedback.itemsCount}}</span>
+                    </div>
+                </section>
+
+                <div ng-if="selectedTab == DISPLAY_OVERVIEW">
+                    <!-- Feedback responses found to be synchronized -->
+                    <div class="mm-warning-card-icon" ng-if="hasOffline">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
+                    </div>
+
+                    <div class="mm-info-card-icon" ng-if="access.cancomplete && !access.isopen">
+                        <i class="icon ion-information-circled padding"></i> {{ 'mma.mod_feedback.feedback_is_not_open' | translate }}
+                    </div>
+
+                    <div class="mm-success-card-icon" ng-if="access.cancomplete && access.isopen && !access.cansubmit">
+                        <i class="icon ion-checkmark-round padding"></i> {{ 'mma.mod_feedback.this_feedback_is_already_submitted' | translate }}
+                    </div>
+                </div>
+
+                <section class="list" ng-if="selectedTab == DISPLAY_OVERVIEW && (access.canedititems || access.canviewreports || !access.isempty)">
+                    <div ng-if="access.canedititems && overview.timeopen" class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_feedback.feedbackopen' | translate }}</p>
+                        <p>{{overview.openTimeReadable}}</p>
+                    </div>
+                    <div ng-if="access.canedititems && overview.timeclose" class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_feedback.feedbackclose' | translate }}</p>
+                        <p>{{overview.closeTimeReadable}}</p>
+                    </div>
+                    <div ng-if="access.canedititems && feedback.page_after_submit" class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_feedback.page_after_submit' | translate }}</p>
+                        <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ feedback.page_after_submit }}</mm-format-text>
+                    </div>
+                    <div ng-if="!access.isempty">
+                        <div class="item item-text-wrap">
+                            <p class="item-heading">{{ 'mma.mod_feedback.mode' | translate }}</p>
+                            <p ng-if="access.isanonymous">{{ 'mma.mod_feedback.anonymous' | translate }}</p>
+                            <p ng-if="!access.isanonymous">{{ 'mma.mod_feedback.non_anonymous' | translate }}</p>
+                        </div>
+                        <div class="item item-text-wrap row-buttons responsive-sm">
+                            <button class="button button-block icon-left ion-search" ng-click="gotoAnswerQuestions(true)">{{ 'mma.mod_feedback.preview' | translate }}</button>
+                            <button ng-if="access.cancomplete && access.cansubmit && !goPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoAnswerQuestions()">
+                                {{ 'mma.mod_feedback.complete_the_form' | translate }}
+                            </button>
+                            <button ng-if="access.cancomplete && access.cansubmit && goPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoAnswerQuestions()">
+                                {{ 'mma.mod_feedback.continue_the_form' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                <section class="list mm-analysis" ng-if="selectedTab == DISPLAY_ANALYSIS && (access.canedititems || !access.isempty)">
+                    <div class="mm-warning-card-icon" ng-if="warning">
+                        <i class="icon ion-information-circled padding"></i> {{ warning }}
+                    </div>
+                    <div class="list" ng-if="items && items.length">
+                        <div ng-repeat="item in items track by $index" class="item item-text-wrap">
+                            <p class="item-heading">{{item.number}}.
+                                <mm-format-text watch="true">{{ item.name }}</mm-format-text>
+                            </p>
+                            <p><mm-format-text watch="true">{{ item.label }}</mm-format-text></p>
+                            <div ng-if="item.template" ng-include="item.template"></div>
+                        </div>
+
+                        <script type="text/ng-template" id="numeric">
+                            <ul>
+                                <li ng-repeat="data in item.data track by $index"><i class="icon ion-minus-round"></i> {{ data }}</li>
+                            </ul>
+                            <p>{{ 'mma.mod_feedback.average' | translate }}: {{item.average | number : 2}}</p>
+                        </script>
+                        <script type="text/ng-template" id="list">
+                            <ul>
+                                <li ng-repeat="data in item.data track by $index" ng-if="data">
+                                    <i class="icon ion-minus-round"></i> <mm-format-text watch="true">{{ data }}</mm-format-text>
+                                </li>
+                            </ul>
+                        </script>
+                        <script type="text/ng-template" id="chart">
+                            <canvas ng-if="item.labels.length <= 5 && !item.single" class="chart chart-bar" chart-data="item.chartData" chart-labels="item.labels" chart-options="chartOptions" height="300"></canvas>
+                            <canvas ng-if="item.labels.length > 5 && !item.single" class="chart chart-horizontal-bar" chart-data="item.chartData" chart-labels="item.labels" chart-options="chartOptions" height="300"></canvas>
+                            <canvas ng-if="item.single" class="chart chart-doughnut" chart-data="item.chartData" chart-labels="item.labels" chart-options="chartOptions" height="300"></canvas>
+                            <p ng-if="item.average">{{ 'mma.mod_feedback.average' | translate }}: {{item.average | number : 2}}</p>
+                        </script>
+                    </div>
+                </section>
+            </mm-loading>
+        </mm-loading>
+    </ion-content>
+</ion-view>

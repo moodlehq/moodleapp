@@ -165,7 +165,7 @@ angular.module('mm.addons.mod_choice')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModChoice.getChoice(courseId, module.id, false, true).then(function(choice) {
+        return $mmaModChoice.getChoice(courseId, module.id).then(function(choice) {
             var now = $mmUtil.timestamp();
             if (choice.timeopen && choice.timeopen > now) {
                 return false;
@@ -217,9 +217,7 @@ angular.module('mm.addons.mod_choice')
                 files = self.getIntroFilesFromInstance(module, choice);
 
             // Prefetch files.
-            angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-            });
+            promises.push($mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id));
 
             // Get the options and results.
             promises.push($mmaModChoice.getOptions(choice.id));

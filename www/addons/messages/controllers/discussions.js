@@ -21,30 +21,41 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionsCtrl
  */
-.controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite,
-            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
-    var newMessagesObserver,
+.controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite, $ionicPlatform,
+            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager, mmaMessagesReadChangedEvent,
+            mmaMessagesReadCronEvent, $translate, $q, $mmApp) {
+    var newMessagesObserver, readChangedObserver, cronObserver,
         siteId = $mmSite.getId(),
-        discussions;
+        discussions,
+        $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+        unregisterResume,
+        searchingMessage = $translate.instant('mm.core.searching'),
+        loadingMessage = $translate.instant('mm.core.loading');
 
     $scope.loaded = false;
+    $scope.formData = {
+        searchString: ''
+    };
+    $scope.showSearchResults = false; // To switch the view template: discussions or searchResults.
+    $scope.results = null;
 
     function fetchDiscussions() {
+        $scope.loadingMessage = loadingMessage;
+        $scope.canSearch = $mmaMessages.isSearchMessagesEnabled();
         return $mmaMessages.getDiscussions().then(function(discs) {
             discussions = discs;
 
             // Convert to an array for sorting.
-            var array = [];
-            angular.forEach(discussions, function(v) {
-                array.push(v);
+            var discussionsSorted = [];
+            angular.forEach(discussions, function(discussion) {
+                discussion.unread = !!discussion.unread;
+                discussionsSorted.push(discussion);
             });
-            $scope.discussions = array;
+            $scope.discussions = discussionsSorted;
         }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingdiscussions', true);
+        }).finally(function() {
+            $scope.loaded = true;
         });
     }
 
@@ -56,12 +67,37 @@ angular.module('mm.addons.messages')
 
     $scope.refresh = function() {
         refreshData().finally(function() {
+            // Triggering without userid will avoid loops. This trigger will only update the side menu.
+            $mmEvents.trigger(mmaMessagesReadChangedEvent, {siteid: siteId});
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
+    $scope.searchMessage = function(query) {
+        $mmApp.closeKeyboard();
+        $scope.loaded = false;
+        $scope.loadingMessage = searchingMessage;
+
+        return $mmaMessages.searchMessages(query).then(function(searchResults) {
+            $scope.showSearchResults = true;
+            $scope.results = searchResults;
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingmessages', true);
+            return $q.reject();
+        }).finally(function() {
+            $scope.loaded = true;
+        });
+    };
+
+    $scope.clearSearch = function() {
+        $scope.loaded = false;
+        $scope.showSearchResults = false;
+        fetchDiscussions().finally(function() {
+            $scope.loaded = true;
+        });
+    };
+
     fetchDiscussions().finally(function() {
-        $scope.loaded = true;
         // Tell mm-split-view that it can load the first link now in tablets. We need to do it
         // like this because the directive doesn't have access to $scope.loaded variable (because of tabs).
         $rootScope.$broadcast(mmCoreSplitViewLoad);
@@ -87,9 +123,54 @@ angular.module('mm.addons.messages')
         }
     });
 
+    readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
+        if (data && data.siteid == siteId && data.userid) {
+            var discussion = discussions[data.userid];
+
+            if (typeof discussion != 'undefined') {
+                // A discussion has been read reset counter.
+                discussion.unread = false;
+
+                // Discussions changed, invalidate them.
+                $mmaMessages.invalidateDiscussionsCache();
+            }
+        }
+    });
+
+    cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
+        if (data && (data.siteid == siteId || !data.siteid)) {
+            refreshData();
+        }
+    });
+
+    // If a message push notification is received, refresh the view.
+    if ($mmPushNotificationsDelegate) {
+        $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:discussions', function(notification) {
+            if ($mmUtil.isFalseOrZero(notification.notif)) {
+                // New message received. If it's from current site, refresh the data.
+                if (notification.site == siteId) {
+                    refreshData();
+                }
+            }
+        });
+    }
+
+    // Refresh the view when the app is resumed.
+    unregisterResume = $ionicPlatform.on('resume', function() {
+        $scope.loaded = false;
+        refreshData();
+    });
+
     $scope.$on('$destroy', function() {
-        if (newMessagesObserver && newMessagesObserver.off) {
-            newMessagesObserver.off();
+        newMessagesObserver && newMessagesObserver.off && newMessagesObserver.off();
+        readChangedObserver && readChangedObserver.off && readChangedObserver.off();
+        cronObserver && cronObserver.off && cronObserver.off();
+
+        if ($mmPushNotificationsDelegate) {
+            $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:discussions');
+        }
+        if (unregisterResume) {
+            unregisterResume();
         }
     });
 });

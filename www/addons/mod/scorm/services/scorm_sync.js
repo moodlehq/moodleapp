@@ -264,10 +264,18 @@ angular.module('mm.addons.mod_scorm')
         $log.debug('Try to sync SCORM ' + scorm.id + ' in site ' + siteId);
 
         // Prefetches data , set sync time and return warnings.
-        function finishSync() {
-            return $mmaModScorm.invalidateAllScormData(scorm.id, siteId).catch(function() {}).then(function() {
-                return $mmaModScormPrefetchHandler.downloadWSData(scorm, siteId);
-            }).then(function() {
+        function finishSync(updated) {
+            var promise;
+
+            if (updated) {
+                promise = $mmaModScorm.invalidateAllScormData(scorm.id, siteId).catch(function() {}).then(function() {
+                    return $mmaModScormPrefetchHandler.downloadWSData(scorm, siteId);
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
                 return self.setSyncTime(scorm.id, siteId).catch(function() {
                     // Ignore errors.
                 });
@@ -330,7 +338,7 @@ angular.module('mm.addons.mod_scorm')
                         }
                     });
                     return $q.all(promises).then(function() {
-                        return finishSync();
+                        return finishSync(true);
                     });
 
                 } else if (collisions.length) {
@@ -366,7 +374,7 @@ angular.module('mm.addons.mod_scorm')
                                 if (cannotSyncSome) {
                                     warnings.push($translate.instant('mma.mod_scorm.warningsynconlineincomplete'));
                                 }
-                                return finishSync();
+                                return finishSync(true);
                             });
                         });
                     });
@@ -551,7 +559,7 @@ angular.module('mm.addons.mod_scorm')
 
         // Sort offline attempts in DESC order.
         offlineAttempts = offlineAttempts.sort(function(a, b) {
-            return parseInt(a, 10) < parseInt(b, 10);
+            return parseInt(a, 10) <= parseInt(b, 10) ? 1 : -1;
         });
 
         // First move the offline attempts after the collisions;
@@ -573,7 +581,7 @@ angular.module('mm.addons.mod_scorm')
 
             // Sort newAttempts in ASC order.
             newAttempts = newAttempts.sort(function(a, b) {
-                return parseInt(a, 10) > parseInt(b, 10);
+                return parseInt(a, 10) >= parseInt(b, 10) ? 1 : -1;
             });
 
             // Now move the attempts in newAttempts.

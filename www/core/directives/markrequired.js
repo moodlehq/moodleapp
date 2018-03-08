@@ -27,7 +27,7 @@ angular.module('mm.core')
  *
  * <ion-label mm-mark-required="{{field.required}}">{{ 'mm.login.username' | translate }}</ion-label>
  */
-.directive('mmMarkRequired', function($translate, $timeout) {
+.directive('mmMarkRequired', function($translate, $timeout, $mmText) {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {

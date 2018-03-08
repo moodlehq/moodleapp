@@ -24,7 +24,8 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5, $mmText,
+        mmaMessagesReadChangedEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -36,7 +37,10 @@ angular.module('mm.addons.messages')
         lastMessage = {message: '', timecreated: 0},
         scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll'),
         canDelete = $mmaMessages.canDeleteMessages(), // Check if user can delete messages.
-        syncObserver;
+        syncObserver,
+        scrollKeyboardInitialized = false,
+        pagesLoaded = 1,
+        unreadMessageFrom = false;
 
     $scope.showKeyboard = $stateParams.showKeyboard;
     $scope.loaded = false;
@@ -47,6 +51,8 @@ angular.module('mm.addons.messages')
         showDelete: false,
         canDelete: false
     };
+    $scope.canLoadMore = false;
+    $scope.loadingPrevious = false;
 
     // Disable the profile button if we're already coming from a profile.
     if (backView && backView.stateName === mmUserProfileState) {
@@ -79,6 +85,15 @@ angular.module('mm.addons.messages')
         return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
     };
 
+    /**
+     * Copy message to clipboard
+     *
+     * @param  {String} text Message text to be copied.
+     */
+    $scope.copyMessage = function(text) {
+        $mmUtil.copyToClipboard(text);
+    };
+
     $scope.sendMessage = function(text) {
         var message;
 
@@ -87,9 +102,12 @@ angular.module('mm.addons.messages')
             return;
         }
 
-        $scope.data.showDelete = false;
+        hideUnreadLabel();
 
-        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        $scope.data.showDelete = false;
+        $scope.newMessage = ''; // Clear new message.
+
+        text = $mmText.replaceNewLines(text, '<br>');
         message = {
             pending: true,
             sending: true,
@@ -102,27 +120,44 @@ angular.module('mm.addons.messages')
 
         messagesBeingSent++;
 
-        $mmaMessages.sendMessage(userId, text).then(function(sent) {
-            message.sending = false;
-            if (sent) {
-                // Message sent to server, not pending anymore.
-                message.pending = false;
-            }
-            notifyNewMessage();
-        }, function(error) {
+        // If there is an ongoing fetch, wait for it to finish.
+        // Otherwise, if a message is sent while fetching it could disappear until the next fetch.
+        waitForFetch().finally(function() {
+            $mmaMessages.sendMessage(userId, text).then(function(data) {
+                var promise;
 
-            // Only close the keyboard if an error happens, we want the user to be able to send multiple
-            // messages withoutthe keyboard being closed.
-            $mmApp.closeKeyboard();
+                messagesBeingSent--;
 
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
-            }
-            $scope.messages.splice($scope.messages.indexOf(message), 1);
-        }).finally(function() {
-            messagesBeingSent--;
+                if (data.sent) {
+                    // Message was sent, fetch messages right now.
+                    promise = fetchMessages();
+                } else {
+                    promise = $q.reject();
+                }
+
+                promise.catch(function() {
+                    // Fetch failed or is offline message, mark the message as sent. If fetch is successful there's no need
+                    // to mark it because the fetch will already show the message received from the server.
+                    message.sending = false;
+                    if (data.sent) {
+                        // Message sent to server, not pending anymore.
+                        message.pending = false;
+                    } else if (data.message) {
+                        message.timecreated = data.message.timecreated;
+                    }
+
+                    notifyNewMessage();
+                });
+            }).catch(function(error) {
+                messagesBeingSent--;
+
+                // Only close the keyboard if an error happens, we want the user to be able to send multiple
+                // messages without the keyboard being closed.
+                $mmApp.closeKeyboard();
+
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.messagenotsent', true);
+                $scope.messages.splice($scope.messages.indexOf(message), 1);
+            });
         });
     };
 
@@ -146,11 +181,7 @@ angular.module('mm.addons.messages')
                 }
             }
         }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingmessages', true);
         }).finally(function() {
             triggerDiscussionLoadedEvent();
             $scope.loaded = true;
@@ -171,11 +202,16 @@ angular.module('mm.addons.messages')
 
     $scope.scrollAfterRender = function(scope) {
         if (scope.$last === true) {
-            // Need a timeout to leave time to the view to be rendered.
-            $timeout(function() {
-                scrollView.scrollBottom();
-                setScrollWithKeyboard();
-            });
+            // Check if scroll is at bottom. If so, scroll bottom after rendering since there might be something new.
+            if (scrollView.getScrollPosition().top == scrollView.getScrollView().getScrollMax().top) {
+                // Need a timeout to leave time to the view to be rendered.
+                $timeout(function() {
+                    scrollView.scrollBottom();
+                    if (!scrollKeyboardInitialized) {
+                        setScrollWithKeyboard();
+                    }
+                });
+            }
         }
     };
 
@@ -190,10 +226,10 @@ angular.module('mm.addons.messages')
             // We do not poll while a message is being sent or we could confuse the user
             // as his message would disappear from the list, and he'd have to wait for the
             // interval to check for new messages.
-            return;
+            return $q.reject();
         } else if (fetching) {
             // Already fetching.
-            return;
+            return $q.reject();
         }
 
         fetching = true;
@@ -205,20 +241,209 @@ angular.module('mm.addons.messages')
                 // Ignore errors.
             });
         }).then(function() {
-            return $mmaMessages.getDiscussion(userId);
+            return getDiscussion(pagesLoaded);
         }).then(function(messages) {
             if (messagesBeingSent > 0) {
                 // Ignore polling due to a race condition.
-                return;
+                return $q.reject();
             }
 
-            // Sort messages.
-            $scope.messages = $mmaMessages.sortMessages(messages);
+            var currentMessages = {};
+
+            // Add all displayed messages to be currentMessages map.
+            angular.forEach($scope.messages, function(message) {
+                // Use smallmessage instead of message ID because ID changes when a message is read.
+                var id = md5.createHash(message.smallmessage) + '#' + message.timecreated;
+                currentMessages[id] = {
+                    message: message
+                };
+            });
+
+            // Add new messages to the list and mark the messages that should still be displayed.
+            angular.forEach(messages, function(message) {
+                var id = md5.createHash(message.smallmessage) + '#' + message.timecreated;
+                if (!currentMessages[id]) {
+                    // Message not added to the list. Add it now.
+                    $scope.messages.push(message);
+                } else {
+                    // Message needs to be kept in the list.
+                    currentMessages[id].keep = true;
+                }
+            });
+
+            // Remove messages that shouldn't be in the list anymore.
+            angular.forEach(currentMessages, function(entry) {
+                if (entry.keep) {
+                    // Don't remove it.
+                    return;
+                }
+
+                var position = $scope.messages.indexOf(entry.message);
+                if (position != -1) {
+                    $scope.messages.splice(position, 1);
+                }
+            });
+
+            // Sort the messages.
+            $mmaMessages.sortMessages($scope.messages);
 
             // Notify that there can be a new message.
             notifyNewMessage();
+
+            // Mark retrieved messages as read if they are not.
+            markMessagesAsRead();
         }).finally(function() {
             fetching = false;
+        });
+    }
+
+    // Hide unread label when sending messages.
+    function hideUnreadLabel() {
+        if (typeof unreadMessageFrom == 'number') {
+            angular.forEach($scope.messages, function(message) {
+                if (message.id == unreadMessageFrom) {
+                    message.unreadFrom = false;
+                }
+            });
+            // Label hidden.
+            unreadMessageFrom = true;
+        }
+    }
+
+    // Wait until fetching is false.
+    function waitForFetch() {
+        if (!fetching) {
+            return $q.when();
+        }
+
+        return $timeout(function() {
+            return waitForFetch();
+        }, 400);
+    }
+
+    // Mark messages as read.
+    function markMessagesAsRead() {
+        var readChanged = false,
+            promises = [];
+
+        if ($mmaMessages.isMarkAllMessagesReadEnabled()) {
+            var messageUnreadFound = false;
+            // Mark all messages at a time if one messages is unread.
+            for (var x in $scope.messages) {
+                var message = $scope.messages[x];
+                // If an unread message is found, mark all messages as read.
+                if (message.useridfrom != $scope.currentUserId && message.read == 0) {
+                    messageUnreadFound = true;
+                    break;
+                }
+            }
+            if (messageUnreadFound) {
+                setUnreadLabelPosition();
+                promises.push($mmaMessages.markAllMessagesRead(userId).then(function() {
+                    readChanged = true;
+                    // Mark all messages as read.
+                    angular.forEach($scope.messages, function(message) {
+                        message.read = 1;
+                    });
+                }));
+            }
+        } else {
+            setUnreadLabelPosition();
+            // Mark each message as read one by one.
+            angular.forEach($scope.messages, function(message) {
+                // If the message is unread, call $mmaMessages.markMessageRead.
+                if (message.useridfrom != $scope.currentUserId && message.read == 0) {
+                    promises.push($mmaMessages.markMessageRead(message.id).then(function() {
+                        readChanged = true;
+                        message.read = 1;
+                    }));
+                }
+            });
+        }
+
+        $q.all(promises).finally(function() {
+            if (readChanged) {
+                $mmEvents.trigger(mmaMessagesReadChangedEvent, {
+                    siteid: $mmSite.getId(),
+                    userid: userId
+                });
+            }
+        });
+    }
+
+    // Set the place where the unread label position has to be.
+    function setUnreadLabelPosition() {
+        if (unreadMessageFrom) {
+            return;
+        }
+
+        var previousMessageRead = false;
+
+        // Check all messages again and mark it as read.
+        angular.forEach($scope.messages, function(message) {
+            if (message.useridfrom != $scope.currentUserId) {
+                // Place unread from message label only once.
+                if (!unreadMessageFrom) {
+                    message.unreadFrom = message.read == 0 && previousMessageRead;
+                    // Save where the label is placed.
+                    unreadMessageFrom = message.unreadFrom && parseInt(message.id, 10);
+                    previousMessageRead = message.read != 0;
+                }
+            }
+        });
+
+        // Do not update the message unread from label on next refresh.
+        if (!unreadMessageFrom) {
+            // Using true to indicate the label is not placed but should not be placed.
+            unreadMessageFrom = true;
+        }
+    }
+
+    // Get a discussion. Can load several "pages".
+    function getDiscussion(pagesToLoad, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead) {
+        lfReceivedUnread = lfReceivedUnread || 0;
+        lfReceivedRead = lfReceivedRead || 0;
+        lfSentUnread = lfSentUnread || 0;
+        lfSentRead = lfSentRead || 0;
+
+        // Only get offline messages if we're loading the first "page".
+        var excludePending = lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0;
+
+        // Get next messages.
+        return $mmaMessages.getDiscussion(userId, excludePending, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead)
+                .then(function(result) {
+
+            pagesToLoad--;
+            if (pagesToLoad > 0 && result.canLoadMore) {
+                // More pages to load. Calculate new limit froms.
+                angular.forEach(result.messages, function(message) {
+                    if (!message.pending) {
+                        if (message.useridfrom == userId) {
+                            if (message.read) {
+                                lfReceivedRead++;
+                            } else {
+                                lfReceivedUnread++;
+                            }
+                        } else {
+                            if (message.read) {
+                                lfSentRead++;
+                            } else {
+                                lfSentUnread++;
+                            }
+                        }
+                    }
+                });
+
+                // Get next messages.
+                return getDiscussion(pagesToLoad, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead)
+                        .then(function(nextMessages) {
+                    return result.messages.concat(nextMessages);
+                });
+            } else {
+                // No more messages to load, return them.
+                $scope.canLoadMore = result.canLoadMore;
+                return result.messages;
+            }
         });
     }
 
@@ -291,49 +516,82 @@ angular.module('mm.addons.messages')
         }
     }
 
-    // Scroll when keyboard is hide/shown to keep the user scroll. This is only needed for Android.
+    // Scroll when keyboard is hide/shown to keep the user scroll.
     function setScrollWithKeyboard() {
-        if (ionic.Platform.isAndroid()) {
-            $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
-                var obsShow,
-                    obsHide,
-                    keyboardHeight,
-                    maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
-                    initialHeight = $window.innerHeight;
+        scrollKeyboardInitialized = true;
 
-                obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
-                    $timeout(function() {
-                        // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
-                        var heightDifference = initialHeight - $window.innerHeight,
-                            newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
-                        if (newKeyboardHeight) {
-                            keyboardHeight = newKeyboardHeight;
-                            scrollView.scrollBy(0, newKeyboardHeight);
-                        }
-                    });
-                });
+        $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
+            var obsShow,
+                obsHide,
+                keyboardHeight,
+                maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
+                initialHeight = $window.innerHeight;
 
-                obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
-                    if (!scrollView || !scrollView.getScrollPosition()) {
-                        return; // Can't get scroll position, stop.
+            obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
+                $timeout(function() {
+                    // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
+                    var heightDifference = initialHeight - $window.innerHeight,
+                        newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
+                    if (newKeyboardHeight) {
+                        keyboardHeight = newKeyboardHeight;
+                        scrollView.scrollBy(0, newKeyboardHeight);
                     }
-
-                    if (scrollView.getScrollPosition().top >= maxInitialScroll) {
-                        // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
-                        // from there to scroll to the right point.
-                        scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
-                    } else {
-                        scrollView.scrollBy(0, - keyboardHeight);
-                    }
-                });
-
-                $scope.$on('$destroy', function() {
-                    obsShow && obsShow.off && obsShow.off();
-                    obsHide && obsHide.off && obsHide.off();
                 });
             });
-        }
+
+            obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
+                if (!scrollView || !scrollView.getScrollPosition()) {
+                    return; // Can't get scroll position, stop.
+                }
+
+                if (scrollView.getScrollPosition().top >= maxInitialScroll) {
+                    // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
+                    // from there to scroll to the right point.
+                    scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
+                } else {
+                    scrollView.scrollBy(0, - keyboardHeight);
+                }
+            });
+
+            $scope.$on('$destroy', function() {
+                obsShow && obsShow.off && obsShow.off();
+                obsHide && obsHide.off && obsHide.off();
+            });
+        });
     }
+
+    // Function to load previous messages.
+    $scope.loadPrevious = function() {
+        if ($scope.loadingPrevious) {
+            // Already loading.
+            return;
+        }
+
+        $scope.loadingPrevious = true;
+
+        // If there is an ongoing fetch, wait for it to finish.
+        waitForFetch().finally(function() {
+
+            // Get current height. This is to keep the scroll position after the messages are loaded.
+            var oldHeight = scrollView.getScrollView().__contentHeight;
+            pagesLoaded++;
+
+            fetchMessages().then(function() {
+                scrollView.resize();
+
+                // Wait for new scroll to be calculated.
+                $timeout(function() {
+                    var newHeight = scrollView.getScrollView().__contentHeight;
+                    scrollView.scrollBy(0, newHeight - oldHeight);
+                });
+            }).catch(function(error) {
+                pagesLoaded--;
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingmessages', true);
+            }).finally(function() {
+                $scope.loadingPrevious = false;
+            });
+        });
+    };
 
     // Function to delete a message.
     $scope.deleteMessage = function(message, index) {
@@ -344,11 +602,7 @@ angular.module('mm.addons.messages')
                 $scope.messages.splice(index, 1); // Remove message from the list without having to wait for re-fetch.
                 fetchMessages(); // Re-fetch messages to update cached data.
             }).catch(function(error) {
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.errordeletemessage', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.errordeletemessage', true);
             }).finally(function() {
                 modal.dismiss();
             });

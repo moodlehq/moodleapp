@@ -9,6 +9,8 @@
     "completed": "کامل شده",
     "contents": "محتویات",
     "enter": "ورود",
+    "errorinvalidversion": "متاسفانه برنامه تنها از اسکورم ۱٫۲ پشتیبانی می‌کند.",
+    "errorpackagefile": "متاسفانه برنامه تنها از بسته‌های ZIP پشتیبانی می‌کند.",
     "exceededmaxattempts": "حداکثر تعداد تلاش‌ها را انجام داده‌اید.",
     "failed": "ناموفق",
     "firstattempt": "اولین تلاش",

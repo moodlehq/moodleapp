@@ -1,0 +1,17 @@
+{
+    "future": "Kommande",
+    "inprogress": "Pågående",
+    "morecourses": "Fler kurser",
+    "next30days": "30 dagar framåt",
+    "next7days": "7 dagar framåt",
+    "nocourses": "Inga kurser",
+    "nocoursesfuture": "Inga kommande kurser",
+    "nocoursesinprogress": "Inga pågående kurser",
+    "nocoursespast": "Inga tidigare kurser",
+    "noevents": "Inga deadlines för aktiviteter",
+    "past": "Tidigare",
+    "pluginname": "Kursöversikt",
+    "sortbycourses": "Sortera efter kurser",
+    "sortbydates": "Sortera efter datum",
+    "timeline": "Tidslinje"
+}

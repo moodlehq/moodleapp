@@ -27,13 +27,13 @@ angular.module('mm.core')
  * scope array, this directive won't update anything, so the module using this directive should be the one
  * uploading and moving the files.
  *
- * All the files added will be copies to the app temproary folder, so they should be deleted after uploading them
+ * All the files added will be copied to the app temporary folder, so they should be deleted after uploading them
  * or if the user cancels the action.
  *
  * Example usage:
  *
  * <mm-attachments files="files" max-size="{{maxSize}}" max-submissions="{{maxSubmissions}}"
- *     component="{{component}}" component-id="{{assign.id}}"></mm-attachments>
+ *     component="{{component}}" component-id="{{assign.id}}" mimetypes="mimetypes"></mm-attachments>
  *
  * Parameters accepted:
  *
@@ -43,6 +43,8 @@ angular.module('mm.core')
  * @param {String} [component]      Component the downloaded files will be linked to.
  * @param {Mixed} [componentId]     Component ID the downloaded files will be linked to.
  * @param {Boolean} [allowOffline]  True to allow selecting files in offline.
+ * @param {String} [acceptedTypes]  List of supported filetypes. If undefined, all types supported.
+ * @param {String} [mimetypes]      List of supported mimetypes. Deprecated, use acceptedTypes instead.
  */
 .directive('mmAttachments', function($mmText, $translate, $ionicScrollDelegate, $mmUtil, $mmApp, $mmFileUploaderHelper, $q) {
     return {
@@ -55,7 +57,9 @@ angular.module('mm.core')
             maxSubmissions: '@?',
             component: '@?',
             componentId: '@?',
-            allowOffline: '@?'
+            allowOffline: '@?',
+            acceptedTypes: '=?',
+            mimetypes: '=?',
         },
         link: function(scope) {
             var allowOffline = scope.allowOffline && scope.allowOffline !== 'false';
@@ -70,13 +74,20 @@ angular.module('mm.core')
 
             if (typeof scope.maxSubmissions == 'undefined' || scope.maxSubmissions < 0) {
                 scope.maxSubmissions = $translate.instant('mm.core.unknown');
+                scope.unlimitedFiles = true;
+            }
+
+            if (scope.acceptedTypes && scope.acceptedTypes.trim()) {
+                scope.filetypes = $mmFileUploaderHelper.prepareFiletypeList(scope.acceptedTypes);
             }
 
             scope.add = function() {
                 if (!allowOffline && !$mmApp.isOnline()) {
                     $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
                 } else {
-                    return $mmFileUploaderHelper.selectFile(maxSize, allowOffline).then(function(result) {
+                    var mimetypes = scope.filetypes && scope.filetypes.mimetypes || scope.mimetypes;
+                    return $mmFileUploaderHelper.selectFile(maxSize, allowOffline, undefined, undefined, mimetypes)
+                            .then(function(result) {
                         scope.files.push(result);
                     });
                 }

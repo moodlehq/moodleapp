@@ -4,8 +4,7 @@
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="plansLoaded" on-refresh="refreshLearningPlans()">
             </ion-refresher>
             <mm-loading hide-until="plansLoaded">
-                <ul class="list">
-                    <li ng-if="plans.length == 0" class="item">{{ 'mma.competency.noplanswerecreated' | translate }}</li>
+                <ul class="list" ng-if="plans.length > 0">
                     <li ng-repeat="plan in plans">
                         <a class="item item-text-wrap" mm-split-view-link="site.learningplan({id: plan.id})" title="{{plan.name}}">
                             <h2>{{plan.name}}</h2>
@@ -13,6 +12,7 @@
                         </a>
                     </li>
                 </ul>
+                <mm-empty-box ng-if="plans.length == 0" icon="ion-map" message="{{ 'mma.competency.noplanswerecreated' | translate }}"></mm-empty-box>
             </mm-loading>
         </ion-content>
     </mm-split-view>

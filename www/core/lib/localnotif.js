@@ -59,7 +59,8 @@ angular.module('mm.core')
  * Provides methods to trigger notifications, listen clicks on them, etc.
  */
 .factory('$mmLocalNotifications', function($log, $cordovaLocalNotification, $mmApp, $q, $rootScope, $ionicPopover, $timeout,
-        mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore, mmCoreNotificationsTriggeredStore) {
+        $mmConfig, mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore, mmCoreNotificationsTriggeredStore,
+        mmCoreSettingsNotificationSound) {
 
     $log = $log.getInstance('$mmLocalNotifications');
 
@@ -105,7 +106,7 @@ angular.module('mm.core')
         }
 
         return db.get(store, id).then(function(entry) {
-            var code = parseInt(entry.code);
+            var code = parseInt(entry.code, 10);
             codes[key] = code;
             return code;
         }, function() {
@@ -113,7 +114,7 @@ angular.module('mm.core')
             return db.query(store, undefined, 'code', true).then(function(entries) {
                 var newCode = 0;
                 if (entries.length > 0) {
-                    newCode = parseInt(entries[0].code) + 1;
+                    newCode = parseInt(entries[0].code, 10) + 1;
                 }
                 return db.insert(store, {id: id, code: newCode}).then(function() {
                     codes[key] = newCode;
@@ -166,7 +167,7 @@ angular.module('mm.core')
         return getSiteCode(siteid).then(function(sitecode) {
             return getComponentCode(component).then(function(componentcode) {
                 // We use the % operation to keep the number under Android's limit.
-                return (sitecode * 100000000 + componentcode * 10000000 + parseInt(notificationid)) % 2147483647;
+                return (sitecode * 100000000 + componentcode * 10000000 + parseInt(notificationid, 10)) % 2147483647;
             });
         });
     }
@@ -299,7 +300,7 @@ angular.module('mm.core')
      * @return {Boolean} True when local notifications plugin is installed.
      */
     self.isAvailable = function() {
-        return window.plugin && window.plugin.notification && window.plugin.notification.local ? true: false;
+        return $mmApp.isDesktop() || !!(window.plugin && window.plugin.notification && window.plugin.notification.local);
     };
 
     /**
@@ -366,6 +367,31 @@ angular.module('mm.core')
     };
 
     /**
+     * Reschedule all notifications that are already scheduled.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#rescheduleAll
+     * @return {Promise} Promise resolved when all notifications have been rescheduled.
+     */
+    self.rescheduleAll = function() {
+        // Get all the scheduled notifications.
+        return $cordovaLocalNotification.getAllScheduled().then(function(notifications) {
+            var promises = [];
+
+            angular.forEach(notifications, function(notification) {
+                // Convert some properties to the needed types.
+                notification.at = new Date(notification.at * 1000);
+                notification.data = notification.data ? JSON.parse(notification.data) : {};
+
+                promises.push(scheduleNotification(notification));
+            });
+
+            return $q.all(promises);
+        });
+    };
+
+    /**
      * Schedule a local notification.
      * @see https://github.com/katzer/cordova-plugin-local-notifications/wiki/04.-Scheduling
      *
@@ -384,6 +410,7 @@ angular.module('mm.core')
             notification.data = notification.data || {};
             notification.data.component = component;
             notification.data.siteid = siteid;
+
             if (ionic.Platform.isAndroid()) {
                 notification.icon = notification.icon || 'res://icon';
                 notification.smallIcon = notification.smallIcon || 'res://icon';
@@ -392,15 +419,35 @@ angular.module('mm.core')
                 notification.ledOffTime = notification.ledOffTime || 1000;
             }
 
-            return self.isTriggered(notification).then(function(triggered) {
-                if (!triggered) {
+            return scheduleNotification(notification);
+        });
+    };
+
+    /**
+     * Helper function to schedule a notification object if it hasn't been triggered already.
+     *
+     * @param  {Object} notification Notification to schedule.
+     * @return {Promise}             Promise resolved when scheduled.
+     */
+    function scheduleNotification(notification) {
+        // Check if the notification has been triggered already.
+        return self.isTriggered(notification).then(function(triggered) {
+            if (!triggered) {
+                // Check if sound is enabled for notifications.
+                return $mmConfig.get(mmCoreSettingsNotificationSound, true).then(function(soundEnabled) {
+                    if (!soundEnabled) {
+                        notification.sound = null;
+                    } else {
+                        delete notification.sound; // Use default value.
+                    }
+
                     // Remove from triggered, since the notification could be in there with a different time.
                     self.removeTriggered(notification.id);
                     return $cordovaLocalNotification.schedule(notification);
-                }
-            });
+                });
+            }
         });
-    };
+    }
 
     /**
      * Show an in app notification popover.
@@ -481,11 +528,11 @@ angular.module('mm.core')
             self.showNotificationPopover(notification);
         }
 
-        var id = parseInt(notification.id);
+        var id = parseInt(notification.id, 10);
         if (!isNaN(id)) {
             return $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {
                 id: id,
-                at: parseInt(notification.at)
+                at: parseInt(notification.at, 10)
             });
         } else {
             return $q.reject();

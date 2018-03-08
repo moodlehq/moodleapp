@@ -1,5 +1,6 @@
 {
     "answer": "Antwort",
+    "answersaved": "Antwort gespeichert",
     "complete": "Fertig",
     "correct": "Richtig",
     "errorattachmentsnotsupported": "Die App erlaubt keine Antworten mit Dateianhängen.",
@@ -8,9 +9,13 @@
     "feedback": "Rückmeldung",
     "howtodraganddrop": "Tippen Sie zum Auswählen und tippen Sie noch einmal zum Ablegen.",
     "incorrect": "Falsch",
+    "information": "Information",
+    "invalidanswer": "Unvollständige Antwort",
     "notanswered": "Nicht abgestimmt",
     "notyetanswered": "unbeantwortet",
     "partiallycorrect": "Teilweise richtig",
     "questionmessage": "Frage {{$a}}: {{$b}}",
+    "questionno": "Frage {{$a}}",
+    "requiresgrading": "Bewertung notwendig",
     "unknown": "Der Status kann nicht bestimmt werden."
 }

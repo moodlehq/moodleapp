@@ -16,8 +16,9 @@ angular.module('mm.core.login')
 
 .constant('mmLoginSSOCode', 2) // SSO in browser window is required.
 .constant('mmLoginSSOInAppCode', 3) // SSO in embedded browser is required.
-.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
-.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
+.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL') // @deprecated since version 3.2.1. Use mmLoginLaunchData instead.
+.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport') // @deprecated since version 3.2.1. Use mmLoginLaunchData instead.
+.constant('mmLoginLaunchData', 'mmLoginLaunchData')
 
 /**
  * Service to provide some helper functionalities for the login component.
@@ -26,13 +27,54 @@ angular.module('mm.core.login')
  * @ngdoc service
  * @name $mmLoginHelper
  */
-.factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchSiteURL,
-            mmLoginLaunchPassport, md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager,
-            $translate, mmCoreConfigConstants) {
+.factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
+            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
+            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses, $mmFS, $mmApp, $mmEmulatorHelper, $mmWS) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
     var self = {};
+
+    /**
+     * Accept site policy.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#acceptSitePolicy
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success. rejected if failure.
+     */
+    self.acceptSitePolicy = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.write('core_user_agree_site_policy', {}).then(function(result) {
+                if (!result.status) {
+                    // Error.
+                    if (result.warnings && result.warnings.length) {
+                        return $q.reject(result.warnings[0].message);
+                    } else {
+                        return $q.reject();
+                    }
+                }
+            });
+        });
+    };
+
+    /**
+     * Check if a site allows requesting a password reset through the app.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#canRequestPasswordReset
+     * @param  {String} siteUrl URL of the site.
+     * @return {Promise}        Promise resolved with boolean: whether can be done through the app.
+     */
+    self.canRequestPasswordReset = function(siteUrl) {
+        return self.requestPasswordReset(siteUrl).then(function() {
+            return true;
+        }).catch(function(error) {
+            return error.available == 1 || error.errorcode != 'invalidrecord';
+        });
+    };
 
     /**
      * Show a confirm modal if needed and open a browser to perform SSO login.
@@ -43,13 +85,13 @@ angular.module('mm.core.login')
      * @param  {String} siteurl     URL of the site where the SSO login will be performed.
      * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
      * @param  {String} [service]   The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [launchUrl] The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @return {Void}
      */
     self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
-        var skipConfirmation = mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false',
-            promise = skipConfirmation ? $q.when() : $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
+        var showConfirmation = self.shouldShowSSOConfirm(typeOfLogin),
+            promise = showConfirmation ? $mmUtil.showConfirm($translate('mm.login.logininsiterequired')) : $q.when();
 
         promise.then(function() {
             self.openBrowserForSSOLogin(siteurl, typeOfLogin, service, launchUrl);
@@ -137,6 +179,65 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Get the site policy.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#getSitePolicy
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the site policy.
+     */
+    self.getSitePolicy = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Check if it's stored in the site config.
+            var sitePolicy = site.getStoredConfig('sitepolicy');
+            if (typeof sitePolicy != 'undefined') {
+                return sitePolicy ? sitePolicy : $q.reject();
+            }
+
+            // Not in the config, try to get it using auth_email_get_signup_settings.
+            return $mmWS.callAjax('auth_email_get_signup_settings', {}, {siteurl: site.getURL()}).then(function(settings) {
+                return settings.sitepolicy ? settings.sitepolicy : $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Get fixed sites.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#getFixedSites
+     * @return {Object[]} List of fixed sites.
+     */
+    self.getFixedSites = function() {
+        return mmCoreConfigConstants.siteurl;
+    };
+
+    /**
+     * Get the valid identity providers from a site config.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#getValidIdentityProviders
+     * @param  {Object} siteConfig Site's public config.
+     * @return {Object[]}          Valid identity providers.
+     */
+    self.getValidIdentityProviders = function(siteConfig) {
+        var validProviders = [],
+            httpUrl = $mmFS.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/'),
+            httpsUrl = $mmFS.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+
+        angular.forEach(siteConfig.identityproviders, function(provider) {
+            if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1)) {
+                validProviders.push(provider);
+            }
+        });
+
+        return validProviders;
+    };
+
+    /**
      * Go to the view to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
@@ -146,9 +247,11 @@ angular.module('mm.core.login')
      * @return {Promise} Promise resolved when the state changes.
      */
     self.goToAddSite = function() {
-        if (mmCoreConfigConstants.siteurl) {
+        if (self.isFixedUrlSet()) {
             // Fixed URL is set, go to credentials page.
-            return $state.go('mm_login.credentials', {siteurl: mmCoreConfigConstants.siteurl});
+            var url = typeof mmCoreConfigConstants.siteurl == 'string' ?
+                    mmCoreConfigConstants.siteurl : mmCoreConfigConstants.siteurl[0].url;
+            return $state.go('mm_login.credentials', {siteurl: url});
         } else {
             return $state.go('mm_login.site');
         }
@@ -163,23 +266,90 @@ angular.module('mm.core.login')
      * @return {Promise} Promise resolved when the state changes.
      */
     self.goToSiteInitialPage = function() {
-        if ($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0) {
-            // Configured to go to Site Home. Check if plugin is installed in the app.
-            var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
-            if ($mmaFrontpage) {
-                return $mmaFrontpage.isFrontpageAvailable().then(function() {
-                    return $state.go('site.mm_course-section');
-                }).catch(function() {
+        return isMyOverviewEnabled().then(function(myOverview) {
+            var myCourses = !myOverview && isMyCoursesEnabled();
+
+            // Check if frontpage is needed to be shown. (If configured or if any of the other avalaible).
+            if (($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0) || (!myCourses && !myOverview)) {
+                promise = isFrontpageEnabled();
+            } else {
+                promise = $q.when(false);
+            }
+
+            return promise.then(function(frontpage) {
+                // Check avalaibility in priority order.
+                if (frontpage) {
+                    return $state.go('site.frontpage');
+                } else if (myOverview) {
+                    return $state.go('site.myoverview');
+                } else if (myCourses) {
                     return $state.go('site.mm_courses');
+                } else {
+                    // Anything else available, go to the user profile.
+                    return $state.go(mmUserProfileState, {userid: $mmSite.getUserId()});
+                }
+            });
+        });
+
+        function isFrontpageEnabled() {
+            var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
+            if ($mmaFrontpage && !$mmaFrontpage.isDisabledInSite()) {
+                return $mmaFrontpage.isFrontpageAvailable().then(function() {
+                    return true;
+                }).catch(function() {
+                    return false;
                 });
             }
+            return $q.when(false);
         }
 
-        return $state.go('site.mm_courses');
+        function isMyCoursesEnabled() {
+            return !$mmCourses.isMyCoursesDisabledInSite();
+        }
+
+        function isMyOverviewEnabled() {
+            var $mmaMyOverview = $mmAddonManager.get('$mmaMyOverview');
+            if ($mmaMyOverview) {
+                return $mmaMyOverview.isSideMenuAvailable();
+            }
+            return $q.when(false);
+        }
     };
 
     /**
-     * Check if the app is configured to use a fixed URL.
+     * Check if the app is configured to use several fixed URLs.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#hasSeveralFixedSites
+     * @return {Boolean} Whether there are several fixed URLs.
+     */
+    self.hasSeveralFixedSites = function() {
+        return mmCoreConfigConstants.siteurl && angular.isArray(mmCoreConfigConstants.siteurl) &&
+                mmCoreConfigConstants.siteurl.length > 1;
+    };
+
+    /**
+     * Given a site public config, check if email signup is disabled.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isEmailSignupDisabled
+     * @param  {Object} config Site public config.
+     * @return {Boolean}       True if email signup is disabled, false otherwise.
+     */
+    self.isEmailSignupDisabled = function(config) {
+        var disabledFeatures = config && config.tool_mobile_disabledfeatures;
+        if (!disabledFeatures) {
+            return false;
+        }
+
+        var regEx = new RegExp('(,|^)\\$mmLoginEmailSignup(,|$)', 'g');
+        return !!disabledFeatures.match(regEx);
+    };
+
+    /**
+     * Check if the app is configured to use a fixed URL (only 1).
      *
      * @module mm.core.login
      * @ngdoc method
@@ -187,7 +357,30 @@ angular.module('mm.core.login')
      * @return {Boolean} True if set, false otherwise.
      */
     self.isFixedUrlSet = function() {
-        return !!mmCoreConfigConstants.siteurl;
+        return mmCoreConfigConstants.siteurl &&
+                (typeof mmCoreConfigConstants.siteurl == 'string' || mmCoreConfigConstants.siteurl.length == 1);
+    };
+
+    /**
+     * Check if current site is logged out, triggering mmCoreEventSessionExpired if it is.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isSiteLoggedOut
+     * @param  {String} [stateName]   Name of the state to go once authenticated if logged out. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated if logged out.
+     * @return {Boolean}              True if user is logged out, false otherwise.
+     */
+    self.isSiteLoggedOut = function(stateName, stateParams) {
+        if ($mmSite.isLoggedOut()) {
+            $mmEvents.trigger(mmCoreEventSessionExpired, {
+                siteid: $mmSite.getId(),
+                statename: stateName,
+                stateparams: stateParams
+            });
+            return true;
+        }
+        return false;
     };
 
     /**
@@ -200,6 +393,11 @@ angular.module('mm.core.login')
      * @return {Boolean}      True if embedded browser, false othwerise.
      */
     self.isSSOEmbeddedBrowser = function(code) {
+        if ($mmApp.isDesktop() && $mmEmulatorHelper.isLinux()) {
+            // In Linux desktop apps, always use embedded browser.
+            return true;
+        }
+
         return code == mmLoginSSOInAppCode;
     };
 
@@ -217,28 +415,71 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Open a browser to perform OAuth login (Google, Facebook, Microsoft).
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#openBrowserForOAuthLogin
+     * @param  {String} siteUrl       URL of the site where the login will be performed.
+     * @param  {Object} provider      The identity provider.
+     * @param  {String} [launchUrl]   The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
+     * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated.
+     * @return {Boolean}              True if success, false if error.
+     */
+    self.openBrowserForOAuthLogin = function(siteUrl, provider, launchUrl, stateName, stateParams) {
+        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        if (!provider || !provider.url) {
+            return false;
+        }
+
+        var service = $mmSitesManager.determineService(siteUrl),
+            loginUrl = self.prepareForSSOLogin(siteUrl, service, launchUrl, stateName, stateParams);
+            params = $mmUtil.extractUrlParams(provider.url);
+
+        if (!params.id) {
+            return false;
+        }
+
+        loginUrl += '&oauthsso=' + params.id;
+
+        if ($mmApp.isDesktop() && $mmEmulatorHelper.isLinux()) {
+            // In Linux desktop apps, always use embedded browser.
+            $mmUtil.openInApp(loginUrl);
+        } else {
+            // Always open it in browser because the user might have the session stored in there.
+            $mmUtil.openInBrowser(loginUrl);
+            if (navigator.app) {
+                navigator.app.exitApp();
+            }
+        }
+
+        return true;
+    };
+
+    /**
      * Open a browser to perform SSO login.
      *
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#openBrowserForSSOLogin
-     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
-     * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
-     * @param  {String} [service]   The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} siteurl       URL of the site where the SSO login will be performed.
+     * @param  {Number} typeOfLogin   mmLoginSSOCode or mmLoginSSOInAppCode.
+     * @param  {String} [service]     The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl]   The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated.
      * @return {Void}
      */
-    self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
-        var loginUrl = self.prepareForSSOLogin(siteurl, service, launchUrl);
+    self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl, stateName, stateParams) {
+        var loginUrl = self.prepareForSSOLogin(siteurl, service, launchUrl, stateName, stateParams);
 
         if (self.isSSOEmbeddedBrowser(typeOfLogin)) {
-            $translate('mm.login.cancel').then(function(cancelStr) {
-                var options = {
-                    clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
-                    closebuttoncaption: cancelStr,
-                };
-                $mmUtil.openInApp(loginUrl, options);
-            });
+            var options = {
+                clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
+                closebuttoncaption: $translate.instant('mm.login.cancel'),
+            };
+            $mmUtil.openInApp(loginUrl, options);
         } else {
             $mmUtil.openInBrowser(loginUrl);
             if (navigator.app) {
@@ -248,19 +489,34 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Open forgotten password in inappbrowser.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#openForgottenPassword
+     * @param  {String} siteUrl URL of the site.
+     * @return {Void}
+     */
+    self.openForgottenPassword = function(siteUrl) {
+        $mmUtil.openInApp(siteUrl + '/login/forgot_password.php');
+    };
+
+    /**
      * Prepare the app to perform SSO login.
      *
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#prepareForSSOLogin
-     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
-     * @param  {String} [service]   The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} siteUrl       URL of the site where the SSO login will be performed.
+     * @param  {String} [service]     The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl]   The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated.
      * @return {Void}
      */
-    self.prepareForSSOLogin = function(siteurl, service, launchUrl) {
+    self.prepareForSSOLogin = function(siteUrl, service, launchUrl, stateName, stateParams) {
         service = service || mmCoreConfigConstants.wsextservice;
-        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
+        launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
 
         var passport = Math.random() * 1000,
             loginUrl = launchUrl + '?service=' + service;
@@ -270,10 +526,53 @@ angular.module('mm.core.login')
 
         // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
         // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
-        $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
-        $mmConfig.set(mmLoginLaunchPassport, passport);
+        $mmConfig.set(mmLoginLaunchData, {
+            siteurl: siteUrl,
+            passport: passport,
+            statename: stateName || '',
+            stateparams: stateParams || {}
+        });
 
         return loginUrl;
+    };
+
+    /**
+     * Request a password reset.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#requestPasswordReset
+     * @param  {String} siteUrl    URL of the site.
+     * @param  {String} [username] Username to search.
+     * @param  {String} [email]    Email to search.
+     * @return {Promise}           Promise resolved when done.
+     */
+    self.requestPasswordReset = function(siteUrl, username, email) {
+        var params = {};
+
+        if (username) {
+            params.username = username;
+        }
+
+        if (email) {
+            params.email = email;
+        }
+
+        return $mmWS.callAjax('core_auth_request_password_reset', params, {siteurl: siteUrl});
+    };
+
+    /**
+     * Check if a confirm should be shown to open a SSO authentication.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#shouldShowSSOConfirm
+     * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
+     * @return {Boolean}            True if confirm modal should be shown, false otherwise.
+     */
+    self.shouldShowSSOConfirm = function(typeOfLogin) {
+        return !self.isSSOEmbeddedBrowser(typeOfLogin) &&
+                    (!mmCoreConfigConstants.skipssoconfirmation || mmCoreConfigConstants.skipssoconfirmation === 'false');
     };
 
     /**
@@ -289,39 +588,39 @@ angular.module('mm.core.login')
         // Split signature:::token
         var params = url.split(":::");
 
-        return $mmConfig.get(mmLoginLaunchSiteURL).then(function(launchSiteURL) {
-            return $mmConfig.get(mmLoginLaunchPassport).then(function(passport) {
+        return $mmConfig.get(mmLoginLaunchData).then(function(data) {
+            var launchSiteURL = data.siteurl,
+                passport = data.passport;
 
-                // Reset temporary values.
-                $mmConfig.delete(mmLoginLaunchSiteURL);
-                $mmConfig.delete(mmLoginLaunchPassport);
+            // Reset temporary values.
+            $mmConfig.delete(mmLoginLaunchData);
 
-                // Validate the signature.
-                // We need to check both http and https.
-                var signature = md5.createHash(launchSiteURL + passport);
-                if (signature != params[0]) {
-                    if (launchSiteURL.indexOf("https://") != -1) {
-                        launchSiteURL = launchSiteURL.replace("https://", "http://");
-                    } else {
-                        launchSiteURL = launchSiteURL.replace("http://", "https://");
-                    }
-                    signature = md5.createHash(launchSiteURL + passport);
-                }
-
-                if (signature == params[0]) {
-                    $log.debug('Signature validated');
-                    return {
-                        siteurl: launchSiteURL,
-                        token: params[1],
-                        privateToken: params[2]
-                    };
+            // Validate the signature.
+            // We need to check both http and https.
+            var signature = md5.createHash(launchSiteURL + passport);
+            if (signature != params[0]) {
+                if (launchSiteURL.indexOf("https://") != -1) {
+                    launchSiteURL = launchSiteURL.replace("https://", "http://");
                 } else {
-                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
-                                    + signature + ' for passport ' + passport);
-                    return $mmLang.translateAndReject('mm.core.unexpectederror');
+                    launchSiteURL = launchSiteURL.replace("http://", "https://");
                 }
+                signature = md5.createHash(launchSiteURL + passport);
+            }
 
-            });
+            if (signature == params[0]) {
+                $log.debug('Signature validated');
+                return {
+                    siteurl: launchSiteURL,
+                    token: params[1],
+                    privateToken: params[2],
+                    statename: data.statename,
+                    stateparams: data.stateparams
+                };
+            } else {
+                $log.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '
+                                + signature + ' for passport ' + passport);
+                return $mmLang.translateAndReject('mm.core.unexpectederror');
+            }
         });
     };
 

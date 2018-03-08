@@ -1,0 +1,18 @@
+{
+    "future": "עתידי",
+    "inprogress": "בלמידה",
+    "morecourses": "קורסים נוספים",
+    "next30days": "ב 30 הימים הבאים",
+    "next7days": "ב 7 הימים הבאים",
+    "nocourses": "טרם נרשמתם לקורס כלשהו",
+    "nocoursesfuture": "טרם נרשמתם לקורס עתידי כלשהו",
+    "nocoursesinprogress": "טרם נרשמתם לקורס המתרחש כעת",
+    "nocoursespast": "אינכם רשומים לקורס אשר הסתיימו",
+    "noevents": "לא קיימות פעילויות עתידיות להן מועד הגשה",
+    "past": "עבר",
+    "pluginname": "סקירה כללית",
+    "recentlyoverdue": "מועד־ההגשה עבר, לאחרונה",
+    "sortbycourses": "מיון לפי שמות קורסים",
+    "sortbydates": "מיון לפי תאריכים",
+    "timeline": "ציר־זמן"
+}

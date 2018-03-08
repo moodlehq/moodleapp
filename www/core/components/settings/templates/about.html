@@ -11,6 +11,12 @@
                 <h2>Apache 2.0</h2>
                 <p><a href="http://www.apache.org/licenses/LICENSE-2.0" mm-link auto-login="no">http://www.apache.org/licenses/LICENSE-2.0</a></p>
             </li>
+            <li class="item item-divider" ng-if="privacyPolicy">
+                <p>{{ 'mm.settings.privacypolicy' | translate }}</p>
+            </li>
+            <li class="item item-text-wrap" ng-if="privacyPolicy">
+                <p><a ng-href="{{ privacyPolicy }}" mm-link auto-login="no">{{ privacyPolicy }}</a></p>
+            </li>
             <li class="item item-divider">
                 <p>{{ 'mm.settings.deviceinfo' | translate }}</p>
             </li>
@@ -24,7 +30,7 @@
             </li>
             <li class="item item-text-wrap" ng-if="filesystemroot">
                 <p class="item-heading">{{ 'mm.settings.filesystemroot' | translate}}</p>
-                <a ng-if="fsclickable" ng-href="{{filesystemroot}}" mm-link auto-login="no">{{ filesystemroot }}</a>
+                <p><a ng-if="fsclickable" ng-href="{{filesystemroot}}" mm-link auto-login="no">{{ filesystemroot }}</a></p>
                 <p ng-if="!fsclickable">{{ filesystemroot }}</p>
             </li>
             <li class="item item-text-wrap" ng-if="navigator && navigator.userAgent">

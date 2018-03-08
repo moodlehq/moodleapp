@@ -13,11 +13,11 @@
         <mm-loading hide-until="chatLoaded">
             <mm-course-mod-description watch="true" description="description" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
-            <div class="card padding" ng-if="chatScheduled != ''">
-                <p>{{ 'mma.mod_chat.sessionstart' | translate:{$a: chatScheduled} }}</p>
+            <div class="mm-info-card-icon" ng-if="chatInfo">
+                <i class="icon ion-clock padding"></i> {{ 'mma.mod_chat.sessionstart' | translate:{$a: chatInfo} }}
             </div>
 
-            <a class="button button-block" ui-sref="site.mod_chat-chat({chatid: chatId, title: title, courseid: courseid})">{{ 'mma.mod_chat.enterchat' | translate }}</a>
+            <a class="button button-block button-positive" ui-sref="site.mod_chat-chat({chatid: chatId, title: title, courseid: courseid})">{{ 'mma.mod_chat.enterchat' | translate }}</a>
         </mm-loading>
     </ion-content>
 </ion-view>
