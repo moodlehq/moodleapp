@@ -52,7 +52,6 @@ import { CoreSitePluginsUserProfileFieldHandler } from '../classes/user-profile-
 @Injectable()
 export class CoreSitePluginsHelperProvider {
     protected logger;
-    protected hasSitePluginsLoaded = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,  private injector: Injector,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
@@ -80,7 +79,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Unload plugins on logout if any.
         eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
-            if (this.hasSitePluginsLoaded) {
+            if (this.sitePluginsProvider.hasSitePluginsLoaded) {
                 // Temporary fix. Reload the page to unload all plugins.
                 window.location.reload();
             }
@@ -251,7 +250,7 @@ export class CoreSitePluginsHelperProvider {
                 plugin.parsedHandlers = JSON.parse(plugin.handlers);
             }
 
-            this.hasSitePluginsLoaded = true;
+            this.sitePluginsProvider.hasSitePluginsLoaded = true;
 
             // Register all the handlers.
             for (const name in plugin.parsedHandlers) {

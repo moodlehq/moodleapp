@@ -27,6 +27,7 @@ import { CoreLoginHelperProvider } from '../../login/providers/helper';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './delegate';
 import { CoreConstants } from '../../constants';
 import { CoreConfigConstants } from '../../../configconstants';
+import { CoreSitePluginsProvider } from '../../siteplugins/providers/siteplugins';
 
 /**
  * Service that provides some features regarding content links.
@@ -38,7 +39,8 @@ export class CoreContentLinksHelperProvider {
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private contentLinksDelegate: CoreContentLinksDelegate, private appProvider: CoreAppProvider,
             private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private translate: TranslateService,
-            private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider) {
+            private initDelegate: CoreInitDelegate, eventsProvider: CoreEventsProvider, private textUtils: CoreTextUtilsProvider,
+            private sitePluginsProvider: CoreSitePluginsProvider) {
         this.logger = logger.getInstance('CoreContentLinksHelperProvider');
 
         // Listen for app launched URLs. If we receive one, check if it's a content link.
@@ -144,7 +146,6 @@ export class CoreContentLinksHelperProvider {
                 return this.sitesProvider.checkSite(siteUrl).then((result) => {
                     // Site exists. We'll allow to add it.
                     const ssoNeeded = this.loginHelper.isSSOLoginNeeded(result.code),
-                        hasRemoteAddonsLoaded = false,
                         pageName = 'CoreLoginCredentialsPage',
                         pageParams = {
                             siteUrl: result.siteUrl,
@@ -152,7 +153,8 @@ export class CoreContentLinksHelperProvider {
                             urlToOpen: url,
                             siteConfig: result.config
                         };
-                    let promise;
+                    let promise,
+                        hasSitePluginsLoaded = false;
 
                     modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
@@ -164,8 +166,8 @@ export class CoreContentLinksHelperProvider {
                         const confirmMsg = this.translate.instant('core.contentlinks.confirmurlothersite');
                         promise = this.domUtils.showConfirm(confirmMsg).then(() => {
                             if (!ssoNeeded) {
-                                // @todo hasRemoteAddonsLoaded = $mmAddonManager.hasRemoteAddonsLoaded(); @todo
-                                if (hasRemoteAddonsLoaded) {
+                                hasSitePluginsLoaded = this.sitePluginsProvider.hasSitePluginsLoaded;
+                                if (hasSitePluginsLoaded) {
                                     // Store the redirect since logout will restart the app.
                                     this.appProvider.storeRedirect(CoreConstants.NO_SITE_ID, pageName, pageParams);
                                 }
@@ -181,7 +183,7 @@ export class CoreContentLinksHelperProvider {
                         if (ssoNeeded) {
                             this.loginHelper.confirmAndOpenBrowserForSSOLogin(
                                 result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
-                        } else if (!hasRemoteAddonsLoaded) {
+                        } else if (!hasSitePluginsLoaded) {
                             this.appProvider.getRootNavController().setRoot(pageName, pageParams);
                         }
                     });

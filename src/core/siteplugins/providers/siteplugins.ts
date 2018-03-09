@@ -62,6 +62,7 @@ export class CoreSitePluginsProvider {
 
     protected logger;
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
+    hasSitePluginsLoaded = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
