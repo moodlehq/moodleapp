@@ -523,6 +523,11 @@ export class CoreWSProvider {
             }
 
             if (typeof data.exception !== 'undefined') {
+                // Special debugging for site plugins, otherwise it's hard to debug errors if the data is cached.
+                if (method == 'tool_mobile_get_content') {
+                    this.logger.error('Error calling WS', method, data);
+                }
+
                 return Promise.reject(data);
             }
 

@@ -49,7 +49,6 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
-import { CoreAddonManagerProvider } from '@providers/addonmanager';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 
 // Core modules.
@@ -110,7 +109,6 @@ export const CORE_PROVIDERS: any[] = [
     CoreUpdateManagerProvider,
     CorePluginFileDelegate,
     CoreSyncProvider,
-    CoreAddonManagerProvider,
     CoreFileHelperProvider
 ];
 
@@ -170,8 +168,7 @@ export const CORE_PROVIDERS: any[] = [
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,
-            sitesProvider: CoreSitesProvider, addonManagerProvider: CoreAddonManagerProvider) {
-        // Inject CoreAddonManagerProvider even if it's not used to make sure it's initialized.
+            sitesProvider: CoreSitesProvider) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
             name: 'CorePlatformReady',

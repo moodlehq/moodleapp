@@ -31,4 +31,8 @@ export const CORE_SITEADDONS_PROVIDERS = [
     ],
     providers: CORE_SITEADDONS_PROVIDERS
 })
-export class CoreSiteAddonsModule { }
+export class CoreSiteAddonsModule {
+    constructor(helper: CoreSiteAddonsHelperProvider) {
+        // Inject the helper even if it isn't used so it's instantiated.
+    }
+}

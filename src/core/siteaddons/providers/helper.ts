@@ -14,6 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
+import { CoreEventsProvider } from '../../../providers/events';
 import { CoreLangProvider } from '../../../providers/lang';
 import { CoreLoggerProvider } from '../../../providers/logger';
 import { CoreSite } from '../../../classes/site';
@@ -54,15 +55,39 @@ import { CoreCoursesProvider } from '../../courses/providers/courses';
 @Injectable()
 export class CoreSiteAddonsHelperProvider {
     protected logger;
+    protected hasSiteAddonsLoaded = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider,  private injector: Injector,
             private mainMenuDelegate: CoreMainMenuDelegate, private moduleDelegate: CoreCourseModuleDelegate,
             private userDelegate: CoreUserDelegate, private langProvider: CoreLangProvider,
             private siteAddonsProvider: CoreSiteAddonsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
+            private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider, eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate) {
         this.logger = logger.getInstance('CoreSiteAddonsHelperProvider');
+
+        // Fetch the addons on login.
+        eventsProvider.on(CoreEventsProvider.LOGIN, () => {
+            const siteId = this.sitesProvider.getCurrentSiteId();
+            this.fetchSiteAddons(siteId).then((addons) => {
+                // Addons fetched, check that site hasn't changed.
+                if (siteId == this.sitesProvider.getCurrentSiteId() && addons.length) {
+                    // Site is still the same. Load the addons and trigger the event.
+                    this.loadSiteAddons(addons).then(() => {
+                        eventsProvider.trigger(CoreEventsProvider.SITE_ADDONS_LOADED, {}, siteId);
+                    });
+
+                }
+            });
+        });
+
+        // Unload addons on logout if any.
+        eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
+            if (this.hasSiteAddonsLoaded) {
+                // Temporary fix. Reload the page to unload all plugins.
+                window.location.reload();
+            }
+        });
     }
 
     /**
@@ -113,6 +138,35 @@ export class CoreSiteAddonsHelperProvider {
             result.jsResult = this.compileProvider.executeJavascript(instance, result.javascript);
 
             return result;
+        });
+    }
+
+    /**
+     * Fetch site addons.
+     *
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any[]>} Promise resolved when done. Returns the list of addons to load.
+     */
+    fetchSiteAddons(siteId?: string): Promise<any[]> {
+        const addons = [];
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            if (!this.siteAddonsProvider.isGetContentAvailable(site)) {
+                // Cannot load site addons, so there's no point to fetch them.
+                return addons;
+            }
+
+            // Get the list of addons. Try not to use cache.
+            return site.read('tool_mobile_get_plugins_supporting_mobile', {}, { getFromCache: false }).then((data) => {
+                data.plugins.forEach((addon: any) => {
+                    // Check if it's a site addon and it's enabled.
+                    if (this.isSiteAddonEnabled(addon, site)) {
+                        addons.push(addon);
+                    }
+                });
+
+                return addons;
+            });
         });
     }
 
@@ -256,10 +310,14 @@ export class CoreSiteAddonsHelperProvider {
     loadSiteAddon(addon: any): Promise<any> {
         const promises = [];
 
+        this.logger.debug('Load site addon:', addon);
+
         try {
             if (!addon.parsedHandlers) {
                 addon.parsedHandlers = JSON.parse(addon.handlers);
             }
+
+            this.hasSiteAddonsLoaded = true;
 
             // Register all the handlers.
             for (const name in addon.parsedHandlers) {
@@ -268,6 +326,22 @@ export class CoreSiteAddonsHelperProvider {
         } catch (ex) {
             this.logger.warn('Error parsing site addon', ex);
         }
+
+        return this.utils.allPromises(promises);
+    }
+
+    /**
+     * Load site addons.
+     *
+     * @param {any[]} addons The addons to load.
+     * @return {Promise<any>} Promise resolved when loaded.
+     */
+    loadSiteAddons(addons: any[]): Promise<any> {
+        const promises = [];
+
+        addons.forEach((addon) => {
+            promises.push(this.loadSiteAddon(addon));
+        });
 
         return this.utils.allPromises(promises);
     }
@@ -343,10 +417,7 @@ export class CoreSiteAddonsHelperProvider {
      * @return {string} A string to identify the handler.
      */
     protected registerCourseFormatHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
-        if (!handlerSchema) {
-            // Required data not provided, stop.
-            return;
-        }
+        this.logger.debug('Register site addon in course format delegate:', addon, handlerSchema, bootstrapResult);
 
         // Create the base handler.
         const formatName = addon.component.replace('format_', ''),
@@ -386,10 +457,14 @@ export class CoreSiteAddonsHelperProvider {
      * @return {string} A string to identify the handler.
      */
     protected registerCourseOptionHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
-        if (!handlerSchema || !handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
+            this.logger.warn('Ignore site addon because it doesn\'t provide displaydata', addon, handlerSchema);
+
             return;
         }
+
+        this.logger.debug('Register site addon in course option delegate:', addon, handlerSchema, bootstrapResult);
 
         // Create the base handler.
         const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
@@ -439,10 +514,14 @@ export class CoreSiteAddonsHelperProvider {
      * @return {string} A string to identify the handler.
      */
     protected registerMainMenuHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
-        if (!handlerSchema || !handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
+            this.logger.warn('Ignore site addon because it doesn\'t provide displaydata', addon, handlerSchema);
+
             return;
         }
+
+        this.logger.debug('Register site addon in main menu delegate:', addon, handlerSchema, bootstrapResult);
 
         // Create the base handler.
         const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
@@ -484,10 +563,14 @@ export class CoreSiteAddonsHelperProvider {
      * @return {string} A string to identify the handler.
      */
     protected registerModuleHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
-        if (!handlerSchema || !handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
+            this.logger.warn('Ignore site addon because it doesn\'t provide displaydata', addon, handlerSchema);
+
             return;
         }
+
+        this.logger.debug('Register site addon in module delegate:', addon, handlerSchema, bootstrapResult);
 
         // Create the base handler.
         const modName = addon.component.replace('mod_', ''),
@@ -542,10 +625,14 @@ export class CoreSiteAddonsHelperProvider {
      * @return {string} A string to identify the handler.
      */
     protected registerUserProfileHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any): string {
-        if (!handlerSchema || !handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata) {
             // Required data not provided, stop.
+            this.logger.warn('Ignore site addon because it doesn\'t provide displaydata', addon, handlerSchema);
+
             return;
         }
+
+        this.logger.debug('Register site addon in user profile delegate:', addon, handlerSchema, bootstrapResult);
 
         // Create the base handler.
         const uniqueName = this.siteAddonsProvider.getHandlerUniqueName(addon, handlerName),
@@ -614,10 +701,14 @@ export class CoreSiteAddonsHelperProvider {
      */
     protected registerUserProfileFieldHandler(addon: any, handlerName: string, handlerSchema: any, bootstrapResult: any)
             : string | Promise<string> {
-        if (!handlerSchema || !handlerSchema.method) {
+        if (!handlerSchema.method) {
             // Required data not provided, stop.
+            this.logger.warn('Ignore site addon because it doesn\'t provide method', addon, handlerSchema);
+
             return;
         }
+
+        this.logger.debug('Register site addon in user profile field delegate:', addon, handlerSchema, bootstrapResult);
 
         // Execute the main method and its JS. The template returned will be used in the profile field component.
         return this.executeMethodAndJS(addon, handlerSchema.method).then((result) => {
