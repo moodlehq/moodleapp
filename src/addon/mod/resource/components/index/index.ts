@@ -45,7 +45,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             protected translate: TranslateService, private prefetchHandler: AddonModResourcePrefetchHandler,
             private resourceHelper: AddonModResourceHelperProvider) {
         super(textUtils, courseHelper, translate, domUtils);
-
     }
 
     /**

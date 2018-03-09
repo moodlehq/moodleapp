@@ -478,6 +478,22 @@ textarea {
   .core-#{$color-name}-card {
     @extend ion-card;
     border-bottom: 3px solid $color-base;
+
+    &[icon-start] {
+      padding-left: 52px;
+      position: relative;
+
+      ion-icon {
+        color: $color-base;
+        position: absolute;
+        top: 0;
+        left: 16px;
+        height: 100%;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+      }
+    }
   }
 }
 

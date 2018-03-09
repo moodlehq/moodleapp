@@ -25,6 +25,14 @@
   .wp .core-#{$color-name}-card {
     @extend .card-wp ;
     @extend .card-content-wp;
+
+    &[icon-start] {
+      padding-left: $card-wp-padding-left * 2 + 20;
+
+      ion-icon {
+        left: $card-wp-padding-left;
+      }
+    }
   }
 }
 
