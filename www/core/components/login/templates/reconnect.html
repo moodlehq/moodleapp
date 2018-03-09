@@ -11,7 +11,7 @@
                     <!-- If no sitename show big siteurl. -->
                     <p ng-if="!sitename" class="item-heading padding mm-siteurl">{{siteurl}}</p>
                     <!-- If sitename, show big sitename and small siteurl. -->
-                    <p ng-if="sitename" class="item-heading padding mm-sitename">{{sitename}}</p>
+                    <p ng-if="sitename" class="item-heading padding mm-sitename"><mm-format-text>{{sitename}}</mm-format-text></p>
                     <p ng-if="sitename" class="mm-siteurl">{{siteurl}}</p>
 
                     <p class="padding-top" ng-if="!isLoggedOut"><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
