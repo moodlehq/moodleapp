@@ -30,7 +30,7 @@ export class CoreLangProvider {
     protected currentLanguage: string; // Save current language in a variable to speed up the get function.
     protected customStrings = {}; // Strings defined using the admin tool.
     protected customStringsRaw: string;
-    protected siteAddonsStrings = {}; // Strings defined by site addons.
+    protected sitePluginsStrings = {}; // Strings defined by site plugins.
 
     constructor(private translate: TranslateService, private configProvider: CoreConfigProvider, platform: Platform,
             private globalization: Globalization) {
@@ -47,16 +47,16 @@ export class CoreLangProvider {
     }
 
     /**
-     * Add a set of site addons strings for a certain language.
+     * Add a set of site plugins strings for a certain language.
      *
      * @param {string} lang The language where to add the strings.
      * @param {any} strings Object with the strings to add.
      * @param {string} [prefix] A prefix to add to all keys.
      */
-    addSiteAddonsStrings(lang: string, strings: any, prefix?: string): void {
+    addSitePluginsStrings(lang: string, strings: any, prefix?: string): void {
         // Initialize structures if they don't exist.
-        if (!this.siteAddonsStrings[lang]) {
-            this.siteAddonsStrings[lang] = {};
+        if (!this.sitePluginsStrings[lang]) {
+            this.sitePluginsStrings[lang] = {};
         }
         if (!this.translate.translations[lang]) {
             this.translate.translations[lang] = {};
@@ -71,15 +71,15 @@ export class CoreLangProvider {
                 continue;
             }
 
-            if (!this.siteAddonsStrings[lang][prefixedKey]) {
-                // It's a new site addon string. Store the original value.
-                this.siteAddonsStrings[lang][prefixedKey] = {
+            if (!this.sitePluginsStrings[lang][prefixedKey]) {
+                // It's a new site plugin string. Store the original value.
+                this.sitePluginsStrings[lang][prefixedKey] = {
                     original: this.translate.translations[lang][prefixedKey],
                     value: value
                 };
             } else {
-                // Site addon string already defined. Store the new value.
-                this.siteAddonsStrings[lang][prefixedKey].value = value;
+                // Site plugin string already defined. Store the new value.
+                this.sitePluginsStrings[lang][prefixedKey].value = value;
             }
 
             // Store the string in the translations table.
@@ -115,11 +115,11 @@ export class CoreLangProvider {
     }
 
     /**
-     * Clear current site addons strings.
+     * Clear current site plugins strings.
      */
-    clearSiteAddonsStrings(): void {
-        this.unloadStrings(this.siteAddonsStrings);
-        this.siteAddonsStrings = {};
+    clearSitePluginsStrings(): void {
+        this.unloadStrings(this.sitePluginsStrings);
+        this.sitePluginsStrings = {};
     }
 
     /**
@@ -132,12 +132,12 @@ export class CoreLangProvider {
     }
 
     /**
-     * Get all current site addons strings.
+     * Get all current site plugins strings.
      *
-     * @return {any} Site addons strings.
+     * @return {any} Site plugins strings.
      */
-    getAllSiteAddonsStrings(): any {
-        return this.siteAddonsStrings;
+    getAllSitePluginsStrings(): any {
+        return this.sitePluginsStrings;
     }
 
     /**
@@ -235,7 +235,7 @@ export class CoreLangProvider {
     }
 
     /**
-     * Unload custom or site addon strings, removing the to the translations table.
+     * Unload custom or site plugin strings, removing them from the translations table.
      *
      * @param {any} strings Strings to unload.
      */

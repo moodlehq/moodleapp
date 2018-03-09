@@ -65,7 +65,7 @@ import { CoreContentLinksModule } from '@core/contentlinks/contentlinks.module';
 import { CoreUserModule } from '@core/user/user.module';
 import { CoreGradesModule } from '@core/grades/grades.module';
 import { CoreSettingsModule } from '@core/settings/settings.module';
-import { CoreSiteAddonsModule } from '@core/siteaddons/siteaddons.module';
+import { CoreSitePluginsModule } from '@core/siteplugins/siteplugins.module';
 import { CoreCompileModule } from '@core/compile/compile.module';
 
 // Addon modules.
@@ -144,7 +144,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreUserModule,
         CoreGradesModule,
         CoreSettingsModule,
-        CoreSiteAddonsModule,
+        CoreSitePluginsModule,
         CoreCompileModule,
         AddonCalendarModule,
         AddonUserProfileFieldModule,

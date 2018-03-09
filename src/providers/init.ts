@@ -161,7 +161,7 @@ export class CoreInitDelegate {
      *
      * An init process should never change state or prompt user interaction.
      *
-     * This delegate cannot be used in remote addons.
+     * This delegate cannot be used by site plugins.
      *
      * @param {CoreInitHandler} instance The instance of the handler.
      */

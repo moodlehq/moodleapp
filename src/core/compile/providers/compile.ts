@@ -35,7 +35,7 @@ import { CORE_USER_PROVIDERS } from '../../user/user.module';
 import { IONIC_NATIVE_PROVIDERS } from '../../emulator/emulator.module';
 
 // Import only this provider to prevent circular dependencies.
-import { CoreSiteAddonsProvider } from '../../siteaddons/providers/siteaddons';
+import { CoreSitePluginsProvider } from '../../siteplugins/providers/siteplugins';
 
 // Import other libraries and providers.
 import { DomSanitizer } from '@angular/platform-browser';
@@ -47,7 +47,7 @@ import { CoreConstants } from '../../constants';
 import * as moment from 'moment';
 import { Md5 } from 'ts-md5/dist/md5';
 
-// Import core classes that can be useful for site addons.
+// Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '../../../classes/base-sync';
 import { CoreCache } from '../../../classes/cache';
 import { CoreDelegate } from '../../../classes/delegate';
@@ -63,16 +63,16 @@ import { CorePipesModule } from '../../../pipes/pipes.module';
 import { CoreCourseComponentsModule } from '../../course/components/components.module';
 import { CoreCourseDirectivesModule } from '../../course/directives/directives.module';
 import { CoreCoursesComponentsModule } from '../../courses/components/components.module';
-import { CoreSiteAddonsDirectivesModule } from '../../siteaddons/directives/directives.module';
+import { CoreSitePluginsDirectivesModule } from '../../siteplugins/directives/directives.module';
 import { CoreSiteHomeComponentsModule } from '../../sitehome/components/components.module';
 import { CoreUserComponentsModule } from '../../user/components/components.module';
 
 // Import some components listed in entryComponents so they can be injected dynamically.
 import { CoreCourseUnsupportedModuleComponent } from '../../course/components/unsupported-module/unsupported-module';
 import { CoreCourseFormatSingleActivityComponent } from '../../course/formats/singleactivity/components/singleactivity';
-import { CoreSiteAddonsModuleIndexComponent } from '../../siteaddons/components/module-index/module-index';
-import { CoreSiteAddonsCourseOptionComponent } from '../../siteaddons/components/course-option/course-option';
-import { CoreSiteAddonsCourseFormatComponent } from '../../siteaddons/components/course-format/course-format';
+import { CoreSitePluginsModuleIndexComponent } from '../../siteplugins/components/module-index/module-index';
+import { CoreSitePluginsCourseOptionComponent } from '../../siteplugins/components/course-option/course-option';
+import { CoreSitePluginsCourseFormatComponent } from '../../siteplugins/components/course-format/course-format';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -92,7 +92,7 @@ export class CoreCompileProvider {
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreSiteAddonsDirectivesModule
+        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, protected compiler: Compiler) {
@@ -163,7 +163,7 @@ export class CoreCompileProvider {
         const providers = (<any[]> CORE_PROVIDERS).concat(CORE_CONTENTLINKS_PROVIDERS).concat(CORE_COURSE_PROVIDERS)
                 .concat(CORE_COURSES_PROVIDERS).concat(CORE_FILEUPLOADER_PROVIDERS).concat(CORE_GRADES_PROVIDERS)
                 .concat(CORE_LOGIN_PROVIDERS).concat(CORE_MAINMENU_PROVIDERS).concat(CORE_SHAREDFILES_PROVIDERS)
-                .concat(CORE_SITEHOME_PROVIDERS).concat([CoreSiteAddonsProvider]).concat(CORE_USER_PROVIDERS)
+                .concat(CORE_SITEHOME_PROVIDERS).concat([CoreSitePluginsProvider]).concat(CORE_USER_PROVIDERS)
                 .concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
@@ -198,9 +198,9 @@ export class CoreCompileProvider {
         instance['CoreCourseModulePrefetchHandlerBase'] = CoreCourseModulePrefetchHandlerBase;
         instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
         instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
-        instance['CoreSiteAddonsModuleIndexComponent'] = CoreSiteAddonsModuleIndexComponent;
-        instance['CoreSiteAddonsCourseOptionComponent'] = CoreSiteAddonsCourseOptionComponent;
-        instance['CoreSiteAddonsCourseFormatComponent'] = CoreSiteAddonsCourseFormatComponent;
+        instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
+        instance['CoreSitePluginsCourseOptionComponent'] = CoreSitePluginsCourseOptionComponent;
+        instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
     }
 
     /**

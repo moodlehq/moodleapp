@@ -42,7 +42,7 @@ import { CoreLoggerProvider } from '@providers/logger';
  *
  * Alternatively, you can also supply a ComponentRef instead of the class of the component. In this case, the component won't
  * be instantiated because it already is, it will be attached to the view and the right data will be passed to it.
- * Passing ComponentRef is meant for site addons, so we'll inject a NavController instance to the component.
+ * Passing ComponentRef is meant for site plugins, so we'll inject a NavController instance to the component.
  *
  * The contents of this component will be displayed if no component is supplied or it cannot be created. In the example above,
  * if no component is supplied then the template will show the message "Cannot render the data.".
@@ -139,7 +139,7 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
             this.container.insert(this.component.hostView);
             this.instance = this.component.instance;
 
-            // This feature is usually meant for site addons. Inject some properties.
+            // This feature is usually meant for site plugins. Inject some properties.
             this.instance['ChangeDetectorRef'] = this.cdr;
             this.instance['NavController'] = this.navCtrl;
             this.instance['componentContainer'] = this.element.nativeElement;
