@@ -22,6 +22,7 @@ import { CoreSite, CoreSiteWSPreSets } from '../../../classes/site';
 import { CoreSitesProvider } from '../../../providers/sites';
 import { CoreUtilsProvider } from '../../../providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
+import { CoreCoursesProvider } from '../../courses/providers/courses';
 
 /**
  * Handler of a site addon.
@@ -64,7 +65,7 @@ export class CoreSiteAddonsProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
-            private filepoolProvider: CoreFilepoolProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
     }
 
@@ -336,6 +337,54 @@ export class CoreSiteAddonsProvider {
         site = site || this.sitesProvider.getCurrentSite();
 
         return site.wsAvailable('tool_mobile_get_content');
+    }
+
+    /**
+     * Check if a handler is enabled for a certain course.
+     *
+     * @param {number} courseId Course ID to check.
+     * @param {boolean} [restrictEnrolled] If true or undefined, handler is only enabled for courses the user is enrolled in.
+     * @param {any} [restrict] Users and courses the handler is restricted to.
+     * @return {boolean | Promise<boolean>} Whether the handler is enabled.
+     */
+    isHandlerEnabledForCourse(courseId: number, restrictEnrolled?: boolean, restrict?: any): boolean | Promise<boolean> {
+        if (restrict && restrict.courses && restrict.courses.indexOf(courseId) == -1) {
+            // Course is not in the list of restricted courses.
+            return false;
+        }
+
+        if (restrictEnrolled || typeof restrictEnrolled == 'undefined') {
+            // Only enabled for courses the user is enrolled to. Check if the user is enrolled in the course.
+            return this.coursesProvider.getUserCourse(courseId, true).then(() => {
+                return true;
+            }).catch(() => {
+                return false;
+            });
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if a handler is enabled for a certain user.
+     *
+     * @param {number} userId User ID to check.
+     * @param {boolean} [restrictCurrent] Whether handler is only enabled for current user.
+     * @param {any} [restrict] Users and courses the handler is restricted to.
+     * @return {boolean} Whether the handler is enabled.
+     */
+    isHandlerEnabledForUser(userId: number, restrictCurrent?: boolean, restrict?: any): boolean {
+        if (restrictCurrent && userId != this.sitesProvider.getCurrentSite().getUserId()) {
+            // Only enabled for current user.
+            return false;
+        }
+
+        if (restrict && restrict.users && restrict.users.indexOf(userId) == -1) {
+            // User is not in the list of restricted users.
+            return false;
+        }
+
+        return true;
     }
 
     /**
