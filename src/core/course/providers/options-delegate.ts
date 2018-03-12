@@ -18,7 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
-import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from './course';
 
 /**

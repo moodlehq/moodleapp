@@ -23,11 +23,11 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
-import { CoreLoginHelperProvider } from '../../login/providers/helper';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './delegate';
-import { CoreConstants } from '../../constants';
+import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
-import { CoreSitePluginsProvider } from '../../siteplugins/providers/siteplugins';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 
 /**
  * Service that provides some features regarding content links.

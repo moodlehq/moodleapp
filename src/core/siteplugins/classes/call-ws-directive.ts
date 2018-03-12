@@ -14,7 +14,7 @@
 
 import { Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { Subscription } from 'rxjs';

@@ -14,7 +14,7 @@
 
 import { Injector } from '@angular/core';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
-import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../course/providers/options-delegate';
+import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreSitePluginsCourseOptionComponent } from '../components/course-option/course-option';
 

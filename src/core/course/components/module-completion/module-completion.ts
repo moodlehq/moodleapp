@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreUserProvider } from '../../../user/providers/user';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing

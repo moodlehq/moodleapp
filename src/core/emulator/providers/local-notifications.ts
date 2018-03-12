@@ -17,7 +17,7 @@ import { LocalNotifications, ILocalNotification } from '@ionic-native/local-noti
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreConstants } from '../../constants';
+import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import * as moment from 'moment';
 

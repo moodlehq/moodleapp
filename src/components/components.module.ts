@@ -15,8 +15,8 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreDirectivesModule } from '@directives';
-import { CorePipesModule } from '@pipes';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreLoadingComponent } from './loading/loading';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';

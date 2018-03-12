@@ -15,8 +15,8 @@
 import { Directive, Input, ElementRef, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
 import { CoreSitePluginsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';

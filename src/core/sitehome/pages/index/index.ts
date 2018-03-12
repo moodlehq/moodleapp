@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * Page that displays site home index.

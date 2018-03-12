@@ -18,8 +18,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCourseProvider } from '../../../course/providers/course';
-import { CoreContentLinksHelperProvider } from '../../../contentlinks/providers/helper';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import * as moment from 'moment';
 
 /**

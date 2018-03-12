@@ -17,9 +17,9 @@ import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
-import { CoreCourseProvider } from '../../../course/providers/course';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * This component is meant to display a course for a list of courses with progress.

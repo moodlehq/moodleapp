@@ -14,7 +14,7 @@
 
 import { Injector } from '@angular/core';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
-import { CoreCourseModulePrefetchHandlerBase } from '../../course/classes/module-prefetch-handler';
+import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 
 /**
  * Handler to prefetch a module site plugin.

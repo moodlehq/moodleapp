@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreUserProfilePage } from './profile';
-import { CoreDirectivesModule } from '@directives';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({

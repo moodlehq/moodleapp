@@ -14,11 +14,11 @@
 
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
-import { CoreCourseModuleMainComponent } from '../../../course/providers/module-delegate';
-import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 
 /**

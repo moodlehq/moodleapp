@@ -15,9 +15,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreCourseProvider } from '../../../course/providers/course';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
-import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 
 /**
  * Component that displays site home index.

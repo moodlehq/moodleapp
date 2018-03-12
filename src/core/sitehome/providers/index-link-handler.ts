@@ -14,9 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '../../login/providers/helper';
+import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
+import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreSiteHomeProvider } from './sitehome';
 
 /**

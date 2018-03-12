@@ -14,10 +14,10 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../course/providers/options-delegate';
-import { CoreCourseProvider } from '../../course/providers/course';
+import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
-import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreGradesCourseComponent } from '../components/course/course';
 
 /**

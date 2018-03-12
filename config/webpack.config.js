@@ -6,12 +6,13 @@ const customConfig = {
   resolve: {
     alias: {
       '@addon': resolve('./src/addon'),
+      '@app': resolve('./src/app'),
       '@classes': resolve('./src/classes'),
       '@core': resolve('./src/core'),
       '@providers': resolve('./src/providers'),
       '@components': resolve('./src/components'),
-      '@directives': resolve('./src/directives/directives.module'),
-      '@pipes': resolve('./src/pipes/pipes.module')
+      '@directives': resolve('./src/directives'),
+      '@pipes': resolve('./src/pipes')
     }
   }
 };

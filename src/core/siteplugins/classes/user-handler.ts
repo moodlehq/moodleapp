@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { NavController } from 'ionic-angular';
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../user/providers/user-delegate';
+import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitePluginsProvider } from '../providers/siteplugins';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../user/providers/user-delegate';
+import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreContentLinksHelperProvider } from '../../contentlinks/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreGradesProvider } from './grades';
 
 /**

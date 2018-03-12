@@ -14,8 +14,8 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../course/providers/options-delegate';
-import { CoreCourseProvider } from '../../course/providers/course';
+import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreUserProvider } from './user';
 import { CoreUserParticipantsComponent } from '../components/participants/participants';
 

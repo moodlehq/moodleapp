@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from '../../fileuploader/providers/delegate';
+import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from '@core/fileuploader/providers/delegate';
 import { CoreSharedFilesHelperProvider } from './helper';
 /**
  * Handler to upload files from the album.

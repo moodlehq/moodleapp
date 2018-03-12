@@ -15,19 +15,19 @@
 import { NgModule } from '@angular/core';
 import { CoreGradesProvider } from './providers/grades';
 import { CoreGradesHelperProvider } from './providers/helper';
-import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreGradesMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreGradesCourseOptionHandler } from './providers/course-option-handler';
 import { CoreGradesComponentsModule } from './components/components.module';
-import { CoreCourseOptionsDelegate } from '../course/providers/options-delegate';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreGradesUserLinkHandler } from './providers/user-link-handler';
 import { CoreGradesOverviewLinkHandler } from './providers/overview-link-handler';
-import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreGradesUserHandler } from './providers/user-handler';
-import { CoreUserDelegate } from '../user/providers/user-delegate';
+import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreUserProvider } from '../user/providers/user';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 // List of providers (without handlers).
 export const CORE_GRADES_PROVIDERS: any[] = [

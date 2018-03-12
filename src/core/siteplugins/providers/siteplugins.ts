@@ -14,15 +14,15 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreFilepoolProvider } from '../../../providers/filepool';
-import { CoreLangProvider } from '../../../providers/lang';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSite, CoreSiteWSPreSets } from '../../../classes/site';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreLangProvider } from '@providers/lang';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
-import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Handler of a site plugin.

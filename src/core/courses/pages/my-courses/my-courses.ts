@@ -18,8 +18,8 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
-import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 
 /**
  * Page that displays the list of courses the user is enrolled in.

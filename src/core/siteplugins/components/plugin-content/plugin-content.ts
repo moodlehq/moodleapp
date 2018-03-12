@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { Subject } from 'rxjs';
 

@@ -19,8 +19,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreUserParticipantsComponent } from './participants/participants';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
-import { CorePipesModule } from '@pipes';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [

@@ -17,7 +17,7 @@ import {
     ElementRef, Optional
 } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreCompileProvider } from '../../../compile/providers/compile';
+import { CoreCompileProvider } from '../../providers/compile';
 import { BehaviorSubject } from 'rxjs';
 
 /**

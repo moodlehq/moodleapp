@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCoursesProvider } from './courses';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../mainmenu/providers/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 import { CoreCoursesMyOverviewProvider } from '../providers/my-overview';
 
 /**

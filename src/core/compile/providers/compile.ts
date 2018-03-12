@@ -18,24 +18,24 @@ import {
     IonicModule
 } from 'ionic-angular';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
+import { CoreLoggerProvider } from '@providers/logger';
 
 // Import core providers.
-import { CORE_PROVIDERS } from '../../../app/app.module';
-import { CORE_CONTENTLINKS_PROVIDERS } from '../../contentlinks/contentlinks.module';
-import { CORE_COURSE_PROVIDERS } from '../../course/course.module';
-import { CORE_COURSES_PROVIDERS } from '../../courses/courses.module';
-import { CORE_FILEUPLOADER_PROVIDERS } from '../../fileuploader/fileuploader.module';
-import { CORE_GRADES_PROVIDERS } from '../../grades/grades.module';
-import { CORE_LOGIN_PROVIDERS } from '../../login/login.module';
-import { CORE_MAINMENU_PROVIDERS } from '../../mainmenu/mainmenu.module';
-import { CORE_SHAREDFILES_PROVIDERS } from '../../sharedfiles/sharedfiles.module';
-import { CORE_SITEHOME_PROVIDERS } from '../../sitehome/sitehome.module';
-import { CORE_USER_PROVIDERS } from '../../user/user.module';
-import { IONIC_NATIVE_PROVIDERS } from '../../emulator/emulator.module';
+import { CORE_PROVIDERS } from '@app/app.module';
+import { CORE_CONTENTLINKS_PROVIDERS } from '@core/contentlinks/contentlinks.module';
+import { CORE_COURSE_PROVIDERS } from '@core/course/course.module';
+import { CORE_COURSES_PROVIDERS } from '@core/courses/courses.module';
+import { CORE_FILEUPLOADER_PROVIDERS } from '@core/fileuploader/fileuploader.module';
+import { CORE_GRADES_PROVIDERS } from '@core/grades/grades.module';
+import { CORE_LOGIN_PROVIDERS } from '@core/login/login.module';
+import { CORE_MAINMENU_PROVIDERS } from '@core/mainmenu/mainmenu.module';
+import { CORE_SHAREDFILES_PROVIDERS } from '@core/sharedfiles/sharedfiles.module';
+import { CORE_SITEHOME_PROVIDERS } from '@core/sitehome/sitehome.module';
+import { CORE_USER_PROVIDERS } from '@core/user/user.module';
+import { IONIC_NATIVE_PROVIDERS } from '@core/emulator/emulator.module';
 
 // Import only this provider to prevent circular dependencies.
-import { CoreSitePluginsProvider } from '../../siteplugins/providers/siteplugins';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 
 // Import other libraries and providers.
 import { DomSanitizer } from '@angular/platform-browser';
@@ -43,36 +43,36 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Http } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
 import { CoreConfigConstants } from '../../../configconstants';
-import { CoreConstants } from '../../constants';
+import { CoreConstants } from '@core/constants';
 import * as moment from 'moment';
 import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
-import { CoreSyncBaseProvider } from '../../../classes/base-sync';
-import { CoreCache } from '../../../classes/cache';
-import { CoreDelegate } from '../../../classes/delegate';
-import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
-import { CoreContentLinksModuleGradeHandler } from '../../contentlinks/classes/module-grade-handler';
-import { CoreContentLinksModuleIndexHandler } from '../../contentlinks/classes/module-index-handler';
-import { CoreCourseModulePrefetchHandlerBase } from '../../course/classes/module-prefetch-handler';
+import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreCache } from '@classes/cache';
+import { CoreDelegate } from '@classes/delegate';
+import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
+import { CoreContentLinksModuleGradeHandler } from '@core/contentlinks/classes/module-grade-handler';
+import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
+import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 
 // Import all modules that define components, directives and pipes.
-import { CoreComponentsModule } from '../../../components/components.module';
-import { CoreDirectivesModule } from '../../../directives/directives.module';
-import { CorePipesModule } from '../../../pipes/pipes.module';
-import { CoreCourseComponentsModule } from '../../course/components/components.module';
-import { CoreCourseDirectivesModule } from '../../course/directives/directives.module';
-import { CoreCoursesComponentsModule } from '../../courses/components/components.module';
-import { CoreSitePluginsDirectivesModule } from '../../siteplugins/directives/directives.module';
-import { CoreSiteHomeComponentsModule } from '../../sitehome/components/components.module';
-import { CoreUserComponentsModule } from '../../user/components/components.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreCourseComponentsModule } from '@core/course/components/components.module';
+import { CoreCourseDirectivesModule } from '@core/course/directives/directives.module';
+import { CoreCoursesComponentsModule } from '@core/courses/components/components.module';
+import { CoreSitePluginsDirectivesModule } from '@core/siteplugins/directives/directives.module';
+import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
+import { CoreUserComponentsModule } from '@core/user/components/components.module';
 
 // Import some components listed in entryComponents so they can be injected dynamically.
-import { CoreCourseUnsupportedModuleComponent } from '../../course/components/unsupported-module/unsupported-module';
-import { CoreCourseFormatSingleActivityComponent } from '../../course/formats/singleactivity/components/singleactivity';
-import { CoreSitePluginsModuleIndexComponent } from '../../siteplugins/components/module-index/module-index';
-import { CoreSitePluginsCourseOptionComponent } from '../../siteplugins/components/course-option/course-option';
-import { CoreSitePluginsCourseFormatComponent } from '../../siteplugins/components/course-format/course-format';
+import { CoreCourseUnsupportedModuleComponent } from '@core/course/components/unsupported-module/unsupported-module';
+import { CoreCourseFormatSingleActivityComponent } from '@core/course/formats/singleactivity/components/singleactivity';
+import { CoreSitePluginsModuleIndexComponent } from '@core/siteplugins/components/module-index/module-index';
+import { CoreSitePluginsCourseOptionComponent } from '@core/siteplugins/components/course-option/course-option';
+import { CoreSitePluginsCourseFormatComponent } from '@core/siteplugins/components/course-format/course-format';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.

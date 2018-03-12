@@ -23,7 +23,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSharedFilesProvider } from './sharedfiles';
-import { CoreFileUploaderProvider } from '../../fileuploader/providers/fileuploader';
+import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 
 /**
  * Helper service to share files with the app.

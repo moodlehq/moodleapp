@@ -20,10 +20,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreCourseProvider } from '../../../course/providers/course';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
-import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
-import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 /**

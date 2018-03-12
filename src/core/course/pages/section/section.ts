@@ -25,7 +25,7 @@ import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseFormatComponent } from '../../components/format/format';
-import { CoreCoursesProvider } from '../../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Page that displays the list of courses the user is enrolled in.

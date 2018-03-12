@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDelegateHandler } from '../../../classes/delegate';
+import { CoreDelegateHandler } from '@classes/delegate';
 
 /**
  * Super class for handlers for site plugins.

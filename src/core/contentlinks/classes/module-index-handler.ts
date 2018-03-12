@@ -14,7 +14,7 @@
 
 import { CoreContentLinksAction } from '../providers/delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
-import { CoreCourseHelperProvider } from '../../course/providers/helper';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * Handler to handle URLs pointing to the index of a module.

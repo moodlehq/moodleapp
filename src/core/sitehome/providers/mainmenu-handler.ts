@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSiteHomeProvider } from './sitehome';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../mainmenu/providers/delegate';
-import { CoreCoursesMyOverviewProvider } from '../../courses/providers/my-overview';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
+import { CoreCoursesMyOverviewProvider } from '@core/courses/providers/my-overview';
 
 /**
  * Handler to add Site Home into main menu.

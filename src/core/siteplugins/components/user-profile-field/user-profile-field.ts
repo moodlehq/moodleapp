@@ -14,7 +14,7 @@
 
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
-import { CoreCompileHtmlComponent } from '../../../compile/components/compile-html/compile-html';
+import { CoreCompileHtmlComponent } from '@core/compile/components/compile-html/compile-html';
 import { Subscription } from 'rxjs';
 
 /**

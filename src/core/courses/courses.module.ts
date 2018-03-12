@@ -19,8 +19,8 @@ import { CoreCoursesMyOverviewProvider } from './providers/my-overview';
 import { CoreCoursesCourseLinkHandler } from './providers/course-link-handler';
 import { CoreCoursesIndexLinkHandler } from './providers/courses-index-link-handler';
 import { CoreCoursesMyOverviewLinkHandler } from './providers/my-overview-link-handler';
-import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
-import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 
 // List of providers (without handlers).
 export const CORE_COURSES_PROVIDERS: any[] = [

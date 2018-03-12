@@ -21,8 +21,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLoginHelperProvider } from '../../providers/helper';
-import { CoreContentLinksDelegate } from '../../../contentlinks/providers/delegate';
-import { CoreContentLinksHelperProvider } from '../../../contentlinks/providers/helper';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 /**

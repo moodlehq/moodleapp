@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
-import { CoreCourseFormatHandler } from '../../course/providers/format-delegate';
+import { CoreCourseFormatHandler } from '@core/course/providers/format-delegate';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreSitePluginsCourseFormatComponent } from '../components/course-format/course-format';
 

@@ -13,23 +13,23 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreLangProvider } from '../../../providers/lang';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSite } from '../../../classes/site';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreLangProvider } from '@providers/lang';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSite } from '@classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from './siteplugins';
-import { CoreCompileProvider } from '../../compile/providers/compile';
+import { CoreCompileProvider } from '@core/compile/providers/compile';
 
 // Delegates
-import { CoreMainMenuDelegate } from '../../mainmenu/providers/delegate';
-import { CoreCourseModuleDelegate } from '../../course/providers/module-delegate';
-import { CoreCourseModulePrefetchDelegate } from '../../course/providers/module-prefetch-delegate';
-import { CoreCourseOptionsDelegate } from '../../course/providers/options-delegate';
-import { CoreCourseFormatDelegate } from '../../course/providers/format-delegate';
-import { CoreUserDelegate } from '../../user/providers/user-delegate';
-import { CoreUserProfileFieldDelegate } from '../../user/providers/user-profile-field-delegate';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
+import { CoreUserDelegate } from '@core/user/providers/user-delegate';
+import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 
 // Handler classes.
 import { CoreSitePluginsCourseFormatHandler } from '../classes/course-format-handler';

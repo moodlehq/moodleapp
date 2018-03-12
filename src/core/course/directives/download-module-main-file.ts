@@ -15,7 +15,7 @@
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreCourseProvider } from '../providers/course';
 import { CoreCourseHelperProvider } from '../providers/helper';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Directive to allow downloading and open the main file of a module.

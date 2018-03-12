@@ -19,7 +19,7 @@ import { AddonUserProfileFieldDatetimeHandler } from './providers/handler';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldDatetimeComponent } from './component/datetime';
 import { CoreComponentsModule } from '@components/components.module';
-import { CorePipesModule } from '@pipes';
+import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [

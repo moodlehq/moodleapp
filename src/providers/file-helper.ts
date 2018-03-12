@@ -19,7 +19,7 @@ import { CoreFileProvider } from './file';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
 import { CoreUtilsProvider } from './utils/utils';
-import { CoreConstants } from '../core/constants';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Provider to provide some helper functions regarding files and packages.

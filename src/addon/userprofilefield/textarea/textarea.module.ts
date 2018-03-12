@@ -19,7 +19,7 @@ import { AddonUserProfileFieldTextareaHandler } from './providers/handler';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldTextareaComponent } from './component/textarea';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
