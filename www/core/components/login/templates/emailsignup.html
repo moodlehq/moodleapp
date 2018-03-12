@@ -8,7 +8,7 @@
         <mm-loading hide-until="settingsLoaded" ng-if="!isMinor">
 
             <form name="ageVerificationForm" class="list list-inset" ng-if="settings && ageDigitalConsentVerification" novalidate="">
-                <div class="item item-text-wrap text-center">
+                <div class="item item-divider item-text-wrap">
                     <p class="item-heading">{{ 'mm.core.agelocationverification' | translate }}</p>
                 </div>
                 <div class="item item-input item-stacked-label item-text-wrap">
@@ -26,7 +26,7 @@
                     <button class="button button-block button-positive" ng-click="verifyAge(ageVerificationForm)">{{ 'mm.core.proceed' | translate }}</button>
                 </div>
 
-                <div class="item item-text-wrap text-center">
+                <div class="item item-text-wrap">
                     <p class="item-heading">{{ 'mm.core.whyisthisrequired' | translate }}</p>
                     <p>{{ 'mm.core.explanationdigitalminor' | translate }}</p>
                 </div>
@@ -109,7 +109,7 @@
         </mm-loading>
 
         <div class="list list-inset" ng-if="isMinor">
-            <div class="item item-text-wrap text-center">
+            <div class="item item-text-wrap item-divider">
                 <p ng-if="sitename" class="item-heading padding"><mm-format-text>{{sitename}}</mm-format-text></p>
             </div>
             <div class="item item-text-wrap">
