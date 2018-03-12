@@ -63,13 +63,18 @@ export class CoreLangProvider {
         }
 
         for (const key in strings) {
-            const prefixedKey = prefix + key,
-                value = strings[key];
+            const prefixedKey = prefix + key;
+            let value = strings[key];
 
             if (this.customStrings[lang] && this.customStrings[lang][prefixedKey]) {
                 // This string is overridden by a custom string, ignore it.
                 continue;
             }
+
+            // Add another curly bracket to string params ({$a} -> {{$a}}).
+            value = value.replace(/{([^ ]+)}/gm, '{{$1}}');
+            // Make sure we didn't add to many brackets in some case.
+            value = value.replace(/{{{([^ ]+)}}}/gm, '{{$1}}');
 
             if (!this.sitePluginsStrings[lang][prefixedKey]) {
                 // It's a new site plugin string. Store the original value.

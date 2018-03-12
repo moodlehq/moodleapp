@@ -836,6 +836,10 @@ export class CoreUtilsProvider {
      * @return {object} Object.
      */
     objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string): object {
+        if (!objects) {
+            return;
+        }
+
         const prefixSubstr = keyPrefix ? keyPrefix.length : 0,
             mapped = {};
         objects.forEach((item) => {

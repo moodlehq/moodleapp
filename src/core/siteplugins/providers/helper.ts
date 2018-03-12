@@ -167,28 +167,28 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Given a handler's unique name, return the prefix to add to its string keys.
+     * Given an addon name, return the prefix to add to its string keys.
      *
-     * @param {string} handlerName Handler's unique name (result of getHandlerUniqueName).
+     * @param {string} addon Name of the addon (plugin.addon).
      * @return {string} Prefix.
      */
-    protected getHandlerPrefixForStrings(handlerName: string): string {
-        if (handlerName) {
-            return 'plugin.' + handlerName + '.';
+    protected getPrefixForStrings(addon: string): string {
+        if (addon) {
+            return 'plugin.' + addon + '.';
         }
 
         return '';
     }
 
     /**
-     * Given a handler's unique name and the key of a string, return the full string key (prefixed).
+     * Given an addon name and the key of a string, return the full string key (prefixed).
      *
-     * @param {string} handlerName Handler's unique name (result of getHandlerUniqueName).
+     * @param {string} addon Name of the addon (plugin.addon).
      * @param {string} key The key of the string.
      * @return {string} Full string key.
      */
-    protected getHandlerPrefixedString(handlerName: string, key: string): string {
-        return this.getHandlerPrefixForStrings(handlerName) + key;
+    protected getPrefixedString(addon: string, key: string): string {
+        return this.getPrefixForStrings(addon) + key;
     }
 
     /**
@@ -216,21 +216,19 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Load the lang strings for a handler.
+     * Load the lang strings for a plugin.
      *
      * @param {any} plugin Data of the plugin.
-     * @param {string} handlerName Name of the handler in the plugin.
-     * @param {any} handlerSchema Data about the handler.
      */
-    loadHandlerLangStrings(plugin: any, handlerName: string, handlerSchema: any): void {
-        if (!handlerSchema.lang) {
+    loadLangStrings(plugin: any): void {
+        if (!plugin.parsedLang) {
             return;
         }
 
-        for (const lang in handlerSchema.lang) {
-            const prefix = this.getHandlerPrefixForStrings(this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName));
+        for (const lang in plugin.parsedLang) {
+            const prefix = this.getPrefixForStrings(plugin.addon);
 
-            this.langProvider.addSitePluginsStrings(lang, handlerSchema.lang[lang], prefix);
+            this.langProvider.addSitePluginsStrings(lang, plugin.parsedLang[lang], prefix);
         }
     }
 
@@ -249,8 +247,14 @@ export class CoreSitePluginsHelperProvider {
             if (!plugin.parsedHandlers) {
                 plugin.parsedHandlers = JSON.parse(plugin.handlers);
             }
+            if (!plugin.parsedLang && plugin.lang) {
+                plugin.parsedLang = JSON.parse(plugin.lang);
+            }
 
             this.sitePluginsProvider.hasSitePluginsLoaded = true;
+
+            // Register lang strings.
+            this.loadLangStrings(plugin);
 
             // Register all the handlers.
             for (const name in plugin.parsedHandlers) {
@@ -288,7 +292,6 @@ export class CoreSitePluginsHelperProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     registerHandler(plugin: any, handlerName: string, handlerSchema: any): Promise<any> {
-        this.loadHandlerLangStrings(plugin, handlerName, handlerSchema);
 
         // Wait for the bootstrap JS to be executed.
         return this.bootstrapHandler(plugin, handlerSchema).then((result) => {
@@ -380,7 +383,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getHandlerPrefixedString(uniqueName, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         this.courseOptionsDelegate.registerHandler(new CoreSitePluginsCourseOptionHandler(uniqueName, prefixedTitle, plugin,
                 handlerSchema, bootstrapResult, this.sitePluginsProvider));
@@ -409,7 +412,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getHandlerPrefixedString(uniqueName, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         this.mainMenuDelegate.registerHandler(
                 new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, bootstrapResult));
@@ -471,7 +474,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
-            prefixedTitle = this.getHandlerPrefixedString(uniqueName, handlerSchema.displaydata.title);
+            prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         this.userDelegate.registerHandler(new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema,
                 bootstrapResult, this.sitePluginsProvider));
