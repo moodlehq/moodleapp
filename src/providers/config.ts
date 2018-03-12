@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreAppProvider } from './app';
-import { SQLiteDB } from '../classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.
@@ -67,9 +67,9 @@ export class CoreConfigProvider {
         }).catch((error) => {
             if (typeof defaultValue != 'undefined') {
                 return defaultValue;
-            } else {
-                return Promise.reject(error);
             }
+
+            return Promise.reject(error);
         });
     }
 

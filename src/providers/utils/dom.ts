@@ -22,7 +22,7 @@ import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreUrlUtilsProvider } from './url';
-import { CoreConstants } from '../../core/constants';
+import { CoreConstants } from '@core/constants';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -152,7 +152,7 @@ export class CoreDomUtilsProvider {
         this.element.innerHTML = html;
         elements = this.element.querySelectorAll('a, img, audio, video, source, track');
 
-        for (const i in elements) {
+        for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
             let url = element.tagName === 'A' ? element.href : element.src;
 
@@ -480,11 +480,19 @@ export class CoreDomUtilsProvider {
      *
      * @param {HTMLElement} oldParent The old parent.
      * @param {HTMLElement} newParent The new parent.
+     * @return {Node[]} List of moved children.
      */
-    moveChildren(oldParent: HTMLElement, newParent: HTMLElement): void {
+    moveChildren(oldParent: HTMLElement, newParent: HTMLElement): Node[] {
+        const movedChildren: Node[] = [];
+
         while (oldParent.childNodes.length > 0) {
-            newParent.appendChild(oldParent.childNodes[0]);
+            const child = oldParent.childNodes[0];
+            movedChildren.push(child);
+
+            newParent.appendChild(child);
         }
+
+        return movedChildren;
     }
 
     /**
@@ -517,7 +525,7 @@ export class CoreDomUtilsProvider {
 
         if (removeAll) {
             selected = this.element.querySelectorAll(selector);
-            for (const i in selected) {
+            for (let i = 0; i < selected.length; i++) {
                 selected[i].remove();
             }
         } else {
@@ -560,7 +568,7 @@ export class CoreDomUtilsProvider {
         for (const key in map) {
             const foundElements = element.querySelectorAll('.' + key);
 
-            for (const i in foundElements) {
+            for (let i = 0; i < foundElements.length; i++) {
                 const foundElement = foundElements[i];
                 foundElement.className = foundElement.className.replace(key, map[key]);
             }

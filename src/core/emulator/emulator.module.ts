@@ -16,8 +16,10 @@ import { NgModule } from '@angular/core';
 import { Platform } from 'ionic-angular';
 
 // Ionic Native services.
+import { Badge } from '@ionic-native/badge';
 import { Camera } from '@ionic-native/camera';
 import { Clipboard } from '@ionic-native/clipboard';
+import { Device } from '@ionic-native/device';
 import { File } from '@ionic-native/file';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { Globalization } from '@ionic-native/globalization';
@@ -26,6 +28,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { MediaCapture } from '@ionic-native/media-capture';
 import { Network } from '@ionic-native/network';
+import { Push } from '@ionic-native/push';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SQLite } from '@ionic-native/sqlite';
@@ -45,13 +48,13 @@ import { ZipMock } from './providers/zip';
 
 import { CoreEmulatorHelperProvider } from './providers/helper';
 import { CoreEmulatorCaptureHelperProvider } from './providers/capture-helper';
-import { CoreAppProvider } from '../../providers/app';
-import { CoreFileProvider } from '../../providers/file';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
-import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
-import { CoreUrlUtilsProvider } from '../../providers/utils/url';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
-import { CoreInitDelegate } from '../../providers/init';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFileProvider } from '@providers/file';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreInitDelegate } from '@providers/init';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -68,6 +71,7 @@ import { CoreInitDelegate } from '../../providers/init';
     imports: [
     ],
     providers: [
+        Badge, // @todo: Mock
         CoreEmulatorHelperProvider,
         CoreEmulatorCaptureHelperProvider,
         {
@@ -84,6 +88,7 @@ import { CoreInitDelegate } from '../../providers/init';
                 return appProvider.isMobile() ? new Clipboard() : new ClipboardMock(appProvider);
             }
         },
+        Device,
         {
             provide: File,
             deps: [CoreAppProvider, CoreTextUtilsProvider],
@@ -139,6 +144,7 @@ import { CoreInitDelegate } from '../../providers/init';
                 return platform.is('cordova') ? new Network() : new NetworkMock();
             }
         },
+        Push, // @todo: Mock
         SplashScreen,
         StatusBar,
         SQLite,

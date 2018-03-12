@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '../../../providers/sites';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';

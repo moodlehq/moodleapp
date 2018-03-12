@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreTextUtilsProvider } from '../providers/utils/text';
-import { CoreConstants } from '../core/constants';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Pipe to convert a number of seconds to Hours:Minutes:Seconds.

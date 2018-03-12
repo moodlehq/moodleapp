@@ -15,9 +15,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Content, NavParams } from 'ionic-angular';
 import { CoreGradesProvider } from '../../providers/grades';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreGradesHelperProvider } from '../../providers/helper';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays activity grade.

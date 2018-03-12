@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
 import { CoreLoginHelperProvider } from '../../login/providers/helper';

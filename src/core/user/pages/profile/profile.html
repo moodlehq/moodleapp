@@ -11,8 +11,7 @@
         <ion-list *ngIf="user && !isDeleted">
             <ion-item text-center>
                 <div class="item-avatar-center">
-                    <img *ngIf="user.profileimageurl" class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
-                    <img *ngIf="!user.profileimageurl" class="avatar" src="assets/img/user-avatar.png" alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <img class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
                     <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
                 </div>
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
@@ -23,14 +22,16 @@
                 </p>
             </ion-item>
 
-            <ion-grid ion-item class="core-user-communication-handlers" *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
-                <ion-row no-padding align-items-center text-center>
-                    <ion-col align-self-center *ngIf="communicationHandlers && communicationHandlers.length">
-                        <a *ngFor="let comHandler of communicationHandlers" (click)="handlerClicked($event, comHandler)" [ngClass]="['core-user-profile-handler', comHandler.class]" title="{{comHandler.title | translate}}">
+            <ion-grid class="core-user-communication-handlers" *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
+                <ion-row no-padding justify-content-between *ngIf="communicationHandlers && communicationHandlers.length">
+                    <ion-col align-self-center *ngFor="let comHandler of communicationHandlers" text-center>
+                        <a (click)="handlerClicked($event, comHandler)" [ngClass]="['core-user-profile-handler', comHandler.class]" title="{{comHandler.title | translate}}" tappable>
                             <ion-icon [name]="comHandler.icon"></ion-icon>
                             <p>{{comHandler.title | translate}}</p>
                         </a>
                     </ion-col>
+                </ion-row>
+                <ion-row no-padding>
                     <ion-col text-center class="core-loading-handlers" *ngIf="isLoadingHandlers">
                         <ion-spinner></ion-spinner>
                     </ion-col>
@@ -51,10 +52,10 @@
             </a>
 
             <ion-item *ngIf="actionHandlers && actionHandlers.length">
-                <button *ngFor="let actHandler of actionHandlers" ion-button block outline [ngClass]="['core-user-profile-handler', actHandler.class]" (click)="handlerClicked($event, actHandler)" [hidden]="actHandler.hidden" title="{{ actHandler.title | translate }}">
-                    <ion-icon *ngIf="actHandler.icon" [name]="actHandler.icon" item-start></ion-icon>
-                    {{ actHandler.title | translate }}
-                    <ion-spinner *ngIf="actHandler.spinner" item-end></ion-spinner>
+                <button *ngFor="let actHandler of actionHandlers" ion-button block outline [ngClass]="['core-user-profile-handler', actHandler.class]" (click)="handlerClicked($event, actHandler)" [hidden]="actHandler.hidden" title="{{ actHandler.title | translate }}" icon-start [disabled]="actHandler.spinner">
+                    <ion-icon *ngIf="actHandler.icon" [name]="actHandler.icon" start></ion-icon>
+                    <span>{{ actHandler.title | translate }}</span>
+                    <ion-spinner *ngIf="actHandler.spinner"></ion-spinner>
                 </button>
             </ion-item>
         </ion-list>

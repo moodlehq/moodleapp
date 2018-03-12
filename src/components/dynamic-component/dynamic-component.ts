@@ -16,7 +16,7 @@ import {
     Component, Input, ViewChild, OnInit, OnChanges, DoCheck, ViewContainerRef, ComponentFactoryResolver,
     KeyValueDiffers, SimpleChange
 } from '@angular/core';
-import { CoreLoggerProvider } from '../../providers/logger';
+import { CoreLoggerProvider } from '@providers/logger';
 
 /**
  * Component to create another component dynamically.

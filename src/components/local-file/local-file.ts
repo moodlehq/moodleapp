@@ -14,11 +14,11 @@
 
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreFileProvider } from '../../providers/file';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
-import { CoreMimetypeUtilsProvider } from '../../providers/utils/mimetype';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
+import { CoreFileProvider } from '@providers/file';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import * as moment from 'moment';
 
 /**

@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to render a text user profile field.

@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { CoreContextMenuItemComponent } from './context-menu-item';
-import { CoreLoggerProvider } from '../../providers/logger';
+import { CoreLoggerProvider } from '@providers/logger';
 
 /**
  * Component to display a list of items received by param in a popover.

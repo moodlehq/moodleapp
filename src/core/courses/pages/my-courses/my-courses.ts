@@ -14,9 +14,9 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCourseHelperProvider } from '../../../course/providers/helper';
 import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
@@ -134,14 +134,15 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
     /**
      * The filter has changed.
      *
-     * @param {string} newValue New filter value.
+     * @param {any} Received Event.
      */
-    filterChanged(newValue: string): void {
+    filterChanged(event: any): void {
+        const newValue = event.target.value && event.target.value.trim().toLowerCase();
         if (!newValue || !this.courses) {
             this.filteredCourses = this.courses;
         } else {
             this.filteredCourses = this.courses.filter((course) => {
-                return course.fullname.indexOf(newValue) > -1;
+                return course.fullname.toLowerCase().indexOf(newValue) > -1;
             });
         }
     }

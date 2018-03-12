@@ -16,8 +16,8 @@ import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
 import { AddonModBookProvider } from './book';
 import { AddonModBookIndexComponent } from '../components/index/index';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../../../../core/course/providers/module-delegate';
-import { CoreCourseProvider } from '../../../../core/course/providers/course';
+import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
 
 /**
  * Handler to support book modules.

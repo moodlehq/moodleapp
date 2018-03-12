@@ -14,11 +14,11 @@
 
 import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController, Content } from 'ionic-angular';
-import { CoreSitesProvider } from '../providers/sites';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreUrlUtilsProvider } from '../providers/utils/url';
-import { CoreUtilsProvider } from '../providers/utils/utils';
-import { CoreContentLinksHelperProvider } from '../core/contentlinks/providers/helper';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreConfigConstants } from '../configconstants';
 
 /**

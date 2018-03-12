@@ -13,6 +13,7 @@ core-loading {
     &.core-loading-noheight .core-loading-content {
         height: auto;
     }
+    @include core-transition(core-show-animation);
 }
 
 .scroll-content > core-loading > .core-loading-container,

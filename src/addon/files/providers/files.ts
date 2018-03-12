@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreMimetypeUtilsProvider } from '../../../providers/utils/mimetype';
-import { CoreSite } from '../../../classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreSite } from '@classes/site';
 import { Md5 } from 'ts-md5/dist/md5';
 
 /**
@@ -35,7 +35,7 @@ export class AddonFilesProvider {
      * @return {boolean} Whether the WS is available, false otherwise.
      */
     canGetPrivateFilesInfo(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_user_get_private_files_info');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_user_get_private_files_info');
     }
 
     /**

@@ -1,0 +1,55 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-buttons end></ion-buttons>
+    </ion-navbar>
+    <core-navbar-buttons end>
+        <button ion-button icon-only clear="true" (click)="toggleDelete()" [hidden]="!canDelete">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+        <a [hidden]="!showProfileLink" core-user-link [userId]="userId" [attr.aria-label]=" 'core.user.viewprofile' | translate">
+            <img class="button core-bar-button-image" [src]="profileLink" core-external-content onError="this.src='assets/img/user-avatar.png'">
+        </a>
+    </core-navbar-buttons>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <!-- Load previous messages. -->
+        <ion-infinite-scroll [enabled]="canLoadMore" (ionInfinite)="loadPrevious($event)" position="top">
+           <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+        <ion-list class="addon-messages-discussion-container" [attr.aria-live]="polite">
+            <ng-container *ngFor="let message of messages; index as index; last as last">
+                <ion-chip *ngIf="showDate(message, messages[index - 1])" class="addon-messages-date" color="light">
+                    <ion-label>{{ message.timecreated | coreFormatDate: "LL" }}</ion-label>
+                </ion-chip>
+
+                <ion-chip class="addon-messages-unreadfrom" *ngIf="message.unreadFrom" color="light">
+                    <ion-label>{{ 'addon.messages.newmessages' | translate:{$a: title} }}</ion-label>
+                    <ion-icon name="arrow-round-down"></ion-icon>
+                </ion-chip>
+
+                <ion-item text-wrap (longPress)="copyMessage(message.smallmessage)" class="addon-message" [class.addon-message-mine]="message.useridfrom == currentUserId" [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
+                    <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
+                    <p class="addon-message-text">
+                        <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text"></core-format-text>
+                    </p>
+                    <ion-note *ngIf="!message.pending">
+                        {{ message.timecreated | coreFormatDate: "dftimedate" }}
+                    </ion-note>
+                    <ion-note *ngIf="message.pending"><ion-icon name="time"></ion-icon></ion-note>
+
+                    <button ion-button icon-only clear="true" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)" class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'" [attr.aria-label]=" 'addon.messages.deletemessage' | translate">
+                        <ion-icon name="trash" color="danger"></ion-icon>
+                    </button>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessages' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>
+<ion-footer color="light" class="footer-adjustable">
+    <ion-toolbar color="light" position="bottom">
+        <core-send-message-form (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()"></core-send-message-form>
+    </ion-toolbar>
+</ion-footer>

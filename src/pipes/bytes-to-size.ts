@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreTextUtilsProvider } from '../providers/utils/text';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Pipe to turn a number in bytes to a human readable size (e.g. 5,25 MB).

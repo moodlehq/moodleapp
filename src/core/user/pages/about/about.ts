@@ -16,9 +16,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays an user about page.

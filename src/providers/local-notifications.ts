@@ -20,8 +20,8 @@ import { CoreConfigProvider } from './config';
 import { CoreLoggerProvider } from './logger';
 import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '../classes/sqlitedb';
-import { CoreConstants } from '../core/constants';
+import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreConstants } from '@core/constants';
 import { Subject } from 'rxjs';
 
 /**
@@ -42,10 +42,13 @@ export interface CoreILocalNotification extends ILocalNotification {
 }
 
 /*
-  Generated class for the LocalNotificationsProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
+ * Generated class for the LocalNotificationsProvider provider.
+ *
+ * See https://angular.io/guide/dependency-injection for more info on providers
+ * and Angular DI.
+ *
+ * @todo We might have to translate the old component name to the new one.
+ *       Otherwise the unique ID of local notifications could change.
 */
 @Injectable()
 export class CoreLocalNotificationsProvider {

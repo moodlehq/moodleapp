@@ -15,13 +15,13 @@
 import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
-import { CoreFileProvider } from '../../providers/file';
-import { CoreLoggerProvider } from '../../providers/logger';
-import { CoreSitesProvider } from '../../providers/sites';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../providers/utils/text';
-import { CoreUrlUtilsProvider } from '../../providers/utils/url';
-import { CoreUtilsProvider } from '../../providers/utils/utils';
+import { CoreFileProvider } from '@providers/file';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  */

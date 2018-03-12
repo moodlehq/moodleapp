@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { AddonCalendarProvider } from './calendar';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/mainmenu/providers/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 
 /**
  * Handler to inject an option into main menu.
@@ -22,7 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/main
 @Injectable()
 export class AddonCalendarMainMenuHandler implements CoreMainMenuHandler {
     name = 'AddonCalendar';
-    priority = 400;
+    priority = 900;
 
     constructor(private calendarProvider: AddonCalendarProvider) { }
 

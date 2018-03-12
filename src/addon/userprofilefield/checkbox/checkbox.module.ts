@@ -16,9 +16,9 @@ import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddonUserProfileFieldCheckboxHandler } from './providers/handler';
-import { CoreUserProfileFieldDelegate } from '../../../core/user/providers/user-profile-field-delegate';
+import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldCheckboxComponent } from './component/checkbox';
-import { CoreComponentsModule } from '../../../components/components.module';
+import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({
     declarations: [

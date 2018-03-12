@@ -14,11 +14,11 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreMimetypeUtilsProvider } from '../../../../providers/utils/mimetype';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreLoginHelperProvider } from '../../providers/helper';
-import { CoreSite } from '../../../../classes/site';
+import { CoreSite } from '@classes/site';
 
 /**
  * Page to accept a site policy.

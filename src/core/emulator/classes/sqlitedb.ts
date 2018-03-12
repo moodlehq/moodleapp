@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SQLiteDB } from '../../../classes/sqlitedb';
+/* tslint:disable:no-console */
+
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Class to mock the interaction with the SQLite database.
@@ -93,6 +95,7 @@ export class SQLiteDBMock extends SQLiteDB {
                 tx.executeSql(sql, params, (tx, results) => {
                     resolve(results);
                 }, (tx, error) => {
+                    console.error(sql, params, error);
                     reject(error);
                 });
             });

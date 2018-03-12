@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ContentChildren, ElementRef, QueryList } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ContentChildren, ElementRef, QueryList } from '@angular/core';
 import { Button } from 'ionic-angular';
-import { CoreLoggerProvider } from '../../providers/logger';
-import { CoreDomUtilsProvider } from '../../providers/utils/dom';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreContextMenuComponent } from '../context-menu/context-menu';
 
 /**
  * Component to add buttons to the app's header without having to place them inside the header itself. This is meant for
@@ -26,10 +27,12 @@ import { CoreDomUtilsProvider } from '../../providers/utils/dom';
  *
  * You can use the [hidden] input to hide all the inner buttons if a certain condition is met.
  *
+ * IMPORTANT: Do not use *ngIf in the buttons inside this component, it can cause problems. Please use [hidden] instead.
+ *
  * Example usage:
  *
  * <core-navbar-buttons end>
- *     <button ion-button icon-only *ngIf="buttonShown" [attr.aria-label]="Do something" (click)="action()">
+ *     <button ion-button icon-only [hidden]="!buttonShown" [attr.aria-label]="Do something" (click)="action()">
  *         <ion-icon name="funnel"></ion-icon>
  *     </button>
  * </core-navbar-buttons>
@@ -38,37 +41,35 @@ import { CoreDomUtilsProvider } from '../../providers/utils/dom';
     selector: 'core-navbar-buttons',
     template: '<ng-content></ng-content>'
 })
-export class CoreNavBarButtonsComponent implements OnInit {
+export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
     protected BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 
     // If the hidden input is true, hide all buttons.
     @Input('hidden') set hidden(value: boolean) {
         this._hidden = value;
-        if (this._buttons) {
-            this._buttons.forEach((button: Button) => {
-                this.showHideButton(button);
-            });
-        }
+        this.showHideAllElements();
     }
 
-    // Get all the buttons inside this directive.
+    // Get all the ion-buttons inside this directive and apply the role bar-button.
     @ContentChildren(Button) set buttons(buttons: QueryList<Button>) {
-        this._buttons = buttons;
         buttons.forEach((button: Button) => {
             button.setRole('bar-button');
-            this.showHideButton(button);
         });
     }
 
     protected element: HTMLElement;
-    protected _buttons: QueryList<Button>;
     protected _hidden: boolean;
+    protected forceHidden = false;
     protected logger: any;
+    protected movedChildren: Node[];
+    protected instanceId: string;
+    protected mergedContextMenu: CoreContextMenuComponent;
 
     constructor(element: ElementRef, logger: CoreLoggerProvider, private domUtils: CoreDomUtilsProvider) {
         this.element = element.nativeElement;
         this.logger = logger.getInstance('CoreNavBarButtonsComponent');
+        this.instanceId = this.domUtils.storeInstanceByElement(this.element, this);
     }
 
     /**
@@ -91,7 +92,9 @@ export class CoreNavBarButtonsComponent implements OnInit {
                 if (buttonsContainer) {
                     this.mergeContextMenus(buttonsContainer);
 
-                    this.domUtils.moveChildren(this.element, buttonsContainer);
+                    this.movedChildren = this.domUtils.moveChildren(this.element, buttonsContainer);
+                    this.showHideAllElements();
+
                 } else {
                     this.logger.warn('The header was found, but it didn\'t have the right ion-buttons.', selector);
                 }
@@ -100,6 +103,17 @@ export class CoreNavBarButtonsComponent implements OnInit {
             // Header not found.
             this.logger.warn('Header not found.');
         });
+    }
+
+    /**
+     * Force or unforce hiding all buttons. If this is true, it will override the "hidden" input.
+     *
+     * @param {boolean} value The value to set.
+     */
+    forceHide(value: boolean): void {
+        this.forceHidden = value;
+
+        this.showHideAllElements();
     }
 
     /**
@@ -124,7 +138,9 @@ export class CoreNavBarButtonsComponent implements OnInit {
             secondaryContextMenuInstance = this.domUtils.getInstanceByElement(secondaryContextMenu);
 
         if (mainContextMenuInstance && secondaryContextMenuInstance) {
-            secondaryContextMenuInstance.mergeContextMenus(mainContextMenuInstance);
+            this.mergedContextMenu = secondaryContextMenuInstance;
+
+            this.mergedContextMenu.mergeContextMenus(mainContextMenuInstance);
 
             // Remove the empty context menu from the DOM.
             secondaryContextMenu.parentElement.removeChild(secondaryContextMenu);
@@ -151,7 +167,7 @@ export class CoreNavBarButtonsComponent implements OnInit {
             if (parentPage) {
                 // Check if the page has a header. If it doesn't, search the next parent page.
                 const header = this.searchHeaderInPage(parentPage);
-                if (header) {
+                if (header && getComputedStyle(header, null).display != 'none') {
                     return Promise.resolve(header);
                 }
             }
@@ -188,15 +204,61 @@ export class CoreNavBarButtonsComponent implements OnInit {
     }
 
     /**
-     * Show or hide a button.
-     *
-     * @param {Button} button Button to show or hide.
+     * Show or hide all the elements.
      */
-    protected showHideButton(button: Button): void {
-        if (this._hidden) {
-            button.getNativeElement().classList.add(this.BUTTON_HIDDEN_CLASS);
-        } else {
-            button.getNativeElement().classList.remove(this.BUTTON_HIDDEN_CLASS);
+    protected showHideAllElements(): void {
+        // Show or hide all moved children.
+        if (this.movedChildren) {
+            this.movedChildren.forEach((child: Node) => {
+                this.showHideElement(child);
+            });
+        }
+
+        // Show or hide all the context menu items that were merged to another context menu.
+        if (this.mergedContextMenu) {
+            if (this.forceHidden || this._hidden) {
+                this.mergedContextMenu.removeMergedItems();
+            } else {
+                this.mergedContextMenu.restoreMergedItems();
+            }
+        }
+    }
+
+    /**
+     * Show or hide an element.
+     *
+     * @param {Node} element Element to show or hide.
+     */
+    protected showHideElement(element: Node): void {
+        // Check if it's an HTML Element
+        if (element instanceof Element) {
+            if (this.forceHidden || this._hidden) {
+                element.classList.add(this.BUTTON_HIDDEN_CLASS);
+            } else {
+                element.classList.remove(this.BUTTON_HIDDEN_CLASS);
+            }
+        }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.domUtils.removeInstanceById(this.instanceId);
+
+        // This component was destroyed, remove all the buttons that were moved.
+        // The buttons can be moved outside of the current page, that's why we need to manually destroy them.
+        // There's no need to destroy context menu items that were merged because they weren't moved from their DOM position.
+        if (this.movedChildren) {
+            this.movedChildren.forEach((child) => {
+                if (child.parentElement) {
+                    child.parentElement.removeChild(child);
+                }
+            });
+        }
+
+        if (this.mergedContextMenu) {
+            this.mergedContextMenu.removeMergedItems();
         }
     }
 }

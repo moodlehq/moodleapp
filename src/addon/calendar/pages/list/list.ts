@@ -17,15 +17,15 @@ import { IonicPage, Content, PopoverController, NavParams, NavController } from 
 import { TranslateService } from '@ngx-translate/core';
 import { AddonCalendarProvider } from '../../providers/calendar';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
-import { CoreCoursesProvider } from '../../../../core/courses/providers/courses';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreLocalNotificationsProvider } from '../../../../providers/local-notifications';
-import { CoreCoursePickerMenuPopoverComponent } from '../../../../components/course-picker-menu/course-picker-menu-popover';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreAppProvider } from '../../../../providers/app';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreAppProvider } from '@providers/app';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays the list of calendar events.

@@ -16,15 +16,15 @@ import { Component, Optional } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreUserHelperProvider } from '../../providers/helper';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreCoursesProvider } from '../../../courses/providers/courses';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreMimetypeUtilsProvider } from '../../../../providers/utils/mimetype';
-import { CoreFileUploaderHelperProvider } from '../../../fileuploader/providers/helper';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/helper';
 import { CoreUserDelegate, CoreUserProfileHandlerData } from '../../providers/user-delegate';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays an user profile page.
@@ -39,6 +39,7 @@ export class CoreUserProfilePage {
     protected userId: number;
     protected site;
     protected obsProfileRefreshed: any;
+    protected subscription;
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -102,9 +103,7 @@ export class CoreUserProfilePage {
             this.user = user;
             this.title = user.fullname;
 
-            this.isLoadingHandlers = true;
-
-            this.userDelegate.getProfileHandlersFor(user, this.courseId).then((handlers) => {
+            this.subscription = this.userDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
@@ -122,8 +121,8 @@ export class CoreUserProfilePage {
                             break;
                     }
                 });
-            }).finally(() => {
-                this.isLoadingHandlers = false;
+
+                this.isLoadingHandlers = !this.userDelegate.areHandlersLoaded();
             });
 
         }).catch((error) => {
@@ -208,6 +207,8 @@ export class CoreUserProfilePage {
      * Page destroyed.
      */
     ngOnDestroy(): void {
+        this.subscription && this.subscription.unsubscribe();
         this.obsProfileRefreshed && this.obsProfileRefreshed.off();
+        this.userDelegate.clearUserHandlers();
     }
 }

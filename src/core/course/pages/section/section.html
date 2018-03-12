@@ -2,12 +2,7 @@
     <ion-navbar>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
 
-        <ion-buttons end>
-            <core-context-menu>
-                <core-context-menu-item *ngIf="displayEnableDownload" [priority]="2000" [content]="'core.settings.enabledownloadsection' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
-                <core-context-menu-item [priority]="1900" [content]="'core.course.downloadcourse' | translate" (action)="prefetchCourse()" [iconAction]="prefetchCourseData.prefetchCourseIcon" [closeOnClick]="false"></core-context-menu-item>
-            </core-context-menu>
-        </ion-buttons>
+        <ion-buttons end></ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content>
@@ -15,6 +10,12 @@
         <!-- Course contents tab. -->
         <core-tab [title]="'core.course.contents' | translate">
             <ng-template>
+                <core-navbar-buttons>
+                    <core-context-menu>
+                        <core-context-menu-item *ngIf="displayEnableDownload" [priority]="2000" [content]="'core.settings.enabledownloadsection' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+                        <core-context-menu-item [priority]="1900" [content]="'core.course.downloadcourse' | translate" (action)="prefetchCourse()" [iconAction]="prefetchCourseData.prefetchCourseIcon" [closeOnClick]="false"></core-context-menu-item>
+                    </core-context-menu>
+                </core-navbar-buttons>
                 <ion-content>
                     <ion-refresher [enabled]="dataLoaded" (ionRefresh)="doRefresh($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>

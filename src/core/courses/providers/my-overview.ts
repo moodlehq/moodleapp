@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreSite } from '../../../classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
 import * as moment from 'moment';
 
 /**

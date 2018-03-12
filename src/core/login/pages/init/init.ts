@@ -14,9 +14,9 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { CoreAppProvider } from '../../../../providers/app';
-import { CoreInitDelegate } from '../../../../providers/init';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreAppProvider } from '@providers/app';
+import { CoreInitDelegate } from '@providers/init';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreConstants } from '../../../constants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 
@@ -77,10 +77,12 @@ export class CoreLoginInitPage {
                 this.loginHelper.goToSiteInitialPage();
             }
         } else {
-            this.sitesProvider.hasSites().then(() => {
-                this.navCtrl.setRoot('CoreLoginSitesPage');
-            }, () => {
-                this.loginHelper.goToAddSite(true);
+            this.sitesProvider.hasSites().then((hasSites) => {
+                if (hasSites) {
+                    this.navCtrl.setRoot('CoreLoginSitesPage');
+                } else {
+                    this.loginHelper.goToAddSite(true);
+                }
             });
         }
     }

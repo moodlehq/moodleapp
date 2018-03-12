@@ -14,12 +14,12 @@
 
 import { Directive, Input, AfterViewInit, ElementRef } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '../providers/app';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreFilepoolProvider } from '../providers/filepool';
-import { CoreSitesProvider } from '../providers/sites';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreUrlUtilsProvider } from '../providers/utils/url';
+import { CoreAppProvider } from '@providers/app';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 
 /**
  * Directive to handle external content.

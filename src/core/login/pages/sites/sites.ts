@@ -15,10 +15,11 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreLoggerProvider } from '../../../../providers/logger';
-import { CoreSitesProvider, CoreSiteBasicInfo } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 
 /**
@@ -35,8 +36,8 @@ export class CoreLoginSitesPage {
     protected logger;
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private translate: TranslateService, logger: CoreLoggerProvider) {
+            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider, logger: CoreLoggerProvider,
+            private translate: TranslateService, private pushNotificationsProvider: AddonPushNotificationsProvider) {
         this.logger = logger.getInstance('CoreLoginSitesPage');
     }
 
@@ -48,8 +49,10 @@ export class CoreLoginSitesPage {
             // Remove protocol from the url to show more url text.
             sites = sites.map((site) => {
                 site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '');
-                site.badge = 10;
-                // @todo: Implement it once push notifications addon is implemented: $mmaPushNotifications.getSiteCounter(site.id)
+                site.badge = 0;
+                this.pushNotificationsProvider.getSiteCounter(site.id).then((counter) => {
+                    site.badge = counter;
+                });
 
                 return site;
             });
@@ -104,8 +107,10 @@ export class CoreLoginSitesPage {
                     this.showDelete = false;
 
                     // If there are no sites left, go to add site.
-                    this.sitesProvider.hasNoSites().then(() => {
-                        this.loginHelper.goToAddSite(true);
+                    this.sitesProvider.hasSites().then((hasSites) => {
+                        if (!hasSites) {
+                            this.loginHelper.goToAddSite(true);
+                        }
                     });
                 }).catch((error) => {
                     this.logger.error('Error deleting site ' + site.id, error);

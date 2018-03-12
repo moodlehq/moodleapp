@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule, Platform } from 'ionic-angular';
 import { HttpModule } from '@angular/http';
@@ -22,53 +23,56 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { MoodleMobileApp } from './app.component';
-import { CoreInterceptor } from '../classes/interceptor';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreDbProvider } from '../providers/db';
-import { CoreAppProvider } from '../providers/app';
-import { CoreConfigProvider } from '../providers/config';
-import { CoreLangProvider } from '../providers/lang';
-import { CoreTextUtilsProvider } from '../providers/utils/text';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreTimeUtilsProvider } from '../providers/utils/time';
-import { CoreUrlUtilsProvider } from '../providers/utils/url';
-import { CoreUtilsProvider } from '../providers/utils/utils';
-import { CoreMimetypeUtilsProvider } from '../providers/utils/mimetype';
-import { CoreInitDelegate } from '../providers/init';
-import { CoreFileProvider } from '../providers/file';
-import { CoreWSProvider } from '../providers/ws';
-import { CoreEventsProvider } from '../providers/events';
-import { CoreSitesFactoryProvider } from '../providers/sites-factory';
-import { CoreSitesProvider } from '../providers/sites';
-import { CoreLocalNotificationsProvider } from '../providers/local-notifications';
-import { CoreGroupsProvider } from '../providers/groups';
-import { CoreCronDelegate } from '../providers/cron';
-import { CoreFileSessionProvider } from '../providers/file-session';
-import { CoreFilepoolProvider } from '../providers/filepool';
-import { CoreUpdateManagerProvider } from '../providers/update-manager';
-import { CorePluginFileDelegate } from '../providers/plugin-file-delegate';
-import { CoreSyncProvider } from '../providers/sync';
+import { CoreInterceptor } from '@classes/interceptor';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreDbProvider } from '@providers/db';
+import { CoreAppProvider } from '@providers/app';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreLangProvider } from '@providers/lang';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreInitDelegate } from '@providers/init';
+import { CoreFileProvider } from '@providers/file';
+import { CoreWSProvider } from '@providers/ws';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesFactoryProvider } from '@providers/sites-factory';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreGroupsProvider } from '@providers/groups';
+import { CoreCronDelegate } from '@providers/cron';
+import { CoreFileSessionProvider } from '@providers/file-session';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreUpdateManagerProvider } from '@providers/update-manager';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
+import { CoreSyncProvider } from '@providers/sync';
 
 // Core modules.
-import { CoreComponentsModule } from '../components/components.module';
-import { CoreEmulatorModule } from '../core/emulator/emulator.module';
-import { CoreLoginModule } from '../core/login/login.module';
-import { CoreMainMenuModule } from '../core/mainmenu/mainmenu.module';
-import { CoreCoursesModule } from '../core/courses/courses.module';
-import { CoreFileUploaderModule } from '../core/fileuploader/fileuploader.module';
-import { CoreSharedFilesModule } from '../core/sharedfiles/sharedfiles.module';
-import { CoreCourseModule } from '../core/course/course.module';
-import { CoreSiteHomeModule } from '../core/sitehome/sitehome.module';
-import { CoreContentLinksModule } from '../core/contentlinks/contentlinks.module';
-import { CoreUserModule } from '../core/user/user.module';
-import { CoreGradesModule } from '../core/grades/grades.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreEmulatorModule } from '@core/emulator/emulator.module';
+import { CoreLoginModule } from '@core/login/login.module';
+import { CoreMainMenuModule } from '@core/mainmenu/mainmenu.module';
+import { CoreCoursesModule } from '@core/courses/courses.module';
+import { CoreFileUploaderModule } from '@core/fileuploader/fileuploader.module';
+import { CoreSharedFilesModule } from '@core/sharedfiles/sharedfiles.module';
+import { CoreCourseModule } from '@core/course/course.module';
+import { CoreSiteHomeModule } from '@core/sitehome/sitehome.module';
+import { CoreContentLinksModule } from '@core/contentlinks/contentlinks.module';
+import { CoreUserModule } from '@core/user/user.module';
+import { CoreGradesModule } from '@core/grades/grades.module';
+import { CoreSettingsModule } from '@core/settings/settings.module';
 
 // Addon modules.
-import { AddonCalendarModule } from '../addon/calendar/calendar.module';
-import { AddonUserProfileFieldModule } from '../addon/userprofilefield/userprofilefield.module';
-import { AddonFilesModule } from '../addon/files/files.module';
-import { AddonModBookModule } from '../addon/mod/book/book.module';
-import { AddonModLabelModule } from '../addon/mod/label/label.module';
+import { AddonCalendarModule } from '@addon/calendar/calendar.module';
+import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
+import { AddonFilesModule } from '@addon/files/files.module';
+import { AddonModBookModule } from '@addon/mod/book/book.module';
+import { AddonModLabelModule } from '@addon/mod/label/label.module';
+import { AddonMessagesModule } from '@addon/messages/messages.module';
+import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -81,6 +85,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         HttpModule,
         IonicModule.forRoot(MoodleMobileApp, {
@@ -105,11 +110,14 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreContentLinksModule,
         CoreUserModule,
         CoreGradesModule,
+        CoreSettingsModule,
         AddonCalendarModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonModBookModule,
-        AddonModLabelModule
+        AddonModLabelModule,
+        AddonMessagesModule,
+        AddonPushNotificationsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

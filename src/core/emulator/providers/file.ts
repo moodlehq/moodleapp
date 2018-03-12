@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { File, Entry, DirectoryEntry, FileEntry, FileError, IWriteOptions } from '@ionic-native/file';
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreTextUtilsProvider } from '../../../providers/utils/text';
+import { CoreAppProvider } from '@providers/app';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConfigConstants } from '../../../configconstants';
 
 /**

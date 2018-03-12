@@ -14,11 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreDelegate, CoreDelegateHandler } from '../../../classes/delegate';
-import { CoreCoursesProvider } from '../../../core/courses/providers/courses';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreEventsProvider } from '../../../providers/events';
+import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 /**
  * Interface that all user profile handlers must implement.
@@ -109,6 +110,12 @@ export interface CoreUserProfileHandlerData {
  */
 export interface CoreUserProfileHandlerToDisplay {
     /**
+     * Name of the handler.
+     * @type {string}
+     */
+    name?: string;
+
+    /**
      * Data to display.
      * @type {CoreUserProfileHandlerData}
      */
@@ -138,7 +145,6 @@ export class CoreUserDelegate extends CoreDelegate {
      * @type {string}
      */
     static TYPE_COMMUNICATION = 'communication';
-
     /**
      * User profile handler type for new page.
      * @type {string}
@@ -150,13 +156,55 @@ export class CoreUserDelegate extends CoreDelegate {
      */
     static TYPE_ACTION = 'action';
 
+    /**
+     * Update handler information event.
+     * @type {string}
+     */
+    static UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
+
     protected handlers: { [s: string]: CoreUserProfileHandler } = {};
     protected enabledHandlers: { [s: string]: CoreUserProfileHandler } = {};
+    protected observableHandlers: Subject<CoreUserProfileHandlerToDisplay[]> =
+        new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([]);
+    protected userHandlers: CoreUserProfileHandlerToDisplay[] = [];
     protected featurePrefix = '$mmUserDelegate_';
+    protected loaded = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             private coursesProvider: CoreCoursesProvider, protected eventsProvider: CoreEventsProvider) {
         super('CoreUserDelegate', loggerProvider, sitesProvider, eventsProvider);
+
+        eventsProvider.on(CoreUserDelegate.UPDATE_HANDLER_EVENT, (data) => {
+            if (data && data.handler) {
+                const handler = this.userHandlers.find((userHandler) => {
+                    return userHandler.name == data.handler;
+                });
+                if (handler) {
+                    for (const x in data.data) {
+                        handler.data[x] = data.data[x];
+                    }
+                    this.observableHandlers.next(this.userHandlers);
+                }
+            }
+        });
+    }
+
+    /**
+     * Check if handlers are loaded.
+     *
+     * @return {boolean} True if handlers are loaded, false otherwise.
+     */
+    areHandlersLoaded(): boolean {
+        return this.loaded;
+    }
+
+    /**
+     * Clear current user handlers.
+     */
+    clearUserHandlers(): void {
+        this.loaded = false;
+        this.userHandlers = [];
+        this.observableHandlers.next(this.userHandlers);
     }
 
     /**
@@ -164,14 +212,15 @@ export class CoreUserDelegate extends CoreDelegate {
      *
      * @param {any} user The user object.
      * @param {number} courseId The course ID.
-     * @return {Promise<CoreUserProfileHandlerToDisplay[]>} Resolved with the handlers.
+     * @return {Subject<CoreUserProfileHandlerToDisplay[]>} Resolved with the handlers.
      */
-    getProfileHandlersFor(user: any, courseId: number): Promise<CoreUserProfileHandlerToDisplay[]> {
-        const handlers: CoreUserProfileHandlerToDisplay[] = [],
-            promises = [];
+    getProfileHandlersFor(user: any, courseId: number): Subject<CoreUserProfileHandlerToDisplay[]> {
+        const promises = [];
+
+        this.userHandlers = [];
 
         // Retrieve course options forcing cache.
-        return this.coursesProvider.getUserCourses(true).then((courses) => {
+        this.coursesProvider.getUserCourses(true).then((courses) => {
             const courseIds = courses.map((course) => {
                 return course.id;
             });
@@ -188,7 +237,8 @@ export class CoreUserDelegate extends CoreDelegate {
                         isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
                         promise = Promise.resolve(isEnabledForUser).then((enabled) => {
                             if (enabled) {
-                                handlers.push({
+                                this.userHandlers.push({
+                                    name: name,
                                     data: handler.getDisplayData(user, courseId),
                                     priority: handler.priority,
                                     type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE
@@ -203,12 +253,20 @@ export class CoreUserDelegate extends CoreDelegate {
                 }
 
                 return Promise.all(promises).then(() => {
-                    return handlers;
+                    // Sort them by priority.
+                    this.userHandlers.sort((a, b) => {
+                        return b.priority - a.priority;
+                    });
+                    this.loaded = true;
+                    this.observableHandlers.next(this.userHandlers);
                 });
             });
         }).catch(() => {
             // Never fails.
-            return handlers;
+            this.loaded = true;
+            this.observableHandlers.next(this.userHandlers);
         });
+
+        return this.observableHandlers;
     }
 }

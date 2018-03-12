@@ -16,10 +16,10 @@ import { NgModule } from '@angular/core';
 import { AddonCalendarProvider } from './providers/calendar';
 import { AddonCalendarHelperProvider } from './providers/helper';
 import { AddonCalendarMainMenuHandler } from './providers/mainmenu-handler';
-import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
-import { CoreInitDelegate } from '../../providers/init';
-import { CoreLocalNotificationsProvider } from '../../providers/local-notifications';
-import { CoreLoginHelperProvider } from '../../core/login/providers/helper';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreInitDelegate } from '@providers/init';
+import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 
 @NgModule({
     declarations: [

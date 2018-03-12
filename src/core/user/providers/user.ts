@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSite } from '../../../classes/site';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSite } from '@classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Service to provide user functionalities.
@@ -398,11 +398,60 @@ export class CoreUserProvider {
         const promises = [];
 
         users.forEach((user) => {
-            if (typeof user.id != 'undefined') {
-                promises.push(this.storeUser(user.id, user.fullname, user.profileimageurl, siteId));
+            if (typeof user.id != 'undefined' && !isNaN(parseInt(user.id, 10))) {
+                promises.push(this.storeUser(parseInt(user.id, 10), user.fullname, user.profileimageurl, siteId));
             }
         });
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Update a preference for a user.
+     *
+     * @param  {string} name     Preference name.
+     * @param  {any} value       Preference new value.
+     * @param  {number} [userId] User ID. If not defined, site's current user.
+     * @param  {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved if success.
+     */
+    updateUserPreference(name: string, value: any, userId?: number, siteId?: string): Promise<any> {
+        const preferences = [
+            {
+                type: name,
+                value: value
+            }
+        ];
+
+        return this.updateUserPreferences(preferences, undefined, userId, siteId);
+    }
+
+    /**
+     * Update some preferences for a user.
+     *
+     * @param  {any} preferences                List of preferences.
+     * @param  {boolean} [disableNotifications] Whether to disable all notifications. Undefined to not update this value.
+     * @param  {number} [userId]                User ID. If not defined, site's current user.
+     * @param  {string} [siteId]                Site ID. If not defined, current site.
+     * @return {Promise<any>}                   Promise resolved if success.
+     */
+    updateUserPreferences(preferences: any, disableNotifications: boolean, userId?: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            userId = userId || site.getUserId();
+
+            const data = {
+                    userid: userId,
+                    preferences: preferences
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            if (typeof disableNotifications != 'undefined') {
+                data['emailstop'] = disableNotifications ? 1 : 0;
+            }
+
+            return site.write('core_user_update_user_preferences', data, preSets);
+        });
     }
 }

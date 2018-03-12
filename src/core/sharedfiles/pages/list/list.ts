@@ -15,10 +15,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicPage, ViewController, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreFileProvider } from '../../../../providers/file';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreTextUtilsProvider } from '../../../../providers/utils/text';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFileProvider } from '@providers/file';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreSharedFilesProvider } from '../../providers/sharedfiles';
 
 /**

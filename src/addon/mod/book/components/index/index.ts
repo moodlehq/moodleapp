@@ -15,12 +15,12 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Optional } from '@angular/core';
 import { NavParams, NavController, Content, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../../../providers/app';
-import { CoreDomUtilsProvider } from '../../../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../../../providers/utils/text';
-import { CoreCourseProvider } from '../../../../../core/course/providers/course';
-import { CoreCourseHelperProvider } from '../../../../../core/course/providers/helper';
-import { CoreCourseModuleMainComponent } from '../../../../../core/course/providers/module-delegate';
+import { CoreAppProvider } from '@providers/app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
 import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/toc-popover';

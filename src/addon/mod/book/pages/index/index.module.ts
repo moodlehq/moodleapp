@@ -15,7 +15,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreDirectivesModule } from '../../../../../directives/directives.module';
+import { CoreDirectivesModule } from '@directives';
 import { AddonModBookComponentsModule } from '../../components/components.module';
 import { AddonModBookIndexPage } from './index';
 

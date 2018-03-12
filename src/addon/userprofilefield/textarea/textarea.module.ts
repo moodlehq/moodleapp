@@ -16,10 +16,10 @@ import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddonUserProfileFieldTextareaHandler } from './providers/handler';
-import { CoreUserProfileFieldDelegate } from '../../../core/user/providers/user-profile-field-delegate';
+import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldTextareaComponent } from './component/textarea';
-import { CoreComponentsModule } from '../../../components/components.module';
-import { CoreDirectivesModule } from '../../../directives/directives.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives';
 
 @NgModule({
     declarations: [

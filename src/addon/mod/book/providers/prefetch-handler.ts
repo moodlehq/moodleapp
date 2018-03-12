@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreCourseModulePrefetchHandlerBase } from '../../../../core/course/classes/module-prefetch-handler';
+import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 import { AddonModBookProvider } from './book';
 
 /**

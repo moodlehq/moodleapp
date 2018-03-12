@@ -14,8 +14,8 @@
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreUtilsProvider } from '../providers/utils/utils';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to auto focus an element when a view is loaded.

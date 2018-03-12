@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCourseFormatSingleActivityComponent } from './components/singleactivity';
 import { CoreCourseFormatSingleActivityHandler } from './providers/handler';
 import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
-import { CoreComponentsModule } from '../../../../components/components.module';
+import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({
     declarations: [

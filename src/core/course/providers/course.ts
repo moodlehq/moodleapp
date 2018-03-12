@@ -14,12 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreTimeUtilsProvider } from '../../../providers/utils/time';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
-import { CoreSiteWSPreSets } from '../../../classes/site';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '../../constants';
 
 /**

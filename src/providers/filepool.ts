@@ -27,8 +27,8 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreTimeUtilsProvider } from './utils/time';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB } from '../classes/sqlitedb';
-import { CoreConstants } from '../core/constants';
+import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
 /**

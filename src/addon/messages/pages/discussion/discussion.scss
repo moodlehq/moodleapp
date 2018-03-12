@@ -1,0 +1,109 @@
+// Messages.
+$item-message-bg: $gray-lighter !default;
+$item-message-note-text: $gray-dark !default;
+$item-message-note-font-size: 75% !default;
+$item-message-mine-bg: $blue-light !default;
+
+
+page-addon-messages-discussion {
+    .addon-messages-discussion-container {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 15px;
+    }
+
+    .addon-messages-date,
+    .addon-messages-unreadfrom {
+        margin-top: 10px;
+    }
+
+    .addon-messages-unreadfrom {
+        color: $blue;
+    }
+
+    // Message item.
+    .addon-message {
+        max-width: 80%;
+        border: 0;
+        border-radius: 16px;
+        padding: 10px;
+        margin: 4px;
+        background-color: $item-message-bg;
+        align-self: flex-start;
+        width: auto;
+        min-height: 0;
+        position: relative;
+        @include core-transition(width);
+
+        &.activated {
+            background-color: darken($item-message-bg, 10%);
+        }
+
+        &.item-block .item-inner {
+            border-bottom: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .label {
+            margin: 0;
+            padding: 0;
+        }
+
+        .addon-message-text {
+            display: inline-flex;
+        }
+
+        .note {
+            align-self: flex-end;
+            color: $item-message-note-text;
+            font-size: $item-message-note-font-size;
+            margin-left: 10px;
+        }
+        .addon-messages-delete-button {
+            min-height: initial;
+            line-height: initial;
+            margin: 0 0 0 10px;
+            height: auto;
+            -webkit-align-self: flex-end;
+            -ms-flex-item-align: end;
+            align-self: flex-end;
+            vertical-align: middle;
+
+            .icon {
+                font-size: 1.4em;
+                line-height: initial;
+            }
+        }
+    }
+
+    // Defines when an item-message is the user's.
+    .addon-message-mine {
+        background-color: $item-message-mine-bg;
+        align-self: flex-end;
+        max-width: 80%;
+
+        &.activated {
+            background-color: darken($item-message-mine-bg, 10%);
+        }
+
+        .spinner {
+            float: right;
+            margin-left: 5px;
+            margin-right: -3px;
+            margin-top: 2px;
+            margin-bottom: -2px;
+
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+        }
+    }
+
+    .addon-message .item-content,
+    .addon-message-mine .item-content{
+        background-color: transparent;
+        padding: 0;
+    }
+}

@@ -15,17 +15,17 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreConfigProvider } from '../../../providers/config';
-import { CoreEventsProvider } from '../../../providers/events';
-import { CoreInitDelegate } from '../../../providers/init';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreWSProvider } from '../../../providers/ws';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../providers/utils/text';
-import { CoreUrlUtilsProvider } from '../../../providers/utils/url';
-import { CoreUtilsProvider } from '../../../providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreInitDelegate } from '@providers/init';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreWSProvider } from '@providers/ws';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -901,7 +901,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        if (!this.sitesProvider.getCurrentSite().wsAvailable('core_user_agree_site_policy')) {
+        if (!this.sitesProvider.wsAvailableInCurrentSite('core_user_agree_site_policy')) {
             // WS not available, stop.
             return;
         }

@@ -17,12 +17,12 @@ import { ActionSheetController, ActionSheet, Platform } from 'ionic-angular';
 import { MediaCapture, MediaFile } from '@ionic-native/media-capture';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreFileProvider } from '../../../providers/file';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreDomUtilsProvider } from '../../../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../../../providers/utils/text';
-import { CoreUtilsProvider, PromiseDefer } from '../../../providers/utils/utils';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFileProvider } from '@providers/file';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreFileUploaderProvider, CoreFileUploaderOptions } from './fileuploader';
 import { CoreFileUploaderDelegate } from './delegate';
 

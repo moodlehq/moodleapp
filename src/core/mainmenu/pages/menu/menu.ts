@@ -14,8 +14,8 @@
 
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
-import { CoreEventsProvider } from '../../../../providers/events';
-import { CoreSitesProvider } from '../../../../providers/sites';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreMainMenuProvider } from '../../providers/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
 
@@ -64,9 +64,10 @@ export class CoreMainMenuPage implements OnDestroy {
     };
     protected moreTabAdded = false;
     protected redirectPageLoaded = false;
+    protected updateBadgeObserver;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
-            private navCtrl: NavController, eventsProvider: CoreEventsProvider) {
+            private navCtrl: NavController, private eventsProvider: CoreEventsProvider) {
         this.redirectPage = navParams.get('redirectPage');
         this.redirectParams = navParams.get('redirectParams');
     }
@@ -83,6 +84,15 @@ export class CoreMainMenuPage implements OnDestroy {
 
         const site = this.sitesProvider.getCurrentSite(),
             displaySiteHome = site.getInfo() && site.getInfo().userhomepage === 0;
+
+        this.updateBadgeObserver = this.eventsProvider.on(CoreMainMenuDelegate.UPDATE_BADGE_EVENT, (data) => {
+            const tab = this.tabs.find((tab) => {
+                return tab.showBadge && tab['name'] == data.name;
+            });
+            if (tab) {
+                tab.badge = data.badge;
+            }
+        }, site.getId());
 
         this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
             handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
@@ -128,5 +138,6 @@ export class CoreMainMenuPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.subscription && this.subscription.unsubscribe();
+        this.updateBadgeObserver && this.updateBadgeObserver.off();
     }
 }

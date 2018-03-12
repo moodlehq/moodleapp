@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Directive, AfterViewInit, Input, ElementRef, OnDestroy } from '@angular/core';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreUtilsProvider } from '../providers/utils/utils';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to keep the keyboard open when clicking a certain element (usually a button).

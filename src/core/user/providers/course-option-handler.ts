@@ -79,7 +79,7 @@ export class CoreUserParticipantsCourseOptionHandler implements CoreCourseOption
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreMainMenuHandlerData} Data needed to render the handler.
+     * @return {CoreCourseOptionsHandlerData} Data needed to render the handler.
      */
     getDisplayData(): CoreCourseOptionsHandlerData {
         return {

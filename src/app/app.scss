@@ -15,7 +15,6 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
-
 // Alignment
 // -------------------------
 
@@ -51,7 +50,7 @@
   }
 }
 
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(sm) {
   .hidden-phone {
     display: none !important;
     opacity: 0 !important;
@@ -234,6 +233,18 @@ core-format-text[ng-reflect-max-height], *[core-format-text][ng-reflect-max-heig
       background-size: 14px 14px;
     }
   }
+}
+
+core-format-text[singleLine="true"], *[core-format-text][singleLine="true"],
+core-format-text[ng-reflect-single-line="true"], *[core-format-text][ng-reflect-single-line="true"] {
+    cursor: pointer;
+    pointer-events: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    position: relative;
+    width: 100%;
 }
 
 .core-media-adapt-width {
@@ -432,10 +443,52 @@ ion-toast.core-toast-alert .toast-wrapper{
     background: $red-dark;
 }
 
+textarea {
+  width: 100%;
+  resize: none;
+
+  &[core-auto-rows] {
+    height: auto;
+    line-height: 18px;
+    padding: 5px;
+  }
+
+  &:not([core-auto-rows]) {
+    height: 200px;
+    min-height: $core-rte-min-height;
+  }
+}
+
+.toolbar .core-bar-button-image {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  max-width: $core-toolbar-button-image-width - 1;
+  max-height: $core-toolbar-button-image-width - 1;
+  border-radius: 50%;
+}
+
+// Footer with auto height.
+.footer.footer-adjustable {
+    height: auto;
+}
+
 // Message cards
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
   .core-#{$color-name}-card {
     @extend ion-card;
     border-bottom: 3px solid $color-base;
+  }
+}
+
+.core-circle:before {
+  content: ' \25CF';
+  font-size: 20px;
+}
+
+@each $color-name, $color-base, $color-contrast in get-colors($colors) {
+  .core-#{$color-name}-circle:before {
+    @extend .core-circle:before;
+    color: $color-base;
   }
 }

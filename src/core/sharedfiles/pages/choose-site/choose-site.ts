@@ -14,9 +14,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CoreFileProvider } from '../../../../providers/file';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreFileProvider } from '@providers/file';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSharedFilesHelperProvider } from '../../providers/helper';
 
 /**

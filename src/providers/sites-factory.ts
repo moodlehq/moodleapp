@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreSite } from '../classes/site';
+import { CoreSite } from '@classes/site';
 
 /*
  * Provider to create sites instances.

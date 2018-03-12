@@ -1,22 +1,20 @@
 <ion-card>
-    <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.fullname">
-        <div class="core-course-link">
-            <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
+    <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.fullname" class="core-course-link">
+        <h2><core-format-text [text]="course.fullname"></core-format-text></h2>
 
-            <div class="core-button-spinner">
-                <!-- Download course. -->
-                <button *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourse($event)">
-                    <ion-icon [name]="prefetchCourseData.prefetchCourseIcon"></ion-icon>
-                </button>
-                <!-- Download course spinner. -->
-                <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'"></ion-spinner>
-            </div>
+        <div class="core-button-spinner">
+            <!-- Download course. -->
+            <button *ngIf="prefetchCourseData.prefetchCourseIcon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourse($event)">
+                <ion-icon [name]="prefetchCourseData.prefetchCourseIcon"></ion-icon>
+            </button>
+            <!-- Download course spinner. -->
+            <ion-spinner *ngIf="prefetchCourseData.prefetchCourseIcon == 'spinner'"></ion-spinner>
         </div>
     </ion-item>
     <ion-item text-wrap *ngIf="course.summary && course.summary.length">
         <p>
             <summary>
-                <core-format-text [text]="course.summary" maxHeight="20"></core-format-text>
+                <core-format-text [text]="course.summary" singleLine="true" clean="true"></core-format-text>
             </summary>
         </p>
     </ion-item>

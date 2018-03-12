@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Globalization } from '@ionic-native/globalization';
-import { CoreAppProvider } from '../../../providers/app';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Emulates the Cordova Globalization plugin in desktop apps and in browser.

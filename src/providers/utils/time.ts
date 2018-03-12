@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { CoreConstants } from '../../core/constants';
+import { CoreConstants } from '@core/constants';
 
 /*
  * "Utils" service with helper functions for date and time.

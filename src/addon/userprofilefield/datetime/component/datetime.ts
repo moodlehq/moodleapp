@@ -14,8 +14,8 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
-import { CoreUtilsProvider } from '../../../../providers/utils/utils';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to render a datetime user profile field.

@@ -1,0 +1,57 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.messages.messagepreferences' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="preferencesLoaded" (ionRefresh)="refreshPreferences($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="preferencesLoaded">
+        <!-- Block non contacts. -->
+        <ion-card>
+            <ion-item>
+              <ion-label>{{ 'addon.messages.blocknoncontacts' | translate }}</ion-label>
+              <ion-toggle [(ngModel)]="blockNonContactsState" (ionChange)="blockNonContacts(blockNonContactsState)"></ion-toggle>
+            </ion-item>
+        </ion-card>
+
+        <ng-container *ngIf="preferences">
+            <div *ngFor="let component of preferences.components">
+                <ion-card list *ngFor="let notification of component.notifications">
+                    <ion-item-divider color="light" text-wrap>
+                        <ion-row no-padding>
+                            <ion-col no-padding>{{ notification.displayname }}</ion-col>
+                            <ion-col col-2 text-center no-padding class="hidden-phone">{{ 'core.settings.loggedin' | translate }}</ion-col>
+                            <ion-col col-2 text-center no-padding class="hidden-phone">{{ 'core.settings.loggedoff' | translate }}</ion-col>
+                        </ion-row>
+                    </ion-item-divider>
+                    <ng-container *ngFor="let processor of notification.processors">
+                        <!-- Tablet view -->
+                        <ion-row text-wrap class="hidden-phone" align-items-center>
+                            <ion-col margin-horizontal>{{ processor.displayname }}</ion-col>
+                            <ion-col col-2 text-center *ngFor="let state of ['loggedin', 'loggedoff']">
+                                <!-- If notifications not disabled, show toggle. -->
+                                <ion-spinner [hidden]="preferences.disableall || !(notification.updating && notification.updating[state])"></ion-spinner>
+                                <ion-toggle *ngIf="!preferences.disableall" [(ngModel)]="processor[state].checked" (ionChange)="changePreference(notification, state, processor)" [disabled]="processor.locked || (notification.updating && notification.updating[state])">
+                                </ion-toggle>
+                                <!-- If notifications are disabled, show "Disabled" instead of toggle. -->
+                                <span *ngIf="preferences.disableall">{{ 'core.settings.disabled' | translate }}</span>
+                            </ion-col>
+                        </ion-row>
+                        <!-- Phone view -->
+                        <ion-list-header text-wrap class="hidden-tablet">{{ processor.displayname }}</ion-list-header>
+                        <!-- If notifications not disabled, show toggles. If notifications are disabled, show "Disabled" instead of toggle. -->
+                        <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" text-wrap class="hidden-tablet">
+                            <ion-label>{{ 'core.settings.' + state | translate }}</ion-label>
+                            <ion-spinner item-end *ngIf="!preferences.disableall && (notification.updating && notification.updating[state])"></ion-spinner>
+                            <ion-toggle item-end *ngIf="!preferences.disableall" [(ngModel)]="processor[state].checked" (ionChange)="changePreference(notification, state, processor)" [disabled]="processor.locked || (notification.updating && notification.updating[state])">
+                            </ion-toggle>
+                            <ion-note item-end *ngIf="preferences.disableall">{{ 'core.settings.disabled' | translate }}</ion-note>
+                        </ion-item>
+                    </ng-container>
+                </ion-card>
+            </div>
+        </ng-container>
+    </core-loading>
+</ion-content>

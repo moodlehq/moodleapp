@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { AddonFilesProvider } from './files';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/mainmenu/providers/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 
 /**
  * Handler to inject an option into main menu.
@@ -22,7 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/main
 @Injectable()
 export class AddonFilesMainMenuHandler implements CoreMainMenuHandler {
     name = 'AddonFiles';
-    priority = 200;
+    priority = 400;
 
     constructor(private filesProvider: AddonFilesProvider) { }
 

@@ -16,18 +16,18 @@ import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { SQLiteDB } from './sqlitedb';
-import { CoreAppProvider } from '../providers/app';
-import { CoreDbProvider } from '../providers/db';
-import { CoreEventsProvider } from '../providers/events';
-import { CoreFileProvider } from '../providers/file';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreWSProvider, CoreWSPreSets, CoreWSFileUploadOptions } from '../providers/ws';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../providers/utils/text';
-import { CoreTimeUtilsProvider } from '../providers/utils/time';
-import { CoreUrlUtilsProvider } from '../providers/utils/url';
-import { CoreUtilsProvider } from '../providers/utils/utils';
-import { CoreConstants } from '../core/constants';
+import { CoreAppProvider } from '@providers/app';
+import { CoreDbProvider } from '@providers/db';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFileProvider } from '@providers/file';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreWSProvider, CoreWSPreSets, CoreWSFileUploadOptions } from '@providers/ws';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { InAppBrowserObject } from '@ionic-native/in-app-browser';
@@ -531,7 +531,7 @@ export class CoreSite {
             } else {
                 this.logger.error(`WS function '${method}' is not available, even in compatibility mode.`);
 
-                return Promise.reject(this.wsProvider.createFakeWSError('core.wsfunctionnotavailable', true));
+                return Promise.reject(this.utils.createFakeWSError('core.wsfunctionnotavailable', true));
             }
         }
 
@@ -560,7 +560,7 @@ export class CoreSite {
             data = this.wsProvider.convertValuesToString(data, wsPreSets.cleanUnicode);
         } catch (e) {
             // Empty cleaned text found.
-            return Promise.reject(this.wsProvider.createFakeWSError('core.unicodenotsupportedcleanerror', true));
+            return Promise.reject(this.utils.createFakeWSError('core.unicodenotsupportedcleanerror', true));
         }
 
         return this.getFromCache(method, data, preSets).catch(() => {

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreSite } from '../../../classes/site';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -355,7 +355,7 @@ export class CoreCoursesProvider {
      * @return {boolean} Whether get courses by field is available.
      */
     isGetCoursesByFieldAvailable(): boolean {
-        return this.sitesProvider.getCurrentSite().wsAvailable('core_course_get_courses_by_field');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_course_get_courses_by_field');
     }
 
     /**

@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { FileTransfer, FileTransferObject, FileUploadResult, FileTransferError } from '@ionic-native/file-transfer';
-import { CoreAppProvider } from '../../../providers/app';
-import { CoreFileProvider } from '../../../providers/file';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFileProvider } from '@providers/file';
 
 /**
  * Mock the File Transfer Error.

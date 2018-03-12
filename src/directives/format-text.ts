@@ -15,18 +15,18 @@
 import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
 import { Platform, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../providers/app';
-import { CoreFilepoolProvider } from '../providers/filepool';
-import { CoreLoggerProvider } from '../providers/logger';
-import { CoreSitesProvider } from '../providers/sites';
-import { CoreDomUtilsProvider } from '../providers/utils/dom';
-import { CoreTextUtilsProvider } from '../providers/utils/text';
-import { CoreUrlUtilsProvider } from '../providers/utils/url';
-import { CoreUtilsProvider } from '../providers/utils/utils';
-import { CoreSite } from '../classes/site';
+import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSite } from '@classes/site';
 import { CoreLinkDirective } from '../directives/link';
 import { CoreExternalContentDirective } from '../directives/external-content';
-import { CoreContentLinksHelperProvider } from '../core/contentlinks/providers/helper';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
