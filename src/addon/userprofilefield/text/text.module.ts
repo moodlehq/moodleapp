@@ -19,7 +19,7 @@ import { AddonUserProfileFieldTextHandler } from './providers/handler';
 import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 import { AddonUserProfileFieldTextComponent } from './component/text';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [

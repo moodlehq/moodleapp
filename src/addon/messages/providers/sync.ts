@@ -21,6 +21,7 @@ import { AddonMessagesOfflineProvider } from './messages-offline';
 import { AddonMessagesProvider } from './messages';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncProvider } from '@providers/sync';
@@ -37,8 +38,8 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
             protected appProvider: CoreAppProvider, private messagesOffline: AddonMessagesOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private messagesProvider: AddonMessagesProvider,
             private userProvider: CoreUserProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            syncProvider: CoreSyncProvider) {
-        super('AddonMessagesSync', sitesProvider, loggerProvider, appProvider, syncProvider);
+            syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider) {
+        super('AddonMessagesSync', sitesProvider, loggerProvider, appProvider, syncProvider, textUtils);
     }
 
     /**

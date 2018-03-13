@@ -39,7 +39,7 @@ export class CoreLinkDirective implements OnInit {
 
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
             private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController,
+            private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;

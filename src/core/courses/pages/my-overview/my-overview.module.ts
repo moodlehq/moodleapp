@@ -18,7 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreCoursesMyOverviewPage } from './my-overview';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreCoursesComponentsModule } from '../../components/components.module';
-import { CoreSiteHomeComponentsModule } from '../../../sitehome/components/components.module';
+import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
 
 @NgModule({
     declarations: [

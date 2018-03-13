@@ -16,18 +16,22 @@ import { NgModule } from '@angular/core';
 import { CoreSiteHomeProvider } from './providers/sitehome';
 import { CoreSiteHomeMainMenuHandler } from './providers/mainmenu-handler';
 import { CoreSiteHomeIndexLinkHandler } from './providers/index-link-handler';
-import { CoreMainMenuDelegate } from '../mainmenu/providers/delegate';
-import { CoreContentLinksDelegate } from '../contentlinks/providers/delegate';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+
+// List of providers (without handlers).
+export const CORE_SITEHOME_PROVIDERS: any[] = [
+    CoreSiteHomeProvider
+];
 
 @NgModule({
     declarations: [],
     imports: [
     ],
-    providers: [
-        CoreSiteHomeProvider,
+    providers: CORE_SITEHOME_PROVIDERS.concat([
         CoreSiteHomeMainMenuHandler,
         CoreSiteHomeIndexLinkHandler
-    ],
+    ]),
     exports: []
 })
 export class CoreSiteHomeModule {

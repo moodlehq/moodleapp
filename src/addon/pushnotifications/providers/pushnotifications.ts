@@ -25,7 +25,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConfigProvider } from '@providers/config';
-import { CoreConfigConstants } from '.././../../configconstants';
+import { CoreConfigConstants } from '../../../configconstants';
 
 /**
  * Service to handle push notifications.

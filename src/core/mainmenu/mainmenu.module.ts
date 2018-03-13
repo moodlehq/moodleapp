@@ -16,14 +16,17 @@ import { NgModule } from '@angular/core';
 import { CoreMainMenuDelegate } from './providers/delegate';
 import { CoreMainMenuProvider } from './providers/mainmenu';
 
+// List of providers.
+export const CORE_MAINMENU_PROVIDERS = [
+    CoreMainMenuDelegate,
+    CoreMainMenuProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        CoreMainMenuDelegate,
-        CoreMainMenuProvider
-    ]
+    providers: CORE_MAINMENU_PROVIDERS
 })
 export class CoreMainMenuModule {}

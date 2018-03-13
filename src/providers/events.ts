@@ -47,7 +47,7 @@ export class CoreEventsProvider {
     static PACKAGE_STATUS_CHANGED = 'package_status_changed';
     static COURSE_STATUS_CHANGED = 'course_status_changed';
     static SECTION_STATUS_CHANGED = 'section_status_changed';
-    static REMOTE_ADDONS_LOADED = 'remote_addons_loaded';
+    static SITE_PLUGINS_LOADED = 'site_plugins_loaded';
     static LOGIN_SITE_CHECKED = 'login_site_checked';
     static LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
     static IAB_LOAD_START = 'inappbrowser_load_start';

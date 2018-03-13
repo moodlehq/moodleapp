@@ -26,8 +26,9 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreConfigConstants } from '../../../configconstants';
-import { CoreConstants } from '../../constants';
+import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
 /**
@@ -80,7 +81,7 @@ export class CoreLoginHelperProvider {
             private wsProvider: CoreWSProvider, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider, private utils: CoreUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider, private configProvider: CoreConfigProvider, private platform: Platform,
-            private initDelegate: CoreInitDelegate) {
+            private initDelegate: CoreInitDelegate, private sitePluginsProvider: CoreSitePluginsProvider) {
         this.logger = logger.getInstance('CoreLoginHelper');
     }
 
@@ -768,10 +769,15 @@ export class CoreLoginHelperProvider {
         if (this.sitesProvider.isLoggedIn()) {
             if (siteId && siteId != this.sitesProvider.getCurrentSiteId()) {
                 // Target page belongs to a different site. Change site.
-                // @todo Store redirect once we have addon manager.
-                this.sitesProvider.logout().then(() => {
-                    this.loadSiteAndPage(page, params, siteId);
-                });
+                if (this.sitePluginsProvider.hasSitePluginsLoaded) {
+                    // The site has site plugins so the app will be restarted. Store the data and logout.
+                    this.appProvider.storeRedirect(siteId, page, params);
+                    this.sitesProvider.logout();
+                } else {
+                    this.sitesProvider.logout().then(() => {
+                        this.loadSiteAndPage(page, params, siteId);
+                    });
+                }
             } else {
                 this.loadPageInMainMenu(page, params);
             }
@@ -936,9 +942,8 @@ export class CoreLoginHelperProvider {
         const params = url.split(':::');
 
         return this.configProvider.get(CoreConstants.LOGIN_LAUNCH_DATA).then((data): any => {
-            try {
-                data = JSON.parse(data);
-            } catch (ex) {
+            data = this.textUtils.parseJSON(data, null);
+            if (data === null) {
                 return Promise.reject(null);
             }
 

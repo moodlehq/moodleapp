@@ -17,8 +17,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
-import { CorePipesModule } from '@pipes';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { AddonMessagesDiscussionsComponent } from '../components/discussions/discussions';
 import { AddonMessagesContactsComponent } from '../components/contacts/contacts';
 

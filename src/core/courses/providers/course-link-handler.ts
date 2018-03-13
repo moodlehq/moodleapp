@@ -16,10 +16,10 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreContentLinksHandlerBase } from '../../contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '../../contentlinks/providers/delegate';
-import { CoreLoginHelperProvider } from '../../login/providers/helper';
-import { CoreCourseProvider } from '../../course/providers/course';
+import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
+import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCoursesProvider } from './courses';
 
 /**

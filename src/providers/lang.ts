@@ -28,8 +28,9 @@ import { Observable } from 'rxjs';
 export class CoreLangProvider {
     protected fallbackLanguage = CoreConfigConstants.default_lang || 'en';
     protected currentLanguage: string; // Save current language in a variable to speed up the get function.
-    protected customStrings = {};
+    protected customStrings = {}; // Strings defined using the admin tool.
     protected customStringsRaw: string;
+    protected sitePluginsStrings = {}; // Strings defined by site plugins.
 
     constructor(private translate: TranslateService, private configProvider: CoreConfigProvider, platform: Platform,
             private globalization: Globalization) {
@@ -43,8 +44,52 @@ export class CoreLangProvider {
                 moment.locale(language);
             });
         });
+    }
 
-        this.decorateTranslate();
+    /**
+     * Add a set of site plugins strings for a certain language.
+     *
+     * @param {string} lang The language where to add the strings.
+     * @param {any} strings Object with the strings to add.
+     * @param {string} [prefix] A prefix to add to all keys.
+     */
+    addSitePluginsStrings(lang: string, strings: any, prefix?: string): void {
+        // Initialize structures if they don't exist.
+        if (!this.sitePluginsStrings[lang]) {
+            this.sitePluginsStrings[lang] = {};
+        }
+        if (!this.translate.translations[lang]) {
+            this.translate.translations[lang] = {};
+        }
+
+        for (const key in strings) {
+            const prefixedKey = prefix + key;
+            let value = strings[key];
+
+            if (this.customStrings[lang] && this.customStrings[lang][prefixedKey]) {
+                // This string is overridden by a custom string, ignore it.
+                continue;
+            }
+
+            // Add another curly bracket to string params ({$a} -> {{$a}}).
+            value = value.replace(/{([^ ]+)}/gm, '{{$1}}');
+            // Make sure we didn't add to many brackets in some case.
+            value = value.replace(/{{{([^ ]+)}}}/gm, '{{$1}}');
+
+            if (!this.sitePluginsStrings[lang][prefixedKey]) {
+                // It's a new site plugin string. Store the original value.
+                this.sitePluginsStrings[lang][prefixedKey] = {
+                    original: this.translate.translations[lang][prefixedKey],
+                    value: value
+                };
+            } else {
+                // Site plugin string already defined. Store the new value.
+                this.sitePluginsStrings[lang][prefixedKey].value = value;
+            }
+
+            // Store the string in the translations table.
+            this.translate.translations[lang][prefixedKey] = value;
+        }
     }
 
     /**
@@ -69,51 +114,17 @@ export class CoreLangProvider {
      * Clear current custom strings.
      */
     clearCustomStrings(): void {
+        this.unloadStrings(this.customStrings);
         this.customStrings = {};
         this.customStringsRaw = '';
     }
 
     /**
-     * Function to "decorate" the TranslateService.
-     * Basically, it extends the translate functions to use the custom lang strings.
+     * Clear current site plugins strings.
      */
-    decorateTranslate(): void {
-        const originalGet = this.translate.get,
-            originalInstant = this.translate.instant;
-
-        // Redefine translate.get.
-        this.translate.get = (key: string | string[], interpolateParams?: object): Observable<any> => {
-            // Always call the original get function to avoid having to create our own Observables.
-            if (typeof key == 'string') {
-                const value = this.getCustomString(key);
-                if (typeof value != 'undefined') {
-                    key = value;
-                }
-            } else {
-                key = this.getCustomStrings(key).translations;
-            }
-
-            return originalGet.apply(this.translate, [key, interpolateParams]);
-        };
-
-        // Redefine translate.instant.
-        this.translate.instant = (key: string | string[], interpolateParams?: object): any => {
-            if (typeof key == 'string') {
-                const value = this.getCustomString(key);
-                if (typeof value != 'undefined') {
-                    return value;
-                }
-
-                return originalInstant.apply(this.translate, [key, interpolateParams]);
-            } else {
-                const result = this.getCustomStrings(key);
-                if (result.allFound) {
-                    return result.translations;
-                }
-
-                return originalInstant.apply(this.translate, [result.translations]);
-            }
-        };
+    clearSitePluginsStrings(): void {
+        this.unloadStrings(this.sitePluginsStrings);
+        this.sitePluginsStrings = {};
     }
 
     /**
@@ -123,6 +134,15 @@ export class CoreLangProvider {
      */
     getAllCustomStrings(): any {
         return this.customStrings;
+    }
+
+    /**
+     * Get all current site plugins strings.
+     *
+     * @return {any} Site plugins strings.
+     */
+    getAllSitePluginsStrings(): any {
+        return this.sitePluginsStrings;
     }
 
     /**
@@ -175,57 +195,6 @@ export class CoreLangProvider {
     }
 
     /**
-     * Get a custom string for a certain key.
-     *
-     * @param {string} key The key of the translation to get.
-     * @return {string} Translation, undefined if not found.
-     */
-    getCustomString(key: string): string {
-        const customStrings = this.getCustomStringsForLanguage();
-        if (customStrings && typeof customStrings[key] != 'undefined') {
-            return customStrings[key];
-        }
-    }
-
-    /**
-     * Get custom strings for several keys.
-     *
-     * @param {string[]} keys The keys of the translations to get.
-     * @return {any} Object with translations and a boolean indicating if all translations were found in custom strings.
-     */
-    getCustomStrings(keys: string[]): any {
-        const customStrings = this.getCustomStringsForLanguage(),
-            translations = [];
-        let allFound = true;
-
-        keys.forEach((key: string) => {
-            if (customStrings && typeof customStrings[key] != 'undefined') {
-                translations.push(customStrings[key]);
-            } else {
-                allFound = false;
-                translations.push(key);
-            }
-        });
-
-        return {
-            allFound: allFound,
-            translations: translations
-        };
-    }
-
-    /**
-     * Get custom strings for a certain language.
-     *
-     * @param {string} [lang] The language to get. If not defined, return current language.
-     * @return {any} Custom strings.
-     */
-    getCustomStringsForLanguage(lang?: string): any {
-        lang = lang || this.currentLanguage;
-
-        return this.customStrings[lang];
-    }
-
-    /**
      * Load certain custom strings.
      *
      * @param {string} strings Custom strings to load (tool_mobile_customlangstrings).
@@ -259,7 +228,36 @@ export class CoreLangProvider {
                 this.customStrings[lang] = {};
             }
 
-            this.customStrings[lang][values[0]] = values[1];
+            // Store the original value of the custom string.
+            this.customStrings[lang][values[0]] = {
+                original: this.translate.translations[lang][values[0]],
+                value: values[1]
+            };
+
+            // Store the string in the translations table.
+            this.translate.translations[lang][values[0]] = values[1];
         });
+    }
+
+    /**
+     * Unload custom or site plugin strings, removing them from the translations table.
+     *
+     * @param {any} strings Strings to unload.
+     */
+    protected unloadStrings(strings: any): void {
+        // Iterate over all languages and strings.
+        for (const lang in strings) {
+            const langStrings = strings[lang];
+            for (const key in langStrings) {
+                const entry = langStrings[key];
+                if (entry.original) {
+                    // The string had a value, restore it.
+                    this.translate.translations[lang][key] = entry.original;
+                } else {
+                    // The string didn't exist, delete it.
+                    delete this.translate.translations[lang][key];
+                }
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase
         return [{
             action: (siteId, navCtrl?): void => {
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
-                this.loginHelper.redirect('AddonParticipantsListPage', {courseId: courseId}, siteId);
+                this.loginHelper.redirect('CoreUserParticipantsPage', {courseId: courseId}, siteId);
             }
         }];
     }

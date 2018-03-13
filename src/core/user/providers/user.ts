@@ -310,7 +310,7 @@ export class CoreUserProvider {
     }
 
     /**
-     * Returns whether or not the participants addon is enabled for a certain course.
+     * Returns whether or not participants is enabled for a certain course.
      *
      * @param {number} courseId Course ID.
      * @param  {string} [siteId] Site Id. If not defined, use current site.

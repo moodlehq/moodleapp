@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnDestroy, Injector } from '@angular/core';
 import { IonicPage, NavParams, Content, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -25,7 +25,7 @@ import { CoreCourseFormatDelegate } from '../../providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../../providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '../../providers/options-delegate';
 import { CoreCourseFormatComponent } from '../../components/format/format';
-import { CoreCoursesProvider } from '../../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -45,7 +45,6 @@ export class CoreCourseSectionPage implements OnDestroy {
     sectionId: number;
     sectionNumber: number;
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
-    handlerData: any = {}; // Data to send to the handlers components.
     dataLoaded: boolean;
     downloadEnabled: boolean;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
@@ -64,13 +63,12 @@ export class CoreCourseSectionPage implements OnDestroy {
             private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            sitesProvider: CoreSitesProvider, private navCtrl: NavController,
+            sitesProvider: CoreSitesProvider, private navCtrl: NavController, private injector: Injector,
             private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
-        this.handlerData.courseId = this.course.id;
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -193,7 +191,14 @@ export class CoreCourseSectionPage implements OnDestroy {
             }));
 
             // Load the course handlers.
-            promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.course, refresh, false).then((handlers) => {
+            promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, this.course, refresh, false)
+                    .then((handlers) => {
+                // Add the courseId to the handler component data.
+                handlers.forEach((handler) => {
+                    handler.data.componentData = handler.data.componentData || {};
+                    handler.data.componentData.courseId = this.course.id;
+                });
+
                 this.courseHandlers = handlers;
             }));
 

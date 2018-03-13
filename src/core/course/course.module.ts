@@ -25,6 +25,16 @@ import { CoreCourseFormatSocialModule } from './formats/social/social.module';
 import { CoreCourseFormatTopicsModule } from './formats/topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
 
+// List of providers (without handlers).
+export const CORE_COURSE_PROVIDERS: any[] = [
+    CoreCourseProvider,
+    CoreCourseHelperProvider,
+    CoreCourseFormatDelegate,
+    CoreCourseModuleDelegate,
+    CoreCourseModulePrefetchDelegate,
+    CoreCourseOptionsDelegate
+];
+
 @NgModule({
     declarations: [],
     imports: [
@@ -33,15 +43,9 @@ import { CoreCourseFormatWeeksModule } from './formats/weeks/weeks.module';
         CoreCourseFormatWeeksModule,
         CoreCourseFormatSocialModule
     ],
-    providers: [
-        CoreCourseProvider,
-        CoreCourseHelperProvider,
-        CoreCourseFormatDelegate,
-        CoreCourseModuleDelegate,
-        CoreCourseModulePrefetchDelegate,
-        CoreCourseOptionsDelegate,
+    providers: CORE_COURSE_PROVIDERS.concat([
         CoreCourseFormatDefaultHandler
-    ],
+    ]),
     exports: []
 })
 export class CoreCourseModule {}

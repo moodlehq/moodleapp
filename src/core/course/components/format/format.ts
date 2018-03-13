@@ -13,17 +13,17 @@
 // limitations under the License.
 
 import {
-    Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter, ViewChildren, QueryList
+    Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange, Output, EventEmitter, ViewChildren, QueryList, Injector
 } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreCourseProvider } from '../../../course/providers/course';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
-import { CoreCourseFormatDelegate } from '../../../course/providers/format-delegate';
-import { CoreCourseModulePrefetchDelegate } from '../../../course/providers/module-prefetch-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 /**
@@ -69,7 +69,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     protected sectionStatusObserver;
 
-    constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService,
+    constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService, private injector: Injector,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
             eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider, private content: Content,
             prefetchDelegate: CoreCourseModulePrefetchDelegate) {
@@ -194,19 +194,29 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected getComponents(): void {
         if (this.course) {
             if (!this.courseFormatComponent) {
-                this.courseFormatComponent = this.cfDelegate.getCourseFormatComponent(this.course);
+                this.cfDelegate.getCourseFormatComponent(this.injector, this.course).then((component) => {
+                    this.courseFormatComponent = component;
+                });
             }
             if (!this.courseSummaryComponent) {
-                this.courseSummaryComponent = this.cfDelegate.getCourseSummaryComponent(this.course);
+                this.cfDelegate.getCourseSummaryComponent(this.injector, this.course).then((component) => {
+                    this.courseSummaryComponent = component;
+                });
             }
             if (!this.sectionSelectorComponent) {
-                this.sectionSelectorComponent = this.cfDelegate.getSectionSelectorComponent(this.course);
+                this.cfDelegate.getSectionSelectorComponent(this.injector, this.course).then((component) => {
+                    this.sectionSelectorComponent = component;
+                });
             }
             if (!this.singleSectionComponent) {
-                this.singleSectionComponent = this.cfDelegate.getSingleSectionComponent(this.course);
+                this.cfDelegate.getSingleSectionComponent(this.injector, this.course).then((component) => {
+                    this.singleSectionComponent = component;
+                });
             }
             if (!this.allSectionsComponent) {
-                this.allSectionsComponent = this.cfDelegate.getAllSectionsComponent(this.course);
+                this.cfDelegate.getAllSectionsComponent(this.injector, this.course).then((component) => {
+                    this.allSectionsComponent = component;
+                });
             }
         }
     }

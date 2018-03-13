@@ -15,13 +15,16 @@
 import { NgModule } from '@angular/core';
 import { CoreLoginHelperProvider } from './providers/helper';
 
+// List of providers.
+export const CORE_LOGIN_PROVIDERS = [
+    CoreLoginHelperProvider
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        CoreLoginHelperProvider
-    ]
+    providers: CORE_LOGIN_PROVIDERS
 })
 export class CoreLoginModule {}

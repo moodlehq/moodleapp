@@ -17,7 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreCoursesCategoriesPage } from './categories';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCoursesComponentsModule } from '../../components/components.module';
 
 @NgModule({

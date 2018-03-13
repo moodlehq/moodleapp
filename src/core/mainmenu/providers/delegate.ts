@@ -82,6 +82,12 @@ export interface CoreMainMenuHandlerData {
      * @type {boolean}
      */
     loading?: boolean;
+
+    /**
+     * Params to pass to the page.
+     * @type {any}
+     */
+    pageParams?: any;
 }
 
 /**

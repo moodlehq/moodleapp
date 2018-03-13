@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import {
-    Component, Input, ViewChild, OnInit, OnChanges, DoCheck, ViewContainerRef, ComponentFactoryResolver,
-    KeyValueDiffers, SimpleChange
+    Component, Input, ViewChild, OnInit, OnChanges, DoCheck, ViewContainerRef, ComponentFactoryResolver, ComponentRef,
+    KeyValueDiffers, SimpleChange, ChangeDetectorRef, Optional, ElementRef
 } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
 
 /**
@@ -38,6 +39,10 @@ import { CoreLoggerProvider } from '@providers/logger';
  *     </core-dynamic-component>
  *
  * Please notice that the component that you pass needs to be declared in entryComponents of the module to be created dynamically.
+ *
+ * Alternatively, you can also supply a ComponentRef instead of the class of the component. In this case, the component won't
+ * be instantiated because it already is, it will be attached to the view and the right data will be passed to it.
+ * Passing ComponentRef is meant for site plugins, so we'll inject a NavController instance to the component.
  *
  * The contents of this component will be displayed if no component is supplied or it cannot be created. In the example above,
  * if no component is supplied then the template will show the message "Cannot render the data.".
@@ -62,7 +67,8 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
     protected logger: any;
     protected differ: any; // To detect changes in the data input.
 
-    constructor(logger: CoreLoggerProvider, private factoryResolver: ComponentFactoryResolver, differs: KeyValueDiffers) {
+    constructor(logger: CoreLoggerProvider, protected factoryResolver: ComponentFactoryResolver, differs: KeyValueDiffers,
+            @Optional() protected navCtrl: NavController, protected cdr: ChangeDetectorRef, protected element: ElementRef) {
         this.logger = logger.getInstance('CoreDynamicComponent');
         this.differ = differs.find([]).create();
     }
@@ -128,21 +134,32 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
             return true;
         }
 
-        try {
-            // Create the component and add it to the container.
-            const factory = this.factoryResolver.resolveComponentFactory(this.component),
-                componentRef = this.container.createComponent(factory);
+        if (this.component instanceof ComponentRef) {
+            // A ComponentRef was supplied instead of the component class. Add it to the view.
+            this.container.insert(this.component.hostView);
+            this.instance = this.component.instance;
 
-            this.instance = componentRef.instance;
+            // This feature is usually meant for site plugins. Inject some properties.
+            this.instance['ChangeDetectorRef'] = this.cdr;
+            this.instance['NavController'] = this.navCtrl;
+            this.instance['componentContainer'] = this.element.nativeElement;
+        } else {
+            try {
+                // Create the component and add it to the container.
+                const factory = this.factoryResolver.resolveComponentFactory(this.component),
+                    componentRef = this.container.createComponent(factory);
 
-            this.setInputData();
+                this.instance = componentRef.instance;
+            } catch (ex) {
+                this.logger.error('Error creating component', ex);
 
-            return true;
-        } catch (ex) {
-            this.logger.error('Error creating component', ex);
-
-            return false;
+                return false;
+            }
         }
+
+        this.setInputData();
+
+        return true;
     }
 
     /**

@@ -22,7 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CoreUserProfileFieldDelegate } from '../../../user/providers/user-profile-field-delegate';
+import { CoreUserProfileFieldDelegate } from '@core/user/providers/user-profile-field-delegate';
 
 /**
  * Page to signup using email.

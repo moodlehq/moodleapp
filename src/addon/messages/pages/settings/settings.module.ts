@@ -17,7 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddonMessagesSettingsPage } from './settings';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonMessagesComponentsModule } from '../../components/components.module';
 
 @NgModule({

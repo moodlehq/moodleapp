@@ -49,6 +49,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -64,6 +65,8 @@ import { CoreContentLinksModule } from '@core/contentlinks/contentlinks.module';
 import { CoreUserModule } from '@core/user/user.module';
 import { CoreGradesModule } from '@core/grades/grades.module';
 import { CoreSettingsModule } from '@core/settings/settings.module';
+import { CoreSitePluginsModule } from '@core/siteplugins/siteplugins.module';
+import { CoreCompileModule } from '@core/compile/compile.module';
 
 // Addon modules.
 import { AddonCalendarModule } from '@addon/calendar/calendar.module';
@@ -78,6 +81,36 @@ import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotif
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http, './assets/lang/', '.json');
 }
+
+// List of providers.
+export const CORE_PROVIDERS: any[] = [
+    CoreLoggerProvider,
+    CoreDbProvider,
+    CoreAppProvider,
+    CoreConfigProvider,
+    CoreLangProvider,
+    CoreTextUtilsProvider,
+    CoreDomUtilsProvider,
+    CoreTimeUtilsProvider,
+    CoreUrlUtilsProvider,
+    CoreUtilsProvider,
+    CoreMimetypeUtilsProvider,
+    CoreInitDelegate,
+    CoreFileProvider,
+    CoreWSProvider,
+    CoreEventsProvider,
+    CoreSitesFactoryProvider,
+    CoreSitesProvider,
+    CoreLocalNotificationsProvider,
+    CoreGroupsProvider,
+    CoreCronDelegate,
+    CoreFileSessionProvider,
+    CoreFilepoolProvider,
+    CoreUpdateManagerProvider,
+    CorePluginFileDelegate,
+    CoreSyncProvider,
+    CoreFileHelperProvider
+];
 
 @NgModule({
     declarations: [
@@ -111,6 +144,8 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreUserModule,
         CoreGradesModule,
         CoreSettingsModule,
+        CoreSitePluginsModule,
+        CoreCompileModule,
         AddonCalendarModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
@@ -123,38 +158,13 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     entryComponents: [
         MoodleMobileApp
     ],
-    providers: [
+    providers: CORE_PROVIDERS.concat([
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
             multi: true,
-        },
-        CoreLoggerProvider,
-        CoreDbProvider,
-        CoreAppProvider,
-        CoreConfigProvider,
-        CoreLangProvider,
-        CoreTextUtilsProvider,
-        CoreDomUtilsProvider,
-        CoreTimeUtilsProvider,
-        CoreUrlUtilsProvider,
-        CoreUtilsProvider,
-        CoreMimetypeUtilsProvider,
-        CoreInitDelegate,
-        CoreFileProvider,
-        CoreWSProvider,
-        CoreEventsProvider,
-        CoreSitesFactoryProvider,
-        CoreSitesProvider,
-        CoreLocalNotificationsProvider,
-        CoreGroupsProvider,
-        CoreCronDelegate,
-        CoreFileSessionProvider,
-        CoreFilepoolProvider,
-        CoreUpdateManagerProvider,
-        CorePluginFileDelegate,
-        CoreSyncProvider
-    ]
+        }
+    ])
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,

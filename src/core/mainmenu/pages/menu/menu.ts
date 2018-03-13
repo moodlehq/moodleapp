@@ -77,7 +77,7 @@ export class CoreMainMenuPage implements OnDestroy {
      */
     ionViewDidLoad(): void {
         if (!this.sitesProvider.isLoggedIn()) {
-            this.navCtrl.setRoot('CoreLoginSitesPage');
+            this.navCtrl.setRoot('CoreLoginInitPage');
 
             return;
         }

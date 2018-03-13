@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
 import { CoreCourseFormatSingleActivityComponent } from '../components/singleactivity';
 
@@ -86,11 +86,13 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
      * Return the Component to use to display the course format instead of using the default one.
      * Use it if you want to display a format completely different from the default one.
      * If you want to customize the default format there are several methods to customize parts of it.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getCourseFormatComponent(course: any): any {
+    getCourseFormatComponent(injector: Injector, course: any): any | Promise<any> {
         return CoreCourseFormatSingleActivityComponent;
     }
 }

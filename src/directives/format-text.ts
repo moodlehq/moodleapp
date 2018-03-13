@@ -62,7 +62,7 @@ export class CoreFormatTextDirective implements OnChanges {
             private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
             private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
             private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, private navCtrl: NavController,
+            private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
             @Optional() private content: Content) {
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
@@ -383,7 +383,7 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
-        const data = JSON.parse(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
+        const data = this.textUtils.parseJSON(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
             youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
                 data.sources[0].src && this.youtubeGetId(data.sources[0].src);
 

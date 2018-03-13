@@ -21,9 +21,9 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCoursesProvider } from '../../providers/courses';
-import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
-import { CoreCourseProvider } from '../../../course/providers/course';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.

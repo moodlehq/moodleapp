@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Service to provide grade functionalities.

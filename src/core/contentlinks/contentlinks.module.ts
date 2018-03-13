@@ -16,14 +16,17 @@ import { NgModule } from '@angular/core';
 import { CoreContentLinksDelegate } from './providers/delegate';
 import { CoreContentLinksHelperProvider } from './providers/helper';
 
+// List of providers.
+export const CORE_CONTENTLINKS_PROVIDERS = [
+    CoreContentLinksDelegate,
+    CoreContentLinksHelperProvider
+];
+
 @NgModule({
     declarations: [],
     imports: [
     ],
-    providers: [
-        CoreContentLinksDelegate,
-        CoreContentLinksHelperProvider
-    ],
+    providers: CORE_CONTENTLINKS_PROVIDERS,
     exports: []
 })
 export class CoreContentLinksModule {}

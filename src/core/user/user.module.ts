@@ -27,22 +27,26 @@ import { CoreUserParticipantsLinkHandler } from './providers/participants-link-h
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreUserComponentsModule } from './components/components.module';
 
+// List of providers (without handlers).
+export const CORE_USER_PROVIDERS: any[] = [
+    CoreUserDelegate,
+    CoreUserProfileFieldDelegate,
+    CoreUserProvider,
+    CoreUserHelperProvider,
+];
+
 @NgModule({
     declarations: [
     ],
     imports: [
         CoreUserComponentsModule
     ],
-    providers: [
-        CoreUserDelegate,
-        CoreUserProfileFieldDelegate,
+    providers: CORE_USER_PROVIDERS.concat([
         CoreUserProfileMailHandler,
-        CoreUserProvider,
-        CoreUserHelperProvider,
         CoreUserProfileLinkHandler,
         CoreUserParticipantsCourseOptionHandler,
         CoreUserParticipantsLinkHandler
-    ]
+    ])
 })
 export class CoreUserModule {
     constructor(userDelegate: CoreUserDelegate, userProfileMailHandler: CoreUserProfileMailHandler,

@@ -383,19 +383,25 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * Same as Javascript's JSON.parse, but if an exception is thrown it will return the original text.
+     * Same as Javascript's JSON.parse, but it will handle errors.
      *
      * @param {string} json JSON text.
+     * @param {any} [defaultValue] Default value t oreturn if the parse fails. Defaults to the original value.
+     * @param {Function} [logErrorFn] An error to call with the exception to log the error. If not supplied, no error.
      * @return {any} JSON parsed as object or what it gets.
      */
-    parseJSON(json: string): any {
+    parseJSON(json: string, defaultValue?: any, logErrorFn?: Function): any {
         try {
             return JSON.parse(json);
         } catch (ex) {
-            // Error, use the json text.
+            // Error, log the error if needed.
+            if (logErrorFn) {
+                logErrorFn(ex);
+            }
         }
 
-        return json;
+        // Error parsing, return the default value or the original value.
+        return typeof defaultValue != 'undefined' ? defaultValue : json;
     }
 
     /**

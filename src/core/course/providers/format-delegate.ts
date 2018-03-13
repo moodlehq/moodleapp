@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -85,44 +85,54 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * Return the Component to use to display the course format instead of using the default one.
      * Use it if you want to display a format completely different from the default one.
      * If you want to customize the default format there are several methods to customize parts of it.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getCourseFormatComponent?(course: any): any;
+    getCourseFormatComponent?(injector: Injector, course: any): any | Promise<any>;
 
     /**
      * Return the Component to use to display the course summary inside the default course format.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getCourseSummaryComponent?(course: any): any;
+    getCourseSummaryComponent?(injector: Injector, course: any): any | Promise<any>;
 
     /**
      * Return the Component to use to display the section selector inside the default course format.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getSectionSelectorComponent?(course: any): any;
+    getSectionSelectorComponent?(injector: Injector, course: any): any | Promise<any>;
 
     /**
      * Return the Component to use to display a single section. This component will only be used if the user is viewing a
      * single section. If all the sections are displayed at once then it won't be used.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getSingleSectionComponent?(course: any): any;
+    getSingleSectionComponent?(injector: Injector, course: any): any | Promise<any>;
 
     /**
      * Return the Component to use to display all sections in a course.
+     * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
-    getAllSectionsComponent?(course: any): any;
+    getAllSectionsComponent?(injector: Injector, course: any): any | Promise<any>;
 
     /**
      * Invalidate the data required to load the course format.
@@ -199,31 +209,40 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
     /**
      * Get the component to use to display all sections in a course.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getAllSectionsComponent(course: any): any {
-        return this.executeFunction(course.format, 'getAllSectionsComponent', [course]);
+    getAllSectionsComponent(injector: Injector, course: any): Promise<any> {
+        return Promise.resolve(this.executeFunction(course.format, 'getAllSectionsComponent', [injector, course])).catch((e) => {
+            this.logger.error('Error getting all sections component', e);
+        });
     }
 
     /**
      * Get the component to use to display a course format.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getCourseFormatComponent(course: any): any {
-        return this.executeFunction(course.format, 'getCourseFormatComponent', [course]);
+    getCourseFormatComponent(injector: Injector, course: any): Promise<any> {
+        return Promise.resolve(this.executeFunction(course.format, 'getCourseFormatComponent', [injector, course])).catch((e) => {
+            this.logger.error('Error getting course format component', e);
+        });
     }
 
     /**
      * Get the component to use to display the course summary in the default course format.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getCourseSummaryComponent(course: any): any {
-        return this.executeFunction(course.format, 'getCourseSummaryComponent', [course]);
+    getCourseSummaryComponent(injector: Injector, course: any): Promise<any> {
+        return Promise.resolve(this.executeFunction(course.format, 'getCourseSummaryComponent', [injector, course])).catch((e) => {
+            this.logger.error('Error getting course summary component', e);
+        });
     }
 
     /**
@@ -259,22 +278,29 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
     /**
      * Get the component to use to display the section selector inside the default course format.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getSectionSelectorComponent(course: any): any {
-        return this.executeFunction(course.format, 'getSectionSelectorComponent', [course]);
+    getSectionSelectorComponent(injector: Injector, course: any): Promise<any> {
+        return Promise.resolve(this.executeFunction(course.format, 'getSectionSelectorComponent', [injector, course]))
+                .catch((e) => {
+            this.logger.error('Error getting section selector component', e);
+        });
     }
 
     /**
      * Get the component to use to display a single section. This component will only be used if the user is viewing
      * a single section. If all the sections are displayed at once then it won't be used.
      *
+     * @param {Injector} injector Injector.
      * @param {any} course The course to render.
-     * @return {any} The component to use, undefined if not found.
+     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
-    getSingleSectionComponent(course: any): any {
-        return this.executeFunction(course.format, 'getSingleSectionComponent', [course]);
+    getSingleSectionComponent(injector: Injector, course: any): Promise<any> {
+        return Promise.resolve(this.executeFunction(course.format, 'getSingleSectionComponent', [injector, course])).catch((e) => {
+            this.logger.error('Error getting single section component', e);
+        });
     }
 
     /**

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../course/providers/options-delegate';
-import { CoreCourseProvider } from '../../course/providers/course';
+import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
-import { CoreCoursesProvider } from '../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreGradesCourseComponent } from '../components/course/course';
 
 /**
@@ -80,9 +80,11 @@ export class CoreGradesCourseOptionHandler implements CoreCourseOptionsHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreCourseOptionsHandlerData} Data needed to render the handler.
+     * @param {Injector} injector Injector.
+     * @param {number} courseId The course ID.
+     * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData(): CoreCourseOptionsHandlerData {
+    getDisplayData(injector: Injector, courseId: number): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
             title: 'core.grades.grades',
             class: 'core-grades-course-handler',

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreCoursesProvider } from '../../../courses/providers/courses';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Component to open the page to view the list of categories.

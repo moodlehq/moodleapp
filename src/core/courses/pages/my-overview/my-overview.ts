@@ -18,9 +18,9 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
-import { CoreCourseHelperProvider } from '../../../course/providers/helper';
-import { CoreCourseOptionsDelegate } from '../../../course/providers/options-delegate';
-import { CoreSiteHomeProvider } from '../../../sitehome/providers/sitehome';
+import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
 
 /**

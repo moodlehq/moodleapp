@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -67,7 +67,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     protected prefetchHandler: CoreCourseModulePrefetchHandler;
     protected statusObserver;
 
-    constructor(protected navCtrl: NavController, protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
+    constructor(@Optional() protected navCtrl: NavController, protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
             protected domUtils: CoreDomUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider) {
         this.completionChanged = new EventEmitter();

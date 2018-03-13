@@ -39,8 +39,9 @@ export class CoreGradesCourseComponent {
     gradesTable: any;
 
     constructor(private gradesProvider: CoreGradesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-        private gradesHelper: CoreGradesHelperProvider, private sitesProvider: CoreSitesProvider, private navCtrl: NavController,
-        private appProvider: CoreAppProvider, @Optional() private svComponent: CoreSplitViewComponent) {
+        private gradesHelper: CoreGradesHelperProvider, private sitesProvider: CoreSitesProvider,
+        @Optional() private navCtrl: NavController, private appProvider: CoreAppProvider,
+        @Optional() private svComponent: CoreSplitViewComponent) {
     }
 
     /**

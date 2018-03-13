@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, ViewChild, Injector } from '@angular/core';
 import { CoreCourseModuleDelegate } from '../../../providers/module-delegate';
 import { CoreCourseUnsupportedModuleComponent } from '../../../components/unsupported-module/unsupported-module';
 import { CoreDynamicComponent } from '../../../../../components/dynamic-component/dynamic-component';
@@ -36,7 +36,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
 
-    constructor(private moduleDelegate: CoreCourseModuleDelegate) { }
+    constructor(private moduleDelegate: CoreCourseModuleDelegate, private injector: Injector) { }
 
     /**
      * Detect changes on input properties.
@@ -47,8 +47,9 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
             const module = this.sections[0] && this.sections[0].modules && this.sections[0].modules[0];
             if (module && !this.componentClass) {
                 // We haven't obtained the class yet. Get it now.
-                this.componentClass = this.moduleDelegate.getMainComponent(this.course, module) ||
-                        CoreCourseUnsupportedModuleComponent;
+                this.moduleDelegate.getMainComponent(this.injector, this.course, module).then((component) => {
+                    this.componentClass = component || CoreCourseUnsupportedModuleComponent;
+                });
             }
 
             this.data.courseId = this.course.id;

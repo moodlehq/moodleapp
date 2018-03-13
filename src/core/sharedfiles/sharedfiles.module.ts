@@ -17,18 +17,22 @@ import { Platform } from 'ionic-angular';
 import { CoreSharedFilesProvider } from './providers/sharedfiles';
 import { CoreSharedFilesHelperProvider } from './providers/helper';
 import { CoreSharedFilesUploadHandler } from './providers/upload-handler';
-import { CoreFileUploaderDelegate } from '../fileuploader/providers/delegate';
+import { CoreFileUploaderDelegate } from '@core/fileuploader/providers/delegate';
+
+// List of providers (without handlers).
+export const CORE_SHAREDFILES_PROVIDERS: any[] = [
+    CoreSharedFilesProvider,
+    CoreSharedFilesHelperProvider
+];
 
 @NgModule({
     declarations: [
     ],
     imports: [
     ],
-    providers: [
-        CoreSharedFilesProvider,
-        CoreSharedFilesHelperProvider,
+    providers: CORE_SHAREDFILES_PROVIDERS.concat([
         CoreSharedFilesUploadHandler
-    ]
+    ])
 })
 export class CoreSharedFilesModule {
     constructor(platform: Platform, delegate: CoreFileUploaderDelegate, handler: CoreSharedFilesUploadHandler,

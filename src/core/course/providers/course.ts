@@ -201,7 +201,7 @@ export class CoreCourseProvider {
      * @return {Promise<any>} Promise resolved with the module.
      */
     getModule(moduleId: number, courseId?: number, sectionId?: number, preferCache?: boolean, ignoreCache?: boolean,
-        siteId?: string): Promise<any> {
+            siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         let promise;

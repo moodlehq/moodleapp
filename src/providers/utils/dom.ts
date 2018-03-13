@@ -265,6 +265,43 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Get the data from a form. It will only collect elements that have a name.
+     *
+     * @param {HTMLFormElement} form The form to get the data from.
+     * @return {any} Object with the data. The keys are the names of the inputs.
+     */
+    getDataFromForm(form: HTMLFormElement): any {
+        if (!form || !form.elements) {
+            return {};
+        }
+
+        const data = {};
+
+        for (let i = 0; i < form.elements.length; i++) {
+            const element: any = form.elements[i],
+                name = element.name || '';
+
+            // Ignore submit inputs.
+            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                data[name] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    data[name] = element.value;
+                }
+            } else {
+                data[name] = element.value;
+            }
+        }
+
+        return data;
+    }
+
+    /**
      * Returns height of an element.
      *
      * @param {any} element DOM element to measure.

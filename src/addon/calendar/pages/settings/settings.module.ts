@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddonCalendarSettingsPage } from './settings';
-import { CorePipesModule } from '@pipes';
+import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [

@@ -15,12 +15,13 @@
     "baseUrl": "./src",
     "paths": {
       "@addon/*": ["addon/*"],
+      "@app/*": ["app/*"],
       "@classes/*": ["classes/*"],
       "@core/*": ["core/*"],
       "@providers/*": ["providers/*"],
       "@components/*": ["components/*"],
-      "@directives": ["directives/directives.module"],
-      "@pipes": ["pipes/pipes.module"]
+      "@directives/*": ["directives/*"],
+      "@pipes/*": ["pipes/*"]
     }
   },
   "include": [

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -31,7 +31,7 @@ export class CoreAutoFocusDirective implements OnInit {
     protected element: HTMLElement;
 
     constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
-            private navCtrl: NavController) {
+            @Optional() private navCtrl: NavController) {
         this.element = element.nativeElement || element;
     }
 

@@ -30,7 +30,7 @@
         <!-- One tab per handler. -->
         <core-tab *ngFor="let handler of courseHandlers" [title]="handler.data.title | translate" class="{{handler.data.class}}">
             <ng-template>
-                <core-dynamic-component [component]="handler.data.component" [data]="handlerData"></core-dynamic-component>
+                <core-dynamic-component [component]="handler.data.component" [data]="handler.data.componentData"></core-dynamic-component>
             </ng-template>
         </core-tab>
     </core-tabs>
