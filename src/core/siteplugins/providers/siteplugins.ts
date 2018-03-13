@@ -217,8 +217,7 @@ export class CoreSitePluginsProvider {
                 return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
             }).then((result) => {
                 if (result.otherdata) {
-                    result.otherdata = this.textUtils.parseJSON(result.otherdata, {},
-                        this.logger.error.bind(this.logger, 'Error parsing get_content otherdata', method));
+                    result.otherdata = this.utils.objectToKeyValueMap(result.otherdata, 'name', 'value');
                 } else {
                     result.otherdata = {};
                 }
