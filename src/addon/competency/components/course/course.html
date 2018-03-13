@@ -18,7 +18,7 @@
             <ion-item text-wrap *ngIf="competencies.statistics.leastproficientcount > 0">
                 <strong>{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
                 <p *ngFor="let comp of competencies.statistics.leastproficient">
-                    <a ui-sref="openCompetencySummary(comp.id)">
+                    <a (click)="openCompetencySummary(comp.id)">
                         {{ comp.shortname }} - {{ comp.idnumber }}
                     </a>
                 </p>
@@ -43,7 +43,7 @@
             <ion-card *ngFor="let competency of competencies.competencies">
                 <a ion-item text-wrap (click)="openCompetency(competency.competency.id)" [title]="competency.competency.shortname">
                     {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
-                    <ion-badge item-end *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename" [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">{{ competency.usercompetencycourse.gradename }}</ion-badge><br>
+                    <ion-badge item-end *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename" [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">{{ competency.usercompetencycourse.gradename }}</ion-badge>
                 </a>
                 <ion-item text-wrap>
                     <div *ngIf="competency.competency.description">

@@ -15,9 +15,9 @@
 import { Component, Optional } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../../providers/app';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreAppProvider } from '@providers/app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
@@ -64,14 +64,8 @@ export class AddonCompetencyPlanPage {
                 this.user = user;
             });
             this.plan = plan;
-        }, (message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            } else {
-                this.domUtils.showErrorModal('Error getting learning plan data.');
-            }
-
-            return Promise.reject(null);
+        }).catch((message) => {
+            this.domUtils.showErrorModalDefault(message, 'Error getting learning plan data.');
         });
     }
 
@@ -82,16 +76,20 @@ export class AddonCompetencyPlanPage {
      */
     openCompetency(competencyId: number): void {
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        navCtrl.push('AddonCompetencyCompetenciesPage', {competencyId, planId: this.planId});
+        if (this.appProvider.isWide()) {
+            navCtrl.push('AddonCompetencyCompetenciesPage', {competencyId, planId: this.planId});
+        } else {
+            navCtrl.push('AddonCompetencyCompetencyPage', {competencyId, planId: this.planId});
+        }
     }
 
     /**
      * Convenience function to get the status name translated.
      *
      * @param {number} status
-     * @return {any}
+     * @return {string}
      */
-    protected getStatusName(status: number): any {
+    protected getStatusName(status: number): string {
         let statusTranslateName;
         switch (status) {
             case AddonCompetencyProvider.STATUS_DRAFT:
@@ -111,7 +109,7 @@ export class AddonCompetencyPlanPage {
                 break;
             default:
                 // We can use the current status name.
-                return status;
+                return String(status);
         }
 
         return this.translate.instant('addon.competency.planstatus' + statusTranslateName);

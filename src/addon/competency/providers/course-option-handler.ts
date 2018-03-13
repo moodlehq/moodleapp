@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '../../../core/course/providers/options-delegate';
-import { CoreCourseProvider } from '../../../core/course/providers/course';
+import { Injectable, Injector } from '@angular/core';
+import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonCompetencyCourseComponent } from '../components/course/course';
 import { AddonCompetencyProvider } from '../providers/competency';
 
@@ -43,7 +42,7 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.competencyProvider.isPluginEnabled();
+        return true;
     }
 
     /**
@@ -79,10 +78,11 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     /**
      * Returns the data needed to render the handler.
      *
+     * @param {Injector} injector Injector.
      * @param {number} courseId The course ID.
-     * @return {CoreCourseOptionsHandlerData} Data.
+     * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
      */
-    getDisplayData(courseId: number): CoreCourseOptionsHandlerData {
+    getDisplayData?(injector: Injector, courseId: number): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
             title: 'addon.competency.competencies',
             class: 'addon-competency-course-handler',

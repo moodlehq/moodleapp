@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../../../core/user/providers/user-delegate';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreContentLinksHelperProvider } from '../../../core/contentlinks/providers/helper';
+import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonCompetencyProvider } from './competency';
 
 /**
@@ -46,7 +46,7 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.competencyProvider.isPluginEnabled();
+        return true;
     }
 
     /**
@@ -104,7 +104,7 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
                 icon: 'ribbon',
                 title: 'addon.competency.competencies',
                 class: 'addon-competency-handler',
-                action: ($event, navCtrl, user, courseId): void => {
+                action: (event, navCtrl, user, courseId): void => {
                     event.preventDefault();
                     event.stopPropagation();
                     // Always use redirect to make it the new history root (to avoid "loops" in history).
@@ -116,7 +116,7 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
                 icon: 'map',
                 title: 'addon.competency.learningplans',
                 class: 'addon-competency-handler',
-                action: ($event, navCtrl, user, courseId): void => {
+                action: (event, navCtrl, user, courseId): void => {
                     event.preventDefault();
                     event.stopPropagation();
                     // Always use redirect to make it the new history root (to avoid "loops" in history).

@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../../providers/app';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { AddonCompetencyProvider } from '../../providers/competency';
-import { AddonCompetencyHelperProvider } from '../../providers/helper';
+import { Component } from '@angular/core';
+import { IonicPage, NavParams } from 'ionic-angular';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -33,9 +28,7 @@ export class AddonCompetencyCourseCompetenciesPage {
     protected courseId: number;
     protected userId: number;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, private translate: TranslateService,
-            private appProvider: CoreAppProvider, private domUtils: CoreDomUtilsProvider,
-            private competencyProvider: AddonCompetencyProvider, private helperProvider: AddonCompetencyHelperProvider) {
+    constructor(navParams: NavParams) {
         this.courseId = navParams.get('courseId');
         this.userId = navParams.get('userId');
     }

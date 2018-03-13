@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, Input, Optional } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '../../../../providers/app';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
+import { CoreAppProvider } from '@providers/app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonCompetencyProvider } from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
@@ -64,14 +64,8 @@ export class AddonCompetencyCourseComponent {
             this.helperProvider.getProfile(this.userId).then((user) => {
                 this.user = user;
             });
-        }, (message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            } else {
-                this.domUtils.showErrorModal('Error getting course competencies data.');
-            }
-
-            return Promise.reject(null);
+        }).catch((message) => {
+            this.domUtils.showErrorModalDefault(message, 'Error getting course competencies data.');
         });
     }
 

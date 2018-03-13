@@ -15,9 +15,9 @@
 import { Component, Optional } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
 
 /**
@@ -103,14 +103,8 @@ export class AddonCompetencyCompetencyPage {
                     evidence.description = this.translate.instant(key, {$a: evidence.desca});
                 }
             });
-        }, (message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            } else {
-                this.domUtils.showErrorModal('Error getting competency data.');
-            }
-
-            return Promise.reject(null);
+        }).catch((message) => {
+            this.domUtils.showErrorModalDefault(message, 'Error getting competency data.');
         });
     }
 
@@ -118,9 +112,9 @@ export class AddonCompetencyCompetencyPage {
      * Convenience function to get the review status name translated.
      *
      * @param {number} status
-     * @return {any}
+     * @return {string}
      */
-    protected getStatusName(status: number): any {
+    protected getStatusName(status: number): string {
         let statusTranslateName;
         switch (status) {
             case AddonCompetencyProvider.REVIEW_STATUS_IDLE:
@@ -134,7 +128,7 @@ export class AddonCompetencyCompetencyPage {
                 break;
             default:
                 // We can use the current status name.
-                return status;
+                return String(status);
         }
 
         return this.translate.instant('addon.competency.usercompetencystatus_' + statusTranslateName);

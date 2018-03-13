@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
 
 /**
@@ -39,8 +39,8 @@ export class AddonCompetencyCompetenciesPage {
     competencies = [];
     title: string;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, private translate: TranslateService,
-            private domUtils: CoreDomUtilsProvider, private competencyProvider: AddonCompetencyProvider) {
+    constructor(navParams: NavParams, private translate: TranslateService, private domUtils: CoreDomUtilsProvider,
+            private competencyProvider: AddonCompetencyProvider) {
         this.planId = navParams.get('planId');
         this.courseId = navParams.get('courseId');
         this.competencyId = navParams.get('competencyId');
@@ -95,13 +95,7 @@ export class AddonCompetencyCompetenciesPage {
             }
             this.competencies = response.competencies;
         }).catch((message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            } else {
-                this.domUtils.showErrorModal('Error getting competencies data.');
-            }
-
-            return Promise.reject(null);
+            this.domUtils.showErrorModalDefault(message, 'Error getting competencies data.');
         });
     }
 

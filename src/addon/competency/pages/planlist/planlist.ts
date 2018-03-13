@@ -15,8 +15,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSplitViewComponent } from '../../../../components/split-view/split-view';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
 
 /**
@@ -68,13 +68,7 @@ export class AddonCompetencyPlanListPage {
         return this.competencyProvider.getLearningPlans(this.userId).then((plans) => {
             this.plans = plans;
         }).catch((message) => {
-            if (message) {
-                this.domUtils.showErrorModal(message);
-            } else {
-                this.domUtils.showErrorModal('Error getting learning plans data.');
-            }
-
-            return Promise.reject(null);
+            this.domUtils.showErrorModalDefault(message, 'Error getting learning plans data.');
         });
     }
 

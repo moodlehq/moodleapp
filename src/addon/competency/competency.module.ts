@@ -19,14 +19,13 @@ import { AddonCompetencyCourseOptionHandler } from './providers/course-option-ha
 import { AddonCompetencyMainMenuHandler } from './providers/mainmenu-handler';
 import { AddonCompetencyUserHandler } from './providers/user-handler';
 import { AddonCompetencyComponentsModule } from './components/components.module';
-import { CoreCourseProvider } from '../../core/course/providers/course';
-import { CoreCourseOptionsDelegate } from '../../core/course/providers/options-delegate';
-import { CoreMainMenuDelegate } from '../../core/mainmenu/providers/delegate';
-import { CoreUserDelegate } from '../../core/user/providers/user-delegate';
-import { CoreUserProvider } from '../../core/user/providers/user';
-import { CoreEventsProvider } from '../../providers/events';
-import { CoreSitesProvider } from '../../providers/sites';
-import { CoreCoursesProvider } from '../../core/courses/providers/courses';
+import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
+import { CoreUserDelegate } from '@core/user/providers/user-delegate';
+import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 @NgModule({
     declarations: [

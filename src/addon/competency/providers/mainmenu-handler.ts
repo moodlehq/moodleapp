@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { AddonCompetencyProvider } from './competency';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/mainmenu/providers/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/providers/delegate';
 
 /**
  * Handler to inject an option into main menu.
@@ -22,7 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../../../core/main
 @Injectable()
 export class AddonCompetencyMainMenuHandler implements CoreMainMenuHandler  {
     name = 'AddonCompetency';
-    priority = 900;
+    priority = 500;
 
     constructor(private competencyProvider: AddonCompetencyProvider) { }
 
@@ -32,15 +32,9 @@ export class AddonCompetencyMainMenuHandler implements CoreMainMenuHandler  {
      * @return {boolean} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.competencyProvider.isPluginEnabled().then((enabled) => {
-            if (!enabled) {
-                return false;
-            }
-
-            // Check the user has at least one learn plan available.
-            return this.competencyProvider.getLearningPlans().then((plans) => {
-                return plans.length > 0;
-            });
+        // Check the user has at least one learn plan available.
+        return this.competencyProvider.getLearningPlans().then((plans) => {
+            return plans.length > 0;
         });
     }
 

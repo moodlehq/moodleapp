@@ -26,7 +26,8 @@
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "gulp watch | ionic-app-scripts serve",
-    "ionic:build:before": "gulp"
+    "ionic:build:before": "gulp",
+    "ionic:watch:before": "gulp"
   },
   "dependencies": {
     "@angular/animations": "^5.2.5",

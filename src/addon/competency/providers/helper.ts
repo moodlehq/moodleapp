@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUserProvider } from '../../../core/user/providers/user';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
- * Service that provides some features regarding the user profile.
+ * Service that provides some features regarding learning plans.
  */
 @Injectable()
 export class AddonCompetencyHelperProvider {

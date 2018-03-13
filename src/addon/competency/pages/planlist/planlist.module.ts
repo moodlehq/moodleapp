@@ -15,9 +15,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '../../../../components/components.module';
-import { CoreDirectivesModule } from '../../../../directives/directives.module';
-import { CorePipesModule } from '../../../../pipes/pipes.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { AddonCompetencyPlanListPage } from './planlist';
 
 @NgModule({
@@ -26,7 +25,6 @@ import { AddonCompetencyPlanListPage } from './planlist';
     ],
     imports: [
         CoreComponentsModule,
-        CoreDirectivesModule,
         CorePipesModule,
         IonicPageModule.forChild(AddonCompetencyPlanListPage),
         TranslateModule.forChild()

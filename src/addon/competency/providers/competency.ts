@@ -13,9 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLoggerProvider } from '../../../providers/logger';
-import { CoreSitesProvider } from '../../../providers/sites';
-import { CoreUserProvider } from '../../../core/user/providers/user';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Service to handle caompetency learning plans.
@@ -104,24 +103,6 @@ export class AddonCompetencyProvider {
     }
 
     /**
-     * Check if competency learning plans WS is available.
-     *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} True if competency learning plans WS is available, false otherwise.
-     */
-    isPluginEnabled(siteId?: string): Promise<boolean> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            if (site.wsAvailable('core_competency_list_course_competencies') && site.wsAvailable('tool_lp_data_for_plans_page')) {
-                return this.getLearningPlans(0, siteId);
-            }
-
-            return false;
-        });
-    }
-
-    /**
      * Returns whether competencies are enabled.
      *
      * @param  {number} courseId Course ID.
@@ -130,10 +111,6 @@ export class AddonCompetencyProvider {
      */
     isPluginForCourseEnabled(courseId: number, siteId?: string): Promise<any> {
         if (!this.sitesProvider.isLoggedIn()) {
-            return Promise.resolve(false);
-        }
-
-        if (!this.isPluginEnabled(siteId)) {
             return Promise.resolve(false);
         }
 
@@ -150,8 +127,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
     getLearningPlans(userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -182,8 +157,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
     getLearningPlan(planId: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get plan ' + planId);
@@ -214,8 +187,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
     getCompetencyInPlan(planId: number, competencyId: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get competency ' + competencyId + ' in plan ' + planId);
@@ -248,8 +219,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
     getCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -283,8 +252,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise to be resolved when the plans are retrieved.
      */
     getCompetencySummary(competencyId: number, userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -309,7 +276,7 @@ export class AddonCompetencyProvider {
     }
 
     /**
-     * Get an specific competency summary.
+     * Get all competencies in a course.
      *
      * @param  {number} courseId    ID of the course.
      * @param  {number} [userId]    ID of the user.
@@ -317,8 +284,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise to be resolved when the course competencies are retrieved.
      */
     getCourseCompetencies(courseId: number, userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             this.logger.debug('Get course competencies for course ' + courseId);
@@ -366,8 +331,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}            Promise resolved when the data is invalidated.
      */
     invalidateLearningPlans(userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -383,8 +346,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}        Promise resolved when the data is invalidated.
      */
     invalidateLearningPlan(planId: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getLearningPlanCacheKey(planId));
         });
@@ -399,8 +360,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}        Promise resolved when the data is invalidated.
      */
     invalidateCompetencyInPlan(planId: number, competencyId: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getCompetencyInPlanCacheKey(planId, competencyId));
         });
@@ -416,8 +375,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}        Promise resolved when the data is invalidated.
      */
     invalidateCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -434,8 +391,6 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}        Promise resolved when the data is invalidated.
      */
     invalidateCompetencySummary(competencyId: number, userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
@@ -452,11 +407,9 @@ export class AddonCompetencyProvider {
      * @return {Promise<any>}        Promise resolved when the data is invalidated.
      */
     invalidateCourseCompetencies(courseId: number, userId?: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getCourseCompetenciesCacheKey(courseId));
-        }).then((response) => {
+        }).then(() => {
             if (!userId || userId == this.sitesProvider.getCurrentSiteUserId()) {
                 return;
             }
@@ -487,8 +440,6 @@ export class AddonCompetencyProvider {
     logCompetencyInPlanView(planId: number, competencyId: number, planStatus: number, userId?: number, siteId?: string)
             : Promise<any> {
         if (planId && competencyId) {
-            siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
             return this.sitesProvider.getSite(siteId).then((site) => {
                 userId = userId || site.getUserId();
 
@@ -498,7 +449,7 @@ export class AddonCompetencyProvider {
                         userid: userId
                     },
                     preSets = {
-                      typeExpected: 'boolean'
+                        typeExpected: 'boolean'
                     };
 
                 if (planStatus == AddonCompetencyProvider.STATUS_COMPLETE) {
@@ -523,8 +474,6 @@ export class AddonCompetencyProvider {
      */
     logCompetencyInCourseView(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<any> {
         if (courseId && competencyId) {
-            siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
             return this.sitesProvider.getSite(siteId).then((site) => {
                 userId = userId || site.getUserId();
 
@@ -553,8 +502,6 @@ export class AddonCompetencyProvider {
      */
     logCompetencyView(competencyId: number, siteId?: string): Promise<any> {
         if (competencyId) {
-            siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
             return this.sitesProvider.getSite(siteId).then((site) => {
                 const params = {
                     id: competencyId,
