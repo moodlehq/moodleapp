@@ -31,6 +31,8 @@ angular.module('mm.core.login')
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.data = {};
+    $scope.verifyAgeData = {};
+    $scope.isMinor = false;
     $scope.escapeForRegex = $mmText.escapeForRegex;
 
     // Setup validation errors.
@@ -46,7 +48,20 @@ angular.module('mm.core.login')
             siteConfig = config;
 
             if (treatSiteConfig(siteConfig)) {
-                return getSignupSettings();
+                // Check content verification.
+                if (typeof $scope.ageDigitalConsentVerification === 'undefined') {
+                    return $mmWS.callAjax('core_auth_is_age_digital_consent_verification_enabled',
+                            {}, {siteurl: $scope.siteurl }).then(function(ageDigitalConsentVerification) {
+
+                        $scope.ageDigitalConsentVerification = ageDigitalConsentVerification.status;
+                    }).catch(function(e) {
+                        // Capture exceptions, fail silently.
+                    }).finally(function() {
+                        return getSignupSettings();
+                    });
+                } else {
+                    return getSignupSettings();
+                }
             }
         }).catch(function(err) {
             $mmUtil.showErrorModal(err);
@@ -59,6 +74,10 @@ angular.module('mm.core.login')
         if (siteConfig && siteConfig.registerauth == 'email' && !$mmLoginHelper.isEmailSignupDisabled(siteConfig)) {
             $scope.sitename = siteConfig.sitename;
             $scope.authInstructions = siteConfig.authinstructions;
+            $scope.ageDigitalConsentVerification = siteConfig.agedigitalconsentverification;
+            $scope.supportName = siteConfig.supportname;
+            $scope.supportEmail = siteConfig.supportemail;
+            $scope.verifyAgeData.country = siteConfig.country;
             initAuthInstructionsModal();
             return true;
         } else {
@@ -84,8 +103,13 @@ angular.module('mm.core.login')
             if (settings.country && !$scope.data.country) {
                 $scope.data.country = settings.country;
             }
+
             if (recaptchaV1Enabled) {
                 $scope.data.recaptcharesponse = ''; // Reset captcha.
+            }
+
+            if (!$scope.verifyAgeData.country) {
+                $scope.verifyAgeData.country = $scope.data.country;
             }
 
             $scope.namefieldsErrors = {};
@@ -215,5 +239,35 @@ angular.module('mm.core.login')
                 modal.dismiss();
             });
         }
+    };
+
+    // Verify Age.
+    $scope.verifyAge = function(verifyAgeForm) {
+        if (verifyAgeForm.$valid) {
+            var modal = $mmUtil.showModalLoading();
+            params = {
+                age: parseInt($scope.verifyAgeData.age),    // Use just the integer part.
+                country: $scope.verifyAgeData.country
+            };
+            $mmWS.callAjax('core_auth_is_minor', params, {siteurl: $scope.siteurl}).then(function(result) {
+                if (!result.status) {
+                    // Not a minor, go ahead!
+                    $scope.ageDigitalConsentVerification = false;
+                } else {
+                    // Is a minor!!
+                    $scope.isMinor = true;
+                }
+            }).catch(function() {
+                // Something wrong, redirect to the site.
+                $mmUtil.showErrorModal('There was an error verifying your age, please try again using the browser.');
+            }).finally(function() {
+                modal.dismiss();
+            });
+        }
+    };
+
+    // Show contact information on site (we have to display again the age verification form).
+    $scope.showContactOnSite = function() {
+        $mmUtil.openInBrowser($scope.siteurl + '/login/verify_age_location.php');
     };
 });
