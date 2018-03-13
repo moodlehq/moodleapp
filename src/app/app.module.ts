@@ -76,6 +76,7 @@ import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
+import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -152,7 +153,8 @@ export const CORE_PROVIDERS: any[] = [
         AddonModBookModule,
         AddonModLabelModule,
         AddonMessagesModule,
-        AddonPushNotificationsModule
+        AddonPushNotificationsModule,
+        AddonRemoteThemesModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

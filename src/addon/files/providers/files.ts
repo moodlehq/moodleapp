@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreSite } from '@classes/site';
-import { Md5 } from 'ts-md5/dist/md5';
 
 /**
  * Service to handle my files and site files.

@@ -100,7 +100,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      */
     protected addMessage(message: any, keep: boolean = true): void {
         // Use smallmessage instead of message ID because ID changes when a message is read.
-        message.hash = Md5.hashStr(message.smallmessage) + '#' + message.timecreated + '#' + message.useridfrom;
+        message.hash = Md5.hashAsciiStr(message.smallmessage) + '#' + message.timecreated + '#' + message.useridfrom;
         if (typeof this.keepMessageMap[message.hash] === 'undefined') {
             // Message not added to the list. Add it now.
             this.messages.push(message);
