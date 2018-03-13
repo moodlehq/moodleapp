@@ -18,6 +18,7 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from './siteplugins';
 import { CoreCompileProvider } from '@core/compile/providers/compile';
@@ -59,7 +60,8 @@ export class CoreSitePluginsHelperProvider {
             private sitePluginsProvider: CoreSitePluginsProvider, private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private compileProvider: CoreCompileProvider, private utils: CoreUtilsProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, eventsProvider: CoreEventsProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate) {
+            private courseFormatDelegate: CoreCourseFormatDelegate, private profileFieldDelegate: CoreUserProfileFieldDelegate,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
@@ -201,15 +203,12 @@ export class CoreSitePluginsHelperProvider {
     isSitePluginEnabled(plugin: any, site: CoreSite): boolean {
         if (!site.isFeatureDisabled('sitePlugin_' + plugin.component + '_' + plugin.addon) && plugin.handlers) {
             // Site plugin not disabled. Check if it has handlers.
-            try {
-                if (!plugin.parsedHandlers) {
-                    plugin.parsedHandlers = JSON.parse(plugin.handlers);
-                }
-
-                return !!(plugin.parsedHandlers && Object.keys(plugin.parsedHandlers).length);
-            } catch (ex) {
-                this.logger.warn('Error parsing site plugin', ex);
+            if (!plugin.parsedHandlers) {
+                plugin.parsedHandlers = this.textUtils.parseJSON(plugin.handlers, null,
+                    this.logger.error.bind(this.logger, 'Error parsing site plugin handlers'));
             }
+
+            return !!(plugin.parsedHandlers && Object.keys(plugin.parsedHandlers).length);
         }
 
         return false;
@@ -243,25 +242,23 @@ export class CoreSitePluginsHelperProvider {
 
         this.logger.debug('Load site plugin:', plugin);
 
-        try {
-            if (!plugin.parsedHandlers) {
-                plugin.parsedHandlers = JSON.parse(plugin.handlers);
-            }
-            if (!plugin.parsedLang && plugin.lang) {
-                plugin.parsedLang = JSON.parse(plugin.lang);
-            }
+        if (!plugin.parsedHandlers) {
+            plugin.parsedHandlers = this.textUtils.parseJSON(plugin.handlers, null,
+                this.logger.error.bind(this.logger, 'Error parsing site plugin handlers'));
+        }
+        if (!plugin.parsedLang && plugin.lang) {
+            plugin.parsedLang = this.textUtils.parseJSON(plugin.lang, null,
+                this.logger.error.bind(this.logger, 'Error parsing site plugin lang'));
+        }
 
-            this.sitePluginsProvider.hasSitePluginsLoaded = true;
+        this.sitePluginsProvider.hasSitePluginsLoaded = true;
 
-            // Register lang strings.
-            this.loadLangStrings(plugin);
+        // Register lang strings.
+        this.loadLangStrings(plugin);
 
-            // Register all the handlers.
-            for (const name in plugin.parsedHandlers) {
-                promises.push(this.registerHandler(plugin, name, plugin.parsedHandlers[name]));
-            }
-        } catch (ex) {
-            this.logger.warn('Error parsing site plugin', ex);
+        // Register all the handlers.
+        for (const name in plugin.parsedHandlers) {
+            promises.push(this.registerHandler(plugin, name, plugin.parsedHandlers[name]));
         }
 
         return this.utils.allPromises(promises);

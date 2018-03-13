@@ -19,6 +19,7 @@ import { CoreAppProvider } from './app';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
+import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
@@ -211,7 +212,8 @@ export class CoreSitesProvider {
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
-            private eventsProvider: CoreEventsProvider, private urlUtils: CoreUrlUtilsProvider) {
+            private eventsProvider: CoreEventsProvider, private urlUtils: CoreUrlUtilsProvider,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
@@ -787,18 +789,9 @@ export class CoreSitesProvider {
             info = entry.info,
             config = entry.config;
 
-        // Try to parse info and config.
-        try {
-            info = info ? JSON.parse(info) : info;
-        } catch (ex) {
-            // Ignore errors.
-        }
-
-        try {
-            config = config ? JSON.parse(config) : config;
-        } catch (ex) {
-            // Ignore errors.
-        }
+        // Parse info and config.
+        info = info ? this.textUtils.parseJSON(info) : info;
+        config = config ? this.textUtils.parseJSON(config) : config;
 
         site = this.sitesFactory.makeSite(entry.id, entry.siteUrl, entry.token,
             info, entry.privateToken, config, entry.loggedOut == 1);
@@ -862,21 +855,15 @@ export class CoreSitesProvider {
             const formattedSites = [];
             sites.forEach((site) => {
                 if (!ids || ids.indexOf(site.id) > -1) {
-                    // Try to parse info.
-                    let siteInfo = site.info;
-                    try {
-                        siteInfo = siteInfo ? JSON.parse(siteInfo) : siteInfo;
-                    } catch (ex) {
-                        // Ignore errors.
-                    }
-
-                    const basicInfo: CoreSiteBasicInfo = {
-                        id: site.id,
-                        siteUrl: site.siteUrl,
-                        fullName: siteInfo && siteInfo.fullname,
-                        siteName: siteInfo && siteInfo.sitename,
-                        avatar: siteInfo && siteInfo.userpictureurl
-                    };
+                    // Parse info.
+                    const siteInfo = site.info ? this.textUtils.parseJSON(site.info) : site.info,
+                        basicInfo: CoreSiteBasicInfo = {
+                            id: site.id,
+                            siteUrl: site.siteUrl,
+                            fullName: siteInfo && siteInfo.fullname,
+                            siteName: siteInfo && siteInfo.sitename,
+                            avatar: siteInfo && siteInfo.userpictureurl
+                        };
                     formattedSites.push(basicInfo);
                 }
             });

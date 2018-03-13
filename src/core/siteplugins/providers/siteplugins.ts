@@ -20,6 +20,7 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -66,7 +67,8 @@ export class CoreSitePluginsProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
-            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider,
+            private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
     }
 
@@ -215,11 +217,8 @@ export class CoreSitePluginsProvider {
                 return this.sitesProvider.getCurrentSite().read('tool_mobile_get_content', data, preSets);
             }).then((result) => {
                 if (result.otherdata) {
-                    try {
-                        result.otherdata = JSON.parse(result.otherdata) || {};
-                    } catch (ex) {
-                        // Ignore errors.
-                    }
+                    result.otherdata = this.textUtils.parseJSON(result.otherdata, {},
+                        this.logger.error.bind(this.logger, 'Error parsing get_content otherdata', method));
                 } else {
                     result.otherdata = {};
                 }

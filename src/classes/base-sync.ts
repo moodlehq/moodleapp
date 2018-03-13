@@ -16,6 +16,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Base class to create sync providers. It provides some common functions.
@@ -44,7 +45,8 @@ export class CoreSyncBaseProvider {
     protected syncPromises: { [siteId: string]: { [uniqueId: string]: Promise<any> } } = {};
 
     constructor(component: string, protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
-            protected appProvider: CoreAppProvider, protected syncProvider: CoreSyncProvider) {
+            protected appProvider: CoreAppProvider, protected syncProvider: CoreSyncProvider,
+            protected textUtils: CoreTextUtilsProvider) {
         this.logger = this.loggerProvider.getInstance(component);
         this.component = component;
     }
@@ -115,11 +117,7 @@ export class CoreSyncBaseProvider {
      */
     getSyncWarnings(id: string | number, siteId?: string): Promise<string[]> {
         return this.syncProvider.getSyncRecord(this.component, id, siteId).then((entry) => {
-            try {
-                return JSON.parse(entry.warnings);
-            } catch (ex) {
-                return [];
-            }
+            return this.textUtils.parseJSON(entry.warnings, []);
         }).catch(() => {
             return [];
         });

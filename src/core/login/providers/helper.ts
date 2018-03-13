@@ -942,9 +942,8 @@ export class CoreLoginHelperProvider {
         const params = url.split(':::');
 
         return this.configProvider.get(CoreConstants.LOGIN_LAUNCH_DATA).then((data): any => {
-            try {
-                data = JSON.parse(data);
-            } catch (ex) {
+            data = this.textUtils.parseJSON(data, null);
+            if (data === null) {
                 return Promise.reject(null);
             }
 

@@ -288,7 +288,7 @@ export class AddonModBookProvider {
             return [];
         }
 
-        return JSON.parse(contents[0].content);
+        return this.textUtils.parseJSON(contents[0].content, []);
     }
 
     /**

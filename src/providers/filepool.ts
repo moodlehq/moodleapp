@@ -2183,7 +2183,7 @@ export class CoreFilepoolProvider {
                 return Promise.reject(null);
             }
             // Convert the links to an object.
-            entry.links = JSON.parse(entry.links);
+            entry.links = this.textUtils.parseJSON(entry.links, []);
 
             return entry;
         });
@@ -2421,7 +2421,7 @@ export class CoreFilepoolProvider {
                 return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
             }
             // Convert the links to an object.
-            item.links = JSON.parse(item.links);
+            item.links = this.textUtils.parseJSON(item.links, []);
 
             return this.processQueueItem(item);
         }, () => {

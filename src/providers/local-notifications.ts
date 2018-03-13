@@ -19,6 +19,7 @@ import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
 import { CoreLoggerProvider } from './logger';
 import { CoreDomUtilsProvider } from './utils/dom';
+import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
@@ -112,7 +113,7 @@ export class CoreLocalNotificationsProvider {
 
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.appDB.createTablesFromSchema(this.tablesSchema);
@@ -151,7 +152,7 @@ export class CoreLocalNotificationsProvider {
 
             scheduled.forEach((notif) => {
                 if (typeof notif.data == 'string') {
-                    notif.data = JSON.parse(notif.data);
+                    notif.data = this.textUtils.parseJSON(notif.data);
                 }
 
                 if (typeof notif.data == 'object' && notif.data.siteId === siteId) {
@@ -403,7 +404,7 @@ export class CoreLocalNotificationsProvider {
             notifications.forEach((notification) => {
                 // Convert some properties to the needed types.
                 notification.at = new Date(notification.at * 1000);
-                notification.data = notification.data ? JSON.parse(notification.data) : {};
+                notification.data = notification.data ? this.textUtils.parseJSON(notification.data, {}) : {};
 
                 promises.push(this.scheduleNotification(notification));
             });

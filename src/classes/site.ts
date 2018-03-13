@@ -734,7 +734,7 @@ export class CoreSite {
                 const expires = (entry.expirationTime - now) / 1000;
                 this.logger.info(`Cached element found, id: ${id} expires in ${expires} seconds`);
 
-                return JSON.parse(entry.data);
+                return this.textUtils.parseJSON(entry.data, {});
             }
 
             return Promise.reject(null);

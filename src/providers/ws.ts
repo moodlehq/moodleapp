@@ -682,11 +682,7 @@ export class CoreWSProvider {
         }
 
         // Treat response.
-        try {
-            data = JSON.parse(data);
-        } catch (ex) {
-            // Ignore errors.
-        }
+        data = this.textUtils.parseJSON(data);
 
         // Some moodle web services return null.
         // If the responseExpected value is set then so long as no data is returned, we create a blank object.
@@ -750,12 +746,9 @@ export class CoreWSProvider {
         };
 
         return transfer.upload(filePath, uploadUrl, options, true).then((success) => {
-            let data: any = success.response;
-            try {
-                data = JSON.parse(data);
-            } catch (err) {
-                this.logger.error('Error parsing response from upload:', err, data);
-
+            const data = this.textUtils.parseJSON(success.response, null,
+                    this.logger.error.bind(this.logger, 'Error parsing response from upload'));
+            if (data === null) {
                 return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
             }
 
