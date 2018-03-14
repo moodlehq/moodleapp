@@ -29,6 +29,7 @@ import { CORE_FILEUPLOADER_PROVIDERS } from '@core/fileuploader/fileuploader.mod
 import { CORE_GRADES_PROVIDERS } from '@core/grades/grades.module';
 import { CORE_LOGIN_PROVIDERS } from '@core/login/login.module';
 import { CORE_MAINMENU_PROVIDERS } from '@core/mainmenu/mainmenu.module';
+import { CORE_QUESTION_PROVIDERS } from '@core/question/question.module';
 import { CORE_SHAREDFILES_PROVIDERS } from '@core/sharedfiles/sharedfiles.module';
 import { CORE_SITEHOME_PROVIDERS } from '@core/sitehome/sitehome.module';
 import { CORE_USER_PROVIDERS } from '@core/user/user.module';
@@ -164,7 +165,7 @@ export class CoreCompileProvider {
                 .concat(CORE_COURSES_PROVIDERS).concat(CORE_FILEUPLOADER_PROVIDERS).concat(CORE_GRADES_PROVIDERS)
                 .concat(CORE_LOGIN_PROVIDERS).concat(CORE_MAINMENU_PROVIDERS).concat(CORE_SHAREDFILES_PROVIDERS)
                 .concat(CORE_SITEHOME_PROVIDERS).concat([CoreSitePluginsProvider]).concat(CORE_USER_PROVIDERS)
-                .concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS);
+                .concat(CORE_QUESTION_PROVIDERS).concat(IONIC_NATIVE_PROVIDERS).concat(this.OTHER_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

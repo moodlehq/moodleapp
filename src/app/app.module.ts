@@ -67,6 +67,7 @@ import { CoreGradesModule } from '@core/grades/grades.module';
 import { CoreSettingsModule } from '@core/settings/settings.module';
 import { CoreSitePluginsModule } from '@core/siteplugins/siteplugins.module';
 import { CoreCompileModule } from '@core/compile/compile.module';
+import { CoreQuestionModule } from '@core/question/question.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -155,6 +156,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreSettingsModule,
         CoreSitePluginsModule,
         CoreCompileModule,
+        CoreQuestionModule,
         AddonBadgesModule,
         AddonCalendarModule,
         AddonCompetencyModule,
