@@ -59,7 +59,7 @@ export class CoreIframeComponent implements OnInit {
         this.iframeHeight = this.domUtils.formatPixelsSize(this.iframeHeight) || '100%';
 
         // Show loading only with external URLs.
-        this.loading = !!this.src.match(/^https?:\/\//i);
+        this.loading = !this.src || !!this.src.match(/^https?:\/\//i);
 
         this.treatFrame(iframe);
 

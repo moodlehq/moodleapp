@@ -387,9 +387,9 @@ export class CoreSitesProvider {
             data.service = 'c';
         }
 
-        const observable = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT);
+        const promise = this.http.post(siteUrl + '/login/token.php', data).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
-        return this.utils.observableToPromise(observable).catch((error) => {
+        return promise.catch((error) => {
             return Promise.reject(error.message);
         }).then((data: any) => {
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
@@ -426,9 +426,9 @@ export class CoreSitesProvider {
                 password: password,
                 service: service
             },
-            observable = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.WS_TIMEOUT);
+            promise = this.http.post(siteUrl + '/login/token.php', params).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
-        return this.utils.observableToPromise(observable).then((data: any): any => {
+        return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
                 return Promise.reject(this.translate.instant('core.cannotconnect'));
             } else {

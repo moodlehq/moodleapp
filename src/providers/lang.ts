@@ -161,7 +161,7 @@ export class CoreLangProvider {
             return language;
         }).catch(() => {
             // User hasn't defined a language. If default language is forced, use it.
-            if (CoreConfigConstants.forcedefaultlanguage && !CoreConfigConstants.forcedefaultlanguage) {
+            if (!CoreConfigConstants.forcedefaultlanguage) {
                 return CoreConfigConstants.default_lang;
             }
 

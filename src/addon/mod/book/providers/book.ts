@@ -153,9 +153,9 @@ export class AddonModBookProvider {
 
         return promise.then((url) => {
             // Fetch the URL content.
-            const observable = this.http.get(url);
+            const promise = this.http.get(url).toPromise();
 
-            return this.utils.observableToPromise(observable).then((response: Response): any => {
+            return promise.then((response: Response): any => {
                 const content = response.text();
                 if (typeof content !== 'string') {
                     return Promise.reject(null);
@@ -381,19 +381,11 @@ export class AddonModBookProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logView(id: number, chapterId: string): Promise<any> {
-        if (id) {
-            const params = {
-                bookid: id,
-                chapterid: chapterId
-            };
+        const params = {
+            bookid: id,
+            chapterid: chapterId
+        };
 
-            return this.sitesProvider.getCurrentSite().write('mod_book_view_book', params).then((response) => {
-                if (!response.status) {
-                    return Promise.reject(null);
-                }
-            });
-        }
-
-        return Promise.reject(null);
+        return this.sitesProvider.getCurrentSite().write('mod_book_view_book', params);
     }
 }

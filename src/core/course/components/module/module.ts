@@ -102,6 +102,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     buttonClicked(event: Event, button: CoreCourseModuleHandlerButton): void {
         if (button && button.action) {
+            event.preventDefault();
+            event.stopPropagation();
+
             button.action(event, this.navCtrl, this.module, this.courseId);
         }
     }

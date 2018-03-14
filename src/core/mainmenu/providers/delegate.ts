@@ -113,8 +113,6 @@ export class CoreMainMenuDelegate extends CoreDelegate {
     protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
     protected featurePrefix = '$mmSideMenuDelegate_';
 
-    static UPDATE_BADGE_EVENT = 'update_main_menu_badge';
-
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {
         super('CoreMainMenuDelegate', loggerProvider, sitesProvider, eventsProvider);

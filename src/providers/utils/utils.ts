@@ -851,26 +851,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Given an observable, convert it to a Promise that will resolve with the first received value.
-     *
-     * @param {Observable<any>} obs The observable to convert.
-     * @return {Promise<any>} Promise.
-     */
-    observableToPromise(obs: Observable<any>): Promise<any> {
-        return new Promise((resolve, reject): void => {
-            const subscription = obs.subscribe((data) => {
-                // Data received, unsubscribe.
-                subscription.unsubscribe();
-                resolve(data);
-            }, (error) => {
-                // Data received, unsubscribe.
-                subscription.unsubscribe();
-                reject(error);
-            });
-        });
-    }
-
-    /**
      * Similar to AngularJS $q.defer().
      *
      * @return {PromiseDefer} The deferred promise.

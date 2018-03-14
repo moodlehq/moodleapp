@@ -32,8 +32,15 @@ import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/provide
 export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCronHandler {
     name = 'AddonMessages';
     priority = 800;
-    protected badge = '';
-    protected loading = true;
+    protected handler: CoreMainMenuHandlerToDisplay = {
+        icon: 'chatbubbles',
+        title: 'addon.messages.messages',
+        page: 'AddonMessagesIndexPage',
+        class: 'addon-messages-handler',
+        showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.
+        badge: '',
+        loading: true
+    };
 
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
@@ -51,8 +58,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
 
         // Reset info on logout.
         eventsProvider.on(CoreEventsProvider.LOGOUT, (data) => {
-            this.badge = '';
-            this.loading = true;
+            this.handler.badge = '';
+            this.handler.loading = true;
         });
 
         // If a message push notification is received, refresh the count.
@@ -82,19 +89,11 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * @return {CoreMainMenuHandlerToDisplay} Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerToDisplay {
-        if (this.loading) {
+        if (this.handler.loading) {
             this.updateBadge();
         }
 
-        return {
-            icon: 'chatbubbles',
-            title: 'addon.messages.messages',
-            page: 'AddonMessagesIndexPage',
-            class: 'addon-messages-handler',
-            showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.
-            badge: this.badge,
-            loading: this.loading
-        };
+        return this.handler;
     }
 
     /**
@@ -110,17 +109,13 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
 
         this.messagesProvider.getUnreadConversationsCount(undefined, siteId).then((unread) => {
             // Leave badge enter if there is a 0+ or a 0.
-            this.badge = parseInt(unread, 10) > 0 ? unread : '';
+            this.handler.badge = parseInt(unread, 10) > 0 ? unread : '';
             // Update badge.
             this.pushNotificationsProvider.updateAddonCounter('AddonMessages', unread, siteId);
         }).catch(() => {
-            this.badge = '';
+            this.handler.badge = '';
         }).finally(() => {
-            this.loading = false;
-            this.eventsProvider.trigger(CoreMainMenuDelegate.UPDATE_BADGE_EVENT, {
-                name: this.name,
-                badge: this.badge
-            }, siteId);
+            this.handler.loading = false;
         });
     }
 

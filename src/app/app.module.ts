@@ -74,6 +74,7 @@ import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofile
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
+import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
 
@@ -151,6 +152,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonFilesModule,
         AddonModBookModule,
         AddonModLabelModule,
+        AddonModResourceModule,
         AddonMessagesModule,
         AddonPushNotificationsModule
     ],
