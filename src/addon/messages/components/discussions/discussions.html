@@ -33,8 +33,8 @@
                 <h2>
                     <core-format-text [text]="discussion.fullname"></core-format-text>
                     <ion-note *ngIf="discussion.message.timecreated > 0 || discussion.unread">
-                        <div *ngIf="discussion.message.timecreated > 0">{{discussion.message.timecreated / 1000 | coreDateDayOrTime}}</div>
-                        <div text-right *ngIf="discussion.unread" class="core-primary-circle"></div>
+                        <span *ngIf="discussion.unread" class="core-primary-circle"></span>
+                        <span *ngIf="discussion.message.timecreated > 0">{{discussion.message.timecreated / 1000 | coreDateDayOrTime}}</span>
                     </ion-note>
                 </h2>
                 <p><core-format-text clean="true" singleLine="true" [text]="discussion.message.message"></core-format-text></p>
