@@ -238,9 +238,9 @@ export class CoreWSProvider {
 
         siteUrl = preSets.siteUrl + '/lib/ajax/service.php';
 
-        const observable = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.WS_TIMEOUT);
+        const promise = this.http.post(siteUrl, JSON.stringify(ajaxData)).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
-        return this.utils.observableToPromise(observable).then((data: any) => {
+        return promise.then((data: any) => {
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data is returned, we create a blank object.
             if (!data && !preSets.responseExpected) {
@@ -486,7 +486,7 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.utils.observableToPromise(this.commonHttp.head(url).timeout(CoreConstants.WS_TIMEOUT));
+            promise = this.commonHttp.head(url).timeout(CoreConstants.WS_TIMEOUT).toPromise();
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -503,11 +503,18 @@ export class CoreWSProvider {
      * @return {Promise<any>} Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
     performPost(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets): Promise<any> {
-        // Perform the post request.
-        const observable = this.http.post(siteUrl, ajaxData).timeout(CoreConstants.WS_TIMEOUT);
-        let promise;
+        const options = {};
 
-        promise = this.utils.observableToPromise(observable).then((data: any) => {
+        // This is done because some returned values like 0 are treated as null if responseType is json.
+        if (preSets.typeExpected == 'number' || preSets.typeExpected == 'boolean' || preSets.typeExpected == 'string') {
+            // Avalaible values are: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType
+            options['responseType'] = 'text';
+        }
+
+        // Perform the post request.
+        let promise = this.http.post(siteUrl, ajaxData, options).timeout(CoreConstants.WS_TIMEOUT).toPromise();
+
+        promise = promise.then((data: any) => {
             // Some moodle web services return null.
             // If the responseExpected value is set to false, we create a blank object if the response is null.
             if (!data && !preSets.responseExpected) {
@@ -517,9 +524,35 @@ export class CoreWSProvider {
             if (!data) {
                 return Promise.reject(this.utils.createFakeWSError('core.serverconnection', true));
             } else if (typeof data != preSets.typeExpected) {
-                this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
+                // If responseType is text an string will be returned, parse before returning.
+                if (typeof data == 'string') {
+                    if (preSets.typeExpected == 'number') {
+                        data = Number(data);
+                        if (isNaN(data)) {
+                            this.logger.warn(`Response expected type "${preSets.typeExpected}" cannot be parsed to number`);
 
-                return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                            return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                        }
+                    } else if (preSets.typeExpected == 'boolean') {
+                        if (data === 'true') {
+                            data = true;
+                        } else if (data === 'false') {
+                            data = false;
+                        } else {
+                            this.logger.warn(`Response expected type "${preSets.typeExpected}" is not true or false`);
+
+                            return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                        }
+                    } else {
+                        this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
+
+                        return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                    }
+                } else {
+                    this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
+
+                    return Promise.reject(this.utils.createFakeWSError('core.errorinvalidresponse', true));
+                }
             }
 
             if (typeof data.exception !== 'undefined') {

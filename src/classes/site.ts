@@ -689,12 +689,12 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved with the WS response.
      */
     protected getFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean): Promise<any> {
-        const id = this.getCacheId(method, data);
-        let promise;
-
         if (!this.db || !preSets.getFromCache) {
             return Promise.reject(null);
         }
+
+        const id = this.getCacheId(method, data);
+        let promise;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
             promise = this.db.getRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
@@ -751,36 +751,37 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved when the response is saved.
      */
     protected saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets): Promise<any> {
-        const id = this.getCacheId(method, data),
-            entry: any = {
-                id: id,
-                data: JSON.stringify(response)
-            };
-        let cacheExpirationTime = CoreConfigConstants.cache_expiration_time,
-            promise;
-
         if (!this.db) {
             return Promise.reject(null);
+        }
+
+        let promise;
+
+        if (preSets.uniqueCacheKey) {
+            // Cache key must be unique, delete all entries with same cache key.
+            promise = this.deleteFromCache(method, data, preSets, true).catch(() => {
+                // Ignore errors.
+            });
         } else {
-            if (preSets.uniqueCacheKey) {
-                // Cache key must be unique, delete all entries with same cache key.
-                promise = this.deleteFromCache(method, data, preSets, true).catch(() => {
-                    // Ignore errors.
-                });
-            } else {
-                promise = Promise.resolve();
+            promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+            const id = this.getCacheId(method, data),
+                entry: any = {
+                    id: id,
+                    data: JSON.stringify(response)
+                };
+            let cacheExpirationTime = CoreConfigConstants.cache_expiration_time;
+
+            cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
+            entry.expirationTime = new Date().getTime() + cacheExpirationTime;
+            if (preSets.cacheKey) {
+                entry.key = preSets.cacheKey;
             }
 
-            return promise.then(() => {
-                cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
-                entry.expirationTime = new Date().getTime() + cacheExpirationTime;
-                if (preSets.cacheKey) {
-                    entry.key = preSets.cacheKey;
-                }
-
-                return this.db.insertOrUpdateRecord(this.WS_CACHE_TABLE, entry, { id: id });
-            });
-        }
+            return this.db.insertOrUpdateRecord(this.WS_CACHE_TABLE, entry, { id: id });
+        });
     }
 
     /**
@@ -793,17 +794,17 @@ export class CoreSite {
      * @return {Promise<any>} Promise resolved when the entries are deleted.
      */
     protected deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<any> {
-        const id = this.getCacheId(method, data);
-
         if (!this.db) {
             return Promise.reject(null);
-        } else {
-            if (allCacheKey) {
-                return this.db.deleteRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey });
-            } else {
-                return this.db.deleteRecords(this.WS_CACHE_TABLE, { id: id });
-            }
         }
+
+        const id = this.getCacheId(method, data);
+
+        if (allCacheKey) {
+            return this.db.deleteRecords(this.WS_CACHE_TABLE, { key: preSets.cacheKey });
+        }
+
+        return this.db.deleteRecords(this.WS_CACHE_TABLE, { id: id });
     }
 
     /*
@@ -985,9 +986,9 @@ export class CoreSite {
             return Promise.resolve({ code: 0 });
         }
 
-        const observable = this.http.post(checkUrl, { service: service }).timeout(CoreConstants.WS_TIMEOUT);
+        const promise = this.http.post(checkUrl, { service: service }).timeout(CoreConstants.WS_TIMEOUT).toPromise();
 
-        return this.utils.observableToPromise(observable).then((data: any) => {
+        return promise.then((data: any) => {
             if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
                 if (!retrying) {
                     this.siteUrl = this.urlUtils.addOrRemoveWWW(this.siteUrl);

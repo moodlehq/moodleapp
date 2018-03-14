@@ -153,9 +153,9 @@ export class AddonModBookProvider {
 
         return promise.then((url) => {
             // Fetch the URL content.
-            const observable = this.http.get(url);
+            const promise = this.http.get(url).toPromise();
 
-            return this.utils.observableToPromise(observable).then((response: Response): any => {
+            return promise.then((response: Response): any => {
                 const content = response.text();
                 if (typeof content !== 'string') {
                     return Promise.reject(null);
