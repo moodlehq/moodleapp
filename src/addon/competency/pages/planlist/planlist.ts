@@ -14,7 +14,6 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
@@ -35,8 +34,7 @@ export class AddonCompetencyPlanListPage {
     plansLoaded = false;
     plans = [];
 
-    constructor(navParams: NavParams, private translate: TranslateService, private domUtils: CoreDomUtilsProvider,
-            private competencyProvider: AddonCompetencyProvider) {
+    constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private competencyProvider: AddonCompetencyProvider) {
         this.userId = navParams.get('userId');
     }
 

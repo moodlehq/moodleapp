@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@providers/cron';
-import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesSyncProvider } from './sync';
 
 /**
@@ -24,7 +23,7 @@ import { AddonMessagesSyncProvider } from './sync';
 export class AddonMessagesSyncCronHandler implements CoreCronHandler {
     name = 'AddonMessagesSyncCronHandler';
 
-    constructor(private sitesProvider: CoreSitesProvider, private messagesSync: AddonMessagesSyncProvider) {}
+    constructor(private messagesSync: AddonMessagesSyncProvider) {}
 
     /**
      * Execute the process.

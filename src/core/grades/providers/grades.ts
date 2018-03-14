@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 

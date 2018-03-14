@@ -14,7 +14,6 @@
 
 import { Component, Optional } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonCompetencyProvider } from '../../providers/competency';
@@ -32,9 +31,8 @@ export class AddonCompetencyCompetencySummaryPage {
     competencyId: number;
     competency: any;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, private translate: TranslateService,
-            private domUtils: CoreDomUtilsProvider, @Optional() private svComponent: CoreSplitViewComponent,
-            private competencyProvider: AddonCompetencyProvider) {
+    constructor(private navCtrl: NavController, navParams: NavParams, private domUtils: CoreDomUtilsProvider,
+            @Optional() private svComponent: CoreSplitViewComponent, private competencyProvider: AddonCompetencyProvider) {
         this.competencyId = navParams.get('competencyId');
     }
 

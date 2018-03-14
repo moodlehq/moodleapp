@@ -18,7 +18,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonMessagesProvider } from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 

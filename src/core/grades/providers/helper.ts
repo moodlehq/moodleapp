@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
@@ -33,8 +32,7 @@ export class CoreGradesHelperProvider {
     constructor(logger: CoreLoggerProvider, private coursesProvider: CoreCoursesProvider,
             private gradesProvider: CoreGradesProvider, private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
-            private urlUtils: CoreUrlUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
         this.logger = logger.getInstance('CoreGradesHelperProvider');
     }
 

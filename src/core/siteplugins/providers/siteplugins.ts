@@ -20,7 +20,6 @@ import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -67,8 +66,7 @@ export class CoreSitePluginsProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
-            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
     }
 

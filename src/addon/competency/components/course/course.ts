@@ -14,7 +14,6 @@
 
 import { Component, ViewChild, Input } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonCompetencyProvider } from '../../providers/competency';
@@ -37,8 +36,7 @@ export class AddonCompetencyCourseComponent {
     competencies: any;
     user: any;
 
-    constructor(private navCtrl: NavController, private translate: TranslateService,
-            private appProvider: CoreAppProvider, private domUtils: CoreDomUtilsProvider,
+    constructor(private navCtrl: NavController, private appProvider: CoreAppProvider, private domUtils: CoreDomUtilsProvider,
             private competencyProvider: AddonCompetencyProvider, private helperProvider: AddonCompetencyHelperProvider) {
     }
 

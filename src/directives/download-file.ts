@@ -15,7 +15,6 @@
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
  * Directive to allow downloading and open a file. When the item with this directive is clicked, the file will be

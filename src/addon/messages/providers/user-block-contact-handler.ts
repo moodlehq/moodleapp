@@ -15,7 +15,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonMessagesProvider } from './messages';
 import { AddonMessagesAddContactUserHandler } from './user-add-contact-handler';
 import { CoreEventsProvider } from '@providers/events';
@@ -40,9 +39,9 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
     protected disabled = false;
     protected updateObs: any;
 
-    constructor(private linkHelper: CoreContentLinksHelperProvider, protected sitesProvider: CoreSitesProvider,
-            private messagesProvider: AddonMessagesProvider, protected eventsProvider: CoreEventsProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService) {
+    constructor(protected sitesProvider: CoreSitesProvider, private messagesProvider: AddonMessagesProvider,
+            protected eventsProvider: CoreEventsProvider, private domUtils: CoreDomUtilsProvider,
+            private translate: TranslateService) {
 
         this.updateObs = eventsProvider.on(AddonMessagesAddContactUserHandler.UPDATED_EVENT, (data) => {
             this.checkButton(data.userId);

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AddonMessagesProvider } from './messages';
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@core/settings/providers/delegate';
-import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Message settings handler.
@@ -25,7 +24,7 @@ export class AddonMessagesSettingsHandler implements CoreSettingsHandler {
     name = 'AddonMessages';
     priority = 600;
 
-    constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider) {
+    constructor(private messagesProvider: AddonMessagesProvider) {
     }
 
     /**

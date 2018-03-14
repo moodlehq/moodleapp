@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, Input, OnInit } from '@angular/core';
-import { Content, NavParams } from 'ionic-angular';
+import { Content } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
