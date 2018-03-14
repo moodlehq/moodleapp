@@ -30,6 +30,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 @Injectable()
 export class AddonRemoteThemesProvider {
     static COMPONENT = 'mmaRemoteStyles';
+    protected SEPARATOR_35 = /\/\*\*? *3\.5(\.0)? *styles? *\*\//i; // A comment like "/* 3.5 styles */".
 
     protected logger;
     protected stylesEls: {[siteId: string]: {element: HTMLStyleElement, hash: string}} = {};
@@ -155,7 +156,7 @@ export class AddonRemoteThemesProvider {
                     return fileUrl;
                 }
             } else {
-                if (infos.mobilecssurl === '') {
+                if (infos && infos.mobilecssurl === '') {
                     // CSS URL is empty. Delete downloaded files (if any).
                     this.filepoolProvider.removeFilesByComponent(siteId, AddonRemoteThemesProvider.COMPONENT, 1);
                 }
@@ -170,11 +171,26 @@ export class AddonRemoteThemesProvider {
         }).then((response): any => {
             const text = response && response.text();
             if (typeof text == 'string') {
-                return {fileUrl: fileUrl, styles: text};
+                return {fileUrl: fileUrl, styles: this.get35Styles(text)};
             } else {
                 return Promise.reject(null);
             }
         });
+    }
+
+    /**
+     * Check if the CSS code has a separator for 3.5 styles. If it does, get only the styles after the separator.
+     *
+     * @param {string} cssCode The CSS code to check.
+     * @return {string} The filtered styles.
+     */
+    protected get35Styles(cssCode: string): string {
+        const separatorPos = cssCode.search(this.SEPARATOR_35);
+        if (separatorPos > -1) {
+            return cssCode.substr(separatorPos).replace(this.SEPARATOR_35, '');
+        }
+
+        return cssCode;
     }
 
     /**
@@ -230,8 +246,10 @@ export class AddonRemoteThemesProvider {
         }
 
         return this.http.get(url).toPromise().then((response) => {
-            const text = response && response.text();
+            let text = response && response.text();
             if (typeof text == 'string') {
+                text = this.get35Styles(text);
+
                 const styleEl = document.createElement('style');
                 styleEl.setAttribute('id', 'mobilecssurl-tmpsite');
                 styleEl.innerHTML = text;
