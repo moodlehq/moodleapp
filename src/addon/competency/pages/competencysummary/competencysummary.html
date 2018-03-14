@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title *ngIf="competency">{{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="competencyLoaded" (ionRefresh)="refreshCompetency($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="competencyLoaded">
+        <ion-card *ngIf="competency">
+            <ion-item text-wrap *ngIf="competency.competency.description">
+                <core-format-text [text]="competency.competency.description"></core-format-text>
+            </ion-item>
+            <ion-item text-wrap>
+                <strong>{{ 'addon.competency.path' | translate }}</strong>:
+                {{ competency.comppath.framework.name }}
+                <span *ngFor="let ancestor of competency.comppath.ancestors">
+                    &nbsp;/&nbsp;<a (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
+                </span>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>

@@ -39,7 +39,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected instanceId: string;
     protected parentContextMenu: CoreContextMenuComponent;
 
-    constructor(private translate: TranslateService, private popoverCtrl: PopoverController, private elementRef: ElementRef,
+    constructor(private translate: TranslateService, private popoverCtrl: PopoverController, elementRef: ElementRef,
             private domUtils: CoreDomUtilsProvider) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();

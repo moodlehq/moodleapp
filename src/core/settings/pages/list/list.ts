@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
+import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
@@ -32,8 +32,7 @@ export class CoreSettingsListPage {
     isIOS: boolean;
     selectedPage: string;
 
-    constructor(private settingsDelegate: CoreSettingsDelegate, private navCtrl: NavController, platorm: Platform,
-            navParams: NavParams) {
+    constructor(private settingsDelegate: CoreSettingsDelegate, platorm: Platform, navParams: NavParams) {
         this.isIOS = platorm.is('ios');
 
         this.selectedPage = navParams.get('page') || false;

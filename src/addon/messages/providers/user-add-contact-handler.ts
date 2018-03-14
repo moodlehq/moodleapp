@@ -15,7 +15,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { AddonMessagesProvider } from './messages';
 import { AddonMessagesBlockContactUserHandler } from './user-block-contact-handler';
 import { CoreEventsProvider } from '@providers/events';
@@ -40,7 +39,7 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
     protected disabled = false;
     protected updateObs: any;
 
-    constructor(private linkHelper: CoreContentLinksHelperProvider, protected sitesProvider: CoreSitesProvider,
+    constructor(protected sitesProvider: CoreSitesProvider,
             private messagesProvider: AddonMessagesProvider, protected eventsProvider: CoreEventsProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService) {
 

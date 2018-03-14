@@ -19,7 +19,6 @@ import { Globalization } from '@ionic-native/globalization';
 import { Platform } from 'ionic-angular';
 import { CoreConfigProvider } from './config';
 import { CoreConfigConstants } from '../configconstants';
-import { Observable } from 'rxjs';
 
 /*
  * Service to handle language features, like changing the current language.

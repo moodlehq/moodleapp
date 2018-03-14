@@ -15,7 +15,6 @@
 import { Component, ViewChild, Input, Optional } from '@angular/core';
 import { Content, NavParams, NavController } from 'ionic-angular';
 import { CoreGradesProvider } from '../../providers/grades';
-import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreGradesHelperProvider } from '../../providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -39,9 +38,8 @@ export class CoreGradesCourseComponent {
     gradesTable: any;
 
     constructor(private gradesProvider: CoreGradesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-        private gradesHelper: CoreGradesHelperProvider, private sitesProvider: CoreSitesProvider,
-        @Optional() private navCtrl: NavController, private appProvider: CoreAppProvider,
-        @Optional() private svComponent: CoreSplitViewComponent) {
+        private gradesHelper: CoreGradesHelperProvider, @Optional() private navCtrl: NavController,
+        private appProvider: CoreAppProvider, @Optional() private svComponent: CoreSplitViewComponent) {
     }
 
     /**

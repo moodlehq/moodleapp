@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.competency.userplans' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="plansLoaded" (ionRefresh)="refreshLearningPlans($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="plansLoaded">
+            <core-empty-box *ngIf="plans.length == 0" icon="map" [message]="'addon.competency.noplanswerecreated' | translate">
+            </core-empty-box>
+            <ion-list *ngIf="plans.length > 0" no-margin>
+                <a ion-item text-wrap *ngFor="let plan of plans" [title]="plan.name" (click)="openPlan(plan.id)" [class.core-split-item-selected]="plan.id == planId">
+                    <h2>{{ plan.name }}</h2>
+                    <p *ngIf="plan.duedate > 0">{{ 'addon.competency.duedate' | translate }}: {{ plan.duedate | coreToLocaleString }}</p>
+                </a>
+            </ion-list>
+        </core-loading>
+    </ion-content>
+</core-split-view>

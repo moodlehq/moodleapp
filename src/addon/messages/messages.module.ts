@@ -28,7 +28,6 @@ import { AddonMessagesBlockContactUserHandler } from './providers/user-block-con
 import { AddonMessagesDiscussionLinkHandler } from './providers/discussion-link-handler';
 import { AddonMessagesIndexLinkHandler } from './providers/index-link-handler';
 import { AddonMessagesSyncCronHandler } from './providers/sync-cron-handler';
-import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';

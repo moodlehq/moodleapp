@@ -33,8 +33,7 @@ export class AddonMessagesIndexPage implements OnDestroy {
     protected loadSplitViewObserver: any;
     protected siteId: string;
 
-    constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider,
-            private messagesProvider: AddonMessagesProvider) {
+    constructor(eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
 
         this.siteId = sitesProvider.getCurrentSiteId();
 

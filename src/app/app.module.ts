@@ -70,6 +70,7 @@ import { CoreCompileModule } from '@core/compile/compile.module';
 
 // Addon modules.
 import { AddonCalendarModule } from '@addon/calendar/calendar.module';
+import { AddonCompetencyModule } from '../addon/competency/competency.module';
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
@@ -148,6 +149,7 @@ export const CORE_PROVIDERS: any[] = [
         CoreSitePluginsModule,
         CoreCompileModule,
         AddonCalendarModule,
+        AddonCompetencyModule,
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonModBookModule,

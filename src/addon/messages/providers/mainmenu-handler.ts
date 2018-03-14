@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AddonMessagesProvider } from './messages';
 import { CoreMainMenuDelegate, CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@core/mainmenu/providers/delegate';
 import { CoreCronHandler } from '@providers/cron';
