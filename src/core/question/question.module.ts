@@ -18,12 +18,14 @@ import { CoreQuestionDelegate } from './providers/delegate';
 import { CoreQuestionBehaviourDelegate } from './providers/behaviour-delegate';
 import { CoreQuestionDefaultHandler } from './providers/default-question-handler';
 import { CoreQuestionBehaviourDefaultHandler } from './providers/default-behaviour-handler';
+import { CoreQuestionHelperProvider } from './providers/helper';
 
 // List of providers (without handlers).
 export const CORE_QUESTION_PROVIDERS: any[] = [
     CoreQuestionProvider,
     CoreQuestionDelegate,
-    CoreQuestionBehaviourDelegate
+    CoreQuestionBehaviourDelegate,
+    CoreQuestionHelperProvider
 ];
 
 @NgModule({

@@ -67,6 +67,7 @@ import { CoreCoursesComponentsModule } from '@core/courses/components/components
 import { CoreSitePluginsDirectivesModule } from '@core/siteplugins/directives/directives.module';
 import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/components.module';
 import { CoreUserComponentsModule } from '@core/user/components/components.module';
+import { CoreQuestionComponentsModule } from '@core/question/components/components.module';
 
 // Import some components listed in entryComponents so they can be injected dynamically.
 import { CoreCourseUnsupportedModuleComponent } from '@core/course/components/unsupported-module/unsupported-module';
@@ -93,7 +94,7 @@ export class CoreCompileProvider {
     protected IMPORTS = [
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule
+        CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, protected compiler: Compiler) {
