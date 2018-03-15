@@ -43,7 +43,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param {any} course The course.
      * @return {string} Title.
      */
-    getCourseTitle?(course: any): string {
+    getCourseTitle(course: any): string {
         return course.fullname || '';
     }
 

@@ -14,17 +14,22 @@
 
 import { NgModule } from '@angular/core';
 import { CoreQuestionProvider } from './providers/question';
+import { CoreQuestionDelegate } from './providers/delegate';
+import { CoreQuestionDefaultHandler } from './providers/default-question-handler';
 
-// List of providers.
-export const CORE_QUESTION_PROVIDERS = [
-    CoreQuestionProvider
+// List of providers (without handlers).
+export const CORE_QUESTION_PROVIDERS: any[] = [
+    CoreQuestionProvider,
+    CoreQuestionDelegate
 ];
 
 @NgModule({
     declarations: [],
     imports: [
     ],
-    providers: CORE_QUESTION_PROVIDERS,
+    providers: CORE_QUESTION_PROVIDERS.concat([
+        CoreQuestionDefaultHandler
+    ]),
     exports: []
 })
 export class CoreQuestionModule {}
