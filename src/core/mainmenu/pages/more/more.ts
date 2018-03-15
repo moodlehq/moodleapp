@@ -43,7 +43,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
             private navCtrl: NavController, private mainMenuProvider: CoreMainMenuProvider,
-            private eventsProvider: CoreEventsProvider) {
+            eventsProvider: CoreEventsProvider) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
         this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.loadSiteInfo.bind(this),

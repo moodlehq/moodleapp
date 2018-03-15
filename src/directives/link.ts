@@ -30,7 +30,7 @@ import { CoreConfigConstants } from '../configconstants';
 export class CoreLinkDirective implements OnInit {
     @Input() capture?: boolean | string; // If the link needs to be captured by the app.
     @Input() inApp?: boolean | string; // True to open in embedded browser, false to open in system browser.
-    @Input() autoLogin?= 'check'; // If the link should be open with auto-login. Accepts the following values:
+    @Input() autoLogin = 'check'; // If the link should be open with auto-login. Accepts the following values:
                                   //   "yes" -> Always auto-login.
                                   //   "no" -> Never auto-login.
                                   //   "check" -> Auto-login only if it points to the current site. Default value.

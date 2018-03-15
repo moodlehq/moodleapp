@@ -24,8 +24,8 @@ import { FormGroup, Validators, FormControl } from '@angular/forms';
 })
 export class AddonUserProfileFieldTextareaComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() edit? = false; // True if editing the field. Defaults to false.
-    @Input() disabled? = false; // True if disabled. Defaults to false.
+    @Input() edit = false; // True if editing the field. Defaults to false.
+    @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
     control: FormControl;

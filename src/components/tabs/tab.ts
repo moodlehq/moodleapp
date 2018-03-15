@@ -46,8 +46,8 @@ export class CoreTabComponent implements OnInit, OnDestroy {
     @Input() icon?: string; // The tab icon.
     @Input() badge?: string; // A badge to add in the tab.
     @Input() badgeStyle?: string; // The badge color.
-    @Input() enabled? = true; // Whether the tab is enabled.
-    @Input() show? = true; // Whether the tab should be shown.
+    @Input() enabled = true; // Whether the tab is enabled.
+    @Input() show = true; // Whether the tab should be shown.
     @Input() id?: string; // An ID to identify the tab.
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
