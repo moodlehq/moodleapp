@@ -2,9 +2,11 @@
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="it.greenteam.prodigeo" version="3.4.1">
   <name>ProDigEO</name>
   <description>
-ProDigEO app</description>
-  <author email="mobile@greenteam.it" href="http://greenteam.it">
-Green Team</author>
+        ProDigEO
+    </description>
+  <author href="http://moodle.com" email="mobile@moodle.com">
+        Green Team
+    </author>
   <content src="index.html"/>
   <access origin="*"/>
   <access origin="tel:*" launch-external="yes"/>
