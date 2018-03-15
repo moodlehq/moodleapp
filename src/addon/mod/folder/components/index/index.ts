@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
+import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModFolderProvider } from '../../providers/folder';
 import { AddonModFolderHelperProvider } from '../../providers/helper';
 
@@ -32,47 +32,25 @@ import { AddonModFolderHelperProvider } from '../../providers/helper';
     selector: 'addon-mod-folder-index',
     templateUrl: 'index.html',
 })
-export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
-    @Input() module: any; // The module of the folder.
-    @Input() courseId: number; // Course ID the folder belongs to.
+export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceComponent {
     @Input() path: string; // For subfolders. Use the path instead of a boolean so Angular detects them as different states.
-    @Output() folderRetrieved?: EventEmitter<any>;
 
-    loaded: boolean;
-    canReload: boolean;
     component = AddonModFolderProvider.COMPONENT;
-    componentId: number;
     canGetFolder: boolean;
     contents: any;
 
-    // Data for context menu.
-    externalUrl: string;
-    description: string;
-    refreshIcon: string;
-    prefetchStatusIcon: string;
-    prefetchText: string;
-    size: string;
-
-    protected isDestroyed;
-    protected statusObserver;
-
     constructor(private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
-            private courseHelper: CoreCourseHelperProvider, private translate: TranslateService,
-            private folderHelper: AddonModFolderHelperProvider) {
-        this.folderRetrieved = new EventEmitter();
+            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
+            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
+            protected translate: TranslateService, private folderHelper: AddonModFolderHelperProvider) {
+        super(textUtils, courseHelper, translate, domUtils);
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.description = this.module.description;
-        this.componentId = this.module.id;
-        this.externalUrl = this.module.url;
-        this.loaded = false;
-        this.canReload = false;
-        this.refreshIcon = 'spinner';
+        super.ngOnInit();
 
         this.canGetFolder = this.folderProvider.isGetFolderWSAvailable();
 
@@ -80,65 +58,26 @@ export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCour
             // Subfolder. Use module param.
             this.showModuleData(this.module);
             this.loaded = true;
-            this.canReload = false;
             this.refreshIcon = 'refresh';
         } else {
-            this.fetchContent().then(() => {
+            this.loadContent().then(() => {
                 this.folderProvider.logView(this.module.instance).then(() => {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
                 });
             }).finally(() => {
                 this.loaded = true;
-                this.canReload = true;
                 this.refreshIcon = 'refresh';
             });
         }
     }
 
     /**
-     * Refresh the data.
+     * Perform the invalidate content function.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @return {Promise<any>} Promise resolved when done.
+     * @return {Promise<any>} Resolved when done.
      */
-    doRefresh(refresher?: any, done?: () => void): Promise<any> {
-        if (this.canReload) {
-            this.refreshIcon = 'spinner';
-
-            this.folderProvider.invalidateContent(this.module.id, this.courseId).catch(() => {
-                // Ignore errors.
-            }).then(() => {
-                return this.fetchContent(true);
-            }).finally(() => {
-                this.refreshIcon = 'refresh';
-                refresher && refresher.complete();
-                done && done();
-            });
-        }
-
-        return Promise.resolve();
-    }
-
-    /**
-     * Expand the description.
-     */
-    expandDescription(): void {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id);
-    }
-
-    /**
-     * Prefetch the module.
-     */
-    prefetch(): void {
-        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId);
-    }
-
-    /**
-     * Confirm and remove downloaded files.
-     */
-    removeFiles(): void {
-        this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    protected invalidateContent(): Promise<any> {
+        return this.folderProvider.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -148,7 +87,7 @@ export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCour
     protected showModuleData(module: any): void {
         this.description = module.intro || module.description;
 
-        this.folderRetrieved.emit(module);
+        this.dataRetrieved.emit(module);
 
         if (this.path) {
             // Subfolder.
@@ -190,24 +129,13 @@ export class AddonModFolderIndexComponent implements OnInit, OnDestroy, CoreCour
         return promise.then((folder) => {
             if (folder) {
                 this.description = folder.intro || folder.description;
-                this.folderRetrieved.emit(folder);
+                this.dataRetrieved.emit(folder);
             }
 
             this.showModuleData(folder);
 
             // All data obtained, now fill the context menu.
-            this.courseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
-        }).catch((error) => {
-            // Error getting data, fail.
-            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
-        }).finally(() => {
-            this.loaded = true;
-            this.refreshIcon = 'refresh';
+            this.fillContextMenu(refresh);
         });
-    }
-
-    ngOnDestroy(): void {
-        this.isDestroyed = true;
-        this.statusObserver && this.statusObserver.off();
     }
 }

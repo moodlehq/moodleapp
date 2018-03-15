@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
+import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModPageProvider } from '../../providers/page';
 import { AddonModPageHelperProvider } from '../../providers/helper';
 import { AddonModPagePrefetchHandler } from '../../providers/prefetch-handler';
@@ -31,48 +31,29 @@ import { AddonModPagePrefetchHandler } from '../../providers/prefetch-handler';
     selector: 'addon-mod-page-index',
     templateUrl: 'index.html',
 })
-export class AddonModPageIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
-    @Input() module: any; // The module of the page.
-    @Input() courseId: number; // Course ID the page belongs to.
-    @Output() pageRetrieved?: EventEmitter<any>;
-
-    loaded: boolean;
+export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModPageProvider.COMPONENT;
-    componentId: number;
     canGetPage: boolean;
     contents: any;
-
-    // Data for context menu.
-    externalUrl: string;
-    description: string;
-    refreshIcon: string;
-    prefetchStatusIcon: string;
-    prefetchText: string;
-    size: string;
-
-    protected isDestroyed;
-    protected statusObserver;
+    protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
 
     constructor(private pageProvider: AddonModPageProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
-            private courseHelper: CoreCourseHelperProvider, private translate: TranslateService,
-            private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler) {
-        this.pageRetrieved = new EventEmitter();
+            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
+            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
+            protected translate: TranslateService, private pageHelper: AddonModPageHelperProvider,
+            private pagePrefetch: AddonModPagePrefetchHandler) {
+        super(textUtils, courseHelper, translate, domUtils);
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.description = this.module.description;
-        this.componentId = this.module.id;
-        this.externalUrl = this.module.url;
-        this.loaded = false;
-        this.refreshIcon = 'spinner';
+        super.ngOnInit();
 
         this.canGetPage = this.pageProvider.isGetPageWSAvailable();
 
-        this.fetchContent().then(() => {
+        this.loadContent().then(() => {
             this.pageProvider.logView(this.module.instance).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
             });
@@ -80,49 +61,12 @@ export class AddonModPageIndexComponent implements OnInit, OnDestroy, CoreCourse
     }
 
     /**
-     * Refresh the data.
+     * Perform the invalidate content function.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @return {Promise<any>} Promise resolved when done.
+     * @return {Promise<any>} Resolved when done.
      */
-    doRefresh(refresher?: any, done?: () => void): Promise<any> {
-        if (this.loaded) {
-            this.refreshIcon = 'spinner';
-
-            return this.pageProvider.invalidateContent(this.module.id, this.courseId).catch(() => {
-                // Ignore errors.
-            }).then(() => {
-                return this.fetchContent(true);
-            }).finally(() => {
-                this.refreshIcon = 'refresh';
-                refresher && refresher.complete();
-                done && done();
-            });
-        }
-
-        return Promise.resolve();
-    }
-
-    /**
-     * Expand the description.
-     */
-    expandDescription(): void {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id);
-    }
-
-    /**
-     * Prefetch the module.
-     */
-    prefetch(): void {
-        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId);
-    }
-
-    /**
-     * Confirm and remove downloaded files.
-     */
-    removeFiles(): void {
-        this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    protected invalidateContent(): Promise<any> {
+        return this.pageProvider.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -158,7 +102,7 @@ export class AddonModPageIndexComponent implements OnInit, OnDestroy, CoreCourse
             promises.push(getPagePromise.then((page) => {
                 if (page) {
                     this.description = page.intro || page.description;
-                    this.pageRetrieved.emit(page);
+                    this.dataRetrieved.emit(page);
                 }
             }).catch(() => {
                 // Ignore errors.
@@ -167,7 +111,7 @@ export class AddonModPageIndexComponent implements OnInit, OnDestroy, CoreCourse
             // Get the page HTML.
             promises.push(this.pageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
                 // All data obtained, now fill the context menu.
-                this.courseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
+                this.fillContextMenu(refresh);
 
                 this.contents = content;
 
@@ -178,17 +122,6 @@ export class AddonModPageIndexComponent implements OnInit, OnDestroy, CoreCourse
             }));
 
             return Promise.all(promises);
-        }).catch((error) => {
-            // Error getting data, fail.
-            this.domUtils.showErrorModalDefault(error, 'addon.mod_page.errorwhileloadingthepage', true);
-        }).finally(() => {
-            this.loaded = true;
-            this.refreshIcon = 'refresh';
         });
-    }
-
-    ngOnDestroy(): void {
-        this.isDestroyed = true;
-        this.statusObserver && this.statusObserver.off();
     }
 }

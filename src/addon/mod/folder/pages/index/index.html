@@ -12,5 +12,5 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <addon-mod-folder-index [module]="module" [courseId]="courseId" [path]="path" (folderRetrieved)="updateData($event)"></addon-mod-folder-index>
+    <addon-mod-folder-index [module]="module" [courseId]="courseId" [path]="path" (dataRetrieved)="updateData($event)"></addon-mod-folder-index>
 </ion-content>
