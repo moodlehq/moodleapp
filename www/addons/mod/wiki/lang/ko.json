@@ -7,7 +7,7 @@
     "newpagetitle": "새 페이지 제목",
     "nocontent": "이 페이지에 내용이 없습니다.",
     "notingroup": "모둠에 없음",
-    "page": "페이지",
+    "page": "페이지: {{$a}}",
     "pageexists": "이 페이지는 이미 존재합니다. 그곳으로 넘어갑니다.",
     "pagename": "페이지 이름",
     "viewpage": "페이지 보기",

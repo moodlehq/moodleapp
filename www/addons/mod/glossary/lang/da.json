@@ -1,5 +1,5 @@
 {
-    "attachment": "Tilføj badge til besked",
+    "attachment": "Bilag",
     "browsemode": "Skim indlæg",
     "byalphabet": "Alfabetisk",
     "byauthor": "Grupper efter forfatter",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Senest opdateret",
     "bysearch": "Søg",
     "cannoteditentry": "Kan ikke redigere opslaget",
-    "casesensitive": "Brug regulære udtryk",
-    "categories": "Kursuskategorier",
+    "casesensitive": "Store og små bogstaver",
+    "categories": "Kategorier",
     "entriestobesynced": "Opslag der skal synkroniseres",
     "entrypendingapproval": "Dette opslag afventer godkendelse",
     "errorloadingentries": "Der opstod en fejl under indlæsning af opslag",

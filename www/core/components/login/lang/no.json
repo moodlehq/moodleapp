@@ -12,7 +12,7 @@
     "help": "Hjelp",
     "instructions": "Instruksjoner",
     "invalidemail": "Feil e-postadresse",
-    "invalidurl": "Ugyldig URL",
+    "invalidurl": "URL-en du skrev inn var ugyldig",
     "login": "Logg inn",
     "loginsteps": "Hei! For å få full tilgang til dette nettstedet må du først opprette en brukerkonto.",
     "missingemail": "Mangler e-postadresse",

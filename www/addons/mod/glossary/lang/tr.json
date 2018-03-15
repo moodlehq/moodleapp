@@ -1,6 +1,9 @@
 {
-    "attachment": "Rozete mesaj ekle",
+    "attachment": "Dosya",
     "browsemode": "Önizleme Modu",
-    "casesensitive": "Düzenli İfadeleri Kullan",
-    "categories": "Ders Kategorileri"
+    "bysearch": "Ara",
+    "cannoteditentry": "Giriş düzenlenemiyor",
+    "casesensitive": "Harf duyarlılığı",
+    "categories": "Kategoriler",
+    "noentriesfound": "Her hangi bir kayıt bulunamadı"
 }

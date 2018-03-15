@@ -1,15 +1,20 @@
 {
-    "addfiletext": "Dosya ekle",
-    "audio": "Ses dosyası ({{$a.EXT}})",
+    "addfiletext": "Dosya Ekle",
+    "audio": "Ses",
+    "camera": "Kamera",
     "errorcapturingaudio": "Ses kayıt hatası",
     "errorcapturingvideo": "Video kayıt hatası",
+    "errormustbeonlinetoupload": "Dosyaları yüklemek için çevrimiçi olmanız gerekiyor",
     "errorreadingfile": "\"{{$a}}\" dosyasını okurken hata oluştu",
     "file": "Dosya",
     "fileuploaded": "Dosya başarıyla yüklendi",
     "invalidfiletype": "{{$a}} dosya türü kabul edilemez",
     "maxbytesfile": "{{$a.file}} dosyasının boyutu çok büyük. En fazla {{$a.size}} MB büyüklüğünde dosya yükleyebilirsiniz.",
     "more": "Dahası",
-    "uploadafile": "Bir dosya yükle",
+    "photoalbums": "Fotoğraf  albümleri",
+    "readingfile": "Dosya okunuyor",
+    "selectafile": "Dosya seç",
+    "uploadafile": "Dosya yükle",
     "uploading": "Yükleniyor",
     "video": "Video"
 }

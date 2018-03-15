@@ -1,8 +1,8 @@
 {
     "complete": "Dovršeno",
-    "completed": "Završeno",
+    "completed": "završeno",
     "completiondate": "Datum dovršetka",
-    "coursecompletion": "Dovršenost e-kolegija",
+    "coursecompletion": "Polaznici moraju završiti ovaj e-kolegij.",
     "criteria": "Kriterij",
     "criteriagroup": "Grupa kriterija",
     "criteriarequiredall": "Potrebno je zadovoljenje svih doljnjih kriterija",

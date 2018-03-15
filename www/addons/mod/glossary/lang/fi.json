@@ -1,5 +1,5 @@
 {
-    "attachment": "Liitä viestiin osaamismerkki",
+    "attachment": "Liite",
     "browsemode": "Selaa merkintöjä",
     "byalphabet": "Aakkosjärjestyksessä",
     "byauthor": "Ryhmittele kirjoittajan mukaisesti",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Äskettäin päivitetty",
     "bysearch": "Hae",
     "cannoteditentry": "Merkintää ei voi muokata",
-    "casesensitive": "Kirjainkoon merkitys",
-    "categories": "Kategoriat",
+    "casesensitive": "Käytä säännöllisiä lausekkeita",
+    "categories": "Kurssikategoriat",
     "entriestobesynced": "Synkronoitavat merkinnät",
     "entrypendingapproval": "Tämä merkintä odottaa hyväksyntää.",
     "errorloadingentries": "Merkintöjä ladattaessa tapahtui virhe.",

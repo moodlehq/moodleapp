@@ -11,6 +11,8 @@
     "contents": "Inhalte",
     "couldnotloadsectioncontent": "Die Abschnittsinhalte konnten nicht geladen werden. Versuchen Sie es später noch einmal.",
     "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuchen Sie es später noch einmal.",
+    "downloadcourse": "Kurs herunterladen",
+    "errordownloadingcourse": "Fehler beim Herunterladen des Kurses",
     "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
     "errorgetmodule": "Fehler beim Laden von Aktivitätsdaten",
     "hiddenfromstudents": "Für Teilnehmer/innen verborgen",
