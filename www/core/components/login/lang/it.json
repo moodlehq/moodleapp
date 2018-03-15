@@ -26,7 +26,7 @@
     "invalidmoodleversion": "Versione di Moodle non valida. La versione minima richiesta è la 2.4:",
     "invalidsite": "L'URL del sito non è valida",
     "invalidtime": "Orario non valido",
-    "invalidurl": "L'URL non è valido",
+    "invalidurl": "L'URL inserito non è valido",
     "invalidvaluemax": "Il valore massimo è {{$a}}",
     "invalidvaluemin": "Il valore minimo è {{$a}}",
     "localmobileunexpectedresponse": "Il controllo delle Moodle Mobile Additional Feature ha restituito una risposta inattesa, sarai autenticato tramite i servizi Mobile standard.",

@@ -2,7 +2,7 @@
     "average": "Průměr",
     "badgrade": "Poskytnutá známka není platná",
     "contributiontocoursetotal": "Podíl z celkové známky",
-    "feedback": "Komentář",
+    "feedback": "Hodnocení",
     "grade": "Známka",
     "grades": "Známky",
     "itemname": "Název položky",
@@ -10,6 +10,6 @@
     "nooutcome": "Bez očekávaných výstupů",
     "percentage": "Procentuální hodnota",
     "range": "Rozsah",
-    "rank": "Pořadí",
+    "rank": "Umístění",
     "weight": "Váha"
 }

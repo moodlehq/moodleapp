@@ -77,7 +77,7 @@
     "timetaken": "Aufgewendete Zeit",
     "unseenpageinbranch": "Noch nicht angezeigte Frage innerhalb des Zweiges",
     "warningretakefinished": "Der Versuch wurde auf der Website beendet.",
-    "welldone": "In den Kurs gelangen Sie mit Klick auf \"Zurückkehren zu ...\"",
+    "welldone": "Glückwunsch!",
     "youhaveseen": "Sie haben einige Seiten der Lektion schon einmal bearbeitet. <br />Wollen Sie an der Stelle fortsetzen, an der Sie damals aufgehört haben?",
     "youranswer": "Ihre Antwort",
     "yourcurrentgradeisoutof": "Ihre derzeitige Bewertung ist {{$a.grade}} von {{$a.total}}",

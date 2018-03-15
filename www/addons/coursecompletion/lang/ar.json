@@ -1,5 +1,5 @@
 {
-    "complete": "كامل",
+    "complete": "تم/كامل",
     "completecourse": "مقرر مكتمل",
     "completed": "تم",
     "completiondate": "تاريخ إكمال المقرر",
@@ -13,9 +13,9 @@
     "manualselfcompletion": "إكمال يدوي ذاتي",
     "notyetstarted": "لم يبدأ بعد",
     "pending": "معلق",
-    "required": "مفروض",
+    "required": "مطلوب",
     "requiredcriteria": "المعايير المطلوبة",
     "requirement": "المتطلبات",
-    "status": "الوضع",
+    "status": "الحالة",
     "viewcoursereport": "عرض تقرير المقرر"
 }

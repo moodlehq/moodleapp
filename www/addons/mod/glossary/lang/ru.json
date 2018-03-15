@@ -1,5 +1,5 @@
 {
-    "attachment": "Вложение:",
+    "attachment": "Прикрепить значок к сообщению",
     "browsemode": "Смотреть записи",
     "byalphabet": "Алфавитно",
     "byauthor": "Группировать по автору",
@@ -8,8 +8,8 @@
     "byrecentlyupdated": "Недавно обновлённые",
     "bysearch": "Поиск",
     "cannoteditentry": "Невозможно редактировать запись",
-    "casesensitive": "Использовать регулярные выражения",
-    "categories": "Категории курсов",
+    "casesensitive": "Чувствительность ответа к регистру",
+    "categories": "Категории",
     "entriestobesynced": "Записи на синзронизацию",
     "entrypendingapproval": "Эта запись ожидает подтверждения.",
     "errorloadingentries": "При загрузке записей произошла ошибка.",

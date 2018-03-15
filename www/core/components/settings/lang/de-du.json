@@ -18,7 +18,7 @@
     "deviceos": "Geräte-OS",
     "devicewebworkers": "Device Web Workers unterstützt",
     "disableall": "Systemmitteilungen deaktivieren",
-    "disabled": "Deaktiviert",
+    "disabled": "Mitteilungen sind für diese Website deaktiviert.",
     "displayformat": "Bildschirmformat",
     "enabledebugging": "Debugging aktivieren",
     "enabledownloadsection": "Herunterladen von Abschnitten aktivieren",
@@ -52,7 +52,7 @@
     "synchronizing": "Synchronisieren ...",
     "syncsettings": "Synchronisieren",
     "syncsitesuccess": "Die Daten wurden synchronisiert.",
-    "total": "Insgesamt",
+    "total": "Gesamt",
     "versioncode": "Versionscode",
     "versionname": "Versionsname",
     "wificonnection": "WLAN-Verbindung"

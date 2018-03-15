@@ -6,7 +6,7 @@
     "newpagetitle": "Un nou titlu de pagină",
     "nocontent": "Nu există conținut pentru această pagină",
     "notingroup": "Nu este în grup",
-    "page": "Pagină",
+    "page": "Pagina {{$a}}",
     "pageexists": "Această pagină există deja.",
     "pagename": "Nume pagină"
 }

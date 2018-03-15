@@ -12,10 +12,10 @@
     "deviceinfo": "Laitteen tiedot",
     "deviceos": "Laitteen käyttöjärjestelmä",
     "disableall": "Estä ilmoitukset väliaikaisesti:",
-    "disabled": "Poistettu käytöstä",
+    "disabled": "Estetty",
     "errordeletesitefiles": "Sivuston tiedostoja poistettaessa tapahtui virhe.",
     "errorsyncsite": "Sivuston tietojen synkronoinnissa tapahtui virhe. Ole hyvä ja tarkista internet-yhteytesi ja yritä uudelleen.",
-    "general": "Yleistä",
+    "general": "Yleinen",
     "language": "Kieli",
     "license": "Lisenssi",
     "loggedin": "Kirjautuneena",
@@ -27,6 +27,6 @@
     "synchronizenow": "Synkronoi nyt",
     "synchronizing": "Synkronoidaan",
     "syncsettings": "Synkronoinnin asetukset",
-    "total": "Kokonaistulos",
+    "total": "Yhteensä",
     "wificonnection": "Langaton (Wi-Fi) yhteys"
 }

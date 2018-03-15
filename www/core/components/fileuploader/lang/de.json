@@ -13,7 +13,7 @@
     "errorreadingfile": "Fehler beim Lesen der Datei",
     "errorwhileuploading": "Fehler beim Hochladen der Datei",
     "file": "Datei",
-    "filesofthesetypes": "Folgende Dateitypen können als Abgabe hinzugefügt werden:",
+    "filesofthesetypes": "Akzeptierte Dateitypen:",
     "fileuploaded": "Datei hochgeladen",
     "invalidfiletype": "Dateityp {{$a}} wird nicht akzeptiert",
     "maxbytesfile": "Die Datei {{$a.file}} ist zu groß. Die maximale Größe zum Hochladen ist {{$a.size}}.",
