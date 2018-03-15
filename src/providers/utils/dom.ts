@@ -200,6 +200,10 @@ export class CoreDomUtilsProvider {
         const urls = [],
             matches = code.match(/url\(\s*["']?(?!data:)([^)]+)\)/igm);
 
+        if (!matches) {
+            return urls;
+        }
+
         // Extract the URL form each match.
         matches.forEach((match) => {
             const submatches = match.match(/url\(\s*['"]?([^'"]*)['"]?\s*\)/im);
