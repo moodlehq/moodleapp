@@ -65,6 +65,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     showDelete = false;
     canDelete = false;
     scrollBottom = true;
+    viewDestroyed = false;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -220,6 +221,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }).then(() => {
             return this.getDiscussion(this.pagesLoaded);
         }).then((messages) => {
+            if (this.viewDestroyed) {
+                return Promise.resolve();
+            }
+
             // Check if we are at the bottom to scroll it after render.
             this.scrollBottom = this.content.scrollHeight - this.content.scrollTop === this.content.contentHeight;
 
@@ -558,7 +563,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Wait for new content height to be calculated.
         setTimeout(() => {
             // Visible content size changed, maintain the bottom position.
-            if (this.content && this.content.contentHeight != this.oldContentHeight) {
+            if (!this.viewDestroyed && this.content && this.content.contentHeight != this.oldContentHeight) {
                 if (!top) {
                     top = this.content.getContentDimensions().scrollTop;
                 }
@@ -579,7 +584,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         if (this.scrollBottom) {
              // Need a timeout to leave time to the view to be rendered.
             setTimeout(() => {
-                this.content.scrollToBottom(0);
+                if (!this.viewDestroyed) {
+                    this.content.scrollToBottom(0);
+                }
             });
             this.scrollBottom = false;
         }
@@ -685,5 +692,6 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // Unset again, just in case.
         this.unsetPolling();
         this.syncObserver && this.syncObserver.off();
+        this.viewDestroyed = true;
     }
 }
