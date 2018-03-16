@@ -225,6 +225,9 @@ angular.module('mm.core.login')
                         if (recaptchaV1Enabled) {
                             // Error sending, request another capctha since the current one is probably invalid now.
                             $scope.requestCaptchaV1(true);
+                        } else {
+                            // Reset captcha (if present).
+                            $scope.$broadcast('mmCore:ResetRecaptchaV2');
                         }
                     }
                 });
@@ -234,6 +237,9 @@ angular.module('mm.core.login')
                 if (recaptchaV1Enabled) {
                     // Error sending, request another capctha since the current one is probably invalid now.
                     $scope.requestCaptchaV1(true);
+                } else {
+                    // Reset captcha V2 (if present).
+                    $scope.$broadcast('mmCore:ResetRecaptchaV2');
                 }
             }).finally(function() {
                 modal.dismiss();

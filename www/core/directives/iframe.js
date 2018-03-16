@@ -75,14 +75,18 @@ angular.module('mm.core')
 
         if (!contentWindow && el && el.getSVGDocument) {
             // It's probably an <embed>. Try to get the window.
-            var svgDoc = el.getSVGDocument();
-            if (svgDoc && svgDoc.defaultView) {
-                contents = angular.element(svgdoc);
-                contentWindow = svgdoc.defaultView;
-            } else if (el.window) {
-                contentWindow = el.window;
-            } else if (el.getWindow) {
-                contentWindow = el.getWindow();
+            try {
+                var svgDoc = el.getSVGDocument();
+                if (svgDoc && svgDoc.defaultView) {
+                    contents = angular.element(svgdoc);
+                    contentWindow = svgdoc.defaultView;
+                } else if (el.window) {
+                    contentWindow = el.window;
+                } else if (el.getWindow) {
+                    contentWindow = el.getWindow();
+                }
+            } catch (ex) {
+                // Error accessing document.
             }
         }
 
