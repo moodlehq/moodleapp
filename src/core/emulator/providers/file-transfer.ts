@@ -238,7 +238,6 @@ export class FileTransferObjectMock extends FileTransferObject {
             const basicAuthHeader = this.getBasicAuthHeader(url);
             let fileKey = null,
                 fileName = null,
-                mimeType = null,
                 params = null,
                 headers = null,
                 httpMethod = null;
@@ -254,7 +253,6 @@ export class FileTransferObjectMock extends FileTransferObject {
             if (options) {
                 fileKey = options.fileKey;
                 fileName = options.fileName;
-                mimeType = options.mimeType;
                 headers = options.headers;
                 httpMethod = options.httpMethod || 'POST';
 

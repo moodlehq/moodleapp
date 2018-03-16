@@ -32,7 +32,7 @@ import { Component, Input, OnChanges, OnDestroy, Output, EventEmitter, SimpleCha
 })
 export class CoreChronoComponent implements OnChanges, OnDestroy {
     @Input() running: boolean; // Set it to true to start the chrono. Set it to false to stop it.
-    @Input() startTime? = 0; // Number of milliseconds to put in the chrono before starting.
+    @Input() startTime = 0; // Number of milliseconds to put in the chrono before starting.
     @Input() endTime?: number; // Number of milliseconds to stop the chrono.
     @Input() reset?: boolean; // Set it to true to reset the chrono.
     @Output() onEnd?: EventEmitter<void>; // Will emit an event when the endTime is reached.

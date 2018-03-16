@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { AddonModResourceProvider } from './resource';
 
 /**
  * Handler to treat links to resource.
@@ -24,6 +25,6 @@ export class AddonModResourceLinkHandler extends CoreContentLinksModuleIndexHand
     name = 'AddonModResourceLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModResourceLinkHandler.name, 'resource');
+        super(courseHelper, AddonModResourceProvider.COMPONENT, 'resource');
     }
 }

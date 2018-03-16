@@ -40,7 +40,7 @@ export class CoreRichTextEditorComponent {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Resize, images, anchor button, fullscreen...
 
-    @Input() placeholder? = ''; // Placeholder to set in textarea.
+    @Input() placeholder = ''; // Placeholder to set in textarea.
     @Input() control: FormControl; // Form control.
     @Output() contentChanged: EventEmitter<string>;
 

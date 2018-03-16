@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { AddonMessagesProvider } from './messages';
-import { CoreMainMenuDelegate, CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@core/mainmenu/providers/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@core/mainmenu/providers/delegate';
 import { CoreCronHandler } from '@providers/cron';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';

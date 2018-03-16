@@ -21,7 +21,6 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
-import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreSite } from '@classes/site';
@@ -211,9 +210,8 @@ export class CoreSitesProvider {
     protected siteTablesSchemas = []; // Schemas for site tables. Other providers can add schemas in here.
 
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
-            private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
-            private eventsProvider: CoreEventsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private textUtils: CoreTextUtilsProvider) {
+            private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
+            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();

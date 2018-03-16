@@ -242,15 +242,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     protected sortTabs(): void {
         if (this.originalTabsContainer) {
             const newTabs = [];
-            let newSelected;
 
             this.tabs.forEach((tab, index) => {
                 const originalIndex = Array.prototype.indexOf.call(this.originalTabsContainer.children, tab.element);
                 if (originalIndex != -1) {
                     newTabs[originalIndex] = tab;
-                    if (this.selected == index) {
-                        newSelected = originalIndex;
-                    }
                 }
             });
 

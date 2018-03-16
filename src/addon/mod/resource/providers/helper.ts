@@ -17,15 +17,12 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonModResourceProvider } from './resource';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreFileProvider } from '@providers/file';
 import { CoreAppProvider } from '@providers/app';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreConstants } from '@core/constants';
 
 /**
  * Service that provides helper functions for resources.
@@ -43,8 +40,7 @@ export class AddonModResourceHelperProvider {
             private resourceProvider: AddonModResourceProvider, private courseHelper: CoreCourseHelperProvider,
             private textUtils: CoreTextUtilsProvider, private mimetypeUtils: CoreMimetypeUtilsProvider,
             private fileProvider: CoreFileProvider, private appProvider: CoreAppProvider,
-            private filepoolProvider: CoreFilepoolProvider, private utils: CoreUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private translate: TranslateService) {
+            private filepoolProvider: CoreFilepoolProvider, private sitesProvider: CoreSitesProvider) {
     }
 
     /**

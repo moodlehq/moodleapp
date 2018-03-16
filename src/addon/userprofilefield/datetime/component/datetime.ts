@@ -26,8 +26,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 })
 export class AddonUserProfileFieldDatetimeComponent implements OnInit {
     @Input() field: any; // The profile field to be rendered.
-    @Input() edit? = false; // True if editing the field. Defaults to false.
-    @Input() disabled? = false; // True if disabled. Defaults to false.
+    @Input() edit = false; // True if editing the field. Defaults to false.
+    @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control.
 
     constructor(private fb: FormBuilder, private timeUtils: CoreTimeUtilsProvider, protected utils: CoreUtilsProvider) { }

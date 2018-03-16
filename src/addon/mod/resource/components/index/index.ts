@@ -104,6 +104,8 @@ export class AddonModResourceIndexComponent implements OnInit, OnDestroy, CoreCo
                 done && done();
             });
         }
+
+        return Promise.resolve();
     }
 
     /**

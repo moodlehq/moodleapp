@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { Observable } from 'rxjs';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { CoreAppProvider } from '../app';
@@ -698,15 +697,6 @@ export class CoreUtilsProvider {
             // In Android we keep it because otherwise we lose the whole toolbar.
             options.location = 'no';
         }
-
-        // Convert the options to a string.
-        const optionsArray = [];
-        let optionsString;
-
-        for (const name in options) {
-            optionsArray.push(`${name}=${options[name]}`);
-        }
-        optionsString = optionsArray.join(',');
 
         this.iabInstance = this.iab.create(url, '_blank', options);
 

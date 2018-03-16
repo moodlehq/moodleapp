@@ -33,12 +33,12 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 export class CoreSearchBoxComponent implements OnInit {
     @Input() searchLabel?: string; // Label to be used on action button.
     @Input() placeholder?: string; // Placeholder text for search text input.
-    @Input() autocorrect? = 'on'; // Enables/disable Autocorrection on search text input.
+    @Input() autocorrect = 'on'; // Enables/disable Autocorrection on search text input.
     @Input() spellcheck?: string | boolean = true; // Enables/disable Spellchecker on search text input.
     @Input() autoFocus?: string | boolean; // Enables/disable Autofocus when entering view.
-    @Input() lengthCheck? = 3; // Check value length before submit. If 0, any string will be submitted.
-    @Input() showClear? = true; // Show/hide clear button.
-    @Input() disabled? = false; // Disables the input text.
+    @Input() lengthCheck = 3; // Check value length before submit. If 0, any string will be submitted.
+    @Input() showClear = true; // Show/hide clear button.
+    @Input() disabled = false; // Disables the input text.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear?: EventEmitter<void>; // Send event when clearing the search form.
 

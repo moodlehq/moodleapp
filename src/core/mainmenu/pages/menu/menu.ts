@@ -14,7 +14,6 @@
 
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
-import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreMainMenuProvider } from '../../providers/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
@@ -66,7 +65,7 @@ export class CoreMainMenuPage implements OnDestroy {
     protected redirectPageLoaded = false;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider, navParams: NavParams,
-            private navCtrl: NavController, private eventsProvider: CoreEventsProvider) {
+            private navCtrl: NavController) {
         this.redirectPage = navParams.get('redirectPage');
         this.redirectParams = navParams.get('redirectParams');
     }
