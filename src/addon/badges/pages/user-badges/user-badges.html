@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.badges.badges' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="badgesLoaded" (ionRefresh)="refreshBadges($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="badgesLoaded">
+            <core-empty-box *ngIf="!badges || badges.length == 0" icon="trophy" [message]="'addon.badges.nobadges' | translate">
+            </core-empty-box>
+
+            <ion-list *ngIf="badges && badges.length" no-margin>
+                <a ion-item text-wrap *ngFor="let badge of badges" [title]="badge.name" (click)="loadIssuedBadge(badge.uniquehash)" [class.core-split-item-selected]="badge.uniquehash == badgeHash">
+                    <ion-avatar item-start>
+                        <img [src]="badge.badgeurl" [alt]="badge.name" item-start core-external-content>
+                    </ion-avatar>
+                    <h2><core-format-text [text]="badge.name"></core-format-text></h2>
+                    <p>{{ badge.dateissued | coreToLocaleString }}</p>
+                    <ion-badge item-end color="danger" *ngIf="badge.dateexpire && currentTime >= badge.dateexpire">
+                        {{ 'addon.badges.expired' | translate }}
+                    </ion-badge>
+                </a>
+            </ion-list>
+        </core-loading>
+    </ion-content>
+</core-split-view>

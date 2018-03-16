@@ -13,27 +13,27 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from './user-delegate';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
+import { AddonBadgesProvider } from './badges';
 
 /**
- * Profile links email handler.
+ * Profile badges handler.
  */
 @Injectable()
-export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
-    name = 'mmUser';
-    priority = 700;
-    type = CoreUserDelegate.TYPE_COMMUNICATION;
+export class AddonBadgesUserHandler implements CoreUserProfileHandler {
+    name = 'mmaBadges';
+    priority = 50;
+    type = CoreUserDelegate.TYPE_NEW_PAGE;
 
-    constructor(protected sitesProvider: CoreSitesProvider) { }
+    constructor(protected badgesProvider: AddonBadgesProvider) { }
 
     /**
      * Check if handler is enabled.
      *
-     * @return {boolean} Always enabled.
+     * @return {Promise<boolean>} Always enabled.
      */
-    isEnabled(): boolean {
-        return true;
+    isEnabled(): Promise<boolean> {
+        return this.badgesProvider.isPluginEnabled();
     }
 
     /**
@@ -43,11 +43,16 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
      * @param {number} courseId Course ID.
      * @param  {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param  {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return  {boolean|Promise<boolean>}   Promise resolved with true if enabled, resolved with false otherwise.
+     * @return  {boolean}   True if enabled, false otherwise.
      */
-    isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
-        // Not current user required.
-        return user.id != this.sitesProvider.getCurrentSite().getUserId() && user.email;
+    isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean {
+
+        if (navOptions && typeof navOptions.badges != 'undefined') {
+            return navOptions.badges;
+        }
+
+        // If we reach here, it means we are opening the user site profile.
+        return true;
     }
 
     /**
@@ -57,13 +62,13 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {
-            icon: 'mail',
-            title: 'core.user.sendemail',
-            class: 'core-user-profile-mail',
+            icon: 'trophy',
+            title: 'addon.badges.badges',
+            class: '',
             action: (event, navCtrl, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                window.open('mailto:' + user.email, '_blank');
+                navCtrl.push('AddonBadgesUserBadgesPage', {courseId: courseId, userId: user.id });
             }
         };
     }
