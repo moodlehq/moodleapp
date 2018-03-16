@@ -16,11 +16,11 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Content, PopoverController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AddonBadgesProvider } from '../../providers/badges';
-import { CoreTimeUtilsProvider } from '../../../../providers/utils/time';
-import { CoreDomUtilsProvider } from '../../../../providers/utils/dom';
-import { CoreSitesProvider } from '../../../../providers/sites';
-import { CoreUserProvider } from '../../../../core/user/providers/user';
-import { CoreCoursesProvider } from '../../../../core/courses/providers/courses';
+import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Page that displays the list of calendar events.

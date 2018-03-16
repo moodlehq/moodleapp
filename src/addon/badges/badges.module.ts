@@ -17,8 +17,8 @@ import { AddonBadgesProvider } from './providers/badges';
 import { AddonBadgesUserHandler } from './providers/user-handler';
 import { AddonBadgesMyBadgesLinkHandler } from './providers/mybadges-link-handler';
 import { AddonBadgesBadgeLinkHandler } from './providers/badge-link-handler';
-import { CoreContentLinksDelegate } from '../../core/contentlinks/providers/delegate';
-import { CoreUserDelegate } from '../../core/user/providers/user-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { CoreUserDelegate } from '@core/user/providers/user-delegate';
 
 @NgModule({
     declarations: [
