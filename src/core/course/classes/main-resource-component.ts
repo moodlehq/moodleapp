@@ -79,10 +79,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     doRefresh(refresher?: any, done?: () => void): Promise<any> {
         if (this.loaded) {
-            this.refreshIcon = 'spinner';
-
             return this.refreshContent().finally(() => {
-                this.refreshIcon = 'refresh';
                 refresher && refresher.complete();
                 done && done();
             });
@@ -97,10 +94,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return {Promise<any>} Resolved when done.
      */
     protected refreshContent(): Promise<any> {
+        this.refreshIcon = 'spinner';
+
         return this.invalidateContent().catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.loadContent(true);
+        }).finally(() =>  {
+            this.refreshIcon = 'refresh';
         });
     }
 

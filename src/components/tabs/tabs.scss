@@ -56,7 +56,7 @@ core-tabs {
     }
 }
 
-.scroll-content.no-scroll {
+:not(.has-refresher) > .scroll-content.no-scroll {
     overflow: hidden !important;
 }
 

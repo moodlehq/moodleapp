@@ -54,7 +54,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.courseProvider = injector.get(CoreCourseProvider);
         this.appProvider = injector.get(CoreAppProvider);
         this.eventsProvider = injector.get(CoreEventsProvider);
-        this.modulePrefetchProvider = injector.get(CoreCourseModulePrefetchDelegate);
 
         const network = injector.get(Network);
 
@@ -78,14 +77,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         if (this.syncEventName) {
             // Refresh data if this discussion is synchronized automatically.
             this.syncObserver = this.eventsProvider.on(this.syncEventName, (data) => {
-                if (this.isRefreshSyncNeeded(data)) {
-                    // Refresh the data.
-                    this.loaded = false;
-                    this.refreshIcon = 'spinner';
-                    this.syncIcon = 'spinner';
-
-                    this.refreshContent(false);
-                }
+                this.autoSyncEventReceived(data);
             }, this.siteId);
         }
     }
@@ -100,12 +92,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.loaded) {
-            this.refreshIcon = 'spinner';
-            this.syncIcon = 'spinner';
-
             return this.refreshContent(true, showErrors).finally(() => {
-                this.refreshIcon = 'refresh';
-                this.syncIcon = 'sync';
                 refresher && refresher.complete();
                 done && done();
             });
@@ -125,6 +112,20 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     }
 
     /**
+     * An autosync event has been received, check if refresh is needed and update the view.
+     *
+     * @param {any} syncEventData Data receiven on sync observer.
+     */
+    protected autoSyncEventReceived(syncEventData: any): void {
+        if (this.isRefreshSyncNeeded(syncEventData)) {
+            this.loaded = false;
+
+            // Refresh the data.
+            this.refreshContent(false);
+        }
+    }
+
+    /**
      * Perform the refresh content function.
      *
      * @param  {boolean}      [sync=false]       If the refresh needs syncing.
@@ -132,10 +133,16 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return {Promise<any>} Resolved when done.
      */
     protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
+        this.refreshIcon = 'spinner';
+        this.syncIcon = 'spinner';
+
         return this.invalidateContent().catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.loadContent(true, sync, showErrors);
+        }).finally(() =>  {
+            this.refreshIcon = 'refresh';
+            this.syncIcon = 'sync';
         });
     }
 

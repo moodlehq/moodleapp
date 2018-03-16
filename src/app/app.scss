@@ -591,6 +591,11 @@ textarea {
   }
 }
 
+canvas[core-chart] {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
 .core-circle:before {
   content: ' \25CF';
 }
