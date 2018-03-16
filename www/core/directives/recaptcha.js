@@ -132,6 +132,18 @@ angular.module('mm.core')
             scope.$watchGroup(['publickey', 'challengehash', 'challengeimage'], function() {
                 setupCaptcha(scope);
             });
+
+            scope.$on('mmCore:ResetRecaptchaV2', function() {
+                // Reset the response.
+                scope.model.recaptcharesponse = '';
+
+                // Reload the iframe.
+                var currentSrc = scope.iframeSrc;
+                scope.iframeSrc = '';
+                $timeout(function() {
+                    scope.iframeSrc = currentSrc;
+                });
+            });
         }
     };
 });
