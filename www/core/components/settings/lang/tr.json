@@ -6,6 +6,7 @@
     "disableall": "Bildirimleri devre dışı bırak",
     "disabled": "Devre dışı bırakıldı",
     "enabledebugging": "Hata ayıklamayı etkinleştir",
+    "enablerichtexteditor": "Meten düzenleyiciyi etkinleştir",
     "estimatedfreespace": "Tahmini boş alan",
     "general": "Genel",
     "language": "Dil",
@@ -17,6 +18,9 @@
     "sites": "Siteler",
     "spaceusage": "Kullanılan alan",
     "synchronization": "Eşitleme",
+    "synchronizenow": "Şimde eşitle",
+    "synchronizing": "Eşitleniyor",
+    "syncsettings": "Eşitleme ayarları",
     "total": "Toplam",
     "versionname": "Sürüm adı",
     "wificonnection": "Wi-Fi Bağlantısı"

@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Oletusilmoitusaika",
     "errorloadevent": "Ladattaessa tapahtumaa tapahtui virhe.",
     "errorloadevents": "Ladattaessa tapahtumia tapahtui virhe.",
-    "noevents": "Tapahtumia ei ole",
+    "noevents": "Ei tulevia aktiviteettien määräaikoja",
     "notifications": "Ilmoitukset"
 }

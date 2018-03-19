@@ -1,0 +1,24 @@
+<!-- ReCAPTCHA V1 -->
+<div ng-if="recaptchaV1Enabled">
+    <img ng-src="{{challengeimage}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
+    <ion-input class="item-input item-stacked-label item-text-wrap">
+        <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
+        <input type="text" name="{{modelValueName}}" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="model[modelValueName]" autocapitalize="none" autocorrect="off" required>
+    </ion-input>
+    <!-- Use anchor instead of button to prevent marking form as submitted. -->
+    <a class="button button-block" ng-click="requestCaptchaV1()">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+</div>
+
+<!-- ReCAPTCHA V2 -->
+<div ng-if="recaptchaV2Enabled">
+    <!-- A button to open the recaptcha modal. -->
+    <!-- Use anchor instead of button to prevent marking form as submitted. -->
+    <a ng-if="!model[modelValueName]" class="button button-block" ng-click="answerRecaptchaV2()">{{ 'mm.core.answer' | translate }}</a>
+    <p ng-if="model[modelValueName]" class="text-success">{{ 'mm.core.answered' | translate }}</p>
+    <p ng-if="expired" class="text-danger">{{ 'mm.login.recaptchaexpired' | translate }}</p>
+</div>
+
+<!-- Error that happens sometimes with reCaptcha V1, probably due to deprecation warnings. -->
+<div ng-if="!challengehash && challengeimage" class="mm-warning-card-icon">
+    <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.errorloadingcontent' | translate }}
+</div>

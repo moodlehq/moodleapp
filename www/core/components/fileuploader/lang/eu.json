@@ -13,7 +13,7 @@
     "errorreadingfile": "Errorea fitxategia irakurtzean.",
     "errorwhileuploading": "Errorea gertatu da fitxategia igotzean.",
     "file": "Fitxategia",
-    "filesofthesetypes": "Mota hauetako fitxategiak gehitu daitezke bidalketa honetara:",
+    "filesofthesetypes": "Onartutako fitxategi-motak:",
     "fileuploaded": "Fitxategia ondo igo da.",
     "invalidfiletype": "{{$a}} fitxategi-mota ezin da onartu.",
     "maxbytesfile": "{{$a.file}} fitxategia oso handia da. Igo ditzakezun fitxategien gehienezko tamaina {{$a.size}} da.",

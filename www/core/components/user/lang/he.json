@@ -1,7 +1,7 @@
 {
     "address": "כתובת",
     "city": "ישוב",
-    "contact": "צור קשר",
+    "contact": "ליצירת קשר",
     "country": "ארץ",
     "description": "תיאור",
     "details": "פרטים",
@@ -11,7 +11,7 @@
     "emailagain": "דואר אלקטרוני (שוב)",
     "firstname": "שם פרטי",
     "interests": "תחומי עניין",
-    "invaliduser": "משתמש לא תקף.",
+    "invaliduser": "משתמש שגוי",
     "lastname": "שם משפחה",
     "manager": "מנהל",
     "newpicture": "תמונה חדשה",

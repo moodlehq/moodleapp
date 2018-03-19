@@ -848,7 +848,9 @@ angular.module('mm.core.course')
             // Prefetch course options.
             angular.forEach(courseOptions, function(option) {
                 if (option.prefetch) {
-                    promises.push($q.when(option.prefetch(course)));
+                    promises.push($q.when(option.prefetch(course)).catch(function() {
+                        // Ignore errors when downloading course options.
+                    }));
                 }
             });
 
@@ -978,6 +980,15 @@ angular.module('mm.core.course')
                     return self.prefetchCourse(course, sections, handlers, siteId);
                 }).catch(function(error) {
                     success = false;
+
+                    // Try to improve the error message, including the course name.
+                    if (course && course.fullname) {
+                        error = $translate.instant('mm.course.errordownloadingcoursewithname', {
+                            name: course.fullname,
+                            error: error || ''
+                        });
+                    }
+
                     return $q.reject(error);
                 }).finally(function() {
                     // Course downloaded or failed, notify the progress.

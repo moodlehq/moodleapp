@@ -11,6 +11,8 @@
     "contents": "Edukiak",
     "couldnotloadsectioncontent": "Ezin izan da ataleko edukia kargatu. Saiatu beranduago mesedez.",
     "couldnotloadsections": "Ezin izan dira atalak kargatu. Saiatu beranduago mesedez.",
+    "downloadcourse": "Jaitsi ikastaroa",
+    "errordownloadingcourse": "Errorea ikastaroa jaistean.",
     "errordownloadingsection": "Errorea atala jaistean.",
     "errorgetmodule": "Errore bat gertatu da jardueraren datuak eskuratzean.",
     "hiddenfromstudents": "Ezkutuan ikasleentzat",

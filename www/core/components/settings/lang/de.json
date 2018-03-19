@@ -21,7 +21,7 @@
     "disabled": "Deaktiviert",
     "displayformat": "Bildschirmformat",
     "enabledebugging": "Debugging aktivieren",
-    "enabledownloadsection": "Herunterladen von Abschnitten aktivieren",
+    "enabledownloadsection": "Abschnitte herunterladen",
     "enabledownloadsectiondescription": "Deaktivieren Sie diese Option, wenn das Laden von Abschnitten im Online-Modus zu lange dauert.",
     "enablerichtexteditor": "Texteditor aktivieren",
     "enablerichtexteditordescription": "Der Texteditor wird überall dort verwendet, wo er für die Textbearbeitung sinnvoll ist.",

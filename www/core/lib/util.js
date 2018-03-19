@@ -1246,20 +1246,24 @@ angular.module('mm.core')
 
             var count = 0,
                 failed = false,
+                error,
                 deferred = $q.defer();
 
             angular.forEach(promises, function(promise) {
-                promise.catch(function() {
+                promise.catch(function(err) {
                     failed = true;
+                    error = err;
                 }).finally(function() {
                     count++;
 
                     if (count === promises.length) {
                         // All promises have finished, reject/resolve.
                         if (failed) {
-                            deferred.reject();
+                            deferred.reject(error);
                         } else {
-                            deferred.resolve();
+                            // All the promises have been resolved, $q.all should finish immediately and send back the result
+                            // of all the promises.
+                            deferred.resolve($q.all(promises));
                         }
                     }
                 });

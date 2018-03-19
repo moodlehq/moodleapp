@@ -3,6 +3,6 @@
     "defaultnotificationtime": "Orario di notifica di default",
     "errorloadevent": "Si è verificato un errore durante il caricamento degli eventi.",
     "errorloadevents": "Si è verificato un errore durante il caricamento degli eventi.",
-    "noevents": "Non ci sono eventi",
+    "noevents": "Non ci sono attività con date di svolgimento e/o di scadenza programmate in questo periodo.",
     "notifications": "Notifiche"
 }

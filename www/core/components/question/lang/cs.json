@@ -17,5 +17,5 @@
     "questionmessage": "Úloha {{$a}}: {{$b}}",
     "questionno": "Úloha {{$a}}",
     "requiresgrading": "Vyžaduje hodnocení",
-    "unknown": "Stav nelze určit"
+    "unknown": "Neznámý"
 }

@@ -17,5 +17,5 @@
     "questionmessage": "Vraag  {{$a}}: {{$b}}",
     "questionno": "Vraag {{$a}}",
     "requiresgrading": "Beoordelen vereist",
-    "unknown": "Kan status niet bepalen"
+    "unknown": "Onbekend"
 }

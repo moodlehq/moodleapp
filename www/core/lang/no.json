@@ -1,5 +1,7 @@
 {
     "allparticipants": "Alle deltakere",
+    "answer": "Svaralternativ",
+    "answered": "Besvart",
     "areyousure": "Er du sikker?",
     "back": "Tilbake",
     "cancel": "Avbryt",
@@ -45,6 +47,7 @@
     "download": "Last ned",
     "edit": "Rediger",
     "error": "Feil",
+    "explanationdigitalminor": "Denne informasjonen er påkrevd for å bestemme om din aldere er over lavalderen for samtykke. Dette er alderen for når en person kan samtykke til vilkår og betingelser og at dataene deres på lovlig vis blir lagret og behandlet.",
     "filename": "Filnavn",
     "folder": "Mappe",
     "forcepasswordchangenotice": "Du må endre passordet for å fortsette",

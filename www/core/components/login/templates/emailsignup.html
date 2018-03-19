@@ -3,15 +3,41 @@
         <button ng-if="authInstructions" class="button button-icon ion-help-circled" ng-click="showAuthInstructions()" aria-label="{{ 'mm.login.instructions' | translate }}"></button>
     </ion-nav-buttons>
     <ion-content mm-state-class delegate-handle="mmLoginEmailSignupScroll">
-        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="settingsLoaded" on-refresh="refreshSettings()">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="settingsLoaded && !isMinor" on-refresh="refreshSettings()">
         </ion-refresher>
-        <mm-loading hide-until="settingsLoaded">
-            <form name="signupForm" class="list list-inset" ng-if="settings" novalidate="">
+        <mm-loading hide-until="settingsLoaded" ng-if="!isMinor">
+
+            <form name="ageVerificationForm" class="list list-inset" ng-if="settings && ageDigitalConsentVerification" novalidate="">
+                <div class="item item-divider item-text-wrap">
+                    <p class="item-heading">{{ 'mm.core.agelocationverification' | translate }}</p>
+                </div>
+                <div class="item item-input item-stacked-label item-text-wrap">
+                    <h2 mm-mark-required="true">{{ 'mm.core.whatisyourage' | translate }}</h2>
+                    <input type="number" name="age" ng-model="verifyAgeData.age" autocapitalize="none" autocorrect="off" ng-required="true" placeholder="0" required>
+                </div>
+                <div class="item item-select item-stacked-label">
+                    <h2 mm-mark-required="true">{{ 'mm.core.wheredoyoulive' | translate }}</h2>
+                    <select name="country" ng-model="verifyAgeData.country" ng-options="code as name for (code, name) in countries" ng-required="true" aria-labelledby="mm-login-verify-country" mm-ios-select-fix required>
+                        <option value="">{{ 'mm.login.selectacountry' | translate }}</option>
+                    </select>
+                </div>
+
+                <div class="item padding">
+                    <button class="button button-block button-positive" ng-click="verifyAge(ageVerificationForm)">{{ 'mm.core.proceed' | translate }}</button>
+                </div>
+
+                <div class="item item-text-wrap">
+                    <p class="item-heading">{{ 'mm.core.whyisthisrequired' | translate }}</p>
+                    <p>{{ 'mm.core.explanationdigitalminor' | translate }}</p>
+                </div>
+            </form>
+
+            <form name="signupForm" class="list list-inset" ng-if="settings && !ageDigitalConsentVerification" novalidate="">
                 <div class="item item-text-wrap text-center">
                     <!-- If no sitename show big siteurl. -->
                     <p ng-if="!sitename" class="item-heading padding">{{siteurl}}</p>
                     <!-- If sitename, show big sitename and small siteurl. -->
-                    <p ng-if="sitename" class="item-heading padding">{{sitename}}</p>
+                    <p ng-if="sitename" class="item-heading padding"><mm-format-text>{{sitename}}</mm-format-text></p>
                     <p ng-if="sitename">{{siteurl}}</p>
                 </div>
                 <!-- Username and password. -->
@@ -59,18 +85,10 @@
                     <mm-user-profile-field ng-repeat="field in category.fields" field="field" edit="true" signup="true" register-auth="email" model="data" scroll-handle="mmLoginEmailSignupScroll"></mm-user-profile-field>
                 </div>
                 <!-- ReCAPTCHA -->
-                <div ng-if="settings.recaptchachallengehash && settings.recaptchachallengeimage">
+                <div ng-if="settings.recaptchapublickey">
                     <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
-                    <div class="item">
-                        <img ng-src="{{settings.recaptchachallengeimage}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
-                    </div>
-                    <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors>
-                        <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
-                        <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="data.recaptcharesponse" autocapitalize="none" autocorrect="off" required>
-                    </ion-input>
-                    <div class="item padding">
-                        <!-- Use anchor instead of button to prevent marking form as submitted. -->
-                        <a class="button button-block" ng-click="requestCaptcha()">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+                    <div class="item item-text-wrap">
+                        <mm-recaptcha publickey="{{settings.recaptchapublickey}}" challengehash="{{settings.recaptchachallengehash}}" challengeimage="{{settings.recaptchachallengeimage}}" model="data" siteurl="{{siteurl}}" request-captcha="requestCaptchaV1()"></mm-recaptcha>
                     </div>
                 </div>
                 <!-- Site policy (if any). -->
@@ -89,5 +107,22 @@
                 </div>
             </form>
         </mm-loading>
+
+        <div class="list list-inset" ng-if="isMinor">
+            <div class="item item-text-wrap item-divider">
+                <p ng-if="sitename" class="item-heading padding"><mm-format-text>{{sitename}}</mm-format-text></p>
+            </div>
+            <div class="item item-text-wrap">
+                <p class="item-heading">{{ 'mm.core.considereddigitalminor' | translate }}</p>
+                <p>{{ 'mm.core.digitalminor_desc' | translate }}</p>
+                <p ng-if="supportName">{{ supportName }}</p>
+                <p ng-if="supportEmail">{{ supportEmail }}</p>
+                <div class="padding" ng-if="!supportName && !supportEmail">
+                    <button class="button button-block button-positive" ng-click="showContactOnSite()">
+                        {{ 'mm.core.openinbrowser' | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </ion-content>
 </ion-view>

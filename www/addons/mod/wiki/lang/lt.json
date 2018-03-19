@@ -10,7 +10,7 @@
     "newpagetitle": "Naujo puslapio pavadinimas",
     "nocontent": "Nėra šio puslapio turinio",
     "notingroup": "Nėra grupėje",
-    "page": "Puslapis",
+    "page": "Puslapis: {{$a}}",
     "pageexists": "Šis puslapis jau yra.",
     "pagename": "Puslapio pavadinimas",
     "subwiki": "Subwiki",

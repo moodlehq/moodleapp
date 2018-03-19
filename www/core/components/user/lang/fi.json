@@ -1,7 +1,7 @@
 {
     "address": "Osoite",
     "city": "Paikkakunta",
-    "contact": "Yhteystiedot",
+    "contact": "Yhteystieto",
     "country": "Maa",
     "description": "Kuvaus",
     "details": "Käyttäjätiedot",
@@ -11,7 +11,7 @@
     "emailagain": "Sähköposti (varmistus)",
     "firstname": "Etunimi",
     "interests": "Kiinnostukset",
-    "invaliduser": "Virheellinen käyttäjä.",
+    "invaliduser": "Virheellinen käyttäjä",
     "lastname": "Sukunimi",
     "manager": "Hallinoija",
     "newpicture": "Uusi kuva",

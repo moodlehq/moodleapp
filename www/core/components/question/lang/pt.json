@@ -17,5 +17,5 @@
     "questionmessage": "Pergunta {{$a}}: {{$b}}",
     "questionno": "Pergunta {{$a}}",
     "requiresgrading": "Requer avaliação",
-    "unknown": "Não é possível determinar o estado"
+    "unknown": "Desconhecido(a)"
 }

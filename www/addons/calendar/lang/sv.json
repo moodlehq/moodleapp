@@ -2,6 +2,6 @@
     "calendarevents": "Kalenderhändelser",
     "errorloadevent": "Fel vid inläsning av händelse.",
     "errorloadevents": "Fel vid inläsning av händelser",
-    "noevents": "Det finns inga händelser",
-    "notifications": "Notifikationer"
+    "noevents": "Inga deadlines för aktiviteter",
+    "notifications": "Administration"
 }

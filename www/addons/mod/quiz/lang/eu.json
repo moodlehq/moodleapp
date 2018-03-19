@@ -22,7 +22,7 @@
     "errorgetquiz": "Errorea galdetegiaren datuak eskuratzean.",
     "errorparsequestions": "Errorea gertatu da galderak irakurtzean. Mesedez galdetegia nabigatzailean egiten saiatu.",
     "errorquestionsnotsupported": "Galdetegi hau ezin da app-an erantzun app-an onartzen ez diren galdera-motak dituelako:",
-    "errorrulesnotsupported": "Galdetegi hau ezin da app-an erantzun app-an onartzen ez diren sarbide-arauak dituelako:",
+    "errorrulesnotsupported": "Galdetegi hau ezin da app-an erantzun bertan onartzen ez diren sarbide-arauak dituelako:",
     "errorsaveattempt": "Errorea gertatu da saiakeraren datuak gordetzean.",
     "errorsyncquiz": "Errore bat gertatu da sinkronizatzean. Mesesdez, saiatu berriz.",
     "errorsyncquizblocked": "Galdetegi hau ezin da orain sinkronizatu beste eragiketa bat martxan dagoelako. Mesedez, saiatu beranduago. Arazoa errepikatzen bada, saiatu mesedez app-a berrabiarazten.",

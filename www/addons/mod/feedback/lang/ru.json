@@ -18,7 +18,7 @@
     "non_anonymous_entries": "Не анонимные записи ({{$a}})",
     "non_respondents_students": "Не ответившие студенты ({{$a}})",
     "not_selected": "Не выбрано",
-    "not_started": "не началось",
+    "not_started": "Не начато",
     "numberoutofrange": "Значение вне диапазона",
     "overview": "Просмотр",
     "page_after_submit": "Сообщение о завершении",
@@ -30,6 +30,6 @@
     "save_entries": "Отправить свои ответы",
     "show_entries": "Показать ответивших",
     "show_nonrespondents": "Показать не ответивших",
-    "started": "начало",
+    "started": "Начало",
     "this_feedback_is_already_submitted": "Вы уже завершили этот учебный элемент"
 }

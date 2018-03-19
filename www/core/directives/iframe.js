@@ -26,6 +26,7 @@ angular.module('mm.core')
  * Accepts the following attributes:
  *
  * @param {String} src          The source of the iframe.
+ * @param {Function} [loaded]   Function to call when the iframe is loaded.
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
@@ -64,8 +65,7 @@ angular.module('mm.core')
      */
     function redefineWindowOpen(element) {
         var el = element[0],
-            contentWindow = element.contentWindow || el.contentWindow,
-            contents = element.contents();
+            contentWindow = element.contentWindow || el.contentWindow;
 
         if (!contentWindow && el && el.contentDocument) {
             // It's probably an <object>. Try to get the window.
@@ -74,14 +74,18 @@ angular.module('mm.core')
 
         if (!contentWindow && el && el.getSVGDocument) {
             // It's probably an <embed>. Try to get the window.
-            var svgDoc = el.getSVGDocument();
-            if (svgDoc && svgDoc.defaultView) {
-                contents = angular.element(svgdoc);
-                contentWindow = svgdoc.defaultView;
-            } else if (el.window) {
-                contentWindow = el.window;
-            } else if (el.getWindow) {
-                contentWindow = el.getWindow();
+            try {
+                var svgDoc = el.getSVGDocument();
+                if (svgDoc && svgDoc.defaultView) {
+                    contents = angular.element(svgdoc);
+                    contentWindow = svgdoc.defaultView;
+                } else if (el.window) {
+                    contentWindow = el.window;
+                } else if (el.getWindow) {
+                    contentWindow = el.getWindow();
+                }
+            } catch (ex) {
+                // Error accessing document.
             }
         }
 
@@ -126,11 +130,16 @@ angular.module('mm.core')
         }
 
         // Search sub frames.
-        angular.forEach(tags, function(tag) {
-            angular.forEach(contents.find(tag), function(subelement) {
-                treatFrame(angular.element(subelement));
+        try {
+            var contents = element.contents();
+            angular.forEach(tags, function(tag) {
+                angular.forEach(contents.find(tag), function(subelement) {
+                    treatFrame(angular.element(subelement));
+                });
             });
-        });
+        } catch (ex) {
+            // Error getting iframe contents, probably due to a cross-origin problem.
+        }
     }
 
     /**
@@ -141,7 +150,13 @@ angular.module('mm.core')
      * @return {Void}
      */
     function treatLinks(element) {
-        var links = element.contents().find('a');
+        var links;
+        try {
+            links = element.contents().find('a');
+        } catch (ex) {
+            // Error getting iframe contents, probably due to a cross-origin problem.
+        }
+
         angular.forEach(links, function(el) {
             var href = el.href;
 
@@ -199,7 +214,8 @@ angular.module('mm.core')
         restrict: 'E',
         templateUrl: 'core/templates/iframe.html',
         scope: {
-            src: '='
+            src: '=',
+            loaded: '&?'
         },
         link: function(scope, element, attrs) {
             var url = (scope.src && scope.src.toString()) || '',  // Convert $sce URLs to string URLs.
@@ -216,6 +232,7 @@ angular.module('mm.core')
             if (scope.loading) {
                 iframe.on('load', function() {
                     scope.loading = false;
+                    scope.loaded && scope.loaded(); // Notify iframe was loaded.
                     $timeout(); // Use $timeout to force a digest and update the view.
                 });
 
