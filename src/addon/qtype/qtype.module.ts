@@ -13,14 +13,22 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmulti.module';
+import { AddonQtypeDescriptionModule } from './description/description.module';
+import { AddonQtypeMultichoiceModule } from './multichoice/multichoice.module';
 import { AddonQtypeNumericalModule } from './numerical/numerical.module';
 import { AddonQtypeShortAnswerModule } from './shortanswer/shortanswer.module';
+import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
 
 @NgModule({
     declarations: [],
     imports: [
+        AddonQtypeCalculatedMultiModule,
+        AddonQtypeDescriptionModule,
+        AddonQtypeMultichoiceModule,
         AddonQtypeNumericalModule,
-        AddonQtypeShortAnswerModule
+        AddonQtypeShortAnswerModule,
+        AddonQtypeTrueFalseModule
     ],
     providers: [
     ],
