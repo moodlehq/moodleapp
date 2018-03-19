@@ -15,8 +15,10 @@
 import { NgModule } from '@angular/core';
 import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmulti.module';
 import { AddonQtypeDescriptionModule } from './description/description.module';
+import { AddonQtypeMatchModule } from './match/match.module';
 import { AddonQtypeMultichoiceModule } from './multichoice/multichoice.module';
 import { AddonQtypeNumericalModule } from './numerical/numerical.module';
+import { AddonQtypeRandomSaMatchModule } from './randomsamatch/randomsamatch.module';
 import { AddonQtypeShortAnswerModule } from './shortanswer/shortanswer.module';
 import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
 
@@ -25,8 +27,10 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
     imports: [
         AddonQtypeCalculatedMultiModule,
         AddonQtypeDescriptionModule,
+        AddonQtypeMatchModule,
         AddonQtypeMultichoiceModule,
         AddonQtypeNumericalModule,
+        AddonQtypeRandomSaMatchModule,
         AddonQtypeShortAnswerModule,
         AddonQtypeTrueFalseModule
     ],

@@ -97,6 +97,98 @@ export class CoreQuestionBaseComponent {
     }
 
     /**
+     * Initialize a question component with a "match" behaviour.
+     *
+     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     */
+    initMatchComponent(): void | HTMLElement {
+        const questionDiv = this.initComponent();
+
+        if (questionDiv) {
+            // Find rows.
+            const rows = Array.from(questionDiv.querySelectorAll('tr'));
+            if (!rows || !rows.length) {
+                this.logger.warn('Aborting because couldn\'t find any row.', this.question.name);
+
+                return this.questionHelper.showComponentError(this.onAbort);
+            }
+
+            this.question.rows = [];
+
+            for (const i in rows) {
+                const row = rows[i],
+                    rowModel: any = {},
+                    columns = Array.from(row.querySelectorAll('td'));
+
+                if (!columns || columns.length < 2) {
+                    this.logger.warn('Aborting because couldn\'t the right columns.', this.question.name);
+
+                    return this.questionHelper.showComponentError(this.onAbort);
+                }
+
+                // Get the row's text. It should be in the first column.
+                rowModel.text = columns[0].innerHTML;
+
+                // Get the select and the options.
+                const select = columns[1].querySelector('select'),
+                    options = Array.from(columns[1].querySelectorAll('option'));
+
+                if (!select || !options || !options.length) {
+                    this.logger.warn('Aborting because couldn\'t find select or options.', this.question.name);
+
+                    return this.questionHelper.showComponentError(this.onAbort);
+                }
+
+                rowModel.id = select.id;
+                rowModel.name = select.name;
+                rowModel.disabled = select.disabled;
+                rowModel.selected = false;
+                rowModel.options = [];
+
+                // Check if answer is correct.
+                if (columns[1].className.indexOf('incorrect') >= 0) {
+                    rowModel.isCorrect = 0;
+                } else if (columns[1].className.indexOf('correct') >= 0) {
+                    rowModel.isCorrect = 1;
+                }
+
+                // Treat each option.
+                for (const j in options) {
+                    const optionEl = options[j];
+
+                    if (typeof optionEl.value == 'undefined') {
+                        this.logger.warn('Aborting because couldn\'t find the value of an option.', this.question.name);
+
+                        return this.questionHelper.showComponentError(this.onAbort);
+                    }
+
+                    const option = {
+                        value: optionEl.value,
+                        label: optionEl.innerHTML,
+                        selected: optionEl.selected
+                    };
+
+                    if (option.selected) {
+                        rowModel.selected = option;
+                    }
+
+                    rowModel.options.push(option);
+                }
+
+                // Get the accessibility label.
+                const accessibilityLabel = columns[1].querySelector('label.accesshide');
+                rowModel.accessibilityLabel = accessibilityLabel && accessibilityLabel.innerHTML;
+
+                this.question.rows.push(rowModel);
+            }
+
+            this.question.loaded = true;
+        }
+
+        return questionDiv;
+    }
+
+    /**
      * Initialize a question component with a multiple choice (checkbox) or single choice (radio).
      *
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
