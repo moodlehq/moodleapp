@@ -37,6 +37,124 @@ export class CoreQuestionBaseComponent {
     }
 
     /**
+     * Initialize a question component of type calculated or calculated simple.
+     *
+     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     */
+    initCalculatedComponent(): void | HTMLElement {
+        // Treat the input text first.
+        const questionDiv = this.initInputTextComponent();
+        if (questionDiv) {
+
+            // Check if the question has a select for units.
+            const selectModel: any = {},
+                select = <HTMLSelectElement> questionDiv.querySelector('select[name*=unit]'),
+                options = select && Array.from(select.querySelectorAll('option'));
+
+            if (select && options && options.length) {
+
+                selectModel.id = select.id;
+                selectModel.name = select.name;
+                selectModel.disabled = select.disabled;
+                selectModel.options = [];
+
+                // Treat each option.
+                for (const i in options) {
+                    const optionEl = options[i];
+
+                    if (typeof optionEl.value == 'undefined') {
+                        this.logger.warn('Aborting because couldn\'t find input.', this.question.name);
+
+                        return this.questionHelper.showComponentError(this.onAbort);
+                    }
+
+                    const option = {
+                        value: optionEl.value,
+                        label: optionEl.innerHTML
+                    };
+
+                    if (optionEl.selected) {
+                        selectModel.selected = option.value;
+                        selectModel.selectedLabel = option.label;
+                    }
+
+                    selectModel.options.push(option);
+                }
+
+                if (!selectModel.selected) {
+                    // No selected option, select the first one.
+                    selectModel.selected = selectModel.options[0].value;
+                    selectModel.selectedLabel = selectModel.options[0].label;
+                }
+
+                // Get the accessibility label.
+                const accessibilityLabel = questionDiv.querySelector('label[for="' + select.id + '"]');
+                selectModel.accessibilityLabel = accessibilityLabel && accessibilityLabel.innerHTML;
+
+                this.question.select = selectModel;
+
+                // Check which one should be displayed first: the select or the input.
+                const input = questionDiv.querySelector('input[type="text"][name*=answer]');
+                this.question.selectFirst =
+                        questionDiv.innerHTML.indexOf(input.outerHTML) > questionDiv.innerHTML.indexOf(select.outerHTML);
+
+                return questionDiv;
+            }
+
+            // Check if the question has radio buttons for units.
+            const radios = <HTMLInputElement[]> Array.from(questionDiv.querySelectorAll('input[type="radio"]'));
+            if (!radios.length) {
+                // No select and no radio buttons. The units need to be entered in the input text.
+                return questionDiv;
+            }
+
+            this.question.options = [];
+
+            for (const i in radios) {
+                const radioEl = radios[i],
+                    option: any = {
+                        id: radioEl.id,
+                        name: radioEl.name,
+                        value: radioEl.value,
+                        checked: radioEl.checked,
+                        disabled: radioEl.disabled
+                    },
+                    // Get the label with the question text.
+                    label = <HTMLElement> questionDiv.querySelector('label[for="' + option.id + '"]');
+
+                this.question.optionsName = option.name;
+
+                if (label) {
+                    option.text = label.innerText;
+
+                    // Check that we were able to successfully extract options required data.
+                    if (typeof option.name != 'undefined' && typeof option.value != 'undefined' &&
+                                typeof option.text != 'undefined') {
+
+                        if (radioEl.checked) {
+                            // If the option is checked we use the model to select the one.
+                            this.question.unit = option.value;
+                        }
+
+                        this.question.options.push(option);
+                        continue;
+                    }
+                }
+
+                // Something went wrong when extracting the questions data. Abort.
+                this.logger.warn('Aborting because of an error parsing options.', this.question.name, option.name);
+
+                return this.questionHelper.showComponentError(this.onAbort);
+            }
+
+            // Check which one should be displayed first: the options or the input.
+            const input = questionDiv.querySelector('input[type="text"][name*=answer]');
+            this.question.optionsFirst =
+                    questionDiv.innerHTML.indexOf(input.outerHTML) > questionDiv.innerHTML.indexOf(options[0].outerHTML);
+        }
+    }
+
+    /**
      * Initialize the component and the question text.
      *
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
