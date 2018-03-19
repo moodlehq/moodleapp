@@ -2,16 +2,16 @@
     "answer": "Risposta",
     "answersaved": "Risposta salvata",
     "complete": "Completo",
-    "correct": "Risposta corretta",
-    "feedback": "Feedback",
-    "incorrect": "Risposta errata",
+    "correct": "Giusto",
+    "feedback": "Commento",
+    "incorrect": "Sbagliato",
     "information": "Informazione",
     "invalidanswer": "Risposta incompleta",
-    "notanswered": "Risposta non data",
-    "notyetanswered": "Risposta non ancora data",
-    "partiallycorrect": "Parzialmente corretta",
+    "notanswered": "Senza scelta",
+    "notyetanswered": "Senza risposta",
+    "partiallycorrect": "Parzialmente corretto",
     "questionmessage": "Domanda {{$a}}: {{$b}}",
     "questionno": "Domanda {{$a}}",
     "requiresgrading": "Richiede valutazione",
-    "unknown": "Non è possibile determinare lo stato"
+    "unknown": "Sconosciuto"
 }

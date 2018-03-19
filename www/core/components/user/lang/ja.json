@@ -1,11 +1,11 @@
 {
     "address": "住所",
     "city": "都道府県",
-    "contact": "コンタクト",
+    "contact": "連絡先",
     "country": "国",
     "description": "説明",
     "details": "詳細",
-    "email": "メール",
+    "email": "メールアドレス",
     "emailagain": "メールアドレス (もう一度)",
     "firstname": "名",
     "interests": "興味のあること",

@@ -1,6 +1,6 @@
 {
-    "attachment": "메세지에 뱃치 첨부",
+    "attachment": "첨부",
     "browsemode": "미리보기 모드",
-    "casesensitive": "대소문자 구별",
-    "categories": "범주들"
+    "casesensitive": "정규 표현 사용",
+    "categories": "강좌 범주"
 }

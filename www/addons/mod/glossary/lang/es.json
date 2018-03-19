@@ -1,6 +1,6 @@
 {
-    "attachment": "Adjuntar insignia al mensaje",
-    "browsemode": "Navegar por las entradas",
+    "attachment": "Adjunto",
+    "browsemode": "Modo de presentación preliminar",
     "byalphabet": "Alfabéticamente",
     "byauthor": "Agrupado por autor",
     "bycategory": "Agrupar por categoría",
@@ -8,7 +8,7 @@
     "byrecentlyupdated": "Actualizado recientemente",
     "bysearch": "Busca",
     "cannoteditentry": "No se puede editar la entrada",
-    "casesensitive": "Diferencia entre mayúsculas y minúsculas",
+    "casesensitive": "Usar expresiones regulares",
     "categories": "Categorías",
     "entriestobesynced": "Entradas pendientes de ser sincronizadas",
     "entrypendingapproval": "Esta entrada está pendiente de aprobación.",
