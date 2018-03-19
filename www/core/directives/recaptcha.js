@@ -87,11 +87,11 @@ angular.module('mm.core')
                         scope.closeModal();
                     };
                     contentWindow.recaptchaexpiredcallback = function() {
+                        // Verification expired. Check the checkbox again.
                         scope.expired = true;
                         scope.model[scope.modelValueName] = '';
                         $timeout(); // Use $timeout to force a digest and update the view.
                     };
-                    // Verification expired. Check the checkbox again.
                 }
             };
         } else if (scope.recaptchaV1Enabled && !scope.initializedV1) {

@@ -65,8 +65,7 @@ angular.module('mm.core')
      */
     function redefineWindowOpen(element) {
         var el = element[0],
-            contentWindow = element.contentWindow || el.contentWindow,
-            contents = element.contents();
+            contentWindow = element.contentWindow || el.contentWindow;
 
         if (!contentWindow && el && el.contentDocument) {
             // It's probably an <object>. Try to get the window.
@@ -131,11 +130,16 @@ angular.module('mm.core')
         }
 
         // Search sub frames.
-        angular.forEach(tags, function(tag) {
-            angular.forEach(contents.find(tag), function(subelement) {
-                treatFrame(angular.element(subelement));
+        try {
+            var contents = element.contents();
+            angular.forEach(tags, function(tag) {
+                angular.forEach(contents.find(tag), function(subelement) {
+                    treatFrame(angular.element(subelement));
+                });
             });
-        });
+        } catch (ex) {
+            // Error getting iframe contents, probably due to a cross-origin problem.
+        }
     }
 
     /**
@@ -146,7 +150,13 @@ angular.module('mm.core')
      * @return {Void}
      */
     function treatLinks(element) {
-        var links = element.contents().find('a');
+        var links;
+        try {
+            links = element.contents().find('a');
+        } catch (ex) {
+            // Error getting iframe contents, probably due to a cross-origin problem.
+        }
+
         angular.forEach(links, function(el) {
             var href = el.href;
 
