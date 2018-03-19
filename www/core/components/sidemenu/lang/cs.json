@@ -1,8 +1,8 @@
 {
     "appsettings": "Nastavení aplikace",
     "changesite": "Změnit stránky",
-    "help": "Nápověda",
-    "logout": "Odhlásit",
+    "help": "Pomoc",
+    "logout": "Odhlásit se",
     "mycourses": "Moje kurzy",
     "togglemenu": "Přepnout nabídku",
     "website": "Webová stránka"

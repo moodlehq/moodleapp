@@ -7,7 +7,7 @@
     "newpagetitle": "Naslov nove stranice",
     "nocontent": "Na ovoj stranici nema sadržaja",
     "notingroup": "Nije u grupi",
-    "page": "Stranica",
+    "page": "Stranica: {{$a}}",
     "pageexists": "Ova stranica već postoji. Preusmjeravam na postojeću.",
     "pagename": "Naziv stranice",
     "viewpage": "Prikaži stranicu",

@@ -7,7 +7,7 @@
     "newpagetitle": "Ny sidetittel",
     "nocontent": "Denne siden har ikke innhold",
     "notingroup": "Ikke i gruppen",
-    "page": "Side: {{$a}}",
+    "page": "Side",
     "pageexists": "Denne siden eksisterer allerede.",
     "pagename": "Sidenavn",
     "titleshouldnotbeempty": "Tittel kan ikke være blank",

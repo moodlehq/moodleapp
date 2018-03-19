@@ -1,8 +1,8 @@
 {
-    "complete": "Анҷом ёфт",
-    "completed": "Иҷро шуд",
-    "coursecompletion": "Ба охир расидани курс",
-    "criteria": "Меъёрҳо",
+    "complete": "Иҷро шуд",
+    "completed": "Анҷом ёфт",
+    "coursecompletion": "Хатми курс",
+    "criteria": "Меъёр",
     "criteriagroup": "Гурӯҳи меъёрҳо",
     "criteriarequiredall": "Мувофиқат ба ҳамаи меъёрҳои дар зер зикршуда талаб карда мешавад",
     "criteriarequiredany": "Мувофиқат ба ҳар яке аз меъёрҳои дар зер зикршуда талаб карда мешавад",

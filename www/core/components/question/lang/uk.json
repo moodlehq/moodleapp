@@ -6,16 +6,16 @@
     "errorattachmentsnotsupported": "Додаток не підтримує прикріплення файлів відповідей",
     "errorinlinefilesnotsupported": "Додаток ще не підтримує редагування вбудованих файлів.",
     "errorquestionnotsupported": "Цей тип питання не підтримується додатком: {{$a}}.",
-    "feedback": "Коментар",
+    "feedback": "Відгук",
     "howtodraganddrop": "Натисніть, щоб вибрати і перемістить.",
     "incorrect": "Неправильно",
     "information": "Інформація",
     "invalidanswer": "Неповна відповідь",
-    "notanswered": "Відповіді не було",
+    "notanswered": "Відповіді ще не було",
     "notyetanswered": "Відповіді ще не було",
     "partiallycorrect": "Частково правильно",
     "questionmessage": "Питання {{$a}}: {{$b}}",
     "questionno": "Питання {{$a}}",
     "requiresgrading": "Потрібно оцінити",
-    "unknown": "Неможливо визначити статус"
+    "unknown": "Невідоме"
 }

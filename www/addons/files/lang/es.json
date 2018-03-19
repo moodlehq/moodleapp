@@ -4,10 +4,10 @@
     "couldnotloadfiles": "La lista de archivos no ha podido cargarse.",
     "emptyfilelist": "No hay archivos que mostrar",
     "erroruploadnotworking": "Desafortunadamente en estos momentos no es posible subir archivos al sitio.",
-    "files": "Ficheros",
+    "files": "Archivos",
     "myprivatefilesdesc": "Los archivos que están disponibles en su área privada en este sitio Moodle.",
     "privatefiles": "Ficheros privados",
     "sitefiles": "Archivos del sitio",
     "sitefilesdesc": "Los otros archivos que están disponibles  para Usted en este sitio Moodle.",
-    "uploadfiles": "Subir archivos"
+    "uploadfiles": "Mandar archivos de retroalimentación"
 }
