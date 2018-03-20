@@ -780,7 +780,7 @@ export class CoreSite {
                 entry.key = preSets.cacheKey;
             }
 
-            return this.db.insertOrUpdateRecord(this.WS_CACHE_TABLE, entry, { id: id });
+            return this.db.insertRecord(this.WS_CACHE_TABLE, entry);
         });
     }
 

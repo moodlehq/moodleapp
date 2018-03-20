@@ -383,7 +383,7 @@ export class CoreUserProvider {
                 profileimageurl: avatar
             };
 
-            return site.getDb().insertOrUpdateRecord(this.USERS_TABLE, userRecord, { id: userId });
+            return site.getDb().insertRecord(this.USERS_TABLE, userRecord);
         });
     }
 

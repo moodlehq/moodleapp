@@ -81,6 +81,6 @@ export class CoreConfigProvider {
      * @return {Promise<any>} Promise resolved when done.
      */
     set(name: string, value: boolean | number | string): Promise<any> {
-        return this.appDB.insertOrUpdateRecord(this.TABLE_NAME, { name: name, value: value }, { name: name });
+        return this.appDB.insertRecord(this.TABLE_NAME, { name: name, value: value });
     }
 }

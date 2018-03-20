@@ -142,7 +142,7 @@ export class CoreSyncProvider {
             data.component = component;
             data.id = id;
 
-            return db.insertOrUpdateRecord(this.SYNC_TABLE, data, { component: component, id: id });
+            return db.insertRecord(this.SYNC_TABLE, data);
         });
     }
 

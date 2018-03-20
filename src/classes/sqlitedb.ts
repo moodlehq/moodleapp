@@ -625,7 +625,7 @@ export class SQLiteDB {
             questionMarks = ',?'.repeat(keys.length).substr(1);
 
         return [
-            `INSERT INTO ${table} (${fields}) VALUES (${questionMarks})`,
+            `INSERT OR REPLACE INTO ${table} (${fields}) VALUES (${questionMarks})`,
             keys.map((key) => data[key])
         ];
     }
@@ -641,24 +641,6 @@ export class SQLiteDB {
             });
         }).then((db: SQLiteObject) => {
             this.db = db;
-        });
-    }
-
-    /**
-     * Insert or update a record.
-     *
-     * @param {string} table The database table.
-     * @param {object} data An object with the fields to insert/update: fieldname=>fieldvalue.
-     * @param {object} conditions The conditions to check if the record already exists (and to update it).
-     * @return {Promise<any>} Promise resolved with done.
-     */
-    insertOrUpdateRecord(table: string, data: object, conditions: object): Promise<any> {
-        return this.getRecord(table, conditions).then(() => {
-            // It exists, update it.
-            return this.updateRecords(table, data, conditions);
-        }).catch(() => {
-            // Doesn't exist, insert it.
-            return this.insertRecord(table, data);
         });
     }
 

@@ -218,13 +218,8 @@ export class AddonNotesOfflineProvider {
                 created: now,
                 lastmodified: now
             };
-            const conditions = {
-                userid: userId,
-                content: content,
-                created: now
-            };
 
-            return site.getDb().insertOrUpdateRecord(this.NOTES_TABLE, data, conditions).then(() => {
+            return site.getDb().insertRecord(this.NOTES_TABLE, data).then(() => {
                 return data;
             });
         });

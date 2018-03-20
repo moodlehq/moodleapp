@@ -623,7 +623,7 @@ export class CoreSitesProvider {
             loggedOut: 0
         };
 
-        return this.appDB.insertOrUpdateRecord(this.SITES_TABLE, entry, { id: id });
+        return this.appDB.insertRecord(this.SITES_TABLE, entry);
     }
 
     /**
@@ -895,7 +895,7 @@ export class CoreSitesProvider {
             siteId: siteId
         };
 
-        return this.appDB.insertOrUpdateRecord(this.CURRENT_SITE_TABLE, entry, { id: 1 }).then(() => {
+        return this.appDB.insertRecord(this.CURRENT_SITE_TABLE, entry).then(() => {
             this.eventsProvider.trigger(CoreEventsProvider.LOGIN, {}, siteId);
         });
     }

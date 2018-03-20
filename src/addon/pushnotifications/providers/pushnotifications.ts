@@ -402,7 +402,7 @@ export class AddonPushNotificationsProvider {
             number: value
         };
 
-        return this.appDB.insertOrUpdateRecord(this.BADGE_TABLE, entry, {siteid: siteId, addon: addon}).then(() => {
+        return this.appDB.insertRecord(this.BADGE_TABLE, entry).then(() => {
             return value;
         });
     }

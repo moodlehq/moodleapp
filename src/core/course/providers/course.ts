@@ -699,7 +699,7 @@ export class CoreCourseProvider {
                         previousDownloadTime: previousDownloadTime
                     };
 
-                    return site.getDb().insertOrUpdateRecord(this.COURSE_STATUS_TABLE, data, { id: courseId });
+                    return site.getDb().insertRecord(this.COURSE_STATUS_TABLE, data);
                 }
             }).then(() => {
                 // Success inserting, trigger event.
