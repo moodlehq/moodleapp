@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, EventEmitter } from '@angular/core';
+import { Input, EventEmitter, Injector } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 
 /**
@@ -30,10 +31,17 @@ export class CoreQuestionBaseComponent {
     @Input() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
     protected logger;
+    protected questionHelper: CoreQuestionHelperProvider;
+    protected domUtils: CoreDomUtilsProvider;
+    protected textUtils: CoreTextUtilsProvider;
 
-    constructor(logger: CoreLoggerProvider, logName: string, protected questionHelper: CoreQuestionHelperProvider,
-            protected domUtils: CoreDomUtilsProvider) {
+    constructor(logger: CoreLoggerProvider, logName: string, protected injector: Injector) {
         this.logger = logger.getInstance(logName);
+
+        // Use an injector to get the providers to prevent having to modify all subclasses if a new provider is needed.
+        this.questionHelper = injector.get(CoreQuestionHelperProvider);
+        this.domUtils = injector.get(CoreDomUtilsProvider);
+        this.textUtils = injector.get(CoreTextUtilsProvider);
     }
 
     /**
@@ -178,6 +186,48 @@ export class CoreQuestionBaseComponent {
         }
 
         return div;
+    }
+
+    /**
+     * Initialize a question component of type essay.
+     *
+     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     */
+    initEssayComponent(): void | HTMLElement {
+        const questionDiv = this.initComponent();
+
+        if (questionDiv) {
+            // First search the textarea.
+            const textarea = <HTMLTextAreaElement> questionDiv.querySelector('textarea[name*=_answer]');
+            this.question.allowsAttachments = !!questionDiv.querySelector('div[id*=filemanager]');
+            this.question.isMonospaced = !!questionDiv.querySelector('.qtype_essay_monospaced');
+            this.question.isPlainText = this.question.isMonospaced || !!questionDiv.querySelector('.qtype_essay_plain');
+            this.question.hasDraftFiles = this.questionHelper.hasDraftFileUrls(questionDiv.innerHTML);
+
+            if (!textarea) {
+                // Textarea not found, we might be in review. Search the answer and the attachments.
+                this.question.answer = this.domUtils.getContentsOfElement(questionDiv, '.qtype_essay_response');
+                this.question.attachments = this.questionHelper.getQuestionAttachmentsFromHtml(
+                        this.domUtils.getContentsOfElement(questionDiv, '.attachments'));
+            } else {
+                // Textarea found.
+                const input = <HTMLInputElement> questionDiv.querySelector('input[type="hidden"][name*=answerformat]'),
+                    content = textarea.innerHTML;
+
+                this.question.textarea = {
+                    id: textarea.id,
+                    name: textarea.name,
+                    text: content ? this.textUtils.decodeHTML(content) : ''
+                };
+
+                if (input) {
+                    this.question.formatInput = {
+                        name: input.name,
+                        value: input.value
+                    };
+                }
+            }
+        }
     }
 
     /**

@@ -17,22 +17,22 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 
 /**
- * Component to render a short answer question.
+ * Component to render an essay question.
  */
 @Component({
-    selector: 'addon-qtype-shortanswer',
-    templateUrl: 'shortanswer.html'
+    selector: 'addon-qtype-essay',
+    templateUrl: 'essay.html'
 })
-export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent implements OnInit {
+export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implements OnInit {
 
     constructor(logger: CoreLoggerProvider, injector: Injector) {
-        super(logger, 'AddonQtypeShortAnswerComponent', injector);
+        super(logger, 'AddonQtypeEssayComponent', injector);
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.initInputTextComponent();
+        this.initEssayComponent();
     }
 }

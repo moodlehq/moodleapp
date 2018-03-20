@@ -17,6 +17,7 @@ import { AddonQtypeCalculatedModule } from './calculated/calculated.module';
 import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmulti.module';
 import { AddonQtypeCalculatedSimpleModule } from './calculatedsimple/calculatedsimple.module';
 import { AddonQtypeDescriptionModule } from './description/description.module';
+import { AddonQtypeEssayModule } from './essay/essay.module';
 import { AddonQtypeMatchModule } from './match/match.module';
 import { AddonQtypeMultichoiceModule } from './multichoice/multichoice.module';
 import { AddonQtypeNumericalModule } from './numerical/numerical.module';
@@ -31,6 +32,7 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
         AddonQtypeCalculatedMultiModule,
         AddonQtypeCalculatedSimpleModule,
         AddonQtypeDescriptionModule,
+        AddonQtypeEssayModule,
         AddonQtypeMatchModule,
         AddonQtypeMultichoiceModule,
         AddonQtypeNumericalModule,

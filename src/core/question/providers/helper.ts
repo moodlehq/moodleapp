@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, EventEmitter } from '@angular/core';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreQuestionProvider } from './question';
@@ -26,7 +27,7 @@ export class CoreQuestionHelperProvider {
     protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-        private questionProvider: CoreQuestionProvider) { }
+        private questionProvider: CoreQuestionProvider, private sitesProvider: CoreSitesProvider) { }
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -267,6 +268,40 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Given an HTML code with list of attachments, returns the list of attached files (filename and fileurl).
+     * Please take into account that this function will treat all the anchors in the HTML, you should provide
+     * an HTML containing only the attachments anchors.
+     *
+     * @param  {String} html HTML code to search in.
+     * @return {Object[]}    Attachments.
+     */
+    getQuestionAttachmentsFromHtml(html: string): any[] {
+        this.div.innerHTML = html;
+
+        // Remove the filemanager (area to attach files to a question).
+        this.domUtils.removeElement(this.div, 'div[id*=filemanager]');
+
+        // Search the anchors.
+        const anchors = Array.from(this.div.querySelectorAll('a')),
+            attachments = [];
+
+        anchors.forEach((anchor) => {
+            let content = anchor.innerHTML;
+
+            // Check anchor is valid.
+            if (anchor.href && content) {
+                content = this.textUtils.cleanTags(content, true).trim();
+                attachments.push({
+                    filename: content,
+                    fileurl: anchor.href
+                });
+            }
+        });
+
+        return attachments;
+    }
+
+    /**
      * Get the sequence check from a question HTML.
      *
      * @param {string} html Question's HTML.
@@ -297,6 +332,22 @@ export class CoreQuestionHelperProvider {
         this.div.innerHTML = html;
 
         return this.domUtils.getContentsOfElement(this.div, '.validationerror');
+    }
+
+    /**
+     * Check if some HTML contains draft file URLs for the current site.
+     *
+     * @param {string} html Question's HTML.
+     * @return {boolean} Whether it contains draft files URLs.
+     */
+    hasDraftFileUrls(html: string): boolean {
+        let url = this.sitesProvider.getCurrentSite().getURL();
+        if (url.slice(-1) != '/') {
+            url = url += '/';
+        }
+        url += 'draftfile.php';
+
+        return html.indexOf(url) != -1;
     }
 
     /**

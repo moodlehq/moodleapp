@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 
 /**
@@ -27,8 +25,8 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
 })
 export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent implements OnInit {
 
-    constructor(logger: CoreLoggerProvider, questionHelper: CoreQuestionHelperProvider, domUtils: CoreDomUtilsProvider) {
-        super(logger, 'AddonQtypeDescriptionComponent', questionHelper, domUtils);
+    constructor(logger: CoreLoggerProvider, injector: Injector) {
+        super(logger, 'AddonQtypeDescriptionComponent', injector);
     }
 
     /**
