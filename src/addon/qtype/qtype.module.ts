@@ -18,7 +18,9 @@ import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmul
 import { AddonQtypeCalculatedSimpleModule } from './calculatedsimple/calculatedsimple.module';
 import { AddonQtypeDescriptionModule } from './description/description.module';
 import { AddonQtypeEssayModule } from './essay/essay.module';
+import { AddonQtypeGapSelectModule } from './gapselect/gapselect.module';
 import { AddonQtypeMatchModule } from './match/match.module';
+import { AddonQtypeMultiAnswerModule } from './multianswer/multianswer.module';
 import { AddonQtypeMultichoiceModule } from './multichoice/multichoice.module';
 import { AddonQtypeNumericalModule } from './numerical/numerical.module';
 import { AddonQtypeRandomSaMatchModule } from './randomsamatch/randomsamatch.module';
@@ -33,7 +35,9 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
         AddonQtypeCalculatedSimpleModule,
         AddonQtypeDescriptionModule,
         AddonQtypeEssayModule,
+        AddonQtypeGapSelectModule,
         AddonQtypeMatchModule,
+        AddonQtypeMultiAnswerModule,
         AddonQtypeMultichoiceModule,
         AddonQtypeNumericalModule,
         AddonQtypeRandomSaMatchModule,

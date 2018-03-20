@@ -231,6 +231,45 @@ export class CoreQuestionBaseComponent {
     }
 
     /**
+     * Initialize a question component that uses the original question text with some basic treatment.
+     *
+     * @param {string} contentSelector The selector to find the question content (text).
+     * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
+     */
+    initOriginalTextComponent(contentSelector: string): void | HTMLElement {
+        if (!this.question) {
+            this.logger.warn('Aborting because of no question received.');
+
+            return this.questionHelper.showComponentError(this.onAbort);
+        }
+
+        const div = document.createElement('div');
+        div.innerHTML = this.question.html;
+
+        // Get question content.
+        const content = <HTMLElement> div.querySelector(contentSelector);
+        if (!content) {
+            this.logger.warn('Aborting because of an error parsing question.', this.question.name);
+
+            return this.questionHelper.showComponentError(this.onAbort);
+        }
+
+        // Remove sequencecheck and validation error.
+        this.domUtils.removeElement(content, 'input[name*=sequencecheck]');
+        this.domUtils.removeElement(content, '.validationerror');
+
+        // Replace Moodle's correct/incorrect and feedback classes with our own.
+        this.questionHelper.replaceCorrectnessClasses(div);
+        this.questionHelper.replaceFeedbackClasses(div);
+
+        // Treat the correct/incorrect icons.
+        this.questionHelper.treatCorrectnessIcons(div, this.component, this.componentId);
+
+        // Set the question text.
+        this.question.text = content.innerHTML;
+    }
+
+    /**
      * Initialize a question component that has an input of type "text".
      *
      * @return {void|HTMLElement} Element containing the question HTML, void if the data is not valid.
