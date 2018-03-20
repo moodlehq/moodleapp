@@ -79,6 +79,7 @@ import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
+import { AddonNotesModule } from '../addon/notes/notes.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 
@@ -161,6 +162,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModResourceModule,
         AddonModFolderModule,
         AddonMessagesModule,
+        AddonNotesModule,
         AddonPushNotificationsModule,
         AddonRemoteThemesModule
     ],
