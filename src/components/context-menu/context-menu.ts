@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, Optional } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
+import { CoreTabComponent } from '@components/tabs/tab';
 import { Subject } from 'rxjs';
 
 /**
@@ -40,7 +41,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected parentContextMenu: CoreContextMenuComponent;
 
     constructor(private translate: TranslateService, private popoverCtrl: PopoverController, elementRef: ElementRef,
-            private domUtils: CoreDomUtilsProvider) {
+            private domUtils: CoreDomUtilsProvider, @Optional() public coreTab: CoreTabComponent) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
         this.itemsChangedStream.auditTime(250).subscribe(() => {
