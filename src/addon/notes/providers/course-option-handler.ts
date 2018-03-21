@@ -25,16 +25,8 @@ import { AddonNotesTypesComponent } from '../components/types/types';
 export class AddonNotesCourseOptionHandler implements CoreCourseOptionsHandler {
     name = 'AddonNotes';
     priority = 200;
-    protected coursesNavEnabledCache = {};
 
     constructor(private notesProvider: AddonNotesProvider) {
-    }
-
-    /**
-     * Clear courses nav cache.
-     */
-    clearCoursesNavCache(): void {
-        this.coursesNavEnabledCache = {};
     }
 
     /**
@@ -42,7 +34,7 @@ export class AddonNotesCourseOptionHandler implements CoreCourseOptionsHandler {
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.notesProvider.isPluginViewNotesEnabled();
+        return this.notesProvider.isPluginEnabled();
     }
 
     /**
@@ -63,15 +55,7 @@ export class AddonNotesCourseOptionHandler implements CoreCourseOptionsHandler {
             return navOptions.notes;
         }
 
-        if (typeof this.coursesNavEnabledCache[courseId] != 'undefined') {
-            return this.coursesNavEnabledCache[courseId];
-        }
-
-        return this.notesProvider.isPluginViewNotesEnabledForCourse(courseId).then((enabled) => {
-            this.coursesNavEnabledCache[courseId] = enabled;
-
-            return enabled;
-        });
+        return this.notesProvider.isPluginViewNotesEnabledForCourse(courseId);
     }
 
     /**

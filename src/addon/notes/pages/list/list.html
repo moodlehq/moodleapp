@@ -17,9 +17,10 @@
     </ion-refresher>
     <core-loading [hideUntil]="notesLoaded" class="core-loading-center">
 
-        <p class="core-warning-card" *ngIf="hasOffline">
-            <ion-icon name="alert" color="warning" padding-right></ion-icon> {{ 'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase } }}
-        </p>
+        <div class="core-warning-card" icon-start *ngIf="hasOffline">
+            <ion-icon name="warning"></ion-icon>
+            {{ 'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase } }}
+        </div>
 
         <core-empty-box *ngIf="notes && notes.length == 0" icon="list" [message]="'addon.notes.nonotes' | translate"></core-empty-box>
 

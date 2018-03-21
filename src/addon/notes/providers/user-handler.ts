@@ -14,6 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { ModalController } from 'ionic-angular';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonNotesProvider } from './notes';
@@ -29,7 +31,11 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
     addNoteEnabledCache = {};
 
     constructor(private modalCtrl: ModalController, private sitesProvider: CoreSitesProvider,
-            private notesProvider: AddonNotesProvider) {
+            private notesProvider: AddonNotesProvider, eventsProvider: CoreEventsProvider) {
+        eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearAddNoteCache.bind(this));
+        eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+            this.clearAddNoteCache(data.courseId);
+        });
     }
 
     /**
@@ -38,7 +44,7 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
      *
      * @param {number} [courseId] Course ID.
      */
-    clearAddNoteCache(courseId?: number): void {
+    private clearAddNoteCache(courseId?: number): void {
         if (courseId) {
             delete this.addNoteEnabledCache[courseId];
         } else {
@@ -51,7 +57,7 @@ export class AddonNotesUserHandler implements CoreUserProfileHandler {
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.notesProvider.isPluginAddNoteEnabled();
+        return this.notesProvider.isPluginEnabled();
     }
 
     /**

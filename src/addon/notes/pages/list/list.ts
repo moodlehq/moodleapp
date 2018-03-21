@@ -76,10 +76,11 @@ export class AddonNotesListPage implements OnDestroy {
     }
 
     /**
-     * Fetch notes
+     * Fetch notes.
+     *
      * @param  {boolean} sync         When to resync notes.
      * @param  {boolean} [showErrors] When to display errors or not.
-     * @return {Promise<any>}         Promise with the notes,
+     * @return {Promise<any>}         Promise with the notes.
      */
     private fetchNotes(sync: boolean, showErrors?: boolean): Promise<any> {
         const promise = sync ? this.syncNotes(showErrors) : Promise.resolve();
@@ -90,7 +91,7 @@ export class AddonNotesListPage implements OnDestroy {
             return this.notesProvider.getNotes(this.courseId).then((notes) => {
                 notes = notes[this.type + 'notes'] || [];
 
-                this.hasOffline = this.notesProvider.hasOfflineNote(notes);
+                this.hasOffline = notes.some((note) => note.offline);
 
                 return this.notesProvider.getNotesUserData(notes, this.courseId).then((notes) => {
                     this.notes = notes;
@@ -101,7 +102,7 @@ export class AddonNotesListPage implements OnDestroy {
         }).finally(() => {
             this.notesLoaded = true;
             this.refreshIcon = 'refresh';
-            this.syncIcon = 'loop';
+            this.syncIcon = 'sync';
         });
     }
 
@@ -124,7 +125,7 @@ export class AddonNotesListPage implements OnDestroy {
     }
 
     /**
-     * Tries to syncrhonize course notes.
+     * Tries to synchronize course notes.
      *
      * @param  {boolean} showErrors Whether to display errors or not.
      * @return {Promise<any>}       Promise resolved if sync is successful, rejected otherwise.

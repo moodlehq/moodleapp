@@ -32,7 +32,7 @@ export class AddonNotesProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
-            private utilsProvider: CoreUtilsProvider, private translate: TranslateService, private userProvider: CoreUserProvider,
+            private utils: CoreUtilsProvider, private translate: TranslateService, private userProvider: CoreUserProvider,
             private notesOffline: AddonNotesOfflineProvider) {
         this.logger = logger.getInstance('AddonNotesProvider');
     }
@@ -65,14 +65,14 @@ export class AddonNotesProvider {
         // Send note to server.
         return this.addNoteOnline(userId, courseId, publishState, noteText, siteId).then(() => {
             return true;
-        }).catch((data) => {
-            if (data.wserror) {
-                // It's a WebService error, the user cannot add the note so don't store it.
-                return Promise.reject(data.error);
-            } else {
-                // Error sending note, store it to retry later.
-                return storeOffline();
+        }).catch((error) => {
+            if (this.utils.isWebServiceError(error)) {
+                // It's a WebService error, the user cannot send the message so don't store it.
+                return Promise.reject(error);
             }
+
+            // Error sending note, store it to retry later.
+            return storeOffline();
         });
     }
 
@@ -84,9 +84,7 @@ export class AddonNotesProvider {
      * @param  {string} publishState Personal, Site or Course.
      * @param  {string} noteText     The note text.
      * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when added, rejected otherwise. Reject param is an object with:
-     *                               - error: The error message.
-     *                               - wserror: True if it's an error returned by the WebService, false otherwise.
+     * @return {Promise<any>}        Promise resolved when added, rejected otherwise.
      */
     addNoteOnline(userId: number, courseId: number, publishState: string, noteText: string, siteId?: string): Promise<any> {
         const notes = [
@@ -99,18 +97,10 @@ export class AddonNotesProvider {
             }
         ];
 
-        return this.addNotesOnline(notes, siteId).catch((error) => {
-            return Promise.reject({
-                error: error,
-                wserror: this.utilsProvider.isWebServiceError(error)
-            });
-        }).then((response) => {
+        return this.addNotesOnline(notes, siteId).then((response) => {
             if (response && response[0] && response[0].noteid === -1) {
                 // There was an error, and it should be translated already.
-                return Promise.reject({
-                    error: response[0].errormessage,
-                    wserror: true
-                });
+                return Promise.reject(this.utils.createFakeWSError(response[0].errormessage));
             }
 
             // A note was added, invalidate the course notes.
@@ -143,7 +133,7 @@ export class AddonNotesProvider {
     }
 
     /**
-     * Returns whether or not the add note plugin is enabled for a certain site.
+     * Returns whether or not the notes plugin is enabled for a certain site.
      *
      * This method is called quite often and thus should only perform a quick
      * check, we should not be calling WS from here.
@@ -151,15 +141,9 @@ export class AddonNotesProvider {
      * @param  {string} [siteId]  Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
-    isPluginAddNoteEnabled(siteId?: string): Promise<boolean> {
+    isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            if (!site.canUseAdvancedFeature('enablenotes')) {
-                return false;
-            } else if (!site.wsAvailable('core_notes_create_notes')) {
-                return false;
-            }
-
-            return true;
+            return site.canUseAdvancedFeature('enablenotes');
         });
     }
 
@@ -188,33 +172,7 @@ export class AddonNotesProvider {
 
             /* Use .read to cache data and be able to check it in offline. This means that, if a user loses the capabilities
                to add notes, he'll still see the option in the app. */
-            return site.read('core_notes_create_notes', data).then(() => {
-                // User can add notes.
-                return true;
-            }).catch(() => {
-                return false;
-            });
-        });
-    }
-
-    /**
-     * Returns whether or not the read notes plugin is enabled for the current site.
-     *
-     * This method is called quite often and thus should only perform a quick
-     * check, we should not be calling WS from here.
-     *
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false or rejected otherwise.
-     */
-    isPluginViewNotesEnabled(siteId?: string): Promise<boolean> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            if (!site.canUseAdvancedFeature('enablenotes')) {
-                return false;
-            } else if (!site.wsAvailable('core_notes_get_course_notes')) {
-                return false;
-            }
-
-            return true;
+            return this.utils.promiseWorks(site.read('core_notes_create_notes', data));
         });
     }
 
@@ -226,11 +184,7 @@ export class AddonNotesProvider {
      * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginViewNotesEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
-        return this.getNotes(courseId, false, true, siteId).then(() => {
-            return true;
-        }).catch(() => {
-            return false;
-        });
+        return this.utils.promiseWorks(this.getNotes(courseId, false, true, siteId));
     }
 
     /**
@@ -312,26 +266,6 @@ export class AddonNotesProvider {
         return Promise.all(promises).then(() => {
             return notes;
         });
-    }
-
-    /**
-     * Given a list of notes, check if any of them is an offline note.
-     *
-     * @param  {any[]} notes List of notes.
-     * @return {boolean}     True if at least 1 note is offline, false otherwise.
-     */
-    hasOfflineNote(notes: any[]): boolean {
-        if (!notes || !notes.length) {
-            return false;
-        }
-
-        for (let i = 0, len = notes.length; i < len; i++) {
-            if (notes[i].offline) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

@@ -22,11 +22,7 @@ import { AddonNotesUserHandler } from './providers/user-handler';
 import { AddonNotesComponentsModule } from './components/components.module';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreCronDelegate } from '@providers/cron';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { CoreEventsProvider } from '@providers/events';
-import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
-import { CoreUserProvider } from '@core/user/providers/user';
 
 @NgModule({
     declarations: [
@@ -45,23 +41,11 @@ import { CoreUserProvider } from '@core/user/providers/user';
 })
 export class AddonNotesModule {
     constructor(courseOptionsDelegate: CoreCourseOptionsDelegate, courseOptionHandler: AddonNotesCourseOptionHandler,
-            userDelegate: CoreUserDelegate, userHandler: AddonNotesUserHandler, cronDelegate: CoreCronDelegate,
-            syncHandler: AddonNotesSyncCronHandler, eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
+            userDelegate: CoreUserDelegate, userHandler: AddonNotesUserHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonNotesSyncCronHandler) {
         // Register handlers.
         courseOptionsDelegate.registerHandler(courseOptionHandler);
         userDelegate.registerHandler(userHandler);
         cronDelegate.register(syncHandler);
-
-        eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
-            courseOptionHandler.clearCoursesNavCache();
-        }, sitesProvider.getCurrentSiteId());
-
-        eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED, () => {
-            courseOptionHandler.clearCoursesNavCache();
-        }, sitesProvider.getCurrentSiteId());
-
-        eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, () => {
-            userHandler.clearAddNoteCache();
-        }, sitesProvider.getCurrentSiteId());
     }
 }

@@ -21,7 +21,7 @@
         <ion-item>
             <ion-textarea placeholder="{{ 'addon.notes.note' | translate }}" rows="5" [(ngModel)]="text" name="text" required="required"></ion-textarea>
         </ion-item>
-        <button ion-button full margin-vertical type="submit" [disabled]="processing || text.length < 2">
+        <button ion-button block margin-vertical type="submit" [disabled]="processing || text.length < 2">
             {{ 'addon.notes.addnewnote' | translate }}
         </button>
     </form>
