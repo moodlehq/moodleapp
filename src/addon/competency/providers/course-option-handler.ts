@@ -26,16 +26,7 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
     name = 'AddonCompetency';
     priority = 700;
 
-    protected coursesNavEnabledCache = {};
-
     constructor(private competencyProvider: AddonCompetencyProvider) {}
-
-    /**
-     * Clear courses nav cache.
-     */
-    clearCoursesNavCache(): void {
-        this.coursesNavEnabledCache = {};
-    }
 
     /**
      * Whether or not the handler is enabled ona site level.
@@ -63,15 +54,8 @@ export class AddonCompetencyCourseOptionHandler implements CoreCourseOptionsHand
             return navOptions.competencies;
         }
 
-        if (typeof this.coursesNavEnabledCache[courseId] != 'undefined') {
-            return this.coursesNavEnabledCache[courseId];
-        }
-
         return this.competencyProvider.isPluginForCourseEnabled(courseId).then((competencies) => {
-            const enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
-            this.coursesNavEnabledCache[courseId] = enabled;
-
-            return enabled;
+            return competencies ? !competencies.canmanagecoursecompetencies : false;
         });
     }
 
