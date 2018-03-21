@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Optional } from '@angular/core';
+import { Component, Optional } from '@angular/core';
 import { Content, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -20,7 +20,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { CoreCourseModuleMainComponent } from '@core/course/providers/module-delegate';
+import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/toc-popover';
@@ -32,71 +32,31 @@ import { AddonModBookTocPopoverComponent } from '../../components/toc-popover/to
     selector: 'addon-mod-book-index',
     templateUrl: 'index.html',
 })
-export class AddonModBookIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
-    @Input() module: any; // The module of the book.
-    @Input() courseId: number; // Course ID the book belongs to.
-    @Output() bookRetrieved?: EventEmitter<any>;
-
-    loaded: boolean;
+export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent {
     component = AddonModBookProvider.COMPONENT;
-    componentId: number;
     chapterContent: string;
     previousChapter: string;
     nextChapter: string;
 
-    // Data for context menu.
-    externalUrl: string;
-    description: string;
-    refreshIcon: string;
-    prefetchStatusIcon: string;
-    prefetchText: string;
-    size: string;
-
     protected chapters: AddonModBookTocChapter[];
     protected currentChapter: string;
     protected contentsMap: AddonModBookContentsMap;
-    protected isDestroyed = false;
-    protected statusObserver;
 
     constructor(private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider, private textUtils: CoreTextUtilsProvider,
-            private courseHelper: CoreCourseHelperProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
-            private popoverCtrl: PopoverController, private translate: TranslateService, @Optional() private content: Content) {
-        this.bookRetrieved = new EventEmitter();
+            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
+            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
+            private prefetchDelegate: AddonModBookPrefetchHandler, private popoverCtrl: PopoverController,
+            protected translate: TranslateService, @Optional() private content: Content) {
+        super(textUtils, courseHelper, translate, domUtils);
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.description = this.module.description;
-        this.componentId = this.module.id;
-        this.externalUrl = this.module.url;
-        this.loaded = false;
-        this.refreshIcon = 'spinner';
+        super.ngOnInit();
 
-        this.fetchContent();
-    }
-
-    /**
-     * Refresh the data.
-     *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    doRefresh(refresher?: any, done?: () => void): Promise<any> {
-        this.refreshIcon = 'spinner';
-
-        return this.bookProvider.invalidateContent(this.module.id, this.courseId).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            return this.fetchContent(this.currentChapter, true);
-        }).finally(() => {
-            this.refreshIcon = 'refresh';
-            refresher && refresher.complete();
-            done && done();
-        });
+        this.loadContent();
     }
 
     /**
@@ -133,40 +93,27 @@ export class AddonModBookIndexComponent implements OnInit, OnDestroy, CoreCourse
     }
 
     /**
-     * Expand the description.
+     * Perform the invalidate content function.
+     *
+     * @return {Promise<any>} Resolved when done.
      */
-    expandDescription(): void {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id);
-    }
-
-    /**
-     * Prefetch the module.
-     */
-    prefetch(): void {
-        this.courseHelper.contextMenuPrefetch(this, this.module, this.courseId);
-    }
-
-    /**
-     * Confirm and remove downloaded files.
-     */
-    removeFiles(): void {
-        this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    protected invalidateContent(): Promise<any> {
+        return this.bookProvider.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
      * Download book contents and load the current chapter.
      *
-     * @param {string} [chapterId] Chapter to load.
      * @param {boolean} [refresh] Whether we're refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchContent(chapterId?: string, refresh?: boolean): Promise<any> {
+    protected fetchContent(refresh?: boolean): Promise<any> {
         const promises = [];
         let downloadFailed = false;
 
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
-            this.bookRetrieved.emit(book);
+            this.dataRetrieved.emit(book);
             this.description = book.intro || this.description;
         }).catch(() => {
             // Ignore errors since this WS isn't available in some Moodle versions.
@@ -192,22 +139,17 @@ export class AddonModBookIndexComponent implements OnInit, OnDestroy, CoreCourse
             }
 
             // Show chapter.
-            return this.loadChapter(chapterId || this.currentChapter).then(() => {
+            return this.loadChapter(this.currentChapter).then(() => {
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
                     this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
                 }
 
                 // All data obtained, now fill the context menu.
-                this.courseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
+                this.fillContextMenu(refresh);
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.
             });
-        }).catch((error) => {
-            // Error getting data, fail.
-            this.loaded = true;
-            this.refreshIcon = 'refresh';
-            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         });
     }
 
@@ -241,10 +183,5 @@ export class AddonModBookIndexComponent implements OnInit, OnDestroy, CoreCourse
             this.loaded = true;
             this.refreshIcon = 'refresh';
         });
-    }
-
-    ngOnDestroy(): void {
-        this.isDestroyed = true;
-        this.statusObserver && this.statusObserver.off();
     }
 }

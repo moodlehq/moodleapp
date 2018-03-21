@@ -40,7 +40,7 @@ export class CoreSearchBoxComponent implements OnInit {
     @Input() showClear = true; // Show/hide clear button.
     @Input() disabled = false; // Disables the input text.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
-    @Output() onClear?: EventEmitter<void>; // Send event when clearing the search form.
+    @Output() onClear: EventEmitter<void>; // Send event when clearing the search form.
 
     searched = false;
     searchText = '';

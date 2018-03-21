@@ -78,6 +78,7 @@ import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
+import { AddonModPageModule } from '@addon/mod/page/page.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
@@ -160,6 +161,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModLabelModule,
         AddonModResourceModule,
         AddonModFolderModule,
+        AddonModPageModule,
         AddonMessagesModule,
         AddonPushNotificationsModule,
         AddonRemoteThemesModule
