@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { AddonQtypeCalculatedModule } from './calculated/calculated.module';
 import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmulti.module';
 import { AddonQtypeCalculatedSimpleModule } from './calculatedsimple/calculatedsimple.module';
+import { AddonQtypeDdwtosModule } from './ddwtos/ddwtos.module';
 import { AddonQtypeDescriptionModule } from './description/description.module';
 import { AddonQtypeEssayModule } from './essay/essay.module';
 import { AddonQtypeGapSelectModule } from './gapselect/gapselect.module';
@@ -33,6 +34,7 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
         AddonQtypeCalculatedModule,
         AddonQtypeCalculatedMultiModule,
         AddonQtypeCalculatedSimpleModule,
+        AddonQtypeDdwtosModule,
         AddonQtypeDescriptionModule,
         AddonQtypeEssayModule,
         AddonQtypeGapSelectModule,
