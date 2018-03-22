@@ -16,6 +16,9 @@ import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { AddonModFeedbackProvider } from './feedback';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { TranslateService } from '@ngx-translate/core';
+import * as moment from 'moment';
 
 /**
  * Service that provides helper functions for feedbacks.
@@ -23,7 +26,12 @@ import { CoreUserProvider } from '@core/user/providers/user';
 @Injectable()
 export class AddonModFeedbackHelperProvider {
 
-      constructor(protected feedbackProvider: AddonModFeedbackProvider, protected userProvider: CoreUserProvider) {
+    protected MODE_RESPONSETIME = 1;
+    protected MODE_COURSE = 2;
+    protected MODE_CATEGORY = 3;
+
+    constructor(protected feedbackProvider: AddonModFeedbackProvider, protected userProvider: CoreUserProvider,
+            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService) {
     }
 
     /**
@@ -159,6 +167,208 @@ export class AddonModFeedbackHelperProvider {
 
         // Not found, open new state.
         return navCtrl.push(pageName, stateParams);
+    }
+
+    /**
+     * Helper funtion for item type Label.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormLabel(item: any): any {
+        item.template = 'label';
+        item.name = '';
+        item.presentation = this.textUtils.replacePluginfileUrls(item.presentation, item.itemfiles);
+
+        return item;
+    }
+
+    /**
+     * Helper funtion for item type Info.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormInfo(item: any): any {
+        item.template = 'label';
+
+        const type = parseInt(item.presentation, 10);
+
+        if (type == this.MODE_COURSE || type == this.MODE_CATEGORY) {
+            item.presentation = item.otherdata;
+            item.value = typeof item.rawValue != 'undefined' ? item.rawValue : item.otherdata;
+        } else if (type == this.MODE_RESPONSETIME) {
+            item.value = '__CURRENT__TIMESTAMP__';
+            const tempValue = typeof item.rawValue != 'undefined' ? item.rawValue * 1000 : new Date().getTime();
+            item.presentation = moment(tempValue).format('LLL');
+        } else {
+            // Errors on item, return false.
+            return false;
+        }
+
+        return item;
+    }
+
+    /**
+     * Helper funtion for item type Numeric.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormNumeric(item: any): any {
+        item.template = 'numeric';
+
+        const range = item.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
+        item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
+        item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
+        item.value = typeof item.rawValue != 'undefined' ? parseFloat(item.rawValue) : '';
+
+        return item;
+    }
+
+    /**
+     * Helper funtion for item type Text field.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormTextfield(item: any): any {
+        item.template = 'textfield';
+        item.length = item.presentation.split(AddonModFeedbackProvider.LINE_SEP)[1] || 255;
+        item.value = typeof item.rawValue != 'undefined' ? item.rawValue : '';
+
+        return item;
+    }
+
+    /**
+     * Helper funtion for item type Textarea.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormTextarea(item: any): any {
+        item.template = 'textarea';
+        item.value = typeof item.rawValue != 'undefined' ? item.rawValue : '';
+
+        return item;
+    }
+
+    /**
+     * Helper funtion for item type Multichoice.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormMultichoice(item: any): any {
+        let parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP) || [];
+        item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+        item.template = 'multichoice-' + item.subtype;
+
+        item.presentation = parts.length > 1 ? parts[1] : '';
+        if (item.subtype != 'd') {
+            parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_ADJUST_SEP) || [];
+            item.presentation = parts.length > 0 ? parts[0] : '';
+            // Horizontal are not supported right now. item.horizontal = parts.length > 1 && !!parts[1];
+        } else {
+            item.class = 'item-select';
+        }
+
+        item.choices = item.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
+        item.choices = item.choices.map((choice, index) => {
+            const weightValue = choice.split(AddonModFeedbackProvider.MULTICHOICERATED_VALUE_SEP) || [''];
+            choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
+
+            return {value: index + 1, label: choice};
+        });
+
+        if (item.subtype === 'r' && item.options.search(AddonModFeedbackProvider.MULTICHOICE_HIDENOSELECT) == -1) {
+            item.choices.unshift({value: 0, label: this.translate.instant('addon.mod_feedback.not_selected')});
+            item.value = typeof item.rawValue != 'undefined' ? parseInt(item.rawValue, 10) : 0;
+        } else if (item.subtype === 'd') {
+            item.choices.unshift({value: 0, label: ''});
+            item.value = typeof item.rawValue != 'undefined' ? parseInt(item.rawValue, 10) : 0;
+        } else if (item.subtype === 'c') {
+            if (typeof item.rawValue == 'undefined') {
+                item.value = '';
+            } else {
+                item.rawValue = '' + item.rawValue;
+                const values = item.rawValue.split(AddonModFeedbackProvider.LINE_SEP);
+                item.choices.forEach((choice) => {
+                    for (const x in values) {
+                        if (choice.value == values[x]) {
+                            choice.checked = true;
+
+                            return;
+                        }
+                    }
+                });
+            }
+        } else {
+            item.value = typeof item.rawValue != 'undefined' ? parseInt(item.rawValue, 10) : '';
+        }
+
+        return item;
+    }
+
+    /**
+     * Helper funtion for item type Captcha.
+     *
+     * @param  {any} item Item to process.
+     * @return {any}      Item processed to show form.
+     */
+    protected getItemFormCaptcha(item: any): any {
+        const data = this.textUtils.parseJSON(item.otherdata);
+        if (data && data.length > 3) {
+            item.captcha = {
+                challengehash: data[0],
+                imageurl: data[1],
+                jsurl: data[2],
+                recaptchapublickey: data[3]
+            };
+        }
+        item.template = 'captcha';
+        item.value = '';
+
+        return item;
+    }
+
+    /**
+     * Process and returns item to print form.
+     *
+     * @param {any}  item        Item to process.
+     * @param {boolean} preview  Previewing options.
+     * @return {any}             Item processed to show form.
+     */
+    getItemForm(item: any, preview: boolean): any {
+        switch (item.typ) {
+            case 'label':
+                return this.getItemFormLabel(item);
+            case 'info':
+                return this.getItemFormInfo(item);
+            case 'numeric':
+                return this.getItemFormNumeric(item);
+            case 'textfield':
+                return this.getItemFormTextfield(item);
+            case 'textarea':
+                return this.getItemFormTextarea(item);
+            case 'multichoice':
+                return this.getItemFormMultichoice(item);
+            case 'multichoicerated':
+                return this.getItemFormMultichoice(item);
+            case 'pagebreak':
+                if (!preview) {
+                    // Pagebreaks are only used on preview.
+                    return false;
+                }
+                break;
+            case 'captcha':
+                // Captcha is not supported right now. However label will be shown.
+                return this.getItemFormCaptcha(item);
+            default:
+                return false;
+        }
+
+        return item;
     }
 
 }

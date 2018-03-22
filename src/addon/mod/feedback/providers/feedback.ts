@@ -25,6 +25,11 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 export class AddonModFeedbackProvider {
     static COMPONENT = 'mmaModFeedback';
     static FORM_SUBMITTED = 'addon_mod_feedback_form_submitted';
+    static LINE_SEP = '|';
+    static MULTICHOICE_TYPE_SEP = '>>>>>';
+    static MULTICHOICE_ADJUST_SEP = '<<<<<';
+    static MULTICHOICE_HIDENOSELECT = 'h';
+    static MULTICHOICERATED_VALUE_SEP = '####';
 
     protected ROOT_CACHE_KEY = this.ROOT_CACHE_KEY + '';
     protected logger;
@@ -354,6 +359,36 @@ export class AddonModFeedbackProvider {
      */
     getFeedbackById(courseId: number, id: number, siteId?: string, forceCache?: boolean): Promise<any> {
         return this.getFeedbackDataByKey(courseId, 'id', id, siteId, forceCache);
+    }
+
+    /**
+     * Returns the items (questions) in the given feedback.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise<any>}                   Promise resolved when the info is retrieved.
+     */
+    getItems(feedbackId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: this.getItemsDataCacheKey(feedbackId)
+                };
+
+            return site.read('mod_feedback_get_items', params, preSets);
+        });
+    }
+
+    /**
+     * Get cache key for get items feedback data WS calls.
+     *
+     * @param  {number} feedbackId  Feedback ID.
+     * @return {string}             Cache key.
+     */
+    protected getItemsDataCacheKey(feedbackId: number): string {
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
     }
 
     /**
