@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { Component, Injector } from '@angular/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModUrlProvider } from '../../providers/url';
 import { AddonModUrlHelperProvider } from '../../providers/helper';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 
 /**
  * Component that displays a url.
@@ -35,11 +31,9 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     canGetUrl: boolean;
     url: string;
 
-    constructor(private urlProvider: AddonModUrlProvider, private courseProvider: CoreCourseProvider,
-            protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            protected translate: TranslateService, private urlHelper: AddonModUrlHelperProvider,
-            protected courseHelper: CoreCourseHelperProvider) {
-        super(textUtils, courseHelper, translate, domUtils);
+    constructor(injector: Injector, private urlProvider: AddonModUrlProvider, private courseProvider: CoreCourseProvider,
+            private urlHelper: AddonModUrlHelperProvider) {
+        super(injector);
     }
 
     /**

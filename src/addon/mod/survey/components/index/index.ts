@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional } from '@angular/core';
+import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { Network } from '@ionic-native/network';
-import { CoreAppProvider } from '@providers/app';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreEventsProvider } from '@providers/events';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModSurveyProvider } from '../../providers/survey';
 import { AddonModSurveyHelperProvider } from '../../providers/helper';
@@ -47,14 +38,10 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     protected userId: number;
     protected syncEventName = AddonModSurveySyncProvider.AUTO_SYNCED;
 
-    constructor(private surveyProvider: AddonModSurveyProvider, protected courseProvider: CoreCourseProvider,
-            protected domUtils: CoreDomUtilsProvider, protected appProvider: CoreAppProvider,
-            protected courseHelper: CoreCourseHelperProvider, protected translate: TranslateService, network: Network,
-            private surveyHelper: AddonModSurveyHelperProvider, protected sitesProvider: CoreSitesProvider,
-            protected eventsProvider: CoreEventsProvider, private surveyOffline: AddonModSurveyOfflineProvider,
-            private surveySync: AddonModSurveySyncProvider, @Optional() private content: Content,
-            protected textUtils: CoreTextUtilsProvider) {
-        super(textUtils, courseHelper, translate, domUtils, sitesProvider, courseProvider, network, appProvider, eventsProvider);
+    constructor(injector: Injector, private surveyProvider: AddonModSurveyProvider, @Optional() private content: Content,
+            private surveyHelper: AddonModSurveyHelperProvider, private surveyOffline: AddonModSurveyOfflineProvider,
+            private surveySync: AddonModSurveySyncProvider) {
+        super(injector);
     }
 
     /**

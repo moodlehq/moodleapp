@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TranslateService } from '@ngx-translate/core';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { Injector } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreEventsProvider } from '@providers/events';
@@ -39,11 +36,22 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     protected onlineObserver: any; // It will observe the status of the network connection.
     protected syncEventName: string; // Auto sync event name.
 
-    constructor(protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected translate: TranslateService, protected domUtils: CoreDomUtilsProvider,
-            protected sitesProvider: CoreSitesProvider, protected courseProvider: CoreCourseProvider, network: Network,
-            protected appProvider: CoreAppProvider, protected eventsProvider: CoreEventsProvider) {
-        super(textUtils, courseHelper, translate, domUtils);
+    // List of services that will be injected using injector.
+    // It's done like this so subclasses don't have to send all the services to the parent in the constructor.
+    protected sitesProvider: CoreSitesProvider;
+    protected courseProvider: CoreCourseProvider;
+    protected appProvider: CoreAppProvider;
+    protected eventsProvider: CoreEventsProvider;
+
+    constructor(injector: Injector) {
+        super(injector);
+
+        this.sitesProvider = injector.get(CoreSitesProvider);
+        this.courseProvider = injector.get(CoreCourseProvider);
+        this.appProvider = injector.get(CoreAppProvider);
+        this.eventsProvider = injector.get(CoreEventsProvider);
+
+        const network = injector.get(Network);
 
         // Refresh online status when changes.
         this.onlineObserver = network.onchange().subscribe((online) => {
@@ -57,6 +65,11 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     ngOnInit(): void {
         super.ngOnInit();
 
+        this.hasOffline = false;
+        this.syncIcon = 'spinner';
+        this.siteId = this.sitesProvider.getCurrentSiteId();
+        this.moduleName = this.courseProvider.translateModuleName(this.moduleName);
+
         if (this.syncEventName) {
             // Refresh data if this discussion is synchronized automatically.
             this.syncObserver = this.eventsProvider.on(this.syncEventName, (data) => {
@@ -66,11 +79,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
                 }
             }, this.siteId);
         }
-
-        this.hasOffline = false;
-        this.syncIcon = 'spinner';
-        this.siteId = this.sitesProvider.getCurrentSiteId();
-        this.moduleName = this.courseProvider.translateModuleName(this.moduleName);
     }
 
     /**
@@ -100,7 +108,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
+     * @param {any} syncEventData Data received on sync observer.
      * @return {boolean}          True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
@@ -110,8 +118,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Perform the refresh content function.
      *
-     * @param  {boolean}      [sync=false]       If the refresh is needs syncing.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
+     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
+     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
      * @return {Promise<any>} Resolved when done.
      */
     protected refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<any> {
@@ -126,8 +134,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Download the component contents.
      *
      * @param {boolean}       [refresh=false] Whether we're refreshing data.
-     * @param  {boolean}      [sync=false]       If the refresh is needs syncing.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
+     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
+     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
@@ -138,8 +146,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Loads the component contents and shows the corresponding error.
      *
      * @param {boolean}       [refresh=false] Whether we're refreshing data.
-     * @param  {boolean}      [sync=false]       If the refresh is needs syncing.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
+     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
+     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
      * @return {Promise<any>} Promise resolved when done.
      */
     protected loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<any> {

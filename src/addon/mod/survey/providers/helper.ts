@@ -26,10 +26,10 @@ export class AddonModSurveyHelperProvider {
     /**
      * Turns a string with values separated by commas into an array.
      *
-     * @param {string} value Value to convert.
+     * @param {any} value Value to convert.
      * @return {string[]}    Array.
      */
-    protected commaStringToArray(value: string): string[] {
+    protected commaStringToArray(value: any): string[] {
         if (typeof value == 'string') {
             if (value.length > 0) {
                 return value.split(',');

@@ -155,7 +155,7 @@ export class AddonModSurveyProvider {
         promises.push(this.getSurvey(courseId, moduleId).then((survey) => {
             const ps = [];
 
-            // Do not invalidate wiki data before getting wiki info, we need it!
+            // Do not invalidate activity data before getting activity info, we need it!
             ps.push(this.invalidateSurveyData(courseId, siteId));
             ps.push(this.invalidateQuestions(survey.id, siteId));
 
@@ -268,7 +268,6 @@ export class AddonModSurveyProvider {
 
             return site.write('mod_survey_submit_answers', params).then((response) => {
                 if (!response.status) {
-                    // There was an error, and it should be translated already.
                     return this.utils.createFakeWSError('');
                 }
             });

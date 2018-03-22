@@ -26,7 +26,7 @@ export class AddonModSurveyOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected SURVEY_TABLE = 'mma_mod_survey_answers';
+    protected SURVEY_TABLE = 'addon_mod_survey_answers';
     protected tablesSchema = [
         {
             name: this.SURVEY_TABLE,
@@ -171,7 +171,7 @@ export class AddonModSurveyOfflineProvider {
                 timecreated: new Date().getTime()
             };
 
-            return site.getDb().insertOrUpdateRecord(this.SURVEY_TABLE, entry, {surveyid: surveyId, userid: userId});
+            return site.getDb().insertRecord(this.SURVEY_TABLE, entry);
         });
     }
 }
