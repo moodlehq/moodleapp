@@ -162,7 +162,7 @@ export class AddonModFeedbackRespondentsPage {
     gotoAttempt(attempt: any): void {
         this.attemptId = attempt.id;
         this.splitviewCtrl.push('AddonModFeedbackAttemptPage', {
-            attemptid: attempt.id,
+            attemptId: attempt.id,
             attempt: attempt,
             feedbackId: this.feedbackId,
             moduleId: this.moduleId

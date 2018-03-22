@@ -21,6 +21,9 @@ import { AddonModFeedbackComponentsModule } from './components/components.module
 import { AddonModFeedbackModuleHandler } from './providers/module-handler';
 import { AddonModFeedbackProvider } from './providers/feedback';
 import { AddonModFeedbackLinkHandler } from './providers/link-handler';
+import { AddonModFeedbackAnalysisLinkHandler } from './providers/analysis-link-handler';
+import { AddonModFeedbackShowEntriesLinkHandler } from './providers/show-entries-link-handler';
+import { AddonModFeedbackShowNonRespondentsLinkHandler } from './providers/show-non-respondents-link-handler';
 import { AddonModFeedbackHelperProvider } from './providers/helper';
 import { AddonModFeedbackPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModFeedbackSyncProvider } from './providers/sync';
@@ -39,6 +42,9 @@ import { AddonModFeedbackOfflineProvider } from './providers/offline';
         AddonModFeedbackPrefetchHandler,
         AddonModFeedbackHelperProvider,
         AddonModFeedbackLinkHandler,
+        AddonModFeedbackAnalysisLinkHandler,
+        AddonModFeedbackShowEntriesLinkHandler,
+        AddonModFeedbackShowNonRespondentsLinkHandler,
         AddonModFeedbackSyncCronHandler,
         AddonModFeedbackSyncProvider,
         AddonModFeedbackOfflineProvider
@@ -48,10 +54,16 @@ export class AddonModFeedbackModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModFeedbackModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModFeedbackPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModFeedbackLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModFeedbackSyncCronHandler) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModFeedbackSyncCronHandler,
+            analysisLinkHandler: AddonModFeedbackAnalysisLinkHandler,
+            showEntriesLinkHandler: AddonModFeedbackShowEntriesLinkHandler,
+            showNonRespondentsLinkHandler: AddonModFeedbackShowNonRespondentsLinkHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
+        contentLinksDelegate.registerHandler(analysisLinkHandler);
+        contentLinksDelegate.registerHandler(showEntriesLinkHandler);
+        contentLinksDelegate.registerHandler(showNonRespondentsLinkHandler);
         cronDelegate.register(syncHandler);
     }
 }

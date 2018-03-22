@@ -61,6 +61,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     };
     showTabs = false;
     tabsReady = false;
+    firstSelectedTab: number;
 
     protected submitObserver: any;
 
@@ -165,7 +166,10 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             this.access = accessData;
             this.showTabs = (accessData.canviewreports || accessData.canviewanalysis) && !accessData.isempty;
 
+            this.firstSelectedTab = 0;
             if (this.tab == 'analysis') {
+                this.firstSelectedTab = 1;
+
                 return this.fetchFeedbackAnalysisData(this.access);
             }
 

@@ -16,7 +16,7 @@
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
     <ng-container *ngIf="showTabs">
-        <core-tabs [hideUntil]="tabsReady">
+        <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
             <core-tab [title]="'addon.mod_feedback.overview' | translate" (ionSelect)="tabChanged('overview')">
                 <ng-template>
                     <ng-container *ngTemplateOutlet="tabOverview"></ng-container>

@@ -81,6 +81,64 @@ export class AddonModFeedbackProvider {
     }
 
     /**
+     * Find an attempt in all responses analysis.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    attemptId       Attempt id to find.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @param   {any}       [previous]      Only for recurrent use. Object with the previous fetched info.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getAttempt(feedbackId: number, attemptId: number, siteId?: string, previous?: any): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        if (typeof previous == 'undefined') {
+            previous = {
+                page: 0,
+                attemptsLoaded: 0,
+                anonAttemptsLoaded: 0
+            };
+        }
+
+        return this.getResponsesAnalysis(feedbackId, 0, previous.page, siteId).then((responses) => {
+            let attempt;
+
+            attempt = responses.attempts.find((attempt) => {
+                return attemptId == attempt.id;
+            });
+
+            if (attempt) {
+                return attempt;
+            }
+
+            attempt = responses.anonattempts.find((attempt) => {
+                return attemptId == attempt.id;
+            });
+
+            if (attempt) {
+                return attempt;
+            }
+
+            if (previous.anonAttemptsLoaded < responses.totalanonattempts) {
+                previous.anonAttemptsLoaded += responses.anonattempts.length;
+            }
+
+            if (previous.attemptsLoaded < responses.totalattempts) {
+                previous.attemptsLoaded += responses.attempts.length;
+            }
+
+            if (previous.anonAttemptsLoaded < responses.totalanonattempts || previous.attemptsLoaded < responses.totalattempts) {
+                // Can load more. Check there.
+                previous.page++;
+
+                return this.getAttempt(feedbackId, attemptId, siteId, previous);
+            }
+
+            // Not found and all loaded. Reject.
+            return Promise.reject(null);
+        });
+    }
+
+    /**
      * Get prefix cache key for feedback completion data WS calls.
      *
      * @param {number} feedbackId Feedback ID.
