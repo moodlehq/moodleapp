@@ -17,25 +17,29 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
-import { AddonNotesTypesComponent } from './types/types';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
+import { AddonNotesListComponent } from './list/list';
 
 @NgModule({
     declarations: [
-        AddonNotesTypesComponent
+        AddonNotesListComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
+        CoreDirectivesModule,
+        CorePipesModule
     ],
     providers: [
     ],
     exports: [
-        AddonNotesTypesComponent
+        AddonNotesListComponent
     ],
     entryComponents: [
-        AddonNotesTypesComponent
+        AddonNotesListComponent
     ]
 })
 export class AddonNotesComponentsModule {}

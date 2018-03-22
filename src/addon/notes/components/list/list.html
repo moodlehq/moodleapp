@@ -1,21 +1,21 @@
-<ion-header>
-    <ion-navbar>
-        <ion-title>{{ 'addon.notes.notes' | translate }}</ion-title>
-        <ion-buttons end></ion-buttons>
-    </ion-navbar>
-    <core-navbar-buttons end>
-        <core-context-menu>
-            <core-context-menu-item [hidden]="!(notesLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate" (action)="refreshNotes(false)" [iconAction]="refreshIcon" [closeOnClick]="true"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!(notesLoaded && hasOffline)" [priority]="100" [content]="'core.settings.synchronizenow' | translate" (action)="refreshNotes(true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
-        </core-context-menu>
-    </core-navbar-buttons>
-</ion-header>
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item [hidden]="!(notesLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate" (action)="refreshNotes(false)" [iconAction]="refreshIcon" [closeOnClick]="true"></core-context-menu-item>
+        <core-context-menu-item [hidden]="!(notesLoaded && hasOffline)" [priority]="100" [content]="'core.settings.synchronizenow' | translate" (action)="refreshNotes(true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
 
 <ion-content>
     <ion-refresher [enabled]="notesLoaded" (ionRefresh)="refreshNotes(false, $event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="notesLoaded" class="core-loading-center">
+
+        <ion-select [(ngModel)]="type" (ngModelChange)="typeChanged()" interface="popover">
+            <ion-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-option>
+            <ion-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-option>
+            <ion-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-option>
+        </ion-select>
 
         <div class="core-warning-card" icon-start *ngIf="hasOffline">
             <ion-icon name="warning"></ion-icon>
@@ -28,7 +28,7 @@
             <ion-card *ngFor="let note of notes">
                 <ion-item text-wrap>
                     <ion-avatar item-start>
-                        <img [src]="note.userprofileimageurl || 'assets/img/user-avatar.png'" core-external-content (click)="openUserProfile(note.userid)" [alt]="'core.pictureof' | translate:{$a: note.userfullname}" role="presentation">
+                        <img [src]="note.userprofileimageurl || 'assets/img/user-avatar.png'" core-external-content core-user-link [userId]="note.userid" [courseId]="note.courseid" [alt]="'core.pictureof' | translate:{$a: note.userfullname}" role="presentation">
                     </ion-avatar>
                     <h2>{{note.userfullname}}</h2>
                     <p *ngIf="!note.offline" item-end>{{note.lastmodified | coreDateDayOrTime}}</p>

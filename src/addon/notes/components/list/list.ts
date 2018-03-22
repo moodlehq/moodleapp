@@ -12,43 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, Optional, ViewChild } from '@angular/core';
-import { Content, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Content } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonNotesProvider } from '../../providers/notes';
 import { AddonNotesSyncProvider } from '../../providers/notes-sync';
 
 /**
- * Page that displays the list of notes.
+ * Component that displays the notes of a course.
  */
-@IonicPage({ segment: 'addon-notes-list' })
 @Component({
-    selector: 'page-addon-notes-list',
+    selector: 'addon-notes-list',
     templateUrl: 'list.html',
 })
-export class AddonNotesListPage implements OnDestroy {
+export class AddonNotesListComponent implements OnInit, OnDestroy {
+    @Input() courseId: number;
+
     @ViewChild(Content) content: Content;
 
-    protected courseId = 0;
     protected syncObserver: any;
 
-    type = '';
+    type = 'course';
     refreshIcon = 'spinner';
     syncIcon = 'spinner';
     notes: any[];
     hasOffline = false;
     notesLoaded = false;
 
-    constructor(navParams: NavParams, private navCtrl: NavController, @Optional() private svComponent: CoreSplitViewComponent,
-            private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
+    constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
             sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
             private notesProvider: AddonNotesProvider, private notesSync: AddonNotesSyncProvider) {
-        this.courseId = navParams.get('courseId') || sitesProvider.getCurrentSiteHomeId();
-        this.type = navParams.get('type');
         // Refresh data if notes are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
@@ -67,9 +63,9 @@ export class AddonNotesListPage implements OnDestroy {
     }
 
     /**
-     * View loaded.
+     * Component being initialized.
      */
-    ionViewDidLoad(): void {
+    ngOnInit(): void {
         this.fetchNotes(true).then(() => {
             this.notesProvider.logView(this.courseId);
         });
@@ -125,6 +121,18 @@ export class AddonNotesListPage implements OnDestroy {
     }
 
     /**
+     * Function called when the type has changed.
+     */
+    typeChanged(): void {
+        this.notesLoaded = false;
+        this.refreshIcon = 'spinner';
+        this.syncIcon = 'spinner';
+        this.fetchNotes(true).then(() => {
+            this.notesProvider.logView(this.courseId);
+        });
+    }
+
+    /**
      * Tries to synchronize course notes.
      *
      * @param  {boolean} showErrors Whether to display errors or not.
@@ -152,17 +160,6 @@ export class AddonNotesListPage implements OnDestroy {
         if (message) {
             this.domUtils.showErrorModal(message);
         }
-    }
-
-    /**
-     * Opens the profile of a user.
-     *
-     * @param {number} userId
-     */
-    openUserProfile(userId: number): void {
-        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
-        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        navCtrl.push('CoreUserProfilePage', {userId, courseId: this.courseId});
     }
 
     /**

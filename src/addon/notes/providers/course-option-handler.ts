@@ -16,7 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { AddonNotesProvider } from './notes';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseOptionsHandler, CoreCourseOptionsHandlerData } from '@core/course/providers/options-delegate';
-import { AddonNotesTypesComponent } from '../components/types/types';
+import { AddonNotesListComponent } from '../components/list/list';
 
 /**
  * Handler to inject an option into the course main menu.
@@ -68,7 +68,7 @@ export class AddonNotesCourseOptionHandler implements CoreCourseOptionsHandler {
         return {
             title: 'addon.notes.notes',
             class: 'addon-notes-course-handler',
-            component: AddonNotesTypesComponent,
+            component: AddonNotesListComponent,
         };
     }
 }
