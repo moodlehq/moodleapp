@@ -299,6 +299,96 @@ export class AddonModFeedbackProvider {
     }
 
     /**
+     * Retrieves a list of students who didn't submit the feedback.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    [groupId=0]     Group id, 0 means that the function will determine the user group.
+     * @param   {number}    [page=0]        The page of records to return.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getNonRespondents(feedbackId: number, groupId: number = 0, page: number = 0, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    feedbackid: feedbackId,
+                    groupid: groupId,
+                    page: page
+                },
+                preSets = {
+                    cacheKey: this.getNonRespondentsDataCacheKey(feedbackId, groupId)
+                };
+
+            return site.read('mod_feedback_get_non_respondents', params, preSets);
+        });
+    }
+
+    /**
+     * Get cache key for non respondents feedback data WS calls.
+     *
+     * @param  {number} feedbackId  Feedback ID.
+     * @param  {number} [groupId=0] Group id, 0 means that the function will determine the user group.
+     * @return {string}             Cache key.
+     */
+    protected getNonRespondentsDataCacheKey(feedbackId: number, groupId: number = 0): string {
+        return this.getNonRespondentsDataPrefixCacheKey(feedbackId) + groupId;
+    }
+
+    /**
+     * Get prefix cache key for feedback non respondents data WS calls.
+     *
+     * @param {number} feedbackId Feedback ID.
+     * @return {string}           Cache key.
+     */
+    protected getNonRespondentsDataPrefixCacheKey(feedbackId: number): string {
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
+    }
+
+    /**
+     * Returns the feedback user responses.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {number}    page            The page of records to return.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getResponsesAnalysis(feedbackId: number, groupId: number, page: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    feedbackid: feedbackId,
+                    groupid: groupId || 0,
+                    page: page || 0
+                },
+                preSets = {
+                    cacheKey: this.getResponsesAnalysisDataCacheKey(feedbackId, groupId)
+                };
+
+            return site.read('mod_feedback_get_responses_analysis', params, preSets);
+        });
+    }
+
+    /**
+     * Get cache key for responses analysis feedback data WS calls.
+     *
+     * @param  {number} feedbackId  Feedback ID.
+     * @param  {number} [groupId=0] Group id, 0 means that the function will determine the user group.
+     * @return {string}             Cache key.
+     */
+    protected getResponsesAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
+        return this.getResponsesAnalysisDataPrefixCacheKey(feedbackId) + groupId;
+    }
+
+    /**
+     * Get prefix cache key for feedback responses analysis data WS calls.
+     *
+     * @param {number} feedbackId Feedback ID.
+     * @return {string}         Cache key.
+     */
+    protected getResponsesAnalysisDataPrefixCacheKey(feedbackId: number): string {
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
+    }
+
+    /**
      * Gets the resume page information.
      *
      * @param   {number}    feedbackId          Feedback ID.
@@ -447,6 +537,34 @@ export class AddonModFeedbackProvider {
      */
     invalidateFiles(moduleId: number, siteId?: string): Promise<any> {
         return this.filepoolProvider.invalidateFilesByComponent(siteId, AddonModFeedbackProvider.COMPONENT, moduleId);
+    }
+
+    /**
+     * Invalidates feedback non respondents record data.
+     *
+     * @param  {number} feedbackId   Feedback ID.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     */
+    invalidateNonRespondentsData(feedbackId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getNonRespondentsDataPrefixCacheKey(feedbackId));
+
+        });
+    }
+
+    /**
+     * Invalidates feedback user responses record data.
+     *
+     * @param  {number} feedbackId   Feedback ID.
+     * @param  {string} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     */
+    invalidateResponsesAnalysisData(feedbackId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getResponsesAnalysisDataPrefixCacheKey(feedbackId));
+
+        });
     }
 
     /**

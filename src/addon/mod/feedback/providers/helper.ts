@@ -14,12 +14,17 @@
 
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { AddonModFeedbackProvider } from './feedback';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Service that provides helper functions for feedbacks.
  */
 @Injectable()
 export class AddonModFeedbackHelperProvider {
+
+      constructor(protected feedbackProvider: AddonModFeedbackProvider, protected userProvider: CoreUserProvider) {
+    }
 
     /**
      * Check if the page we are going to open is in the history and returns the number of pages in the stack to go back.
@@ -61,6 +66,62 @@ export class AddonModFeedbackHelperProvider {
         }
 
         return 0;
+    }
+
+    /**
+     * Retrieves a list of students who didn't submit the feedback with extra info.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {number}    page            The page of records to return.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getNonRespondents(feedbackId: number, groupId: number, page: number): Promise<any> {
+        return this.feedbackProvider.getNonRespondents(feedbackId, groupId, page).then((responses) => {
+            return this.addImageProfileToAttempts(responses.users).then((users) => {
+                responses.users = users;
+
+                return responses;
+            });
+        });
+    }
+
+    /**
+     * Returns the feedback user responses with extra info.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {number}    page            The page of records to return.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getResponsesAnalysis(feedbackId: number, groupId: number, page: number): Promise<any> {
+        return this.feedbackProvider.getResponsesAnalysis(feedbackId, groupId, page).then((responses) => {
+            return this.addImageProfileToAttempts(responses.attempts).then((attempts) => {
+                responses.attempts = attempts;
+
+                return responses;
+            });
+        });
+    }
+
+    /**
+     * Add Image profile url field on attempts
+     *
+     * @param  {any}          attempts Attempts array to get profile from.
+     * @return {Promise<any>}          Returns the same array with the profileimageurl added if found.
+     */
+    protected addImageProfileToAttempts(attempts: any): Promise<any> {
+        const promises = attempts.map((attempt) => {
+            return this.userProvider.getProfile(attempt.userid, attempt.courseid, true).then((user) => {
+                attempt.profileimageurl = user.profileimageurl;
+            }).catch(() => {
+                // Error getting profile, resolve promise without adding any extra data.
+            });
+        });
+
+        return Promise.all(promises).then(() => {
+            return attempts;
+        });
     }
 
     /**
