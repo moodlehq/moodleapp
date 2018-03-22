@@ -98,7 +98,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
      * @param {CoreMainMenuHandlerData} handler Handler to open.
      */
     openHandler(handler: CoreMainMenuHandlerData): void {
-        this.navCtrl.push(handler.page);
+        this.navCtrl.push(handler.page, handler.pageParams);
     }
 
     /**
