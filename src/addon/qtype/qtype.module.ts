@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { AddonQtypeCalculatedModule } from './calculated/calculated.module';
 import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmulti.module';
 import { AddonQtypeCalculatedSimpleModule } from './calculatedsimple/calculatedsimple.module';
+import { AddonQtypeDdImageOrTextModule } from './ddimageortext/ddimageortext.module';
 import { AddonQtypeDdMarkerModule } from './ddmarker/ddmarker.module';
 import { AddonQtypeDdwtosModule } from './ddwtos/ddwtos.module';
 import { AddonQtypeDescriptionModule } from './description/description.module';
@@ -35,6 +36,7 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
         AddonQtypeCalculatedModule,
         AddonQtypeCalculatedMultiModule,
         AddonQtypeCalculatedSimpleModule,
+        AddonQtypeDdImageOrTextModule,
         AddonQtypeDdMarkerModule,
         AddonQtypeDdwtosModule,
         AddonQtypeDescriptionModule,
