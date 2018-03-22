@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, Content, PopoverController, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import { IonicPage, Content, NavParams } from 'ionic-angular';
 import { AddonBadgesProvider } from '../../providers/badges';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -43,10 +42,9 @@ export class AddonBadgesIssuedBadgePage {
     badgeLoaded = false;
     currentTime = 0;
 
-    constructor(private translate: TranslateService, private badgesProvider: AddonBadgesProvider, navParams: NavParams,
+    constructor(private badgesProvider: AddonBadgesProvider, navParams: NavParams, sitesProvider: CoreSitesProvider,
             private domUtils: CoreDomUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider,
-            private coursesProvider: CoreCoursesProvider) {
+            private userProvider: CoreUserProvider, private coursesProvider: CoreCoursesProvider) {
 
         this.courseId = navParams.get('courseId') || 0; // Use 0 for site badges.
         this.userId = navParams.get('userId') || sitesProvider.getCurrentSite().getUserId();
