@@ -459,7 +459,7 @@ export class CoreCronDelegate {
                 value: time
             };
 
-        return this.appDB.insertOrUpdateRecord(this.CRON_TABLE, entry, { id: id });
+        return this.appDB.insertRecord(this.CRON_TABLE, entry);
     }
 
     /**

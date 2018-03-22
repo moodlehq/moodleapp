@@ -16,6 +16,8 @@ import { Injectable } from '@angular/core';
 import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@core/user/providers/user-delegate';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonCompetencyProvider } from './competency';
 
 /**
@@ -30,13 +32,15 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
     usersNavEnabledCache = {};
 
     constructor(private linkHelper: CoreContentLinksHelperProvider, protected sitesProvider: CoreSitesProvider,
-            private competencyProvider: AddonCompetencyProvider) {
+            private competencyProvider: AddonCompetencyProvider, eventsProvider: CoreEventsProvider) {
+        eventsProvider.on(CoreEventsProvider.LOGOUT, this.clearUsersNavCache.bind(this));
+        eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, this.clearUsersNavCache.bind(this));
     }
 
     /**
      * Clear users nav cache.
      */
-    clearUsersNavCache(): void {
+    private clearUsersNavCache(): void {
         this.participantsNavEnabledCache = {};
         this.usersNavEnabledCache = {};
     }

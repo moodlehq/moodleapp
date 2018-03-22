@@ -326,8 +326,8 @@ export class AddonPushNotificationsProvider {
                     this.onMessageReceived(notification);
                 });
 
-                pushObject.on('registration').subscribe((registrationId: any) => {
-                    this.pushID = registrationId;
+                pushObject.on('registration').subscribe((data: any) => {
+                    this.pushID = data.registrationId;
                     this.registerDeviceOnMoodle().catch((error) => {
                         this.logger.warn('Can\'t register device', error);
                     });
@@ -402,7 +402,7 @@ export class AddonPushNotificationsProvider {
             number: value
         };
 
-        return this.appDB.insertOrUpdateRecord(this.BADGE_TABLE, entry, {siteid: siteId, addon: addon}).then(() => {
+        return this.appDB.insertRecord(this.BADGE_TABLE, entry).then(() => {
             return value;
         });
     }

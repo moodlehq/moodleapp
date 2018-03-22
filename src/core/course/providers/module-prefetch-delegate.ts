@@ -417,7 +417,9 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                         courseId: courseId,
                         time: this.timeUtils.timestamp()
                     };
-                    site.getDb().insertOrUpdateRecord(this.CHECK_UPDATES_TIMES_TABLE, entry, { courseId: courseId });
+                    site.getDb().insertRecord(this.CHECK_UPDATES_TIMES_TABLE, entry).catch(() => {
+                        // Ignore errors.
+                    });
 
                     return this.treatCheckUpdatesResult(data.toCheck, response, result);
                 }).catch((error) => {

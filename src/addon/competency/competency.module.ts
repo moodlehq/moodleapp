@@ -22,10 +22,6 @@ import { AddonCompetencyComponentsModule } from './components/components.module'
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
 import { CoreUserDelegate } from '@core/user/providers/user-delegate';
-import { CoreUserProvider } from '@core/user/providers/user';
-import { CoreEventsProvider } from '@providers/events';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 @NgModule({
     declarations: [
@@ -44,24 +40,10 @@ import { CoreCoursesProvider } from '@core/courses/providers/courses';
 export class AddonCompetencyModule {
     constructor(mainMenuDelegate: CoreMainMenuDelegate, mainMenuHandler: AddonCompetencyMainMenuHandler,
             courseOptionsDelegate: CoreCourseOptionsDelegate, courseOptionHandler: AddonCompetencyCourseOptionHandler,
-            userDelegate: CoreUserDelegate, userHandler: AddonCompetencyUserHandler,
-            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider) {
+            userDelegate: CoreUserDelegate, userHandler: AddonCompetencyUserHandler) {
 
         mainMenuDelegate.registerHandler(mainMenuHandler);
         courseOptionsDelegate.registerHandler(courseOptionHandler);
         userDelegate.registerHandler(userHandler);
-
-        eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
-            courseOptionHandler.clearCoursesNavCache();
-            userHandler.clearUsersNavCache();
-        }, sitesProvider.getCurrentSiteId());
-
-        eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED, () => {
-            courseOptionHandler.clearCoursesNavCache();
-        }, sitesProvider.getCurrentSiteId());
-
-        eventsProvider.on(CoreUserProvider.PROFILE_REFRESHED, () => {
-            userHandler.clearUsersNavCache();
-        }, sitesProvider.getCurrentSiteId());
     }
 }

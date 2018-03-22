@@ -134,10 +134,12 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         }
 
         // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
-        const mainContextMenuInstance = this.domUtils.getInstanceByElement(mainContextMenu),
-            secondaryContextMenuInstance = this.domUtils.getInstanceByElement(secondaryContextMenu);
+        const mainContextMenuInstance: CoreContextMenuComponent = this.domUtils.getInstanceByElement(mainContextMenu),
+            secondaryContextMenuInstance: CoreContextMenuComponent = this.domUtils.getInstanceByElement(secondaryContextMenu);
 
-        if (mainContextMenuInstance && secondaryContextMenuInstance) {
+        // Check that both context menus belong to the same core-tab. We shouldn't merge menus from different tabs.
+        if (mainContextMenuInstance && secondaryContextMenuInstance &&
+                mainContextMenuInstance.coreTab === secondaryContextMenuInstance.coreTab) {
             this.mergedContextMenu = secondaryContextMenuInstance;
 
             this.mergedContextMenu.mergeContextMenus(mainContextMenuInstance);

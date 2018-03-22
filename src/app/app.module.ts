@@ -81,6 +81,7 @@ import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonModPageModule } from '@addon/mod/page/page.module';
 import { AddonModUrlModule } from '@addon/mod/url/url.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
+import { AddonNotesModule } from '../addon/notes/notes.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 
@@ -165,6 +166,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModPageModule,
         AddonModUrlModule,
         AddonMessagesModule,
+        AddonNotesModule,
         AddonPushNotificationsModule,
         AddonRemoteThemesModule
     ],

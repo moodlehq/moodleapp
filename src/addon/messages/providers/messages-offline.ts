@@ -148,11 +148,7 @@ export class AddonMessagesOfflineProvider {
                 deviceoffline: this.appProvider.isOnline() ? 0 : 1
             };
 
-            return site.getDb().insertOrUpdateRecord(this.MESSAGES_TABLE, entry, {
-                        touserid: toUserId,
-                        smallmessage: message,
-                        timecreated: entry.timecreated
-                    }).then(() => {
+            return site.getDb().insertRecord(this.MESSAGES_TABLE, entry).then(() => {
                 return entry;
             });
         });
@@ -173,11 +169,7 @@ export class AddonMessagesOfflineProvider {
                 data = { deviceoffline: value ? 1 : 0 };
 
             messages.forEach((message) => {
-                promises.push(db.insertOrUpdateRecord(this.MESSAGES_TABLE, data, {
-                    touserid: message.touserid,
-                    smallmessage: message.smallmessage,
-                    timecreated: message.timecreated
-                }));
+                promises.push(db.insertRecord(this.MESSAGES_TABLE, data));
             });
 
             return Promise.all(promises);

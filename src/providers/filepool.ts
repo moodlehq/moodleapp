@@ -477,7 +477,7 @@ export class CoreFilepoolProvider {
                 componentId: componentId || ''
             };
 
-            return db.insertOrUpdateRecord(this.LINKS_TABLE, newEntry, { fileId: fileId });
+            return db.insertRecord(this.LINKS_TABLE, newEntry);
         });
     }
 
@@ -544,7 +544,7 @@ export class CoreFilepoolProvider {
         values.fileId = fileId;
 
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.insertOrUpdateRecord(this.FILES_TABLE, values, { fileId: fileId });
+            return db.insertRecord(this.FILES_TABLE, values);
         });
     }
 
@@ -2766,7 +2766,7 @@ export class CoreFilepoolProvider {
                     // The package already has this status, no need to change it.
                     promise = Promise.resolve();
                 } else {
-                    promise = site.getDb().insertOrUpdateRecord(this.PACKAGES_TABLE, packageEntry, { id: packageId });
+                    promise = site.getDb().insertRecord(this.PACKAGES_TABLE, packageEntry);
                 }
 
                 return promise.then(() => {

@@ -151,11 +151,11 @@ export class CoreSyncBaseProvider {
     /**
      * Check if a sync is needed: if a certain time has passed since the last time.
      *
-     * @param {string} id Unique sync identifier per component.
+     * @param {string | number} id Unique sync identifier per component.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with boolean: whether sync is needed.
      */
-    isSyncNeeded(id: string, siteId?: string): Promise<boolean> {
+    isSyncNeeded(id: string | number, siteId?: string): Promise<boolean> {
         return this.getSyncTime(id, siteId).then((time) => {
             return Date.now() - this.syncInterval >= time;
         });
@@ -178,12 +178,12 @@ export class CoreSyncBaseProvider {
     /**
      * Set the synchronization warnings.
      *
-     * @param {string} id Unique sync identifier per component.
+     * @param {string | number} id Unique sync identifier per component.
      * @param {string[]} warnings Warnings to set.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when done.
      */
-    setSyncWarnings(id: string, warnings: string[], siteId?: string): Promise<any> {
+    setSyncWarnings(id: string | number, warnings: string[], siteId?: string): Promise<any> {
         const warningsText = JSON.stringify(warnings || []);
 
         return this.syncProvider.insertOrUpdateSyncRecord(this.component, id, { warnings: warningsText }, siteId);
@@ -245,5 +245,5 @@ export class CoreSyncBaseProvider {
         }
 
         return Promise.resolve();
-}
+    }
 }

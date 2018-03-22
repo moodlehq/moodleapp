@@ -671,7 +671,7 @@ export class LocalNotificationsMock extends LocalNotifications {
         notification = Object.assign({}, notification); // Clone the object.
         notification.triggered = !!triggered;
 
-        return this.appDB.insertOrUpdateRecord(this.DESKTOP_NOTIFS_TABLE, notification, { id: notification.id });
+        return this.appDB.insertRecord(this.DESKTOP_NOTIFS_TABLE, notification);
     }
 
     /**

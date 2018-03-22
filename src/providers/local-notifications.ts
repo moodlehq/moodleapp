@@ -500,6 +500,6 @@ export class CoreLocalNotificationsProvider {
             at: parseInt(notification.at, 10)
         };
 
-        return this.appDB.insertOrUpdateRecord(this.TRIGGERED_TABLE, entry, { id: notification.id });
+        return this.appDB.insertRecord(this.TRIGGERED_TABLE, entry);
     }
 }
