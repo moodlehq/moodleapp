@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModResourceProvider } from '../../providers/resource';
 import { AddonModResourcePrefetchHandler } from '../../providers/prefetch-handler';
@@ -39,13 +35,10 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     src: string;
     contentText: string;
 
-    constructor(private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
-            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
-            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected translate: TranslateService, private prefetchHandler: AddonModResourcePrefetchHandler,
+    constructor(injector: Injector, private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
+            private appProvider: CoreAppProvider, private prefetchHandler: AddonModResourcePrefetchHandler,
             private resourceHelper: AddonModResourceHelperProvider) {
-        super(textUtils, courseHelper, translate, domUtils);
-
+        super(injector);
     }
 
     /**

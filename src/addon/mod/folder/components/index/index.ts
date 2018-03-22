@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Input, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModFolderProvider } from '../../providers/folder';
 import { AddonModFolderHelperProvider } from '../../providers/helper';
@@ -39,11 +35,9 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     canGetFolder: boolean;
     contents: any;
 
-    constructor(private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
-            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
-            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected translate: TranslateService, private folderHelper: AddonModFolderHelperProvider) {
-        super(textUtils, courseHelper, translate, domUtils);
+    constructor(injector: Injector, private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
+            private appProvider: CoreAppProvider, private folderHelper: AddonModFolderHelperProvider) {
+        super(injector);
     }
 
     /**

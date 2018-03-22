@@ -25,6 +25,14 @@
   .md .core-#{$color-name}-card {
     @extend .card-md;
     @extend .card-content-md;
+
+    &[icon-start] {
+      padding-left: $card-md-padding-left * 2 + 20;
+
+      ion-icon {
+        left: $card-md-padding-left;
+      }
+    }
   }
 }
 

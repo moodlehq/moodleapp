@@ -25,6 +25,14 @@
   .ios .core-#{$color-name}-card {
     @extend .card-ios ;
     @extend .card-content-ios;
+
+    &[icon-start] {
+      padding-left: $card-ios-padding-left * 2 + 20;
+
+      ion-icon {
+        left: $card-ios-padding-left;
+      }
+    }
   }
 }
 

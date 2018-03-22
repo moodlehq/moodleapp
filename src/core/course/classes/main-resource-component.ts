@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { OnInit, OnDestroy, Input, Output, EventEmitter, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -43,8 +43,18 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected statusObserver; // Observer of package status changed, used when calling fillContextMenu.
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
 
-    constructor(protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected translate: TranslateService, protected domUtils: CoreDomUtilsProvider) {
+    // List of services that will be injected using injector.
+    // It's done like this so subclasses don't have to send all the services to the parent in the constructor.
+    protected textUtils: CoreTextUtilsProvider;
+    protected courseHelper: CoreCourseHelperProvider;
+    protected translate: TranslateService;
+    protected domUtils: CoreDomUtilsProvider;
+
+    constructor(injector: Injector) {
+        this.textUtils = injector.get(CoreTextUtilsProvider);
+        this.courseHelper = injector.get(CoreCourseHelperProvider);
+        this.translate = injector.get(TranslateService);
+        this.domUtils = injector.get(CoreDomUtilsProvider);
         this.dataRetrieved = new EventEmitter();
     }
 

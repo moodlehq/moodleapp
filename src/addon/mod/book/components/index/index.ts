@@ -12,14 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional } from '@angular/core';
+import { Component, Optional, Injector } from '@angular/core';
 import { Content, PopoverController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
@@ -42,12 +38,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     protected currentChapter: string;
     protected contentsMap: AddonModBookContentsMap;
 
-    constructor(private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
-            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
-            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            private prefetchDelegate: AddonModBookPrefetchHandler, private popoverCtrl: PopoverController,
-            protected translate: TranslateService, @Optional() private content: Content) {
-        super(textUtils, courseHelper, translate, domUtils);
+    constructor(injector: Injector, private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
+            private appProvider: CoreAppProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
+            private popoverCtrl: PopoverController, @Optional() private content: Content) {
+        super(injector);
     }
 
     /**

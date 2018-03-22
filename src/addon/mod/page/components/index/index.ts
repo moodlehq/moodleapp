@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModPageProvider } from '../../providers/page';
 import { AddonModPageHelperProvider } from '../../providers/helper';
@@ -37,12 +33,10 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     contents: any;
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
 
-    constructor(private pageProvider: AddonModPageProvider, private courseProvider: CoreCourseProvider,
-            protected domUtils: CoreDomUtilsProvider, private appProvider: CoreAppProvider,
-            protected textUtils: CoreTextUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
-            protected translate: TranslateService, private pageHelper: AddonModPageHelperProvider,
+    constructor(injector: Injector, private pageProvider: AddonModPageProvider, private courseProvider: CoreCourseProvider,
+            private appProvider: CoreAppProvider, private pageHelper: AddonModPageHelperProvider,
             private pagePrefetch: AddonModPagePrefetchHandler) {
-        super(textUtils, courseHelper, translate, domUtils);
+        super(injector);
     }
 
     /**

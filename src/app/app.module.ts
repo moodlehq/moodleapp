@@ -80,6 +80,7 @@ import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonModPageModule } from '@addon/mod/page/page.module';
 import { AddonModUrlModule } from '@addon/mod/url/url.module';
+import { AddonModSurveyModule } from '@addon/mod/survey/survey.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonNotesModule } from '../addon/notes/notes.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
@@ -165,6 +166,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModFolderModule,
         AddonModPageModule,
         AddonModUrlModule,
+        AddonModSurveyModule,
         AddonMessagesModule,
         AddonNotesModule,
         AddonPushNotificationsModule,
