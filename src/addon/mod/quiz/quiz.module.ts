@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { AddonModQuizAccessRuleDelegate } from './providers/access-rules-delegate';
+import { AddonModQuizProvider } from './providers/quiz';
 
 @NgModule({
     declarations: [
@@ -21,7 +22,8 @@ import { AddonModQuizAccessRuleDelegate } from './providers/access-rules-delegat
     imports: [
     ],
     providers: [
-        AddonModQuizAccessRuleDelegate
+        AddonModQuizAccessRuleDelegate,
+        AddonModQuizProvider
     ]
 })
 export class AddonModQuizModule { }
