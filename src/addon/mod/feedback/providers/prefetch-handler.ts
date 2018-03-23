@@ -47,7 +47,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHan
      *                           in the filepool root feedback.
      * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
      */
-    /*downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
+    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
         const promises = [],
             siteId = this.sitesProvider.getCurrentSiteId();
 
@@ -119,7 +119,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHan
         }));
 
         return Promise.all(promises);
-    }*/
+    }
 
     /**
      * Get the list of downloadable files.
@@ -129,7 +129,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHan
      * @param  {string} [siteId]  Site ID. If not defined, current site.
      * @return {Promise<any>}     Promise resolved with the list of files.
      */
-    /*getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
+    getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
         let files = [];
 
         return this.feedbackProvider.getFeedback(courseId, module.id).then((feedback) => {
@@ -149,7 +149,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseModulePrefetchHan
             // Any error, return the list we have.
             return files;
         });
-    }*/
+    }
 
     /**
      * Returns feedback intro files.

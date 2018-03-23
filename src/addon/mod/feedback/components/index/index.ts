@@ -338,11 +338,11 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      *
      * @param {boolean} preview Preview or edit the form.
      */
-    gotoAnswerQuestions(preview: boolean): void {
+    gotoAnswerQuestions(preview: boolean = false): void {
         const stateParams = {
             module: this.module,
-            moduleid: this.module.id,
-            courseid: this.courseId,
+            moduleId: this.module.id,
+            courseId: this.courseId,
             preview: preview
         };
         this.navCtrl.push('AddonModFeedbackFormPage', stateParams);

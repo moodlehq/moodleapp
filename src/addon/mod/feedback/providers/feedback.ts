@@ -17,6 +17,8 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreAppProvider } from '@providers/app';
+import { AddonModFeedbackOfflineProvider } from './offline';
 
 /**
  * Service that provides some features for feedbacks.
@@ -35,8 +37,253 @@ export class AddonModFeedbackProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private filepoolProvider: CoreFilepoolProvider) {
+            private filepoolProvider: CoreFilepoolProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
+            private appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonModFeedbackProvider');
+    }
+
+    /**
+     * Check dependency of a question item.
+     *
+     * @param   {any[]}  items      All question items to check dependency.
+     * @param   {any}    item       Item to check.
+     * @return  {boolean}           Return true if dependency is acomplished and it can be shown. False, otherwise.
+     */
+    protected checkDependencyItem(items: any[], item: any): boolean {
+        const depend = items.find((itemFind) => {
+            return itemFind.id == item.dependitem;
+        });
+
+        // Item not found, looks like dependent item has been removed or is in the same or following pages.
+        if (!depend) {
+            return true;
+        }
+
+        switch (depend.typ) {
+            case 'label':
+                return false;
+            case 'multichoice':
+            case 'multichoicerated':
+                return this.compareDependItemMultichoice(depend, item.dependvalue);
+            default:
+                break;
+        }
+
+        return item.dependvalue == depend.rawValue;
+    }
+
+    /**
+     * Check dependency item of type Multichoice.
+     *
+     * @param  {any}     item        Item to check.
+     * @param  {string}  dependValue Value to compare.
+     * @return {boolean}             eturn true if dependency is acomplished and it can be shown. False, otherwise.
+     */
+    protected compareDependItemMultichoice(item: any, dependValue: string): boolean {
+        let values, choices;
+        const parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP) || [],
+            subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+
+        choices = parts[1] || '';
+        choices = choices.split(AddonModFeedbackProvider.MULTICHOICE_ADJUST_SEP)[0] || '';
+        choices = choices.split(AddonModFeedbackProvider.LINE_SEP) || [];
+
+        if (subtype === 'c') {
+            if (typeof item.rawValue == 'undefined') {
+                values = [''];
+            } else {
+                item.rawValue = '' + item.rawValue;
+                values = item.rawValue.split(AddonModFeedbackProvider.LINE_SEP);
+            }
+        } else {
+            values = [item.rawValue];
+        }
+
+        for (let index = 0; index < choices.length; index++) {
+            for (const x in values) {
+                if (values[x] == index + 1) {
+                    let value = choices[index];
+
+                    if (item.typ == 'multichoicerated') {
+                        value = value.split(AddonModFeedbackProvider.MULTICHOICERATED_VALUE_SEP)[1] || '';
+                    }
+
+                    if (value.trim() == dependValue) {
+                        return true;
+                    }
+
+                    // We can finish checking if only searching on one value and we found it.
+                    if (values.length == 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Fill values of item questions.
+     *
+     * @param   {number}   feedbackId   Feedback ID.
+     * @param   {any[]}    items        Item to fill the value.
+     * @param   {boolean}  offline      True if it should return cached data. Has priority over ignoreCache.
+     * @param   {boolean}  ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {string}   siteId       Site ID.
+     * @return  {Promise<any>}          Resolved with values when done.
+     */
+    protected fillValues(feedbackId: number, items: any[], offline: boolean, ignoreCache: boolean, siteId: string): Promise<any> {
+        return this.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then((valuesArray) => {
+            if (valuesArray.length == 0) {
+                // Try sending empty values to get the last completed attempt values.
+                return this.processPageOnline(feedbackId, 0, {}, undefined, siteId).then(() => {
+                    return this.getCurrentValues(feedbackId, offline, ignoreCache, siteId);
+                }).catch(() => {
+                    // Ignore errors
+                });
+            }
+
+            return valuesArray;
+
+        }).then((valuesArray) => {
+            const values = {};
+
+            valuesArray.forEach((value) => {
+                values[value.item] = value.value;
+            });
+
+            items.forEach((itemData) => {
+                if (itemData.hasvalue && typeof values[itemData.id] != 'undefined') {
+                    itemData.rawValue = values[itemData.id];
+                }
+            });
+        }).catch(() => {
+            // Ignore errors.
+        }).then(() => {
+            // Merge with offline data.
+            return this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).then((offlineValuesArray) => {
+                const offlineValues = {};
+
+                // Merge all values into one array.
+                offlineValuesArray = offlineValuesArray.reduce((a, b) => {
+                    const responses = this.utils.objectToArrayOfObjects(b.responses, 'id', 'value');
+
+                    return a.concat(responses);
+                }, []).map((a) => {
+                    const parts = a.id.split('_');
+                    a.typ = parts[0];
+                    a.item = parseInt(parts[1], 0);
+
+                    return a;
+                });
+
+                offlineValuesArray.forEach((value) => {
+                    if (typeof offlineValues[value.item] == 'undefined') {
+                        offlineValues[value.item] = [];
+                    }
+                    offlineValues[value.item].push(value.value);
+                });
+
+                items.forEach((itemData) => {
+                    if (itemData.hasvalue && typeof offlineValues[itemData.id] != 'undefined') {
+                        // Treat multichoice checkboxes.
+                        if (itemData.typ == 'multichoice' &&
+                                itemData.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP)[0] == 'c') {
+
+                            offlineValues[itemData.id] = offlineValues[itemData.id].filter((value) => {
+                                return value > 0;
+                            });
+                            itemData.rawValue = offlineValues[itemData.id].join(AddonModFeedbackProvider.LINE_SEP);
+                        } else {
+                            itemData.rawValue = offlineValues[itemData.id][0];
+                        }
+                    }
+                });
+
+                return items;
+            });
+        }).catch(() => {
+            // Ignore errors.
+            return items;
+        });
+    }
+
+    /**
+     * Returns all the feedback non respondents users.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @param   {any}       [previous]      Only for recurrent use. Object with the previous fetched info.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getAllNonRespondents(feedbackId: number, groupId: number, siteId?: string, previous?: any): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        if (typeof previous == 'undefined') {
+            previous = {
+                page: 0,
+                users: []
+            };
+        }
+
+        return this.getNonRespondents(feedbackId, groupId, previous.page, siteId).then((response) => {
+            if (previous.users.length < response.total) {
+                previous.users = previous.users.concat(response.users);
+            }
+
+            if (previous.users.length < response.total) {
+                // Can load more.
+                previous.page++;
+
+                return this.getAllNonRespondents(feedbackId, groupId, siteId, previous);
+            }
+            previous.total = response.total;
+
+            return previous;
+        });
+    }
+
+    /**
+     * Returns all the feedback user responses.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @param   {any}       [previous]      Only for recurrent use. Object with the previous fetched info.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     */
+    getAllResponsesAnalysis(feedbackId: number, groupId: number, siteId?: string, previous?: any): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        if (typeof previous == 'undefined') {
+            previous = {
+                page: 0,
+                attempts: [],
+                anonattempts: []
+            };
+        }
+
+        return this.getResponsesAnalysis(feedbackId, groupId, previous.page, siteId).then((responses) => {
+            if (previous.anonattempts.length < responses.totalanonattempts) {
+                previous.anonattempts = previous.anonattempts.concat(responses.anonattempts);
+            }
+
+            if (previous.attempts.length < responses.totalattempts) {
+                previous.attempts = previous.attempts.concat(responses.attempts);
+            }
+
+            if (previous.anonattempts.length < responses.totalanonattempts || previous.attempts.length < responses.totalattempts) {
+                // Can load more.
+                previous.page++;
+
+                return this.getAllResponsesAnalysis(feedbackId, groupId, siteId, previous);
+            }
+
+            previous.totalattempts = responses.totalattempts;
+            previous.totalanonattempts = responses.totalanonattempts;
+
+            return previous;
+        });
     }
 
     /**
@@ -437,6 +684,118 @@ export class AddonModFeedbackProvider {
     }
 
     /**
+     * Get a single feedback page items. This function is not cached, use AddonModFeedbackHelperProvider#getPageItems instead.
+     *
+     * @param   {number}    feedbackId  Feedback ID.
+     * @param   {number}    page        The page to get.
+     * @param   {string}    [siteId]    Site ID. If not defined, current site.
+     * @return  {Promise<any>}          Promise resolved when the info is retrieved.
+     */
+    getPageItems(feedbackId: number, page: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                    feedbackid: feedbackId,
+                    page: page
+                };
+
+            return site.write('mod_feedback_get_page_items', params);
+        });
+    }
+
+    /**
+     * Get a single feedback page items. If offline or server down it will use getItems to calculate dependencies.
+     *
+     * @param   {number}  feedbackId          Feedback ID.
+     * @param   {number}  page                The page to get.
+     * @param   {boolean} [offline=false]     True if it should return cached data. Has priority over ignoreCache.
+     * @param   {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param   {string}  [siteId]            Site ID. If not defined, current site.
+     * @return  {Promise<any>}                Promise resolved when the info is retrieved.
+     */
+    getPageItemsWithValues(feedbackId: number, page: number, offline: boolean = false, ignoreCache: boolean = false,
+            siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.getPageItems(feedbackId, page, siteId).then((response) => {
+            return this.fillValues(feedbackId, response.items, offline, ignoreCache, siteId).then((items) => {
+                response.items = items;
+
+                return response;
+            });
+        }).catch(() => {
+            // If getPageItems fail we should calculate it using getItems.
+            return this.getItems(feedbackId, siteId).then((response) => {
+                return this.fillValues(feedbackId, response.items, offline, ignoreCache, siteId).then((items) => {
+                    // Separate items by pages.
+                    let currentPage = 0;
+                    const previousPageItems = [];
+
+                    const pageItems = items.filter((item) => {
+                        // Greater page, discard all entries.
+                        if (currentPage > page) {
+                            return false;
+                        }
+
+                        if (item.typ == 'pagebreak') {
+                            currentPage++;
+
+                            return false;
+                        }
+
+                        // Save items on previous page to check dependencies and discard entry.
+                        if (currentPage < page) {
+                            previousPageItems.push(item);
+
+                            return false;
+                        }
+
+                        // Filter depending items.
+                        if (item && item.dependitem > 0 && previousPageItems.length > 0) {
+                            return this.checkDependencyItem(previousPageItems, item);
+                        }
+
+                        // Filter items with errors.
+                        return item;
+                    });
+
+                    // Check if there are more pages.
+                    response.hasprevpage = page > 0;
+                    response.hasnextpage = currentPage > page;
+                    response.items = pageItems;
+
+                    return response;
+                });
+            });
+        });
+    }
+
+    /**
+     * Convenience function to get the page we can jump.
+     *
+     * @param  {number}  feedbackId [description]
+     * @param  {number}  page       [description]
+     * @param  {number}  changePage [description]
+     * @param  {string}  siteId     [description]
+     * @return {Promise<number | false>}            [description]
+     */
+    protected getPageJumpTo(feedbackId: number, page: number, changePage: number, siteId: string): Promise<number | false> {
+        return this.getPageItemsWithValues(feedbackId, page, true, false, siteId).then((resp) => {
+            // The page we are going has items.
+            if (resp.items.length > 0) {
+                return page;
+            }
+
+            // Check we can jump futher.
+            if ((changePage == 1 && resp.hasnextpage) || (changePage == -1 && resp.hasprevpage)) {
+                return this.getPageJumpTo(feedbackId, page + changePage, changePage, siteId);
+            }
+
+            // Completed or first page.
+            return false;
+        });
+    }
+
+    /**
      * Returns the feedback user responses.
      *
      * @param   {number}    feedbackId      Feedback ID.
@@ -721,6 +1080,93 @@ export class AddonModFeedbackProvider {
         };
 
         return this.sitesProvider.getCurrentSite().write('mod_feedback_view_feedback', params);
+    }
+
+    /**
+     * Process a jump between pages.
+     *
+     * @param   {number}    feedbackId      Feedback ID.
+     * @param   {number}    page            The page being processed.
+     * @param   {any}       responses       The data to be processed the key is the field name (usually type[index]_id).
+     * @param   {boolean}   goPrevious      Whether we want to jump to previous page.
+     * @param   {boolean}   formHasErrors   Whether the form we sent has required but empty fields (only used in offline).
+     * @param   {number}    courseId        Course ID the feedback belongs to.
+     * @param   {string}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise<any>}                   Promise resolved when the info is retrieved.
+     */
+    processPage(feedbackId: number, page: number, responses: any, goPrevious: boolean, formHasErrors: boolean, courseId: number,
+            siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Convenience function to store a message to be synchronized later.
+        const storeOffline = (): Promise<any> => {
+            return this.feedbackOffline.saveResponses(feedbackId, page, responses, courseId, siteId).then(() => {
+                // Simulate process_page response.
+                const response = {
+                        jumpto: page,
+                        completed: false,
+                        offline: true
+                    };
+                let changePage = 0;
+
+                if (goPrevious) {
+                    if (page > 0) {
+                        changePage = -1;
+                    }
+                } else if (!formHasErrors) {
+                    // We can only go next if it has no errors.
+                    changePage = 1;
+                }
+
+                if (changePage === 0) {
+                    return response;
+                }
+
+                return this.getPageItemsWithValues(feedbackId, page, true, false, siteId).then((resp) => {
+                    // Check completion.
+                    if (changePage == 1 && !resp.hasnextpage) {
+                        response.completed = true;
+
+                        return response;
+                    }
+
+                    return this.getPageJumpTo(feedbackId, page + changePage, changePage, siteId).then((loadPage) => {
+                        if (loadPage === false) {
+                            // Completed or first page.
+                            if (changePage == -1) {
+                                // First page.
+                                response.jumpto = 0;
+                            } else {
+                                // Completed.
+                                response.completed = true;
+                            }
+                        } else {
+                            response.jumpto = loadPage;
+                        }
+
+                        return response;
+                    });
+                });
+            });
+        };
+
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If there's already a response to be sent to the server, discard it first.
+        return this.feedbackOffline.deleteFeedbackPageResponses(feedbackId, page, siteId).then(() => {
+            return this.processPageOnline(feedbackId, page, responses, goPrevious, siteId).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                }
+
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            });
+        });
     }
 
     /**

@@ -170,9 +170,10 @@ export class CoreUtilsProvider {
 
     /**
      * Blocks leaving a view.
+     * @deprecated, use ionViewCanLeave instead.
      */
     blockLeaveView(): void {
-        // @todo
+        return;
     }
 
     /**

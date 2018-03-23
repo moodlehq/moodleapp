@@ -95,6 +95,88 @@ export class AddonModFeedbackHelperProvider {
     }
 
     /**
+     * Get page items responses to be sent.
+     *
+     * @param   {any[]} items    Items where the values are.
+     * @return  {any}            Responses object to be sent.
+     */
+    getPageItemsResponses(items: any[]): any {
+        const responses = {};
+
+        items.forEach((itemData) => {
+            let answered = false;
+
+            itemData.hasError = false;
+
+            if (itemData.typ == 'captcha') {
+                const value = itemData.value || '',
+                    name = itemData.typ + '_' + itemData.id;
+
+                answered = !!value;
+                responses[name] = 1;
+                responses['g-recaptcha-response'] = value;
+                responses['recaptcha_element'] = 'dummyvalue';
+
+                if (itemData.required && !answered) {
+                    // Check if it has any value.
+                    itemData.isEmpty = true;
+                } else {
+                    itemData.isEmpty = false;
+                }
+            } else if (itemData.hasvalue) {
+                let name, value;
+                const nameTemp = itemData.typ + '_' + itemData.id;
+
+                if (itemData.typ == 'multichoice' && itemData.subtype == 'c') {
+                    name = nameTemp + '[0]';
+                    responses[name] = 0;
+                    itemData.choices.forEach((choice, index) => {
+                        name = nameTemp + '[' + (index + 1) + ']';
+                        value = choice.checked ? choice.value : 0;
+                        if (!answered && value) {
+                            answered = true;
+                        }
+                        responses[name] = value;
+                    });
+                } else {
+                    if (itemData.typ == 'multichoice') {
+                        name = nameTemp + '[0]';
+                    } else {
+                        name = nameTemp;
+                    }
+
+                    if (itemData.typ == 'multichoice' || itemData.typ == 'multichoicerated') {
+                        value = itemData.value || 0;
+                    } else if (itemData.typ == 'numeric') {
+                        value = itemData.value || itemData.value  == 0 ? itemData.value : '';
+
+                        if (value != '') {
+                            if ((itemData.rangefrom != '' && value < itemData.rangefrom) ||
+                                    (itemData.rangeto != '' && value > itemData.rangeto)) {
+                                itemData.hasError = true;
+                            }
+                        }
+                    } else {
+                        value = itemData.value || itemData.value  == 0 ? itemData.value : '';
+                    }
+
+                    answered = !!value;
+                    responses[name] = value;
+                }
+
+                if (itemData.required && !answered) {
+                    // Check if it has any value.
+                    itemData.isEmpty = true;
+                } else {
+                    itemData.isEmpty = false;
+                }
+            }
+        });
+
+        return responses;
+    }
+
+    /**
      * Returns the feedback user responses with extra info.
      *
      * @param   {number}    feedbackId      Feedback ID.
@@ -269,8 +351,6 @@ export class AddonModFeedbackHelperProvider {
             parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_ADJUST_SEP) || [];
             item.presentation = parts.length > 0 ? parts[0] : '';
             // Horizontal are not supported right now. item.horizontal = parts.length > 1 && !!parts[1];
-        } else {
-            item.class = 'item-select';
         }
 
         item.choices = item.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
@@ -320,9 +400,6 @@ export class AddonModFeedbackHelperProvider {
         const data = this.textUtils.parseJSON(item.otherdata);
         if (data && data.length > 3) {
             item.captcha = {
-                challengehash: data[0],
-                imageurl: data[1],
-                jsurl: data[2],
                 recaptchapublickey: data[3]
             };
         }

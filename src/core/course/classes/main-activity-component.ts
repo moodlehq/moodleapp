@@ -59,7 +59,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
         // Refresh online status when changes.
         this.onlineObserver = network.onchange().subscribe((online) => {
-            this.isOnline = this.appProvider.isOnline();
+            this.isOnline = online;
         });
     }
 

@@ -157,7 +157,7 @@ export class AddonModFeedbackOfflineProvider {
                     timemodified: this.timeUtils.timestamp()
                 };
 
-            return site.getDb().insertOrUpdateRecord(this.FEEDBACK_TABLE, entry, {feedbackid: feedbackId, page: page});
+            return site.getDb().insertRecord(this.FEEDBACK_TABLE, entry);
         });
     }
 }

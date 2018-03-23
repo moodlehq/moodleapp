@@ -1,0 +1,15 @@
+page-addon-mod-feedback-form {
+    .addon-mod_feedback-form-content {
+        align-self: self-start;
+        width: 100%;
+    }
+    .item-md .addon-mod_feedback-form-content {
+        @include margin($item-md-padding-media-top, ($item-md-padding-end / 2), $item-md-padding-media-bottom, 0);
+    }
+    .item-ios .addon-mod_feedback-form-content {
+        @include margin($item-ios-padding-media-top, $item-ios-padding-start, $item-ios-padding-media-bottom, 0);
+    }
+    .item-wp .addon-mod_feedback-form-content {
+        @include margin($item-wp-padding-media-top, ($item-wp-padding-end / 2), $item-wp-padding-media-bottom, 0);
+    }
+}
