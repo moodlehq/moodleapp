@@ -20,6 +20,7 @@ import { CoreCourseModuleDelegate } from './providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './providers/module-prefetch-delegate';
 import { CoreCourseOptionsDelegate } from './providers/options-delegate';
 import { CoreCourseFormatDefaultHandler } from './providers/default-format';
+import { CoreCourseModuleDefaultHandler } from './providers/default-module';
 import { CoreCourseFormatSingleActivityModule } from './formats/singleactivity/singleactivity.module';
 import { CoreCourseFormatSocialModule } from './formats/social/social.module';
 import { CoreCourseFormatTopicsModule } from './formats/topics/topics.module';
@@ -44,7 +45,8 @@ export const CORE_COURSE_PROVIDERS: any[] = [
         CoreCourseFormatSocialModule
     ],
     providers: CORE_COURSE_PROVIDERS.concat([
-        CoreCourseFormatDefaultHandler
+        CoreCourseFormatDefaultHandler,
+        CoreCourseModuleDefaultHandler
     ]),
     exports: []
 })

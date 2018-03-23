@@ -71,8 +71,6 @@ export interface CoreUserProfileFieldHandlerData {
  */
 @Injectable()
 export class CoreUserProfileFieldDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreUserProfileFieldHandler } = {};
-    protected enabledHandlers: { [s: string]: CoreUserProfileFieldHandler } = {};
     protected handlerNameProperty = 'type';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,

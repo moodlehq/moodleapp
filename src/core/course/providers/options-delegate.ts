@@ -129,8 +129,6 @@ export interface CoreCourseOptionsHandlerToDisplay {
  */
 @Injectable()
 export class CoreCourseOptionsDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreCourseOptionsHandler } = {}; // All registered handlers.
-    protected enabledHandlers: { [s: string]: CoreCourseOptionsHandler } = {}; // Handlers enabled for the current site.
     protected loaded: { [courseId: number]: boolean } = {};
     protected lastUpdateHandlersForCoursesStart: any = {};
     protected coursesHandlers: {
@@ -440,7 +438,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
         this.lastUpdateHandlersForCoursesStart[courseId] = now;
 
         for (const name in this.enabledHandlers) {
-            const handler = this.enabledHandlers[name];
+            const handler = <CoreCourseOptionsHandler> this.enabledHandlers[name];
 
             // Checks if the handler is enabled for the user.
             promises.push(Promise.resolve(handler.isEnabledForCourse(courseId, accessData, navOptions, admOptions))

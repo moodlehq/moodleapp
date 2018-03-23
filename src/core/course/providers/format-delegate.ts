@@ -155,8 +155,6 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
  */
 @Injectable()
 export class CoreCourseFormatDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreCourseFormatHandler } = {}; // All registered handlers.
-    protected enabledHandlers: { [s: string]: CoreCourseFormatHandler } = {}; // Handlers enabled for the current site.
     protected featurePrefix = 'CoreCourseFormatDelegate_';
     protected handlerNameProperty = 'format';
 
@@ -172,7 +170,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {boolean} Whether it allows seeing all sections at the same time.
      */
     canViewAllSections(course: any): boolean {
-        return this.executeFunction(course.format, 'canViewAllSections', [course]);
+        return this.executeFunctionOnEnabled(course.format, 'canViewAllSections', [course]);
     }
 
     /**
@@ -182,7 +180,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {boolean} Whether the option to enable section/module download should be displayed
      */
     displayEnableDownload(course: any): boolean {
-        return this.executeFunction(course.format, 'displayEnableDownload', [course]);
+        return this.executeFunctionOnEnabled(course.format, 'displayEnableDownload', [course]);
     }
 
     /**
@@ -192,25 +190,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {boolean} Whether the section selector should be displayed.
      */
     displaySectionSelector(course: any): boolean {
-        return this.executeFunction(course.format, 'displaySectionSelector', [course]);
-    }
-
-    /**
-     * Execute a certain function in a course format handler.
-     * If the handler isn't found or function isn't defined, call the same function in the default handler.
-     *
-     * @param {string} format The format name.
-     * @param {string} fnName Name of the function to execute.
-     * @param {any[]} params Parameters to pass to the function.
-     * @return {any} Function returned value or default value.
-     */
-    protected executeFunction(format: string, fnName: string, params?: any[]): any {
-        const handler = this.enabledHandlers[format];
-        if (handler && handler[fnName]) {
-            return handler[fnName].apply(handler, params);
-        } else if (this.defaultHandler[fnName]) {
-            return this.defaultHandler[fnName].apply(this.defaultHandler, params);
-        }
+        return this.executeFunctionOnEnabled(course.format, 'displaySectionSelector', [course]);
     }
 
     /**
@@ -221,7 +201,8 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
     getAllSectionsComponent(injector: Injector, course: any): Promise<any> {
-        return Promise.resolve(this.executeFunction(course.format, 'getAllSectionsComponent', [injector, course])).catch((e) => {
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getAllSectionsComponent', [injector, course]))
+                .catch((e) => {
             this.logger.error('Error getting all sections component', e);
         });
     }
@@ -234,7 +215,8 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
     getCourseFormatComponent(injector: Injector, course: any): Promise<any> {
-        return Promise.resolve(this.executeFunction(course.format, 'getCourseFormatComponent', [injector, course])).catch((e) => {
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getCourseFormatComponent', [injector, course]))
+                .catch((e) => {
             this.logger.error('Error getting course format component', e);
         });
     }
@@ -247,7 +229,8 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
     getCourseSummaryComponent(injector: Injector, course: any): Promise<any> {
-        return Promise.resolve(this.executeFunction(course.format, 'getCourseSummaryComponent', [injector, course])).catch((e) => {
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getCourseSummaryComponent', [injector, course]))
+                .catch((e) => {
             this.logger.error('Error getting course summary component', e);
         });
     }
@@ -260,7 +243,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {string} Course title.
      */
     getCourseTitle(course: any, sections?: any[]): string {
-        return this.executeFunction(course.format, 'getCourseTitle', [course, sections]);
+        return this.executeFunctionOnEnabled(course.format, 'getCourseTitle', [course, sections]);
     }
 
     /**
@@ -272,7 +255,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      */
     getCurrentSection(course: any, sections: any[]): Promise<any> {
         // Convert the result to a Promise if it isn't.
-        return Promise.resolve(this.executeFunction(course.format, 'getCurrentSection', [course, sections])).catch(() => {
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getCurrentSection', [course, sections])).catch(() => {
             // This function should never fail. Just return the first section.
             if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
                 return sections[0];
@@ -290,7 +273,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
     getSectionSelectorComponent(injector: Injector, course: any): Promise<any> {
-        return Promise.resolve(this.executeFunction(course.format, 'getSectionSelectorComponent', [injector, course]))
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getSectionSelectorComponent', [injector, course]))
                 .catch((e) => {
             this.logger.error('Error getting section selector component', e);
         });
@@ -305,7 +288,8 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
     getSingleSectionComponent(injector: Injector, course: any): Promise<any> {
-        return Promise.resolve(this.executeFunction(course.format, 'getSingleSectionComponent', [injector, course])).catch((e) => {
+        return Promise.resolve(this.executeFunctionOnEnabled(course.format, 'getSingleSectionComponent', [injector, course]))
+                .catch((e) => {
             this.logger.error('Error getting single section component', e);
         });
     }
@@ -318,7 +302,7 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved when the data is invalidated.
      */
     invalidateData(course: any, sections: any[]): Promise<any> {
-        return this.executeFunction(course.format, 'invalidateData', [course, sections]);
+        return this.executeFunctionOnEnabled(course.format, 'invalidateData', [course, sections]);
     }
 
     /**
@@ -329,10 +313,6 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved when done.
      */
     openCourse(navCtrl: NavController, course: any): Promise<any> {
-        if (this.enabledHandlers[course.format] && this.enabledHandlers[course.format].openCourse) {
-            return this.enabledHandlers[course.format].openCourse(navCtrl, course);
-        }
-
-        return navCtrl.push('CoreCourseSectionPage', { course: course });
+        return this.executeFunctionOnEnabled(course.format, 'openCourse', [navCtrl, course]);
     }
 }

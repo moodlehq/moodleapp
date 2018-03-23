@@ -146,9 +146,6 @@ export interface CoreFileUploaderHandlerDataToReturn extends CoreFileUploaderHan
  */
 @Injectable()
 export class CoreFileUploaderDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreFileUploaderHandler } = {}; // All registered handlers.
-    protected enabledHandlers: { [s: string]: CoreFileUploaderHandler } = {}; // Handlers enabled for the current site.
-
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {
         super('CoreFileUploaderDelegate', loggerProvider, sitesProvider, eventsProvider);
@@ -173,7 +170,7 @@ export class CoreFileUploaderDelegate extends CoreDelegate {
         const handlers = [];
 
         for (const name in this.enabledHandlers) {
-            const handler = this.enabledHandlers[name];
+            const handler = <CoreFileUploaderHandler> this.enabledHandlers[name];
             let supportedMimetypes;
 
             if (mimetypes) {
