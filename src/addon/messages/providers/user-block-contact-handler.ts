@@ -62,8 +62,8 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
      *
      * @param {any} user          User to check.
      * @param {number} courseId   Course ID.
-     * @param  {any} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-     * @param  {any} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+     * @param  {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param  {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return  {boolean|Promise<boolean>}   Promise resolved with true if enabled, resolved with false otherwise.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {

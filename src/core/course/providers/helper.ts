@@ -758,11 +758,8 @@ export class CoreCourseHelperProvider {
     /**
      * Get a course status icon from status.
      *
-     * @module mm.core.course
-     * @ngdoc method
-     * @name $mmCourseHelper#getCourseStatusIconFromStatus
-     * @param {String} status Course status.
-     * @return {String}       Icon name.
+     * @param {string} status Course status.
+     * @return {string} Icon name.
      */
     getCourseStatusIconFromStatus(status: string): string {
         if (status == CoreConstants.DOWNLOADED) {

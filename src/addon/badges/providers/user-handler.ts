@@ -21,7 +21,7 @@ import { AddonBadgesProvider } from './badges';
  */
 @Injectable()
 export class AddonBadgesUserHandler implements CoreUserProfileHandler {
-    name = 'mmaBadges';
+    name = 'AddonBadges';
     priority = 50;
     type = CoreUserDelegate.TYPE_NEW_PAGE;
 

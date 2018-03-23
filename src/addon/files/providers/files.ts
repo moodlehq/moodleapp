@@ -295,7 +295,7 @@ export class AddonFilesProvider {
     isDisabledInSite(site: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaFiles');
+        return site.isFeatureDisabled('CoreMainMenuDelegate_AddonFiles');
     }
 
     /**
@@ -328,7 +328,7 @@ export class AddonFilesProvider {
     isPrivateFilesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('files_privatefiles');
+        return site.isFeatureDisabled('AddonFilesPrivateFiles');
     }
 
     /**
@@ -352,7 +352,7 @@ export class AddonFilesProvider {
     isSiteFilesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('files_sitefiles');
+        return site.isFeatureDisabled('AddonFilesSiteFiles');
     }
 
     /**
@@ -376,7 +376,7 @@ export class AddonFilesProvider {
     isUploadDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('files_upload');
+        return site.isFeatureDisabled('AddonFilesUpload');
     }
 
     /**

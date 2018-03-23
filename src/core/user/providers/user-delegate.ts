@@ -167,7 +167,7 @@ export class CoreUserDelegate extends CoreDelegate {
     protected observableHandlers: Subject<CoreUserProfileHandlerToDisplay[]> =
         new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([]);
     protected userHandlers: CoreUserProfileHandlerToDisplay[] = [];
-    protected featurePrefix = '$mmUserDelegate_';
+    protected featurePrefix = 'CoreUserDelegate_';
     protected loaded = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,

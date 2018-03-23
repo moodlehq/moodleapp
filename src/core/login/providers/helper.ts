@@ -489,12 +489,14 @@ export class CoreLoginHelperProvider {
      * @return {boolean} Whether email signup is disabled.
      */
     isEmailSignupDisabled(config: any): boolean {
-        const disabledFeatures = config && config.tool_mobile_disabledfeatures;
+        let disabledFeatures = config && config.tool_mobile_disabledfeatures;
         if (!disabledFeatures) {
             return false;
         }
 
-        const regEx = new RegExp('(,|^)\\$mmLoginEmailSignup(,|$)', 'g');
+        disabledFeatures = this.textUtils.treatDisabledFeatures(disabledFeatures);
+
+        const regEx = new RegExp('(,|^)CoreLoginEmailSignup(,|$)', 'g');
 
         return !!disabledFeatures.match(regEx);
     }
@@ -744,8 +746,8 @@ export class CoreLoginHelperProvider {
         loginUrl += '&passport=' + passport;
         loginUrl += '&urlscheme=' + CoreConfigConstants.customurlscheme;
 
-        // Store the siteurl and passport in $mmConfig for persistence.
-        // We are "configuring" the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
+        // Store the siteurl and passport in CoreConfigProvider for persistence.
+        // We are "configuring" the app to wait for an SSO. CoreConfigProvider shouldn't be used as a temporary storage.
         this.configProvider.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify({
             siteUrl: siteUrl,
             passport: passport,

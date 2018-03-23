@@ -139,7 +139,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
         }
     } = {};
 
-    protected featurePrefix = '$mmCoursesDelegate_';
+    protected featurePrefix = 'CoreCourseOptionsDelegate_';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
             protected eventsProvider: CoreEventsProvider, private coursesProvider: CoreCoursesProvider) {

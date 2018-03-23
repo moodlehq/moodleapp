@@ -22,6 +22,52 @@ import { CoreLangProvider } from '../lang';
 */
 @Injectable()
 export class CoreTextUtilsProvider {
+
+    // List of regular expressions to convert the old nomenclature to new nomenclature for disabled features.
+    protected DISABLED_FEATURES_COMPAT_REGEXPS = [
+        {old: /\$mmLoginEmailSignup/g, new: 'CoreLoginEmailSignup'},
+        {old: /\$mmSideMenuDelegate/g, new: 'CoreMainMenuDelegate'},
+        {old: /\$mmCoursesDelegate/g, new: 'CoreCourseOptionsDelegate'},
+        {old: /\$mmUserDelegate/g, new: 'CoreUserDelegate'},
+        {old: /\$mmCourseDelegate/g, new: 'CoreCourseModuleDelegate'},
+        {old: /_mmCourses/g, new: '_CoreCourses'},
+        {old: /_mmaFrontpage/g, new: '_CoreSiteHome'},
+        {old: /_mmaGrades/g, new: '_CoreGrades'},
+        {old: /_mmaCompetency/g, new: '_AddonCompetency'},
+        {old: /_mmaNotifications/g, new: '_AddonNotifications'},
+        {old: /_mmaMessages/g, new: '_AddonMessages'},
+        {old: /_mmaCalendar/g, new: '_AddonCalendar'},
+        {old: /_mmaFiles/g, new: '_AddonFiles'},
+        {old: /_mmaParticipants/g, new: '_CoreUserParticipants'},
+        {old: /_mmaCourseCompletion/g, new: '_AddonCourseCompletion'},
+        {old: /_mmaNotes/g, new: '_AddonNotes'},
+        {old: /_mmaBadges/g, new: '_AddonBadges'},
+        {old: /files_privatefiles/g, new: 'AddonFilesPrivateFiles'},
+        {old: /files_sitefiles/g, new: 'AddonFilesSiteFiles'},
+        {old: /files_upload/g, new: 'AddonFilesUpload'},
+        {old: /_mmaModAssign/g, new: '_AddonModAssign'},
+        {old: /_mmaModBook/g, new: '_AddonModBook'},
+        {old: /_mmaModChat/g, new: '_AddonModChat'},
+        {old: /_mmaModChoice/g, new: '_AddonModChoice'},
+        {old: /_mmaModData/g, new: '_AddonModData'},
+        {old: /_mmaModFeedback/g, new: '_AddonModFeedback'},
+        {old: /_mmaModFolder/g, new: '_AddonModFolder'},
+        {old: /_mmaModForum/g, new: '_AddonModForum'},
+        {old: /_mmaModGlossary/g, new: '_AddonModGlossary'},
+        {old: /_mmaModImscp/g, new: '_AddonModImscp'},
+        {old: /_mmaModLabel/g, new: '_AddonModLabel'},
+        {old: /_mmaModLesson/g, new: '_AddonModLesson'},
+        {old: /_mmaModLti/g, new: '_AddonModLti'},
+        {old: /_mmaModPage/g, new: '_AddonModPage'},
+        {old: /_mmaModQuiz/g, new: '_AddonModQuiz'},
+        {old: /_mmaModResource/g, new: '_AddonModResource'},
+        {old: /_mmaModScorm/g, new: '_AddonModScorm'},
+        {old: /_mmaModSurvey/g, new: '_AddonModSurvey'},
+        {old: /_mmaModUrl/g, new: '_AddonModUrl'},
+        {old: /_mmaModWiki/g, new: '_AddonModWiki'},
+        {old: /_mmaModWorkshop/g, new: '_AddonModWorkshop'},
+    ];
+
     protected element = document.createElement('div'); // Fake element to use in some functions, to prevent creating it each time.
 
     constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController) { }
@@ -532,6 +578,26 @@ export class CoreTextUtilsProvider {
         }
 
         return stripped;
+    }
+
+    /**
+     * Treat the list of disabled features, replacing old nomenclature with the new one.
+     *
+     * @param {string} features List of disabled features.
+     * @return {string} Treated list.
+     */
+    treatDisabledFeatures(features: string): string {
+        if (!features) {
+            return '';
+        }
+
+        for (let i = 0; i < this.DISABLED_FEATURES_COMPAT_REGEXPS.length; i++) {
+            const entry = this.DISABLED_FEATURES_COMPAT_REGEXPS[i];
+
+            features = features.replace(entry.old, entry.new);
+        }
+
+        return features;
     }
 
     /**

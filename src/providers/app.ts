@@ -323,10 +323,10 @@ export class CoreAppProvider {
         if (localStorage && localStorage.getItem) {
             try {
                 const data: CoreRedirectData = {
-                    siteId: localStorage.getItem('mmCoreRedirectSiteId'),
-                    page: localStorage.getItem('mmCoreRedirectState'),
-                    params: localStorage.getItem('mmCoreRedirectParams'),
-                    timemodified: parseInt(localStorage.getItem('mmCoreRedirectTime'), 10)
+                    siteId: localStorage.getItem('CoreRedirectSiteId'),
+                    page: localStorage.getItem('CoreRedirectState'),
+                    params: localStorage.getItem('CoreRedirectParams'),
+                    timemodified: parseInt(localStorage.getItem('CoreRedirectTime'), 10)
                 };
 
                 if (data.params) {
@@ -352,10 +352,10 @@ export class CoreAppProvider {
     storeRedirect(siteId: string, page: string, params: any): void {
         if (localStorage && localStorage.setItem) {
             try {
-                localStorage.setItem('mmCoreRedirectSiteId', siteId);
-                localStorage.setItem('mmCoreRedirectState', page);
-                localStorage.setItem('mmCoreRedirectParams', JSON.stringify(params));
-                localStorage.setItem('mmCoreRedirectTime', String(Date.now()));
+                localStorage.setItem('CoreRedirectSiteId', siteId);
+                localStorage.setItem('CoreRedirectState', page);
+                localStorage.setItem('CoreRedirectParams', JSON.stringify(params));
+                localStorage.setItem('CoreRedirectTime', String(Date.now()));
             } catch (ex) {
                 // Ignore errors.
             }

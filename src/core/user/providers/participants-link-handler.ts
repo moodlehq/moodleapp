@@ -24,7 +24,7 @@ import { CoreUserProvider } from './user';
 @Injectable()
 export class CoreUserParticipantsLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreUserParticipants';
-    featureName = '$mmCoursesDelegate_mmaParticipants';
+    featureName = 'CoreCourseOptionsDelegate_CoreUserParticipants';
     pattern = /\/user\/index\.php/;
 
     constructor(private userProvider: CoreUserProvider, private loginHelper: CoreLoginHelperProvider) {

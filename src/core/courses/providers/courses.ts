@@ -141,7 +141,7 @@ export class CoreCoursesProvider {
     isMyCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmCourses');
+        return site.isFeatureDisabled('CoreMainMenuDelegate_CoreCourses');
     }
 
     /**
@@ -165,7 +165,7 @@ export class CoreCoursesProvider {
     isSearchCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmCoursesDelegate_search');
+        return site.isFeatureDisabled('CoreCourseOptionsDelegate_search');
     }
 
     /**

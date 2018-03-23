@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { AddonModFolderProvider } from './folder';
 
 /**
  * Handler to treat links to resource.
@@ -25,6 +24,6 @@ export class AddonModFolderLinkHandler extends CoreContentLinksModuleIndexHandle
     name = 'AddonModFolderLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModFolderProvider.COMPONENT, 'folder');
+        super(courseHelper, 'AddonModFolder', 'folder');
     }
 }

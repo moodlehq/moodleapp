@@ -80,8 +80,8 @@ export class CoreMainMenuMorePage implements OnDestroy {
 
         this.siteInfo = currentSite.getInfo();
         this.logoutLabel = 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
-        this.showWeb = !currentSite.isFeatureDisabled('$mmSideMenuDelegate_website');
-        this.showHelp = !currentSite.isFeatureDisabled('$mmSideMenuDelegate_help');
+        this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
+        this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');
 
         currentSite.getDocsUrl().then((docsUrl) => {
             this.docsUrl = docsUrl;

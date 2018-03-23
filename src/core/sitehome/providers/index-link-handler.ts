@@ -25,7 +25,7 @@ import { CoreSiteHomeProvider } from './sitehome';
 @Injectable()
 export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreSiteHomeIndexLinkHandler';
-    featureName = '$mmSideMenuDelegate_mmaFrontpage';
+    featureName = 'CoreMainMenuDelegate_CoreSiteHome';
     pattern = /\/course\/view\.php.*([\?\&]id=\d+)/;
 
     constructor(private sitesProvider: CoreSitesProvider, private siteHomeProvider: CoreSiteHomeProvider,

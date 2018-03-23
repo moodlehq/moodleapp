@@ -24,6 +24,6 @@ export class AddonModLabelLinkHandler extends CoreContentLinksModuleIndexHandler
     name = 'AddonModLabelLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'mmaModLabel', 'label');
+        super(courseHelper, 'AddonModLabel', 'label');
     }
 }

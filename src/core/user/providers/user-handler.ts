@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '@providers/sites';
  */
 @Injectable()
 export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
-    name = 'mmUser';
+    name = 'CoreUserProfileMail';
     priority = 700;
     type = CoreUserDelegate.TYPE_COMMUNICATION;
 

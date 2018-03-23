@@ -168,7 +168,7 @@ export interface CoreCourseModuleHandlerButton {
 export class CoreCourseModuleDelegate extends CoreDelegate {
     protected handlers: { [s: string]: CoreCourseModuleHandler } = {}; // All registered handlers.
     protected enabledHandlers: { [s: string]: CoreCourseModuleHandler } = {}; // Handlers enabled for the current site.
-    protected featurePrefix = '$mmCourseDelegate_';
+    protected featurePrefix = 'CoreCourseModuleDelegate_';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
             protected courseProvider: CoreCourseProvider) {

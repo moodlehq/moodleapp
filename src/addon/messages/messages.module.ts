@@ -85,7 +85,7 @@ export class AddonMessagesModule {
 
         const notificationClicked = (notification: any): void => {
             messagesProvider.isMessagingEnabledForSite(notification.site).then(() => {
-                sitesProvider.isFeatureDisabled('$mmSideMenuDelegate_mmaMessages', notification.site).then((disabled) => {
+                sitesProvider.isFeatureDisabled('CoreMainMenuDelegate_AddonMessages', notification.site).then((disabled) => {
                     if (disabled) {
                         // Messages are disabled, stop.
                         return;

@@ -231,7 +231,7 @@ export class CoreCoursesMyOverviewProvider {
     isDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaMyOverview');
+        return site.isFeatureDisabled('CoreMainMenuDelegate_CoreCourses');
     }
 
     /**

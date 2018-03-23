@@ -24,7 +24,7 @@ import { CoreCoursesProvider } from './courses';
 @Injectable()
 export class CoreCoursesIndexLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreCoursesIndexLinkHandler';
-    featureName = '$mmSideMenuDelegate_mmCourses';
+    featureName = 'CoreMainMenuDelegate_CoreCourses';
     pattern = /\/course\/?(index\.php.*)?$/;
 
     constructor(private coursesProvider: CoreCoursesProvider, private loginHelper: CoreLoginHelperProvider) {
