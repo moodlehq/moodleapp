@@ -57,6 +57,12 @@ export type CoreCourseModulesProgressFunction = (data: CoreCourseModulesProgress
  */
 export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
     /**
+     * Name of the module. It should match the "modname" of the module returned in core_course_get_contents.
+     * @type {string}
+     */
+    modName: string;
+
+    /**
      * The handler's component.
      * @type {string}
      */
@@ -214,6 +220,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
     protected ROOT_CACHE_KEY = 'mmCourse:';
     protected statusCache = new CoreCache();
+    protected handlerNameProperty = 'modName';
 
     // Promises for check updates, to prevent performing the same request twice at the same time.
     protected courseUpdatesPromises: { [s: string]: { [s: string]: Promise<any> } } = {};

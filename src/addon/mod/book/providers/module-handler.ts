@@ -24,7 +24,8 @@ import { CoreCourseProvider } from '@core/course/providers/course';
  */
 @Injectable()
 export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
-    name = 'book';
+    name = 'AddonModBook';
+    modName = 'book';
 
     constructor(protected bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider) { }
 

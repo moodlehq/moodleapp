@@ -19,6 +19,11 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
 
 export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
+    /**
+     * Type of the field the handler supports. E.g. 'checkbox'.
+     * @type {string}
+     */
+    type: string;
 
     /**
      * Return the Component to use to display the user profile field.
@@ -68,6 +73,7 @@ export interface CoreUserProfileFieldHandlerData {
 export class CoreUserProfileFieldDelegate extends CoreDelegate {
     protected handlers: { [s: string]: CoreUserProfileFieldHandler } = {};
     protected enabledHandlers: { [s: string]: CoreUserProfileFieldHandler } = {};
+    protected handlerNameProperty = 'type';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {

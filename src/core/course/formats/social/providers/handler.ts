@@ -21,5 +21,6 @@ import { CoreCourseFormatSingleActivityHandler } from '../../singleactivity/prov
  */
 @Injectable()
 export class CoreCourseFormatSocialHandler extends CoreCourseFormatSingleActivityHandler {
-    name = 'social';
+    name = 'CoreCourseFormatSocial';
+    format = 'social';
 }

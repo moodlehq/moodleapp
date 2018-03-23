@@ -22,7 +22,7 @@ import { CoreSitePluginsCourseFormatComponent } from '../components/course-forma
  */
 export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandler implements CoreCourseFormatHandler {
 
-    constructor(name: string, protected handlerSchema: any) {
+    constructor(name: string, public format: string, protected handlerSchema: any) {
         super(name);
     }
 

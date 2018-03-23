@@ -21,7 +21,8 @@ import { AddonModFolderProvider } from './folder';
  */
 @Injectable()
 export class AddonModFolderPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
-    name = 'folder';
+    name = 'AddonModFolder';
+    modName = 'folder';
     component = AddonModFolderProvider.COMPONENT;
     isResource = true;
 

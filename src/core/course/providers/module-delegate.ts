@@ -26,6 +26,12 @@ import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
  */
 export interface CoreCourseModuleHandler extends CoreDelegateHandler {
     /**
+     * Name of the module. It should match the "modname" of the module returned in core_course_get_contents.
+     * @type {string}
+     */
+    modName: string;
+
+    /**
      * Get the data required to display the module in the course contents view.
      *
      * @param {any} module The module object.
@@ -169,6 +175,7 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
     protected handlers: { [s: string]: CoreCourseModuleHandler } = {}; // All registered handlers.
     protected enabledHandlers: { [s: string]: CoreCourseModuleHandler } = {}; // Handlers enabled for the current site.
     protected featurePrefix = 'CoreCourseModuleDelegate_';
+    protected handlerNameProperty = 'modName';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
             protected courseProvider: CoreCourseProvider) {

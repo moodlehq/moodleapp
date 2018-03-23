@@ -20,7 +20,8 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/cour
  */
 @Injectable()
 export class AddonModLabelModuleHandler implements CoreCourseModuleHandler {
-    name = 'label';
+    name = 'AddonModLabel';
+    modName = 'label';
 
     constructor() {
         // Nothing to do.

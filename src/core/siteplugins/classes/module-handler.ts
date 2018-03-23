@@ -24,7 +24,7 @@ import { CoreSitePluginsModuleIndexComponent } from '../components/module-index/
 export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler implements CoreCourseModuleHandler {
     priority: number;
 
-    constructor(name: string, protected handlerSchema: any) {
+    constructor(name: string, public modName: string, protected handlerSchema: any) {
         super(name);
     }
 

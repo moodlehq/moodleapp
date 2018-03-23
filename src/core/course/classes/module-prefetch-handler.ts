@@ -54,10 +54,16 @@ export type prefetchFunction = (module: any, courseId: number, single: boolean, 
  */
 export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePrefetchHandler {
     /**
+     * Name of the handler.
+     * @type {string}
+     */
+    name = 'CoreCourseModulePrefetchHandler';
+
+    /**
      * Name of the module. It should match the "modname" of the module returned in core_course_get_contents.
      * @type {string}
      */
-    name = '';
+    modName = 'default';
 
     /**
      * The handler's component.

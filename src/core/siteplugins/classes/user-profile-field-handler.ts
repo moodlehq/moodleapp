@@ -22,7 +22,7 @@ import { CoreSitePluginsUserProfileFieldComponent } from '../components/user-pro
  */
 export class CoreSitePluginsUserProfileFieldHandler extends CoreSitePluginsBaseHandler implements CoreUserProfileFieldHandler {
 
-    constructor(name: string) {
+    constructor(name: string, public type: string) {
         super(name);
     }
 

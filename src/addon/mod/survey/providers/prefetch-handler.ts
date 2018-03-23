@@ -22,7 +22,8 @@ import { AddonModSurveyHelperProvider } from './helper';
  */
 @Injectable()
 export class AddonModSurveyPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
-    name = 'survey';
+    name = 'AddonModSurvey';
+    modName = 'survey';
     component = AddonModSurveyProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 

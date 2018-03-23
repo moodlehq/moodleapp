@@ -26,6 +26,12 @@ import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
  */
 export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     /**
+     * Name of the format the handler supports. E.g. 'singleactivity'.
+     * @type {string}
+     */
+    format: string;
+
+    /**
      * Get the title to use in course page. If not defined, course fullname.
      * This function will be called without sections first, and then call it again when the sections are retrieved.
      *
@@ -151,7 +157,8 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
 export class CoreCourseFormatDelegate extends CoreDelegate {
     protected handlers: { [s: string]: CoreCourseFormatHandler } = {}; // All registered handlers.
     protected enabledHandlers: { [s: string]: CoreCourseFormatHandler } = {}; // Handlers enabled for the current site.
-    protected featurePrefix = 'CoreCourseFormatHandler_';
+    protected featurePrefix = 'CoreCourseFormatDelegate_';
+    protected handlerNameProperty = 'format';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
             protected defaultHandler: CoreCourseFormatDefaultHandler) {

@@ -21,7 +21,8 @@ import { AddonModBookProvider } from './book';
  */
 @Injectable()
 export class AddonModBookPrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
-    name = 'book';
+    name = 'AddonModBook';
+    modName = 'book';
     component = AddonModBookProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$/;
     isResource = true;
