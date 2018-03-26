@@ -34,24 +34,24 @@ export interface AddonModQuizAccessRuleHandler extends CoreDelegateHandler {
      * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
      *
      * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} attempt The attempt started/continued.
+     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
      * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {boolean|Promise<boolean>} Whether the rule requires a preflight check.
      */
-    isPreflightCheckRequired(quiz: any, attempt: any, prefetch?: boolean, siteId?: string): boolean | Promise<boolean>;
+    isPreflightCheckRequired(quiz: any, attempt?: any, prefetch?: boolean, siteId?: string): boolean | Promise<boolean>;
 
     /**
      * Add preflight data that doesn't require user interaction. The data should be added to the preflightData param.
      *
      * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} attempt The attempt started/continued.
      * @param {any} preflightData Object where to add the preflight data.
+     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
      * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
      */
-    getFixedPreflightData?(quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string): void | Promise<any>;
+    getFixedPreflightData?(quiz: any, preflightData: any, attempt?: any, prefetch?: boolean, siteId?: string): void | Promise<any>;
 
     /**
      * Return the Component to use to display the access rule preflight.
@@ -128,26 +128,36 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
      *
      * @param {string[]} rules List of active rules names.
      * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
      * @param {any} preflightData Object where to store the preflight data.
+     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
      * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved when all the data has been gathered.
      */
-    getFixedPreflightData(rules: string[], quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
+    getFixedPreflightData(rules: string[], quiz: any, preflightData: any, attempt?: any, prefetch?: boolean, siteId?: string)
             : Promise<any> {
         rules = rules || [];
 
         const promises = [];
         rules.forEach((rule) => {
             promises.push(Promise.resolve(
-                this.executeFunctionOnEnabled(rule, 'getFixedPreflightData', [quiz, attempt, preflightData, prefetch, siteId])
+                this.executeFunctionOnEnabled(rule, 'getFixedPreflightData', [quiz, preflightData, attempt, prefetch, siteId])
             ));
         });
 
         return this.utils.allPromises(promises).catch(() => {
             // Never reject.
         });
+    }
+
+    /**
+     * Get the Component to use to display the access rule preflight.
+     *
+     * @param {Injector} injector Injector.
+     * @return {Promise<any>} Promise resolved with the component to use, undefined if not found.
+     */
+    getPreflightComponent(rule: string, injector: Injector): Promise<any> {
+        return Promise.resolve(this.executeFunctionOnEnabled(rule, 'getPreflightComponent', [injector]));
     }
 
     /**
@@ -165,7 +175,7 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
      *
      * @param {string[]} rules List of active rules names.
      * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
+     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
      * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<boolean>} Promise resolved with boolean: whether it's required.
@@ -177,9 +187,7 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
         let isRequired = false;
 
         rules.forEach((rule) => {
-            promises.push(Promise.resolve(
-                this.executeFunctionOnEnabled(rule, 'isPreflightCheckRequired', [quiz, attempt, prefetch, siteId])
-            ).then((required) => {
+            promises.push(this.isPreflightCheckRequiredForRule(rule, quiz, attempt, prefetch, siteId).then((required) => {
                 if (required) {
                     isRequired = true;
                 }
@@ -192,6 +200,20 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
             // Never reject.
             return isRequired;
         });
+    }
+
+    /**
+     * Check if preflight check is required for a certain rule.
+     *
+     * @param {string} rule Rule name.
+     * @param {any} quiz Quiz.
+     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<boolean>} Promise resolved with boolean: whether it's required.
+     */
+    isPreflightCheckRequiredForRule(rule: string, quiz: any, attempt: any, prefetch?: boolean, siteId?: string): Promise<boolean> {
+        return Promise.resolve(this.executeFunctionOnEnabled(rule, 'isPreflightCheckRequired', [quiz, attempt, prefetch, siteId]));
     }
 
     /**
