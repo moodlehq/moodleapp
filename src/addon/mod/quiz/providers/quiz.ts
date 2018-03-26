@@ -24,6 +24,7 @@ import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
+import { AddonModQuizOfflineProvider } from './quiz-offline';
 import * as moment from 'moment';
 
 /**
@@ -60,7 +61,7 @@ export class AddonModQuizProvider {
             private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
             private gradesHelper: CoreGradesHelperProvider, private questionDelegate: CoreQuestionDelegate,
             private filepoolProvider: CoreFilepoolProvider, private timeUtils: CoreTimeUtilsProvider,
-            private accessRulesDelegate: AddonModQuizAccessRuleDelegate) {
+            private accessRulesDelegate: AddonModQuizAccessRuleDelegate, private quizOfflineProvider: AddonModQuizOfflineProvider) {
         this.logger = logger.getInstance('AddonModQuizProvider');
     }
 
@@ -431,10 +432,10 @@ export class AddonModQuizProvider {
      * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {boolean} [loadLocal] Whether it should load local state for each question. Only applicable if offline=true.
      * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the attempt summary.
+     * @return {Promise<any[]>} Promise resolved with the list of questions for the attempt summary.
      */
     getAttemptSummary(attemptId: number, preflightData: any, offline?: boolean, ignoreCache?: boolean, loadLocal?: boolean,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<any[]> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
@@ -455,7 +456,7 @@ export class AddonModQuizProvider {
             return site.read('mod_quiz_get_attempt_summary', params, preSets).then((response) => {
                 if (response && response.questions) {
                     if (offline && loadLocal) {
-                        // @todo return $mmaModQuizOffline.loadQuestionsLocalStates(attemptId, response.questions, site.getId());
+                        return this.quizOfflineProvider.loadQuestionsLocalStates(attemptId, response.questions, site.getId());
                     }
 
                     return response.questions;
@@ -1399,8 +1400,11 @@ export class AddonModQuizProvider {
      * @return {Promise<boolean>} Promise resolved with boolean: true if finished in offline but not synced, false otherwise.
      */
     isAttemptFinishedOffline(attemptId: number, siteId?: string): Promise<boolean> {
-        // @todo
-        return Promise.resolve(false);
+        return this.quizOfflineProvider.getAttemptById(attemptId, siteId).then((attempt) => {
+            return !!attempt.finished;
+        }).catch(() => {
+            return false;
+        });
     }
 
     /**
@@ -1438,8 +1442,13 @@ export class AddonModQuizProvider {
      * @return {Promise<boolean>} Promise resolved with boolean: true if last offline attempt is unfinished, false otherwise.
      */
     isLastAttemptOfflineUnfinished(quiz: any, siteId?: string, userId?: number): Promise<boolean> {
-        // @todo
-        return Promise.resolve(false);
+        return this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId, userId).then((attempts) => {
+            const last = attempts.pop();
+
+            return last && !last.finished;
+        }).catch(() => {
+            return false;
+        });
     }
 
     /**
@@ -1524,7 +1533,7 @@ export class AddonModQuizProvider {
 
         promises.push(this.sitesProvider.getCurrentSite().write('mod_quiz_view_attempt', params));
         if (offline) {
-            // @todo promises.push($mmaModQuizOffline.setAttemptCurrentPage(attemptId, page));
+            promises.push(this.quizOfflineProvider.setAttemptCurrentPage(attemptId, page));
         }
 
         return Promise.all(promises);
@@ -1582,15 +1591,54 @@ export class AddonModQuizProvider {
      * @param {any} data Data to save.
      * @param {any} preflightData Preflight required data (like password).
      * @param {boolean} [finish] Whether to finish the quiz.
-     * @param {boolean} [timeup] Whether the quiz time is up, false otherwise.
+     * @param {boolean} [timeUp] Whether the quiz time is up, false otherwise.
      * @param {boolean} [offline] Whether the attempt is offline.
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved in success, rejected otherwise.
      */
-    processAttempt(quiz: any, attempt: any, data: any, preflightData: any, finish?: boolean, timeup?: boolean, offline?: boolean,
+    processAttempt(quiz: any, attempt: any, data: any, preflightData: any, finish?: boolean, timeUp?: boolean, offline?: boolean,
             siteId?: string): Promise<any> {
-        // @todo
-        return Promise.resolve();
+        if (offline) {
+            return this.processAttemptOffline(quiz, attempt, data, preflightData, finish, siteId);
+        }
+
+        return this.processAttemptOnline(attempt.id, data, preflightData, finish, timeUp, siteId);
+    }
+
+    /**
+     * Process an online attempt, saving its data.
+     *
+     * @param {number} attemptId Attempt ID.
+     * @param {any} data Data to save.
+     * @param {any} preflightData Preflight required data (like password).
+     * @param {boolean} [finish] Whether to finish the quiz.
+     * @param {boolean} [timeUp] Whether the quiz time is up, false otherwise.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved in success, rejected otherwise.
+     */
+    protected processAttemptOnline(attemptId: number, data: any, preflightData: any, finish?: boolean, timeUp?: boolean,
+            siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                attemptid: attemptId,
+                data: this.utils.objectToArrayOfObjects(data, 'name', 'value'),
+                finishattempt: finish ? 1 : 0,
+                timeup: timeUp ? 1 : 0,
+                preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value')
+            };
+
+            return site.write('mod_quiz_process_attempt', params).then((response) => {
+                if (response && response.warnings && response.warnings.length) {
+                    // Reject with the first warning.
+                    return Promise.reject(response.warnings[0]);
+                } else if (response && response.state) {
+                    return response.state;
+                }
+
+                return Promise.reject(null);
+            });
+        });
     }
 
     /**
@@ -1604,7 +1652,7 @@ export class AddonModQuizProvider {
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @return {Promise<any>} Promise resolved in success, rejected otherwise.
      */
-    protected processOfflineAttempt(quiz: any, attempt: any, data: any, preflightData: any, finish?: boolean, siteId?: string)
+    protected processAttemptOffline(quiz: any, attempt: any, data: any, preflightData: any, finish?: boolean, siteId?: string)
             : Promise<any> {
 
         // Get attempt summary to have the list of questions.
@@ -1612,8 +1660,7 @@ export class AddonModQuizProvider {
             // Convert the question array to an object.
             const questions = this.utils.arrayToObject(questionArray, 'slot');
 
-            return questions;
-            // @todo return $mmaModQuizOffline.processAttempt(quiz, attempt, questions, data, finish, siteId);
+            return this.quizOfflineProvider.processAttempt(quiz, attempt, questions, data, finish, siteId);
         });
     }
 
@@ -1678,15 +1725,44 @@ export class AddonModQuizProvider {
     saveAttempt(quiz: any, attempt: any, data: any, preflightData: any, offline?: boolean, siteId?: string): Promise<any> {
         try {
             if (offline) {
-                return this.processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
+                return this.processAttemptOffline(quiz, attempt, data, preflightData, false, siteId);
             }
 
-            // @todo return $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
+            return this.saveAttemptOnline(attempt.id, data, preflightData, siteId);
         } catch (ex) {
             this.logger.error(ex);
 
             return Promise.reject(null);
         }
+    }
+
+    /**
+     * Save an attempt data.
+     *
+     * @param {number} attemptId Attempt ID.
+     * @param {any} data Data to save.
+     * @param {any} preflightData Preflight required data (like password).
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<void>} Promise resolved in success, rejected otherwise.
+     */
+    protected saveAttemptOnline(attemptId: number, data: any, preflightData: any, siteId?: string): Promise<void> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                attemptid: attemptId,
+                data: this.utils.objectToArrayOfObjects(data, 'name', 'value'),
+                preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value')
+            };
+
+            return site.write('mod_quiz_save_attempt', params).then((response) => {
+                if (response && response.warnings && response.warnings.length) {
+                    // Reject with the first warning.
+                    return Promise.reject(response.warnings[0]);
+                } else if (!response || !response.status) {
+                    return Promise.reject(null);
+                }
+            });
+        });
     }
 
     /**
@@ -1727,7 +1803,7 @@ export class AddonModQuizProvider {
             return site.write('mod_quiz_start_attempt', params).then((response) => {
                 if (response && response.warnings && response.warnings.length) {
                     // Reject with the first warning.
-                    return Promise.reject(response.warnings[0].message);
+                    return Promise.reject(response.warnings[0]);
                 } else if (response && response.attempt) {
                     return response.attempt;
                 }
