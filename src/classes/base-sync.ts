@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import * as moment from 'moment';
 
 /**
  * Base class to create sync providers. It provides some common functions.
@@ -44,10 +46,14 @@ export class CoreSyncBaseProvider {
     // Store sync promises.
     protected syncPromises: { [siteId: string]: { [uniqueId: string]: Promise<any> } } = {};
 
-    constructor(component: string, protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
+    // List of services that will be injected using injector.
+    // It's done like this so subclasses don't have to send all the services to the parent in the constructor.
+
+    constructor(component: string, loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected appProvider: CoreAppProvider, protected syncProvider: CoreSyncProvider,
-            protected textUtils: CoreTextUtilsProvider) {
-        this.logger = this.loggerProvider.getInstance(component);
+            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService) {
+
+        this.logger = loggerProvider.getInstance(component);
         this.component = component;
     }
 
@@ -90,6 +96,33 @@ export class CoreSyncBaseProvider {
             const uniqueId = this.getUniqueSyncId(id);
 
             return this.syncPromises[siteId][uniqueId];
+        }
+    }
+
+    /**
+     * Get the synchronization time in a human readable format.
+     *
+     * @param {string | number} id Unique sync identifier per component.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the readable time.
+     */
+    getReadableSyncTime(id: string | number, siteId?: string): Promise<string> {
+        return this.getSyncTime(id, siteId).then((time) => {
+            return this.getReadableTimeFromTimestamp(time);
+        });
+    }
+
+    /**
+     * Given a timestamp return it in a human readable format.
+     *
+     * @param {number} timestamp Timestamp
+     * @return {string} Human readable time.
+     */
+    getReadableTimeFromTimestamp(timestamp: number): string {
+        if (!timestamp) {
+            return this.translate.instant('core.never');
+        } else {
+            return moment(timestamp).format('LLL');
         }
     }
 
