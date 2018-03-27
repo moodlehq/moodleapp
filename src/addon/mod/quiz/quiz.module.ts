@@ -13,9 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModQuizAccessRuleDelegate } from './providers/access-rules-delegate';
 import { AddonModQuizProvider } from './providers/quiz';
 import { AddonModQuizOfflineProvider } from './providers/quiz-offline';
+import { AddonModQuizHelperProvider } from './providers/helper';
+import { AddonModQuizSyncProvider } from './providers/quiz-sync';
+import { AddonModQuizPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModQuizSyncCronHandler } from './providers/sync-cron-handler';
 
 @NgModule({
     declarations: [
@@ -25,7 +31,18 @@ import { AddonModQuizOfflineProvider } from './providers/quiz-offline';
     providers: [
         AddonModQuizAccessRuleDelegate,
         AddonModQuizProvider,
-        AddonModQuizOfflineProvider
+        AddonModQuizOfflineProvider,
+        AddonModQuizHelperProvider,
+        AddonModQuizSyncProvider,
+        AddonModQuizPrefetchHandler,
+        AddonModQuizSyncCronHandler
     ]
 })
-export class AddonModQuizModule { }
+export class AddonModQuizModule {
+    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModQuizPrefetchHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModQuizSyncCronHandler) {
+
+        prefetchDelegate.registerHandler(prefetchHandler);
+        cronDelegate.register(syncHandler);
+    }
+}

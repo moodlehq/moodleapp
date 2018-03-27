@@ -14,9 +14,11 @@
 
 import { Injectable, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreQuestionProvider } from './question';
 
 /**
@@ -29,7 +31,8 @@ export class CoreQuestionHelperProvider {
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
         private questionProvider: CoreQuestionProvider, private sitesProvider: CoreSitesProvider,
-        private translate: TranslateService) { }
+        private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
+        private filepoolProvider: CoreFilepoolProvider) { }
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -426,6 +429,43 @@ export class CoreQuestionHelperProvider {
 
         // Update the question HTML.
         question.html = form.innerHTML;
+    }
+
+    /**
+     * Prefetch the files in a question HTML.
+     *
+     * @param {any} question Question.
+     * @param {string} [component] The component to link the files to. If not defined, question component.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component. If not defined, question ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when all the files have been downloaded.
+     */
+    prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string): Promise<any> {
+        const urls = this.domUtils.extractDownloadableFilesFromHtml(question.html);
+
+        if (!component) {
+            component = CoreQuestionProvider.COMPONENT;
+            componentId = question.id;
+        }
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const promises = [];
+
+            urls.forEach((url) => {
+                if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(url)) {
+                    return;
+                }
+
+                if (url.indexOf('theme/image.php') > -1 && url.indexOf('flagged') > -1) {
+                    // Ignore flag images.
+                    return;
+                }
+
+                promises.push(this.filepoolProvider.addToQueueByUrl(siteId, url, component, componentId));
+            });
+
+            return Promise.all(promises);
+        });
     }
 
     /**

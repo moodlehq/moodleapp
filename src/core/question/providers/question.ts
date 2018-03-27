@@ -58,6 +58,8 @@ export interface CoreQuestionState {
  */
 @Injectable()
 export class CoreQuestionProvider {
+    static COMPONENT = 'mmQuestion';
+
     // Variables for database.
     protected QUESTION_TABLE = 'questions';
     protected QUESTION_ANSWERS_TABLE = 'question_answers';
