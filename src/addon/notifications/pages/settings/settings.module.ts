@@ -13,17 +13,21 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSettingsDelegate } from './providers/delegate';
-import { CoreSettingsHelper } from './providers/helper';
+import { IonicPageModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { AddonNotificationsSettingsPage } from './settings';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
+        AddonNotificationsSettingsPage,
     ],
     imports: [
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        IonicPageModule.forChild(AddonNotificationsSettingsPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-        CoreSettingsDelegate,
-        CoreSettingsHelper
-    ]
 })
-export class CoreSettingsModule {}
+export class AddonNotificationsSettingsPageModule {}

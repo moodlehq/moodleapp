@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSettingsDelegate } from './providers/delegate';
-import { CoreSettingsHelper } from './providers/helper';
+import { AddonMessageOutputDelegate } from './providers/delegate';
 
 @NgModule({
     declarations: [
@@ -22,8 +21,7 @@ import { CoreSettingsHelper } from './providers/helper';
     imports: [
     ],
     providers: [
-        CoreSettingsDelegate,
-        CoreSettingsHelper
+        AddonMessageOutputDelegate
     ]
 })
-export class CoreSettingsModule {}
+export class AddonMessageOutputModule {}
