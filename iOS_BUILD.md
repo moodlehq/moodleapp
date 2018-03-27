@@ -1,13 +1,13 @@
 ## iOS build instructions ##
 Build fails due to couple of packages
-# DocumentHandler
-# WebIntent
+* DocumentHandler
+* WebIntent
 
 ### Get v3.5.0 ### 
 ```shell
 git clone https://github.com/1hf/moodlemobile2.git
 cd moodlemobile2/
-187  git checkout v3.5.0
+git checkout v3.5.0
 ```
 
 ### Install DocumentHandler from source ###
