@@ -5,7 +5,7 @@ Build fails due to couple of packages
 
 ### Get v3.5.0 ### 
 ```shell
-git clone https://github.com/1hf/moodlemobile2.git
+git clone https://github.com/moodlehq/moodlemobile2.git
 cd moodlemobile2/
 git checkout v3.5.0
 ```
