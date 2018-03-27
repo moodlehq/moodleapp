@@ -1,16 +1,16 @@
-** iOS build instructions **
+## iOS build instructions ##
 Build fails due to couple of packages
-* DocumentHandler
-* WebIntent
+# DocumentHandler
+# WebIntent
 
-*** Get v3.5.0 *** 
+### Get v3.5.0 ### 
 ```shell
 git clone https://github.com/1hf/moodlemobile2.git
 cd moodlemobile2/
 187  git checkout v3.5.0
 ```
 
-*** Install DocumentHandler from source ***
+### Install DocumentHandler from source ###
 ```shell 	
 cd .. 
 git clone https://github.com/ti8m/DocumentHandler.git
@@ -21,7 +21,7 @@ cd ../moodlemobile2/
 ionic cordova plugin add ../DocumentHandler
 ```
 
-*** Install WebIntent from source ***
+### Install WebIntent from source ###
 ```shell
 cd ..
 git clone https://github.com/Tunts/WebIntent.git
@@ -33,17 +33,17 @@ cd moodlemobile2/
 ionic cordova plugin add ../WebIntent
 ```
 
-*** If CocoaPods not set ***
+### If CocoaPods not set ###
 ```shell
 pod setup
 ionic cordova plugin add phonegap-plugin-push
 ```
-*** Remove windows related packages ***
+### Remove windows related packages ###
 ```shell
 npm remove @nodert-win10/windows.data.xml.dom --save
 npm remove electron-windows-notifications --save
 ```
-*** Rebuild ***
+### Rebuild ###
 ```shell
 ionic cordova platform remove ios
 ionic cordova platform add ios
