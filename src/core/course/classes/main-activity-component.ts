@@ -15,6 +15,7 @@
 import { Injector } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreEventsProvider } from '@providers/events';
 import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from '@providers/app';
@@ -33,8 +34,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
     protected siteId: string; // Current Site ID.
     protected syncObserver: any; // It will observe the sync auto event.
+    protected statusObserver: any; // It will observe changes on the status of the activity. Only if setStatusListener is called.
     protected onlineObserver: any; // It will observe the status of the network connection.
     protected syncEventName: string; // Auto sync event name.
+    protected currentStatus: string; // The current status of the activity. Only if setStatusListener is called.
 
     // List of services that will be injected using injector.
     // It's done like this so subclasses don't have to send all the services to the parent in the constructor.
@@ -42,6 +45,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     protected courseProvider: CoreCourseProvider;
     protected appProvider: CoreAppProvider;
     protected eventsProvider: CoreEventsProvider;
+    protected modulePrefetchProvider: CoreCourseModulePrefetchDelegate;
 
     constructor(injector: Injector) {
         super(injector);
@@ -50,6 +54,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.courseProvider = injector.get(CoreCourseProvider);
         this.appProvider = injector.get(CoreAppProvider);
         this.eventsProvider = injector.get(CoreEventsProvider);
+        this.modulePrefetchProvider = injector.get(CoreCourseModulePrefetchDelegate);
 
         const network = injector.get(Network);
 
@@ -75,6 +80,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             this.syncObserver = this.eventsProvider.on(this.syncEventName, (data) => {
                 if (this.isRefreshSyncNeeded(data)) {
                     // Refresh the data.
+                    this.loaded = false;
+                    this.refreshIcon = 'spinner';
+                    this.syncIcon = 'spinner';
+
                     this.refreshContent(false);
                 }
             }, this.siteId);
@@ -169,6 +178,39 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     }
 
     /**
+     * Displays some data based on the current status.
+     *
+     * @param {string} status The current status.
+     * @param {string} [previousStatus] The previous status. If not defined, there is no previous status.
+     */
+    protected showStatus(status: string, previousStatus?: string): void {
+        // To be overridden.
+    }
+
+    /**
+     * Watch for changes on the status.
+     */
+    protected setStatusListener(): void {
+        if (typeof this.statusObserver == 'undefined') {
+            // Listen for changes on this module status.
+            this.statusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
+                if (data.componentId === this.module.id && data.component === this.component) {
+                    // The status has changed, update it.
+                    const previousStatus = this.currentStatus;
+                    this.currentStatus = data.status;
+
+                    this.showStatus(this.currentStatus, previousStatus);
+                }
+            }, this.siteId);
+
+            // Also, get the current status.
+            this.modulePrefetchProvider.getModuleStatus(this.module, this.courseId).then((status) => {
+                this.showStatus(status);
+            });
+        }
+    }
+
+    /**
      * Performs the sync of the activity.
      *
      * @return {Promise<any>} Promise resolved when done.
@@ -217,5 +259,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
         this.onlineObserver && this.onlineObserver.unsubscribe();
         this.syncObserver && this.syncObserver.off();
+        this.statusObserver && this.statusObserver.off();
     }
 }

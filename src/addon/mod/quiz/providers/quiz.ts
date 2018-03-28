@@ -33,6 +33,7 @@ import * as moment from 'moment';
 @Injectable()
 export class AddonModQuizProvider {
     static COMPONENT = 'mmaModQuiz';
+    static ATTEMPT_FINISHED_EVENT = 'addon_mod_quiz_attempt_finished';
 
     // Grade methods.
     static GRADEHIGHEST = 1;
@@ -1026,7 +1027,7 @@ export class AddonModQuizProvider {
      * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
      * @param {string} [siteId] Site ID. If not defined, current site.
      * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved with the attempts.
+     * @return {Promise<any>} Promise resolved with the best grade data.
      */
     getUserBestGrade(quizId: number, ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

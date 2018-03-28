@@ -112,7 +112,7 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
      * @param {any[]} params List of params to send to the function.
      * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
      */
-    callComponentFunction(name: string, params: any[]): any {
+    callComponentFunction(name: string, params?: any[]): any {
         if (this.instance && typeof this.instance[name] == 'function') {
             return this.instance[name].apply(this.instance, params);
         }

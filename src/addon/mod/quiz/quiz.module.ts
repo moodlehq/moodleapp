@@ -14,19 +14,23 @@
 
 import { NgModule } from '@angular/core';
 import { CoreCronDelegate } from '@providers/cron';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModQuizAccessRuleDelegate } from './providers/access-rules-delegate';
 import { AddonModQuizProvider } from './providers/quiz';
 import { AddonModQuizOfflineProvider } from './providers/quiz-offline';
 import { AddonModQuizHelperProvider } from './providers/helper';
 import { AddonModQuizSyncProvider } from './providers/quiz-sync';
+import { AddonModQuizModuleHandler } from './providers/module-handler';
 import { AddonModQuizPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModQuizSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonModQuizComponentsModule } from './components/components.module';
 
 @NgModule({
     declarations: [
     ],
     imports: [
+        AddonModQuizComponentsModule
     ],
     providers: [
         AddonModQuizAccessRuleDelegate,
@@ -34,14 +38,17 @@ import { AddonModQuizSyncCronHandler } from './providers/sync-cron-handler';
         AddonModQuizOfflineProvider,
         AddonModQuizHelperProvider,
         AddonModQuizSyncProvider,
+        AddonModQuizModuleHandler,
         AddonModQuizPrefetchHandler,
         AddonModQuizSyncCronHandler
     ]
 })
 export class AddonModQuizModule {
-    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModQuizPrefetchHandler,
+    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModQuizModuleHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModQuizPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModQuizSyncCronHandler) {
 
+        moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
     }

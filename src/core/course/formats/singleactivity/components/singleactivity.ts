@@ -67,4 +67,18 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     doRefresh(refresher?: any, done?: () => void): Promise<any> {
         return Promise.resolve(this.dynamicComponent.callComponentFunction('doRefresh', [refresher, done]));
     }
+
+    /**
+     * User entered the page that contains the component.
+     */
+    ionViewDidEnter(): void {
+        this.dynamicComponent.callComponentFunction('ionViewDidEnter');
+    }
+
+    /**
+     * User left the page that contains the component.
+     */
+    ionViewDidLeave(): void {
+        this.dynamicComponent.callComponentFunction('ionViewDidLeave');
+    }
 }

@@ -314,4 +314,18 @@ export class CoreCourseSectionPage implements OnDestroy {
             this.completionObserver.off();
         }
     }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.formatComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.formatComponent.ionViewDidLeave();
+    }
 }

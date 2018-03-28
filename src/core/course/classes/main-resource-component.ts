@@ -42,6 +42,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected isDestroyed; // Whether the component is destroyed, used when calling fillContextMenu.
     protected statusObserver; // Observer of package status changed, used when calling fillContextMenu.
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
+    protected isCurrentView: boolean; // Whether the component is in the current view.
 
     // List of services that will be injected using injector.
     // It's done like this so subclasses don't have to send all the services to the parent in the constructor.
@@ -173,5 +174,19 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.statusObserver && this.statusObserver.off();
+    }
+
+    /**
+     * User entered the page that contains the component. This function should be called by the page that contains this component.
+     */
+    ionViewDidEnter(): void {
+        this.isCurrentView = true;
+    }
+
+    /**
+     * User left the page that contains the component. This function should be called by the page that contains this component.
+     */
+    ionViewDidLeave(): void {
+        this.isCurrentView = false;
     }
 }
