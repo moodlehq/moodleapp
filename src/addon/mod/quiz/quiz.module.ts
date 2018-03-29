@@ -26,11 +26,31 @@ import { AddonModQuizPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModQuizSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModQuizComponentsModule } from './components/components.module';
 
+// Access rules.
+import { AddonModQuizAccessDelayBetweenAttemptsModule } from './accessrules/delaybetweenattempts/delaybetweenattempts.module';
+import { AddonModQuizAccessIpAddressModule } from './accessrules/ipaddress/ipaddress.module';
+import { AddonModQuizAccessNumAttemptsModule } from './accessrules/numattempts/numattempts.module';
+import { AddonModQuizAccessOfflineAttemptsModule } from './accessrules/offlineattempts/offlineattempts.module';
+import { AddonModQuizAccessOpenCloseDateModule } from './accessrules/openclosedate/openclosedate.module';
+import { AddonModQuizAccessPasswordModule } from './accessrules/password/password.module';
+import { AddonModQuizAccessSafeBrowserModule } from './accessrules/safebrowser/safebrowser.module';
+import { AddonModQuizAccessSecureWindowModule } from './accessrules/securewindow/securewindow.module';
+import { AddonModQuizAccessTimeLimitModule } from './accessrules/timelimit/timelimit.module';
+
 @NgModule({
     declarations: [
     ],
     imports: [
-        AddonModQuizComponentsModule
+        AddonModQuizComponentsModule,
+        AddonModQuizAccessDelayBetweenAttemptsModule,
+        AddonModQuizAccessIpAddressModule,
+        AddonModQuizAccessNumAttemptsModule,
+        AddonModQuizAccessOfflineAttemptsModule,
+        AddonModQuizAccessOpenCloseDateModule,
+        AddonModQuizAccessPasswordModule,
+        AddonModQuizAccessSafeBrowserModule,
+        AddonModQuizAccessSecureWindowModule,
+        AddonModQuizAccessTimeLimitModule
     ],
     providers: [
         AddonModQuizAccessRuleDelegate,
