@@ -1,0 +1,8 @@
+<core-loading [hideUntil]="commentsLoaded">
+    <div (click)="openComments()" *ngIf="commentsCount >= 0">
+        {{ 'core.commentscount' | translate : {'$a': commentsCount} }}
+    </div>
+    <div *ngIf="commentsCount < 0">
+        {{ 'core.commentsnotworking' | translate }}
+    </div>
+</core-loading>
