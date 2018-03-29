@@ -19,7 +19,9 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionProvider } from './question';
+import { CoreQuestionDelegate } from './delegate';
 
 /**
  * Service with some common functions to handle questions.
@@ -31,8 +33,8 @@ export class CoreQuestionHelperProvider {
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
         private questionProvider: CoreQuestionProvider, private sitesProvider: CoreSitesProvider,
-        private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-        private filepoolProvider: CoreFilepoolProvider) { }
+        private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider, private utils: CoreUtilsProvider,
+        private filepoolProvider: CoreFilepoolProvider, private questionDelegate: CoreQuestionDelegate) { }
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -302,6 +304,44 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Retrieve the answers entered in a form.
+     * We don't use ngModel because it doesn't detect changes done by JavaScript and some questions might do that.
+     *
+     * @param {HTMLFormElement} form Form.
+     * @return {any} Object with the answers.
+     */
+    getAnswersFromForm(form: HTMLFormElement): any {
+        if (!form || !form.elements) {
+            return {};
+        }
+
+        const answers = {},
+            elements = Array.from(form.elements);
+
+        elements.forEach((element: HTMLInputElement) => {
+            const name = element.name || '';
+
+            // Ignore flag and submit inputs.
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                answers[name] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    answers[name] = element.value;
+                }
+            } else {
+                answers[name] = element.value;
+            }
+        });
+
+        return answers;
+    }
+
+    /**
      * Given an HTML code with list of attachments, returns the list of attached files (filename and fileurl).
      * Please take into account that this function will treat all the anchors in the HTML, you should provide
      * an HTML containing only the attachments anchors.
@@ -465,6 +505,27 @@ export class CoreQuestionHelperProvider {
             });
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Prepare and return the answers.
+     *
+     * @param {any[]} questions The list of questions.
+     * @param {any} answers The input data.
+     * @param {boolean} offline True if data should be saved in offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with answers to send to server.
+     */
+    prepareAnswers(questions: any[], answers: any, offline?: boolean, siteId?: string): Promise<any> {
+        const promises = [];
+
+        questions.forEach((question) => {
+            promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId));
+        });
+
+        return this.utils.allPromises(promises).then(() => {
+            return answers;
         });
     }
 

@@ -18,7 +18,7 @@
 
 <!-- Question behaviour buttons. -->
 <ion-item text-wrap *ngFor="let button of question.behaviourButtons">
-    <a ion-button block (click)="action.emit(button)" [disabled]="button.disabled">{{ button.value }}</a>
+    <button ion-button block (click)="buttonClicked.emit(button)" [disabled]="button.disabled">{{ button.value }}</button>
 </ion-item>
 
 <!-- Question feedback. -->

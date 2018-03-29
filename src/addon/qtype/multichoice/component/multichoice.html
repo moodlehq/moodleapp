@@ -15,9 +15,9 @@
 
     <!-- Radio buttons for single choice. -->
     <div *ngIf="!question.multi" radio-group [ngModel]="question.singleChoiceModel" [name]="question.optionsName">
-        <ion-item text-wrap>
+        <ion-item text-wrap *ngFor="let option of question.options">
             <ion-label><core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text></ion-label>
-            <ion-radio *ngFor="let option of question.options" [value]="option.value" [disabled]="option.disabled" [ngClass]='{"core-question-answer-correct": option.isCorrect === 1, "core-question-answer-incorrect": option.isCorrect === 0}'>
+            <ion-radio [value]="option.value" [disabled]="option.disabled" [ngClass]='{"core-question-answer-correct": option.isCorrect === 1, "core-question-answer-incorrect": option.isCorrect === 0}'>
                 <p *ngIf="option.feedback" class="core-question-feedback-container"><core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"></core-format-text></p>
             </ion-radio>
         </ion-item>
