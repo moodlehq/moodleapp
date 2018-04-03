@@ -1,0 +1,21 @@
+core-timer {
+    .core-timer {
+        background-color: $core-timer-color;
+
+        span {
+            font-weight: bold;
+        }
+
+        // Create the timer warning colors. Go from $core-timer-color to $core-timer-warn-color.
+        @for $i from 0 through $core-timer-iterations {
+            &.core-timer-timeleft-#{$i} {
+                background-color: mix($core-timer-color, $core-timer-warn-color, ($i / $core-timer-iterations) * 100);
+                @if $i <= $core-timer-iterations / 2 {
+                    label, span, ion-icon {
+                        color: $white;
+                    }
+                }
+            }
+        }
+    }
+}

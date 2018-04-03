@@ -40,6 +40,7 @@ import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
+import { CoreTimerComponent } from './timer/timer';
 
 @NgModule({
     declarations: [
@@ -65,7 +66,8 @@ import { CoreSendMessageFormComponent } from './send-message-form/send-message-f
         CoreRichTextEditorComponent,
         CoreNavBarButtonsComponent,
         CoreDynamicComponent,
-        CoreSendMessageFormComponent
+        CoreSendMessageFormComponent,
+        CoreTimerComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -98,7 +100,8 @@ import { CoreSendMessageFormComponent } from './send-message-form/send-message-f
         CoreRichTextEditorComponent,
         CoreNavBarButtonsComponent,
         CoreDynamicComponent,
-        CoreSendMessageFormComponent
+        CoreSendMessageFormComponent,
+        CoreTimerComponent
     ]
 })
 export class CoreComponentsModule {}

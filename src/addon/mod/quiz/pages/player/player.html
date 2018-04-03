@@ -11,7 +11,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <!-- Navigation arrows -->
+        <!-- Navigation arrows and time left. -->
         <div *ngIf="questions && questions.length && !quizAborted && !showSummary">
             <ion-row align-items-center>
                 <ion-col col-2>
@@ -19,8 +19,8 @@
                         <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
                     </a>
                 </ion-col>
-                <ion-col col-8>
-                    <!-- @todo <core-timer *ngIf="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></core-timer> -->
+                <ion-col col-8 text-center>
+                    <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" align="center"></core-timer>
                 </ion-col>
                 <ion-col col-2 text-right>
                     <a ion-button icon-only color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
@@ -101,7 +101,8 @@
             <ion-item text-wrap *ngIf="attempt.dueDateWarning">
                 {{ attempt.dueDateWarning }}
             </ion-item>
-            <!-- @todo <core-timer ng-if="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></core-timer> -->
+            <!-- Time left (if quiz is timed). -->
+            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate"></core-timer>
             <!-- List of messages explaining why the quiz cannot be submitted. -->
             <ion-item text-wrap *ngIf="preventSubmitMessages.length">
                 <p class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
