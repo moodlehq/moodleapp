@@ -37,6 +37,7 @@
 
 .opacity-hide { opacity: 0; }
 .core-big   { font-size: 115%; }
+.invisible { visibility: hidden; }
 
 @include media-breakpoint-up(sm) {
   .core-center-view .scroll-content {
@@ -509,4 +510,14 @@ textarea {
     @extend .core-circle:before;
     color: $color-base;
   }
+}
+
+.accesshide {
+  position: absolute;
+  left: -10000px;
+  font-weight: normal;
+  font-size: 1em; }
+
+.core-monospaced {
+  font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
 }

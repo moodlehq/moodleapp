@@ -83,7 +83,6 @@ export class CoreQuestionBaseComponent {
 
                     if (optionEl.selected) {
                         selectModel.selected = option.value;
-                        selectModel.selectedLabel = option.label;
                     }
 
                     selectModel.options.push(option);
@@ -92,7 +91,6 @@ export class CoreQuestionBaseComponent {
                 if (!selectModel.selected) {
                     // No selected option, select the first one.
                     selectModel.selected = selectModel.options[0].value;
-                    selectModel.selectedLabel = selectModel.options[0].label;
                 }
 
                 // Get the accessibility label.
@@ -158,7 +156,7 @@ export class CoreQuestionBaseComponent {
             // Check which one should be displayed first: the options or the input.
             const input = questionDiv.querySelector('input[type="text"][name*=answer]');
             this.question.optionsFirst =
-                    questionDiv.innerHTML.indexOf(input.outerHTML) > questionDiv.innerHTML.indexOf(options[0].outerHTML);
+                    questionDiv.innerHTML.indexOf(input.outerHTML) > questionDiv.innerHTML.indexOf(radios[0].outerHTML);
         }
     }
 
@@ -313,7 +311,7 @@ export class CoreQuestionBaseComponent {
 
         if (questionDiv) {
             // Find rows.
-            const rows = Array.from(questionDiv.querySelectorAll('tr'));
+            const rows = Array.from(questionDiv.querySelectorAll('table.answer tr'));
             if (!rows || !rows.length) {
                 this.logger.warn('Aborting because couldn\'t find any row.', this.question.name);
 
@@ -376,7 +374,7 @@ export class CoreQuestionBaseComponent {
                     };
 
                     if (option.selected) {
-                        rowModel.selected = option;
+                        rowModel.selected = option.value;
                     }
 
                     rowModel.options.push(option);
@@ -404,8 +402,6 @@ export class CoreQuestionBaseComponent {
         const questionDiv = this.initComponent();
 
         if (questionDiv) {
-            // Create the model for radio buttons.
-            this.question.singleChoiceModel = {};
 
             // Get the prompt.
             this.question.prompt = this.domUtils.getContentsOfElement(questionDiv, '.prompt');
@@ -480,6 +476,11 @@ export class CoreQuestionBaseComponent {
                 this.logger.warn('Aborting because of an error parsing options.', this.question.name, option.name);
 
                 return this.questionHelper.showComponentError(this.onAbort);
+            }
+
+            if (!this.question.multi && typeof this.question.singleChoiceModel == 'undefined') {
+                // We couldn't find the option to select, select the first one.
+                this.question.singleChoiceModel = options[0].value;
             }
         }
 

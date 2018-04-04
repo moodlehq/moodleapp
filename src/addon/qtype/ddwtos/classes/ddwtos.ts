@@ -46,6 +46,7 @@ export class AddonQtypeDdwtosQuestion {
     protected selectors: AddonQtypeDdwtosQuestionCSSSelectors; // Result of cssSelectors.
     protected placed: {[no: number]: number}; // Map that relates drag elements numbers with drop zones numbers.
     protected selected: HTMLElement; // Selected element (being "dragged").
+    protected resizeFunction;
 
     /**
      * Create the instance.
@@ -125,7 +126,7 @@ export class AddonQtypeDdwtosQuestion {
      * @return {AddonQtypeDdwtosQuestionCSSSelectors} Object with the functions to get the selectors.
      */
     cssSelectors(slot: number): AddonQtypeDdwtosQuestionCSSSelectors {
-        const topNode = '#core-question-' + slot + ' .addon-qtype-ddwtos-container',
+        const topNode = '.addon-qtype-ddwtos-container',
             selectors: AddonQtypeDdwtosQuestionCSSSelectors = {};
 
         selectors.topNode = (): string => {
@@ -193,7 +194,9 @@ export class AddonQtypeDdwtosQuestion {
      * Function to call when the instance is no longer needed.
      */
     destroy(): void {
-        window.removeEventListener('resize', this.resizeFunction);
+        if (this.resizeFunction) {
+            window.removeEventListener('resize', this.resizeFunction);
+        }
     }
 
     /**
@@ -285,6 +288,7 @@ export class AddonQtypeDdwtosQuestion {
             this.positionDragItems();
         });
 
+        this.resizeFunction = this.positionDragItems.bind(this);
         window.addEventListener('resize', this.resizeFunction);
     }
 
@@ -486,13 +490,6 @@ export class AddonQtypeDdwtosQuestion {
             drop = <HTMLElement> this.container.querySelector(this.selectors.dropForPlace(placeNo));
 
         this.placeDragInDrop(null, drop);
-    }
-
-    /**
-     * Function to call when the window is resized.
-     */
-    resizeFunction(): void {
-        this.positionDragItems();
     }
 
     /**

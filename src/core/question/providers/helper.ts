@@ -319,7 +319,7 @@ export class CoreQuestionHelperProvider {
             elements = Array.from(form.elements);
 
         elements.forEach((element: HTMLInputElement) => {
-            const name = element.name || '';
+            const name = element.name || element.getAttribute('ng-reflect-name') || '';
 
             // Ignore flag and submit inputs.
             if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
@@ -588,13 +588,11 @@ export class CoreQuestionHelperProvider {
      * @param {string} [error] Error to show.
      */
     showComponentError(onAbort: EventEmitter<void>, error?: string): void {
-        error = error || 'Error processing the question. This could be caused by custom modifications in your site.';
-
         // Prevent consecutive errors.
         const now = Date.now();
         if (now - this.lastErrorShown > 500) {
             this.lastErrorShown = now;
-            this.domUtils.showErrorModal(error);
+            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorparsequestions', true);
         }
 
         onAbort && onAbort.emit();
