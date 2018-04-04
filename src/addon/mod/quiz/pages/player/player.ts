@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavParams, Content } from 'ionic-angular';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { IonicPage, NavParams, Content, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -24,6 +25,8 @@ import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { AddonModQuizProvider } from '../../providers/quiz';
 import { AddonModQuizSyncProvider } from '../../providers/quiz-sync';
 import { AddonModQuizHelperProvider } from '../../providers/helper';
+import { AddonModQuizAutoSave } from '../../classes/auto-save';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that allows attempting a quiz.
@@ -53,6 +56,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     canReturn: boolean; // Whether the user can return to a page after seeing the summary.
     preventSubmitMessages: string[]; // List of messages explaining why the quiz cannot be submitted.
     endTime: number; // The time when the attempt must be finished.
+    autoSaveError: boolean; // Whether there's been an error in auto-save.
 
     protected element: HTMLElement; // Host element of the page.
     protected courseId: number; // The course ID the quiz belongs to.
@@ -64,13 +68,15 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     protected newAttempt: boolean; // Whether the user is starting a new attempt.
     protected quizDataLoaded: boolean; // Whether the quiz data has been loaded.
     protected timeUpCalled: boolean; // Whether the time up function has been called.
+    protected autoSave: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
+    protected autoSaveErrorSubscription: Subscription; // To be notified when an error happens in auto-save.
 
-    constructor(navParams: NavParams, element: ElementRef, protected translate: TranslateService,
+    constructor(navParams: NavParams, element: ElementRef, logger: CoreLoggerProvider, protected translate: TranslateService,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
-            protected syncProvider: CoreSyncProvider, protected domUtils: CoreDomUtilsProvider,
+            protected syncProvider: CoreSyncProvider, protected domUtils: CoreDomUtilsProvider, popoverCtrl: PopoverController,
             protected timeUtils: CoreTimeUtilsProvider, protected quizProvider: AddonModQuizProvider,
             protected quizHelper: AddonModQuizHelperProvider, protected quizSync: AddonModQuizSyncProvider,
-            protected questionHelper: CoreQuestionHelperProvider) {
+            protected questionHelper: CoreQuestionHelperProvider, protected cdr: ChangeDetectorRef) {
 
         this.quizId = navParams.get('quizId');
         this.courseId = navParams.get('courseId');
@@ -78,6 +84,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
         // Block the quiz so it cannot be synced.
         this.syncProvider.blockOperation(AddonModQuizProvider.COMPONENT, this.quizId);
+
+        // Create the auto save instance.
+        this.autoSave = new AddonModQuizAutoSave('addon-mod_quiz-player-form', '#addon-mod_quiz-connection-error-button',
+                logger, popoverCtrl, questionHelper, quizProvider);
     }
 
     /**
@@ -86,6 +96,12 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Start the player when the page is loaded.
         this.start();
+
+        // Listen for errors on auto-save.
+        this.autoSaveErrorSubscription = this.autoSave.onError().subscribe((error) => {
+            this.autoSaveError = error;
+            this.cdr.detectChanges();
+        });
     }
 
     /**
@@ -93,8 +109,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         // Stop auto save.
-        // @todo $mmaModQuizAutoSave.stopAutoSaving();
-        // @todo $mmaModQuizAutoSave.stopCheckChangesProcess();
+        this.autoSave.cancelAutoSave();
+        this.autoSave.stopCheckChangesProcess();
+        this.autoSaveErrorSubscription && this.autoSaveErrorSubscription.unsubscribe();
 
         // Unblock the quiz so it can be synced.
         this.syncProvider.unblockOperation(AddonModQuizProvider.COMPONENT, this.quizId);
@@ -176,20 +193,28 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         promise.then(() => {
             // Attempt data successfully saved, load the page or summary.
 
-            if (page === -1) {
-                return this.loadSummary();
-            } else {
-                // @todo $mmaModQuizAutoSave.stopCheckChangesProcess(); // Stop checking for changes during page change.
+            // Attempt data successfully saved, load the page or summary.
+            let subPromise;
 
-                return this.loadPage(page).catch((error) => {
-                    // @todo $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt); // Start the check again.
-                    this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
-                });
+            // Stop checking for changes during page change.
+            this.autoSave.stopCheckChangesProcess();
+
+            if (page === -1) {
+                subPromise = this.loadSummary();
+            } else {
+                subPromise = this.loadPage(page);
             }
+
+            return subPromise.catch((error) => {
+                // If the user isn't seeing the summary, start the check again.
+                if (!this.showSummary) {
+                    this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
+                }
+
+                this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
+            });
         }, (error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
         }).finally(() => {
             this.loaded = true;
 
@@ -365,7 +390,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.quizProvider.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline);
 
             // Start looking for changes.
-            // @todo $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt);
+            this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
         });
     }
 
@@ -423,8 +448,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                     this.offline);
         }).then(() => {
             // Answers saved, cancel auto save.
-            // @todo $mmaModQuizAutoSave.cancelAutoSave();
-            // @todo $mmaModQuizAutoSave.hideAutoSaveError($scope);
+            this.autoSave.cancelAutoSave();
+            this.autoSave.hideAutoSaveError();
         });
     }
 
@@ -443,7 +468,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @param {Event} ev Click event.
      */
     showConnectionError(ev: Event): void {
-        // @todo
+        this.autoSave.showAutoSaveError(ev);
     }
 
     /**

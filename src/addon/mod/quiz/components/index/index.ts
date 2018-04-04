@@ -65,6 +65,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected gradebookData: {grade: number, feedback?: string}; // The gradebook grade and feedback.
     protected overallStats: boolean; // Equivalent to overallstats in mod_quiz_view_object in Moodle.
     protected finishedObserver: any; // It will observe attempt finished events.
+    protected hasPlayed = false; // Whether the user has gone to the quiz player (attempted).
 
     constructor(injector: Injector, protected quizProvider: AddonModQuizProvider, @Optional() protected content: Content,
             protected quizHelper: AddonModQuizHelperProvider, protected quizOffline: AddonModQuizOfflineProvider,
@@ -401,7 +402,36 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
-        // @todo: Go to auto review if we're coming from player.
+        if (this.hasPlayed) {
+            this.hasPlayed = false;
+
+            // Update data when we come back from the player since the attempt status could have changed.
+            let promise;
+
+            // Check if we need to go to review an attempt automatically.
+            if (this.autoReview && this.autoReview.synced) {
+                promise = this.goToAutoReview();
+                this.autoReview = undefined;
+            } else {
+                promise = Promise.resolve();
+            }
+
+            // Refresh data.
+            this.loaded = false;
+            this.refreshIcon = 'spinner';
+            this.syncIcon = 'spinner';
+            this.content.scrollToTop();
+
+            promise.then(() => {
+                this.refreshContent().finally(() => {
+                    this.loaded = true;
+                    this.refreshIcon = 'refresh';
+                    this.syncIcon = 'sync';
+                });
+            });
+        } else {
+            this.autoReview = undefined;
+        }
     }
 
     /**
@@ -410,6 +440,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
         this.autoReview = undefined;
+
+        if (this.navCtrl.getActive().component.name == 'AddonModQuizPlayerPage') {
+            this.hasPlayed = true;
+        }
     }
 
     /**

@@ -20,10 +20,12 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModQuizIndexComponent } from './index/index';
+import { AddonModQuizConnectionErrorComponent } from './connection-error/connection-error';
 
 @NgModule({
     declarations: [
-        AddonModQuizIndexComponent
+        AddonModQuizIndexComponent,
+        AddonModQuizConnectionErrorComponent
     ],
     imports: [
         CommonModule,
@@ -36,10 +38,12 @@ import { AddonModQuizIndexComponent } from './index/index';
     providers: [
     ],
     exports: [
-        AddonModQuizIndexComponent
+        AddonModQuizIndexComponent,
+        AddonModQuizConnectionErrorComponent
     ],
     entryComponents: [
-        AddonModQuizIndexComponent
+        AddonModQuizIndexComponent,
+        AddonModQuizConnectionErrorComponent
     ]
 })
 export class AddonModQuizComponentsModule {}
