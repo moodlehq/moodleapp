@@ -6,7 +6,9 @@
             <button id="addon-mod_quiz-connection-error-button" ion-button icon-only [hidden]="!autoSaveError" (click)="showConnectionError($event)" [attr.aria-label]="'core.error' | translate">
                 <ion-icon name="alert"></ion-icon>
             </button>
-            <!-- @todo <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button> -->
+            <button *ngIf="navigation && navigation.length" ion-button icon-only [attr.aria-label]="'addon.mod_quiz.opentoc' | translate" (click)="navigationModal.present()">
+                <ion-icon name="bookmark"></ion-icon>
+            </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>

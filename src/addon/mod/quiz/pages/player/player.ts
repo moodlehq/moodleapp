@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { IonicPage, NavParams, Content, PopoverController } from 'ionic-angular';
+import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -47,7 +47,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     quizAborted: boolean; // Whether the quiz was aborted due to an error.
     preflightData: any = {}; // Preflight data to attempt the quiz.
     offline: boolean; // Whether the quiz is being attempted in offline mode.
-    toc: any[]; // TOC to navigate the questions.
+    navigation: any[]; // List of questions to navigate them.
     questions: any[]; // Questions of the current page.
     nextPage: number; // Next page.
     previousPage: number; // Previous page.
@@ -70,13 +70,15 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     protected timeUpCalled: boolean; // Whether the time up function has been called.
     protected autoSave: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
     protected autoSaveErrorSubscription: Subscription; // To be notified when an error happens in auto-save.
+    protected navigationModal: Modal; // Modal to navigate through the questions.
 
     constructor(navParams: NavParams, element: ElementRef, logger: CoreLoggerProvider, protected translate: TranslateService,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
             protected syncProvider: CoreSyncProvider, protected domUtils: CoreDomUtilsProvider, popoverCtrl: PopoverController,
             protected timeUtils: CoreTimeUtilsProvider, protected quizProvider: AddonModQuizProvider,
             protected quizHelper: AddonModQuizHelperProvider, protected quizSync: AddonModQuizSyncProvider,
-            protected questionHelper: CoreQuestionHelperProvider, protected cdr: ChangeDetectorRef) {
+            protected questionHelper: CoreQuestionHelperProvider, protected cdr: ChangeDetectorRef,
+            protected modalCtrl: ModalController) {
 
         this.quizId = navParams.get('quizId');
         this.courseId = navParams.get('courseId');
@@ -88,6 +90,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         // Create the auto save instance.
         this.autoSave = new AddonModQuizAutoSave('addon-mod_quiz-player-form', '#addon-mod_quiz-connection-error-button',
                 logger, popoverCtrl, questionHelper, quizProvider);
+
+        // Create the navigation modal.
+        this.navigationModal = this.modalCtrl.create('AddonModQuizNavigationModalPage', {
+            page: this
+        });
     }
 
     /**
@@ -164,10 +171,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * Change the current page. If slot is supplied, try to scroll to that question.
      *
      * @param {number} page Page to load. -1 means summary.
-     * @param {boolean} [fromToc] Whether the page was selected using the TOC.
+     * @param {boolean} [fromModal] Whether the page was selected using the navigation modal.
      * @param {number} [slot] Slot of the question to scroll to.
      */
-    changePage(page: number, fromToc?: boolean, slot?: number): void {
+    changePage(page: number, fromModal?: boolean, slot?: number): void {
         if (page != -1 && (this.attempt.state == AddonModQuizProvider.ATTEMPT_OVERDUE || this.attempt.finishedOffline)) {
             // We can't load a page if overdue or the local attempt is finished.
             return;
@@ -176,9 +183,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.scrollToQuestion(slot);
 
             return;
-        } else if ((page == this.attempt.currentpage && !this.showSummary) || (fromToc && this.quiz.isSequential && page != -1)) {
+        } else if ((page == this.attempt.currentpage && !this.showSummary) || (fromModal && this.quiz.isSequential && page != -1)) {
             // If the user is navigating to the current page we do nothing.
-            // Also, in sequential quizzes we don't allow navigating using the TOC except for finishing the quiz (summary).
+            // Also, in sequential quizzes we don't allow navigating using the modal except for finishing the quiz (summary).
             return;
         } else if (page === -1 && this.showSummary) {
             // Summary already shown.
@@ -417,14 +424,14 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Load TOC to navigate the questions.
+     * Load data to navigate the questions using the navigation modal.
      *
      * @return {Promise<void>} Promise resolved when done.
      */
-    protected loadToc(): Promise<void> {
-        // We use the attempt summary to build the TOC because it contains all the questions.
+    protected loadNavigation(): Promise<void> {
+        // We use the attempt summary to build the navigation because it contains all the questions.
         return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, this.offline).then((questions) => {
-            this.toc = questions;
+            this.navigation = questions;
         });
     }
 
@@ -512,7 +519,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                 this.attemptAccessInfo = info;
                 this.attempt = attempt;
 
-                return this.loadToc();
+                return this.loadNavigation();
             }).then(() => {
                 if (this.attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !this.attempt.finishedOffline) {
                     // Attempt not overdue and not finished in offline, load page.
