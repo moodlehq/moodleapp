@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal } from 'ionic-angular';
+import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -71,6 +71,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     protected autoSave: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
     protected autoSaveErrorSubscription: Subscription; // To be notified when an error happens in auto-save.
     protected navigationModal: Modal; // Modal to navigate through the questions.
+    protected forceLeave = false; // If true, don't perform any check when leaving the view.
 
     constructor(navParams: NavParams, element: ElementRef, logger: CoreLoggerProvider, protected translate: TranslateService,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
@@ -78,7 +79,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             protected timeUtils: CoreTimeUtilsProvider, protected quizProvider: AddonModQuizProvider,
             protected quizHelper: AddonModQuizHelperProvider, protected quizSync: AddonModQuizSyncProvider,
             protected questionHelper: CoreQuestionHelperProvider, protected cdr: ChangeDetectorRef,
-            protected modalCtrl: ModalController) {
+            protected modalCtrl: ModalController, protected navCtrl: NavController) {
 
         this.quizId = navParams.get('quizId');
         this.courseId = navParams.get('courseId');
@@ -122,6 +123,33 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
         // Unblock the quiz so it can be synced.
         this.syncProvider.unblockOperation(AddonModQuizProvider.COMPONENT, this.quizId);
+    }
+
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     */
+    ionViewCanLeave(): boolean | Promise<void> {
+        if (this.forceLeave) {
+            return true;
+        }
+
+        if (this.questions && this.questions.length && !this.showSummary) {
+            // Save answers.
+            const modal = this.domUtils.showModalLoading('core.sending', true);
+
+            return this.processAttempt(false, false).catch(() => {
+                // Save attempt failed. Show confirmation.
+                modal.dismiss();
+
+                return this.domUtils.showConfirm(this.translate.instant('addon.mod_quiz.confirmleavequizonerror'));
+            }).finally(() => {
+                modal.dismiss();
+            });
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -327,7 +355,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                 }, this.sitesProvider.getCurrentSiteId());
 
                 // Leave the player.
-                // @todo blockData && blockData.back();
+                this.forceLeave = true;
+                this.navCtrl.pop();
             }).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
             }).finally(() => {
