@@ -78,7 +78,7 @@ export class AddonModQuizHelperProvider {
                     return Promise.reject(error);
                 } else if (retrying && !isPreflightCheckRequired) {
                     // We're retrying after a failure, but the preflight check wasn't required.
-                    // If this happens it means there's something wrong with some access rule.
+                    // This means there's something wrong with some access rule or user is offline and data isn't cached.
                     // Don't retry again because it would lead to an infinite loop.
                     return Promise.reject(error);
                 } else {

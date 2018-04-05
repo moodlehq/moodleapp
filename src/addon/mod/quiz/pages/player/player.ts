@@ -420,7 +420,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
-            this.quizProvider.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline);
+            this.quizProvider.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline).catch((error) => {
+                // Ignore errors.
+            });
 
             // Start looking for changes.
             this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
@@ -445,7 +447,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.attempt.dueDateWarning = this.quizProvider.getAttemptDueDateWarning(this.quiz, this.attempt);
 
             // Log summary as viewed.
-            this.quizProvider.logViewAttemptSummary(this.attempt.id, this.preflightData);
+            this.quizProvider.logViewAttemptSummary(this.attempt.id, this.preflightData).catch((error) => {
+                // Ignore errors.
+            });
         });
     }
 

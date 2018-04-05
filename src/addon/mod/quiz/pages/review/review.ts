@@ -77,7 +77,9 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     ngOnInit(): void {
         this.fetchData().then(() => {
-            this.quizProvider.logViewAttemptReview(this.attemptId);
+            this.quizProvider.logViewAttemptReview(this.attemptId).catch((error) => {
+                // Ignore errors.
+            });
         }).finally(() => {
             this.loaded = true;
         });

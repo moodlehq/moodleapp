@@ -205,6 +205,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
             // Also, get the current status.
             this.modulePrefetchProvider.getModuleStatus(this.module, this.courseId).then((status) => {
+                this.currentStatus = status;
                 this.showStatus(status);
             });
         }

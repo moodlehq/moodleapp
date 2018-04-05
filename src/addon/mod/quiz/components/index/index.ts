@@ -16,6 +16,7 @@ import { Component, Optional, Injector } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreQuestionBehaviourDelegate } from '@core/question/providers/behaviour-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModQuizProvider } from '../../providers/quiz';
 import { AddonModQuizHelperProvider } from '../../providers/helper';
 import { AddonModQuizOfflineProvider } from '../../providers/quiz-offline';
@@ -70,7 +71,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     constructor(injector: Injector, protected quizProvider: AddonModQuizProvider, @Optional() protected content: Content,
             protected quizHelper: AddonModQuizHelperProvider, protected quizOffline: AddonModQuizOfflineProvider,
             protected quizSync: AddonModQuizSyncProvider, protected behaviourDelegate: CoreQuestionBehaviourDelegate,
-            protected prefetchHandler: AddonModQuizPrefetchHandler, protected navCtrl: NavController) {
+            protected prefetchHandler: AddonModQuizPrefetchHandler, protected navCtrl: NavController,
+            protected prefetchDelegate: CoreCourseModulePrefetchDelegate) {
         super(injector);
     }
 
@@ -87,6 +89,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
             this.quizProvider.logViewQuiz(this.quizData.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch((error) => {
+                // Ignore errors.
             });
         });
 
@@ -110,7 +114,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (this.quizProvider.isQuizOffline(this.quizData)) {
             // Quiz supports offline, check if it needs to be downloaded.
-            if (this.currentStatus != CoreConstants.DOWNLOADED) {
+            // If the site doesn't support check updates, always prefetch it because we cannot tell if there's something new.
+            const isDownloaded = this.currentStatus == CoreConstants.DOWNLOADED;
+
+            if (!isDownloaded || !this.prefetchDelegate.canCheckUpdates()) {
                 // Prefetch the quiz.
                 this.showStatusSpinner = true;
 
@@ -118,8 +125,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                     // Success downloading, open quiz.
                     this.openQuiz();
                 }).catch((error) => {
-                    if (this.hasOffline) {
+                    if (this.hasOffline || (isDownloaded && !this.prefetchDelegate.canCheckUpdates())) {
                         // Error downloading but there is something offline, allow continuing it.
+                        // If the site doesn't support check updates, continue too because we cannot tell if there's something new.
                         this.openQuiz();
                     } else {
                         this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);

@@ -233,7 +233,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
             return Promise.all(promises);
         }).then(() => {
             // Check if we need to start a new attempt.
-            const attempt = attempts[attempts.length - 1];
+            let attempt = attempts[attempts.length - 1];
             if (!attempt || this.quizProvider.isAttemptFinished(attempt.state)) {
                 // Check if the user can attempt the quiz.
                 if (attemptAccessInfo.preventnewattemptreasons.length) {
@@ -241,6 +241,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
                 }
 
                 startAttempt = true;
+                attempt = undefined;
             }
 
             // Get the preflight data. This function will also start a new attempt if needed.
@@ -407,9 +408,11 @@ export class AddonModQuizPrefetchHandler extends CoreCourseModulePrefetchHandler
         }));
         promises.push(this.quizProvider.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId)
                 .then((gradebookData) => {
-            if (typeof gradebookData.grade != 'undefined') {
+            if (typeof gradebookData.graderaw != 'undefined') {
                 return this.quizProvider.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
             }
+        }).catch(() => {
+            // Ignore errors.
         }));
         promises.push(this.quizProvider.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.
 

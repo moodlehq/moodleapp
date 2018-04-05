@@ -405,7 +405,8 @@ export class CoreQuestionProvider {
      */
     getQuestionAnswers(component: string, attemptId: number, slot: number, filter?: boolean, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.QUESTION_ANSWERS_TABLE, {component, attemptId, slot}).then((answers) => {
+            return site.getDb().getRecords(this.QUESTION_ANSWERS_TABLE, {component, attemptId, questionSlot: slot})
+                    .then((answers) => {
                 if (filter) {
                     // Get only answers that isn't "extra" data like sequencecheck or certainty.
                     return this.getBasicAnswersFromArray(answers);
@@ -525,7 +526,7 @@ export class CoreQuestionProvider {
      */
     removeQuestionAnswers(component: string, attemptId: number, slot: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().deleteRecords(this.QUESTION_ANSWERS_TABLE, {component, attemptId, slot});
+            return site.getDb().deleteRecords(this.QUESTION_ANSWERS_TABLE, {component, attemptId, questionSlot: slot});
         });
     }
 

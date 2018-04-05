@@ -67,6 +67,10 @@ export class AddonModQuizOfflineProvider {
                     type: 'INTEGER'
                 },
                 {
+                    name: 'timemodified',
+                    type: 'INTEGER'
+                },
+                {
                     name: 'finished',
                     type: 'INTEGER'
                 }
@@ -245,7 +249,7 @@ export class AddonModQuizOfflineProvider {
         }).then((entry) => {
             // Save attempt in DB.
             entry.timemodified = now;
-            entry.finished = !!finish;
+            entry.finished = finish ? 1 : 0;
 
             return db.insertRecord(this.ATTEMPTS_TABLE, entry);
         }).then(() => {
