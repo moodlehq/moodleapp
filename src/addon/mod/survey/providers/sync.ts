@@ -78,7 +78,7 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
         return this.surveyOffline.getAllData(siteId).then((entries) => {
             // Sync all surveys.
             const promises = entries.map((entry) => {
-                return this.syncSurvey(entry.surveyid, entry.userid, siteId).then((result) => {
+                return this.syncSurveyIfNeeded(entry.surveyid, entry.userid, siteId).then((result) => {
                     if (result && result.answersSent) {
                         // Sync successful, send event.
                         this.eventsProvider.trigger(AddonModSurveySyncProvider.AUTO_SYNCED, {
@@ -91,6 +91,26 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
             });
 
             return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Sync a survey only if a certain time has passed since the last time.
+     *
+     * @param  {Number} surveyId Survey ID.
+     * @param  {Number} userId   User the answers belong to.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>}    Promise resolved when the survey is synced or if it doesn't need to be synced.
+     */
+    syncSurveyIfNeeded(surveyId: number, userId: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const syncId = this.getSyncId(surveyId, userId);
+
+        return this.isSyncNeeded(syncId, siteId).then((needed) => {
+            if (needed) {
+                return this.syncSurvey(surveyId, userId, siteId);
+            }
         });
     }
 
