@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -45,7 +45,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     component = AddonModQuizProvider.COMPONENT; // Component to link the files to.
     loaded: boolean; // Whether data has been loaded.
     quizAborted: boolean; // Whether the quiz was aborted due to an error.
-    preflightData: any = {}; // Preflight data to attempt the quiz.
     offline: boolean; // Whether the quiz is being attempted in offline mode.
     navigation: any[]; // List of questions to navigate them.
     questions: any[]; // Questions of the current page.
@@ -57,11 +56,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     preventSubmitMessages: string[]; // List of messages explaining why the quiz cannot be submitted.
     endTime: number; // The time when the attempt must be finished.
     autoSaveError: boolean; // Whether there's been an error in auto-save.
+    navigationModal: Modal; // Modal to navigate through the questions.
 
-    protected element: HTMLElement; // Host element of the page.
     protected courseId: number; // The course ID the quiz belongs to.
     protected quizId: number; // Quiz ID to attempt.
-    protected isTimed: boolean; // Whether the quiz has a time limit.
+    protected preflightData: any = {}; // Preflight data to attempt the quiz.
     protected quizAccessInfo: any; // Quiz access information.
     protected attemptAccessInfo: any; // Attempt access info.
     protected lastAttempt: any; // Last user attempt before a new one is created (if needed).
@@ -70,16 +69,15 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     protected timeUpCalled: boolean; // Whether the time up function has been called.
     protected autoSave: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
     protected autoSaveErrorSubscription: Subscription; // To be notified when an error happens in auto-save.
-    protected navigationModal: Modal; // Modal to navigate through the questions.
     protected forceLeave = false; // If true, don't perform any check when leaving the view.
 
-    constructor(navParams: NavParams, element: ElementRef, logger: CoreLoggerProvider, protected translate: TranslateService,
+    constructor(navParams: NavParams, logger: CoreLoggerProvider, protected translate: TranslateService,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
             protected syncProvider: CoreSyncProvider, protected domUtils: CoreDomUtilsProvider, popoverCtrl: PopoverController,
             protected timeUtils: CoreTimeUtilsProvider, protected quizProvider: AddonModQuizProvider,
             protected quizHelper: AddonModQuizHelperProvider, protected quizSync: AddonModQuizSyncProvider,
             protected questionHelper: CoreQuestionHelperProvider, protected cdr: ChangeDetectorRef,
-            protected modalCtrl: ModalController, protected navCtrl: NavController) {
+            modalCtrl: ModalController, protected navCtrl: NavController) {
 
         this.quizId = navParams.get('quizId');
         this.courseId = navParams.get('courseId');
@@ -93,7 +91,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                 logger, popoverCtrl, questionHelper, quizProvider);
 
         // Create the navigation modal.
-        this.navigationModal = this.modalCtrl.create('AddonModQuizNavigationModalPage', {
+        this.navigationModal = modalCtrl.create('AddonModQuizNavigationModalPage', {
             page: this
         });
     }
@@ -288,7 +286,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.offline = offlineMode;
 
             if (this.quiz.timelimit > 0) {
-                this.isTimed = true;
                 this.quiz.readableTimeLimit = this.timeUtils.formatTime(this.quiz.timelimit);
             }
 

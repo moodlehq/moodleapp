@@ -34,7 +34,10 @@ export class AddonModQuizNavigationModalPage {
      */
     pageInstance: any;
 
+    isReview: boolean; // Whether the user is reviewing the attempt.
+
     constructor(params: NavParams, protected viewCtrl: ViewController) {
+        this.isReview = !!params.get('isReview');
         this.pageInstance = params.get('page');
     }
 

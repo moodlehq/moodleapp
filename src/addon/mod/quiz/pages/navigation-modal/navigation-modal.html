@@ -12,12 +12,12 @@
     <nav>
         <ion-list>
             <!-- In player, show button to finish attempt. -->
-            <a ion-item text-wrap *ngIf="!pageInstance.isReview" (click)="loadPage(-1)">
+            <a ion-item text-wrap *ngIf="!isReview" (click)="loadPage(-1)">
                 {{ 'addon.mod_quiz.finishattemptdots' | translate }}
             </a>
 
             <!-- In review we can toggle between all questions in same page or one page at a time. -->
-            <a ion-item text-wrap *ngIf="pageInstance.isReview && pageInstance.numPages > 1" (click)="switchMode()">
+            <a ion-item text-wrap *ngIf="isReview && pageInstance.numPages > 1" (click)="switchMode()">
                 <span *ngIf="!pageInstance.showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
                 <span *ngIf="pageInstance.showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
             </a>
@@ -27,14 +27,14 @@
             </a>
 
             <!-- In player, show button to finish attempt. -->
-            <a ion-item text-wrap *ngIf="!pageInstance.isReview" (click)="loadPage(-1)">
+            <a ion-item text-wrap *ngIf="!isReview" (click)="loadPage(-1)">
                 {{ 'addon.mod_quiz.finishattemptdots' | translate }}
             </a>
 
             <!-- In review we can toggle between all questions in same page or one page at a time. -->
-            <a ion-item text-wrap *ngIf="pageInstance.isReview && pageInstance.numPages > 1" (click)="switchMode()">
-                <span ng-if="!pageInstance.showAll">{{ 'mma.mod_quiz.showall' | translate }}</span>
-                <span ng-if="pageInstance.showAll">{{ 'mma.mod_quiz.showeachpage' | translate }}</span>
+            <a ion-item text-wrap *ngIf="isReview && pageInstance.numPages > 1" (click)="switchMode()">
+                <span *ngIf="!pageInstance.showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                <span *ngIf="pageInstance.showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
             </a>
         </ion-list>
     </nav>

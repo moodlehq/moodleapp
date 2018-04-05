@@ -213,6 +213,19 @@ $core-timer-warn-color:     $red !default;
 $core-timer-color:          $white !default;
 $core-timer-iterations:     15 !default;
 
+// Question variables.
+$core-question-correct-color:         $green-dark !default;
+$core-question-correct-color-bg:      $green-light !default;
+$core-question-incorrect-color:       $red !default;
+$core-question-incorrect-color-bg:    $red-light !default;
+$core-question-feedback-color:        $yellow-dark !default;
+$core-question-feedback-color-bg:     $yellow-light !default;
+$core-question-warning-color:         $red !default;
+
+$core-question-state-correct-color:   $green-light !default;
+$core-question-state-partial-color:   $yellow-light !default;
+$core-question-state-incorrect-color: $red-light !default;
+
 // Mixins
 // -------------------------
 @mixin core-transition($where: all, $time: 500ms) {

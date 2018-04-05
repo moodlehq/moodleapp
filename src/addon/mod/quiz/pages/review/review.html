@@ -1,0 +1,102 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.mod_quiz.review' | translate }}</ion-title>
+
+        <ion-buttons end>
+            <button *ngIf="navigation && navigation.length" ion-button icon-only [attr.aria-label]="'addon.mod_quiz.opentoc' | translate" (click)="navigationModal.present()">
+                <ion-icon name="bookmark"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+
+        <!-- Review summary -->
+        <ion-card *ngIf="attempt">
+            <ion-card-header text-wrap>
+                <h2 *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</h2>
+                <h2 *ngIf="!attempt.preview">{{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}</h2>
+            </ion-card-header>
+            <ion-list>
+                <ion-item text-wrap>
+                    <p class="item-heading">{{ 'addon.mod_quiz.startedon' | translate }}</p>
+                    <p>{{ attempt.timestart * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                </ion-item>
+                <ion-item text-wrap>
+                    <p class="item-heading">{{ 'addon.mod_quiz.attemptstate' | translate }}</p>
+                    <p>{{ attempt.readableState }}</p>
+                </ion-item>
+                <ion-item text-wrap *ngIf="showCompleted">
+                    <p class="item-heading">{{ 'addon.mod_quiz.completedon' | translate }}</p>
+                    <p>{{ attempt.timefinish * 1000 | coreFormatDate:"dfmediumdate" }}</p>
+                </ion-item>
+                <ion-item text-wrap *ngIf="attempt.timeTaken">
+                    <p class="item-heading">{{ 'addon.mod_quiz.timetaken' | translate }}</p>
+                    <p>{{ attempt.timeTaken }}</p>
+                </ion-item>
+                <ion-item text-wrap *ngIf="attempt.overTime">
+                    <p class="item-heading">{{ 'addon.mod_quiz.overdue' | translate }}</p>
+                    <p>{{ attempt.overTime }}</p>
+                </ion-item>
+                <ion-item text-wrap *ngIf="attempt.readableMark">
+                    <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
+                    <p><core-format-text [text]="attempt.readableMark"></core-format-text></p>
+                </ion-item>
+                <ion-item text-wrap *ngIf="attempt.readableGrade">
+                    <p class="item-heading">{{ 'addon.mod_quiz.grade' | translate }}</p>
+                    <p>{{ attempt.readableGrade }}</p>
+                </ion-item>
+                <ion-item text-wrap *ngFor="let data of additionalData">
+                    <p class="item-heading">{{ data.title }}</p>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="data.content"></core-format-text>
+                </ion-item>
+            </ion-list>
+        </ion-card>
+
+        <!-- Questions -->
+        <div *ngIf="attempt && questions.length">
+            <!-- Arrows to go to next/previous. -->
+            <ng-container *ngTemplateOutlet="navArrows"></ng-container>
+
+            <!-- Questions. -->
+            <div *ngFor="let question of questions">
+                <ion-card id="addon-mod_quiz-question-{{question.slot}}">
+                    <!-- "Header" of the question. -->
+                    <ion-item-divider color="light">
+                        <h2 *ngIf="question.number" class="inline">{{ 'core.question.questionno' | translate:{$a: question.number} }}</h2>
+                        <h2 *ngIf="!question.number" class="inline">{{ 'core.question.information' | translate }}</h2>
+                        <ion-note text-wrap item-end *ngIf="question.status || question.readableMark">
+                            <p *ngIf="question.status" class="block">{{question.status}}</p>
+                            <p *ngIf="question.readableMark"><core-format-text [text]="question.readableMark"></core-format-text></p>
+                        </ion-note>
+                    </ion-item-divider>
+                    <!-- Body of the question. -->
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="componentId" [attemptId]="attempt.id" [offlineEnabled]="false"></core-question>
+                </ion-card>
+            </div>
+
+            <!-- Arrows to go to next/previous. -->
+            <ng-container *ngTemplateOutlet="navArrows"></ng-container>
+        </div>
+    </core-loading>
+</ion-content>
+
+<!-- Arrows to go to next/previous. -->
+<ng-template #navArrows>
+    <ion-row align-items-center>
+        <ion-col>
+            <a ion-button icon-only color="light" *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
+                <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+            </a>
+        </ion-col>
+        <ion-col text-right>
+            <a ion-button icon-only color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
+                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+            </a>
+        </ion-col>
+    </ion-row>
+</ng-template>

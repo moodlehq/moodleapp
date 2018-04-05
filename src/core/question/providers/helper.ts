@@ -397,6 +397,18 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Get the CSS class for a question based on its state.
+     *
+     * @param {string} name Question's state name.
+     * @return {string} State class.
+     */
+    getQuestionStateClass(name: string): string {
+        const state = this.questionProvider.getState(name);
+
+        return state ? state.class : '';
+    }
+
+    /**
      * Get the validation error message from a question HTML if it's there.
      *
      * @param {string} html Question's HTML.

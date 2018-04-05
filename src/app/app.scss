@@ -356,6 +356,84 @@ ion-select {
     }
 }
 
+// Question.
+// -------------------------
+
+.core-question-answer-correct,
+.core-question-comment {
+  color: $core-question-correct-color;
+  background-color: $core-question-correct-color-bg;
+
+  .label, ion-label.label {
+    color: $core-question-correct-color;
+  }
+}
+
+.core-question-answer-incorrect,
+.core-question-incorrect {
+  color: $core-question-incorrect-color;
+  background-color: $core-question-incorrect-color-bg;
+
+  .label, ion-label.label {
+    color: $core-question-incorrect-color;
+  }
+}
+
+.core-question-feedback-container {
+  background-color: $core-question-feedback-color-bg;
+  color: $core-question-feedback-color;
+
+  .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+    margin: 0 0 .5em;
+  }
+
+  .correctness {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: bold;
+    line-height: 14px;
+    color: $white;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: $gray-dark;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+
+    &.incorrect {
+      background-color: $red;
+    }
+    &.correct {
+      background-color: $green;
+    }
+  }
+}
+
+.core-question-feedback-inline {
+  display: inline-block;
+}
+
+.core-question-feedback-padding {
+  padding: 8px 35px 8px 14px;
+}
+
+.core-question-correct {
+  background-color: $core-question-state-correct-color;
+}
+.core-question-partiallycorrect {
+  background-color: $core-question-state-partial-color;
+}
+.core-question-notanswered,
+.core-question-incorrect {
+  background-color: $core-question-state-incorrect-color;
+}
+
+.core-question-warning {
+  color: $core-question-warning-color;
+}
+
+.questioncorrectnessicon {
+  font-size: 20px;
+}
+
 // Atto styles
 // -------------------------
 .atto_image_preview {
