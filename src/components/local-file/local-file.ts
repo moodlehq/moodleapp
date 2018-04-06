@@ -171,15 +171,14 @@ export class CoreLocalFileComponent implements OnInit {
         // Ask confirmation.
         this.domUtils.showConfirm(this.translate.instant('core.confirmdeletefile')).then(() => {
             const modal = this.domUtils.showModalLoading();
-            this.fileProvider.removeFile(this.relativePath).then(() => {
+
+            return this.fileProvider.removeFile(this.relativePath).then(() => {
                 this.onDelete.emit();
-            }).catch(() => {
-                this.domUtils.showErrorModal('core.errordeletefile', true);
             }).finally(() => {
                 modal.dismiss();
             });
         }).catch(() => {
-            // User cancelled.
+            this.domUtils.showErrorModal('core.errordeletefile', true);
         });
     }
 }

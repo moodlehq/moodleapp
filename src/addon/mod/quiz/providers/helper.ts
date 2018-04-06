@@ -139,7 +139,7 @@ export class AddonModQuizHelperProvider {
                 if (typeof data != 'undefined') {
                     resolve(data);
                 } else {
-                    reject(null);
+                    reject(this.domUtils.createCanceledError());
                 }
             });
         });

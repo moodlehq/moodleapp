@@ -362,9 +362,9 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
 
         return this.courseHelper.confirmAndPrefetchCourses(this.courses[selected], (progress) => {
             selectedData.badge = progress.count + ' / ' + progress.total;
-        }).then((downloaded) => {
-            selectedData.icon = downloaded ? 'refresh' : initialIcon;
-        }, (error) => {
+        }).then(() => {
+            selectedData.icon = 'refresh';
+        }).catch((error) => {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
                 selectedData.icon = initialIcon;

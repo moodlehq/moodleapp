@@ -172,7 +172,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             answers[button.name] = button.value;
 
             // Behaviour checks are always in online.
-            this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData).then(() => {
+            return this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData).then(() => {
                 // Reload the current page.
                 const scrollElement = this.content.getScrollElement(),
                     scrollTop = scrollElement.scrollTop || 0,
@@ -185,11 +185,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                     this.loaded = true;
                     this.content.scrollTo(scrollLeft, scrollTop);
                 });
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error, 'Error performing action.');
             }).finally(() => {
                 modal.dismiss();
             });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error performing action.');
         });
     }
 
@@ -354,11 +354,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                 // Leave the player.
                 this.forceLeave = true;
                 this.navCtrl.pop();
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
             }).finally(() => {
                 modal.dismiss();
             });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
         });
     }
 
@@ -560,13 +560,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                     // Attempt is overdue or finished in offline, we can only load the summary.
                     return this.loadSummary();
                 }
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
             });
         }).catch((error) => {
-            if (error) {
-                this.domUtils.showErrorModal(error);
-            }
+            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
         });
     }
 

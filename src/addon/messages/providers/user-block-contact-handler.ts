@@ -103,8 +103,6 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
 
                         return this.domUtils.showConfirm(template, title, title).then(() => {
                             return this.messagesProvider.blockContact(user.id);
-                        }, () => {
-                            // Ignore on cancel.
                         });
                     }
                 }).catch((error) => {

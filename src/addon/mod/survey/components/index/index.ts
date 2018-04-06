@@ -188,15 +188,15 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
                 });
             }
 
-            this.surveyProvider.submitAnswers(this.survey.id, this.survey.name, this.courseId, answers).then(() => {
+            return this.surveyProvider.submitAnswers(this.survey.id, this.survey.name, this.courseId, answers).then(() => {
                 this.content.scrollToTop();
 
                 return this.refreshContent(false);
-            }).catch((message) => {
-                this.domUtils.showErrorModalDefault(message, 'addon.mod_survey.cannotsubmitsurvey', true);
             }).finally(() => {
                 modal.dismiss();
             });
+        }).catch((message) => {
+            this.domUtils.showErrorModalDefault(message, 'addon.mod_survey.cannotsubmitsurvey', true);
         });
     }
 
