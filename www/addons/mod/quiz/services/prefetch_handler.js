@@ -558,7 +558,7 @@ angular.module('mm.addons.mod_quiz')
             attempts = atts;
         }));
         promises.push($mmaModQuiz.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId).then(function(gradebookData) {
-            if (typeof gradebookData.grade != 'undefined') {
+            if (typeof gradebookData.graderaw != 'undefined') {
                 return $mmaModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, true, siteId);
             }
         }));
