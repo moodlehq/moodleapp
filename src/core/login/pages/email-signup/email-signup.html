@@ -82,19 +82,10 @@
             </ng-container>
 
             <!-- ReCAPTCHA -->
-            <ng-container *ngIf="settings.recaptchachallengehash && settings.recaptchachallengeimage">
+            <ng-container *ngIf="settings.recaptchapublickey">
                 <ion-item-divider text-wrap color="light">{{ 'core.login.security_question' | translate }}</ion-item-divider>
-                <ion-item>
-                    <img [src]="settings.recaptchachallengeimage" alt="{{ 'core.login.recaptchachallengeimage' | translate }}">
-                </ion-item>
                 <ion-item text-wrap>
-                    <ion-label stacked core-mark-required="true">{{ 'core.login.enterthewordsabove' | translate }}</ion-label>
-                    <ion-input type="text" name="recaptcharesponse" placeholder="{{ 'core.login.enterthewordsabove' | translate }}" formControlName="recaptcharesponse" autocapitalize="none" autocorrect="off"></ion-input>
-                    <core-input-errors item-content [control]="signupForm.controls.recaptcharesponse"></core-input-errors>
-                </ion-item>
-                <ion-item padding>
-                    <!-- Use anchor instead of button to prevent marking form as submitted. -->
-                    <a ion-button block (click)="requestCaptcha()">{{ 'core.login.getanothercaptcha' | translate }}</a>
+                    <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"></core-recaptcha>
                 </ion-item>
             </ng-container>
 
@@ -113,7 +104,7 @@
 
             <!-- Submit button. -->
             <ion-item padding>
-                <button ion-button block color="primary">{{ 'core.login.createaccount' | translate }}</button>
+                <button ion-button block color="primary" type="submit">{{ 'core.login.createaccount' | translate }}</button>
             </ion-item>
         </form>
     </core-loading>

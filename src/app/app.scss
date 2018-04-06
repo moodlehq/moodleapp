@@ -603,7 +603,8 @@ textarea {
     @extend .core-circle:before;
     color: $color-base;
   }
-  .text-#{$color-name} {
+
+  .text-#{$color-name}, p.#{$color-name}, .item p.text-#{$color-name} {
     color: $color-base;
   }
 }
@@ -626,4 +627,15 @@ textarea {
 
 [ion-fixed] {
   width: 100%;
+}
+
+.core-modal-fullscreen {
+  .modal-wrapper {
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
 }

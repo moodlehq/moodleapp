@@ -143,6 +143,10 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
         const result = [],
             promises = [];
 
+        if (!fields) {
+            return Promise.resolve([]);
+        }
+
         fields.forEach((field) => {
             promises.push(this.getDataForField(field, signup, registerAuth, formValues).then((data) => {
                 if (data) {

@@ -44,6 +44,9 @@ export class CoreLoginEmailSignupPage {
     countriesKeys: any[];
     categories: any[];
     settingsLoaded = false;
+    captcha = {
+        recaptcharesponse: ''
+    };
 
     // Validation errors.
     usernameErrors: any;
@@ -98,10 +101,6 @@ export class CoreLoginEmailSignupPage {
             this.signupForm.addControl(this.settings.namefields[i], this.fb.control('', Validators.required));
         }
 
-        if (this.settings.recaptchachallengehash && this.settings.recaptchachallengeimage) {
-            this.signupForm.addControl('recaptcharesponse', this.fb.control('', Validators.required));
-        }
-
         if (this.settings.sitepolicy) {
             this.signupForm.addControl('policyagreed', this.fb.control(false, Validators.requiredTrue));
         }
@@ -133,8 +132,8 @@ export class CoreLoginEmailSignupPage {
             this.settings = settings;
             this.categories = this.loginHelper.formatProfileFieldsForSignup(settings.profilefields);
 
-            if (this.signupForm && this.signupForm.controls['recaptcharesponse']) {
-                this.signupForm.controls['recaptcharesponse'].reset(); // Reset captcha.
+            if (this.settings.recaptchapublickey) {
+                this.captcha.recaptcharesponse = ''; // Reset captcha.
             }
 
             this.namefieldsErrors = {};
@@ -184,26 +183,10 @@ export class CoreLoginEmailSignupPage {
     }
 
     /**
-     * Request another captcha.
-     *
-     * @param {boolean} ignoreError Whether to ignore errors.
-     */
-    requestCaptcha(ignoreError?: boolean): void {
-        const modal = this.domUtils.showModalLoading();
-        this.getSignupSettings().catch((err) => {
-            if (!ignoreError && err) {
-                this.domUtils.showErrorModal(err);
-            }
-        }).finally(() => {
-            modal.dismiss();
-        });
-    }
-
-    /**
      * Create account.
      */
     create(): void {
-        if (!this.signupForm.valid) {
+        if (!this.signupForm.valid || (this.settings.recaptchapublickey && !this.captcha.recaptcharesponse)) {
             // Form not valid. Scroll to the first element with errors.
             if (!this.domUtils.scrollToInputError(this.content)) {
                 // Input not found, show an error modal.
@@ -226,9 +209,9 @@ export class CoreLoginEmailSignupPage {
                 params.redirect = this.loginHelper.prepareForSSOLogin(this.siteUrl, service, this.siteConfig.launchurl);
             }
 
-            if (this.settings.recaptchachallengehash && this.settings.recaptchachallengeimage) {
-                params.recaptchachallengehash = this.settings.recaptchachallengehash;
-                params.recaptcharesponse = this.signupForm.value.recaptcharesponse;
+            // Get the recaptcha response (if needed).
+            if (this.settings.recaptchapublickey && this.captcha.recaptcharesponse) {
+                params.recaptcharesponse = this.captcha.recaptcharesponse;
             }
 
             // Get the data for the custom profile fields.
@@ -243,17 +226,20 @@ export class CoreLoginEmailSignupPage {
                             this.domUtils.showAlert(this.translate.instant('core.success'), message);
                             this.navCtrl.pop();
                         } else {
-                            this.domUtils.showErrorModalFirstWarning(result.warnings, 'core.login.usernotaddederror', true);
+                            if (result.warnings && result.warnings.length) {
+                                let error = result.warnings[0].message;
+                                if (error == 'incorrect-captcha-sol') {
+                                    error = this.translate.instant('mm.login.recaptchaincorrect');
+                                }
 
-                            // Error sending, request another capctha since the current one is probably invalid now.
-                            this.requestCaptcha(true);
+                                this.domUtils.showErrorModal(error);
+                            } else {
+                                this.domUtils.showErrorModal('core.login.usernotaddederror', true);
+                            }
                         }
                     });
                 }).catch((error) => {
                     this.domUtils.showErrorModalDefault(error && error.error, 'core.login.usernotaddederror', true);
-
-                    // Error sending, request another capctha since the current one is probably invalid now.
-                    this.requestCaptcha(true);
                 }).finally(() => {
                     modal.dismiss();
                 });
