@@ -23,7 +23,7 @@
                     <ion-item-divider *ngIf="item.typ == 'pagebreak'" color="light"></ion-item-divider>
                     <ion-item text-wrap *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <h2 *ngIf="item.name" [core-mark-required]="item.required">
-                            <span *ngIf="item.itemnumber">{{item.itemnumber}}. </span>{{ item.name }}
+                            <span *ngIf="item.itemnumber">{{item.itemnumber}}. </span><core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text>
                         </h2>
                         <p *ngIf="item.submittedValue"><core-format-text  [component]="component" [componentId]="componentId" [text]=" item.submittedValue"></core-format-text></p>
                     </ion-item>

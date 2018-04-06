@@ -21,14 +21,14 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
- * Content links handler for a feedback analysis.
- * Match mod/feedback/analysis.php with a valid feedback id.
+ * Content links handler for feedback complete questions.
+ * Match mod/feedback/complete.php with a valid feedback id.
  */
 @Injectable()
-export class AddonModFeedbackAnalysisLinkHandler extends CoreContentLinksHandlerBase {
-    name = 'AddonModFeedbackAnalysisLinkHandler';
+export class AddonModFeedbackCompleteLinkHandler extends CoreContentLinksHandlerBase {
+    name = 'AddonModFeedbackCompleteLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /\/mod\/feedback\/analysis\.php.*([\&\?]id=\d+)/;
+    pattern = /\/mod\/feedback\/complete\.php.*([\?\&](id|gopage)=\d+)/;
 
     constructor(private linkHelper: CoreContentLinksHelperProvider, private feedbackProvider: AddonModFeedbackProvider,
             private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider) {
@@ -54,11 +54,14 @@ export class AddonModFeedbackAnalysisLinkHandler extends CoreContentLinksHandler
                 this.courseProvider.getModuleBasicInfo(moduleId, siteId).then((module) => {
                     const stateParams = {
                         module: module,
-                        courseId: module.course,
-                        tab: 'analysis'
+                        moduleId: module.id,
+                        courseId: module.course
                     };
+                    if (typeof params.gopage == 'undefined') {
+                        stateParams['page'] = parseInt(params.gopage, 10);
+                    }
 
-                    return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackIndexPage', stateParams, siteId);
+                    return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackFormPage', stateParams, siteId);
                 }).finally(() => {
                     modal.dismiss();
                 });
@@ -77,17 +80,10 @@ export class AddonModFeedbackAnalysisLinkHandler extends CoreContentLinksHandler
      * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
-        return this.feedbackProvider.isPluginEnabled(siteId).then((enabled) => {
-            if (!enabled) {
-                return false;
-            }
+        if (typeof params.id == 'undefined') {
+            return false;
+        }
 
-            if (typeof params.id == 'undefined') {
-                // Cannot treat the URL.
-                return false;
-            }
-
-            return true;
-        });
+        return this.feedbackProvider.isPluginEnabled(siteId);
     }
 }

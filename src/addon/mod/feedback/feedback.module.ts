@@ -24,6 +24,8 @@ import { AddonModFeedbackLinkHandler } from './providers/link-handler';
 import { AddonModFeedbackAnalysisLinkHandler } from './providers/analysis-link-handler';
 import { AddonModFeedbackShowEntriesLinkHandler } from './providers/show-entries-link-handler';
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './providers/show-non-respondents-link-handler';
+import { AddonModFeedbackCompleteLinkHandler } from './providers/complete-link-handler';
+import { AddonModFeedbackPrintLinkHandler } from './providers/print-link-handler';
 import { AddonModFeedbackHelperProvider } from './providers/helper';
 import { AddonModFeedbackPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModFeedbackSyncProvider } from './providers/sync';
@@ -45,6 +47,8 @@ import { AddonModFeedbackOfflineProvider } from './providers/offline';
         AddonModFeedbackAnalysisLinkHandler,
         AddonModFeedbackShowEntriesLinkHandler,
         AddonModFeedbackShowNonRespondentsLinkHandler,
+        AddonModFeedbackCompleteLinkHandler,
+        AddonModFeedbackPrintLinkHandler,
         AddonModFeedbackSyncCronHandler,
         AddonModFeedbackSyncProvider,
         AddonModFeedbackOfflineProvider
@@ -57,13 +61,17 @@ export class AddonModFeedbackModule {
             cronDelegate: CoreCronDelegate, syncHandler: AddonModFeedbackSyncCronHandler,
             analysisLinkHandler: AddonModFeedbackAnalysisLinkHandler,
             showEntriesLinkHandler: AddonModFeedbackShowEntriesLinkHandler,
-            showNonRespondentsLinkHandler: AddonModFeedbackShowNonRespondentsLinkHandler) {
+            showNonRespondentsLinkHandler: AddonModFeedbackShowNonRespondentsLinkHandler,
+            completeLinkHandler: AddonModFeedbackCompleteLinkHandler,
+            printLinkHandler: AddonModFeedbackPrintLinkHandler) {
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(analysisLinkHandler);
         contentLinksDelegate.registerHandler(showEntriesLinkHandler);
         contentLinksDelegate.registerHandler(showNonRespondentsLinkHandler);
+        contentLinksDelegate.registerHandler(completeLinkHandler);
+        contentLinksDelegate.registerHandler(printLinkHandler);
         cronDelegate.register(syncHandler);
     }
 }

@@ -27,7 +27,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 @Injectable()
 export class AddonModFeedbackShowEntriesLinkHandler extends CoreContentLinksHandlerBase {
     name = 'AddonModFeedbackShowEntriesLinkHandler';
-    featureName = '$mmCourseDelegate_mmaModFeedback';
+    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
     pattern = /\/mod\/feedback\/show_entries\.php.*([\?\&](id|showcompleted)=\d+)/;
 
     constructor(private linkHelper: CoreContentLinksHelperProvider, private feedbackProvider: AddonModFeedbackProvider,

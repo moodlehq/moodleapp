@@ -24,7 +24,8 @@ import { AddonModFeedbackProvider } from './feedback';
  */
 @Injectable()
 export class AddonModFeedbackModuleHandler implements CoreCourseModuleHandler {
-    name = 'feedback';
+    name = 'AddonModFeedback';
+    modName = 'feedback';
 
     constructor(private courseProvider: CoreCourseProvider, private feedbackProvider: AddonModFeedbackProvider) { }
 

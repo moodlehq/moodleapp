@@ -27,7 +27,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 @Injectable()
 export class AddonModFeedbackShowNonRespondentsLinkHandler extends CoreContentLinksHandlerBase {
     name = 'AddonModFeedbackShowNonRespondentsLinkHandler';
-    featureName = '$mmCourseDelegate_mmaModFeedback';
+    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
     pattern = /\/mod\/feedback\/show_nonrespondents\.php.*([\?\&](id)=\d+)/;
 
     constructor(private linkHelper: CoreContentLinksHelperProvider, private feedbackProvider: AddonModFeedbackProvider,

@@ -144,8 +144,8 @@
 
             <ion-list *ngIf="items && items.length">
                 <ion-item text-wrap *ngFor="let item of items" class="core-analysis">
-                    <h2>{{item.number}}. {{ item.name }}</h2>
-                    <p>{{ item.label }}</p>
+                    <h2>{{item.number}}. <core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text></h2>
+                    <p><core-format-text  [component]="component" [componentId]="componentId" [text]="item.label"></core-format-text></p>
                     <ng-container [ngSwitch]="item.template">
                         <ng-container *ngSwitchCase="'numeric'">
                             <ul>
