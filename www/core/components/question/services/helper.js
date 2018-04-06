@@ -768,7 +768,7 @@ angular.module('mm.core.question')
             questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
 
             // Find rows.
-            rows = questionEl.querySelectorAll('tr');
+            rows = questionEl.querySelectorAll('table.answer tr');
             if (!rows || !rows.length) {
                 log.warn('Aborting because couldn\'t find any row.', question.name);
                 return self.showDirectiveError(scope);
