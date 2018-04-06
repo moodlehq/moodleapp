@@ -20,7 +20,8 @@ import { CoreCourseFormatHandler } from '../../../providers/format-delegate';
  */
 @Injectable()
 export class CoreCourseFormatTopicsHandler implements CoreCourseFormatHandler {
-    name = 'topics';
+    name = 'CoreCourseFormatTopics';
+    format = 'topics';
 
     constructor() {
         // Nothing to do.

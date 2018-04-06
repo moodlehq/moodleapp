@@ -100,6 +100,6 @@ export class CoreSiteHomeProvider {
     isDisabledInSite(site: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaFrontpage');
+        return site.isFeatureDisabled('CoreMainMenuDelegate_CoreSiteHome');
     }
 }

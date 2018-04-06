@@ -23,7 +23,8 @@ import { AddonModPageHelperProvider } from './helper';
  */
 @Injectable()
 export class AddonModPagePrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
-    name = 'page';
+    name = 'AddonModPage';
+    modName = 'page';
     component = AddonModPageProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$/;
     isResource = true;

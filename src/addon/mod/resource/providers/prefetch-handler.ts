@@ -23,7 +23,8 @@ import { CoreFilepoolProvider } from '@providers/filepool';
  */
 @Injectable()
 export class AddonModResourcePrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
-    name = 'resource';
+    name = 'AddonModResource';
+    modName = 'resource';
     component = AddonModResourceProvider.COMPONENT;
     isResource = true;
 

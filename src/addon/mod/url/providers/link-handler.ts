@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { AddonModUrlProvider } from './url';
 
 /**
  * Handler to treat links to url.
@@ -25,6 +24,6 @@ export class AddonModUrlLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModUrlLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModUrlProvider.COMPONENT, 'url');
+        super(courseHelper, 'AddonModUrl', 'url');
     }
 }

@@ -22,7 +22,8 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
  */
 @Injectable()
 export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHandler {
-    name = 'text';
+    name = 'AddonUserProfileFieldText';
+    type = 'text';
 
     constructor(private textUtils: CoreTextUtilsProvider) { }
 

@@ -306,7 +306,7 @@ export class CoreUserProvider {
     isParticipantsDisabledInSite(site?: any): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmCoursesDelegate_mmaParticipants');
+        return site.isFeatureDisabled('CoreCourseOptionsDelegate_CoreUserParticipants');
     }
 
     /**
@@ -334,7 +334,7 @@ export class CoreUserProvider {
     isUpdatePictureDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmUserDelegate_picture');
+        return site.isFeatureDisabled('CoreUserDelegate_picture');
     }
 
     /**

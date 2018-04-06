@@ -22,12 +22,13 @@ import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module
 export class CoreSitePluginsModulePrefetchHandler extends CoreCourseModulePrefetchHandlerBase {
     protected ROOT_CACHE_KEY = 'CoreSitePluginsModulePrefetchHandler:';
 
-    constructor(injector: Injector, protected sitePluginsProvider: CoreSitePluginsProvider, component: string, modName: string,
-            protected handlerSchema: any) {
+    constructor(injector: Injector, protected sitePluginsProvider: CoreSitePluginsProvider, component: string, name: string,
+            modName: string, protected handlerSchema: any) {
         super(injector);
 
         this.component = component;
-        this.name = modName;
+        this.name = name;
+        this.modName = modName;
         this.isResource = handlerSchema.isresource;
 
         if (handlerSchema.updatesnames) {

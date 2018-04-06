@@ -23,7 +23,7 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 @Injectable()
 export class CoreCoursesMyOverviewLinkHandler extends CoreContentLinksHandlerBase {
     name = 'CoreCoursesMyOverviewLinkHandler';
-    featureName = '$mmSideMenuDelegate_mmCourses';
+    featureName = 'CoreMainMenuDelegate_CoreCourses';
     pattern = /\/my\/?$/;
 
     constructor(private loginHelper: CoreLoginHelperProvider) {

@@ -22,7 +22,8 @@ import { CoreConstants } from '../../../../constants';
  */
 @Injectable()
 export class CoreCourseFormatWeeksHandler implements CoreCourseFormatHandler {
-    name = 'weeks';
+    name = 'CoreCourseFormatWeeks';
+    format = 'weeks';
 
     constructor(private timeUtils: CoreTimeUtilsProvider) { }
 

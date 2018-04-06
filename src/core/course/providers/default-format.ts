@@ -23,7 +23,8 @@ import { CoreCourseProvider } from './course';
  */
 @Injectable()
 export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
-    name = 'default';
+    name = 'CoreCourseFormatDefault';
+    format = 'default';
 
     constructor(private coursesProvider: CoreCoursesProvider) { }
 

@@ -26,7 +26,8 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
  */
 @Injectable()
 export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
-    name = 'resource';
+    name = 'AddonModResource';
+    modName = 'resource';
 
     constructor(protected resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             protected mimetypeUtils: CoreMimetypeUtilsProvider, private resourceHelper: AddonModResourceHelperProvider) { }

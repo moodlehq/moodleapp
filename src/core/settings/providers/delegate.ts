@@ -79,8 +79,6 @@ export interface CoreSettingsHandlerData {
 @Injectable()
 export class CoreSettingsDelegate extends CoreDelegate {
 
-    protected handlers: { [s: string]: CoreSettingsHandler } = {};
-    protected enabledHandlers: { [s: string]: CoreSettingsHandler } = {};
     protected siteHandlers: CoreSettingsHandlerData[] = []; // Handlers to return.
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
@@ -113,7 +111,7 @@ export class CoreSettingsDelegate extends CoreDelegate {
         const handlersData: any[] = [];
 
         for (const name in this.enabledHandlers) {
-            const handler = this.enabledHandlers[name],
+            const handler = <CoreSettingsHandler> this.enabledHandlers[name],
                 data = handler.getDisplayData();
 
             handlersData.push({

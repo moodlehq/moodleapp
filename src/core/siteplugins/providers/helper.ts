@@ -353,8 +353,9 @@ export class CoreSitePluginsHelperProvider {
         this.logger.debug('Register site plugin in course format delegate:', plugin, handlerSchema, bootstrapResult);
 
         // Create and register the handler.
-        const formatName = plugin.component.replace('format_', '');
-        this.courseFormatDelegate.registerHandler(new CoreSitePluginsCourseFormatHandler(formatName, handlerSchema));
+        const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+            formatName = plugin.component.replace('format_', '');
+        this.courseFormatDelegate.registerHandler(new CoreSitePluginsCourseFormatHandler(uniqueName, formatName, handlerSchema));
 
         return formatName;
     }
@@ -437,14 +438,15 @@ export class CoreSitePluginsHelperProvider {
         this.logger.debug('Register site plugin in module delegate:', plugin, handlerSchema, bootstrapResult);
 
         // Create and register the handler.
-        const modName = plugin.component.replace('mod_', '');
+        const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+            modName = plugin.component.replace('mod_', '');
 
-        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(modName, handlerSchema));
+        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, handlerSchema));
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.
             this.prefetchDelegate.registerHandler(new CoreSitePluginsModulePrefetchHandler(
-                this.injector, this.sitePluginsProvider, plugin.component, modName, handlerSchema));
+                this.injector, this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
         }
 
         return modName;
@@ -502,8 +504,9 @@ export class CoreSitePluginsHelperProvider {
         // Execute the main method and its JS. The template returned will be used in the profile field component.
         return this.executeMethodAndJS(plugin, handlerSchema.method).then((result) => {
             // Create and register the handler.
-            const fieldType = plugin.component.replace('profilefield_', ''),
-                fieldHandler = new CoreSitePluginsUserProfileFieldHandler(fieldType);
+            const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
+                fieldType = plugin.component.replace('profilefield_', ''),
+                fieldHandler = new CoreSitePluginsUserProfileFieldHandler(uniqueName, fieldType);
 
             // Store in handlerSchema some data required by the component.
             handlerSchema.methodTemplates = result.templates;

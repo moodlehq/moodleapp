@@ -343,7 +343,7 @@ export class AddonCalendarProvider {
     isCalendarDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaCalendar');
+        return site.isFeatureDisabled('CoreMainMenuDelegate_AddonCalendar');
     }
 
     /**

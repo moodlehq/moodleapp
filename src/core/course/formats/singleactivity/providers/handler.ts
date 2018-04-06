@@ -21,7 +21,8 @@ import { CoreCourseFormatSingleActivityComponent } from '../components/singleact
  */
 @Injectable()
 export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHandler {
-    name = 'singleactivity';
+    name = 'CoreCourseFormatSingleActivity';
+    format = 'singleactivity';
 
     constructor() {
         // Nothing to do.

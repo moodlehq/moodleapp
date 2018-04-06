@@ -23,7 +23,7 @@ import { CoreGradesProvider } from './grades';
  */
 @Injectable()
 export class CoreGradesUserHandler implements CoreUserProfileHandler {
-    name = 'mmGrades';
+    name = 'CoreGrades:viewGrades';
     priority = 400;
     type = CoreUserDelegate.TYPE_NEW_PAGE;
     viewGradesEnabledCache = {};
@@ -71,8 +71,8 @@ export class CoreGradesUserHandler implements CoreUserProfileHandler {
      *
      * @param {any} user     User to check.
      * @param {number} courseId Course ID.
-     * @param  {any} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-     * @param  {any} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+     * @param  {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param  {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return  {boolean|Promise<boolean>}   Promise resolved with true if enabled, resolved with false otherwise.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {

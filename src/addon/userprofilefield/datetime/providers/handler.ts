@@ -21,7 +21,8 @@ import { AddonUserProfileFieldDatetimeComponent } from '../component/datetime';
  */
 @Injectable()
 export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFieldHandler {
-    name = 'datetime';
+    name = 'AddonUserProfileFieldDatetime';
+    type = 'datetime';
 
     constructor() {
         // Nothing to do.

@@ -23,7 +23,8 @@ import { CoreCourseProvider } from '@core/course/providers/course';
  */
 @Injectable()
 export class AddonModSurveyModuleHandler implements CoreCourseModuleHandler {
-    name = 'survey';
+    name = 'AddonModSurvey';
+    modName = 'survey';
 
     constructor(private courseProvider: CoreCourseProvider) { }
 

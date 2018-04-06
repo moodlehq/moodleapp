@@ -25,7 +25,8 @@ import { AddonModUrlHelperProvider } from './helper';
  */
 @Injectable()
 export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
-    name = 'url';
+    name = 'AddonModUrl';
+    modName = 'url';
 
     constructor(private courseProvider: CoreCourseProvider, private urlProvider: AddonModUrlProvider,
         private urlHelper: AddonModUrlHelperProvider) { }

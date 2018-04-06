@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { AddonModSurveyProvider } from './survey';
 
 /**
  * Handler to treat links to survey.
@@ -25,6 +24,6 @@ export class AddonModSurveyLinkHandler extends CoreContentLinksModuleIndexHandle
     name = 'AddonModSurveyLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModSurveyProvider.COMPONENT, 'survey');
+        super(courseHelper, 'AddonModSurvey', 'survey');
     }
 }

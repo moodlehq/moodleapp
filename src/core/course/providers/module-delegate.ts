@@ -19,12 +19,19 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from './course';
 import { CoreSite } from '@classes/site';
+import { CoreCourseModuleDefaultHandler } from './default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 
 /**
  * Interface that all course module handlers must implement.
  */
 export interface CoreCourseModuleHandler extends CoreDelegateHandler {
+    /**
+     * Name of the module. It should match the "modname" of the module returned in core_course_get_contents.
+     * @type {string}
+     */
+    modName: string;
+
     /**
      * Get the data required to display the module in the course contents view.
      *
@@ -166,12 +173,11 @@ export interface CoreCourseModuleHandlerButton {
  */
 @Injectable()
 export class CoreCourseModuleDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreCourseModuleHandler } = {}; // All registered handlers.
-    protected enabledHandlers: { [s: string]: CoreCourseModuleHandler } = {}; // Handlers enabled for the current site.
-    protected featurePrefix = '$mmCourseDelegate_';
+    protected featurePrefix = 'CoreCourseModuleDelegate_';
+    protected handlerNameProperty = 'modName';
 
     constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
-            protected courseProvider: CoreCourseProvider) {
+            protected courseProvider: CoreCourseProvider, protected defaultHandler: CoreCourseModuleDefaultHandler) {
         super('CoreCourseModuleDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
@@ -184,12 +190,10 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
      */
     getMainComponent(injector: Injector, course: any, module: any): Promise<any> {
-        const handler = this.enabledHandlers[module.modname];
-        if (handler && handler.getMainComponent) {
-            return Promise.resolve(handler.getMainComponent(injector, course, module)).catch((err) => {
-                this.logger.error('Error getting main component', err);
-            });
-        }
+        return Promise.resolve(this.executeFunctionOnEnabled(module.modname, 'getMainComponent', [injector, course, module]))
+                .catch((err) => {
+            this.logger.error('Error getting main component', err);
+        });
     }
 
     /**
@@ -202,36 +206,7 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getModuleDataFor(modname: string, module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-        if (typeof this.enabledHandlers[modname] != 'undefined') {
-            return this.enabledHandlers[modname].getData(module, courseId, sectionId);
-        }
-
-        // Return the default data.
-        const defaultData: CoreCourseModuleHandlerData = {
-            icon: this.courseProvider.getModuleIconSrc(module.modname),
-            title: module.name,
-            class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions): void => {
-                event.preventDefault();
-                event.stopPropagation();
-
-                navCtrl.push('CoreCourseUnsupportedModulePage', { module: module }, options);
-            }
-        };
-
-        if (module.url) {
-            defaultData.buttons = [{
-                icon: 'open',
-                label: 'core.openinbrowser',
-                action: (e: Event): void => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(module.url);
-                }
-            }];
-        }
-
-        return defaultData;
+        return this.executeFunctionOnEnabled(modname, 'getData', [module, courseId, sectionId]);
     }
 
     /**
@@ -255,10 +230,12 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * @return {boolean} Whether module is disabled.
      */
     isModuleDisabledInSite(modname: string, site?: CoreSite): boolean {
-        if (typeof this.handlers[modname] != 'undefined') {
+        const handler = this.getHandler(modname, true);
+
+        if (handler) {
             site = site || this.sitesProvider.getCurrentSite();
 
-            return this.isFeatureDisabled(this.handlers[modname], site);
+            return this.isFeatureDisabled(handler, site);
         }
 
         return false;

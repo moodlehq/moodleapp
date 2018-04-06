@@ -107,11 +107,9 @@ export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
  */
 @Injectable()
 export class CoreMainMenuDelegate extends CoreDelegate {
-    protected handlers: { [s: string]: CoreMainMenuHandler } = {};
-    protected enabledHandlers: { [s: string]: CoreMainMenuHandler } = {};
     protected loaded = false;
     protected siteHandlers: Subject<CoreMainMenuHandlerToDisplay[]> = new BehaviorSubject<CoreMainMenuHandlerToDisplay[]>([]);
-    protected featurePrefix = '$mmSideMenuDelegate_';
+    protected featurePrefix = 'CoreMainMenuDelegate_';
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider: CoreEventsProvider) {
@@ -153,7 +151,7 @@ export class CoreMainMenuDelegate extends CoreDelegate {
         const handlersData: any[] = [];
 
         for (const name in this.enabledHandlers) {
-            const handler = this.enabledHandlers[name],
+            const handler = <CoreMainMenuHandler> this.enabledHandlers[name],
                 data = handler.getDisplayData();
 
             handlersData.push({

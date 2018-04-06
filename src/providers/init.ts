@@ -107,8 +107,6 @@ export class CoreInitDelegate {
     /**
      * Instantly returns if the app is ready.
      *
-     * To be notified when the app is ready, refer to {@link $mmApp#ready}.
-     *
      * @return {boolean} Whether it's ready.
      */
     isReady(): boolean {

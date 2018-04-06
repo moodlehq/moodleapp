@@ -23,7 +23,8 @@ import { CoreCourseProvider } from '@core/course/providers/course';
  */
 @Injectable()
 export class AddonModFolderModuleHandler implements CoreCourseModuleHandler {
-    name = 'folder';
+    name = 'AddonModFolder';
+    modName = 'folder';
 
     constructor(private courseProvider: CoreCourseProvider) { }
 

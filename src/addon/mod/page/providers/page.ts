@@ -31,7 +31,7 @@ export class AddonModPageProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider,
             private utils: CoreUtilsProvider, private filepoolProvider: CoreFilepoolProvider) {
-        this.logger = logger.getInstance('mmaModPageProvider');
+        this.logger = logger.getInstance('AddonModPageProvider');
     }
 
     /**

@@ -24,7 +24,7 @@ import { AddonBadgesProvider } from './badges';
 @Injectable()
 export class AddonBadgesMyBadgesLinkHandler extends CoreContentLinksHandlerBase {
     name = 'AddonBadgesMyBadgesLinkHandler';
-    featureName = '$mmUserDelegate_mmaBadges';
+    featureName = 'CoreUserDelegate_AddonBadges';
     pattern = /\/badges\/mybadges\.php/;
 
     constructor(private badgesProvider: AddonBadgesProvider, private loginHelper: CoreLoginHelperProvider) {

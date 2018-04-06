@@ -146,18 +146,18 @@ export interface LocalMobileResponse {
  */
 export class CoreSite {
     // List of injected services. This class isn't injectable, so it cannot use DI.
-    protected appProvider;
-    protected dbProvider;
-    protected domUtils;
-    protected eventsProvider;
-    protected fileProvider;
-    protected http;
-    protected textUtils;
-    protected timeUtils;
-    protected translate;
-    protected utils;
-    protected urlUtils;
-    protected wsProvider;
+    protected appProvider: CoreAppProvider;
+    protected dbProvider: CoreDbProvider;
+    protected domUtils: CoreDomUtilsProvider;
+    protected eventsProvider: CoreEventsProvider;
+    protected fileProvider: CoreFileProvider;
+    protected http: HttpClient;
+    protected textUtils: CoreTextUtilsProvider;
+    protected timeUtils: CoreTimeUtilsProvider;
+    protected translate: TranslateService;
+    protected utils: CoreUtilsProvider;
+    protected urlUtils: CoreUrlUtilsProvider;
+    protected wsProvider: CoreWSProvider;
 
     // Variables for the database.
     protected WS_CACHE_TABLE = 'wscache';
@@ -184,17 +184,19 @@ export class CoreSite {
         ]
     };
 
-    // Rest of variables.
-    protected logger;
-    protected db: SQLiteDB;
-    protected cleanUnicode = false;
-    protected lastAutoLogin = 0;
-    protected moodleReleases = {
+    // Versions of Moodle releases.
+    protected MOODLE_RELEASES = {
         3.1: 2016052300,
         3.2: 2016120500,
         3.3: 2017051503,
         3.4: 2017111300
     };
+
+    // Rest of variables.
+    protected logger;
+    protected db: SQLiteDB;
+    protected cleanUnicode = false;
+    protected lastAutoLogin = 0;
 
     /**
      * Create a site.
@@ -366,6 +368,7 @@ export class CoreSite {
      * @param {any} Config.
      */
     setConfig(config: any): void {
+        config.tool_mobile_disabledfeatures = this.textUtils.treatDisabledFeatures(config.tool_mobile_disabledfeatures);
         this.config = config;
     }
 
@@ -935,7 +938,7 @@ export class CoreSite {
             const siteFolder = this.fileProvider.getSiteFolder(this.id);
 
             return this.fileProvider.removeDir(siteFolder).catch(() => {
-                // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists.
+                // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exists.
             });
         } else {
             return Promise.resolve();
@@ -1133,9 +1136,9 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {any} [options] Override default options passed to InAppBrowser.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
-     * @return {Promise<InAppBrowserObject>} Promise resolved when done.
+     * @return {Promise<InAppBrowserObject|void>} Promise resolved when done.
      */
-    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
+    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
         return this.openWithAutoLogin(true, url, options, alertMessage);
     }
 
@@ -1145,9 +1148,9 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {object} [options] Override default options passed to inappbrowser.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
-     * @return {Promise<InAppBrowserObject>} Promise resolved when done.
+     * @return {Promise<InAppBrowserObject|void>} Promise resolved when done.
      */
-    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
+    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
         return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
     }
 
@@ -1158,12 +1161,12 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {object} [options] Override default options passed to $cordovaInAppBrowser#open.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
-     * @return {Promise<InAppBrowserObject>} Promise resolved when done. Resolve param is returned only if inApp=true.
+     * @return {Promise<InAppBrowserObject|void>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
+    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
         // Convenience function to open the URL.
         const open = (url): Promise<any> => {
-            return new Promise<InAppBrowserObject>((resolve, reject): void => {
+            return new Promise<InAppBrowserObject | void>((resolve, reject): void => {
                 if (modal) {
                     modal.dismiss();
                 }
@@ -1223,9 +1226,10 @@ export class CoreSite {
      * @param {string} url The URL to open.
      * @param {object} [options] Override default options passed to inappbrowser.
      * @param {string} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
-     * @return {Promise<InAppBrowserObject>} Promise resolved when done. Resolve param is returned only if inApp=true.
+     * @return {Promise<InAppBrowserObject|void>} Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject> {
+    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string)
+            : Promise<InAppBrowserObject | void> {
         if (this.containsUrl(url)) {
             return this.openWithAutoLogin(inApp, url, options, alertMessage);
         } else {
@@ -1396,12 +1400,12 @@ export class CoreSite {
             return 0;
         }
 
-        if (typeof this.moodleReleases[data.major] == 'undefined') {
+        if (typeof this.MOODLE_RELEASES[data.major] == 'undefined') {
             // Major version not found. Use the last one.
-            data.major = Object.keys(this.moodleReleases).slice(-1);
+            data.major = Object.keys(this.MOODLE_RELEASES).slice(-1);
         }
 
-        return this.moodleReleases[data.major] + data.minor;
+        return this.MOODLE_RELEASES[data.major] + data.minor;
     }
 
     /**
@@ -1431,7 +1435,7 @@ export class CoreSite {
      */
     protected getNextMajorVersionNumber(version: string): number {
         const data = this.getMajorAndMinor(version),
-            releases = Object.keys(this.moodleReleases);
+            releases = Object.keys(this.MOODLE_RELEASES);
         let position;
 
         if (!data) {
@@ -1443,9 +1447,9 @@ export class CoreSite {
 
         if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
-            return this.moodleReleases[releases[position]];
+            return this.MOODLE_RELEASES[releases[position]];
         }
 
-        return this.moodleReleases[releases[position + 1]];
+        return this.MOODLE_RELEASES[releases[position + 1]];
     }
 }

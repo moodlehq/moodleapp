@@ -21,7 +21,8 @@ import { AddonUserProfileFieldCheckboxComponent } from '../component/checkbox';
  */
 @Injectable()
 export class AddonUserProfileFieldCheckboxHandler implements CoreUserProfileFieldHandler {
-    name = 'checkbox';
+    name = 'AddonUserProfileFieldCheckbox';
+    type = 'checkbox';
 
     constructor() {
         // Nothing to do.

@@ -242,11 +242,11 @@ export class CoreFilepoolProvider {
     protected FOLDER = 'filepool';
     protected WIFI_DOWNLOAD_THRESHOLD = 20971520; // 20MB.
     protected DOWNLOAD_THRESHOLD = 2097152; // 2MB.
-    protected QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING';
-    protected QUEUE_PAUSED = 'mmFilepool:QUEUE_PAUSED';
-    protected ERR_QUEUE_IS_EMPTY = 'mmFilepoolError:ERR_QUEUE_IS_EMPTY';
-    protected ERR_FS_OR_NETWORK_UNAVAILABLE = 'mmFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE';
-    protected ERR_QUEUE_ON_PAUSE = 'mmFilepoolError:ERR_QUEUE_ON_PAUSE';
+    protected QUEUE_RUNNING = 'CoreFilepool:QUEUE_RUNNING';
+    protected QUEUE_PAUSED = 'CoreFilepool:QUEUE_PAUSED';
+    protected ERR_QUEUE_IS_EMPTY = 'CoreFilepoolError:ERR_QUEUE_IS_EMPTY';
+    protected ERR_FS_OR_NETWORK_UNAVAILABLE = 'CoreFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE';
+    protected ERR_QUEUE_ON_PAUSE = 'CoreFilepoolError:ERR_QUEUE_ON_PAUSE';
 
     // Variables for database.
     protected QUEUE_TABLE = 'filepool_files_queue'; // Queue of files to download.
@@ -1369,7 +1369,7 @@ export class CoreFilepoolProvider {
      * @return {string} Event name.
      */
     protected getFileEventName(siteId: string, fileId: string): string {
-        return 'mmFilepoolFile:' + siteId + ':' + fileId;
+        return 'CoreFilepoolFile:' + siteId + ':' + fileId;
     }
 
     /**

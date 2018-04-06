@@ -21,7 +21,8 @@ import { AddonUserProfileFieldMenuComponent } from '../component/menu';
  */
 @Injectable()
 export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHandler {
-    name = 'menu';
+    name = 'AddonUserProfileFieldMenu';
+    type = 'menu';
 
     constructor() {
         // Nothing to do.

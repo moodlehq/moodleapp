@@ -14,28 +14,27 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
-import { AddonModBookProvider } from './book';
-import { AddonModBookIndexComponent } from '../components/index/index';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
-import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from './module-delegate';
+import { CoreCourseProvider } from './course';
 
 /**
- * Handler to support book modules.
+ * Default handler used when the module doesn't have a specific implementation.
  */
 @Injectable()
-export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
-    name = 'AddonModBook';
-    modName = 'book';
+export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
+    name = 'CoreCourseModuleDefault';
+    modName = 'default';
 
-    constructor(protected bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider) { }
+    constructor(private sitesProvider: CoreSitesProvider, private courseProvider: CoreCourseProvider) { }
 
     /**
-     * Check if the handler is enabled on a site level.
+     * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.bookProvider.isPluginEnabled();
+        return true;
     }
 
     /**
@@ -47,15 +46,33 @@ export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-        return {
-            icon: this.courseProvider.getModuleIconSrc('book'),
+        // Return the default data.
+        const defaultData: CoreCourseModuleHandlerData = {
+            icon: this.courseProvider.getModuleIconSrc(module.modname),
             title: module.name,
-            class: 'addon-mod_book-handler',
-            showDownloadButton: true,
-            action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModBookIndexPage', {module: module, courseId: courseId}, options);
+            class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
+            action: (event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions): void => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                navCtrl.push('CoreCourseUnsupportedModulePage', { module: module }, options);
             }
         };
+
+        if (module.url) {
+            defaultData.buttons = [{
+                icon: 'open',
+                label: 'core.openinbrowser',
+                action: (e: Event): void => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(module.url);
+                }
+            }];
+        }
+
+        return defaultData;
     }
 
     /**
@@ -69,6 +86,7 @@ export class AddonModBookModuleHandler implements CoreCourseModuleHandler {
      * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
      */
     getMainComponent(injector: Injector, course: any, module: any): any | Promise<any> {
-        return AddonModBookIndexComponent;
+        // We can't inject CoreCourseUnsupportedModuleComponent here due to circular dependencies.
+        // Don't return anything, by default it will use CoreCourseUnsupportedModuleComponent.
     }
 }

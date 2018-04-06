@@ -20,6 +20,7 @@ import { CoreEventsProvider } from '@providers/events';
 export interface CoreDelegateHandler {
     /**
      * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
+     * This name will be used to check if the feature is disabled.
      * @type {string}
      */
     name: string;
@@ -73,6 +74,14 @@ export class CoreDelegate {
      * @type {string}
      */
     protected featurePrefix: string;
+
+    /**
+     * Name of the property to be used to index the handlers. By default, the handler's name will be used.
+     * If your delegate uses a Moodle component name to identify the handlers, please override this property.
+     * E.g. CoreCourseModuleDelegate uses 'modName' to index the handlers.
+     * @type {string}
+     */
+    protected handlerNameProperty = 'name';
 
     /**
      * Constructor of the Delegate.
@@ -182,14 +191,14 @@ export class CoreDelegate {
      * @return {boolean} True when registered, false if already registered.
      */
     registerHandler(handler: CoreDelegateHandler): boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
-            this.logger.log(`Addon '${handler.name}' already registered`);
+        if (typeof this.handlers[handler[this.handlerNameProperty]] !== 'undefined') {
+            this.logger.log(`Handler '${handler[this.handlerNameProperty]}' already registered`);
 
             return false;
         }
 
-        this.logger.log(`Registered addon '${handler.name}'`);
-        this.handlers[handler.name] = handler;
+        this.logger.log(`Registered handler '${handler[this.handlerNameProperty]}'`);
+        this.handlers[handler[this.handlerNameProperty]] = handler;
 
         return true;
     }
@@ -222,9 +231,9 @@ export class CoreDelegate {
             // Check that site hasn't changed since the check started.
             if (this.isLastUpdateCall(time) && this.sitesProvider.getCurrentSiteId() === siteId) {
                 if (enabled) {
-                    this.enabledHandlers[handler.name] = handler;
+                    this.enabledHandlers[handler[this.handlerNameProperty]] = handler;
                 } else {
-                    delete this.enabledHandlers[handler.name];
+                    delete this.enabledHandlers[handler[this.handlerNameProperty]];
                 }
             }
         });

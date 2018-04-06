@@ -24,7 +24,8 @@ import { CoreCourseProvider } from '@core/course/providers/course';
  */
 @Injectable()
 export class AddonModPageModuleHandler implements CoreCourseModuleHandler {
-    name = 'page';
+    name = 'AddonModPage';
+    modName = 'page';
 
     constructor(private courseProvider: CoreCourseProvider, protected pageProvider: AddonModPageProvider) { }
 

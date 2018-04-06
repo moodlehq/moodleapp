@@ -162,12 +162,10 @@ export class CoreUserDelegate extends CoreDelegate {
      */
     static UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
 
-    protected handlers: { [s: string]: CoreUserProfileHandler } = {};
-    protected enabledHandlers: { [s: string]: CoreUserProfileHandler } = {};
     protected observableHandlers: Subject<CoreUserProfileHandlerToDisplay[]> =
         new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([]);
     protected userHandlers: CoreUserProfileHandlerToDisplay[] = [];
-    protected featurePrefix = '$mmUserDelegate_';
+    protected featurePrefix = 'CoreUserDelegate_';
     protected loaded = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
@@ -233,7 +231,7 @@ export class CoreUserDelegate extends CoreDelegate {
 
                 for (const name in this.enabledHandlers) {
                     // Checks if the handler is enabled for the user.
-                    const handler = this.handlers[name],
+                    const handler = <CoreUserProfileHandler> this.handlers[name],
                         isEnabledForUser = handler.isEnabledForUser(user, courseId, navOptions, admOptions),
                         promise = Promise.resolve(isEnabledForUser).then((enabled) => {
                             if (enabled) {
