@@ -68,7 +68,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
-        CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+            CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [];
     }
 

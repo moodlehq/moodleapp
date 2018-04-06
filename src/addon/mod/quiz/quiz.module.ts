@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { AddonModQuizAccessRuleDelegate } from './providers/access-rules-delegate';
 import { AddonModQuizProvider } from './providers/quiz';
 import { AddonModQuizOfflineProvider } from './providers/quiz-offline';
@@ -24,6 +25,9 @@ import { AddonModQuizSyncProvider } from './providers/quiz-sync';
 import { AddonModQuizModuleHandler } from './providers/module-handler';
 import { AddonModQuizPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModQuizSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonModQuizIndexLinkHandler } from './providers/index-link-handler';
+import { AddonModQuizGradeLinkHandler } from './providers/grade-link-handler';
+import { AddonModQuizReviewLinkHandler } from './providers/review-link-handler';
 import { AddonModQuizComponentsModule } from './components/components.module';
 
 // Access rules.
@@ -60,16 +64,24 @@ import { AddonModQuizAccessTimeLimitModule } from './accessrules/timelimit/timel
         AddonModQuizSyncProvider,
         AddonModQuizModuleHandler,
         AddonModQuizPrefetchHandler,
-        AddonModQuizSyncCronHandler
+        AddonModQuizSyncCronHandler,
+        AddonModQuizIndexLinkHandler,
+        AddonModQuizGradeLinkHandler,
+        AddonModQuizReviewLinkHandler
     ]
 })
 export class AddonModQuizModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModQuizModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModQuizPrefetchHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModQuizSyncCronHandler) {
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModQuizSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
+            indexHandler: AddonModQuizIndexLinkHandler, gradeHandler: AddonModQuizGradeLinkHandler,
+            reviewHandler: AddonModQuizReviewLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         cronDelegate.register(syncHandler);
+        linksDelegate.registerHandler(indexHandler);
+        linksDelegate.registerHandler(gradeHandler);
+        linksDelegate.registerHandler(reviewHandler);
     }
 }
