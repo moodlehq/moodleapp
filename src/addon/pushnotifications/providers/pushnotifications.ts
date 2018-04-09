@@ -25,6 +25,7 @@ import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConfigProvider } from '@providers/config';
+import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 
 /**
@@ -89,8 +90,7 @@ export class AddonPushNotificationsProvider {
      * @return {Promise<PushOptions>} Promise with the push options resolved when done.
      */
     protected getOptions(): Promise<PushOptions> {
-        // @todo: CoreSettingsProvider.NOTIFICATION_SOUND
-        return this.configProvider.get('CoreSettingsProvider.NOTIFICATION_SOUND', true).then((soundEnabled) => {
+        return this.configProvider.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true).then((soundEnabled) => {
             return {
                 android: {
                     senderID: CoreConfigConstants.gcmpn,

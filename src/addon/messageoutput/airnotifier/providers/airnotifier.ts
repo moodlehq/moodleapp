@@ -70,7 +70,7 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Get user devices.
      *
-     * @param {string} [siteid] Site ID. If not defined, use current site.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any>} Promise resolved with the devices.
      */
     getUserDevices(siteId?: string): Promise<any> {

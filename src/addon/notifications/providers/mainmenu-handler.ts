@@ -95,7 +95,7 @@ export class AddonNotificationsMainMenuHandler implements CoreMainMenuHandler {
     /**
      * Triggers an update for the badge number and loading status. Mandatory if showBadge is enabled.
      *
-     * @param {string} siteId Site ID or current Site if undefined.
+     * @param {string} [siteId] Site ID or current Site if undefined.
      */
     updateBadge(siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

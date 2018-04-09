@@ -18,6 +18,8 @@ import { CoreCronHandler } from '@providers/cron';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 import { AddonNotificationsProvider } from './notifications';
 
 /**
@@ -29,7 +31,8 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
 
     constructor(private appProvider: CoreAppProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private localNotifications: CoreLocalNotificationsProvider,
-            private notificationsProvider: AddonNotificationsProvider) {}
+            private notificationsProvider: AddonNotificationsProvider, private textUtils: CoreTextUtilsProvider,
+            private emulatorHelper: CoreEmulatorHelperProvider) {}
 
     /**
      * Get the time between consecutive executions.
@@ -73,12 +76,37 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
         }
 
         if (this.appProvider.isDesktop() && this.localNotifications.isAvailable()) {
-            /* @todo
-            $mmEmulatorHelper.checkNewNotifications(
-                mmaNotificationsPushSimulationComponent, fetchNotifications, getTitleAndText, siteId);
-            */
+            this.emulatorHelper.checkNewNotifications(
+                AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT,
+                this.fetchNotifications.bind(this), this.getTitleAndText.bind(this), siteId);
         }
 
         return Promise.resolve(null);
+    }
+
+    /**
+     * Get the latest unread notifications from a site.
+     *
+     * @param  {string} siteId  Site ID.
+     * @return {Promise<any[]>} Promise resolved with the notifications.
+     */
+    protected fetchNotifications(siteId: string): Promise<any[]> {
+        return this.notificationsProvider.getUnreadNotifications(0, undefined, true, false, true, siteId);
+    }
+
+    /**
+     * Given a notification, return the title and the text for the notification.
+     *
+     * @param  {any} notification Notification.
+     * @return {Promise<any>} Promise resvoled with an object with title and text.
+     */
+    protected getTitleAndText(notification: any): Promise<any> {
+        const data = {
+            title: notification.userfromfullname,
+            text: notification.mobiletext.replace(/-{4,}/ig, '')
+        };
+        data.text = this.textUtils.replaceNewLines(data.text, '<br>');
+
+        return Promise.resolve(data);
     }
 }

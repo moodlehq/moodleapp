@@ -28,7 +28,6 @@ import { AddonMessageOutputAirnotifierProvider } from '../../providers/airnotifi
 })
 export class AddonMessageOutputAirnotifierDevicesPage implements OnDestroy {
 
-    title = '';
     devices = [];
     devicesLoaded = false;
 
@@ -108,8 +107,8 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnDestroy {
     /**
      * Enable or disable a certain device.
      *
-     * @param {any} device
-     * @param {boolean} enable
+     * @param {any} device The device object.
+     * @param {boolean} enable True to enable the device, false to disable it.
      */
     enableDevice(device: any, enable: boolean): void {
         device.updating = true;

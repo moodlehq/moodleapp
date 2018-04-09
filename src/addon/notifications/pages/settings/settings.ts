@@ -115,7 +115,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Load a processor.
      *
-     * @param {any} processor
+     * @param {any} processor Processor object.
      */
     protected loadProcessor(processor: any): void {
         if (!processor) {
@@ -242,7 +242,7 @@ export class AddonNotificationsSettingsPage implements OnDestroy {
     /**
      * Change the notification sound setting.
      *
-     * @param {enabled} enabled
+     * @param {enabled} enabled True to enable the notification sound, false to disable it.
      */
     changeNotificationSound(enabled: boolean): void {
         this.configProvider.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled).finally(() => {

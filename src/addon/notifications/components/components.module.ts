@@ -32,8 +32,5 @@ import { AddonNotificationsActionsComponent } from './actions/actions';
     exports: [
         AddonNotificationsActionsComponent
     ],
-    entryComponents: [
-        AddonNotificationsActionsComponent
-    ]
 })
 export class AddonNotificationsComponentsModule {}

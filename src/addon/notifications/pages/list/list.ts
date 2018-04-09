@@ -70,8 +70,8 @@ export class AddonNotificationsListPage {
     /**
      * Convenience function to get notifications. Gets unread notifications first.
      *
-     * @param {boolean} refreh
-     * @return {Primise<any>} Resolved when done.
+     * @param {boolean} refreh Whether we're refreshing data.
+     * @return {Promise<any>} Resolved when done.
      */
     protected fetchNotifications(refresh?: boolean): Promise<any> {
         if (refresh) {
@@ -83,6 +83,9 @@ export class AddonNotificationsListPage {
 
         return this.notificationsProvider.getUnreadNotifications(this.unreadCount, limit).then((unread) => {
             let promise;
+
+            unread.forEach(this.formatText.bind(this));
+
             /* Don't add the unread notifications to this.notifications yet. If there are no unread notifications
                that causes that the "There are no notifications" message is shown in pull to refresh. */
             this.unreadCount += unread.length;
@@ -91,6 +94,7 @@ export class AddonNotificationsListPage {
                 // Limit not reached. Get read notifications until reach the limit.
                 const readLimit = limit - unread.length;
                 promise = this.notificationsProvider.getReadNotifications(this.readCount, readLimit).then((read) => {
+                    read.forEach(this.formatText.bind(this));
                     this.readCount += read.length;
                     if (refresh) {
                         this.notifications = unread.concat(read);
@@ -127,7 +131,7 @@ export class AddonNotificationsListPage {
     /**
      * Mark notifications as read.
      *
-     * @param {any[]} notifications
+     * @param {any[]} notifications Array of notification objects.
      */
     protected markNotificationsAsRead(notifications: any[]): void {
         if (notifications.length > 0) {
@@ -172,14 +176,12 @@ export class AddonNotificationsListPage {
 
     /**
      * Formats the text of a notification.
-     * @param {string} text
-     * @return {string} Formatted text.
+     *
+     * @param {any} notification The notification object.
      */
-    formatText(text: string): string {
-        text = text.replace(/-{4,}/ig, '');
-        text = this.textUtils.replaceNewLines(text, '<br>');
-
-        return text;
+    protected formatText(notification: any): void {
+        const text = notification.mobiletext.replace(/-{4,}/ig, '');
+        notification.mobiletext = this.textUtils.replaceNewLines(text, '<br>');
     }
 
     /**

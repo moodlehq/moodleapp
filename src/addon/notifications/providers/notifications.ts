@@ -18,6 +18,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 
 /**
  * Service to handle notifications.
@@ -27,14 +28,15 @@ export class AddonNotificationsProvider {
 
     static READ_CHANGED_EVENT = 'addon_notifications_read_changed_event';
     static READ_CRON_EVENT = 'addon_notifications_read_cron_event';
-    static PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
+    static PUSH_SIMULATION_COMPONENT = 'AddonNotificationsPushSimulation';
     static LIST_LIMIT = 20;
 
     protected ROOT_CACHE_KEY = 'mmaNotifications:';
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private sitesProvider: CoreSitesProvider,
-            private timeUtils: CoreTimeUtilsProvider, private userProvider: CoreUserProvider) {
+            private timeUtils: CoreTimeUtilsProvider, private userProvider: CoreUserProvider,
+            private emulatorHelper: CoreEmulatorHelperProvider) {
         this.logger = logger.getInstance('AddonNotificationsProvider');
     }
 
@@ -75,7 +77,7 @@ export class AddonNotificationsProvider {
     /**
      * Get notification preferences.
      *
-     * @param {string} [siteid] Site ID. If not defined, use current site.
+     * @param {string} [siteId] Site ID. If not defined, use current site.
      * @return {Promise<any>} Promise resolved with the notification preferences.
      */
     getNotificationPreferences(siteId?: string): Promise<any> {
@@ -141,11 +143,9 @@ export class AddonNotificationsProvider {
                     const notifications = response.messages;
                     this.formatNotificationsData(notifications);
                     if (this.appProvider.isDesktop() && toDisplay && !read && limitFrom === 0) {
-                        /* @todo
                         // Store the last received notification. Don't block the user for this.
-                        $mmEmulatorHelper.storeLastReceivedNotification(
-                            mmaNotificationsPushSimulationComponent, notifications[0], siteId);
-                        */
+                        this.emulatorHelper.storeLastReceivedNotification(
+                            AddonNotificationsProvider.PUSH_SIMULATION_COMPONENT, notifications[0], siteId);
                     }
 
                     return notifications;
