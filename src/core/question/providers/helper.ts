@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Injectable, EventEmitter } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreQuestionProvider } from './question';
@@ -26,7 +28,8 @@ export class CoreQuestionHelperProvider {
     protected div = document.createElement('div'); // A div element to search in HTML code.
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-        private questionProvider: CoreQuestionProvider) { }
+        private questionProvider: CoreQuestionProvider, private sitesProvider: CoreSitesProvider,
+        private translate: TranslateService) { }
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -267,6 +270,69 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Get the names of all the inputs inside an HTML code.
+     * This function will return an object where the keys are the input names. The values will always be true.
+     * This is in order to make this function compatible with other functions like CoreQuestionProvider.getBasicAnswers.
+     *
+     * @param {string} html HTML code.
+     * @return {any} Object where the keys are the names.
+     */
+    getAllInputNamesFromHtml(html: string): any {
+        const form = document.createElement('form'),
+            answers = {};
+
+        form.innerHTML = html;
+
+        // Search all input elements.
+        Array.from(form.elements).forEach((element: HTMLInputElement) => {
+            const name = element.name || '';
+
+            // Ignore flag and submit inputs.
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            answers[this.questionProvider.removeQuestionPrefix(name)] = true;
+        });
+
+        return answers;
+    }
+
+    /**
+     * Given an HTML code with list of attachments, returns the list of attached files (filename and fileurl).
+     * Please take into account that this function will treat all the anchors in the HTML, you should provide
+     * an HTML containing only the attachments anchors.
+     *
+     * @param  {String} html HTML code to search in.
+     * @return {Object[]}    Attachments.
+     */
+    getQuestionAttachmentsFromHtml(html: string): any[] {
+        this.div.innerHTML = html;
+
+        // Remove the filemanager (area to attach files to a question).
+        this.domUtils.removeElement(this.div, 'div[id*=filemanager]');
+
+        // Search the anchors.
+        const anchors = Array.from(this.div.querySelectorAll('a')),
+            attachments = [];
+
+        anchors.forEach((anchor) => {
+            let content = anchor.innerHTML;
+
+            // Check anchor is valid.
+            if (anchor.href && content) {
+                content = this.textUtils.cleanTags(content, true).trim();
+                attachments.push({
+                    filename: content,
+                    fileurl: anchor.href
+                });
+            }
+        });
+
+        return attachments;
+    }
+
+    /**
      * Get the sequence check from a question HTML.
      *
      * @param {string} html Question's HTML.
@@ -297,6 +363,22 @@ export class CoreQuestionHelperProvider {
         this.div.innerHTML = html;
 
         return this.domUtils.getContentsOfElement(this.div, '.validationerror');
+    }
+
+    /**
+     * Check if some HTML contains draft file URLs for the current site.
+     *
+     * @param {string} html Question's HTML.
+     * @return {boolean} Whether it contains draft files URLs.
+     */
+    hasDraftFileUrls(html: string): boolean {
+        let url = this.sitesProvider.getCurrentSite().getURL();
+        if (url.slice(-1) != '/') {
+            url = url += '/';
+        }
+        url += 'draftfile.php';
+
+        return html.indexOf(url) != -1;
     }
 
     /**
@@ -347,6 +429,30 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Replace Moodle's correct/incorrect classes with the Mobile ones.
+     *
+     * @param {HTMLElement} element DOM element.
+     */
+    replaceCorrectnessClasses(element: HTMLElement): void {
+        this.domUtils.replaceClassesInElement(element, {
+            correct: 'core-question-answer-correct',
+            incorrect: 'core-question-answer-incorrect'
+        });
+    }
+
+    /**
+     * Replace Moodle's feedback classes with the Mobile ones.
+     *
+     * @param {HTMLElement} element DOM element.
+     */
+    replaceFeedbackClasses(element: HTMLElement): void {
+        this.domUtils.replaceClassesInElement(element, {
+            outcome: 'core-question-feedback-container core-question-feedback-padding',
+            specificfeedback: 'core-question-feedback-container core-question-feedback-inline'
+        });
+    }
+
+    /**
      * Search a behaviour button in a certain question property containing HTML.
      *
      * @param {any} question Question.
@@ -391,5 +497,56 @@ export class CoreQuestionHelperProvider {
         }
 
         onAbort && onAbort.emit();
+    }
+
+    /**
+     * Treat correctness icons, replacing them with local icons and setting click events to show the feedback if needed.
+     *
+     * @param {HTMLElement} element DOM element.
+     */
+    treatCorrectnessIcons(element: HTMLElement, component?: string, componentId?: number): void {
+
+        const icons = <HTMLImageElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon'));
+        icons.forEach((icon) => {
+            // Replace the icon with the font version.
+            if (icon.src) {
+                const newIcon: any = document.createElement('i');
+
+                if (icon.src.indexOf('incorrect') > -1) {
+                    newIcon.className = 'icon fa fa-remove text-danger fa-fw questioncorrectnessicon';
+                } else if (icon.src.indexOf('correct') > -1) {
+                    newIcon.className = 'icon fa fa-check text-success fa-fw questioncorrectnessicon';
+                } else {
+                    return;
+                }
+
+                newIcon.title = icon.title;
+                newIcon.ariaLabel = icon.title;
+                icon.parentNode.replaceChild(newIcon, icon);
+            }
+        });
+
+        const spans = Array.from(element.querySelectorAll('.feedbackspan.accesshide'));
+        spans.forEach((span) => {
+            // Search if there's a hidden feedback for this element.
+            const icon = <HTMLElement> span.previousSibling;
+            if (!icon) {
+                return;
+            }
+
+            if (!icon.classList.contains('icon') && !icon.classList.contains('questioncorrectnessicon')) {
+                return;
+            }
+
+            icon.classList.add('questioncorrectnessicon');
+
+            if (span.innerHTML) {
+                // There's a hidden feedback, show it when the icon is clicked.
+                icon.addEventListener('click', (event) => {
+                    const title = this.translate.instant('core.question.feedback');
+                    this.textUtils.expandText(title, span.innerHTML, component, componentId);
+                });
+            }
+        });
     }
 }
