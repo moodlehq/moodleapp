@@ -78,7 +78,7 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "^3.1.5",
+    "@ionic/app-scripts": "^3.1.8",
     "gulp": "^3.9.1",
     "gulp-clip-empty-files": "^0.1.2",
     "gulp-rename": "^1.2.2",
