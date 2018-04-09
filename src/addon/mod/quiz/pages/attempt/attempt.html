@@ -36,7 +36,7 @@
                     {{ 'addon.mod_quiz.review' | translate }}
                 </button>
             </ion-item>
-            <ion-item text-wrap class="core-error-item" *ngIf="!quiz.showReviewColumn">
+            <ion-item text-wrap class="core-danger-item" *ngIf="!quiz.showReviewColumn">
                 <p>{{ 'addon.mod_quiz.noreviewattempt' | translate }}</p>
             </ion-item>
         </ion-list>

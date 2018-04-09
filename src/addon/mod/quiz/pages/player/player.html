@@ -13,26 +13,32 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="loaded">
+    <!-- Navigation arrows and time left. -->
+    <ion-toolbar *ngIf="loaded && endTime && questions && questions.length && !quizAborted && !showSummary" color="light" ion-fixed>
+        <ion-title>
+            <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" align="center"></core-timer>
+        </ion-title>
+        <ion-buttons end>
+            <a ion-button icon-only *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
+                <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+            </a>
+            <a ion-button icon-only *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
+                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+            </a>
+        </ion-buttons>
+    </ion-toolbar>
+    <core-loading [hideUntil]="loaded" [class.core-has-fixed-timer]="endTime">
         <!-- Navigation arrows and time left. -->
-        <div *ngIf="questions && questions.length && !quizAborted && !showSummary">
-            <ion-row align-items-center>
-                <ion-col col-2>
-                    <a ion-button icon-only color="light" *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
-                        <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
-                    </a>
-                </ion-col>
-                <ion-col col-8 text-center>
-                    <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" align="center"></core-timer>
-                </ion-col>
-                <ion-col col-2 text-right>
-                    <a ion-button icon-only color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
-                        <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
-                    </a>
-                </ion-col>
-            </ion-row>
-        </div>
-
+        <ion-toolbar *ngIf="!endTime && questions && questions.length && !quizAborted && !showSummary" color="light">
+            <ion-buttons end>
+                <a ion-button icon-only *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
+                    <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+                </a>
+                <a ion-button icon-only *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
+                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                </a>
+            </ion-buttons>
+        </ion-toolbar>
         <!-- Button to start attempting. -->
         <div padding *ngIf="!attempt">
             <button ion-button block (click)="start()">{{ 'addon.mod_quiz.startattempt' | translate }}</button>

@@ -18,7 +18,7 @@
 
     <!-- Draft files not supported. -->
     <ng-container *ngIf="question.textarea && question.hasDraftFiles">
-        <ion-item text-wrap class="core-error-item">
+        <ion-item text-wrap class="core-danger-item">
             <p class="core-question-warning">{{ 'core.question.errorinlinefilesnotsupported' | translate }}</p>
         </ion-item>
         <ion-item text-wrap>
@@ -27,7 +27,7 @@
     </ng-container>
 
     <!-- Attachments not supported in the app yet. -->
-    <ion-item text-wrap *ngIf="question.allowsAttachments" class="core-error-item">
+    <ion-item text-wrap *ngIf="question.allowsAttachments" class="core-danger-item">
         <p class="core-question-warning">{{ 'core.question.errorattachmentsnotsupported' | translate }}</p>
     </ion-item>
 

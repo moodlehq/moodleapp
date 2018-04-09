@@ -179,16 +179,12 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
      * @param {any} e Scroll event.
      */
     showHideTabs(e: any): void {
-        if (e.target.scrollTop < this.tabBarHeight) {
-            if (!this.tabsShown) {
-                this.tabBarElement.classList.remove('tabs-hidden');
-                this.tabsShown = true;
-            }
-        } else {
-            if (this.tabsShown) {
-                this.tabBarElement.classList.add('tabs-hidden');
-                this.tabsShown = false;
-            }
+        if (this.tabsShown && e.target.scrollTop - this.tabBarHeight > this.tabBarHeight) {
+            this.tabBarElement.classList.add('tabs-hidden');
+            this.tabsShown = false;
+        } else if (!this.tabsShown && e.target.scrollTop < this.tabBarHeight) {
+            this.tabBarElement.classList.remove('tabs-hidden');
+            this.tabsShown = true;
         }
     }
 

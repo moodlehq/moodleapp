@@ -652,6 +652,8 @@ export class CoreQuestionHelperProvider {
             icon.classList.add('questioncorrectnessicon');
 
             if (span.innerHTML) {
+                icon.setAttribute('tappable', '');
+                // @TODO: addEventListener not working.
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
                     const title = this.translate.instant('core.question.feedback');

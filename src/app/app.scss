@@ -32,7 +32,7 @@
 .img-responsive {
   display: block;
   max-width: 100%;
-  height: auto;
+  /* height: auto; */
 }
 
 .opacity-hide { opacity: 0; }
@@ -75,6 +75,10 @@
 
 .item-dimmed {
   opacity: 0.6;
+}
+
+.item-radio-checked {
+  background-color: $gray-lighter;
 }
 
 .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
@@ -337,6 +341,16 @@ ion-select {
   position: relative
 }
 
+ion-col ion-select {
+    float: right;
+    max-width: none;
+    width: 100%;
+    .select-text {
+      white-space: normal;
+      text-align: right;
+    }
+  }
+
 // File uploader.
 // -------------------------
 
@@ -430,7 +444,8 @@ ion-select {
   color: $core-question-warning-color;
 }
 
-.questioncorrectnessicon {
+.questioncorrectnessicon,
+.fa.icon.questioncorrectnessicon {
   font-size: 20px;
 }
 
@@ -588,14 +603,27 @@ textarea {
     @extend .core-circle:before;
     color: $color-base;
   }
+  .text-#{$color-name} {
+    color: $color-base;
+  }
 }
 
 .accesshide {
   position: absolute;
   left: -10000px;
   font-weight: normal;
-  font-size: 1em; }
+  font-size: 1em;
+}
 
 .core-monospaced {
   font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+}
+
+
+.core-white-push-arrow .item-inner{
+    background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23FFFFFF'/></svg>") !important;
+}
+
+[ion-fixed] {
+  width: 100%;
 }

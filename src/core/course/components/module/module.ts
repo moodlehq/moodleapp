@@ -150,6 +150,10 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             this.showDownload = status === CoreConstants.NOT_DOWNLOADED;
             this.showRefresh = status === CoreConstants.OUTDATED ||
                 (!this.prefetchDelegate.canCheckUpdates() && status === CoreConstants.DOWNLOADED);
+
+            if (this.module.handlerData.updateStatus) {
+                this.module.handlerData.updateStatus(status);
+            }
         }
     }
 

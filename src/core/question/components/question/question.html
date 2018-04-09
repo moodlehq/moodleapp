@@ -12,7 +12,7 @@
 <core-dynamic-component *ngFor="let componentClass of behaviourComponents" [component]="componentClass" [data]="data"></core-dynamic-component>
 
 <!-- Question validation error. -->
-<ion-item text-wrap class="core-error-item" *ngIf="question.validationError">
+<ion-item text-wrap class="core-danger-item" *ngIf="question.validationError">
     <p>{{ question.validationError }}</p>
 </ion-item>
 

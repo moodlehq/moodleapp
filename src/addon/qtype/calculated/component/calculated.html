@@ -18,7 +18,7 @@
 
                 <!-- Input to enter the answer. -->
                 <ion-col>
-                    <ion-input type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" [disabled]="question.input.readOnly" [ngClass]='{"core-question-answer-correct": question.input.isCorrect === 1, "core-question-answer-incorrect": question.input.isCorrect === 0}' autocorrect="off">
+                    <ion-input padding-left type="text" placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.input.name" [value]="question.input.value" [disabled]="question.input.readOnly" [ngClass]='{"core-question-answer-correct": question.input.isCorrect === 1, "core-question-answer-incorrect": question.input.isCorrect === 0}' autocorrect="off">
                     </ion-input>
                 </ion-col>
 
