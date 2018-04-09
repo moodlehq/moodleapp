@@ -53,6 +53,68 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Extract question behaviour submit buttons from the question's HTML and add them to "behaviourButtons" property.
+     * The buttons aren't deleted from the content because all the im-controls block will be removed afterwards.
+     *
+     * @param {any} question Question to treat.
+     * @param {string} [selector] Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
+     */
+    extractQbehaviourButtons(question: any, selector?: string): void {
+        selector = selector || '.im-controls input[type="submit"]';
+
+        this.div.innerHTML = question.html;
+
+        // Search the buttons.
+        const buttons = <HTMLInputElement[]> Array.from(this.div.querySelectorAll(selector));
+        buttons.forEach((button) => {
+            this.addBehaviourButton(question, button);
+        });
+
+        question.html = this.div.innerHTML;
+    }
+
+    /**
+     * Check if the question has CBM and, if so, extract the certainty options and add them to a new
+     * "behaviourCertaintyOptions" property.
+     * The value of the selected option is stored in question.behaviourCertaintySelected.
+     * We don't remove them from HTML because the whole im-controls block will be removed afterwards.
+     *
+     * @param {any} question Question to treat.
+     * @return {boolean} Wether the certainty is found.
+     */
+    extractQbehaviourCBM(question: any): boolean {
+        this.div.innerHTML = question.html;
+
+        const labels = Array.from(this.div.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]'));
+        question.behaviourCertaintyOptions = [];
+
+        labels.forEach((label) => {
+            // Search the radio button inside this certainty and add its data to the options array.
+            const input = <HTMLInputElement> label.querySelector('input[type="radio"]');
+            if (input) {
+                question.behaviourCertaintyOptions.push({
+                    id: input.id,
+                    name: input.name,
+                    value: input.value,
+                    text: this.textUtils.cleanTags(label.innerHTML),
+                    disabled: input.disabled
+                });
+
+                if (input.checked) {
+                    question.behaviourCertaintySelected = input.value;
+                }
+            }
+        });
+
+        // If we have a certainty value stored in local we'll use that one.
+        if (question.localAnswers && typeof question.localAnswers['-certainty'] != 'undefined') {
+            question.behaviourCertaintySelected = question.localAnswers['-certainty'];
+        }
+
+        return labels.length > 0;
+    }
+
+    /**
      * Check if the question has a redo button and, if so, add it to "behaviourButtons" property
      * and remove it from the HTML.
      *
@@ -78,6 +140,33 @@ export class CoreQuestionHelperProvider {
                 this.searchBehaviourButton(question, 'infoHtml', redoSelector);
             }
         }
+    }
+
+    /**
+     * Check if the question contains a "seen" input.
+     * If so, add the name and value to a "behaviourSeenInput" property and remove the input.
+     *
+     * @param {any} question Question to treat.
+     * @return {boolean} Whether the seen input is found.
+     */
+    extractQbehaviourSeenInput(question: any): boolean {
+        this.div.innerHTML = question.html;
+
+        // Search the "seen" input.
+        const seenInput = <HTMLInputElement> this.div.querySelector('input[type="hidden"][name*=seen]');
+        if (seenInput) {
+            // Get the data and remove the input.
+            question.behaviourSeenInput = {
+                name: seenInput.name,
+                value: seenInput.value
+            };
+            seenInput.parentElement.removeChild(seenInput);
+            question.html = this.div.innerHTML;
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
