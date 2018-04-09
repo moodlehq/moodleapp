@@ -30,6 +30,7 @@ export class CoreConstants {
     static SETTINGS_RICH_TEXT_EDITOR = 'CoreSettingsRichTextEditor';
     static SETTINGS_NOTIFICATION_SOUND = 'CoreSettingsNotificationSound';
     static SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';
+    static SETTINGS_REPORT_IN_BACKGROUND = 'CoreSettingsReportInBackground';
 
     // WS constants.
     static WS_TIMEOUT = 30000;

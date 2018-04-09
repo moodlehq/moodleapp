@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'core.settings.synchronization' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="sitesLoaded">
+        <ion-item-divider color="light">
+            <p>{{ 'core.settings.syncsettings' | translate }}</p>
+        </ion-item-divider>
+        <ion-item>
+            <ion-label>{{ 'core.settings.enablesyncwifi' | translate }}</ion-label>
+            <ion-toggle item-end [(ngModel)]="syncOnlyOnWifi" (ngModelChange)="syncOnlyOnWifiChanged()">
+            </ion-toggle>
+        </ion-item>
+        <ion-item-divider color="light">
+            <p>{{ 'core.settings.sites' | translate }}</p>
+        </ion-item-divider>
+        <ion-item *ngFor="let site of sites" [class.core-primary-item]="site.id == currentSiteId">
+            <h2><core-format-text [text]="site.siteName"></core-format-text></h2>
+            <p>{{ site.fullName }}</p>
+            <p>{{ site.siteUrl }}</p>
+            <button ion-button icon-only clear item-end *ngIf="!isSynchronizing(site.id)" (click)="synchronize(site.id)" [title]="site.siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                <ion-icon name="sync"></ion-icon>
+            </button>
+            <ion-spinner item-end *ngIf="isSynchronizing(site.id)"></ion-spinner>
+        </ion-item>
+    </core-loading>
+</ion-content>

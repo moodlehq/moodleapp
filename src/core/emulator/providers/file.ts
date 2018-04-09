@@ -279,7 +279,7 @@ export class FileMock extends File {
                     maxIterations = 10;
                     // More accurate. Factor is 1.1.
                     calculateByRequest(size, 1.1).then((size: number) => {
-                        return size / 1024; // Return size in KB.
+                        resolve(size / 1024); // Return size in KB.
                     });
                 });
 

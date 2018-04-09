@@ -13,8 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreCronDelegate } from '@providers/cron';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Settings helper service.
@@ -22,8 +28,11 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 @Injectable()
 export class CoreSettingsHelper {
     protected logger;
+    protected syncPromises = {};
 
-    constructor(loggerProvider: CoreLoggerProvider, private utils: CoreUtilsProvider) {
+    constructor(loggerProvider: CoreLoggerProvider, private appProvider: CoreAppProvider, private cronDelegate: CoreCronDelegate,
+            private eventsProvider: CoreEventsProvider, private filePoolProvider: CoreFilepoolProvider,
+            private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private translate: TranslateService) {
         this.logger = loggerProvider.getInstance('CoreSettingsHelper');
     }
 
@@ -90,5 +99,80 @@ export class CoreSettingsHelper {
         });
 
         return result;
+    }
+
+    /**
+     * Get the synchronization promise of a site.
+     *
+     * @param {string} siteId ID of the site.
+     * @return {Promise<any> | null} Sync promise or null if site is not being syncrhonized.
+     */
+    getSiteSyncPromise(siteId: string): Promise<any> {
+        if (this.syncPromises[siteId]) {
+            return this.syncPromises[siteId];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Synchronize a site.
+     *
+     * @param {boolean} syncOnlyOnWifi True to sync only on wifi, false otherwise.
+     * @param {string} siteId ID of the site to synchronize.
+     * @return {Promise<any>} Promise resolved when synchronized, rejected if failure.
+     */
+    synchronizeSite(syncOnlyOnWifi: boolean, siteId: string): Promise<any> {
+        if (this.syncPromises[siteId]) {
+            // There's already a sync ongoing for this site, return the promise.
+            return this.syncPromises[siteId];
+        }
+
+        const promises = [];
+        const hasSyncHandlers = this.cronDelegate.hasManualSyncHandlers();
+
+        if (hasSyncHandlers && !this.appProvider.isOnline()) {
+            // We need connection to execute sync.
+            return Promise.reject(this.translate.instant('core.settings.cannotsyncoffline'));
+        } else if (hasSyncHandlers && syncOnlyOnWifi && this.appProvider.isNetworkAccessLimited()) {
+            return Promise.reject(this.translate.instant('core.settings.cannotsyncwithoutwifi'));
+        }
+
+        // Invalidate all the site files so they are re-downloaded.
+        promises.push(this.filePoolProvider.invalidateAllFiles(siteId).catch(() => {
+            // Ignore errors.
+        }));
+
+        // Get the site to invalidate data.
+        promises.push(this.sitesProvider.getSite(siteId).then((site) => {
+            // Invalidate the WS cache.
+            return site.invalidateWsCache().then(() => {
+                const subPromises = [];
+
+                // Check if local_mobile was installed in Moodle.
+                subPromises.push(site.checkIfLocalMobileInstalledAndNotUsed().then(() => {
+                    // Local mobile was added. Throw invalid session to force reconnect and create a new token.
+                    this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, siteId);
+
+                    return Promise.reject(this.translate.instant('core.lostconnection'));
+                }, () => {
+                    // Update site info.
+                    return this.sitesProvider.updateSiteInfo(siteId);
+                }));
+
+                // Execute cron if needed.
+                subPromises.push(this.cronDelegate.forceSyncExecution(siteId));
+
+                return Promise.all(subPromises);
+            });
+        }));
+
+        const syncPromise = Promise.all(promises);
+        this.syncPromises[siteId] = syncPromise;
+        syncPromise.finally(() => {
+            delete this.syncPromises[siteId];
+        });
+
+        return syncPromise;
     }
 }
