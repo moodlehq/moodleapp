@@ -82,9 +82,12 @@ import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonModPageModule } from '@addon/mod/page/page.module';
 import { AddonModUrlModule } from '@addon/mod/url/url.module';
 import { AddonModSurveyModule } from '@addon/mod/survey/survey.module';
+import { AddonMessageOutputModule } from '@addon/messageoutput/messageoutput.module';
+import { AddonMessageOutputAirnotifierModule } from '@addon/messageoutput/airnotifier/airnotifier.module';
 import { AddonMessagesModule } from '@addon/messages/messages.module';
 import { AddonNotesModule } from '../addon/notes/notes.module';
 import { AddonPushNotificationsModule } from '@addon/pushnotifications/pushnotifications.module';
+import { AddonNotificationsModule } from '@addon/notifications/notifications.module';
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
@@ -171,8 +174,11 @@ export const CORE_PROVIDERS: any[] = [
         AddonModPageModule,
         AddonModUrlModule,
         AddonModSurveyModule,
+        AddonMessageOutputModule,
+        AddonMessageOutputAirnotifierModule,
         AddonMessagesModule,
         AddonNotesModule,
+        AddonNotificationsModule,
         AddonPushNotificationsModule,
         AddonRemoteThemesModule,
         AddonQbehaviourModule,

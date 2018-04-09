@@ -13,17 +13,19 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSettingsDelegate } from './providers/delegate';
-import { CoreSettingsHelper } from './providers/helper';
+import { IonicPageModule } from 'ionic-angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreComponentsModule } from '@components/components.module';
+import { AddonMessageOutputAirnotifierDevicesPage } from './devices';
 
 @NgModule({
     declarations: [
+        AddonMessageOutputAirnotifierDevicesPage,
     ],
     imports: [
+        CoreComponentsModule,
+        IonicPageModule.forChild(AddonMessageOutputAirnotifierDevicesPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-        CoreSettingsDelegate,
-        CoreSettingsHelper
-    ]
 })
-export class CoreSettingsModule {}
+export class AddonMessageOutputAirnotifierDevicesPageModule {}

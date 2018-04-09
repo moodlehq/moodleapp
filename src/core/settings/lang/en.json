@@ -1,5 +1,7 @@
 {
     "about": "About",
+    "disableall": "Disable notifications",
+    "disabled": "Disabled",
     "general": "General",
     "loggedin": "Online",
     "loggedoff": "Offline",

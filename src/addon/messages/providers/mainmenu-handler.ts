@@ -24,6 +24,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { AddonPushNotificationsProvider } from '@addon/pushnotifications/providers/pushnotifications';
 import { AddonPushNotificationsDelegate } from '@addon/pushnotifications/providers/delegate';
+import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 
 /**
  * Handler to inject an option into main menu.
@@ -46,7 +47,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
             private eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
             private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
             private pushNotificationsProvider: AddonPushNotificationsProvider, utils: CoreUtilsProvider,
-            pushNotificationsDelegate: AddonPushNotificationsDelegate) {
+            pushNotificationsDelegate: AddonPushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
         eventsProvider.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);
@@ -132,9 +133,9 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
         }
 
         if (this.appProvider.isDesktop() && this.localNotificationsProvider.isAvailable()) {
-            // @todo
-            /*$mmEmulatorHelper.checkNewNotifications(
-                    AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, this.fetchMessages, this.getTitleAndText, siteId);*/
+            this.emulatorHelper.checkNewNotifications(
+                AddonMessagesProvider.PUSH_SIMULATION_COMPONENT,
+                this.fetchMessages.bind(this), this.getTitleAndText.bind(this), siteId);
         }
 
         return Promise.resolve();

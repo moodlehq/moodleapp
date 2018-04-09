@@ -20,6 +20,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonMessagesOfflineProvider } from './messages-offline';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 
 /**
  * Service to handle messages.
@@ -40,7 +41,8 @@ export class AddonMessagesProvider {
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider,
             private userProvider: CoreUserProvider, private messagesOffline: AddonMessagesOfflineProvider,
-            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
+            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
+            private emulatorHelper: CoreEmulatorHelperProvider) {
         this.logger = logger.getInstance('AddonMessagesProvider');
     }
 
@@ -1088,7 +1090,6 @@ export class AddonMessagesProvider {
 
     /**
      * Store the last received message if it's newer than the last stored.
-     * @todo
      *
      * @param  {number} userIdFrom ID of the useridfrom retrieved, 0 for all users.
      * @param  {any} message       Last message received.
@@ -1096,10 +1097,10 @@ export class AddonMessagesProvider {
      * @return {Promise<any>}      Promise resolved when done.
      */
     protected storeLastReceivedMessageIfNeeded(userIdFrom: number, message: any, siteId?: string): Promise<any> {
-        /*let component = mmaMessagesPushSimulationComponent;
+        const component = AddonMessagesProvider.PUSH_SIMULATION_COMPONENT;
 
         // Get the last received message.
-        return $mmEmulatorHelper.getLastReceivedNotification(component, siteId).then((lastMessage) => {
+        return this.emulatorHelper.getLastReceivedNotification(component, siteId).then((lastMessage) => {
             if (userIdFrom > 0 && (!message || !lastMessage)) {
                 // Seeing a single discussion. No received message or cannot know if it really is the last received message. Stop.
                 return;
@@ -1110,9 +1111,8 @@ export class AddonMessagesProvider {
                 return;
             }
 
-            return $mmEmulatorHelper.storeLastReceivedNotification(component, message, siteId);
-        });*/
-        return Promise.resolve();
+            return this.emulatorHelper.storeLastReceivedNotification(component, message, siteId);
+        });
     }
 
     /**

@@ -35,6 +35,7 @@ import { SQLite } from '@ionic-native/sqlite';
 import { Zip } from '@ionic-native/zip';
 
 // Services that Mock Ionic Native in browser an desktop.
+import { BadgeMock } from './providers/badge';
 import { CameraMock } from './providers/camera';
 import { ClipboardMock } from './providers/clipboard';
 import { FileMock } from './providers/file';
@@ -44,6 +45,7 @@ import { InAppBrowserMock } from './providers/inappbrowser';
 import { LocalNotificationsMock } from './providers/local-notifications';
 import { MediaCaptureMock } from './providers/media-capture';
 import { NetworkMock } from './providers/network';
+import { PushMock } from './providers/push';
 import { ZipMock } from './providers/zip';
 
 import { CoreEmulatorHelperProvider } from './providers/helper';
@@ -89,7 +91,14 @@ export const IONIC_NATIVE_PROVIDERS = [
     imports: [
     ],
     providers: [
-        Badge, // @todo: Mock
+        {
+            provide: Badge,
+            deps: [CoreAppProvider],
+            useFactory: (appProvider: CoreAppProvider): Badge => {
+                // Use platform instead of CoreAppProvider to prevent circular dependencies.
+                return appProvider.isMobile() ? new Badge() : new BadgeMock(appProvider);
+            }
+        },
         CoreEmulatorHelperProvider,
         CoreEmulatorCaptureHelperProvider,
         {
@@ -162,7 +171,14 @@ export const IONIC_NATIVE_PROVIDERS = [
                 return platform.is('cordova') ? new Network() : new NetworkMock();
             }
         },
-        Push, // @todo: Mock
+        {
+            provide: Push,
+            deps: [CoreAppProvider],
+            useFactory: (appProvider: CoreAppProvider): Push => {
+                // Use platform instead of CoreAppProvider to prevent circular dependencies.
+                return appProvider.isMobile() ? new Push() : new PushMock(appProvider);
+            }
+        },
         SplashScreen,
         StatusBar,
         SQLite,

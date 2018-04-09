@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSettingsDelegate } from './providers/delegate';
-import { CoreSettingsHelper } from './providers/helper';
+import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
+import { AddonMessageOutputAirnotifierProvider } from './providers/airnotifier';
+import { AddonMessageOutputAirnotifierHandler } from './providers/handler';
 
 @NgModule({
     declarations: [
@@ -22,8 +23,12 @@ import { CoreSettingsHelper } from './providers/helper';
     imports: [
     ],
     providers: [
-        CoreSettingsDelegate,
-        CoreSettingsHelper
+        AddonMessageOutputAirnotifierProvider,
+        AddonMessageOutputAirnotifierHandler,
     ]
 })
-export class CoreSettingsModule {}
+export class AddonMessageOutputAirnotifierModule {
+    constructor(messageOutputDelegate: AddonMessageOutputDelegate, airnotifierHandler: AddonMessageOutputAirnotifierHandler) {
+        messageOutputDelegate.registerHandler(airnotifierHandler);
+    }
+}
