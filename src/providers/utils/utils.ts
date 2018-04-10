@@ -626,7 +626,7 @@ export class CoreUtilsProvider {
      * @return {boolean} Whether the error was returned by the WebService.
      */
     isWebServiceError(error: any): boolean {
-        return typeof error.errorcode == 'undefined';
+        return typeof error.errorcode == 'undefined' && typeof error.warningcode == 'undefined';
     }
 
     /**

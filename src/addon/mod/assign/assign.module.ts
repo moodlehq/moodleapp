@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { AddonModAssignProvider } from './providers/assign';
+import { AddonModAssignOfflineProvider } from './providers/assign-offline';
 import { AddonModAssignFeedbackDelegate } from './providers/feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './providers/submission-delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './providers/default-feedback-handler';
@@ -22,6 +24,8 @@ import { AddonModAssignDefaultSubmissionHandler } from './providers/default-subm
     declarations: [
     ],
     providers: [
+        AddonModAssignProvider,
+        AddonModAssignOfflineProvider,
         AddonModAssignFeedbackDelegate,
         AddonModAssignSubmissionDelegate,
         AddonModAssignDefaultFeedbackHandler,
