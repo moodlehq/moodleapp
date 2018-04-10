@@ -13,12 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModAssignProvider } from './providers/assign';
 import { AddonModAssignOfflineProvider } from './providers/assign-offline';
+import { AddonModAssignHelperProvider } from './providers/helper';
 import { AddonModAssignFeedbackDelegate } from './providers/feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './providers/submission-delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './providers/default-feedback-handler';
 import { AddonModAssignDefaultSubmissionHandler } from './providers/default-submission-handler';
+import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
 
 @NgModule({
     declarations: [
@@ -26,10 +29,16 @@ import { AddonModAssignDefaultSubmissionHandler } from './providers/default-subm
     providers: [
         AddonModAssignProvider,
         AddonModAssignOfflineProvider,
+        AddonModAssignHelperProvider,
         AddonModAssignFeedbackDelegate,
         AddonModAssignSubmissionDelegate,
         AddonModAssignDefaultFeedbackHandler,
-        AddonModAssignDefaultSubmissionHandler
+        AddonModAssignDefaultSubmissionHandler,
+        AddonModAssignPrefetchHandler
     ]
 })
-export class AddonModAssignModule { }
+export class AddonModAssignModule {
+    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler) {
+        prefetchDelegate.registerHandler(prefetchHandler);
+    }
+}
