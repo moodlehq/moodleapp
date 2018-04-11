@@ -29,12 +29,14 @@ export class CoreViewerTextPage {
     content: string; // Page content.
     component: string; // Component to use in format-text.
     componentId: string | number; // Component ID to use in format-text.
+    files: any[]; // List of files.
 
     constructor(private viewCtrl: ViewController, params: NavParams, textUtils: CoreTextUtilsProvider) {
         this.title = params.get('title');
         this.content = params.get('content');
         this.component = params.get('component');
         this.componentId = params.get('componentId');
+        this.files = params.get('files');
     }
 
     /**

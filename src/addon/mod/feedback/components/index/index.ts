@@ -65,11 +65,11 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
     protected submitObserver: any;
 
-    constructor(injector: Injector, private feedbackProvider: AddonModFeedbackProvider, @Optional() private content: Content,
+    constructor(injector: Injector, private feedbackProvider: AddonModFeedbackProvider, @Optional() content: Content,
             private feedbackOffline: AddonModFeedbackOfflineProvider, private groupsProvider: CoreGroupsProvider,
             private feedbackSync: AddonModFeedbackSyncProvider, private navCtrl: NavController,
             private feedbackHelper: AddonModFeedbackHelperProvider) {
-        super(injector);
+        super(injector, content);
 
         // Listen for form submit events.
         this.submitObserver = this.eventsProvider.on(AddonModFeedbackProvider.FORM_SUBMITTED, (data) => {

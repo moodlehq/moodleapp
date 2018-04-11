@@ -68,12 +68,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected finishedObserver: any; // It will observe attempt finished events.
     protected hasPlayed = false; // Whether the user has gone to the quiz player (attempted).
 
-    constructor(injector: Injector, protected quizProvider: AddonModQuizProvider, @Optional() protected content: Content,
+    constructor(injector: Injector, protected quizProvider: AddonModQuizProvider, @Optional() content: Content,
             protected quizHelper: AddonModQuizHelperProvider, protected quizOffline: AddonModQuizOfflineProvider,
             protected quizSync: AddonModQuizSyncProvider, protected behaviourDelegate: CoreQuestionBehaviourDelegate,
             protected prefetchHandler: AddonModQuizPrefetchHandler, protected navCtrl: NavController,
             protected prefetchDelegate: CoreCourseModulePrefetchDelegate) {
-        super(injector);
+        super(injector, content);
     }
 
     /**

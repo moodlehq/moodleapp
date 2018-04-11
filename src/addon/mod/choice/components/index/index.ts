@@ -48,9 +48,9 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasAnsweredOnline = false;
     protected now: number;
 
-    constructor(injector: Injector, private choiceProvider: AddonModChoiceProvider, @Optional() private content: Content,
+    constructor(injector: Injector, private choiceProvider: AddonModChoiceProvider, @Optional() content: Content,
             private choiceOffline: AddonModChoiceOfflineProvider, private choiceSync: AddonModChoiceSyncProvider) {
-        super(injector);
+        super(injector, content);
     }
 
     /**

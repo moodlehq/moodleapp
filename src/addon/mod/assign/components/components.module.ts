@@ -13,24 +13,33 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreViewerTextPage } from './text';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreCourseComponentsModule } from '@core/course/components/components.module';
+import { AddonModAssignIndexComponent } from './index/index';
 
-/**
- * Module to lazy load the page.
- */
 @NgModule({
     declarations: [
-        CoreViewerTextPage
+        AddonModAssignIndexComponent
     ],
     imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        IonicPageModule.forChild(CoreViewerTextPage),
-        TranslateModule.forChild()
+        CoreCourseComponentsModule
+    ],
+    providers: [
+    ],
+    exports: [
+        AddonModAssignIndexComponent
+    ],
+    entryComponents: [
+        AddonModAssignIndexComponent
     ]
 })
-export class CoreViewerTextPageModule {}
+export class AddonModAssignComponentsModule {}

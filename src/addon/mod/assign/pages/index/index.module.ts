@@ -15,22 +15,19 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreViewerTextPage } from './text';
-import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { AddonModAssignComponentsModule } from '../../components/components.module';
+import { AddonModAssignIndexPage } from './index';
 
-/**
- * Module to lazy load the page.
- */
 @NgModule({
     declarations: [
-        CoreViewerTextPage
+        AddonModAssignIndexPage,
     ],
     imports: [
-        CoreComponentsModule,
         CoreDirectivesModule,
-        IonicPageModule.forChild(CoreViewerTextPage),
+        AddonModAssignComponentsModule,
+        IonicPageModule.forChild(AddonModAssignIndexPage),
         TranslateModule.forChild()
-    ]
+    ],
 })
-export class CoreViewerTextPageModule {}
+export class AddonModAssignIndexPageModule {}

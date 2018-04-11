@@ -38,10 +38,10 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     protected userId: number;
     protected syncEventName = AddonModSurveySyncProvider.AUTO_SYNCED;
 
-    constructor(injector: Injector, private surveyProvider: AddonModSurveyProvider, @Optional() private content: Content,
+    constructor(injector: Injector, private surveyProvider: AddonModSurveyProvider, @Optional() content: Content,
             private surveyHelper: AddonModSurveyHelperProvider, private surveyOffline: AddonModSurveyOfflineProvider,
             private surveySync: AddonModSurveySyncProvider) {
-        super(injector);
+        super(injector, content);
     }
 
     /**
@@ -83,8 +83,6 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.survey && syncEventData.surveyId == this.survey.id && syncEventData.userId == this.userId) {
-            this.content.scrollToTop();
-
             return true;
         }
 
@@ -189,9 +187,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             }
 
             return this.surveyProvider.submitAnswers(this.survey.id, this.survey.name, this.courseId, answers).then(() => {
-                this.content.scrollToTop();
-
-                return this.refreshContent(false);
+                return this.showLoadingAndRefresh(false);
             }).finally(() => {
                 modal.dismiss();
             });

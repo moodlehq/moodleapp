@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
+import { Content } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -47,7 +48,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     protected eventsProvider: CoreEventsProvider;
     protected modulePrefetchProvider: CoreCourseModulePrefetchDelegate;
 
-    constructor(injector: Injector) {
+    constructor(injector: Injector, protected content?: Content) {
         super(injector);
 
         this.sitesProvider = injector.get(CoreSitesProvider);
@@ -118,10 +119,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      */
     protected autoSyncEventReceived(syncEventData: any): void {
         if (this.isRefreshSyncNeeded(syncEventData)) {
-            this.loaded = false;
-
             // Refresh the data.
-            this.refreshContent(false);
+            this.showLoadingAndRefresh(false);
         }
     }
 
@@ -144,6 +143,22 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             this.refreshIcon = 'refresh';
             this.syncIcon = 'sync';
         });
+    }
+
+    /**
+     * Show loading and perform the refresh content function.
+     *
+     * @param  {boolean}      [sync=false]       If the refresh needs syncing.
+     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
+     * @return {Promise<any>} Resolved when done.
+     */
+    protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<any> {
+        this.refreshIcon = 'spinner';
+        this.syncIcon = 'spinner';
+        this.loaded = false;
+        this.content && this.content.scrollToTop();
+
+        return this.refreshContent(true, showErrors);
     }
 
     /**

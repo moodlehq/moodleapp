@@ -14,19 +14,20 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, NavOptions } from 'ionic-angular';
-import { AddonModSurveyIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { AddonModAssignProvider } from './assign';
+import { AddonModAssignIndexComponent } from '../components/index/index';
 
 /**
- * Handler to support survey modules.
+ * Handler to support assign modules.
  */
 @Injectable()
-export class AddonModSurveyModuleHandler implements CoreCourseModuleHandler {
-    name = 'AddonModSurvey';
-    modName = 'survey';
+export class AddonModAssignModuleHandler implements CoreCourseModuleHandler {
+    name = 'AddonModAssign';
+    modName = 'assign';
 
-    constructor(private courseProvider: CoreCourseProvider) { }
+    constructor(private courseProvider: CoreCourseProvider, private assignProvider: AddonModAssignProvider) { }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -34,7 +35,7 @@ export class AddonModSurveyModuleHandler implements CoreCourseModuleHandler {
      * @return {boolean} Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean {
-        return true;
+        return this.assignProvider.isPluginEnabled();
     }
 
     /**
@@ -47,12 +48,12 @@ export class AddonModSurveyModuleHandler implements CoreCourseModuleHandler {
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
-            icon: this.courseProvider.getModuleIconSrc('survey'),
+            icon: this.courseProvider.getModuleIconSrc('assign'),
             title: module.name,
-            class: 'addon-mod_survey-handler',
+            class: 'addon-mod_assign-handler',
             showDownloadButton: true,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
-                navCtrl.push('AddonModSurveyIndexPage', {module: module, courseId: courseId}, options);
+                navCtrl.push('AddonModAssignIndexPage', {module: module, courseId: courseId}, options);
             }
         };
     }
@@ -66,6 +67,6 @@ export class AddonModSurveyModuleHandler implements CoreCourseModuleHandler {
      * @return {any} The component to use, undefined if not found.
      */
     getMainComponent(course: any, module: any): any {
-        return AddonModSurveyIndexComponent;
+        return AddonModAssignIndexComponent;
     }
 }
