@@ -77,6 +77,7 @@ import { AddonCompetencyModule } from '@addon/competency/competency.module';
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
+import { AddonModChatModule } from '@addon/mod/chat/chat.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
@@ -170,6 +171,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonModBookModule,
+        AddonModChatModule,
         AddonModLabelModule,
         AddonModResourceModule,
         AddonModFolderModule,

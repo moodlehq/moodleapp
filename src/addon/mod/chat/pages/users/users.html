@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.mod_chat.currentusers' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="usersLoaded">
+        <ion-item text-wrap *ngFor="let user of users" [class.addon-mod-chat-user]="currentUserId != user.id && isOnline">
+            <ion-avatar item-start>
+                <img [src]="user.profileimageurl" onError="this.src='assets/img/user-avatar.png'" core-external-content [alt]="'core.pictureof' | translate:{$a: user.fullname}" role="presentation">
+            </ion-avatar>
+            <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+            <ng-container *ngIf="currentUserId != user.id && isOnline">
+                <button ion-button clear icon-left (click)="talkTo(user)">
+                    <ion-icon name="chatboxes"></ion-icon>
+                    {{ 'addon.mod_chat.talk' | translate }}
+                </button>
+                <button ion-button clear icon-left (click)="beepTo(user)">
+                    <ion-icon name="notifications"></ion-icon>
+                    {{ 'addon.mod_chat.beep' | translate }}
+                </button>
+            </ng-container>
+        </ion-item>
+    </core-loading>
+</ion-content>

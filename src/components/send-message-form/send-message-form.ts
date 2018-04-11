@@ -31,12 +31,11 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
     templateUrl: 'send-message-form.html'
 })
 export class CoreSendMessageFormComponent implements OnInit {
+    @Input() message: string; // Input text.
     @Input() placeholder = ''; // Placeholder for the input area.
     @Input() showKeyboard = false; // If keyboard is shown or not.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
-
-    message: string;
 
     constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider) {
         this.onSubmit = new EventEmitter();
