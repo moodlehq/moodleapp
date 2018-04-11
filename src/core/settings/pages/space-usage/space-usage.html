@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'core.settings.spaceusage' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="usageLoaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="usageLoaded">
+        <ion-item *ngFor="let site of sites" [class.core-primary-item]="site.id == currentSiteId">
+            <h2><core-format-text [text]="site.siteName"></core-format-text></h2>
+            <p>{{ site.fullName }}</p>
+            <p item-end>{{ site.spaceUsage | coreBytesToSize }}</p>
+            <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteFiles(site)" [hidden]="!site.spaceUsage > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
+                <ion-icon name="trash"></ion-icon>
+            </button>
+        </ion-item>
+        <ion-item-divider color="light">
+            <p>{{ 'core.settings.total' | translate }}</p>
+            <p item-end>{{ totalUsage | coreBytesToSize }}</p>
+        </ion-item-divider>
+        <ion-item-divider color="light">
+            <p>{{ 'core.settings.estimatedfreespace' | translate }}</p>
+            <p item-end>{{ freeSpace | coreBytesToSize }}</p>
+        </ion-item-divider>
+    </core-loading>
+</ion-content>

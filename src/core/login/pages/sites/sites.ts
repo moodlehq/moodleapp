@@ -45,9 +45,9 @@ export class CoreLoginSitesPage {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.sitesProvider.getSites().then((sites) => {
+        this.sitesProvider.getSortedSites().then((sites) => {
             // Remove protocol from the url to show more url text.
-            sites = sites.map((site) => {
+            this.sites = sites.map((site) => {
                 site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '');
                 site.badge = 0;
                 this.pushNotificationsProvider.getSiteCounter(site.id).then((counter) => {
@@ -55,24 +55,6 @@ export class CoreLoginSitesPage {
                 });
 
                 return site;
-            });
-
-            // Sort sites by url and fullname.
-            this.sites = sites.sort((a, b) => {
-                // First compare by site url without the protocol.
-                let compareA = a.siteUrl.toLowerCase(),
-                    compareB = b.siteUrl.toLowerCase();
-                const compare = compareA.localeCompare(compareB);
-
-                if (compare !== 0) {
-                    return compare;
-                }
-
-                // If site url is the same, use fullname instead.
-                compareA = a.fullName.toLowerCase().trim();
-                compareB = b.fullName.toLowerCase().trim();
-
-                return compareA.localeCompare(compareB);
             });
 
             this.showDelete = false;

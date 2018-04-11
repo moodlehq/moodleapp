@@ -871,6 +871,36 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get the list of sites stored, sorted by URL and full name.
+     *
+     * @param {String[]} [ids] IDs of the sites to get. If not defined, return all sites.
+     * @return {Promise<CoreSiteBasicInfo[]>} Promise resolved when the sites are retrieved.
+     */
+    getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
+        return this.getSites(ids).then((sites) => {
+            // Sort sites by url and ful lname.
+            sites.sort((a, b) => {
+                // First compare by site url without the protocol.
+                let compareA = a.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
+                    compareB = b.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
+                const compare = compareA.localeCompare(compareB);
+
+                if (compare !== 0) {
+                    return compare;
+                }
+
+                // If site url is the same, use fullname instead.
+                compareA = a.fullName.toLowerCase().trim();
+                compareB = b.fullName.toLowerCase().trim();
+
+                return compareA.localeCompare(compareB);
+            });
+
+            return sites;
+        });
+    }
+
+    /**
      * Get the list of IDs of sites stored.
      *
      * @return {Promise<string[]>} Promise resolved when the sites IDs are retrieved.

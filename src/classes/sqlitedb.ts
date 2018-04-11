@@ -270,7 +270,7 @@ export class SQLiteDB {
     deleteRecords(table: string, conditions?: object): Promise<any> {
         if (conditions === null || typeof conditions == 'undefined') {
             // No conditions, delete the whole table.
-            return this.execute(`DELETE FROM TABLE ${table}`);
+            return this.execute(`DELETE FROM ${table}`);
         }
 
         const selectAndParams = this.whereClause(conditions);
