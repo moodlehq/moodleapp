@@ -13,15 +13,18 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModAssignProvider } from './providers/assign';
 import { AddonModAssignOfflineProvider } from './providers/assign-offline';
+import { AddonModAssignSyncProvider } from './providers/assign-sync';
 import { AddonModAssignHelperProvider } from './providers/helper';
 import { AddonModAssignFeedbackDelegate } from './providers/feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './providers/submission-delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './providers/default-feedback-handler';
 import { AddonModAssignDefaultSubmissionHandler } from './providers/default-submission-handler';
 import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModAssignSyncCronHandler } from './providers/sync-cron-handler';
 
 @NgModule({
     declarations: [
@@ -29,16 +32,20 @@ import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
     providers: [
         AddonModAssignProvider,
         AddonModAssignOfflineProvider,
+        AddonModAssignSyncProvider,
         AddonModAssignHelperProvider,
         AddonModAssignFeedbackDelegate,
         AddonModAssignSubmissionDelegate,
         AddonModAssignDefaultFeedbackHandler,
         AddonModAssignDefaultSubmissionHandler,
-        AddonModAssignPrefetchHandler
+        AddonModAssignPrefetchHandler,
+        AddonModAssignSyncCronHandler
     ]
 })
 export class AddonModAssignModule {
-    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler) {
+    constructor(prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler) {
         prefetchDelegate.registerHandler(prefetchHandler);
+        cronDelegate.register(syncHandler);
     }
 }
