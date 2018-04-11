@@ -261,7 +261,7 @@ export class CoreQuestionBaseComponent {
         this.questionHelper.replaceFeedbackClasses(div);
 
         // Treat the correct/incorrect icons.
-        this.questionHelper.treatCorrectnessIcons(div, this.component, this.componentId);
+        this.questionHelper.treatCorrectnessIcons(div);
 
         // Set the question text.
         this.question.text = content.innerHTML;

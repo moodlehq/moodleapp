@@ -55,7 +55,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         this.questionHelper.replaceFeedbackClasses(div);
 
         // Treat the correct/incorrect icons.
-        this.questionHelper.treatCorrectnessIcons(div, this.component, this.componentId);
+        this.questionHelper.treatCorrectnessIcons(div);
 
         const answerContainer = div.querySelector('.answercontainer');
         if (!answerContainer) {
@@ -91,6 +91,8 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
             // Create the instance.
             this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element, this.question,
                     this.question.readOnly, this.inputIds);
+
+            this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
         }
     }
 

@@ -39,7 +39,7 @@
         </ion-card-header>
         <ion-list>
             <!-- "Header" of the table -->
-            <ion-item text-wrap class="addon-mod_quiz-table-header">
+            <ion-item text-wrap class="addon-mod_quiz-table-header" detail-push>
                 <ion-row align-items-center>
                     <ion-col text-center class="hidden-phone" *ngIf="quiz.showAttemptColumn"><b>{{ 'addon.mod_quiz.attemptnumber' | translate }}</b></ion-col>
                     <ion-col text-center class="hidden-tablet" *ngIf="quiz.showAttemptColumn"><b>#</b></ion-col>

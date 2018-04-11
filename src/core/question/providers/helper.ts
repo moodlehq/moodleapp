@@ -615,7 +615,7 @@ export class CoreQuestionHelperProvider {
      *
      * @param {HTMLElement} element DOM element.
      */
-    treatCorrectnessIcons(element: HTMLElement, component?: string, componentId?: number): void {
+    treatCorrectnessIcons(element: HTMLElement): void {
 
         const icons = <HTMLImageElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon'));
         icons.forEach((icon) => {
@@ -652,11 +652,31 @@ export class CoreQuestionHelperProvider {
             icon.classList.add('questioncorrectnessicon');
 
             if (span.innerHTML) {
+                // There's a hidden feedback. Mark the icon as tappable.
+                // The click listener is only added if treatCorrectnessIconsClicks is called.
                 icon.setAttribute('tappable', '');
-                // @TODO: addEventListener not working.
+            }
+        });
+    }
+
+    /**
+     * Add click listeners to all tappable correctness icons.
+     *
+     * @param {HTMLElement} element DOM element.
+     * @param {string} [component] The component to use when viewing the feedback.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     */
+    treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number): void {
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]')),
+            title = this.translate.instant('core.question.feedback');
+
+        icons.forEach((icon) => {
+            // Search the feedback for the icon.
+            const span = <HTMLElement> icon.parentElement.querySelector('.feedbackspan.accesshide');
+
+            if (span) {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
-                    const title = this.translate.instant('core.question.feedback');
                     this.textUtils.expandText(title, span.innerHTML, component, componentId);
                 });
             }
