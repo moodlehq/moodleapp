@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="commentsLoaded" (ionRefresh)="refreshComments($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="commentsLoaded">
+        <core-empty-box *ngIf="!comments || !comments.length" icon="chatbubbles" [message]="'core.nocomments' | translate"></core-empty-box>
+
+        <ion-card *ngFor="let comment of comments">
+            <ion-item text-wrap>
+                <ion-avatar item-start>
+                    <img [src]="comment.profileimageurl" onError="this.src='assets/img/user-avatar.png'" core-external-content core-user-link [userId]="comment.userid" [alt]="'core.pictureof' | translate:{$a: comment.fullname}" role="presentation">
+                </ion-avatar>
+                <h2>{{ comment.fullname }}</h2>
+                <p>{{ comment.time }}</p>
+            </ion-item>
+            <ion-item text-wrap>
+                <core-format-text clean="true" [text]="comment.content"></core-format-text>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>
