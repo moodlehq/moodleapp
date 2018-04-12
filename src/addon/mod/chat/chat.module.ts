@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { AddonModChatComponentsModule } from './components/components.module';
-import { AddonModChatModuleHandler } from './providers/module-handler';
 import { AddonModChatProvider } from './providers/chat';
+import { AddonModChatLinkHandler } from './providers/link-handler';
+import { AddonModChatModuleHandler } from './providers/module-handler';
 
 @NgModule({
     declarations: [
@@ -26,11 +28,14 @@ import { AddonModChatProvider } from './providers/chat';
     ],
     providers: [
         AddonModChatProvider,
+        AddonModChatLinkHandler,
         AddonModChatModuleHandler,
     ]
 })
 export class AddonModChatModule {
-    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChatModuleHandler) {
+    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChatModuleHandler,
+            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModChatLinkHandler) {
         moduleDelegate.registerHandler(moduleHandler);
+        contentLinksDelegate.registerHandler(linkHandler);
     }
 }

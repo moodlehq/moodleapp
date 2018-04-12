@@ -12,8 +12,8 @@
 
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
 
-    <ion-card class="core-info-card" *ngIf="chatInfo">
-        <ion-icon item-start name="time"></ion-icon> {{ 'addon.mod_chat.sessionstart' | translate:{$a: chatInfo} }}
+    <ion-card icon-start class="core-info-card" *ngIf="chatInfo">
+        <ion-icon name="time"></ion-icon> {{ 'addon.mod_chat.sessionstart' | translate:{$a: chatInfo} }}
     </ion-card>
 
     <div padding-horizontal>

@@ -221,6 +221,9 @@ export class AddonModChatChatPage {
 
     /**
      * Send a message to the chat.
+     *
+     * @param {string} text     Text of the nessage.
+     * @param {number} [beep=0] ID of the user to beep.
      */
     sendMessage(text: string, beep: number = 0): void {
         if (!this.isOnline) {
