@@ -27,7 +27,7 @@ export class AddonModFeedbackOfflineProvider {
     protected logger;
 
     // Variables for database.
-    protected FEEDBACK_TABLE = 'mma_mod_feedback_answers';
+    protected FEEDBACK_TABLE = 'addon_mod_feedback_answers';
     protected tablesSchema = [
         {
             name: this.FEEDBACK_TABLE,
@@ -102,7 +102,11 @@ export class AddonModFeedbackOfflineProvider {
      */
     getFeedbackResponses(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.FEEDBACK_TABLE, {feedbackid: feedbackId});
+            return site.getDb().getRecords(this.FEEDBACK_TABLE, {feedbackid: feedbackId}).then((entries) => {
+                return entries.map((entry) => {
+                    entry.responses = this.textUtils.parseJSON(entry.responses);
+                });
+            });
         });
     }
 

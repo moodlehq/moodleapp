@@ -38,9 +38,9 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
     constructor(protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
             protected appProvider: CoreAppProvider, private feedbackOffline: AddonModFeedbackOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private feedbackProvider: AddonModFeedbackProvider,
-            private translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
             courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider) {
-        super('AddonModFeedbackSyncProvider', sitesProvider, loggerProvider, appProvider, syncProvider, textUtils);
+        super('AddonModFeedbackSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
         this.componentTranslate = courseProvider.translateModuleName('feedback');
     }
 
@@ -108,7 +108,7 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
     }
 
     /**
-     * ynchronize all offline responses of a feedback.
+     * Synchronize all offline responses of a feedback.
      *
      * @param  {number} feedbackId Feedback ID to be synced.
      * @param  {string} [siteId] Site ID. If not defined, current site.
@@ -221,7 +221,16 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
         return this.addOngoingSync(syncId, syncPromise, siteId);
     }
 
-    // Convenience function to sync process page calls.
+    /**
+     * Convenience function to sync process page calls.
+     *
+     * @param  {any}          feedback     Feedback object.
+     * @param  {any}          data         Response data.
+     * @param  {string}       siteId       Site Id.
+     * @param  {number}       timemodified Current completed modification time.
+     * @param  {any}          result       Result object to be modified.
+     * @return {Promise<any>}              Resolve when done or rejected with error.
+     */
     protected processPage(feedback: any, data: any, siteId: string, timemodified: number, result: any): Promise<any> {
         // Delete all pages that are submitted before changing website.
         if (timemodified > data.timemodified) {

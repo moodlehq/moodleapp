@@ -18,7 +18,7 @@ import { Chart } from 'chart.js';
 /**
  * This component shows a chart using chart.js.
  * Documentation can be found at http://www.chartjs.org/docs/.
- * It does not support changes on any input.
+ * It only supports changes on these properties: data and labels.
  *
  * Example usage:
  * <canvas core-chart [data]="data" [labels]="labels" [type]="type" [legend]="legend"></canvas>

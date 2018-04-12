@@ -77,7 +77,7 @@ export class AddonModFeedbackProvider {
      *
      * @param  {any}     item        Item to check.
      * @param  {string}  dependValue Value to compare.
-     * @return {boolean}             eturn true if dependency is acomplished and it can be shown. False, otherwise.
+     * @return {boolean}             Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected compareDependItemMultichoice(item: any, dependValue: string): boolean {
         let values, choices;
@@ -772,11 +772,11 @@ export class AddonModFeedbackProvider {
     /**
      * Convenience function to get the page we can jump.
      *
-     * @param  {number}  feedbackId [description]
-     * @param  {number}  page       [description]
-     * @param  {number}  changePage [description]
-     * @param  {string}  siteId     [description]
-     * @return {Promise<number | false>}            [description]
+     * @param  {number}  feedbackId Feedback ID.
+     * @param  {number}  page       Page where we want to jump.
+     * @param  {number}  changePage If page change is forward (1) or backward (-1).
+     * @param  {string}  siteId     Site ID.
+     * @return {Promise<number | false>}  Page number where to jump. Or false if completed or first page.
      */
     protected getPageJumpTo(feedbackId: number, page: number, changePage: number, siteId: string): Promise<number | false> {
         return this.getPageItemsWithValues(feedbackId, page, true, false, siteId).then((resp) => {
@@ -1037,9 +1037,9 @@ export class AddonModFeedbackProvider {
      *
      * @param   {number}    feedbackId      Feedback ID.
      * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @return  {Promise<boolean>}              Promise resolved when the info is retrieved.
      */
-    isCompleted(feedbackId: number, siteId?: string): Promise<any> {
+    isCompleted(feedbackId: number, siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                     feedbackid: feedbackId
@@ -1092,7 +1092,7 @@ export class AddonModFeedbackProvider {
      * @param   {boolean}   formHasErrors   Whether the form we sent has required but empty fields (only used in offline).
      * @param   {number}    courseId        Course ID the feedback belongs to.
      * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}                   Promise resolved when the info is retrieved.
+     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
      */
     processPage(feedbackId: number, page: number, responses: any, goPrevious: boolean, formHasErrors: boolean, courseId: number,
             siteId?: string): Promise<any> {

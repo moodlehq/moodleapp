@@ -376,7 +376,7 @@ export class CoreUserProvider {
      * @param  {string} [siteId]   Site ID. If not defined, current site.
      * @return {Promise<any>}      Promise resolved when prefetched.
      */
-    prefetchProfiles(userIds: number[], courseId: number, siteId?: string): Promise<any> {
+    prefetchProfiles(userIds: number[], courseId?: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const treated = {},

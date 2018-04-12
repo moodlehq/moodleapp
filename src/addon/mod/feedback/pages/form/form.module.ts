@@ -17,7 +17,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreComponentsModule } from '@components/components.module';
-import { CorePipesModule } from '@pipes/pipes.module';
 import { AddonModFeedbackComponentsModule } from '../../components/components.module';
 import { AddonModFeedbackFormPage } from './form';
 
@@ -28,7 +27,6 @@ import { AddonModFeedbackFormPage } from './form';
     imports: [
         CoreDirectivesModule,
         CoreComponentsModule,
-        CorePipesModule,
         AddonModFeedbackComponentsModule,
         IonicPageModule.forChild(AddonModFeedbackFormPage),
         TranslateModule.forChild()

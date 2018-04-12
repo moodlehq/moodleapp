@@ -37,10 +37,11 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Check if the page we are going to open is in the history and returns the number of pages in the stack to go back.
      *
-     * @param {string} pageName   Name of the page we want to navigate.
-     * @param {number} instance   Activity instance Id. I.e FeedbackId.
-     * @param {string} paramName  Param name where to find the instance number.
-     * @param {string} prefix     Prefix to check if we are out of the activity context.
+     * @param {string} pageName       Name of the page we want to navigate.
+     * @param {number} instance       Activity instance Id. I.e FeedbackId.
+     * @param {string} paramName      Param name where to find the instance number.
+     * @param {string} prefix         Prefix to check if we are out of the activity context.
+     * @param {NavController} navCtrl Nav Controller of the view.
      * @return {number}   Returns the number of times the history needs to go back to find the specified page.
      */
     protected getActivityHistoryBackCounter(pageName: string, instance: number, paramName: string, prefix: string,

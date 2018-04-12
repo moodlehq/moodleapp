@@ -77,7 +77,7 @@ export class CoreRecaptchaComponent {
 }
 
 @Component({
-    selector: 'core-recaptcha',
+    selector: 'core-recaptcha-modal',
     templateUrl: 'recaptchamodal.html'
 })
 export class CoreRecaptchaModalComponent {
