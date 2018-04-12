@@ -139,7 +139,7 @@ export class AddonModFeedbackSyncProvider extends CoreSyncBaseProvider {
         let courseId,
             feedback;
 
-        this.logger.debug(`Try to sync feedback '${feedbackId}'`);
+        this.logger.debug(`Try to sync feedback '${feedbackId}' in site ${siteId}'`);
 
         // Get offline responses to be sent.
         const syncPromise = this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).catch(() => {

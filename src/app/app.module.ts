@@ -81,6 +81,7 @@ import { AddonModAssignModule } from '@addon/mod/assign/assign.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModChatModule } from '@addon/mod/chat/chat.module';
 import { AddonModChoiceModule } from '@addon/mod/choice/choice.module';
+import { AddonModDataModule } from '@addon/mod/data/data.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonModLtiModule } from '@addon/mod/lti/lti.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
@@ -185,6 +186,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModBookModule,
         AddonModChatModule,
         AddonModChoiceModule,
+        AddonModDataModule,
         AddonModLabelModule,
         AddonModResourceModule,
         AddonModFeedbackModule,
