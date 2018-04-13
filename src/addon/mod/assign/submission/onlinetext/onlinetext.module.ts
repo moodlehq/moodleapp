@@ -16,38 +16,35 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { AddonModAssignSubmissionOnlineTextHandler } from './providers/handler';
+import { AddonModAssignSubmissionOnlineTextComponent } from './component/onlinetext';
+import { AddonModAssignSubmissionDelegate } from '../../providers/submission-delegate';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { AddonModAssignIndexComponent } from './index/index';
-import { AddonModAssignSubmissionComponent } from './submission/submission';
-import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/submission-plugin';
 
 @NgModule({
     declarations: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent
+        AddonModAssignSubmissionOnlineTextComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
-        CoreCourseComponentsModule
+        CoreDirectivesModule
     ],
     providers: [
+        AddonModAssignSubmissionOnlineTextHandler
     ],
     exports: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent
+        AddonModAssignSubmissionOnlineTextComponent
     ],
     entryComponents: [
-        AddonModAssignIndexComponent
+        AddonModAssignSubmissionOnlineTextComponent
     ]
 })
-export class AddonModAssignComponentsModule {}
+export class AddonModAssignSubmissionOnlineTextModule {
+    constructor(submissionDelegate: AddonModAssignSubmissionDelegate, handler: AddonModAssignSubmissionOnlineTextHandler) {
+        submissionDelegate.registerHandler(handler);
+    }
+}

@@ -16,38 +16,33 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { AddonModAssignIndexComponent } from './index/index';
-import { AddonModAssignSubmissionComponent } from './submission/submission';
-import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/submission-plugin';
+import { AddonModAssignSubmissionCommentsHandler } from './providers/handler';
+import { AddonModAssignSubmissionCommentsComponent } from './component/comments';
+import { AddonModAssignSubmissionDelegate } from '../../providers/submission-delegate';
+import { CoreCommentsComponentsModule } from '@core/comments/components/components.module';
 
 @NgModule({
     declarations: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent
+        AddonModAssignSubmissionCommentsComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
-        CoreCourseComponentsModule
+        CoreCommentsComponentsModule
     ],
     providers: [
+        AddonModAssignSubmissionCommentsHandler
     ],
     exports: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent
+        AddonModAssignSubmissionCommentsComponent
     ],
     entryComponents: [
-        AddonModAssignIndexComponent
+        AddonModAssignSubmissionCommentsComponent
     ]
 })
-export class AddonModAssignComponentsModule {}
+export class AddonModAssignSubmissionCommentsModule {
+    constructor(submissionDelegate: AddonModAssignSubmissionDelegate, handler: AddonModAssignSubmissionCommentsHandler) {
+        submissionDelegate.registerHandler(handler);
+    }
+}

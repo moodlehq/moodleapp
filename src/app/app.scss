@@ -81,6 +81,12 @@
   background-color: $gray-lighter;
 }
 
+// Make no-lines work in any element, not just ion-item and ion-list.
+.item *[no-lines] .item-inner,
+*[no-lines] .item .item-inner {
+  border: 0;
+}
+
 .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
   min-height: 32px;
   img, .label {

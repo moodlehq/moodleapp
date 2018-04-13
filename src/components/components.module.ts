@@ -43,6 +43,7 @@ import { CoreSendMessageFormComponent } from './send-message-form/send-message-f
 import { CoreTimerComponent } from './timer/timer';
 import { CoreRecaptchaComponent, CoreRecaptchaModalComponent } from './recaptcha/recaptcha';
 import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
+import { CoreAttachmentsComponent } from './attachments/attachments';
 
 @NgModule({
     declarations: [
@@ -72,7 +73,8 @@ import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
         CoreTimerComponent,
         CoreRecaptchaComponent,
         CoreRecaptchaModalComponent,
-        CoreNavigationBarComponent
+        CoreNavigationBarComponent,
+        CoreAttachmentsComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -109,7 +111,8 @@ import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
         CoreSendMessageFormComponent,
         CoreTimerComponent,
         CoreRecaptchaComponent,
-        CoreNavigationBarComponent
+        CoreNavigationBarComponent,
+        CoreAttachmentsComponent
     ]
 })
 export class CoreComponentsModule {}

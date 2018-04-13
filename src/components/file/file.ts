@@ -39,7 +39,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     @Input() alwaysDownload?: boolean | string; // Whether it should always display the refresh button when the file is downloaded.
                                                 // Use it for files that you cannot determine if they're outdated or not.
     @Input() canDownload?: boolean | string = true; // Whether file can be downloaded.
-    @Output() onDelete?: EventEmitter<string>; // Will notify when the delete button is clicked.
+    @Output() onDelete?: EventEmitter<void>; // Will notify when the delete button is clicked.
 
     isDownloaded: boolean;
     isDownloading: boolean;
@@ -178,7 +178,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      *
      * @param {Event} e Click event.
      */
-    deleteFile(e: Event): void {
+    delete(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 

@@ -177,8 +177,8 @@ export class CoreLocalFileComponent implements OnInit {
             }).finally(() => {
                 modal.dismiss();
             });
-        }).catch(() => {
-            this.domUtils.showErrorModal('core.errordeletefile', true);
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.errordeletefile', true);
         });
     }
 }

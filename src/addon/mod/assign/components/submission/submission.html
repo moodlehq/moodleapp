@@ -27,7 +27,7 @@
         <core-tab [title]="'addon.mod_assign.submission' | translate">
             <ng-template>
                 <ion-content>
-                    <!-- @todo <addon-mod-assign-submission-plugin *ngFor="let plugin of submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin" scroll-handle="{{scrollHandle}}"></addon-mod-assign-submission-plugin> -->
+                    <addon-mod-assign-submission-plugin *ngFor="let plugin of submissionPlugins" [assign]="assign" [submission]="userSubmission" [plugin]="plugin"></addon-mod-assign-submission-plugin>
 
                     <!-- Render some data about the submission. -->
                     <ion-item text-wrap *ngIf="userSubmission && userSubmission.status != statusNew && userSubmission.timemodified">

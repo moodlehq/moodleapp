@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ViewChild, Optional } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, Optional, ViewChildren, QueryList } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -35,6 +35,7 @@ import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
 import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
 
 /**
  * Component that displays an assignment submission.
@@ -45,6 +46,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     @ViewChild(CoreTabsComponent) tabs: CoreTabsComponent;
+    @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents: QueryList<AddonModAssignSubmissionPluginComponent>;
 
     @Input() courseId: number; // Course ID the submission belongs to.
     @Input() moduleId: number; // Module ID the submission belongs to.
@@ -327,6 +329,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         }
         promises.push(this.gradesHelper.invalidateGradeModuleItems(this.courseId, this.submitId));
         promises.push(this.courseProvider.invalidateModule(this.moduleId));
+
+        // Invalidate plugins.
+        if (this.submissionComponents && this.submissionComponents.length) {
+            this.submissionComponents.forEach((component) => {
+                promises.push(component.invalidate());
+            });
+        }
 
         return Promise.all(promises).catch(() => {
             // Ignore errors.
