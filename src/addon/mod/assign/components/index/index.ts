@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Injector } from '@angular/core';
+import { Component, Optional, Injector, ViewChild } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -22,6 +22,7 @@ import { AddonModAssignHelperProvider } from '../../providers/helper';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
 import { AddonModAssignSyncProvider } from '../../providers/assign-sync';
 import * as moment from 'moment';
+import { AddonModAssignSubmissionComponent } from '../submission/submission';
 
 /**
  * Component that displays an assignment.
@@ -31,6 +32,8 @@ import * as moment from 'moment';
     templateUrl: 'index.html',
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent {
+    @ViewChild(AddonModAssignSubmissionComponent) submissionComponent: AddonModAssignSubmissionComponent;
+
     component = AddonModAssignProvider.COMPONENT;
     moduleName = 'assign';
 
@@ -238,11 +241,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected hasSyncSucceed(result: any): boolean {
         if (result.updated) {
-            // Sync done, trigger event.
-            this.eventsProvider.trigger(AddonModAssignSyncProvider.MANUAL_SYNCED, {
-                assignId: this.assign.id,
-                warnings: result.warnings
-            }, this.siteId);
+            this.submissionComponent && this.submissionComponent.invalidateAndRefresh();
         }
 
         return result.updated;
@@ -267,7 +266,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         return Promise.all(promises).finally(() => {
-            // @todo $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
+            this.submissionComponent && this.submissionComponent.invalidateAndRefresh();
         });
     }
 

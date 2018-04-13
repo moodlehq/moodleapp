@@ -18,12 +18,15 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
 import { AddonModAssignIndexComponent } from './index/index';
+import { AddonModAssignSubmissionComponent } from './submission/submission';
 
 @NgModule({
     declarations: [
-        AddonModAssignIndexComponent
+        AddonModAssignIndexComponent,
+        AddonModAssignSubmissionComponent
     ],
     imports: [
         CommonModule,
@@ -31,12 +34,14 @@ import { AddonModAssignIndexComponent } from './index/index';
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
         CoreCourseComponentsModule
     ],
     providers: [
     ],
     exports: [
-        AddonModAssignIndexComponent
+        AddonModAssignIndexComponent,
+        AddonModAssignSubmissionComponent
     ],
     entryComponents: [
         AddonModAssignIndexComponent

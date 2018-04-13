@@ -82,6 +82,7 @@
         </div>
     </ion-card>
 
-    <!-- @todo <addon-mod-assign-submission *ngIf="!canViewSubmissions" [courseId]="courseId" [moduleId]="module.id"></addon-mod-assign-submission> -->
+    <!-- If it's a student, display his submission. -->
+    <addon-mod-assign-submission *ngIf="loaded && !canViewSubmissions" [courseId]="courseId" [moduleId]="module.id"></addon-mod-assign-submission>
 
 </core-loading>
