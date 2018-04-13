@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit, Injector, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, ElementRef } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
@@ -24,14 +24,15 @@ import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
     selector: 'addon-qtype-ddwtos',
     templateUrl: 'ddwtos.html'
 })
-export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
 
     protected element: HTMLElement;
     protected questionInstance: AddonQtypeDdwtosQuestion;
-    protected inputIds: string[]; // Ids of the inputs of the question (where the answers will be stored).
+    protected inputIds: string[] = []; // Ids of the inputs of the question (where the answers will be stored).
+    protected destroyed = false;
 
-    constructor(logger: CoreLoggerProvider, injector: Injector, element: ElementRef) {
-        super(logger, 'AddonQtypeDdwtosComponent', injector);
+    constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
+        super(loggerProvider, 'AddonQtypeDdwtosComponent', injector);
 
         this.element = element.nativeElement;
     }
@@ -54,7 +55,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         this.questionHelper.replaceFeedbackClasses(div);
 
         // Treat the correct/incorrect icons.
-        this.questionHelper.treatCorrectnessIcons(div, this.component, this.componentId);
+        this.questionHelper.treatCorrectnessIcons(div);
 
         const answerContainer = div.querySelector('.answercontainer');
         if (!answerContainer) {
@@ -74,28 +75,32 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         }
 
         // Get the inputs where the answers will be stored and add them to the question text.
-        const inputEls = <HTMLElement[]> Array.from(div.querySelectorAll('input[type="hidden"]:not([name*=sequencecheck])')),
-            inputIds = [];
+        const inputEls = <HTMLElement[]> Array.from(div.querySelectorAll('input[type="hidden"]:not([name*=sequencecheck])'));
 
         inputEls.forEach((inputEl) => {
             this.question.text += inputEl.outerHTML;
-            inputIds.push(inputEl.getAttribute('id'));
+            this.inputIds.push(inputEl.getAttribute('id'));
         });
     }
 
     /**
-     * View has been initialized.
+     * The question has been rendered.
      */
-    ngAfterViewInit(): void {
-        // Create the instance.
-        this.questionInstance = new AddonQtypeDdwtosQuestion(this.logger, this.domUtils, this.element, this.question,
-                this.question.readOnly, this.inputIds);
+    questionRendered(): void {
+        if (!this.destroyed) {
+            // Create the instance.
+            this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element, this.question,
+                    this.question.readOnly, this.inputIds);
+
+            this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+        }
     }
 
     /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
+        this.destroyed = true;
         this.questionInstance && this.questionInstance.destroy();
     }
 }

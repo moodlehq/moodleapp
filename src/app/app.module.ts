@@ -81,6 +81,7 @@ import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonModPageModule } from '@addon/mod/page/page.module';
+import { AddonModQuizModule } from '@addon/mod/quiz/quiz.module';
 import { AddonModUrlModule } from '@addon/mod/url/url.module';
 import { AddonModSurveyModule } from '@addon/mod/survey/survey.module';
 import { AddonMessageOutputModule } from '@addon/messageoutput/messageoutput.module';
@@ -174,6 +175,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModResourceModule,
         AddonModFolderModule,
         AddonModPageModule,
+        AddonModQuizModule,
         AddonModUrlModule,
         AddonModSurveyModule,
         AddonMessageOutputModule,

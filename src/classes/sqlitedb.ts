@@ -343,6 +343,10 @@ export class SQLiteDB {
      * @param {object} data Data to insert.
      */
     protected formatDataToInsert(data: object): void {
+        if (!data) {
+            return;
+        }
+
         // Remove undefined entries and convert null to "NULL".
         for (const name in data) {
             const value = data[name];
@@ -782,6 +786,8 @@ export class SQLiteDB {
      */
     updateRecords(table: string, data: any, conditions?: any): Promise<any> {
 
+        this.formatDataToInsert(data);
+
         if (!data || !Object.keys(data).length) {
             // No fields to update, consider it's done.
             return Promise.resolve();
@@ -791,8 +797,6 @@ export class SQLiteDB {
             sets = [];
         let sql,
             params;
-
-        this.formatDataToInsert(data);
 
         for (const key in data) {
             sets.push(`${key} = ?`);

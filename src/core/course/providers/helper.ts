@@ -249,8 +249,7 @@ export class CoreCourseHelperProvider {
      * @param {any} course Course to prefetch.
      * @param {any[]} [sections] List of course sections.
      * @param {CoreCourseOptionsHandlerToDisplay[]} courseHandlers List of course handlers.
-     * @return {Promise<boolean>} Promise resolved with true when the download finishes, resolved with false if user doesn't
-     *                            confirm, rejected if an error occurs.
+     * @return {Promise<boolean>} Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
      */
     confirmAndPrefetchCourse(iconData: any, course: any, sections?: any[], courseHandlers?: CoreCourseOptionsHandlerToDisplay[])
             : Promise<boolean> {
@@ -288,11 +287,8 @@ export class CoreCourseHelperProvider {
             }, (error): any => {
                 // User cancelled or there was an error calculating the size.
                 iconData.prefetchCourseIcon = initialIcon;
-                if (error) {
-                    return Promise.reject(error);
-                }
 
-                return false;
+                return Promise.reject(error);
             });
         });
     }
@@ -302,9 +298,9 @@ export class CoreCourseHelperProvider {
      *
      * @param {any[]} courses List of courses to download.
      * @param {Function} [onProgress] Function to call everytime a course is downloaded.
-     * @return {Promise<boolean>} Resolved with true when downloaded, resolved with false if user cancels, rejected if error.
+     * @return {Promise<boolean>} Resolved when downloaded, rejected if error or canceled.
      */
-    confirmAndPrefetchCourses(courses: any[], onProgress?: (data: CoreCourseCoursesProgress) => void): Promise<boolean> {
+    confirmAndPrefetchCourses(courses: any[], onProgress?: (data: CoreCourseCoursesProgress) => void): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         // Confirm the download without checking size because it could take a while.
@@ -347,12 +343,7 @@ export class CoreCourseHelperProvider {
                 onProgress({ count: 0, total: total, success: true });
             }
 
-            return this.utils.allPromises(promises).then(() => {
-                return true;
-            });
-        }, () => {
-            // User cancelled.
-            return false;
+            return this.utils.allPromises(promises);
         });
     }
 
@@ -426,23 +417,18 @@ export class CoreCourseHelperProvider {
      */
     contextMenuPrefetch(instance: any, module: any, courseId: number): Promise<any> {
         const initialIcon = instance.prefetchStatusIcon;
-        let cancelled = false;
 
         instance.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
 
         // We need to call getDownloadSize, the package might have been updated.
         return this.prefetchDelegate.getModuleDownloadSize(module, courseId, true).then((size) => {
-            return this.domUtils.confirmDownloadSize(size).catch(() => {
-                // User hasn't confirmed, stop.
-                cancelled = true;
-
-                return Promise.reject(null);
-            }).then(() => {
+            return this.domUtils.confirmDownloadSize(size).then(() => {
                 return this.prefetchDelegate.prefetchModule(module, courseId, true);
             });
         }).catch((error) => {
             instance.prefetchStatusIcon = initialIcon;
-            if (!instance.isDestroyed && !cancelled) {
+
+            if (!instance.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
         });
@@ -979,35 +965,36 @@ export class CoreCourseHelperProvider {
 
         // First of all, mark the course as being downloaded.
         this.courseDwnPromises[siteId][course.id] = this.courseProvider.setCourseStatus(course.id, CoreConstants.DOWNLOADING,
-            siteId).then(() => {
-                const promises = [];
-                let allSectionsSection = sections[0];
+                siteId).then(() => {
 
-                // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
-                if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
-                    allSectionsSection = { id: CoreCourseProvider.ALL_SECTIONS_ID };
+            const promises = [];
+            let allSectionsSection = sections[0];
+
+            // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
+            if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
+                allSectionsSection = { id: CoreCourseProvider.ALL_SECTIONS_ID };
+            }
+            promises.push(this.prefetchSection(allSectionsSection, course.id, sections));
+
+            // Prefetch course options.
+            courseHandlers.forEach((handler) => {
+                if (handler.prefetch) {
+                    promises.push(handler.prefetch(course));
                 }
-                promises.push(this.prefetchSection(allSectionsSection, course.id, sections));
-
-                // Prefetch course options.
-                courseHandlers.forEach((handler) => {
-                    if (handler.prefetch) {
-                        promises.push(handler.prefetch(course));
-                    }
-                });
-
-                return this.utils.allPromises(promises);
-            }).then(() => {
-                // Download success, mark the course as downloaded.
-                return this.courseProvider.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId);
-            }).catch((error) => {
-                // Error, restore previous status.
-                return this.courseProvider.setCoursePreviousStatus(course.id, siteId).then(() => {
-                    return Promise.reject(error);
-                });
-            }).finally(() => {
-                delete this.courseDwnPromises[siteId][course.id];
             });
+
+            return this.utils.allPromises(promises);
+        }).then(() => {
+            // Download success, mark the course as downloaded.
+            return this.courseProvider.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId);
+        }).catch((error) => {
+            // Error, restore previous status.
+            return this.courseProvider.setCoursePreviousStatus(course.id, siteId).then(() => {
+                return Promise.reject(error);
+            });
+        }).finally(() => {
+            delete this.courseDwnPromises[siteId][course.id];
+        });
 
         return this.courseDwnPromises[siteId][course.id];
     }

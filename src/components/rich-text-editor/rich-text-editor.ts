@@ -42,6 +42,7 @@ export class CoreRichTextEditorComponent {
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
     @Input() control: FormControl; // Form control.
+    @Input() name = 'core-rich-text-editor'; // Name to set to the textarea.
     @Output() contentChanged: EventEmitter<string>;
 
     @ViewChild('editor') editor: ElementRef; // WYSIWYG editor.
@@ -109,6 +110,7 @@ export class CoreRichTextEditorComponent {
                 this.clearText();
             } else {
                 this.control.setValue(this.editorElement.innerHTML);
+                this.textarea.value = this.editorElement.innerHTML;
             }
         } else {
             if (this.isNullOrWhiteSpace(this.textarea.value)) {
@@ -117,6 +119,7 @@ export class CoreRichTextEditorComponent {
                 this.control.setValue(this.textarea.value);
             }
         }
+
         this.contentChanged.emit(this.control.value);
     }
 

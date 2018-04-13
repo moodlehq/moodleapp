@@ -45,6 +45,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     protected topNode: HTMLElement;
     protected proportion = 1;
     protected selected: HTMLElement; // Selected element (being "dragged").
+    protected resizeFunction;
 
     /**
      * Create the this.
@@ -182,7 +183,10 @@ export class AddonQtypeDdImageOrTextQuestion {
      */
     destroy(): void {
         this.stopPolling();
-        window.removeEventListener('resize', this.resizeFunction);
+
+        if (this.resizeFunction) {
+            window.removeEventListener('resize', this.resizeFunction);
+        }
     }
 
     /**
@@ -192,7 +196,7 @@ export class AddonQtypeDdImageOrTextQuestion {
      * @return {AddonQtypeDdImageOrTextQuestionDocStructure} The object.
      */
     docStructure(slot: number): AddonQtypeDdImageOrTextQuestionDocStructure {
-        const topNode = <HTMLElement> this.container.querySelector(`#core-question-${slot} .addon-qtype-ddimageortext-container`),
+        const topNode = <HTMLElement> this.container.querySelector('.addon-qtype-ddimageortext-container'),
             dragItemsArea = <HTMLElement> topNode.querySelector('div.dragitems'),
             doc: AddonQtypeDdImageOrTextQuestionDocStructure = {};
 
@@ -456,6 +460,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             this.pollForImageLoad();
         });
 
+        this.resizeFunction = this.repositionDragsForQuestion.bind(this);
         window.addEventListener('resize', this.resizeFunction);
     }
 
@@ -635,13 +640,6 @@ export class AddonQtypeDdImageOrTextQuestion {
                 this.removeDragFromDrop(dragItem);
             }
         }
-    }
-
-    /**
-     * Function to call when the window is resized.
-     */
-    resizeFunction(): void {
-        this.repositionDragsForQuestion();
     }
 
     /**

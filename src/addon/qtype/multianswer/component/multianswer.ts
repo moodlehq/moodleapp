@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ElementRef } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 
@@ -25,8 +25,12 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
 })
 export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent implements OnInit {
 
-    constructor(logger: CoreLoggerProvider, injector: Injector) {
+    protected element: HTMLElement;
+
+    constructor(logger: CoreLoggerProvider, injector: Injector, element: ElementRef) {
         super(logger, 'AddonQtypeMultiAnswerComponent', injector);
+
+        this.element = element.nativeElement;
     }
 
     /**
@@ -34,5 +38,12 @@ export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent im
      */
     ngOnInit(): void {
         this.initOriginalTextComponent('.formulation');
+    }
+
+    /**
+     * The question has been rendered.
+     */
+    questionRendered(): void {
+        this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
     }
 }

@@ -35,12 +35,14 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
     static AUTO_SYNCED = 'addon_mod_survey_autom_synced';
     protected componentTranslate: string;
 
-    constructor(protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
-            protected appProvider: CoreAppProvider, private surveyOffline: AddonModSurveyOfflineProvider,
+    constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
+            syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
+            courseProvider: CoreCourseProvider, private surveyOffline: AddonModSurveyOfflineProvider,
             private eventsProvider: CoreEventsProvider,  private surveyProvider: AddonModSurveyProvider,
-            private translate: TranslateService, private utils: CoreUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            courseProvider: CoreCourseProvider, syncProvider: CoreSyncProvider) {
-        super('AddonModSurveySyncProvider', sitesProvider, loggerProvider, appProvider, syncProvider, textUtils);
+            private utils: CoreUtilsProvider) {
+
+        super('AddonModSurveySyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
+
         this.componentTranslate = courseProvider.translateModuleName('survey');
     }
 

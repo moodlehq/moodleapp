@@ -34,12 +34,12 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_messages_autom_synced';
 
-    constructor(protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
-            protected appProvider: CoreAppProvider, private messagesOffline: AddonMessagesOfflineProvider,
-            private eventsProvider: CoreEventsProvider,  private messagesProvider: AddonMessagesProvider,
-            private userProvider: CoreUserProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider) {
-        super('AddonMessagesSync', sitesProvider, loggerProvider, appProvider, syncProvider, textUtils);
+    constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
+            translate: TranslateService, syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider,
+            private messagesOffline: AddonMessagesOfflineProvider, private eventsProvider: CoreEventsProvider,
+            private messagesProvider: AddonMessagesProvider, private userProvider: CoreUserProvider,
+            private utils: CoreUtilsProvider) {
+        super('AddonMessagesSync', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
     }
 
     /**

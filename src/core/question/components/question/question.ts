@@ -123,7 +123,7 @@ export class CoreQuestionComponent implements OnInit {
 
                 promise.then(() => {
                     // Handle behaviour.
-                    this.behaviourDelegate.handleQuestion(this.question, this.question.preferredBehaviour).then((comps) => {
+                    this.behaviourDelegate.handleQuestion(this.question.preferredBehaviour, this.question).then((comps) => {
                         this.behaviourComponents = comps;
                     });
                     this.questionHelper.extractQbehaviourRedoButton(this.question);

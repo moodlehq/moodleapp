@@ -1,0 +1,143 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text *ngIf="quiz" [text]="quiz.name"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button id="addon-mod_quiz-connection-error-button" ion-button icon-only [hidden]="!autoSaveError" (click)="showConnectionError($event)" [attr.aria-label]="'core.error' | translate">
+                <ion-icon name="alert"></ion-icon>
+            </button>
+            <button *ngIf="navigation && navigation.length" ion-button icon-only [attr.aria-label]="'addon.mod_quiz.opentoc' | translate" (click)="navigationModal.present()">
+                <ion-icon name="bookmark"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <!-- Navigation arrows and time left. -->
+    <ion-toolbar *ngIf="loaded && endTime && questions && questions.length && !quizAborted && !showSummary" color="light" ion-fixed>
+        <ion-title>
+            <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" align="center"></core-timer>
+        </ion-title>
+        <ion-buttons end>
+            <a ion-button icon-only *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
+                <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+            </a>
+            <a ion-button icon-only *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
+                <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+            </a>
+        </ion-buttons>
+    </ion-toolbar>
+    <core-loading [hideUntil]="loaded" [class.core-has-fixed-timer]="endTime">
+        <!-- Navigation arrows and time left. -->
+        <ion-toolbar *ngIf="!endTime && questions && questions.length && !quizAborted && !showSummary" color="light">
+            <ion-buttons end>
+                <a ion-button icon-only *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
+                    <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+                </a>
+                <a ion-button icon-only *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
+                    <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                </a>
+            </ion-buttons>
+        </ion-toolbar>
+        <!-- Button to start attempting. -->
+        <div padding *ngIf="!attempt">
+            <button ion-button block (click)="start()">{{ 'addon.mod_quiz.startattempt' | translate }}</button>
+        </div>
+
+        <!-- Questions -->
+        <form name="addon-mod_quiz-player-form" *ngIf="questions && questions.length && !quizAborted && !showSummary">
+            <div *ngFor="let question of questions">
+                <ion-card id="addon-mod_quiz-question-{{question.slot}}">
+                    <!-- "Header" of the question. -->
+                    <ion-item-divider color="light">
+                        <h2 *ngIf="question.number" class="inline">{{ 'core.question.questionno' | translate:{$a: question.number} }}</h2>
+                        <h2 *ngIf="!question.number" class="inline">{{ 'core.question.information' | translate }}</h2>
+                        <ion-note text-wrap item-end *ngIf="question.status || question.readableMark">
+                            <p *ngIf="question.status" class="block">{{question.status}}</p>
+                            <p *ngIf="question.readableMark"><core-format-text [text]="question.readableMark"></core-format-text></p>
+                        </ion-note>
+                    </ion-item-divider>
+                    <!-- Body of the question. -->
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [offlineEnabled]="offline" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
+                </ion-card>
+            </div>
+        </form>
+
+        <!-- Go to next or previous page. -->
+        <ion-grid text-wrap *ngIf="questions && questions.length && !quizAborted && !showSummary">
+            <ion-row>
+                <ion-col *ngIf="previousPage >= 0" >
+                    <button ion-button block icon-start (click)="changePage(previousPage)">
+                        <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+                        {{ 'core.previous' | translate }}
+                    </button>
+                </ion-col>
+                <ion-col *ngIf="nextPage >= -1">
+                    <button ion-button block icon-end (click)="changePage(nextPage)">
+                        {{ 'core.next' | translate }}
+                        <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <!-- Summary -->
+        <ion-card *ngIf="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="addon-mod_quiz-table">
+            <ion-card-header text-wrap>
+                <h2>{{ 'addon.mod_quiz.summaryofattempt' | translate }}</h2>
+            </ion-card-header>
+            <!-- "Header" of the summary table. -->
+            <ion-item text-wrap>
+                <ion-row align-items-center>
+                    <ion-col col-3 text-center><b>{{ 'addon.mod_quiz.question' | translate }}</b></ion-col>
+                    <ion-col col-9 text-center><b>{{ 'addon.mod_quiz.status' | translate }}</b></ion-col>
+                </ion-row>
+            </ion-item>
+            <!-- Lift of questions of the summary table. -->
+            <ng-container *ngFor="let question of summaryQuestions">
+                <a ion-item (click)="changePage(question.page, false, question.slot)" *ngIf="question.number" [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}" [attr.detail-push]="!quiz.isSequential && canReturn ? true : null">
+                    <ion-row align-items-center>
+                        <ion-col col-3 text-center>{{ question.number }}</ion-col>
+                        <ion-col col-9 text-center>{{ question.status }}</ion-col>
+                    </ion-row>
+                </a>
+            </ng-container>
+            <!-- Button to return to last page seen. -->
+            <ion-item *ngIf="canReturn">
+                <a ion-button block (click)="changePage(attempt.currentpage)">{{ 'addon.mod_quiz.returnattempt' | translate }}</a>
+            </ion-item>
+            <!-- Due date warning. -->
+            <ion-item text-wrap *ngIf="attempt.dueDateWarning">
+                {{ attempt.dueDateWarning }}
+            </ion-item>
+            <!-- Time left (if quiz is timed). -->
+            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate"></core-timer>
+            <!-- List of messages explaining why the quiz cannot be submitted. -->
+            <ion-item text-wrap *ngIf="preventSubmitMessages.length">
+                <p class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
+                <p *ngFor="let message of preventSubmitMessages">{{message}}</p>
+                <a ion-button block icon-end [href]="moduleUrl" core-link>
+                    <ion-icon name="open"></ion-icon>
+                    {{ 'core.openinbrowser' | translate }}
+                </a>
+            </ion-item>
+            <!-- Button to submit the quiz. -->
+            <ion-item *ngIf="!attempt.finishedOffline && !preventSubmitMessages.length">
+                <a ion-button block (click)="finishAttempt(true)">{{ 'addon.mod_quiz.submitallandfinish' | translate }}</a>
+            </ion-item>
+        </ion-card>
+
+        <!-- Quiz aborted -->
+        <ion-card *ngIf="attempt && (((!questions || !questions.length) && !showSummary) || quizAborted)">
+            <ion-item text-wrap>
+                <p>{{ 'addon.mod_quiz.errorparsequestions' | translate }}</p>
+            </ion-item>
+            <ion-item>
+                <a ion-button block icon-end [href]="moduleUrl" core-link>
+                    <ion-icon name="open"></ion-icon>
+                    {{ 'core.openinbrowser' | translate }}
+                </a>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>

@@ -100,8 +100,6 @@ export class AddonMessagesAddContactUserHandler implements CoreUserProfileHandle
 
                         return this.domUtils.showConfirm(template, title, title).then(() => {
                             return this.messagesProvider.removeContact(user.id);
-                        }, () => {
-                            // Ignore on cancel.
                         });
                     } else {
                         return this.messagesProvider.addContact(user.id);

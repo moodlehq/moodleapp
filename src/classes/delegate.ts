@@ -84,6 +84,12 @@ export class CoreDelegate {
     protected handlerNameProperty = 'name';
 
     /**
+     * Set of promises to update a handler, to prevent doing the same operation twice.
+     * @type {{[siteId: string]: {[name: string]: Promise<any>}}}
+     */
+    protected updatePromises: {[siteId: string]: {[name: string]: Promise<any>}} = {};
+
+    /**
      * Constructor of the Delegate.
      *
      * @param {string} delegateName Delegate name used for logging purposes.
@@ -215,6 +221,13 @@ export class CoreDelegate {
             currentSite = this.sitesProvider.getCurrentSite();
         let promise;
 
+        if (this.updatePromises[siteId] && this.updatePromises[siteId][handler.name]) {
+            // There's already an update ongoing for this handler, return the promise.
+            return this.updatePromises[siteId][handler.name];
+        } else if (!this.updatePromises[siteId]) {
+            this.updatePromises[siteId] = {};
+        }
+
         if (!this.sitesProvider.isLoggedIn()) {
             promise = Promise.reject(null);
         } else if (this.isFeatureDisabled(handler, currentSite)) {
@@ -224,7 +237,7 @@ export class CoreDelegate {
         }
 
         // Checks if the handler is enabled.
-        return promise.catch(() => {
+        this.updatePromises[siteId][handler.name] = promise.catch(() => {
             return false;
         }).then((enabled: boolean) => {
             // Verify that this call is the last one that was started.
@@ -236,7 +249,12 @@ export class CoreDelegate {
                     delete this.enabledHandlers[handler[this.handlerNameProperty]];
                 }
             }
+        }).finally(() => {
+            // Update finished, delete the promise.
+            delete this.updatePromises[siteId][handler.name];
         });
+
+        return this.updatePromises[siteId][handler.name];
     }
 
     /**

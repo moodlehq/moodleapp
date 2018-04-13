@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit, Injector, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, ElementRef } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
@@ -24,14 +24,15 @@ import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
     selector: 'addon-qtype-ddimageortext',
     templateUrl: 'ddimageortext.html'
 })
-export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
 
     protected element: HTMLElement;
     protected questionInstance: AddonQtypeDdImageOrTextQuestion;
     protected drops: any[]; // The drop zones received in the init object of the question.
+    protected destroyed = false;
 
-    constructor(logger: CoreLoggerProvider, injector: Injector, element: ElementRef) {
-        super(logger, 'AddonQtypeDdImageOrTextComponent', injector);
+    constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
+        super(loggerProvider, 'AddonQtypeDdImageOrTextComponent', injector);
 
         this.element = element.nativeElement;
     }
@@ -76,18 +77,21 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
     }
 
     /**
-     * View has been initialized.
+     * The question has been rendered.
      */
-    ngAfterViewInit(): void {
-        // Create the instance.
-        this.questionInstance = new AddonQtypeDdImageOrTextQuestion(this.logger, this.domUtils, this.element,
-                this.question, this.question.readOnly, this.drops);
+    questionRendered(): void {
+        if (!this.destroyed) {
+            // Create the instance.
+            this.questionInstance = new AddonQtypeDdImageOrTextQuestion(this.loggerProvider, this.domUtils, this.element,
+                    this.question, this.question.readOnly, this.drops);
+        }
     }
 
     /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
+        this.destroyed = true;
         this.questionInstance && this.questionInstance.destroy();
     }
 }

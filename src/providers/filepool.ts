@@ -653,10 +653,10 @@ export class CoreFilepoolProvider {
                         if (filePath && entry.path !== filePath) {
                             newData.path = filePath;
                         }
-                        if (entry.isexternalfile !== options.isexternalfile) {
+                        if (entry.isexternalfile !== options.isexternalfile && (entry.isexternalfile || options.isexternalfile)) {
                             newData.isexternalfile = options.isexternalfile;
                         }
-                        if (entry.repositorytype !== options.repositorytype) {
+                        if (entry.repositorytype !== options.repositorytype && (entry.repositorytype || options.repositorytype)) {
                             newData.repositorytype = options.repositorytype;
                         }
 
@@ -2659,7 +2659,7 @@ export class CoreFilepoolProvider {
                     // Going back from downloading to previous status, restore previous download time.
                     newData.downloadTime = entry.previousDownloadTime;
                 }
-                newData.status = entry.previous || CoreConstants.DOWNLOADED;
+                newData.status = entry.previous || CoreConstants.NOT_DOWNLOADED;
                 newData.updated = Date.now();
                 this.logger.debug(`Set previous status '${entry.status}' for package ${component} ${componentId}`);
 

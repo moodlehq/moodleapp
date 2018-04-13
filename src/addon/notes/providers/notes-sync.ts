@@ -34,12 +34,13 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_notes_autom_synced';
 
-    constructor(protected sitesProvider: CoreSitesProvider, protected loggerProvider: CoreLoggerProvider,
-            protected appProvider: CoreAppProvider, private notesOffline: AddonNotesOfflineProvider,
+    constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
+            syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
+            private notesOffline: AddonNotesOfflineProvider, private utils: CoreUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private notesProvider: AddonNotesProvider,
-            private coursesProvider: CoreCoursesProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            syncProvider: CoreSyncProvider, protected textUtils: CoreTextUtilsProvider) {
-        super('AddonNotesSync', sitesProvider, loggerProvider, appProvider, syncProvider, textUtils);
+            private coursesProvider: CoreCoursesProvider) {
+
+        super('AddonNotesSync', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate);
     }
 
     /**

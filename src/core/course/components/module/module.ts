@@ -66,6 +66,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
     protected prefetchHandler: CoreCourseModulePrefetchHandler;
     protected statusObserver;
+    protected isDestroyed = false;
 
     constructor(@Optional() protected navCtrl: NavController, protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
             protected domUtils: CoreDomUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
@@ -128,14 +129,13 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         // Get download size to ask for confirm if it's high.
         this.prefetchHandler.getDownloadSize(module, this.courseId).then((size) => {
-            this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh).catch((error) => {
-                // Error or cancelled.
-                this.spinner = false;
-            });
+            return this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh);
         }).catch((error) => {
-            // Error getting download size, hide spinner.
+            // Error, hide spinner.
             this.spinner = false;
-            this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            if (!this.isDestroyed && error) {
+                this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            }
         });
     }
 
@@ -150,6 +150,10 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             this.showDownload = status === CoreConstants.NOT_DOWNLOADED;
             this.showRefresh = status === CoreConstants.OUTDATED ||
                 (!this.prefetchDelegate.canCheckUpdates() && status === CoreConstants.DOWNLOADED);
+
+            if (this.module.handlerData.updateStatus) {
+                this.module.handlerData.updateStatus(status);
+            }
         }
     }
 
@@ -158,5 +162,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.statusObserver && this.statusObserver.off();
+        this.isDestroyed = true;
     }
 }

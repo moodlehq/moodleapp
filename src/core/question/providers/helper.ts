@@ -14,10 +14,14 @@
 
 import { Injectable, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreQuestionProvider } from './question';
+import { CoreQuestionDelegate } from './delegate';
 
 /**
  * Service with some common functions to handle questions.
@@ -29,7 +33,8 @@ export class CoreQuestionHelperProvider {
 
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
         private questionProvider: CoreQuestionProvider, private sitesProvider: CoreSitesProvider,
-        private translate: TranslateService) { }
+        private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider, private utils: CoreUtilsProvider,
+        private filepoolProvider: CoreFilepoolProvider, private questionDelegate: CoreQuestionDelegate) { }
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -299,6 +304,44 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Retrieve the answers entered in a form.
+     * We don't use ngModel because it doesn't detect changes done by JavaScript and some questions might do that.
+     *
+     * @param {HTMLFormElement} form Form.
+     * @return {any} Object with the answers.
+     */
+    getAnswersFromForm(form: HTMLFormElement): any {
+        if (!form || !form.elements) {
+            return {};
+        }
+
+        const answers = {},
+            elements = Array.from(form.elements);
+
+        elements.forEach((element: HTMLInputElement) => {
+            const name = element.name || element.getAttribute('ng-reflect-name') || '';
+
+            // Ignore flag and submit inputs.
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                answers[name] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    answers[name] = element.value;
+                }
+            } else {
+                answers[name] = element.value;
+            }
+        });
+
+        return answers;
+    }
+
+    /**
      * Given an HTML code with list of attachments, returns the list of attached files (filename and fileurl).
      * Please take into account that this function will treat all the anchors in the HTML, you should provide
      * an HTML containing only the attachments anchors.
@@ -351,6 +394,18 @@ export class CoreQuestionHelperProvider {
                 };
             }
         }
+    }
+
+    /**
+     * Get the CSS class for a question based on its state.
+     *
+     * @param {string} name Question's state name.
+     * @return {string} State class.
+     */
+    getQuestionStateClass(name: string): string {
+        const state = this.questionProvider.getState(name);
+
+        return state ? state.class : '';
     }
 
     /**
@@ -429,6 +484,64 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Prefetch the files in a question HTML.
+     *
+     * @param {any} question Question.
+     * @param {string} [component] The component to link the files to. If not defined, question component.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component. If not defined, question ID.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when all the files have been downloaded.
+     */
+    prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string): Promise<any> {
+        const urls = this.domUtils.extractDownloadableFilesFromHtml(question.html);
+
+        if (!component) {
+            component = CoreQuestionProvider.COMPONENT;
+            componentId = question.id;
+        }
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const promises = [];
+
+            urls.forEach((url) => {
+                if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(url)) {
+                    return;
+                }
+
+                if (url.indexOf('theme/image.php') > -1 && url.indexOf('flagged') > -1) {
+                    // Ignore flag images.
+                    return;
+                }
+
+                promises.push(this.filepoolProvider.addToQueueByUrl(siteId, url, component, componentId));
+            });
+
+            return Promise.all(promises);
+        });
+    }
+
+    /**
+     * Prepare and return the answers.
+     *
+     * @param {any[]} questions The list of questions.
+     * @param {any} answers The input data.
+     * @param {boolean} offline True if data should be saved in offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with answers to send to server.
+     */
+    prepareAnswers(questions: any[], answers: any, offline?: boolean, siteId?: string): Promise<any> {
+        const promises = [];
+
+        questions.forEach((question) => {
+            promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId));
+        });
+
+        return this.utils.allPromises(promises).then(() => {
+            return answers;
+        });
+    }
+
+    /**
      * Replace Moodle's correct/incorrect classes with the Mobile ones.
      *
      * @param {HTMLElement} element DOM element.
@@ -487,13 +600,11 @@ export class CoreQuestionHelperProvider {
      * @param {string} [error] Error to show.
      */
     showComponentError(onAbort: EventEmitter<void>, error?: string): void {
-        error = error || 'Error processing the question. This could be caused by custom modifications in your site.';
-
         // Prevent consecutive errors.
         const now = Date.now();
         if (now - this.lastErrorShown > 500) {
             this.lastErrorShown = now;
-            this.domUtils.showErrorModal(error);
+            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorparsequestions', true);
         }
 
         onAbort && onAbort.emit();
@@ -504,7 +615,7 @@ export class CoreQuestionHelperProvider {
      *
      * @param {HTMLElement} element DOM element.
      */
-    treatCorrectnessIcons(element: HTMLElement, component?: string, componentId?: number): void {
+    treatCorrectnessIcons(element: HTMLElement): void {
 
         const icons = <HTMLImageElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon'));
         icons.forEach((icon) => {
@@ -541,9 +652,31 @@ export class CoreQuestionHelperProvider {
             icon.classList.add('questioncorrectnessicon');
 
             if (span.innerHTML) {
+                // There's a hidden feedback. Mark the icon as tappable.
+                // The click listener is only added if treatCorrectnessIconsClicks is called.
+                icon.setAttribute('tappable', '');
+            }
+        });
+    }
+
+    /**
+     * Add click listeners to all tappable correctness icons.
+     *
+     * @param {HTMLElement} element DOM element.
+     * @param {string} [component] The component to use when viewing the feedback.
+     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     */
+    treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number): void {
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]')),
+            title = this.translate.instant('core.question.feedback');
+
+        icons.forEach((icon) => {
+            // Search the feedback for the icon.
+            const span = <HTMLElement> icon.parentElement.querySelector('.feedbackspan.accesshide');
+
+            if (span) {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
-                    const title = this.translate.instant('core.question.feedback');
                     this.textUtils.expandText(title, span.innerHTML, component, componentId);
                 });
             }

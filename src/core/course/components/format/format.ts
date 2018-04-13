@@ -326,4 +326,22 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.sectionStatusObserver.off();
         }
     }
+
+    /**
+     * User entered the page that contains the component.
+     */
+    ionViewDidEnter(): void {
+        this.dynamicComponents.forEach((component) => {
+            component.callComponentFunction('ionViewDidEnter');
+        });
+    }
+
+    /**
+     * User left the page that contains the component.
+     */
+    ionViewDidLeave(): void {
+        this.dynamicComponents.forEach((component) => {
+            component.callComponentFunction('ionViewDidLeave');
+        });
+    }
 }

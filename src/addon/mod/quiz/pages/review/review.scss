@@ -1,0 +1,11 @@
+page-addon-mod-quiz-review {
+    .item-radio-disabled,
+    .item-checkbox-disabled,
+    .text-input[disabled] {
+      opacity: 1;
+
+      .label, .radio, .checkbox {
+        opacity: 1;
+      }
+    }
+}

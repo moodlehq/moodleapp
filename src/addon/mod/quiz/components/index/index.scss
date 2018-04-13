@@ -1,0 +1,34 @@
+addon-mod-quiz-index {
+
+    .addon-mod_quiz-table {
+        .addon-mod_quiz-table-header .item-inner {
+            background-image: none;
+            font-size: 0.9em;
+        }
+
+        .item-inner ion-label {
+            margin-right: 0;
+        }
+
+        .item {
+            padding-left: 0;
+        }
+
+        .label {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .item:nth-child(even) {
+            background-color: $gray-lighter;
+        }
+
+        .addon-mod_quiz-highlighted,
+        .item.addon-mod_quiz-highlighted,
+        .addon-mod_quiz-highlighted p,
+        .item.addon-mod_quiz-highlighted p {
+            background-color: $blue-light;
+            color: $blue-dark;
+        }
+    }
+}

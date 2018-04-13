@@ -283,18 +283,18 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     prefetchCourse(): void {
         this.courseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course, this.sections, this.courseHandlers)
-            .then((downloaded) => {
-                if (downloaded && this.downloadEnabled) {
-                    // Recalculate the status.
-                    this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
-                        // Ignore errors (shouldn't happen).
-                    });
-                }
-            }).catch((error) => {
-                if (!this.isDestroyed) {
-                    this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                }
-            });
+                .then(() => {
+            if (this.downloadEnabled) {
+                // Recalculate the status.
+                this.courseHelper.calculateSectionsStatus(this.sections, this.course.id).catch(() => {
+                    // Ignore errors (shouldn't happen).
+                });
+            }
+        }).catch((error) => {
+            if (!this.isDestroyed) {
+                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+            }
+        });
     }
 
     /**
@@ -313,5 +313,19 @@ export class CoreCourseSectionPage implements OnDestroy {
         if (this.completionObserver) {
             this.completionObserver.off();
         }
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.formatComponent.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.formatComponent.ionViewDidLeave();
     }
 }

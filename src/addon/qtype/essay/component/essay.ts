@@ -15,6 +15,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
+import { FormControl, FormBuilder } from '@angular/forms';
 
 /**
  * Component to render an essay question.
@@ -25,7 +26,9 @@ import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implements OnInit {
 
-    constructor(logger: CoreLoggerProvider, injector: Injector) {
+    protected formControl: FormControl;
+
+    constructor(logger: CoreLoggerProvider, injector: Injector, protected fb: FormBuilder) {
         super(logger, 'AddonQtypeEssayComponent', injector);
     }
 
@@ -34,5 +37,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
      */
     ngOnInit(): void {
         this.initEssayComponent();
+
+        this.formControl = this.fb.control(this.question.textarea && this.question.textarea.text);
     }
 }

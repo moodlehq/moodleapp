@@ -20,7 +20,7 @@
 </div>
 
 <div [hidden]="rteEnabled">
-    <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" ngControl="control" (ionChange)="onChange($event)"></ion-textarea>
+    <ion-textarea #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)"></ion-textarea>
     <div class="formatOptions">
         <button tappable (click)="toggleEditor($event)">Toggle Editor</button>
     </div>

@@ -107,6 +107,13 @@ export interface CoreCourseModuleHandlerData {
      * @param {NavOptions} [options] Options for the navigation.
      */
     action?(event: Event, navCtrl: NavController, module: any, courseId: number, options?: NavOptions): void;
+
+    /**
+     * Updates the status of the module.
+     *
+     * @param {string} status Module status.
+     */
+    updateStatus?(status: string): void;
 }
 
 /**

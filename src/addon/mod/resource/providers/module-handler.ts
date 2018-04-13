@@ -20,6 +20,8 @@ import { AddonModResourceIndexComponent } from '../components/index/index';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Handler to support resource modules.
@@ -29,8 +31,12 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
     name = 'AddonModResource';
     modName = 'resource';
 
+    protected statusObserver;
+
     constructor(protected resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
-            protected mimetypeUtils: CoreMimetypeUtilsProvider, private resourceHelper: AddonModResourceHelperProvider) { }
+            protected mimetypeUtils: CoreMimetypeUtilsProvider, private resourceHelper: AddonModResourceHelperProvider,
+            protected prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+    }
 
     /**
      * Check if the handler is enabled on a site level.
@@ -50,6 +56,11 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      * @return {CoreCourseModuleHandlerData} Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
+        const updateStatus = (status: string): void => {
+            handlerData.buttons[0].hidden = status !== CoreConstants.DOWNLOADED ||
+                this.resourceHelper.isDisplayedInIframe(module);
+        };
+
         const handlerData = {
             icon: this.courseProvider.getModuleIconSrc('resource'),
             title: module.name,
@@ -58,8 +69,9 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
                 navCtrl.push('AddonModResourceIndexPage', {module: module, courseId: courseId}, options);
             },
+            updateStatus: updateStatus.bind(this),
             buttons: [ {
-                hidden: !this.resourceHelper.isDisplayedInIframe(module),
+                hidden: true,
                 icon: 'document',
                 label: 'addon.mod_resource.openthefile',
                 action: (event: Event, navCtrl: NavController, module: any, courseId: number): void => {
@@ -92,7 +104,9 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
      */
     protected hideOpenButton(module: any, courseId: number): Promise<boolean> {
         return this.courseProvider.loadModuleContents(module, courseId).then(() => {
-            return this.resourceHelper.isDisplayedInIframe(module);
+            return this.prefetchDelegate.getModuleStatus(module, courseId).then((status) => {
+                return status !== CoreConstants.DOWNLOADED || this.resourceHelper.isDisplayedInIframe(module);
+            });
         });
     }
 

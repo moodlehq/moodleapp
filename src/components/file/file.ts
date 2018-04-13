@@ -158,14 +158,17 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             promise = this.fileSize ? this.domUtils.confirmDownloadSize({ size: this.fileSize, total: true }) : Promise.resolve();
             promise.then(() => {
                 // User confirmed, add the file to queue.
-                this.filepoolProvider.invalidateFileByUrl(this.siteId, this.fileUrl).finally(() => {
+                return this.filepoolProvider.invalidateFileByUrl(this.siteId, this.fileUrl).finally(() => {
                     this.isDownloading = true;
+
                     this.filepoolProvider.addToQueueByUrl(this.siteId, this.fileUrl, this.component,
                         this.componentId, this.timemodified, undefined, undefined, 0, this.file).catch((error) => {
                             this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
                             this.calculateState();
                         });
                 });
+            }).catch(() => {
+                // Ignore error.
             });
         }
     }

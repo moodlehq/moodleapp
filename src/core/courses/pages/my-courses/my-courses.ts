@@ -160,9 +160,9 @@ export class CoreCoursesMyCoursesPage implements OnDestroy {
 
         return this.courseHelper.confirmAndPrefetchCourses(this.courses, (progress) => {
             this.prefetchCoursesData.badge = progress.count + ' / ' + progress.total;
-        }).then((downloaded) => {
-            this.prefetchCoursesData.icon = downloaded ? 'ion-android-refresh' : initialIcon;
-        }, (error) => {
+        }).then(() => {
+            this.prefetchCoursesData.icon = 'ion-android-refresh';
+        }).catch((error) => {
             if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
                 this.prefetchCoursesData.icon = initialIcon;

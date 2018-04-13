@@ -518,18 +518,18 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.domUtils.showConfirm(this.translate.instant(langKey)).then(() => {
             const modal = this.domUtils.showModalLoading('core.deleting', true);
 
-            this.messagesProvider.deleteMessage(message).then(() => {
+            return this.messagesProvider.deleteMessage(message).then(() => {
                  // Remove message from the list without having to wait for re-fetch.
                 this.messages.splice(index, 1);
                 this.removeMessage(message.hash);
                 this.notifyNewMessage();
 
                 this.fetchData(); // Re-fetch messages to update cached data.
-            }).catch((error) => {
-                this.domUtils.showErrorModalDefault(error, 'addon.messages.errordeletemessage', true);
             }).finally(() => {
                 modal.dismiss();
             });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'addon.messages.errordeletemessage', true);
         });
     }
 

@@ -32,11 +32,12 @@
 .img-responsive {
   display: block;
   max-width: 100%;
-  height: auto;
+  /* height: auto; */
 }
 
 .opacity-hide { opacity: 0; }
 .core-big   { font-size: 115%; }
+.invisible { visibility: hidden; }
 
 @include media-breakpoint-up(sm) {
   .core-center-view .scroll-content {
@@ -74,6 +75,10 @@
 
 .item-dimmed {
   opacity: 0.6;
+}
+
+.item-radio-checked {
+  background-color: $gray-lighter;
 }
 
 .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
@@ -336,6 +341,16 @@ ion-select {
   position: relative
 }
 
+ion-col ion-select {
+    float: right;
+    max-width: none;
+    width: 100%;
+    .select-text {
+      white-space: normal;
+      text-align: right;
+    }
+  }
+
 // File uploader.
 // -------------------------
 
@@ -353,6 +368,85 @@ ion-select {
         z-index: 100;
         cursor: pointer;
     }
+}
+
+// Question.
+// -------------------------
+
+.core-question-answer-correct,
+.core-question-comment {
+  color: $core-question-correct-color;
+  background-color: $core-question-correct-color-bg;
+
+  .label, ion-label.label {
+    color: $core-question-correct-color;
+  }
+}
+
+.core-question-answer-incorrect,
+.core-question-incorrect {
+  color: $core-question-incorrect-color;
+  background-color: $core-question-incorrect-color-bg;
+
+  .label, ion-label.label {
+    color: $core-question-incorrect-color;
+  }
+}
+
+.core-question-feedback-container {
+  background-color: $core-question-feedback-color-bg;
+  color: $core-question-feedback-color;
+
+  .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+    margin: 0 0 .5em;
+  }
+
+  .correctness {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: bold;
+    line-height: 14px;
+    color: $white;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: $gray-dark;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+
+    &.incorrect {
+      background-color: $red;
+    }
+    &.correct {
+      background-color: $green;
+    }
+  }
+}
+
+.core-question-feedback-inline {
+  display: inline-block;
+}
+
+.core-question-feedback-padding {
+  padding: 8px 35px 8px 14px;
+}
+
+.core-question-correct {
+  background-color: $core-question-state-correct-color;
+}
+.core-question-partiallycorrect {
+  background-color: $core-question-state-partial-color;
+}
+.core-question-notanswered,
+.core-question-incorrect {
+  background-color: $core-question-state-incorrect-color;
+}
+
+.core-question-warning {
+  color: $core-question-warning-color;
+}
+
+.questioncorrectnessicon,
+.fa.icon.questioncorrectnessicon {
+  font-size: 20px;
 }
 
 // Atto styles
@@ -509,4 +603,27 @@ textarea {
     @extend .core-circle:before;
     color: $color-base;
   }
+  .text-#{$color-name} {
+    color: $color-base;
+  }
+}
+
+.accesshide {
+  position: absolute;
+  left: -10000px;
+  font-weight: normal;
+  font-size: 1em;
+}
+
+.core-monospaced {
+  font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+}
+
+
+.core-white-push-arrow .item-inner{
+    background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23FFFFFF'/></svg>") !important;
+}
+
+[ion-fixed] {
+  width: 100%;
 }

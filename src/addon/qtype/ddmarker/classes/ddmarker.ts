@@ -50,6 +50,7 @@ export class AddonQtypeDdMarkerQuestion {
     protected proportion = 1;
     protected selected: HTMLElement; // Selected element (being "dragged").
     protected graphics: AddonQtypeDdMarkerGraphicsApi;
+    protected resizeFunction;
 
     doc: AddonQtypeDdMarkerQuestionDocStructure;
     shapes = [];
@@ -157,7 +158,9 @@ export class AddonQtypeDdMarkerQuestion {
      * Function to call when the instance is no longer needed.
      */
     destroy(): void {
-        window.removeEventListener('resize', this.resizeFunction);
+        if (this.resizeFunction) {
+            window.removeEventListener('resize', this.resizeFunction);
+        }
     }
 
     /**
@@ -167,7 +170,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @return {AddonQtypeDdMarkerQuestionDocStructure} The object.
      */
     docStructure(slot: number): AddonQtypeDdMarkerQuestionDocStructure {
-        const topNode = <HTMLElement> this.container.querySelector('#core-question-' + slot + ' .addon-qtype-ddmarker-container'),
+        const topNode = <HTMLElement> this.container.querySelector('.addon-qtype-ddmarker-container'),
             dragItemsArea = <HTMLElement> topNode.querySelector('div.dragitems');
 
         return {
@@ -293,9 +296,9 @@ export class AddonQtypeDdMarkerQuestion {
         const markerTexts = this.doc.markerTexts();
         // Check if there is already a marker text for this drop zone.
         if (link) {
-            existingMarkerText = markerTexts.querySelector('span.markertext' + dropZoneNo + ' a');
+            existingMarkerText = <HTMLElement> markerTexts.querySelector('span.markertext' + dropZoneNo + ' a');
         } else {
-            existingMarkerText = markerTexts.querySelector('span.markertext' + dropZoneNo);
+            existingMarkerText = <HTMLElement> markerTexts.querySelector('span.markertext' + dropZoneNo);
         }
 
         if (existingMarkerText) {
@@ -538,7 +541,7 @@ export class AddonQtypeDdMarkerQuestion {
             dragging = (this.doc.dragItemBeingDragged(choiceNo) !== null),
             coords: number[][] = [];
 
-        if (fv !== '' && typeof fv != 'undefined') {
+        if (fv !== '' && typeof fv != 'undefined' && fv !== null) {
             // Get all the coordinates in the input and add them to the coords list.
             const coordsStrings = fv.split(';');
 
@@ -645,6 +648,7 @@ export class AddonQtypeDdMarkerQuestion {
             this.pollForImageLoad();
         });
 
+        this.resizeFunction = this.redrawDragsAndDrops.bind(this);
         window.addEventListener('resize', this.resizeFunction);
     }
 
@@ -731,6 +735,9 @@ export class AddonQtypeDdMarkerQuestion {
         }, 500);
     }
 
+    /**
+     * Redraw all draggables and drop zones.
+     */
     redrawDragsAndDrops(): void {
         // Mark all the draggable items as not placed.
         const drags = this.doc.dragItems();
@@ -789,7 +796,7 @@ export class AddonQtypeDdMarkerQuestion {
                     dropZone = this.dropZones[dropZoneNo],
                     dzNo = Number(dropZoneNo);
 
-                this.drawDropZone(dzNo, dropZone.markerText, dropZone.shape, dropZone.coords, colourForDropZone, true);
+                this.drawDropZone(dzNo, dropZone.markertext, dropZone.shape, dropZone.coords, colourForDropZone, true);
             }
         }
     }
@@ -801,13 +808,6 @@ export class AddonQtypeDdMarkerQuestion {
      */
     resetDragXY(choiceNo: number): void {
         this.setFormValue(choiceNo, '');
-    }
-
-    /**
-     * Function to call when the window is resized.
-     */
-    resizeFunction(): void {
-        this.redrawDragsAndDrops();
     }
 
     /**

@@ -233,6 +233,8 @@ export class CoreContentLinksHelperProvider {
                         } else {
                             this.goToChooseSite(url);
                         }
+                    }).catch(() => {
+                        // User canceled.
                     });
                 }
 

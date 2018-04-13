@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit, Injector, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, ElementRef } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
@@ -24,14 +24,15 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
     selector: 'addon-qtype-ddmarker',
     templateUrl: 'ddmarker.html'
 })
-export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
 
     protected element: HTMLElement;
     protected questionInstance: AddonQtypeDdMarkerQuestion;
     protected dropZones: any[]; // The drop zones received in the init object of the question.
+    protected destroyed = false;
 
-    constructor(logger: CoreLoggerProvider, injector: Injector, element: ElementRef) {
-        super(logger, 'AddonQtypeDdMarkerComponent', injector);
+    constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
+        super(loggerProvider, 'AddonQtypeDdMarkerComponent', injector);
 
         this.element = element.nativeElement;
     }
@@ -83,18 +84,21 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
     }
 
     /**
-     * View has been initialized.
+     * The question has been rendered.
      */
-    ngAfterViewInit(): void {
-        // Create the instance.
-        this.questionInstance = new AddonQtypeDdMarkerQuestion(this.logger, this.domUtils, this.textUtils, this.element,
-                this.question, this.question.readOnly, this.dropZones);
+    questionRendered(): void {
+        if (!this.destroyed) {
+            // Create the instance.
+            this.questionInstance = new AddonQtypeDdMarkerQuestion(this.loggerProvider, this.domUtils, this.textUtils, this.element,
+                    this.question, this.question.readOnly, this.dropZones);
+        }
     }
 
     /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
+        this.destroyed = true;
         this.questionInstance && this.questionInstance.destroy();
     }
 }

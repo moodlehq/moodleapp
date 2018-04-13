@@ -140,6 +140,15 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Create a "cancelled" error. These errors won't display an error message in showErrorModal functions.
+     *
+     * @return {any} The error object.
+     */
+    createCanceledError(): any {
+        return {coreCanceled: true};
+    }
+
+    /**
      * Extract the downloadable URLs from an HTML code.
      *
      * @param {string} html HTML code.
@@ -771,7 +780,7 @@ export class CoreDomUtilsProvider {
      * @param {string} [okText] Text of the OK button.
      * @param {string} [cancelText] Text of the Cancel button.
      * @param {any} [options] More options. See https://ionicframework.com/docs/api/components/alert/AlertController/
-     * @return {Promise<void>} Promise resolved if the user confirms and rejected if he cancels.
+     * @return {Promise<void>} Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
     showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<void> {
         return new Promise<void>((resolve, reject): void => {
@@ -787,7 +796,7 @@ export class CoreDomUtilsProvider {
                     text: cancelText || this.translate.instant('core.cancel'),
                     role: 'cancel',
                     handler: (): void => {
-                        reject();
+                        reject(this.createCanceledError());
                     }
                 },
                 {
@@ -813,7 +822,10 @@ export class CoreDomUtilsProvider {
     showErrorModal(error: any, needsTranslate?: boolean, autocloseTime?: number): Alert {
         if (typeof error == 'object') {
             // We received an object instead of a string. Search for common properties.
-            if (typeof error.content != 'undefined') {
+            if (error.coreCanceled) {
+                // It's a canceled error, don't display an error.
+                return;
+            } else if (typeof error.content != 'undefined') {
                 error = error.content;
             } else if (typeof error.body != 'undefined') {
                 error = error.body;
@@ -833,6 +845,11 @@ export class CoreDomUtilsProvider {
             }
         }
 
+        if (error == CoreConstants.DONT_SHOW_ERROR) {
+            // The error shouldn't be shown, stop.
+            return;
+        }
+
         const message = this.textUtils.decodeHTML(needsTranslate ? this.translate.instant(error) : error);
 
         return this.showAlert(this.getErrorTitle(message), message, undefined, autocloseTime);
@@ -848,14 +865,18 @@ export class CoreDomUtilsProvider {
      * @return {Alert} The alert modal.
      */
     showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Alert {
-        if (error != CoreConstants.DONT_SHOW_ERROR) {
-            if (error && typeof error != 'string') {
-                error = error.message || error.error;
-            }
-            error = typeof error == 'string' ? error : defaultError;
-
-            return this.showErrorModal(error, needsTranslate, autocloseTime);
+        if (error && error.coreCanceled) {
+            // It's a canceled error, don't display an error.
+            return;
         }
+
+        if (error && typeof error != 'string') {
+            error = error.message || error.error || error.content || error.body;
+        }
+
+        error = typeof error == 'string' ? error : defaultError;
+
+        return this.showErrorModal(error, needsTranslate, autocloseTime);
     }
 
     /**

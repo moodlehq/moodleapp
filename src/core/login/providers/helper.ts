@@ -235,7 +235,7 @@ export class CoreLoginHelperProvider {
 
         promise.then(() => {
             this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl);
-        }, () => {
+        }).catch(() => {
             // User cancelled, ignore.
         });
     }

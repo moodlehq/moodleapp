@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'addon.mod_quiz.quiznavigation' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content class="addon-mod_quiz-navigation-modal">
+    <nav>
+        <ion-list>
+            <!-- In player, show button to finish attempt. -->
+            <a ion-item text-wrap *ngIf="!isReview" (click)="loadPage(-1)">
+                {{ 'addon.mod_quiz.finishattemptdots' | translate }}
+            </a>
+
+            <!-- In review we can toggle between all questions in same page or one page at a time. -->
+            <a ion-item text-wrap *ngIf="isReview && pageInstance.numPages > 1" (click)="switchMode()">
+                <span *ngIf="!pageInstance.showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                <span *ngIf="pageInstance.showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+            </a>
+            <a ion-item text-wrap *ngFor="let question of pageInstance.navigation" class="{{question.stateClass}}" [ngClass]='{"addon-mod_quiz-selected": !pageInstance.showSummary && pageInstance.attempt.currentpage == question.page}' (click)="loadPage(question.page, question.slot)">
+                <span *ngIf="question.number">{{ 'core.question.questionno' | translate:{$a: question.number} }}</span>
+                <span *ngIf="!question.number">{{ 'core.question.information' | translate }}</span>
+            </a>
+
+            <!-- In player, show button to finish attempt. -->
+            <a ion-item text-wrap *ngIf="!isReview" (click)="loadPage(-1)">
+                {{ 'addon.mod_quiz.finishattemptdots' | translate }}
+            </a>
+
+            <!-- In review we can toggle between all questions in same page or one page at a time. -->
+            <a ion-item text-wrap *ngIf="isReview && pageInstance.numPages > 1" (click)="switchMode()">
+                <span *ngIf="!pageInstance.showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                <span *ngIf="pageInstance.showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+            </a>
+        </ion-list>
+    </nav>
+</ion-content>
