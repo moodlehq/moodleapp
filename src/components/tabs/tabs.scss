@@ -25,6 +25,17 @@ core-tabs {
 
     .core-tabs-content-container {
         height: 100%;
+
+        &.no-scroll {
+            height: auto;
+            padding-bottom: 0 !important;
+
+            .scroll-content {
+                overflow: hidden !important;
+                contain: initial;
+                position: relative;
+            }
+        }
     }
 
     &.tabs-hidden {
