@@ -131,13 +131,13 @@ export class AddonModSurveySyncProvider extends CoreSyncBaseProvider {
             return this.getOngoingSync(syncId, siteId);
         }
 
+        this.logger.debug(`Try to sync survey '${surveyId}' for user '${userId}'`);
+
         let courseId;
         const result = {
             warnings: [],
             answersSent: false
         };
-
-        this.logger.debug(`Try to sync survey '${surveyId}' for user '${userId}'`);
 
         // Get answers to be sent.
         const syncPromise = this.surveyOffline.getSurveyData(surveyId, siteId, userId).catch(() => {
