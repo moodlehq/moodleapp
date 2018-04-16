@@ -198,12 +198,8 @@ export class CoreFileUploaderHelperProvider {
      */
     filePickerClosed(): void {
         if (this.filePickerDeferred) {
-            this.filePickerDeferred.reject();
+            this.filePickerDeferred.reject(this.domUtils.createCanceledError());
             this.filePickerDeferred = undefined;
-        }
-        // Close the action sheet if it's opened.
-        if (this.actionSheet) {
-            this.actionSheet.dismiss();
         }
     }
 
