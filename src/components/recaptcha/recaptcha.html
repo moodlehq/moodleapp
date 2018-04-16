@@ -1,0 +1,14 @@
+<!-- ReCAPTCHA V2 -->
+<div *ngIf="publicKey">
+    <!-- A button to open the recaptcha modal. -->
+    <!-- Use anchor instead of button to prevent marking form as submitted. -->
+    <button ion-button block *ngIf="!model[modelValueName]" (click)="answerRecaptcha()" type="button">{{ 'core.answer' | translate }}</button>
+    <p *ngIf="model[modelValueName]" class="text-success">{{ 'core.answered' | translate }}</p>
+    <p *ngIf="expired" class="text-danger">{{ 'core.login.recaptchaexpired' | translate }}</p>
+</div>
+
+<!-- Error that happens sometimes with reCaptcha V1, probably due to deprecation warnings. -->
+<div class="core-warning-card" icon-start *ngIf="!challengehash && challengeimage" >
+    <ion-icon name="warning"></ion-icon>
+    {{ 'core.errorloadingcontent' | translate }}
+</div>

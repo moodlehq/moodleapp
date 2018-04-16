@@ -79,6 +79,7 @@ import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonModBookModule } from '@addon/mod/book/book.module';
 import { AddonModLabelModule } from '@addon/mod/label/label.module';
 import { AddonModResourceModule } from '@addon/mod/resource/resource.module';
+import { AddonModFeedbackModule } from '@addon/mod/feedback/feedback.module';
 import { AddonModFolderModule } from '@addon/mod/folder/folder.module';
 import { AddonModPageModule } from '@addon/mod/page/page.module';
 import { AddonModQuizModule } from '@addon/mod/quiz/quiz.module';
@@ -173,6 +174,7 @@ export const CORE_PROVIDERS: any[] = [
         AddonModBookModule,
         AddonModLabelModule,
         AddonModResourceModule,
+        AddonModFeedbackModule,
         AddonModFolderModule,
         AddonModPageModule,
         AddonModQuizModule,

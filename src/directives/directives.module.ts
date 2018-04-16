@@ -22,6 +22,7 @@ import { CoreKeepKeyboardDirective } from './keep-keyboard';
 import { CoreUserLinkDirective } from './user-link';
 import { CoreAutoRowsDirective } from './auto-rows';
 import { CoreLongPressDirective } from './long-press';
+import { CoreChartDirective } from './chart';
 
 @NgModule({
     declarations: [
@@ -33,7 +34,8 @@ import { CoreLongPressDirective } from './long-press';
         CoreLinkDirective,
         CoreUserLinkDirective,
         CoreAutoRowsDirective,
-        CoreLongPressDirective
+        CoreLongPressDirective,
+        CoreChartDirective
     ],
     imports: [],
     exports: [
@@ -45,7 +47,8 @@ import { CoreLongPressDirective } from './long-press';
         CoreLinkDirective,
         CoreUserLinkDirective,
         CoreAutoRowsDirective,
-        CoreLongPressDirective
+        CoreLongPressDirective,
+        CoreChartDirective
     ]
 })
 export class CoreDirectivesModule {}

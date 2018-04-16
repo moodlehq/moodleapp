@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreFilepoolProvider } from '@providers/filepool';
 
 /**
  * Service to provide user functionalities.
@@ -53,7 +54,8 @@ export class CoreUserProvider {
 
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider) {
+    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
+            private filepoolProvider: CoreFilepoolProvider) {
         this.logger = logger.getInstance('CoreUserProvider');
         this.sitesProvider.createTablesFromSchema(this.tablesSchema);
     }
@@ -364,6 +366,36 @@ export class CoreUserProvider {
         return this.sitesProvider.getCurrentSite().write('core_user_view_user_list', {
             courseid: courseId
         });
+    }
+
+    /**
+     * Prefetch user profiles and their images from a certain course. It prevents duplicates.
+     *
+     * @param  {number[]} userIds  List of user IDs.
+     * @param  {number} [courseId] Course the users belong to.
+     * @param  {string} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise<any>}      Promise resolved when prefetched.
+     */
+    prefetchProfiles(userIds: number[], courseId?: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const treated = {},
+            promises = [];
+
+        userIds.forEach((userId) => {
+            // Prevent repeats and errors.
+            if (!treated[userId]) {
+                treated[userId] = true;
+
+                promises.push(this.getProfile(userId, courseId).then((profile) => {
+                    if (profile.profileimageurl) {
+                        this.filepoolProvider.addToQueueByUrl(siteId, profile.profileimageurl);
+                    }
+                }));
+            }
+        });
+
+        return Promise.all(promises);
     }
 
     /**

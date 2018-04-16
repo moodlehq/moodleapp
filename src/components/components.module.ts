@@ -41,6 +41,7 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
 import { CoreTimerComponent } from './timer/timer';
+import { CoreRecaptchaComponent, CoreRecaptchaModalComponent } from './recaptcha/recaptcha';
 
 @NgModule({
     declarations: [
@@ -67,11 +68,14 @@ import { CoreTimerComponent } from './timer/timer';
         CoreNavBarButtonsComponent,
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
-        CoreTimerComponent
+        CoreTimerComponent,
+        CoreRecaptchaComponent,
+        CoreRecaptchaModalComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
-        CoreCoursePickerMenuPopoverComponent
+        CoreCoursePickerMenuPopoverComponent,
+        CoreRecaptchaModalComponent
     ],
     imports: [
         IonicModule,
@@ -101,7 +105,8 @@ import { CoreTimerComponent } from './timer/timer';
         CoreNavBarButtonsComponent,
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
-        CoreTimerComponent
+        CoreTimerComponent,
+        CoreRecaptchaComponent
     ]
 })
 export class CoreComponentsModule {}

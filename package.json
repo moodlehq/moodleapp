@@ -65,6 +65,7 @@
     "@types/cordova-plugin-network-information": "0.0.3",
     "@types/node": "^8.0.47",
     "@types/promise.prototype.finally": "^2.0.2",
+    "chart.js": "^2.7.2",
     "electron-builder-squirrel-windows": "^19.3.0",
     "electron-windows-notifications": "^1.1.13",
     "ionic-angular": "^3.9.2",

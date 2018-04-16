@@ -567,8 +567,17 @@ textarea {
     height: auto;
 }
 
-// Message cards
+canvas[core-chart] {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.core-circle:before {
+  content: ' \25CF';
+}
+
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
+  // Message cards.
   .core-#{$color-name}-card {
     @extend ion-card;
     border-bottom: 3px solid $color-base;
@@ -589,21 +598,24 @@ textarea {
       }
     }
   }
-}
 
-.core-circle:before {
-  content: ' \25CF';
-}
+  .core-#{$color-name}-item {
+    border-bottom: 3px solid $color-base !important;
+    ion-icon {
+      color: $color-base;
+    }
+  }
 
-@each $color-name, $color-base, $color-contrast in get-colors($colors) {
   .core-#{$color-name}-circle {
     margin: 0 4px;
   }
+
   .core-#{$color-name}-circle:before {
     @extend .core-circle:before;
     color: $color-base;
   }
-  .text-#{$color-name} {
+
+  .text-#{$color-name}, p.#{$color-name}, .item p.text-#{$color-name} {
     color: $color-base;
   }
 }
@@ -626,4 +638,15 @@ textarea {
 
 [ion-fixed] {
   width: 100%;
+}
+
+.core-modal-fullscreen {
+  .modal-wrapper {
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
 }

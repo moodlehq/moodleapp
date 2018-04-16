@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, OnInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
 import { CoreFileProvider } from '@providers/file';
@@ -35,6 +35,7 @@ export class CoreIframeComponent implements OnInit {
     @Input() src: string;
     @Input() iframeWidth: string;
     @Input() iframeHeight: string;
+    @Output() loaded?: EventEmitter<HTMLIFrameElement> = new EventEmitter<HTMLIFrameElement>();
     loading: boolean;
     safeUrl: SafeResourceUrl;
 
@@ -46,6 +47,7 @@ export class CoreIframeComponent implements OnInit {
             private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider, private domUtils: CoreDomUtilsProvider,
             private sitesProvider: CoreSitesProvider, private platform: Platform, private sanitizer: DomSanitizer) {
         this.logger = logger.getInstance('CoreIframe');
+        this.loaded = new EventEmitter<HTMLIFrameElement>();
     }
 
     /**
@@ -66,6 +68,7 @@ export class CoreIframeComponent implements OnInit {
         if (this.loading) {
             iframe.addEventListener('load', () => {
                 this.loading = false;
+                this.loaded.emit(iframe); // Notify iframe was loaded.
             });
 
             iframe.addEventListener('error', () => {
