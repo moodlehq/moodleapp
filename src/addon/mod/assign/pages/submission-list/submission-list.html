@@ -1,0 +1,48 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end></ion-buttons>
+    </ion-navbar>
+</ion-header>
+<core-split-view>
+    <ion-content>
+        <ion-refresher [enabled]="loaded" (ionRefresh)="refreshList($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="loaded">
+            <core-empty-box *ngIf="!submissions || submissions.length == 0" icon="paper" [message]="'addon.mod_assign.submissionstatus_' | translate">
+            </core-empty-box>
+
+            <ion-list>
+                <!-- List of submissions. -->
+                <ng-container *ngFor="let submission of submissions">
+                    <a ion-item text-wrap (click)="loadSubmission(submission)" [class.core-split-item-selected]="submission.id == selectedSubmissionId">
+                        <ion-avatar item-start *ngIf="submission.userprofileimageurl">
+                            <img [src]="submission.userprofileimageurl" [alt]="'core.pictureof' | translate:{$a: submission.userfullname}" core-external-content role="presentation" onError="this.src='assets/img/user-avatar.png'">
+                        </ion-avatar>
+                        <h2 *ngIf="submission.userfullname">{{submission.userfullname}}</h2>
+                        <h2 *ngIf="!submission.userfullname">{{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
+                        <p *ngIf="assign.teamsubmission">
+                            <span *ngIf="submission.groupname">{{submission.groupname}}</span>
+                            <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && !submission.manyGroups && !submission.blindid">{{ 'addon.mod_assign.noteam' | translate }}</span>
+                            <span *ngIf="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'addon.mod_assign.multipleteams' | translate }}</span>
+                            <span *ngIf="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'addon.mod_assign.defaultteam' | translate }}</span>
+                        </p>
+                        <ion-badge text-center [color]="submission.statusColor" *ngIf="submission.statusTranslated">
+                            {{ submission.statusTranslated }}
+                        </ion-badge>
+                        <ion-badge text-center [color]="submission.gradingColor" *ngIf="submission.gradingStatusTranslationId">
+                            {{ submission.gradingStatusTranslationId | translate }}
+                        </ion-badge>
+                    </a>
+                </ng-container>
+
+                <ion-item text-wrap class="core-warning-card" *ngIf="!haveAllParticipants" icon-start>
+                    <ion-icon name="warning"></ion-icon>
+                    {{ 'addon.mod_assign.notallparticipantsareshown' | translate }}
+                </ion-item>
+            </ion-list>
+        </core-loading>
+    </ion-content>
+</core-split-view>
