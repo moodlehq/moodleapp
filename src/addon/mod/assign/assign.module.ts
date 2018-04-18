@@ -28,12 +28,14 @@ import { AddonModAssignModuleHandler } from './providers/module-handler';
 import { AddonModAssignPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModAssignSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
+import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 
 @NgModule({
     declarations: [
     ],
     imports: [
-        AddonModAssignSubmissionModule
+        AddonModAssignSubmissionModule,
+        AddonModAssignFeedbackModule
     ],
     providers: [
         AddonModAssignProvider,

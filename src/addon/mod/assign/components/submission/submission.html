@@ -176,7 +176,7 @@
                         <p item-content *ngIf="!canSaveGrades || !outcome.itemNumber">{{ outcome.selected }}</p>
                     </ion-item>
 
-                    <!-- @todo <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" assign="assign" submission="userSubmission" userid="submitId" plugin="plugin" can-edit="canSaveGrades"></addon-mod-assign-feedback-plugin> -->
+                    <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign" [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="canSaveGrades"></addon-mod-assign-feedback-plugin>
 
                     <!-- Workflow status. -->
                     <ion-item text-wrap *ngIf="workflowStatusTranslationId">

@@ -16,41 +16,35 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { AddonModAssignFeedbackCommentsHandler } from './providers/handler';
+import { AddonModAssignFeedbackCommentsComponent } from './component/comments';
+import { AddonModAssignFeedbackDelegate } from '../../providers/feedback-delegate';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { AddonModAssignIndexComponent } from './index/index';
-import { AddonModAssignSubmissionComponent } from './submission/submission';
-import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/submission-plugin';
-import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedback-plugin';
 
 @NgModule({
     declarations: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent,
-        AddonModAssignFeedbackPluginComponent
+        AddonModAssignFeedbackCommentsComponent
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
-        CoreCourseComponentsModule
+        CoreDirectivesModule
     ],
     providers: [
+        AddonModAssignFeedbackCommentsHandler
     ],
     exports: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent,
-        AddonModAssignFeedbackPluginComponent
+        AddonModAssignFeedbackCommentsComponent
     ],
     entryComponents: [
-        AddonModAssignIndexComponent
+        AddonModAssignFeedbackCommentsComponent
     ]
 })
-export class AddonModAssignComponentsModule {}
+export class AddonModAssignFeedbackCommentsModule {
+    constructor(feedbackDelegate: AddonModAssignFeedbackDelegate, handler: AddonModAssignFeedbackCommentsHandler) {
+        feedbackDelegate.registerHandler(handler);
+    }
+}
