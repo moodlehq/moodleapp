@@ -1,0 +1,5 @@
+<ion-list>
+    <a ion-item *ngFor="let item of items" (click)="loadItem(item.href)" detail-none [class.core-bold]="!item.href">
+        <span padding-left *ngFor="let i of getNumberForPadding(item.level)"></span>{{item.title}}
+    </a>
+</ion-list>

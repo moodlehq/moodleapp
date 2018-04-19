@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
 import { CoreFileProvider } from '@providers/file';
@@ -29,7 +29,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
     selector: 'core-iframe',
     templateUrl: 'iframe.html'
 })
-export class CoreIframeComponent implements OnInit {
+export class CoreIframeComponent implements OnInit, OnChanges {
 
     @ViewChild('iframe') iframe: ElementRef;
     @Input() src: string;
@@ -56,7 +56,6 @@ export class CoreIframeComponent implements OnInit {
     ngOnInit(): void {
         const iframe: HTMLIFrameElement = this.iframe && this.iframe.nativeElement;
 
-        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.src);
         this.iframeWidth = this.domUtils.formatPixelsSize(this.iframeWidth) || '100%';
         this.iframeHeight = this.domUtils.formatPixelsSize(this.iframeHeight) || '100%';
 
@@ -79,6 +78,15 @@ export class CoreIframeComponent implements OnInit {
             setTimeout(() => {
                 this.loading = false;
             }, this.IFRAME_TIMEOUT);
+        }
+    }
+
+    /**
+     * Detect changes on input properties.
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange }): void {
+        if (changes.src) {
+            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(changes.src.currentValue);
         }
     }
 
