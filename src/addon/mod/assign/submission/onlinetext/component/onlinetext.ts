@@ -68,8 +68,8 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             return this.assignOfflineProvider.getSubmission(this.assign.id).catch(() => {
                 // No offline data found.
             }).then((offlineData) => {
-                if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {
-                    return offlineData.plugindata.onlinetext_editor.text;
+                if (offlineData && offlineData.pluginData && offlineData.pluginData.onlinetext_editor) {
+                    return offlineData.pluginData.onlinetext_editor.text;
                 }
 
                 // No offline data found, return online text.

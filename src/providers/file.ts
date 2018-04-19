@@ -426,6 +426,7 @@ export class CoreFileProvider {
 
         return new Promise((resolve, reject): void => {
             const reader = new FileReader();
+
             reader.onloadend = (evt): void => {
                 const target = <any> evt.target; // Convert to <any> to be able to use non-standard properties.
                 if (target.result !== undefined || target.result !== null) {
@@ -436,6 +437,18 @@ export class CoreFileProvider {
                     reject({ code: null, message: 'READER_ONLOADEND_ERR' });
                 }
             };
+
+            // Check if the load starts. If it doesn't start in 3 seconds, reject.
+            // Sometimes in Android the read doesn't start for some reason, so the promise never finishes.
+            let hasStarted = false;
+            reader.onloadstart = (evt): void => {
+                hasStarted = true;
+            };
+            setTimeout(() => {
+                if (!hasStarted) {
+                    reject();
+                }
+            }, 3000);
 
             switch (format) {
                 case CoreFileProvider.FORMATDATAURL:

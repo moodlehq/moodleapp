@@ -46,25 +46,32 @@ export class AddonModAssignHelperProvider {
      * @param {any} submission Submission.
      * @return {boolean} Whether it can be edited offline.
      */
-    canEditSubmissionOffline(assign: any, submission: any): boolean {
+    canEditSubmissionOffline(assign: any, submission: any): Promise<boolean> {
         if (!submission) {
-            return false;
+            return Promise.resolve(false);
         }
 
         if (submission.status == AddonModAssignProvider.SUBMISSION_STATUS_NEW ||
                 submission.status == AddonModAssignProvider.SUBMISSION_STATUS_REOPENED) {
             // It's a new submission, allow creating it in offline.
-            return true;
+            return Promise.resolve(true);
         }
+
+        const promises = [];
+        let canEdit = true;
 
         for (let i = 0; i < submission.plugins.length; i++) {
             const plugin = submission.plugins[i];
-            if (!this.submissionDelegate.canPluginEditOffline(assign, submission, plugin)) {
-                return false;
-            }
+            promises.push(this.submissionDelegate.canPluginEditOffline(assign, submission, plugin).then((canEditPlugin) => {
+                if (!canEditPlugin) {
+                    canEdit = false;
+                }
+            }));
         }
 
-        return true;
+        return Promise.all(promises).then(() => {
+            return canEdit;
+        });
     }
 
     /**

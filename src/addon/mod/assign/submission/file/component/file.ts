@@ -47,10 +47,10 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
         this.assignOfflineProvider.getSubmission(this.assign.id).catch(() => {
             // Error getting data, assume there's no offline submission.
         }).then((offlineData) => {
-            if (offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager) {
+            if (offlineData && offlineData.pluginData && offlineData.pluginData.files_filemanager) {
                 // It has offline data.
                 let promise;
-                if (offlineData.plugindata.files_filemanager.offline) {
+                if (offlineData.pluginData.files_filemanager.offline) {
                     promise = this.assignHelper.getStoredSubmissionFiles(this.assign.id,
                             AddonModAssignSubmissionFileHandler.FOLDER_NAME);
                 } else {
@@ -58,7 +58,7 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
                 }
 
                 return promise.then((offlineFiles) => {
-                    const onlineFiles = offlineData.plugindata.files_filemanager.online || [];
+                    const onlineFiles = offlineData.pluginData.files_filemanager.online || [];
                     offlineFiles = this.fileUploaderProvider.markOfflineFiles(offlineFiles);
 
                     this.files = onlineFiles.concat(offlineFiles);

@@ -103,13 +103,6 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
     hasDraftData?(assignId: number, userId: number, siteId?: string): boolean | Promise<boolean>;
 
     /**
-     * Whether or not the handler is enabled for edit on a site level.
-     *
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled for edit on a site level.
-     */
-    isEnabledForEdit?(): boolean | Promise<boolean>;
-
-    /**
      * Prefetch any required data for the plugin.
      * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
      *
@@ -256,16 +249,6 @@ export class AddonModAssignFeedbackDelegate extends CoreDelegate {
      */
     isPluginSupported(pluginType: string): boolean {
         return this.hasHandler(pluginType, true);
-    }
-
-    /**
-     * Check if a feedback plugin is supported for edit.
-     *
-     * @param {string} pluginType Type of the plugin.
-     * @return {Promise<boolean>} Whether it's supported for edit.
-     */
-    isPluginSupportedForEdit(pluginType: string): Promise<boolean> {
-        return Promise.resolve(this.executeFunctionOnEnabled(pluginType, 'isEnabledForEdit'));
     }
 
     /**

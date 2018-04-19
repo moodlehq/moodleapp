@@ -153,7 +153,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
 
             if (response.lastattempt) {
                 const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, response.lastattempt);
-                if (userSubmission) {
+                if (userSubmission && userSubmission.plugins) {
                     // Add submission plugin files.
                     userSubmission.plugins.forEach((plugin) => {
                         promises.push(this.submissionDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
@@ -161,7 +161,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
                 }
             }
 
-            if (response.feedback) {
+            if (response.feedback && response.feedback.plugins) {
                 // Add feedback plugin files.
                 response.feedback.plugins.forEach((plugin) => {
                     promises.push(this.feedbackDelegate.getPluginFiles(assign, response, plugin, siteId));
@@ -237,7 +237,9 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
                 blindMarking = assign.blindmarking && !assign.revealidentities;
 
             if (blindMarking) {
-                subPromises.push(this.assignProvider.getAssignmentUserMappings(assign.id, undefined, siteId));
+                subPromises.push(this.assignProvider.getAssignmentUserMappings(assign.id, undefined, siteId).catch(() => {
+                    // Ignore errors.
+                }));
             }
 
             subPromises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
@@ -342,9 +344,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
 
             if (userSubmission && userSubmission.id) {
                 // Prefetch submission plugins data.
-                userSubmission.plugins.forEach((plugin) => {
-                    promises.push(this.submissionDelegate.prefetch(assign, userSubmission, plugin, siteId));
-                });
+                if (userSubmission.plugins) {
+                    userSubmission.plugins.forEach((plugin) => {
+                        promises.push(this.submissionDelegate.prefetch(assign, userSubmission, plugin, siteId));
+                    });
+                }
 
                 // Get ID of the user who did the submission.
                 if (userSubmission.userid) {
@@ -365,9 +369,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseModulePrefetchHandl
             }
 
             // Prefetch feedback plugins data.
-            submission.feedback.plugins.forEach((plugin) => {
-                promises.push(this.feedbackDelegate.prefetch(assign, submission, plugin, siteId));
-            });
+            if (submission.feedback.plugins) {
+                submission.feedback.plugins.forEach((plugin) => {
+                    promises.push(this.feedbackDelegate.prefetch(assign, submission, plugin, siteId));
+                });
+            }
         }
 
         // Prefetch user profiles.

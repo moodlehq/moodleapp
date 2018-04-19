@@ -213,7 +213,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 return Promise.reject(null);
             }
 
-            courseId = submissions.length > 0 ? submissions[0].courseid : grades[0].courseid;
+            courseId = submissions.length > 0 ? submissions[0].courseId : grades[0].courseId;
 
             return this.assignProvider.getAssignmentById(courseId, assignId, siteId).then((assignData) => {
                 assign = assignData;

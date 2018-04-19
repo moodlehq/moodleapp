@@ -188,8 +188,8 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
         return this.assignOfflineProvider.getSubmission(assign.id, submission.userid).catch(() => {
             // No offline data found.
         }).then((data) => {
-            if (data && data.plugindata && data.plugindata.onlinetext_editor) {
-                return data.plugindata.onlinetext_editor.text;
+            if (data && data.pluginData && data.pluginData.onlinetext_editor) {
+                return data.pluginData.onlinetext_editor.text;
             }
 
             // No offline data found, get text from plugin.

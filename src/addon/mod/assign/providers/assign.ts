@@ -200,7 +200,12 @@ export class AddonModAssignProvider {
 
             return site.read('mod_assign_get_user_mappings', params, preSets).then((response) => {
                 // Search the user.
-                if (userId && userId > 0 && response.assignments && response.assignments.length) {
+                if (response.assignments && response.assignments.length) {
+                    if (!userId || userId < 0) {
+                        // User not valid, stop.
+                        return -1;
+                    }
+
                     const assignment = response.assignments[0];
 
                     if (assignment.assignmentid == assignId) {
@@ -212,6 +217,8 @@ export class AddonModAssignProvider {
                             }
                         }
                     }
+                } else if (response.warnings && response.warnings.length) {
+                    return Promise.reject(response.warnings[0]);
                 }
 
                 return Promise.reject(null);

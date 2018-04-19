@@ -200,7 +200,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     copyPrevious(): void {
         if (!this.appProvider.isOnline()) {
-            this.domUtils.showErrorModal('mm.core.networkerrormsg', true);
+            this.domUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
         }
@@ -229,9 +229,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 // Now go to edit.
                 this.goToEdit();
 
-                // Invalidate and refresh data to update this view.
-                this.invalidateAndRefresh();
-
                 if (!this.assign.submissiondrafts) {
                     // No drafts allowed, so it was submitted. Trigger event.
                     this.eventsProvider.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
@@ -239,12 +236,17 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                         submissionId: this.userSubmission.id,
                         userId: this.currentUserId
                     }, this.siteId);
+                } else {
+                    // Invalidate and refresh data to update this view.
+                    this.invalidateAndRefresh();
                 }
             }).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'core.error', true);
             }).finally(() => {
                 modal.dismiss();
             });
+        }).catch(() => {
+            // Cancelled.
         });
     }
 
@@ -382,7 +384,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
             // Check if there's any offline data for this submission.
             promises.push(this.assignOfflineProvider.getSubmission(assign.id, this.submitId).then((data) => {
-                this.hasOffline = data && data.plugindata && Object.keys(data.plugindata).length > 0;
+                this.hasOffline = data && data.pluginData && Object.keys(data.pluginData).length > 0;
                 this.submittedOffline = data && data.submitted;
             }).catch(() => {
                 // No offline data found.
@@ -505,6 +507,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 return;
             }
 
+            // Make sure outcomes is an array.
+            gradeInfo.outcomes = gradeInfo.outcomes || [];
+
             if (!this.isDestroyed) {
                 // Block the assignment.
                 this.syncProvider.blockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
@@ -556,8 +561,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                             this.originalGrades.grade = this.grade.grade;
                         }
 
-                        this.grade.applyToAll = data.applytoall;
-                        this.grade.addAttempt = data.addattempt;
+                        this.grade.applyToAll = data.applyToAll;
+                        this.grade.addAttempt = data.addAttempt;
                         this.originalGrades.applyToAll = this.grade.applyToAll;
                         this.originalGrades.addAttempt = this.grade.addAttempt;
 
@@ -600,7 +605,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      * @param {any} status Submission status.
      */
     protected setStatusNameAndClass(status: any): void {
-        if (this.hasOffline) {
+        if (this.hasOffline || this.submittedOffline) {
             // Offline data.
             this.statusTranslated = this.translate.instant('core.notsent');
             this.statusColor = 'warning';
@@ -668,9 +673,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
             this.assignProvider.submitForGrading(this.assign.id, this.courseId, acceptStatement, this.userSubmission.timemodified,
                     this.hasOffline).then(() => {
-
-                // Invalidate and refresh data.
-                this.invalidateAndRefresh();
 
                 // Submitted, trigger event.
                 this.eventsProvider.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {

@@ -105,6 +105,9 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             if (this.assign && data.assignmentId == this.assign.id && data.userId == this.userId) {
                 // Assignment submitted, check completion.
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+
+                // Reload data since it can have offline data now.
+                this.showLoadingAndRefresh(true, false);
             }
         }, this.siteId);
 

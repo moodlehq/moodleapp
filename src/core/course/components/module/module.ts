@@ -128,12 +128,12 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.spinner = true;
 
         // Get download size to ask for confirm if it's high.
-        this.prefetchHandler.getDownloadSize(module, this.courseId).then((size) => {
+        this.prefetchHandler.getDownloadSize(this.module, this.courseId).then((size) => {
             return this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh);
         }).catch((error) => {
             // Error, hide spinner.
             this.spinner = false;
-            if (!this.isDestroyed && error) {
+            if (!this.isDestroyed) {
                 this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
         });

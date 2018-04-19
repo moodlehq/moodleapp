@@ -17,7 +17,10 @@
                 <!-- Submission statement. -->
                 <ion-item text-wrap *ngIf="submissionStatement">
                     <ion-label><core-format-text [text]="submissionStatement"></core-format-text></ion-label>
-                    <ion-checkbox item-end name="submissionstatement"></ion-checkbox>
+                    <ion-checkbox item-end name="submissionstatement" [(ngModel)]="submissionStatementAccepted"></ion-checkbox>
+
+                    <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
+                    <input item-content type="hidden" [ngModel]="submissionStatementAccepted" name="submissionstatement">
                 </ion-item>
 
                 <addon-mod-assign-submission-plugin *ngFor="let plugin of userSubmission.plugins" [assign]="assign" [submission]="userSubmission" [plugin]="plugin" [edit]="true" [allowOffline]="allowOffline"></addon-mod-assign-submission-plugin>

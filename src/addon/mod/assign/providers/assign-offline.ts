@@ -412,7 +412,6 @@ export class AddonModAssignOfflineProvider {
                 return {
                     assignId: assignId,
                     courseId: courseId,
-                    pluginData: '{}',
                     userId: userId,
                     onlineTimemodified: timemodified,
                     timecreated: now,
@@ -420,8 +419,9 @@ export class AddonModAssignOfflineProvider {
                 };
             }).then((submission) => {
                 // Mark the submission.
-                submission.submitted = !!submitted;
-                submission.submissionstatement = !!acceptStatement;
+                submission.submitted = submitted ? 1 : 0;
+                submission.submissionStatement = acceptStatement ? 1 : 0;
+                submission.pluginData = submission.pluginData ? JSON.stringify(submission.pluginData) : '{}';
 
                 return site.getDb().insertRecord(this.SUBMISSIONS_TABLE, submission);
             });
@@ -452,7 +452,7 @@ export class AddonModAssignOfflineProvider {
                     courseId: courseId,
                     pluginData: pluginData ? JSON.stringify(pluginData) : '{}',
                     userId: userId,
-                    submitted: !!submitted,
+                    submitted: submitted ? 1 : 0,
                     timecreated: now,
                     timemodified: now,
                     onlineTimemodified: timemodified
@@ -489,9 +489,9 @@ export class AddonModAssignOfflineProvider {
                     courseId: courseId,
                     grade: grade,
                     attemptNumber: attemptNumber,
-                    addAttempt: !!addAttempt,
+                    addAttempt: addAttempt ? 1 : 0,
                     workflowState: workflowState,
-                    applyToAll: !!applyToAll,
+                    applyToAll: applyToAll ? 1 : 0,
                     outcomes: outcomes ? JSON.stringify(outcomes) : '{}',
                     pluginData: pluginData ? JSON.stringify(pluginData) : '{}',
                     timemodified: now

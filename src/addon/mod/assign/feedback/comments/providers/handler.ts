@@ -46,7 +46,6 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
      */
     discardDraft(assignId: number, userId: number, siteId?: string): void | Promise<any> {
         const id = this.getDraftId(assignId, userId, siteId);
-
         if (typeof this.drafts[id] != 'undefined') {
             delete this.drafts[id];
         }
@@ -129,8 +128,8 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
         return this.assignOfflineProvider.getSubmissionGrade(assign.id, userId).catch(() => {
             // No offline data found.
         }).then((data) => {
-            if (data && data.plugindata && data.plugindata.assignfeedbackcomments_editor) {
-                return data.plugindata.assignfeedbackcomments_editor.text;
+            if (data && data.pluginData && data.pluginData.assignfeedbackcomments_editor) {
+                return data.pluginData.assignfeedbackcomments_editor.text;
             }
 
             // No offline data found, get text from plugin.
@@ -169,15 +168,6 @@ export class AddonModAssignFeedbackCommentsHandler implements AddonModAssignFeed
      * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * Whether or not the handler is enabled for edit on a site level.
-     *
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled for edit on a site level.
-     */
-    isEnabledForEdit(): boolean | Promise<boolean> {
         return true;
     }
 

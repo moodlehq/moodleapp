@@ -95,12 +95,4 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     isEnabled(): boolean | Promise<boolean> {
         return true;
     }
-
-    /**
-     * Whether or not the handler is enabled for edit on a site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled for edit on a site level.
-     */
-    isEnabledForEdit(): boolean | Promise<boolean> {
-        return false;
-    }
 }

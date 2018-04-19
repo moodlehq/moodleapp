@@ -40,6 +40,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     userSubmission: any; // The user submission.
     allowOffline: boolean; // Whether offline is allowed.
     submissionStatement: string; // The submission statement.
+    submissionStatementAccepted: boolean; // Whether submission statement is accepted.
     loaded: boolean; // Whether data has been loaded.
 
     protected moduleId: number; // Module ID the submission belongs to.
@@ -125,14 +126,17 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, this.isBlind).then((response) => {
                     const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(this.assign, response.lastattempt);
 
-                    if (this.assignHelper.canEditSubmissionOffline(this.assign, userSubmission)) {
-                        return response;
-                    }
+                    // Check if the user can edit it in offline.
+                    return this.assignHelper.canEditSubmissionOffline(this.assign, userSubmission).then((canEditOffline) => {
+                        if (canEditOffline) {
+                            return response;
+                        }
 
-                    // Submission cannot be edited in offline, reject.
-                    this.allowOffline = false;
+                        // Submission cannot be edited in offline, reject.
+                        this.allowOffline = false;
 
-                    return Promise.reject(err);
+                        return Promise.reject(err);
+                    });
                 });
             }).then((response) => {
                 if (!response.lastattempt.canedit) {
@@ -152,7 +156,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
 
                 // Check if there's any offline data for this submission.
                 return this.assignOfflineProvider.getSubmission(this.assign.id, this.userId).then((data) => {
-                    this.hasOffline = data && data.plugindata && Object.keys(data.plugindata).length > 0;
+                    this.hasOffline = data && data.pluginData && Object.keys(data.pluginData).length > 0;
                 }).catch(() => {
                     // No offline data found.
                     this.hasOffline = false;
@@ -262,7 +266,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     protected saveSubmission(): Promise<any> {
         const inputData = this.getInputData();
 
-        if (this.submissionStatement && !inputData.submissionstatement) {
+        if (this.submissionStatement && (!inputData.submissionstatement || inputData.submissionstatement === 'false')) {
             return Promise.reject(this.translate.instant('addon.mod_assign.acceptsubmissionstatement'));
         }
 

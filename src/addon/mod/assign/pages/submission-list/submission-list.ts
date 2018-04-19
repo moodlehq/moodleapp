@@ -218,7 +218,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      * @param {any} submission The submission to load.
      */
     loadSubmission(submission: any): void {
-        if (this.selectedSubmissionId === submission.id) {
+        if (this.selectedSubmissionId === submission.id && this.splitviewCtrl.isOn()) {
             // Already selected.
             return;
         }
