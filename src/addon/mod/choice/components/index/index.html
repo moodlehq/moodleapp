@@ -23,7 +23,7 @@
     </ion-card>
     <ion-card class="core-info-card" icon-start *ngIf="choiceClosed">
         <ion-icon name="information-circle"></ion-icon>
-        <p *ngIf="options && options.length">{{ 'addon.mod_choice.yourselection' | translate }} <core-format-text  [text]="options[0].text"></core-format-text></p>
+        <p *ngIf="options && options.length">{{ 'addon.mod_choice.yourselection' | translate }} <core-format-text [text]="options[0].text"></core-format-text></p>
         <p>{{ 'addon.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
     </ion-card>
 

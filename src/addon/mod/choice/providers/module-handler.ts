@@ -50,6 +50,7 @@ export class AddonModChoiceModuleHandler implements CoreCourseModuleHandler {
             icon: this.courseProvider.getModuleIconSrc('choice'),
             title: module.name,
             class: 'addon-mod_choice-handler',
+            showDownloadButton: true,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
                 navCtrl.push('AddonModChoiceIndexPage', {module: module, courseId: courseId}, options);
             }

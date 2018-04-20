@@ -87,13 +87,13 @@ export class AddonModChoiceProvider {
             return this.deleteResponsesOnline(choiceId, responses, siteId).then(() => {
                 return true;
             }).catch((error) => {
-                if (error && error.wserror) {
-                    // The WebService has thrown an error, this means that responses cannot be deleted.
-                    return Promise.reject(error.error);
-                } else {
-                    // Couldn't connect to server, store in offline.
-                    return storeOffline();
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
                 }
+
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
             });
         });
     }
@@ -185,12 +185,7 @@ export class AddonModChoiceProvider {
 
             return site.read('mod_choice_get_choices_by_courses', params, preSets).then((response) => {
                 if (response && response.choices) {
-                    let currentChoice;
-                    response.choices.forEach((choice) => {
-                        if (!currentChoice && choice[key] == value) {
-                            currentChoice = choice;
-                        }
-                    });
+                    const currentChoice = response.choices.find((choice) => choice[key] == value);
                     if (currentChoice) {
                         return currentChoice;
                     }
@@ -351,15 +346,11 @@ export class AddonModChoiceProvider {
      * @return {Promise<any>} Promise resolved when the WS call is successful.
      */
     logView(id: string): Promise<any> {
-        if (id) {
-            const params = {
-                choiceid: id
-            };
+        const params = {
+            choiceid: id
+        };
 
-            return this.sitesProvider.getCurrentSite().write('mod_choice_view_choice', params);
-        }
-
-        return Promise.reject(null);
+        return this.sitesProvider.getCurrentSite().write('mod_choice_view_choice', params);
     }
 
     /**

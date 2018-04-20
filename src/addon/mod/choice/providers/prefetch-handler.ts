@@ -16,6 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { CoreCourseModulePrefetchHandlerBase } from '@core/course/classes/module-prefetch-handler';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChoiceProvider } from './choice';
+import { AddonModChoiceSyncProvider } from './sync';
 
 /**
  * Handler to prefetch choices.
@@ -27,27 +28,48 @@ export class AddonModChoicePrefetchHandler extends CoreCourseModulePrefetchHandl
     component = AddonModChoiceProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
-    constructor(injector: Injector, protected choiceProvider: AddonModChoiceProvider, private userProvider: CoreUserProvider) {
+    constructor(protected injector: Injector, protected choiceProvider: AddonModChoiceProvider,
+            protected syncProvider: AddonModChoiceSyncProvider, protected userProvider: CoreUserProvider) {
         super(injector);
     }
 
     /**
-     * Download or prefetch the content.
+     * Download the module.
      *
-     * @param  {any}     module     The module object returned by WS.
-     * @param  {number}  courseId   Course ID.
-     * @param  {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param  {string}  [dirPath]  Path of the directory where to store all the content files. This is to keep the files
-     *                              relative paths and make the package work in an iframe. Undefined to download the files
-     *                              in the filepool root choice.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
+     * @param {any} module The module object returned by WS.
+     * @param {number} courseId Course ID.
+     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @return {Promise<any>} Promise resolved when all content is downloaded.
      */
-    downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
-        const siteId = this.sitesProvider.getCurrentSiteId();
-        const promises = [];
+    download(module: any, courseId: number, dirPath?: string): Promise<any> {
+        // Same implementation for download or prefetch.
+        return this.prefetch(module, courseId, false, dirPath);
+    }
 
-        promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-        promises.push(this.choiceProvider.getChoice(courseId, module.id, siteId).then((choice) => {
+    /**
+     * Prefetch a module.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {string} [dirPath] Path of the directory where to store all the content files. @see downloadOrPrefetch.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
+        return this.prefetchPackage(module, courseId, single, this.prefetchChoice.bind(this));
+    }
+
+    /**
+     * Prefetch a choice.
+     *
+     * @param {any} module Module.
+     * @param {number} courseId Course ID the module belongs to.
+     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param {String} siteId Site ID.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected prefetchChoice(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+        return this.choiceProvider.getChoice(courseId, module.id, siteId).then((choice) => {
             const promises = [];
 
             // Get the options and results.
@@ -71,10 +93,12 @@ export class AddonModChoicePrefetchHandler extends CoreCourseModulePrefetchHandl
                 return Promise.all(subPromises);
             }));
 
-            return Promise.all(promises);
-        }));
+            // Get the intro files.
+            const introFiles = this.getIntroFilesFromInstance(module, choice);
+            promises.push(this.filepoolProvider.addFilesToQueue(siteId, introFiles, AddonModChoiceProvider.COMPONENT, module.id));
 
-        return Promise.all(promises);
+            return Promise.all(promises);
+        });
     }
 
     /**

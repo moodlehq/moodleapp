@@ -62,8 +62,13 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         this.userId = this.sitesProvider.getCurrentSiteUserId();
 
         this.loadContent(false, true).then(() => {
+            if (!this.choice) {
+                return;
+            }
             this.choiceProvider.logView(this.choice.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            }).catch((error) => {
+                // Ignore errors.
             });
         });
     }
@@ -74,11 +79,16 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * @return {Promise<any>} Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
-        return Promise.all([
-            this.choiceProvider.invalidateChoiceData(this.courseId),
-            this.choiceProvider.invalidateOptions(this.choice.id),
-            this.choiceProvider.invalidateResults(this.choice.id),
-        ]);
+        const promises = [];
+
+        promises.push(this.choiceProvider.invalidateChoiceData(this.courseId));
+
+        if (this.choice) {
+            promises.push(this.choiceProvider.invalidateOptions(this.choice.id));
+            promises.push(this.choiceProvider.invalidateResults(this.choice.id));
+        }
+
+        return Promise.all(promises);
     }
 
     /**
@@ -242,7 +252,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             // Cannot see results yet.
             this.canSeeResults = false;
 
-            return Promise.resolve(null);
+            return Promise.resolve();
         }
 
         return this.choiceProvider.getResults(this.choice.id).then((results) => {

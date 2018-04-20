@@ -164,7 +164,7 @@ export class AddonModChoiceSyncProvider extends CoreSyncBaseProvider {
                 }
 
                 // Couldn't connect to server, reject.
-                return Promise.reject(error && error.error);
+                return Promise.reject(error);
             });
         }).then(() => {
             if (courseId) {
