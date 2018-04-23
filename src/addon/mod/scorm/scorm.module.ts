@@ -15,6 +15,8 @@
 import { NgModule } from '@angular/core';
 import { AddonModScormProvider } from './providers/scorm';
 import { AddonModScormOfflineProvider } from './providers/scorm-offline';
+import { AddonModScormPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModScormSyncProvider } from './providers/scorm-sync';
 
 @NgModule({
     declarations: [
@@ -23,7 +25,9 @@ import { AddonModScormOfflineProvider } from './providers/scorm-offline';
     ],
     providers: [
         AddonModScormProvider,
-        AddonModScormOfflineProvider
+        AddonModScormOfflineProvider,
+        AddonModScormPrefetchHandler,
+        AddonModScormSyncProvider
     ]
 })
 export class AddonModScormModule { }
