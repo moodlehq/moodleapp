@@ -77,6 +77,12 @@ export class AddonModScormProvider {
     static MODENORMAL = 'normal';
     static MODEREVIEW = 'review';
 
+    // Events.
+    static LAUNCH_NEXT_SCO_EVENT = 'addon_mod_scorm_launch_next_sco';
+    static LAUNCH_PREV_SCO_EVENT = 'addon_mod_scorm_launch_prev_sco';
+    static UPDATE_TOC_EVENT = 'addon_mod_scorm_update_toc';
+    static GO_OFFLINE_EVENT = 'addon_mod_scorm_go_offline';
+
     // Protected constants.
     protected VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
     protected STATUSES = {
