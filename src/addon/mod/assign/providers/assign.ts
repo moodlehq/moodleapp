@@ -488,7 +488,7 @@ export class AddonModAssignProvider {
             case 'nosubmission':
                 return 'danger';
             default:
-                return '';
+                return 'light';
         }
     }
 

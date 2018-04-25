@@ -6,11 +6,11 @@
     </p>
     <div item-end>
         <div text-right>
-            <a ion-button *ngIf="canEdit" (click)="editComment()" color="light">
+            <button ion-button icon-only clear *ngIf="canEdit" (click)="editComment()" color="dark">
                 <ion-icon name="create"></ion-icon>
-            </a>
+            </button>
         </div>
-        <ion-note *ngIf="!isSent">
+        <ion-note *ngIf="!isSent" color="dark">
             <ion-icon name="clock"></ion-icon>
             {{ 'core.notsent' | translate }}
         </ion-note>

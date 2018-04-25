@@ -14,10 +14,9 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <!-- Description and intro attachments. -->
-    <ion-card *ngIf="description">
+    <ion-card *ngIf="description" (click)="expandDescription($event)">
         <ion-item text-wrap>
             <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120" (click)="expandDescription($event)"></core-format-text>
-            <ion-note *ngIf="note" item-end>{{ note }}</ion-note>
         </ion-item>
     </ion-card>
 

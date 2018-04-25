@@ -96,6 +96,10 @@ export class CoreLocalFileComponent implements OnInit {
      * @param {Event} e Click event.
      */
     fileClicked(e: Event): void {
+        if (this.editMode) {
+            return;
+        }
+
         e.preventDefault();
         e.stopPropagation();
 
@@ -127,8 +131,12 @@ export class CoreLocalFileComponent implements OnInit {
      * Rename the file.
      *
      * @param {string} newName New name.
+     * @param {Event}  e       Click event.
      */
-    changeName(newName: string): void {
+    changeName(newName: string, e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (newName == this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
