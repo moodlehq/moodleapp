@@ -18,6 +18,7 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { AddonModScormProvider } from './providers/scorm';
+import { AddonModScormHelperProvider } from './providers/helper';
 import { AddonModScormOfflineProvider } from './providers/scorm-offline';
 import { AddonModScormModuleHandler } from './providers/module-handler';
 import { AddonModScormPrefetchHandler } from './providers/prefetch-handler';
@@ -36,6 +37,7 @@ import { AddonModScormComponentsModule } from './components/components.module';
     providers: [
         AddonModScormProvider,
         AddonModScormOfflineProvider,
+        AddonModScormHelperProvider,
         AddonModScormSyncProvider,
         AddonModScormModuleHandler,
         AddonModScormPrefetchHandler,
