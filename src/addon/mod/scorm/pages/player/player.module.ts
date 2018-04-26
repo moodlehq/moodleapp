@@ -13,37 +13,21 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreCourseComponentsModule } from '@core/course/components/components.module';
-import { AddonModScormIndexComponent } from './index/index';
-import { AddonModScormTocPopoverComponent } from './toc-popover/toc-popover';
+import { AddonModScormPlayerPage } from './player';
 
 @NgModule({
     declarations: [
-        AddonModScormIndexComponent,
-        AddonModScormTocPopoverComponent
+        AddonModScormPlayerPage,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CoreCourseComponentsModule
+        IonicPageModule.forChild(AddonModScormPlayerPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-    ],
-    exports: [
-        AddonModScormIndexComponent,
-        AddonModScormTocPopoverComponent
-    ],
-    entryComponents: [
-        AddonModScormIndexComponent,
-        AddonModScormTocPopoverComponent
-    ]
 })
-export class AddonModScormComponentsModule {}
+export class AddonModScormPlayerPageModule {}

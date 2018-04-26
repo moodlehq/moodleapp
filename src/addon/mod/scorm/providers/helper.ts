@@ -13,8 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from './scorm';
+import { AddonModScormOfflineProvider } from './scorm-offline';
 
 /**
  * Helper service that provides some features for SCORM.
@@ -22,9 +26,13 @@ import { AddonModScormProvider, AddonModScormAttemptCountResult } from './scorm'
 @Injectable()
 export class AddonModScormHelperProvider {
 
-    protected div = document.createElement('div'); // A div element to search in HTML code.
+    // List of elements we want to ignore when copying attempts (they're calculated).
+    protected elementsToIgnore = ['status', 'score_raw', 'total_time', 'session_time', 'student_id', 'student_name', 'credit',
+                        'mode', 'entry'];
 
-    constructor(private domUtils: CoreDomUtilsProvider, private scormProvider: AddonModScormProvider) { }
+    constructor(private sitesProvider: CoreSitesProvider, private translate: TranslateService,
+            private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
+            private scormProvider: AddonModScormProvider, private scormOfflineProvider: AddonModScormOfflineProvider) { }
 
     /**
      * Show a confirm dialog if needed. If SCORM doesn't have size, try to calculate it.
@@ -55,6 +63,93 @@ export class AddonModScormHelperProvider {
                     return this.domUtils.confirmDownloadSize({size: size, total: true});
                 });
             }
+        });
+    }
+
+    /**
+     * Creates a new offline attempt based on an existing online attempt.
+     *
+     * @param {any} scorm SCORM.
+     * @param {number} attempt Number of the online attempt.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the attempt is created.
+     */
+    convertAttemptToOffline(scorm: any, attempt: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Get data from the online attempt.
+        return this.scormProvider.getScormUserData(scorm.id, attempt, undefined, false, false, siteId).then((onlineData) => {
+            // The SCORM API might have written some data to the offline attempt already.
+            // We don't want to override it with cached online data.
+            return this.scormOfflineProvider.getScormUserData(scorm.id, attempt, undefined, siteId).catch(() => {
+                // Ignore errors.
+            }).then((offlineData) => {
+                const dataToStore = this.utils.clone(onlineData);
+
+                // Filter the data to copy.
+                for (const scoId in dataToStore) {
+                    const sco = dataToStore[scoId];
+
+                    // Delete calculated data.
+                    this.elementsToIgnore.forEach((el) => {
+                        delete sco.userdata[el];
+                    });
+
+                    // Don't override offline data.
+                    if (offlineData && offlineData[sco.scoid] && offlineData[sco.scoid].userdata) {
+                        const scoUserData = {};
+
+                        for (const element in sco.userdata) {
+                            if (!offlineData[sco.scoid].userdata[element]) {
+                                // This element is not stored in offline, we can save it.
+                                scoUserData[element] = sco.userdata[element];
+                            }
+                        }
+
+                        sco.userdata = scoUserData;
+                    }
+                }
+
+                return this.scormOfflineProvider.createNewAttempt(scorm, attempt, dataToStore, onlineData, siteId);
+            });
+        }).catch(() => {
+            // Shouldn't happen.
+            return Promise.reject(this.translate.instant('addon.mod_scorm.errorcreateofflineattempt'));
+        });
+    }
+
+    /**
+     * Creates a new offline attempt.
+     *
+     * @param {any} scorm SCORM.
+     * @param {number} newAttempt Number of the new attempt.
+     * @param {number} lastOnline Number of the last online attempt.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved when the attempt is created.
+     */
+    createOfflineAttempt(scorm: any, newAttempt: number, lastOnline: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        // Try to get data from online attempts.
+        return this.searchOnlineAttemptUserData(scorm.id, lastOnline, siteId).then((userData) => {
+            // We're creating a new attempt, remove all the user data that is not needed for a new attempt.
+            for (const scoId in userData) {
+                const sco = userData[scoId],
+                    filtered = {};
+
+                for (const element in sco.userdata) {
+                    if (element.indexOf('.') == -1 && this.elementsToIgnore.indexOf(element) == -1) {
+                        // The element doesn't use a dot notation, probably SCO data.
+                        filtered[element] = sco.userdata[element];
+                    }
+                }
+
+                sco.userdata = filtered;
+            }
+
+            return this.scormOfflineProvider.createNewAttempt(scorm, newAttempt, userData, undefined, siteId);
+        }).catch(() => {
+            return Promise.reject(this.translate.instant('addon.mod_scorm.errorcreateofflineattempt'));
         });
     }
 
@@ -98,6 +193,41 @@ export class AddonModScormHelperProvider {
     }
 
     /**
+     * Get the first SCO to load in a SCORM. If a non-empty TOC is provided, it will be the first valid SCO in the TOC.
+     * Otherwise, it will be the first valid SCO returned by $mmaModScorm#getScos.
+     *
+     * @param {number} scormId Scorm ID.
+     * @param {number} attempt Attempt number.
+     * @param {any[]} [toc] SCORM's TOC.
+     * @param {string} [organization] Organization to use.
+     * @param {boolean} [offline] Whether the attempt is offline.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with the first SCO.
+     */
+    getFirstSco(scormId: number, attempt: number, toc?: any[], organization?: string, offline?: boolean, siteId?: string)
+            : Promise<any> {
+
+        let promise;
+        if (toc && toc.length) {
+            promise = Promise.resolve(toc);
+        } else {
+            // SCORM doesn't have a TOC. Get all the scos.
+            promise = this.scormProvider.getScosWithData(scormId, attempt, organization, offline, false, siteId);
+        }
+
+        return promise.then((scos) => {
+            // Search the first valid SCO.
+            for (let i = 0; i < scos.length; i++) {
+                const sco = scos[i];
+
+                if (sco.isvisible && sco.prereq && sco.launch) {
+                    return sco;
+                }
+            }
+        });
+    }
+
+    /**
      * Get the last attempt (number and whether it's offline).
      * It'll be the highest number as long as it doesn't surpass the max number of attempts.
      *
@@ -117,5 +247,84 @@ export class AddonModScormHelperProvider {
                 offline: attempts.lastAttempt.offline
             };
         }
+    }
+
+    /**
+     * Given a TOC in array format and a scoId, return the next available SCO.
+     *
+     * @param {any[]} toc SCORM's TOC.
+     * @param {number} scoId SCO ID.
+     * @return {any} Next SCO.
+     */
+    getNextScoFromToc(toc: any, scoId: number): any {
+        for (let i = 0; i < toc.length; i++) {
+            if (toc[i].id == scoId) {
+                // We found the current SCO. Now let's search the next visible SCO with fulfilled prerequisites.
+                for (let j = i + 1; j < toc.length; j++) {
+                    if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
+                        return toc[j];
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Given a TOC in array format and a scoId, return the previous available SCO.
+     *
+     * @param {any[]} toc SCORM's TOC.
+     * @param {number} scoId SCO ID.
+     * @return {any} Previous SCO.
+     */
+    getPreviousScoFromToc(toc: any, scoId: number): any {
+        for (let i = 0; i < toc.length; i++) {
+            if (toc[i].id == scoId) {
+                // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
+                for (let j = i - 1; j >= 0; j--) {
+                    if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
+                        return toc[j];
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Given a TOC in array format and a scoId, return the SCO.
+     *
+     * @param {any[]} toc SCORM's TOC.
+     * @param {number} scoId SCO ID.
+     * @return {any} SCO.
+     */
+    getScoFromToc(toc: any[], scoId: number): any {
+        for (let i = 0; i < toc.length; i++) {
+            if (toc[i].id == scoId) {
+                return toc[i];
+            }
+        }
+    }
+
+    /**
+     * Searches user data for an online attempt. If the data can't be retrieved, re-try with the previous online attempt.
+     *
+     * @param {number} scormId SCORM ID.
+     * @param {number} attempt Online attempt to get the data.
+     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @return {Promise<any>} Promise resolved with user data.
+     */
+    searchOnlineAttemptUserData(scormId: number, attempt: number, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.scormProvider.getScormUserData(scormId, attempt, undefined, false, false, siteId).catch(() => {
+            if (attempt > 0) {
+                // We couldn't retrieve the data. Try again with the previous online attempt.
+                return this.searchOnlineAttemptUserData(scormId, attempt - 1, siteId);
+            } else {
+                // No more attempts to try. Reject
+                return Promise.reject(null);
+            }
+        });
     }
 }
