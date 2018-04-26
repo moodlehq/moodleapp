@@ -14,9 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { Zip } from '@ionic-native/zip';
-import { JSZip } from 'jszip';
+import * as JSZip from 'jszip';
 import { File } from '@ionic-native/file';
-import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Emulates the Cordova Zip plugin in desktop apps and in browser.
@@ -24,8 +24,34 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 @Injectable()
 export class ZipMock extends Zip {
 
-    constructor(private file: File, private mimeUtils: CoreMimetypeUtilsProvider) {
+    constructor(private file: File, private textUtils: CoreTextUtilsProvider) {
         super();
+    }
+
+    /**
+     * Create a directory. It creates all the foldes in dirPath 1 by 1 to prevent errors.
+     *
+     * @param {string} destination Destination parent folder.
+     * @param {string} dirPath Relative path to the folder.
+     * @return {Promise<void>} Promise resolved when done.
+     */
+    protected createDir(destination: string, dirPath: string): Promise<void> {
+        // Create all the folders 1 by 1 in order, otherwise it fails.
+        const folders = dirPath.split('/');
+        let promise = Promise.resolve();
+
+        for (let i = 0; i < folders.length; i++) {
+            const folder = folders[i];
+
+            promise = promise.then(() => {
+                return this.file.createDir(destination, folder, true).then(() => {
+                    // Folder created, add it to the destination path.
+                    destination = this.textUtils.concatenatePaths(destination, folder);
+                });
+            });
+        }
+
+        return promise;
     }
 
     /**
@@ -37,35 +63,68 @@ export class ZipMock extends Zip {
      * @return {Promise<number>} Promise that resolves with a number. 0 is success, -1 is error.
      */
     unzip(source: string, destination: string, onProgress?: Function): Promise<number> {
+
         // Replace all %20 with spaces.
         source = source.replace(/%20/g, ' ');
         destination = destination.replace(/%20/g, ' ');
 
         const sourceDir = source.substring(0, source.lastIndexOf('/')),
-            sourceName = source.substr(source.lastIndexOf('/') + 1);
+            sourceName = source.substr(source.lastIndexOf('/') + 1),
+            zip = new JSZip();
 
+        // Read the file first.
         return this.file.readAsArrayBuffer(sourceDir, sourceName).then((data) => {
-            const zip = new JSZip(data),
-                promises = [],
-                total = Object.keys(zip.files).length;
-            let loaded = 0;
 
-            if (!zip.files || !zip.files.length) {
+            // Now load the file using the JSZip library.
+            return zip.loadAsync(data);
+        }).then((): any => {
+
+            if (!zip.files || !Object.keys(zip.files).length) {
                 // Nothing to extract.
                 return 0;
             }
 
-            zip.files.forEach((file, name) => {
-                let type,
-                    promise;
+            // First of all, create the directory where the files will be unzipped.
+            const destParent = destination.substring(0, source.lastIndexOf('/')),
+                destFolderName = destination.substr(source.lastIndexOf('/') + 1);
+
+            return this.file.createDir(destParent, destFolderName, false);
+        }).then(() => {
+
+            const promises = [],
+                total = Object.keys(zip.files).length;
+            let loaded = 0;
+
+            for (const name in zip.files) {
+                const file = zip.files[name];
+                let promise;
 
                 if (!file.dir) {
-                    // It's a file. Get the mimetype and write the file.
-                    type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(name));
-                    promise = this.file.writeFile(destination, name, new Blob([file.asArrayBuffer()], { type: type }));
+                    // It's a file.
+                    const fileDir = name.substring(0, name.lastIndexOf('/')),
+                        fileName = name.substr(name.lastIndexOf('/') + 1),
+                        filePromises = [];
+                    let fileData;
+
+                    if (fileDir) {
+                        // The file is in a subfolder, create it first.
+                        filePromises.push(this.createDir(destination, fileDir));
+                    }
+
+                    // Read the file contents as a Blob.
+                    filePromises.push(file.async('blob').then((data) => {
+                        fileData = data;
+                    }));
+
+                    promise = Promise.all(filePromises).then(() => {
+                        // File read and parent folder created, now write the file.
+                        const parentFolder = this.textUtils.concatenatePaths(destination, fileDir);
+
+                        return this.file.writeFile(parentFolder, fileName, fileData, {replace: true});
+                    });
                 } else {
                     // It's a folder, create it if it doesn't exist.
-                    promise = this.file.createDir(destination, name, false);
+                    promise = this.createDir(destination, name);
                 }
 
                 promises.push(promise.then(() => {
@@ -73,7 +132,7 @@ export class ZipMock extends Zip {
                     loaded++;
                     onProgress && onProgress({ loaded: loaded, total: total });
                 }));
-            });
+            }
 
             return Promise.all(promises).then(() => {
                 return 0;

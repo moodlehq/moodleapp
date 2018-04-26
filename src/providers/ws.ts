@@ -706,8 +706,8 @@ export class CoreWSProvider {
         data = ('response' in xhr) ? xhr.response : xhr.responseText;
 
         // Check status.
-        xhr.status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
-        if (xhr.status < 200 || xhr.status >= 300) {
+        const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
+        if (status < 200 || status >= 300) {
             // Request failed.
             errorResponse.message = data;
 

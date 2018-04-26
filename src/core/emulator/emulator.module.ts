@@ -53,7 +53,6 @@ import { CoreEmulatorCaptureHelperProvider } from './providers/capture-helper';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreInitDelegate } from '@providers/init';
@@ -184,10 +183,10 @@ export const IONIC_NATIVE_PROVIDERS = [
         SQLite,
         {
             provide: Zip,
-            deps: [CoreAppProvider, File, CoreMimetypeUtilsProvider, CoreTextUtilsProvider],
-            useFactory: (appProvider: CoreAppProvider, file: File, mimeUtils: CoreMimetypeUtilsProvider): Zip => {
+            deps: [CoreAppProvider, File, CoreTextUtilsProvider],
+            useFactory: (appProvider: CoreAppProvider, file: File, textUtils: CoreTextUtilsProvider): Zip => {
                 // Use platform instead of CoreAppProvider to prevent circular dependencies.
-                return appProvider.isMobile() ? new Zip() : new ZipMock(file, mimeUtils);
+                return appProvider.isMobile() ? new Zip() : new ZipMock(file, textUtils);
             }
         },
     ]
