@@ -224,7 +224,7 @@ export class AddonModAssignSubmissionDelegate extends CoreDelegate {
      * @param {any} inputData Data entered by the user for the submission.
      */
     clearTmpData(assign: any, submission: any, plugin: any, inputData: any): void {
-        return this.executeFunctionOnEnabled(plugin.type, 'return', [assign, submission, plugin, inputData]);
+        return this.executeFunctionOnEnabled(plugin.type, 'clearTmpData', [assign, submission, plugin, inputData]);
     }
 
     /**

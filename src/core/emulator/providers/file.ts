@@ -74,6 +74,8 @@ export class FileMock extends File {
      */
     private copyMock(srce: Entry, destDir: DirectoryEntry, newName: string): Promise<Entry> {
         return new Promise<Entry>((resolve, reject): void => {
+            newName = newName.replace(/%20/g, ' '); // Replace all %20 with spaces.
+
             srce.copyTo(destDir, newName, (deste) => {
                 resolve(deste);
             }, (err) => {
@@ -212,6 +214,8 @@ export class FileMock extends File {
     getDirectory(directoryEntry: DirectoryEntry, directoryName: string, flags: Flags): Promise<DirectoryEntry> {
         return new Promise<DirectoryEntry>((resolve, reject): void => {
             try {
+                directoryName = directoryName.replace(/%20/g, ' '); // Replace all %20 with spaces.
+
                 directoryEntry.getDirectory(directoryName, flags, (de) => {
                     resolve(de);
                 }, (err) => {
@@ -235,6 +239,8 @@ export class FileMock extends File {
     getFile(directoryEntry: DirectoryEntry, fileName: string, flags: Flags): Promise<FileEntry> {
         return new Promise<FileEntry>((resolve, reject): void => {
             try {
+                fileName = fileName.replace(/%20/g, ' '); // Replace all %20 with spaces.
+
                 directoryEntry.getFile(fileName, flags, resolve, (err) => {
                     this.fillErrorMessageMock(err);
                     reject(err);
@@ -375,6 +381,8 @@ export class FileMock extends File {
      */
     private moveMock(srce: Entry, destDir: DirectoryEntry, newName: string): Promise<Entry> {
         return new Promise<Entry>((resolve, reject): void => {
+            newName = newName.replace(/%20/g, ' '); // Replace all %20 with spaces.
+
             srce.moveTo(destDir, newName, (deste) => {
                 resolve(deste);
             }, (err) => {

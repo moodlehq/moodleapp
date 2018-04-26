@@ -56,16 +56,16 @@ export class CoreAutoFocusDirective implements OnInit {
     protected autoFocus(): void {
         const autoFocus = this.utils.isTrueOrOne(this.coreAutoFocus);
         if (autoFocus) {
-            // If it's a ion-input or ion-textarea, search the right input to use.
-            let element = this.element;
-            if (this.element.tagName == 'ION-INPUT') {
-                element = this.element.querySelector('input') || element;
-            } else if (this.element.tagName == 'ION-TEXTAREA') {
-                element = this.element.querySelector('textarea') || element;
-            }
-
             // Wait a bit to make sure the view is loaded.
             setTimeout(() => {
+                // If it's a ion-input or ion-textarea, search the right input to use.
+                let element = this.element;
+                if (this.element.tagName == 'ION-INPUT') {
+                    element = this.element.querySelector('input') || element;
+                } else if (this.element.tagName == 'ION-TEXTAREA') {
+                    element = this.element.querySelector('textarea') || element;
+                }
+
                 this.domUtils.focusElement(element);
             }, 200);
         }

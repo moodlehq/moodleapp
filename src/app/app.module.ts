@@ -212,7 +212,7 @@ export const CORE_PROVIDERS: any[] = [
 })
 export class AppModule {
     constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider,
-            sitesProvider: CoreSitesProvider) {
+            sitesProvider: CoreSitesProvider, fileProvider: CoreFileProvider) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
             name: 'CorePlatformReady',
@@ -230,6 +230,14 @@ export class AppModule {
             priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 200,
             blocking: false,
             load: sitesProvider.restoreSession.bind(sitesProvider)
+        });
+
+        // Register clear app tmp folder.
+        initDelegate.registerProcess({
+            name: 'CoreClearTmpFolder',
+            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 150,
+            blocking: false,
+            load: fileProvider.clearTmpFolder.bind(fileProvider)
         });
 
         // Execute the init processes.

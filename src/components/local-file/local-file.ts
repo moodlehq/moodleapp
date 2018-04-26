@@ -120,11 +120,6 @@ export class CoreLocalFileComponent implements OnInit {
         e.stopPropagation();
         this.editMode = true;
         this.newFileName = this.file.name;
-
-        // @todo For some reason core-auto-focus isn't working right. Focus the input manually.
-        // $timeout(function() {
-        //     $mmUtil.focusElement(element[0].querySelector('input'));
-        // });
     }
 
     /**
@@ -159,8 +154,8 @@ export class CoreLocalFileComponent implements OnInit {
                 this.file = fileEntry;
                 this.loadFileBasicData();
                 this.onRename.emit({ file: this.file });
-            }).catch(() => {
-                this.domUtils.showErrorModal('core.errorrenamefile', true);
+            }).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'core.errorrenamefile', true);
             });
         }).finally(() => {
             modal.dismiss();
