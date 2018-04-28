@@ -1,5 +1,19 @@
 {
-    "contents": "内容",
-    "hiddenfromstudents": "对学生隐藏",
-    "overriddennotice": "您在该活动中的最终成绩将自动调整。"
+  "contents": "内容",
+  "hiddenfromstudents": "对学生隐藏",
+  "overriddennotice": "您在该活动中的最终成绩将自动调整。",
+  "activitynotyetviewableremoteaddon": "您的组织安裝了尚未支持的插件",
+  "activitynotyetviewablesiteupgradeneeded": "您的组织的网站安装需要更新.",
+  "allsections": "全部",
+  "askadmintosupport": "请与网站管理员联系, 告知他们您要使用应用程序使用此活动.",
+  "confirmdeletemodulefiles": "您确定要刪除此模块文件吗?",
+  "confirmdownload": "您即将下载{{size}}. 您确定您要继续吗?",
+  "confirmdownloadunknownsize": "我们无法计算下载的文件大小，您确定要继续吗?",
+  "confirmpartialdownloadsize": "您即将下载<strong>至少</ strong> {{size}}. 您确定您要继续吗?",
+  "couldnotloadsectioncontent": "无法载入区块内容，请稍后再试.",
+  "couldnotloadsections": "无法载入区块，请稍后再试.",
+  "errordownloadingsection": "载入区块时发生错误",
+  "errorgetmodule": "取得模块资料时出现错误",
+  "nocontentavailable": "无可使用内容",
+  "useactivityonbrowser": "您可以在浏览器中使用"
 }

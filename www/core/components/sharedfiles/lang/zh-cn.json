@@ -1,4 +1,11 @@
 {
-    "rename": "重命名",
-    "replace": "替换"
+  "rename": "重命名",
+  "replace": "替换",
+  "chooseaccountstorefile": "选择要存入文件的账号",
+  "chooseactionrepeatedfile": "已经有一个同名的文件.  要替换现有文件还是重命名为“{{$ a}}”?",
+  "errorreceivefilenosites": "沒有已存入的网站. 请在应用程序共享文件之前新增网站.",
+  "nosharedfiles": "本网站没有存入共享文件.",
+  "nosharedfilestoupload": "您没有要在此处上传的文件. 如果您要从其他应用上传文件, 请找到该文件, 然后按一下[开启]按钮.",
+  "sharedfiles": "分享文件",
+  "successstorefile": "文件已成功储存.现在您可以选择文件上传到您的个人档案."
 }

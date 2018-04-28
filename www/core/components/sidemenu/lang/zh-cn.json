@@ -1,7 +1,9 @@
 {
-    "changesite": "注销",
-    "help": "帮助",
-    "logout": "注销",
-    "mycourses": "我的课程",
-    "website": "网站"
+  "changesite": "注销",
+  "help": "帮助",
+  "logout": "注销",
+  "mycourses": "我的课程",
+  "website": "网站",
+  "appsettings": "应用程序设置",
+  "togglemenu": "切换功能菜单"
 }
