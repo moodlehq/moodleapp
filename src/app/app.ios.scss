@@ -104,3 +104,10 @@
     }
   }
 }
+
+// Different levels of padding.
+@for $i from 0 through 15 {
+  .ios .core-padding-#{$i} {
+    padding-left: 15px * $i + $item-ios-padding-start;
+  }
+}

@@ -621,7 +621,7 @@ canvas[core-chart] {
     color: $color-base;
   }
 
-  .text-#{$color-name}, p.#{$color-name}, .item p.text-#{$color-name} {
+  .text-#{$color-name}, p.text-#{$color-name}, .item p.text-#{$color-name}, .card p.text-#{$color-name} {
     color: $color-base;
   }
 }

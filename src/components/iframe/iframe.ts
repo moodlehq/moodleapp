@@ -139,6 +139,13 @@ export class CoreIframeComponent implements OnInit, OnChanges {
                 winAndDoc = this.getContentWindowAndDocument(element);
                 this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document);
                 this.treatLinks(element, winAndDoc.document);
+
+                if (winAndDoc.window) {
+                    // Send a resize events to the iframe so it calculates the right size if needed.
+                    setTimeout(() => {
+                        winAndDoc.window.dispatchEvent(new Event('resize'));
+                    }, 1000);
+                }
             });
         }
     }

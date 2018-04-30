@@ -46,7 +46,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     protected courseProvider: CoreCourseProvider;
     protected appProvider: CoreAppProvider;
     protected eventsProvider: CoreEventsProvider;
-    protected modulePrefetchProvider: CoreCourseModulePrefetchDelegate;
+    protected modulePrefetchDelegate: CoreCourseModulePrefetchDelegate;
 
     constructor(injector: Injector, protected content?: Content) {
         super(injector);
@@ -55,6 +55,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.courseProvider = injector.get(CoreCourseProvider);
         this.appProvider = injector.get(CoreAppProvider);
         this.eventsProvider = injector.get(CoreEventsProvider);
+        this.modulePrefetchDelegate = injector.get(CoreCourseModulePrefetchDelegate);
 
         const network = injector.get(Network);
 
@@ -158,7 +159,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.loaded = false;
         this.content && this.content.scrollToTop();
 
-        return this.refreshContent(true, showErrors);
+        return this.refreshContent(sync, showErrors);
     }
 
     /**
@@ -226,7 +227,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             }, this.siteId);
 
             // Also, get the current status.
-            this.modulePrefetchProvider.getModuleStatus(this.module, this.courseId).then((status) => {
+            this.modulePrefetchDelegate.getModuleStatus(this.module, this.courseId).then((status) => {
                 this.currentStatus = status;
                 this.showStatus(status);
             });

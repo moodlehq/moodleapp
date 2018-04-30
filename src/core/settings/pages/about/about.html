@@ -38,7 +38,7 @@
         </ion-item>
         <ion-item text-wrap *ngIf="fileSystemRoot">
             <h2>{{ 'core.settings.filesystemroot' | translate}}</h2>
-            <p><a *ngIf="fsClickable" [href]="fileSystemRoot" core-link auto-login="no">{{ filesystemroot }}</a></p>
+            <p><a *ngIf="fsClickable" [href]="fileSystemRoot" core-link auto-login="no">{{ fileSystemRoot }}</a></p>
             <p *ngIf="!fsClickable">{{ fileSystemRoot }}</p>
         </ion-item>
         <ion-item text-wrap *ngIf="navigator && navigator.userAgent">

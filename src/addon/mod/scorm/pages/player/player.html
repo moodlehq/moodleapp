@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+
+        <ion-buttons end>
+            <button *ngIf="showToc && !loadingToc && toc && toc.length" ion-button icon-only (click)="openToc($event)">
+                <ion-icon name="bookmark"></ion-icon>
+            </button>
+            <ion-spinner *ngIf="showToc && loadingToc"></ion-spinner>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <core-navigation-bar [previous]="previousSco" [next]="nextSco" (action)="loadSco($event)"></core-navigation-bar>
+        <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scorm.popup ? scorm.width : undefined" [iframeHeight]="scorm.popup ? scorm.height : undefined"></core-iframe>
+        <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
+    </core-loading>
+</ion-content>

@@ -731,6 +731,10 @@ export class CoreFileProvider {
             destFolder = this.addBasePathIfNeeded(destFolder || this.mimeUtils.removeExtension(path));
 
             return this.zip.unzip(fileEntry.toURL(), destFolder, onProgress);
+        }).then((result) => {
+            if (result == -1) {
+                return Promise.reject(null);
+            }
         });
     }
 
