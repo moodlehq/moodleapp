@@ -211,6 +211,19 @@ export class CoreGradesProvider {
     }
 
     /**
+     * Invalidates courses grade table and items WS calls for all users.
+     *
+     * @param {number} courseId ID of the course to get the grades from.
+     * @param {string} [siteId] Site ID (empty for current site).
+     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     */
+    invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return site.invalidateWsCacheForKeyStartingWith(this.getCourseGradesPrefixCacheKey(courseId));
+        });
+    }
+
+    /**
      * Invalidates grade table data WS calls.
      *
      * @param {number} courseId Course ID.
@@ -247,7 +260,7 @@ export class CoreGradesProvider {
      * @param {string} [siteId]     Site id (empty for current site).
      * @return {Promise<any>}     Promise resolved when the data is invalidated.
      */
-    invalidateCourseGradesItemsData(courseId: number, userId: number, groupId: number, siteId?: string): Promise<any> {
+    invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.invalidateWsCacheForKey(this.getCourseGradesItemsCacheKey(courseId, userId, groupId));
         });

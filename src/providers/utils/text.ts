@@ -303,14 +303,16 @@ export class CoreTextUtilsProvider {
      * @param {string} text Content of the text to be expanded.
      * @param {string} [component] Component to link the embedded files to.
      * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param {any[]} [files] List of files to display along with the text.
      */
-    expandText(title: string, text: string, component?: string, componentId?: string | number): void {
+    expandText(title: string, text: string, component?: string, componentId?: string | number, files?: any[]): void {
         if (text.length > 0) {
             const params: any = {
                 title: title,
                 content: text,
                 component: component,
-                componentId: componentId
+                componentId: componentId,
+                files: files
             };
 
             // Open a modal with the contents.

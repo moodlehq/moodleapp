@@ -235,6 +235,29 @@ export class CoreGradesHelperProvider {
     }
 
     /**
+     * Returns the label of the selected grade.
+     *
+     * @param {any[]} grades Array with objects with value and label.
+     * @param {number} selectedGrade Selected grade value.
+     * @return {string} Selected grade label.
+     */
+    getGradeLabelFromValue(grades: any[], selectedGrade: number): string {
+        selectedGrade = Number(selectedGrade);
+
+        if (!grades || !selectedGrade || selectedGrade <= 0) {
+            return '';
+        }
+
+        for (const x in grades) {
+            if (grades[x].value == selectedGrade) {
+                return grades[x].label;
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
      *
      * @param  {number}  courseId             ID of the course to get the grades from.
@@ -264,6 +287,27 @@ export class CoreGradesHelperProvider {
 
             return Promise.reject(null);
         });
+    }
+
+    /**
+     * Returns the value of the selected grade.
+     *
+     * @param {any[]} grades Array with objects with value and label.
+     * @param {string} selectedGrade Selected grade label.
+     * @return {number} Selected grade value.
+     */
+    getGradeValueFromLabel(grades: any[], selectedGrade: string): number {
+        if (!grades || !selectedGrade) {
+            return 0;
+        }
+
+        for (const x in grades) {
+            if (grades[x].label == selectedGrade) {
+                return grades[x].value < 0 ? 0 : grades[x].value;
+            }
+        }
+
+        return 0;
     }
 
     /**

@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreViewerTextPage } from './text';
+import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
 /**
@@ -26,6 +27,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
         CoreViewerTextPage
     ],
     imports: [
+        CoreComponentsModule,
         CoreDirectivesModule,
         IonicPageModule.forChild(CoreViewerTextPage),
         TranslateModule.forChild()

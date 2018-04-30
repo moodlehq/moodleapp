@@ -1,4 +1,6 @@
 core-loading {
+    @include core-transition(height, 200ms);
+
     .core-loading-container {
         width: 100%;
         text-align: center;
@@ -7,34 +9,45 @@ core-loading {
     }
 
     .core-loading-content {
+        display: unset;
         padding-bottom: 1px; /* This makes height be real */
     }
 
     &.core-loading-noheight .core-loading-content {
         height: auto;
     }
-    @include core-transition(core-show-animation);
 }
 
-.scroll-content > core-loading > .core-loading-container,
-ion-content > .scroll-content > core-loading > .core-loading-container,
-.core-loading-center .core-loading-container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: table;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    margin: 0;
-    padding: 0;
-    clear: both;
+.scroll-content > core-loading,
+ion-content > .scroll-content > core-loading,
+.core-loading-center {
+    position: unset !important;
+}
 
-    .core-loading-spinner {
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle;
+.scroll-content > core-loading,
+ion-content > .scroll-content > core-loading,
+.core-loading-center,
+core-loading.core-loading-loaded {
+    position: relative;
+
+    > .core-loading-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: table;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        margin: 0;
+        padding: 0;
+        clear: both;
+
+        .core-loading-spinner {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
     }
 }

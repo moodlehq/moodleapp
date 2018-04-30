@@ -487,7 +487,7 @@ export class CoreFileUploaderProvider {
      * @return {Promise<number>} Promise resolved with the itemId.
      */
     uploadOrReuploadFiles(files: any[], component?: string, componentId?: string | number, siteId?: string): Promise<number> {
-            siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         if (!files || !files.length) {
             // Return fake draft ID.

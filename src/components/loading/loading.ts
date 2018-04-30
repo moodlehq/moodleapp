@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { coreShowHideAnimation } from '@classes/animations';
 
@@ -41,11 +41,15 @@ import { coreShowHideAnimation } from '@classes/animations';
     templateUrl: 'loading.html',
     animations: [coreShowHideAnimation]
 })
-export class CoreLoadingComponent implements OnInit {
+export class CoreLoadingComponent implements OnInit, OnChanges {
     @Input() hideUntil: boolean; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
+    @ViewChild('content') content: ElementRef;
+    protected element: HTMLElement; // Current element.
 
-    constructor(private translate: TranslateService) { }
+    constructor(private translate: TranslateService, element: ElementRef) {
+        this.element = element.nativeElement;
+    }
 
     /**
      * Component being initialized.
@@ -54,6 +58,19 @@ export class CoreLoadingComponent implements OnInit {
         if (!this.message) {
             // Default loading message.
             this.message = this.translate.instant('core.loading');
+        }
+    }
+
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if (changes.hideUntil.currentValue === true) {
+            setTimeout(() => {
+                // Content is loaded so, center the spinner on the content itself.
+                this.element.classList.add('core-loading-loaded');
+                setTimeout(() => {
+                    // Change CSS to force calculate height.
+                    this.content.nativeElement.classList.add('core-loading-content');
+                }, 500);
+            });
         }
     }
 

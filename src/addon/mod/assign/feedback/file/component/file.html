@@ -1,0 +1,7 @@
+<!-- Read only. -->
+<ion-item text-wrap *ngIf="files && files.length">
+    <h2>{{plugin.name}}</h2>
+    <div no-lines>
+        <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-file>
+    </div>
+</ion-item>

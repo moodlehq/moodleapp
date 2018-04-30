@@ -13,33 +13,28 @@
 // limitations under the License.
 
 import { Component, Input } from '@angular/core';
-import { ModalController, ViewController, NavParams } from 'ionic-angular';
+import { ModalController } from 'ionic-angular';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreRecaptchaModalComponent } from './recaptchamodal';
 
 /**
- * Directive to display a reCaptcha.
- *
- * Accepts the following attributes:
- * @param {any} model The model where to store the recaptcha response.
- * @param {string} publicKey The site public key.
- * @param {string} [modelValueName] Name of the model property where to store the response. Defaults to 'recaptcharesponse'.
- * @param {string} [siteUrl] The site URL. If not defined, current site.
+ * Component that allows answering a recaptcha.
  */
 @Component({
     selector: 'core-recaptcha',
     templateUrl: 'recaptcha.html'
 })
 export class CoreRecaptchaComponent {
+    @Input() model: any; // The model where to store the recaptcha response.
+    @Input() publicKey: string; // The site public key.
+    @Input() modelValueName = 'recaptcharesponse'; // Name of the model property where to store the response.
+    @Input() siteUrl?: string; // The site URL. If not defined, current site.
+
     expired = false;
 
     protected lang: string;
-
-    @Input() model: any;
-    @Input() publicKey: string;
-    @Input() modelValueName = 'recaptcharesponse';
-    @Input() siteUrl?: string;
 
     constructor(private sitesProvider: CoreSitesProvider, langProvider: CoreLangProvider,
             private textUtils: CoreTextUtilsProvider, private modalCtrl: ModalController) {
@@ -73,55 +68,5 @@ export class CoreRecaptchaComponent {
             this.model[this.modelValueName] = data.value;
         });
         modal.present();
-    }
-}
-
-@Component({
-    selector: 'core-recaptcha-modal',
-    templateUrl: 'recaptchamodal.html'
-})
-export class CoreRecaptchaModalComponent {
-
-    expired = false;
-    value = '';
-    src: string;
-
-    constructor(protected viewCtrl: ViewController, params: NavParams) {
-        this.src = params.get('src');
-    }
-
-    /**
-     * Close modal.
-     */
-    closeModal(): void {
-        this.viewCtrl.dismiss({
-            expired: this.expired,
-            value: this.value
-        });
-    }
-
-    /**
-     * The iframe with the recaptcha was loaded.
-     *
-     * @param {HTMLIFrameElement} iframe Iframe element.
-     */
-    loaded(iframe: HTMLIFrameElement): void {
-        // Search the iframe content.
-        const contentWindow = iframe && iframe.contentWindow;
-
-        if (contentWindow) {
-            // Set the callbacks we're interested in.
-            contentWindow['recaptchacallback'] = (value): void => {
-                this.expired = false;
-                this.value = value;
-                this.closeModal();
-            };
-
-            contentWindow['recaptchaexpiredcallback'] = (): void => {
-                // Verification expired. Check the checkbox again.
-                this.expired = true;
-                this.value = '';
-            };
-        }
     }
 }

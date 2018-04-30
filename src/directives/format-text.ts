@@ -211,6 +211,11 @@ export class CoreFormatTextDirective implements OnChanges {
                     this.element.style.maxHeight = this.maxHeight + 'px';
 
                     this.element.addEventListener('click', (e) => {
+                        if (e.defaultPrevented) {
+                            // Ignore it if the event was prevented by some other listener.
+                            return;
+                        }
+
                         e.preventDefault();
                         e.stopPropagation();
 

@@ -296,7 +296,7 @@ export class CoreDomUtilsProvider {
 
             // Ignore submit inputs.
             if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                return;
+                continue;
             }
 
             // Get the value.

@@ -41,8 +41,10 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
 import { CoreTimerComponent } from './timer/timer';
-import { CoreRecaptchaComponent, CoreRecaptchaModalComponent } from './recaptcha/recaptcha';
+import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
+import { CoreRecaptchaModalComponent } from './recaptcha/recaptchamodal';
 import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
+import { CoreAttachmentsComponent } from './attachments/attachments';
 
 @NgModule({
     declarations: [
@@ -72,7 +74,8 @@ import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
         CoreTimerComponent,
         CoreRecaptchaComponent,
         CoreRecaptchaModalComponent,
-        CoreNavigationBarComponent
+        CoreNavigationBarComponent,
+        CoreAttachmentsComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -109,7 +112,8 @@ import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
         CoreSendMessageFormComponent,
         CoreTimerComponent,
         CoreRecaptchaComponent,
-        CoreNavigationBarComponent
+        CoreNavigationBarComponent,
+        CoreAttachmentsComponent
     ]
 })
 export class CoreComponentsModule {}

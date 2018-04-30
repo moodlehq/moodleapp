@@ -1,0 +1,18 @@
+addon-mod-assign-submission {
+    div.latesubmission,
+    div.overdue {
+        // @extend .core-danger-item;
+    }
+
+    div.earlysubmission {
+        // @extend .core-success-item;
+    }
+
+    div.submissioneditable p {
+        color: $red;
+    }
+
+    .core-grading-summary .advancedgrade {
+        display: none;
+    }
+}

@@ -50,6 +50,7 @@ export class AddonModSurveyModuleHandler implements CoreCourseModuleHandler {
             icon: this.courseProvider.getModuleIconSrc('survey'),
             title: module.name,
             class: 'addon-mod_survey-handler',
+            showDownloadButton: true,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions): void {
                 navCtrl.push('AddonModSurveyIndexPage', {module: module, courseId: courseId}, options);
             }

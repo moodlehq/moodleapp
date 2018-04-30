@@ -549,6 +549,32 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Adds a hash to a filename if needed.
+     *
+     * @param {string} url The URL of the file, already treated (decoded, without revision, etc.).
+     * @param {string} filename The filename.
+     * @return {string} The filename with the hash.
+     */
+    protected addHashToFilename(url: string, filename: string): string {
+        // Check if the file already has a hash. If a file is downloaded and re-uploaded with the app it will have a hash already.
+        const matches = filename.match(/_[a-f0-9]{32}/g);
+
+        if (matches && matches.length) {
+            // There is at least 1 match. Get the last one.
+            const hash = matches[matches.length - 1],
+                treatedUrl = url.replace(hash, ''); // Remove the hash from the URL.
+
+            // Check that the hash is valid.
+            if ('_' + Md5.hashAsciiStr('url:' + treatedUrl) == hash) {
+                // The data found is a hash of the URL, don't need to add it again.
+                return filename;
+            }
+        }
+
+        return filename + '_' + Md5.hashAsciiStr('url:' + url);
+    }
+
+    /**
      * Add a file to the queue.
      *
      * @param {string} siteId The site ID.
@@ -1414,7 +1440,7 @@ export class CoreFilepoolProvider {
         // We want to keep the original file name so people can easily identify the files after the download.
         filename = this.guessFilenameFromUrl(url);
 
-        return filename + '_' + Md5.hashAsciiStr('url:' + url);
+        return this.addHashToFilename(url, filename);
     }
 
     /**

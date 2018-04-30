@@ -626,7 +626,36 @@ export class CoreUtilsProvider {
      * @return {boolean} Whether the error was returned by the WebService.
      */
     isWebServiceError(error: any): boolean {
-        return typeof error.errorcode == 'undefined';
+        return typeof error.errorcode == 'undefined' && typeof error.warningcode == 'undefined';
+    }
+
+    /**
+     * Given a list (e.g. a,b,c,d,e) this function returns an array of 1->a, 2->b, 3->c etc.
+     * Taken from make_menu_from_list on moodlelib.php (not the same but similar).
+     *
+     * @param {string} list The string to explode into array bits
+     * @param {string} [defaultLabel] Element that will become default option, if not defined, it won't be added.
+     * @param {string} [separator] The separator used within the list string. Default ','.
+     * @param {any}  [defaultValue] Element that will become default option value. Default 0.
+     * @return {any[]} The now assembled array
+     */
+    makeMenuFromList(list: string, defaultLabel?: string, separator: string = ',', defaultValue?: any): any[] {
+        // Split and format the list.
+        const split = list.split(separator).map((label, index) => {
+            return {
+                label: label.trim(),
+                value: index + 1
+            };
+        });
+
+        if (defaultLabel) {
+            split.unshift({
+                label: defaultLabel,
+                value: defaultValue || 0
+            });
+        }
+
+        return split;
     }
 
     /**

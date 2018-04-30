@@ -44,6 +44,7 @@ import { Content } from 'ionic-angular';
 export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = true; // Determine when should the contents be shown.
+    @Input() parentScrollable = false; // Determine if the scroll should be in the parent content or the tab itself.
     @Output() ionChange: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>(); // Emitted when the tab changes.
     @ViewChild('originalTabs') originalTabsRef: ElementRef;
     @ViewChild('topTabs') topTabs: ElementRef;
@@ -58,7 +59,6 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
     protected tabBarHeight;
     protected tabBarElement: HTMLElement; // Host element.
     protected tabsShown = true;
-    protected scroll: HTMLElement; // Parent scroll element (if core-tabs is inside a ion-content).
 
     constructor(element: ElementRef, protected content: Content) {
         this.tabBarElement = element.nativeElement;
@@ -164,9 +164,14 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges {
         this.tabBarHeight = this.topTabsElement.offsetHeight;
         this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
         if (this.content) {
-            this.scroll = this.content.getScrollElement();
-            if (this.scroll) {
-                this.scroll.classList.add('no-scroll');
+            if (!this.parentScrollable) {
+                // Parent scroll element (if core-tabs is inside a ion-content).
+                const scroll = this.content.getScrollElement();
+                if (scroll) {
+                    scroll.classList.add('no-scroll');
+                }
+            } else {
+                this.originalTabsContainer.classList.add('no-scroll');
             }
         }
 

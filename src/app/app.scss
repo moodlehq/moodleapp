@@ -81,6 +81,12 @@
   background-color: $gray-lighter;
 }
 
+// Make no-lines work in any element, not just ion-item and ion-list.
+.item *[no-lines] .item-inner,
+*[no-lines] .item .item-inner {
+  border: 0;
+}
+
 .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
   min-height: 32px;
   img, .label {
@@ -634,6 +640,11 @@ canvas[core-chart] {
 
 .core-white-push-arrow .item-inner{
     background-image: url("data:image/svg+xml;charset=utf-8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23FFFFFF'/></svg>") !important;
+}
+
+// For list where some items have detail icon and some others don't.
+.core-list-align-detail-right .item .item-inner {
+    @include padding-horizontal(null, 32px);
 }
 
 [ion-fixed] {
