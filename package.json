@@ -1,14 +1,14 @@
 {
-  "name": "moodlemobile",
-  "version": "3.4.2",
-  "description": "The official app for Moodle.",
+  "name": "matemobile",
+  "version": "1.0",
+  "description": "Aplicación para la enseñanza de las matemáticas",
   "author": {
-    "name": "Moodle Pty Ltd.",
-    "email": "mobile@moodle.com"
+    "name": "Santiago Romero Sánchez",
+    "email": "sromeros@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/moodlehq/moodlemobile2.git"
+    "url": ""
   },
   "license": "Apache-2.0",
   "licenses": [
