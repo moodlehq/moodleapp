@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.moodle.moodlemobile" version="3.4.2">
   <name>MateMobile</name>
   <description>
-        App para la enseñanza de las matemáticas
+        Aplicación para la enseñanza de las matemáticas
     </description>
   <author href="http://moodle.com" email="mobile@moodle.com">
         Santiago Romero Sánchez
