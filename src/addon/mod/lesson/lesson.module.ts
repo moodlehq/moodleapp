@@ -13,17 +13,51 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
+import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
+import { AddonModLessonComponentsModule } from './components/components.module';
 import { AddonModLessonProvider } from './providers/lesson';
 import { AddonModLessonOfflineProvider } from './providers/lesson-offline';
+import { AddonModLessonSyncProvider } from './providers/lesson-sync';
+import { AddonModLessonModuleHandler } from './providers/module-handler';
+import { AddonModLessonPrefetchHandler } from './providers/prefetch-handler';
+import { AddonModLessonSyncCronHandler } from './providers/sync-cron-handler';
+import { AddonModLessonIndexLinkHandler } from './providers/index-link-handler';
+import { AddonModLessonGradeLinkHandler } from './providers/grade-link-handler';
+import { AddonModLessonReportLinkHandler } from './providers/report-link-handler';
 
 @NgModule({
     declarations: [
     ],
     imports: [
+        AddonModLessonComponentsModule
     ],
     providers: [
         AddonModLessonProvider,
-        AddonModLessonOfflineProvider
+        AddonModLessonOfflineProvider,
+        AddonModLessonSyncProvider,
+        AddonModLessonModuleHandler,
+        AddonModLessonPrefetchHandler,
+        AddonModLessonSyncCronHandler,
+        AddonModLessonIndexLinkHandler,
+        AddonModLessonGradeLinkHandler,
+        AddonModLessonReportLinkHandler
     ]
 })
-export class AddonModLessonModule { }
+export class AddonModLessonModule {
+    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLessonModuleHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModLessonPrefetchHandler,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModLessonSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
+            indexHandler: AddonModLessonIndexLinkHandler, gradeHandler: AddonModLessonGradeLinkHandler,
+            reportHandler: AddonModLessonReportLinkHandler) {
+
+        moduleDelegate.registerHandler(moduleHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
+        cronDelegate.register(syncHandler);
+        linksDelegate.registerHandler(indexHandler);
+        linksDelegate.registerHandler(gradeHandler);
+        linksDelegate.registerHandler(reportHandler);
+    }
+}

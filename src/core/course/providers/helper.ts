@@ -908,6 +908,10 @@ export class CoreCourseHelperProvider {
         }
 
         return promise.then(() => {
+            // Make sure they're numbers.
+            courseId = Number(courseId);
+            sectionId = Number(sectionId);
+
             // Get the site.
             return this.sitesProvider.getSite(siteId);
         }).then((s) => {
