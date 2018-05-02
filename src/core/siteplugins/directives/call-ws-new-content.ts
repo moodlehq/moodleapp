@@ -92,7 +92,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
                 component: this.component,
                 method: this.method,
                 args: args,
-                bootstrapResult: this.parentContent && this.parentContent.bootstrapResult
+                initResult: this.parentContent && this.parentContent.initResult
             });
         }
     }

@@ -89,7 +89,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                     component: this.component,
                     method: this.method,
                     args: args,
-                    bootstrapResult: this.parentContent && this.parentContent.bootstrapResult
+                    initResult: this.parentContent && this.parentContent.initResult
                 });
             }
         });

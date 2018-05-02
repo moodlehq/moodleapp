@@ -47,10 +47,10 @@ export interface CoreSitePluginsHandler {
     handlerSchema: any;
 
     /**
-     * Result of the bootstrap WS call.
+     * Result of the init WS call.
      * @type {any}
      */
-    bootstrapResult?: any;
+    initResult?: any;
 }
 
 /**
@@ -137,23 +137,23 @@ export class CoreSitePluginsProvider {
     }
 
     /**
-     * Given the result of a bootstrap get_content and, optionally, the result of another get_content,
+     * Given the result of a init get_content and, optionally, the result of another get_content,
      * build an object with the data to pass to the JS of the get_content.
      *
-     * @param {any} bootstrapResult Result of the bootstrap WS call.
+     * @param {any} initResult Result of the init WS call.
      * @param {any} [contentResult] Result of the content WS call (if any).
      * @return {any} An object with the data to pass to the JS.
      */
-    createDataForJS(bootstrapResult: any, contentResult?: any): any {
-        // First of all, add the data returned by the bootstrap JS (if any).
-        let data = this.utils.clone(bootstrapResult.jsResult || {});
+    createDataForJS(initResult: any, contentResult?: any): any {
+        // First of all, add the data returned by the init JS (if any).
+        let data = this.utils.clone(initResult.jsResult || {});
         if (typeof data == 'boolean') {
             data = {};
         }
 
-        // Now add some data returned by the bootstrap WS call.
-        data.BOOTSTRAP_TEMPLATES = this.utils.objectToKeyValueMap(bootstrapResult.templates, 'id', 'html');
-        data.BOOTSTRAP_OTHERDATA = bootstrapResult.otherdata;
+        // Now add some data returned by the init WS call.
+        data.INIT_TEMPLATES = this.utils.objectToKeyValueMap(initResult.templates, 'id', 'html');
+        data.INIT_OTHERDATA = initResult.otherdata;
 
         if (contentResult) {
             // Now add the data returned by the content WS call.

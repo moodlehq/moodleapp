@@ -79,6 +79,12 @@ export interface CoreSiteWSPreSets {
     getEmergencyCacheUsingCacheKey?: boolean;
 
     /**
+     * If true, the cache entry will be deleted if the WS call returns an exception.
+     * @type {boolean}
+     */
+    deleteCacheIfWSError?: boolean;
+
+    /**
      * Whether it should only be 1 entry for this cache key (all entries with same key will be deleted).
      * @type {boolean}
      */
@@ -629,6 +635,15 @@ export class CoreSite {
                     return Promise.reject(error);
                 } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
+
+                    return Promise.reject(error);
+                }
+
+                if (preSets.deleteCacheIfWSError && this.utils.isWebServiceError(error)) {
+                    // Delete the cache entry and return the entry. Don't block the user with the delete.
+                    this.deleteFromCache(method, data, preSets).catch(() => {
+                        // Ignore errors.
+                    });
 
                     return Promise.reject(error);
                 }

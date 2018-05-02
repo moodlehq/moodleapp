@@ -37,7 +37,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     component: string;
     method: string;
     args: any;
-    bootstrapResult: any;
+    initResult: any;
 
     // Data for context menu.
     externalUrl: string;
@@ -69,7 +69,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                     courseid: this.courseId,
                     cmid: this.module.id
                 };
-                this.bootstrapResult = handler.bootstrapResult;
+                this.initResult = handler.initResult;
             }
 
             // Get the data for the context menu.

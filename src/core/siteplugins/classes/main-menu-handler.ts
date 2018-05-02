@@ -22,7 +22,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
     priority: number;
 
     constructor(name: string, protected title: string, protected plugin: any, protected handlerSchema: any,
-            protected bootstrapResult: any) {
+            protected initResult: any) {
         super(name);
 
         this.priority = handlerSchema.priority;
@@ -43,7 +43,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
                 title: this.title,
                 component: this.plugin.component,
                 method: this.handlerSchema.method,
-                bootstrapResult: this.bootstrapResult
+                initResult: this.initResult
             }
         };
     }

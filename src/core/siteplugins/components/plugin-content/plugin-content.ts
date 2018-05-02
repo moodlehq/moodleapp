@@ -28,7 +28,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
     @Input() component: string;
     @Input() method: string;
     @Input() args: any;
-    @Input() bootstrapResult: any; // Result of the bootstrap WS call of the handler.
+    @Input() initResult: any; // Result of the init WS call of the handler.
     @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
     @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 
@@ -65,7 +65,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;
-            this.jsData = this.sitePluginsProvider.createDataForJS(this.bootstrapResult, result);
+            this.jsData = this.sitePluginsProvider.createDataForJS(this.initResult, result);
 
             this.onContentLoaded.emit(refresh);
         }).catch((error) => {

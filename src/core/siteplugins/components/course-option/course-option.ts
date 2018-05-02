@@ -32,7 +32,7 @@ export class CoreSitePluginsCourseOptionComponent implements OnInit {
     component: string;
     method: string;
     args: any;
-    bootstrapResult: any;
+    initResult: any;
 
     constructor(protected sitePluginsProvider: CoreSitePluginsProvider) { }
 
@@ -48,7 +48,7 @@ export class CoreSitePluginsCourseOptionComponent implements OnInit {
                 this.args = {
                     courseid: this.courseId,
                 };
-                this.bootstrapResult = handler.bootstrapResult;
+                this.initResult = handler.initResult;
             }
         }
     }

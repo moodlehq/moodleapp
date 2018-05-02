@@ -33,7 +33,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnInit {
     component: string;
     method: string;
     args: any;
-    bootstrapResult: any;
+    initResult: any;
 
     constructor(protected sitePluginsProvider: CoreSitePluginsProvider) { }
 
@@ -50,7 +50,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnInit {
                     courseid: this.course.id,
                     downloadenabled: this.downloadEnabled
                 };
-                this.bootstrapResult = handler.bootstrapResult;
+                this.initResult = handler.initResult;
             }
         }
     }

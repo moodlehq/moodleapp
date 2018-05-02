@@ -25,7 +25,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     priority: number;
 
     constructor(name: string, protected title: string, protected plugin: any, protected handlerSchema: any,
-            protected bootstrapResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
+            protected initResult: any, protected sitePluginsProvider: CoreSitePluginsProvider) {
         super(name);
 
         this.priority = handlerSchema.priority;
@@ -42,7 +42,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         return this.sitePluginsProvider.isHandlerEnabledForCourse(
-                courseId, this.handlerSchema.restricttoenrolledcourses, this.bootstrapResult.restrict);
+                courseId, this.handlerSchema.restricttoenrolledcourses, this.initResult.restrict);
     }
 
     /**
